@@ -38,6 +38,12 @@ def get_demisto_arg(name):
 set_demisto_arg("host", "https://some-triage-host/")
 set_demisto_arg("token", "api_token")
 set_demisto_arg("user", "user")
+set_demisto_arg("date_range", "1 day")
+set_demisto_arg("max_fetch", 30)
+set_demisto_arg("category_id", "")
+set_demisto_arg("match_priority", "")
+set_demisto_arg("tags", "")
+set_demisto_arg("mailbox_location", "Processed_Reports")
 patch("demistomock.getParam", get_demisto_arg)  # args ≡ params in tests
 
 import CofenseTriagev2  # noqa: 402
@@ -64,6 +70,12 @@ def stub_demisto_setup(mocker):
     mocker.patch("demistomock.setLastRun")
 
 
+@pytest.fixture
+@freeze_time("2000-10-31")
+def triage_instance():
+    return CofenseTriagev2.build_triage_instance()
+
+
 class TestCofenseTriage:
     def test_test_function(self, requests_mock, triage_instance):
         requests_mock.get(
@@ -87,15 +99,9 @@ class TestCofenseTriage:
 
     @freeze_time("2000-10-31")
     def test_fetch_reports(self, mocker, requests_mock, triage_instance):
-        set_demisto_arg("max_fetch", 10)
-        set_demisto_arg("date_range", "1 day")
-        set_demisto_arg("category_id", 5)
-        set_demisto_arg("match_priority", 2)
-        set_demisto_arg("tags", "")
-        set_demisto_arg("mailbox_location", "Processed_Reports")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&"
-            "match_priority=2&tags=&start_date=2000-10-30+00%3A00%3A00",
+            "https://some-triage-host/api/public/v1/processed_reports?category_id=&"
+            "match_priority=&tags=&start_date=2000-10-30T00%3A00%3A00",
             # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
@@ -125,19 +131,9 @@ class TestCofenseTriage:
     def test_fetch_reports_already_fetched(
             self, mocker, requests_mock, triage_instance
     ):
-        set_demisto_args(
-            {
-                "max_fetch": 10,
-                "date_range": "1 day",
-                "category_id": 5,
-                "match_priority": 2,
-                "tags": "",
-                "mailbox_location": "Processed_Reports",
-            }
-        )
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&"
-            "match_priority=2&tags=&start_date=2000-10-30+00%3A00%3A00",
+            "https://some-triage-host/api/public/v1/processed_reports?category_id=&"
+            "match_priority=&tags=&start_date=2000-10-30T00%3A00%3A00",
             # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
@@ -292,10 +288,10 @@ class TestCofenseTriage:
         assert len(demisto_results) == 1
         assert demisto_results[0]["HumanReadable"] == (
             "### Reports:\n"
-            "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n"
+            "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n" # noqa: 501
             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-            "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n"
-            "| 3884 | 2020-08-24T16:43:04.412Z |  | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13458 | Inbox | 1 | 555 | Report body 3 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 3<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 3 aaa | 2020-08-24T16:15:52.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 667, 'name': 'Triage_rule_1', 'reports_count': 41, 'active': True, 'created_at': '2019-04-11T16:46:11.078Z', 'updated_at': '2019-04-11T16:46:11.078Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-24T16:21:07.000Z | 2020-08-24T16:43:05.946Z |\n"
+            "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n" # noqa: 501
+            "| 3884 | 2020-08-24T16:43:04.412Z |  | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13458 | Inbox | 1 | 555 | Report body 3 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 3<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 3 aaa | 2020-08-24T16:15:52.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 667, 'name': 'Triage_rule_1', 'reports_count': 41, 'active': True, 'created_at': '2019-04-11T16:46:11.078Z', 'updated_at': '2019-04-11T16:46:11.078Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-24T16:21:07.000Z | 2020-08-24T16:43:05.946Z |\n" # noqa: 501
         )
 
     @freeze_time("2000-10-31")
@@ -324,10 +320,10 @@ class TestCofenseTriage:
         assert len(demisto_results) == 1
         assert demisto_results[0]["HumanReadable"] == (
             "### Reports:\n"
-            "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n"
+            "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n" # noqa: 501
             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-            "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n"
-            "| 3884 | 2020-08-24T16:43:04.412Z |  | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13458 | Inbox | 1 | 555 | Report body 3 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 3<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 3 aaa | 2020-08-24T16:15:52.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 667, 'name': 'Triage_rule_1', 'reports_count': 41, 'active': True, 'created_at': '2019-04-11T16:46:11.078Z', 'updated_at': '2019-04-11T16:46:11.078Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-24T16:21:07.000Z | 2020-08-24T16:43:05.946Z |\n"
+            "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n" # noqa: 501
+            "| 3884 | 2020-08-24T16:43:04.412Z |  | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13458 | Inbox | 1 | 555 | Report body 3 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 3<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 3 aaa | 2020-08-24T16:15:52.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 667, 'name': 'Triage_rule_1', 'reports_count': 41, 'active': True, 'created_at': '2019-04-11T16:46:11.078Z', 'updated_at': '2019-04-11T16:46:11.078Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-24T16:21:07.000Z | 2020-08-24T16:43:05.946Z |\n" # noqa: 501
         )
 
     @freeze_time("2000-10-31")
@@ -352,9 +348,9 @@ class TestCofenseTriage:
         assert len(demisto_results) == 1
         assert demisto_results[0]["HumanReadable"] == (
             "### Reports:\n"
-            "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n"
+            "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n" # noqa: 501
             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-            "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n"
+            "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n" # noqa: 501
         )
 
     def test_get_attachment_command(self, mocker, requests_mock, triage_instance):

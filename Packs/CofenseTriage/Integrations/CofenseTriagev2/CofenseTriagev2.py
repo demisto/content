@@ -741,28 +741,30 @@ def get_report_png_by_id(triage_instance, report_id):
     ).content
 
 
+def build_triage_instance():
+    demisto_params = {
+        "start_date": parse_date_range(demisto.getParam("date_range"))[0].isoformat(),
+        "max_fetch": int(demisto.getParam("max_fetch")),
+        "category_id": demisto.getParam("category_id"),
+        "match_priority": demisto.getParam("match_priority"),
+        "tags": demisto.getParam("tags"),
+        "mailbox_location": demisto.getParam("mailbox_location"),
+    }
+
+    return TriageInstance(
+        host=demisto.getParam("host").rstrip("/") if demisto.getParam("host") else "",
+        token=demisto.getParam("token"),
+        user=demisto.getParam("user"),
+        disable_tls_verification=demisto.params().get("insecure", False),
+        demisto_params=demisto_params,
+    )
+
+
 def main():
     try:
         handle_proxy()
 
-        demisto_params = {
-            "start_date": parse_date_range(demisto.getParam('date_range'))[
-                0
-            ].isoformat(),
-            "max_fetch": int(demisto.getParam('max_fetch')),
-            "category_id": demisto.getParam("category_id"),
-            "match_priority": demisto.getParam("match_priority"),
-            "tags": demisto.getParam("tags"),
-            "mailbox_location": demisto.getParam("mailbox_location"),
-        }
-
-        triage_instance = TriageInstance(
-            host=demisto.getParam("host").rstrip("/") if demisto.getParam("host") else "",
-            token=demisto.getParam("token"),
-            user=demisto.getParam("user"),
-            disable_tls_verification=demisto.params().get("insecure", False),
-            demisto_params=demisto_params,
-        )
+        triage_instance = build_triage_instance()
 
         if demisto.command() == "test-module":
             test_function(triage_instance)
