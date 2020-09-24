@@ -748,7 +748,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of indicator from the list of supported indicator types.
+      description: The type of indicator from the list of supported indicator types. Can be "domain", "ipv4", "ipv6", "md5", "sha1", or "sha256".
       isArray: false
       name: type
       predefined:
