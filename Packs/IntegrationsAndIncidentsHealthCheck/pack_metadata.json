@@ -1,6 +1,6 @@
 {
     "name": "Integrations & Incidents Health Check",
-    "description": "Do you know which of your integrations nor open incidents failed? With this content, you can view all your failed integrations and open incidents.",
+    "description": "Do you know which of your integrations or open incidents failed? With this content, you can view your failed integrations and open incidents",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
