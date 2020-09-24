@@ -510,17 +510,32 @@ def build_url_filter_for_get_list_entries(args):
     return url_params
 
 
+def arrange_list_entries_for_context(list_entries):
+    sender_list = []
+    recipient_list = []
+    for obj in list_entries:
+        if 'senderList' in obj.kyes():
+            sender_list.append(obj)
+
+        else:
+            recipient_list.append(obj)
+
+    list_entries_context = {'sender_list': sender_list, 'recipient_list': recipient_list}
+    return list_entries_context
+
+
 def list_entries_get_command(client, args):
     list_type = args.get('list_type')
     url_params = build_url_filter_for_get_list_entries(args)
     list_entries_response = client.list_entries_get(url_params, list_type)
-    list_entries = list_entries_response.get('data', [None])[0]
+    list_entries = list_entries_response.get('data', [None])
+    list_entries_context = arrange_list_entries_for_context(list_entries)
     output_prefix = list_type.title()
     return CommandResults(
         readable_output=list_entries,
         outputs_prefix=f'CiscoEmailSecurity.ListEntries.{output_prefix}',
         outputs_key_field='mid',
-        outputs=list_entries
+        outputs=list_entries_context
     )
 
 
