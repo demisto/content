@@ -1,7 +1,7 @@
 id: JOB - Integrations and Playbooks Health Check
 version: -1
 name: JOB - Integrations and Playbooks Health Check
-description: You should run this playbook as a scheduled job.  The playbook will check
+description: You should run this playbook as a scheduled job.  The playbook checks
   the health of all enabled integrations and open incidents.
 starttaskid: "0"
 tasks:
@@ -132,7 +132,7 @@ tasks:
       version: -1
       name: Should send the health check report?
       description: |
-        Checks if there the input to send the health check report ("SendHealthCheckReport") equal 'True'.
+        Checks the input to see if there is what to send the health check report ("SendHealthCheckReport") equal 'True'.
       type: condition
       iscommand: false
       brand: ""
@@ -175,7 +175,7 @@ tasks:
       id: 047c13e5-1b2f-4d92-81e9-ce622b79201f
       version: -1
       name: Generate Health Check report
-      description: commands.local.cmd.generalReport
+      description: Generates a general health check report.
       script: Builtin|||generateGeneralReport
       type: regular
       iscommand: true
@@ -352,7 +352,7 @@ tasks:
       id: 4e25c5f2-fd48-4a44-8481-b82d29251056
       version: -1
       name: Re run health check tests?
-      description: Asks the user to re run the health check tests.
+      description: Asks the user to re-run the health check tests.
       type: condition
       iscommand: false
       brand: ""
@@ -382,7 +382,7 @@ tasks:
       id: cd4df84a-a673-44ad-8044-95cec11f3fc5
       version: -1
       name: Delete context data
-      description: Delete field from context
+      description: Delete field from context.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -444,7 +444,7 @@ tasks:
       version: -1
       name: JOB - Integrations and Playbooks Health Check - Lists handling
       description: This playbook is triggered by a 'JOB - Integrations and Playbooks
-        Health' playbook and is responsible for creating nor updating related XSOAR
+        Health' playbook and is responsible for creating or updating related XSOAR
         lists.
       playbookName: JOB - Integrations and Playbooks Health Check - Lists handling
       type: playbook
@@ -868,7 +868,7 @@ tasks:
       id: eac1a104-08c2-482d-8743-ff9c2164c3f8
       version: -1
       name: Copies analyst notes from linked incident
-      description: Copies the anaylst notes from the integrations and incidents grid.
+      description: Copies the anaylst's notes from the integrations and incidents grid.
       scriptName: CopyLinkedAnalystNotes
       type: regular
       iscommand: false
