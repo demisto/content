@@ -1053,7 +1053,7 @@ def get_random_tests(tests_num, rand, conf=deepcopy(CONF), id_set=deepcopy(ID_SE
     if len(runnable_test_ids) <= tests_num:
         random_test_ids_to_run = runnable_test_ids
     else:
-        random_test_ids_to_run = random.sample(runnable_test_ids, k=tests_num)
+        random_test_ids_to_run = rand.sample(runnable_test_ids, k=tests_num)
 
     return set(random_test_ids_to_run)
 
