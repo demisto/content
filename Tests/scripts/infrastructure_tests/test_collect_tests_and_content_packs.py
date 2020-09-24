@@ -385,7 +385,8 @@ class TestSampleTesting:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert len(filterd_tests) == RANDOM_TESTS_NUM
-        assert content_packs == {"Base", "DeveloperTools"}
+        assert "Base" in content_packs
+        assert "DeveloperTools" in content_packs
 
     def test_sample_tests__with_test(self, mocker):
         """
@@ -441,23 +442,24 @@ class TestNoChange:
         filterd_tests, content_packs = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        assert content_packs == {"Base", "DeveloperTools", "HelloWorld"}
+        assert content_packs == {"Base", "DeveloperTools", "HelloWorld", "fake_pack"}
 
 
-def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[], changed_common=[], is_conf_json=False,
-                                  sample_tests=[], modified_metadata_list=[], is_reputations_json=[], is_indicator_json=[]):
+def create_get_modified_files_ret(modified_files_list=None, modified_tests_list=None, changed_common=None,
+                                  is_conf_json=False, sample_tests=None, modified_metadata_list=None,
+                                  is_reputations_json=None, is_indicator_json=None):
     """
     Returns return value for get_modified_files() to be used with a mocker patch
     """
     return (
-        modified_files_list,
-        modified_tests_list,
-        changed_common,
+        modified_files_list if modified_files_list is not None else [],
+        modified_tests_list if modified_tests_list is not None else [],
+        changed_common if changed_common is not None else [],
         is_conf_json,
-        sample_tests,
-        modified_metadata_list,
-        is_reputations_json,
-        is_indicator_json
+        sample_tests if sample_tests is not None else [],
+        modified_metadata_list if modified_metadata_list is not None else [],
+        is_reputations_json if is_reputations_json is not None else [],
+        is_indicator_json if is_indicator_json is not None else []
     )
 
 
