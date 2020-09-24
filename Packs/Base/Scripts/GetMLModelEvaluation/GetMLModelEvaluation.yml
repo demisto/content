@@ -31,8 +31,8 @@ args:
   isArray: true
   name: detailedOutput
   predefined:
-    - 'true'
-    - 'false'
+  - 'true'
+  - 'false'
   required: false
   secret: false
 comment: Finds a threshold for ML model, and performs an evaluation based on it
@@ -61,6 +61,6 @@ type: python
 dockerimage: demisto/dl:1.4
 tests:
 - Create Phishing Classifier V2 ML Test
-fromversion: 4.5.0
+fromversion: 5.0.0
 runas: DBotWeakRole
 runonce: false

@@ -2,7 +2,7 @@ commonfields:
   id: DefaultIncidentClassifier
   version: -1
 name: DefaultIncidentClassifier
-script: |-
+script: >-
   for (var i =0; incidents[0].labels && i < incidents[0].labels.length; i++) {
       if (incidents[0].labels[i].type === 'Email/from') {
           var sender = incidents[0].labels[i].value;
@@ -19,6 +19,7 @@ script: |-
           }
       }
   }
+
   return 'incident is not an email, not classifying';
 type: javascript
 tags:
@@ -33,14 +34,11 @@ args:
   description: Email address from which Nexpose sends emails to our mail listener
 - name: defaultIncidentType
   required: true
-  description: The incident type to be set in case the email is neither from Splunk
-    nor Nexpose
+  description: The incident type to be set in case the email is neither from Splunk nor Nexpose
 - name: minRiskScore
-  description: Argument passed as-is to NexposeEmailParser. See its documentation
-    for details.
+  description: Argument passed as-is to NexposeEmailParser. See its documentation for details.
 - name: minVulnCount
-  description: Argument passed as-is to NexposeEmailParser. See its documentation
-    for details.
+  description: Argument passed as-is to NexposeEmailParser. See its documentation for details.
 - name: sentinelOneSender
   description: Email address from which sentinel one sends emails to our mail listener
 - name: sentinelOneIncidentType
@@ -48,3 +46,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0
