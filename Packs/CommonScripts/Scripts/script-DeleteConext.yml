@@ -2,7 +2,7 @@ commonfields:
   id: DeleteContext
   version: -1
 name: DeleteContext
-script: |
+script: >
   function errorEntry(text) {
       return  {
           ContentsFormat: formats.text,
@@ -11,9 +11,13 @@ script: |
       };
   }
 
+
   var fieldsToDelete;
+
   var shouldDeleteAll = (args.all === 'yes');
+
   var isSubPlaybookKey = (args.subplaybook === 'yes');
+
   if (args.subplaybook === 'auto') {
       var res = executeCommand('Print', { value: 'id=${currentPlaybookID}' });
       if (res && res[0].Contents && res[0].Contents.startsWith('id=')) {
@@ -23,11 +27,13 @@ script: |
          }
       }
   }
+
   if (!shouldDeleteAll && !args.key) {
       return {Contents: 'You must specify key or all=yes',
                       ContentsFormat: formats.text,
                       Type: entryTypes.error};
   }
+
   if (shouldDeleteAll) {
       var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(function(item) { return item.trim(); }) : [];
       var keysToKeepObj = {};
@@ -50,7 +56,7 @@ script: |
       }
       var message;
       if (errorsStr) {
-          message = "Context cleared with the folloing errors:" + errorsStr;
+          message = "Context cleared with the following errors:" + errorsStr;
       } else {
           message = "Context cleared";
       }
@@ -127,14 +133,13 @@ args:
   - "yes"
   - "no"
   - "auto"
-  description: Specify "yes" if the context key is inside of a sub-playbook. 
-    Use **auto** to delete either from the sub-playbook context (if the playbook is called as a sub-playbook) or
-    from the global context (if the playbook is the top playbook).
+  description: Specify "yes" if the context key is inside of a sub-playbook. Use **auto** to delete either from the sub-playbook context (if the playbook is called as a sub-playbook) or from the global context (if the playbook is the top playbook).
 - name: keysToKeep
-  description: Context keys to keep when deleting all context. Supports comma separated
-    values and nested objects, e.g. URL.Data,IP.Address
+  description: Context keys to keep when deleting all context. Supports comma separated values and nested objects, e.g. URL.Data,IP.Address
 - name: index
   description: index to delete in case 'key' argument was specified
 scripttarget: 0
+runas: DBotRole
 runonce: false
 sensitive: true
+fromversion: 5.0.0

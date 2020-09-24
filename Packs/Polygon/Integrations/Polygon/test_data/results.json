@@ -11,7 +11,8 @@
                 "FileName": "abc",
                 "Status": "In Progress"
             }
-        }
+        },
+        "IndicatorTimeline": []
     },
     "upload_url_results": {
         "Type": 1,
@@ -24,7 +25,8 @@
                 "URL": "http://test.com",
                 "Status": "In Progress"
             }
-        }
+        },
+        "IndicatorTimeline": []
     },
     "analysis_info_results": [
         {
@@ -91,7 +93,8 @@
                     "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
                     "SHA256": "0d1b77c84c68c50932e28c3462a1962916abbbebb456ce654751ab401aa37697"
                 }
-            }
+            },
+            "IndicatorTimeline": []
         }
     ],
     "serialized_report": {
@@ -292,13 +295,14 @@
         },
         "HumanReadable": "### Results\n|Found|Malware-families|SHA1|Score|Verdict|\n|---|---|---|---|---|\n| true | Trojan | 44b3f79dfd7c5861501a19a3bac89f544c7ff815 | 21.0 | true |\n",
         "EntryContext": {
-            "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [{
-                "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
-                "Malicious": {
-                    "Vendor": "Group-IB TDS Polygon",
-                    "Description": "TDS Polygon score: 21.0, Trojan"
-                }
-            }],
+            "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+                {
+                    "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
+                    "Malicious": {
+                        "Vendor": "Group-IB TDS Polygon",
+                        "Description": "TDS Polygon score: 21.0, Trojan"
+                    }
+                }],
             "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
                 "Indicator": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
                 "Type": "file",
@@ -314,6 +318,7 @@
                     "Trojan"
                 ]
             }
-        }
+        },
+        "IndicatorTimeline": []
     }]
 }

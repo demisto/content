@@ -34,10 +34,9 @@ class Client(BaseClient):
     """
 
     def __init__(self, token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key):
-        headers = {
-            'Authorization': registration_id,
-            'Accept': 'application/json'
-        }
+        headers = get_x_content_info_headers()
+        headers['Authorization'] = registration_id
+        headers['Accept'] = 'application/json'
         super().__init__(base_url=token_retrieval_url, headers=headers, verify=use_ssl, proxy=proxy)
         self.refresh_token = refresh_token
         self.enc_key = enc_key
@@ -87,7 +86,9 @@ class Client(BaseClient):
         api_url = oproxy_response.get('url')
         refresh_token = oproxy_response.get(REFRESH_TOKEN_CONST)
         instance_id = oproxy_response.get(INSTANCE_ID_CONST)
-        expires_in = int(oproxy_response.get(EXPIRES_IN, MINUTES_60))
+        # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
+        # an empty string to an int.
+        expires_in = int(oproxy_response.get(EXPIRES_IN, MINUTES_60) or 0)
         if not access_token or not api_url or not instance_id:
             raise DemistoException(f'Missing attribute in response: access_token, instance_id or api are missing.\n'
                                    f'Oproxy response: {oproxy_response}')

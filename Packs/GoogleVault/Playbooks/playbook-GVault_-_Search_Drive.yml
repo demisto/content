@@ -1,6 +1,6 @@
 id: Google-Vault-Search-Drive
 version: -1
-fromversion: 4.0.0
+fromversion: 5.0.0
 name: Google Vault - Search Drive
 description: This is a playbook for performing Google Vault search in Drive accounts and display the results.
 starttaskid: "0"
@@ -36,8 +36,7 @@ tasks:
       id: 4535653a-d322-4c51-8857-a50edf322136
       version: -1
       name: Create Drive Export
-      description: Creates a Google Vault export in order to perform search actions
-        on emails.
+      description: Creates a Google Vault export in order to perform search actions on emails.
       script: '|||gvault-create-export-drive'
       type: regular
       iscommand: true
@@ -127,8 +126,7 @@ tasks:
         complex:
           root: inputs.pollTimeout
       dt:
-        simple: GoogleVault.Matter.Export(val.Status != 'COMPLETED')=val.MatterID
-          + '#' + val.ExportID
+        simple: GoogleVault.Matter.Export(val.Status != 'COMPLETED')=val.MatterID + '#' + val.ExportID
     separatecontext: true
     loop:
       iscommand: false
@@ -365,10 +363,7 @@ tasks:
       - "5"
     scriptarguments:
       message:
-        simple: 'Polling time out: Your search is taking a bit more time. To see your
-          results please run playbook ''Google Vault - Display Results'' with a grater
-          ''PollIntarval'' and ''PollTimeout'' using this ExportID: ${GoogleVault.Matter.Export.ExportID}
-          and MatterID: ${GoogleVault.Matter.Export.MatterID}'
+        simple: 'Polling time out: Your search is taking a bit more time. To see your results please run playbook ''Google Vault - Display Results'' with a grater ''PollIntarval'' and ''PollTimeout'' using this ExportID: ${GoogleVault.Matter.Export.ExportID} and MatterID: ${GoogleVault.Matter.Export.MatterID}'
     separatecontext: false
     view: |-
       {
@@ -410,8 +405,7 @@ inputs:
   value:
     simple: Specific Accounts
   required: false
-  description: "Choice of Search method.\n Default is: 'Specific Accounts' -requires
-    emails argument. \n'Organizational Unit' - requires ou argument.\n'Team Drive'"
+  description: "Choice of Search method.\n Default is: 'Specific Accounts' -requires emails argument. \n'Organizational Unit' - requires ou argument.\n'Team Drive'"
 - key: emails
   value: {}
   required: false
@@ -478,8 +472,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: If set to true the export file created will be downloaded into the
-    War Room
+  description: If set to true the export file created will be downloaded into the War Room
 outputs:
 - contextPath: GoogleVault.Matter.Export.MatterID
   description: Matter ID
@@ -533,4 +526,4 @@ outputs:
   description: Matter object
   type: unknown
 tests:
-  - Google_Vault-Search_And_Display_Results_test
+- Google_Vault-Search_And_Display_Results_test

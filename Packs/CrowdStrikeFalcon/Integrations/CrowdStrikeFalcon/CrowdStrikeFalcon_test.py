@@ -14,7 +14,8 @@ def get_access_token(requests_mock, mocker):
         'params',
         return_value={
             'url': SERVER_URL,
-            'proxy': True
+            'proxy': True,
+            'incidents_per_fetch': 2
         }
     )
     requests_mock.post(
@@ -2083,3 +2084,79 @@ def test_refresh_session(requests_mock, mocker):
     results = refresh_session_command()
 
     assert results['HumanReadable'] == f"CrowdStrike Session Refreshed: {session_id}"
+
+
+class TestFetch:
+    """ Test the logic of the fetch
+
+    """
+    @pytest.fixture()
+    def set_up_mocks(self, requests_mock, mocker):
+        """ Sets up the mocks for the fetch.
+        """
+        mocker.patch.object(demisto, 'setLastRun')
+        requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
+                           json={'resources': [{'detection_id': 'ldt:1',
+                                                'created_timestamp': '2020-09-04T09:16:11Z',
+                                                'max_severity_displayname': 'Low'},
+                                               {'detection_id': 'ldt:2',
+                                                'created_timestamp': '2020-09-04T09:20:11Z',
+                                                'max_severity_displayname': 'Low'}]})
+
+    def test_old_fetch_to_new_fetch(self, set_up_mocks, mocker):
+        """
+        Tests the change of logic done in fetch. Validates that it's done smoothly
+        Given:
+            Old getLastRun which holds `first_behavior_time` and `last_detection_id`
+        When:
+            2 results are returned (which equals the FETCH_LIMIT)
+        Then:
+            The `first_behavior_time` doesn't change and an `offset` of 2 is added.
+
+        """
+        from CrowdStrikeFalcon import fetch_incidents
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_time': '2020-09-04T09:16:10Z',
+                                                                 'last_detection_id': 1234})
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_time': '2020-09-04T09:16:10Z',
+                                                          'offset': 2}
+
+    def test_new_fetch_with_offset(self, set_up_mocks, mocker):
+        """
+        Tests the correct flow of fetch
+        Given:
+            `getLastRun` which holds only `first_behavior_time`
+        When:
+            2 results are returned (which equals the FETCH_LIMIT)
+        Then:
+            The `first_behavior_time` doesn't change and an `offset` of 2 is added.
+        """
+
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_time': '2020-09-04T09:16:10Z'})
+        from CrowdStrikeFalcon import fetch_incidents
+
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_time': '2020-09-04T09:16:10Z',
+                                                          'offset': 2}
+
+    def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
+        """
+        Tests the correct flow of fetch
+        Given:
+            `getLastRun` which holds  `first_behavior_time` and `offset`
+        When:
+            1 result is returned (which is less than the FETCH_LIMIT)
+        Then:
+            The `first_behavior_time` changes and no `offset` is added.
+        """
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_time': '2020-09-04T09:16:10Z',
+                                                                 'offset': 2})
+        # Override post to have 1 results so FETCH_LIMIT won't be reached
+        requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
+                           json={'resources': [{'detection_id': 'ldt:1',
+                                                'created_timestamp': '2020-09-04T09:16:11Z',
+                                                'max_severity_displayname': 'Low'}]})
+        from CrowdStrikeFalcon import fetch_incidents
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_time': '2020-09-04T09:16:11Z'}

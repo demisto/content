@@ -15,7 +15,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers
 
 try:
     from StringIO import StringIO
@@ -133,9 +133,9 @@ def test_tbl_to_md_multiline():
     expected_table = '''### tableToMarkdown test with multiline
 |header_1|header_2|header_3|
 |---|---|---|
-| a1 | b1.1<br>b1.2 | c1\|1 |
-| a2 | b2.1<br>b2.2 | c2\|1 |
-| a3 | b3.1<br>b3.2 | c3\|1 |
+| a1 | b1.1<br>b1.2 | c1\\|1 |
+| a2 | b2.1<br>b2.2 | c2\\|1 |
+| a3 | b3.1<br>b3.2 | c3\\|1 |
 '''
     assert table == expected_table
 
@@ -646,6 +646,9 @@ def test_logger_replace_strs(mocker):
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
 
 
+TEST_SSH_KEY = '-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
+               'AAAAdzc2gtcn\n-----END OPENSSH PRIVATE KEY-----'
+
 SENSITIVE_PARAM = {
     'app': None,
     'authentication': {
@@ -657,7 +660,7 @@ SENSITIVE_PARAM = {
             'name': '',
             'password': 'cred_pass',
             'sortValues': None,
-            'sshkey': 'ssh_key_secret',
+            'sshkey': TEST_SSH_KEY,
             'sshkeyPass': 'ssh_key_secret_pass',
             'user': '',
             'vaultInstanceId': '',
@@ -676,7 +679,7 @@ def test_logger_replace_strs_credentials(mocker):
     ilog = IntegrationLogger()
     # log some secrets
     ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh pass: ssh_key_secret_pass. ident: ident_pass:')
-    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass'):
+    for s in ('cred_pass', TEST_SSH_KEY, 'ssh_key_secret_pass', 'ident_pass'):
         assert s not in ilog.messages[0]
 
 
@@ -824,6 +827,7 @@ def test_get_demisto_version(mocker, clear_version_cache):
     assert is_demisto_version_ge('5.0.0')
     assert is_demisto_version_ge('4.5.0')
     assert not is_demisto_version_ge('5.5.0')
+    assert get_demisto_version_as_str() == '5.0.0-50000'
 
 
 def test_is_demisto_version_ge_4_5(mocker, clear_version_cache):
@@ -988,6 +992,7 @@ class TestCommandResults:
         assert list(results.to_context()['EntryContext'].keys())[0] == \
                'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
+
     def test_readable_only_context(self):
         """
         Given:
@@ -1077,7 +1082,8 @@ class TestCommandResults:
                         'Type': 'ip'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': []
         }
 
     def test_multiple_indicators(self, clear_version_cache):
@@ -1160,7 +1166,8 @@ class TestCommandResults:
                         'Type': 'ip'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': []
         }
 
     def test_return_list_of_items(self, clear_version_cache):
@@ -1188,7 +1195,8 @@ class TestCommandResults:
             'HumanReadable': tableToMarkdown('Results', tickets),
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
-            }
+            },
+            'IndicatorTimeline': []
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1219,7 +1227,8 @@ class TestCommandResults:
             'HumanReadable': None,
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
-            }
+            },
+            'IndicatorTimeline': []
         })
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1362,8 +1371,64 @@ class TestCommandResults:
                         'Type': 'domain'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': []
         }
+
+    def test_indicator_timeline_with_list_of_indicators(self):
+        """
+       Given:
+           -  a list of an indicator
+       When
+           - creating an IndicatorTimeline object
+           - creating a CommandResults objects using the IndicatorTimeline object
+       Then
+           - the IndicatorTimeline receives the appropriate category and message
+       """
+        from CommonServerPython import CommandResults, IndicatorsTimeline
+
+        indicators = ['8.8.8.8']
+        timeline = IndicatorsTimeline(indicators=indicators, category='test', message='message')
+
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs=None,
+            raw_response=indicators,
+            indicators_timeline=timeline
+        )
+
+        assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
+            {'Value': '8.8.8.8', 'Category': 'test', 'Message': 'message'}
+        ])
+
+    def test_indicator_timeline_running_from_an_integration(self, mocker):
+        """
+       Given:
+           -  a list of an indicator
+       When
+           - mocking the demisto.params()
+           - creating an IndicatorTimeline object
+           - creating a CommandResults objects using the IndicatorTimeline object
+       Then
+           - the IndicatorTimeline receives the appropriate category and message
+       """
+        from CommonServerPython import CommandResults, IndicatorsTimeline
+        mocker.patch.object(demisto, 'params', return_value={'insecure': True})
+        indicators = ['8.8.8.8']
+        timeline = IndicatorsTimeline(indicators=indicators)
+
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs=None,
+            raw_response=indicators,
+            indicators_timeline=timeline
+        )
+
+        assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
+            {'Value': '8.8.8.8', 'Category': 'Integration Update'}
+        ])
 
 
 class TestBaseClient:
@@ -1617,18 +1682,86 @@ def test_http_client_debug(mocker):
     assert debug_log is not None
 
 
-def test_parse_date_range():
-    utc_now = datetime.utcnow()
-    utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
-    # testing UTC date time and range of 2 days
-    assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
-    assert abs(utc_start_time - utc_end_time).days == 2
+class TestParseDateRange:
+    @staticmethod
+    def test_utc_time_sanity():
+        utc_now = datetime.utcnow()
+        utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
+        # testing UTC date time and range of 2 days
+        assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+        assert abs(utc_start_time - utc_end_time).days == 2
 
-    local_now = datetime.now()
-    local_start_time, local_end_time = parse_date_range('73 minutes', utc=False)
-    # testing local datetime and range of 73 minutes
-    assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
-    assert abs(local_start_time - local_end_time).seconds / 60 == 73
+    @staticmethod
+    def test_local_time_sanity():
+        local_now = datetime.now()
+        local_start_time, local_end_time = parse_date_range('73 minutes', utc=False)
+        # testing local datetime and range of 73 minutes
+        assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
+        assert abs(local_start_time - local_end_time).seconds / 60 == 73
+
+    @staticmethod
+    def test_with_trailing_spaces():
+        utc_now = datetime.utcnow()
+        utc_start_time, utc_end_time = parse_date_range('2 days   ', utc=True)
+        # testing UTC date time and range of 2 days
+        assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+        assert abs(utc_start_time - utc_end_time).days == 2
+
+    @staticmethod
+    def test_case_insensitive():
+        utc_now = datetime.utcnow()
+        utc_start_time, utc_end_time = parse_date_range('2 Days', utc=True)
+        # testing UTC date time and range of 2 days
+        assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+        assert abs(utc_start_time - utc_end_time).days == 2
+
+    @staticmethod
+    def test_error__invalid_input_format(mocker):
+        mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
+        demisto_results = mocker.spy(demisto, 'results')
+
+        try:
+            parse_date_range('2 Days ago', utc=True)
+        except Exception as exp:
+            assert str(exp) == 'mock exit'
+        results = demisto.results.call_args[0][0]
+        assert 'date_range must be "number date_range_unit"' in results['Contents']
+
+    @staticmethod
+    def test_error__invalid_time_value_not_a_number(mocker):
+        mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
+        demisto_results = mocker.spy(demisto, 'results')
+
+        try:
+            parse_date_range('ten Days', utc=True)
+        except Exception as exp:
+            assert str(exp) == 'mock exit'
+        results = demisto.results.call_args[0][0]
+        assert 'The time value is invalid' in results['Contents']
+
+    @staticmethod
+    def test_error__invalid_time_value_not_an_integer(mocker):
+        mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
+        demisto_results = mocker.spy(demisto, 'results')
+
+        try:
+            parse_date_range('1.5 Days', utc=True)
+        except Exception as exp:
+            assert str(exp) == 'mock exit'
+        results = demisto.results.call_args[0][0]
+        assert 'The time value is invalid' in results['Contents']
+
+    @staticmethod
+    def test_error__invalid_time_unit(mocker):
+        mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
+        demisto_results = mocker.spy(demisto, 'results')
+
+        try:
+            parse_date_range('2 nights', utc=True)
+        except Exception as exp:
+            assert str(exp) == 'mock exit'
+        results = demisto.results.call_args[0][0]
+        assert 'The unit of date_range is invalid' in results['Contents']
 
 
 def test_encode_string_results():
@@ -1972,7 +2105,8 @@ INDICATOR_VALUE_AND_TYPE = [
     ('2001:db8:0000:0000:0000:0000:0000:0000', 'IPv6'),
     ('112.126.94.107', 'IP'),
     ('a', None),
-    ('*castaneda-thornton.com', 'DomainGlob')
+    ('*castaneda-thornton.com', 'DomainGlob'),
+    ('53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b', 'File')
 ]
 
 
@@ -2018,25 +2152,12 @@ def test_handle_proxy(mocker):
                              ({'a': '1'}, ['a'], '1', None),
                              ({'a': {'b': '2'}}, ['a', 'b'], '2', None),
                              ({'a': {'b': '2'}}, ['a', 'c'], 'test', 'test'),
-                             ({'a': ['0', '1']}, ['a', 0], '0', None),  # Nested list
-                             ({'a': ['0', '1']}, ['a', 0, 1], '3', '3')  # Access object with attribute index
                          ])
 def test_safe_get(dict_obj, keys, expected, default_return_value):
     from CommonServerPython import dict_safe_get
-    assert expected == dict_safe_get(dict_object=dict_obj, keys=keys, default_return_value=default_return_value)
-
-
-@pytest.mark.parametrize(argnames="raise_type_error",
-                         argvalues=[True, False])
-def test_safe_get_return_type(raise_type_error):
-    from CommonServerPython import dict_safe_get
-    if raise_type_error:
-        with pytest.raises(TypeError):
-            dict_safe_get(dict_object={'a': '1'}, keys=['a'],
-                          return_type=int, raise_return_type=raise_type_error)
-    else:
-        assert dict_safe_get(dict_object={'a': '1'}, keys=['a'],
-                             return_type=int, raise_return_type=raise_type_error) is None
+    assert expected == dict_safe_get(dict_object=dict_obj,
+                                     keys=keys,
+                                     default_return_value=default_return_value)
 
 
 MIRRORS = '''
@@ -2289,8 +2410,7 @@ def test_update_context_no_merge(mocker):
     conversations.extend([new_conversation])
 
     # Arrange
-    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS,
-                                                                     True)
+    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS, True)
     new_conversations = json.loads(context['conversations'])
 
     # Assert
@@ -2558,3 +2678,24 @@ def test_handle_incoming_error_in_mirror__should_not_update(mocker):
     assert response.mirrored_object.get('in_mirror_error') == 'My in error'
     assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
     assert len(response.entries) == 0
+
+
+def test_get_x_content_info_headers(mocker):
+    test_license = 'TEST_LICENSE_ID'
+    test_brand = 'TEST_BRAND'
+    mocker.patch.object(
+        demisto,
+        'getLicenseID',
+        return_value=test_license
+    )
+    mocker.patch.object(
+        demisto,
+        'callingContext',
+        new_callable=mocker.PropertyMock(return_value={'context': {
+            'IntegrationBrand': test_brand,
+            'IntegrationInstance': 'TEST_INSTANCE',
+        }})
+    )
+    headers = get_x_content_info_headers()
+    assert headers['X-Content-LicenseID'] == test_license
+    assert headers['X-Content-Name'] == test_brand

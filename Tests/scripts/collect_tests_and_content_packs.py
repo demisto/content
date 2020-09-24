@@ -244,7 +244,6 @@ def get_modified_files_for_testing(files_string):
             file_path = file_data[2]
         else:
             file_path = file_data[1]
-
         # ignoring deleted files.
         # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
         if ((file_status.lower() == 'm' or file_status.lower() == 'a' or file_status.lower().startswith('r'))
@@ -1249,7 +1248,25 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
         json.dump(envs_to_test, filter_envs_file)
 
 
-def create_test_file(is_nightly, skip_save=False):
+def get_list_of_files_in_the_pack(path_to_pack):
+    file_paths = []
+    for root, dirs, files in os.walk(path_to_pack):
+        for file in files:
+            file_paths.append(os.path.join(root, file))
+    return file_paths
+
+
+def changed_files_to_string(changed_files):
+    files_with_status = []
+
+    for file_path in changed_files:
+        file_with_status = f'M\t{file_path}'
+        files_with_status.append(file_with_status)
+
+    return '\n'.join(files_with_status)
+
+
+def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
     packs_to_install_string = ''
@@ -1259,7 +1276,10 @@ def create_test_file(is_nightly, skip_save=False):
         branch_name = branch_name_reg.group(1)
 
         logging.info("Getting changed files from the branch: {0}".format(branch_name))
-        if branch_name != 'master':
+        if path_to_pack:
+            changed_files = get_list_of_files_in_the_pack(path_to_pack)
+            files_string = changed_files_to_string(changed_files)
+        elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
             if os.getenv('CONTRIB_BRANCH'):
@@ -1303,10 +1323,11 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--nightly', type=tools.str2bool, help='Is nightly or not')
     parser.add_argument('-s', '--skip-save', type=tools.str2bool,
                         help='Skipping saving the test filter file (good for simply doing validation)')
+    parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly, options.skip_save)
+    create_test_file(options.nightly, options.skip_save, options.changed_pack_path)
     if not _FAILED:
         logging.info("Finished test configuration")
         sys.exit(0)

@@ -1,15 +1,21 @@
 id: Trend Micro Apex - Test
 version: -1
+contentitemexportablefields:
+  contentitemfields:
+    packID: TrendMicroApex
+    itemVersion: 1.0.1
+    fromServerVersion: ""
+    toServerVersion: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Trend Micro Apex - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 07beef94-02f5-4b61-88e1-31042bb0da0e
+    taskid: bf55e28d-9135-45db-8190-4de6f560e2a7
     type: start
     task:
-      elasticcommonfields: {}
-      id: 07beef94-02f5-4b61-88e1-31042bb0da0e
+      id: bf55e28d-9135-45db-8190-4de6f560e2a7
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +27,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -32,11 +38,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 5c907466-de9d-46b9-8fe6-2704013f6fc4
+    taskid: 7dfe298a-6e4b-4d58-82cd-7dc074f7848b
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 5c907466-de9d-46b9-8fe6-2704013f6fc4
+      id: 7dfe298a-6e4b-4d58-82cd-7dc074f7848b
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -45,6 +50,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
+      - "13"
       - "9"
     scriptarguments:
       all:
@@ -53,7 +59,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -64,20 +70,23 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 76b854e0-ad45-4e35-88b5-011b2ec9aff3
+    taskid: 10ebcfbf-9522-4de9-8083-76752337ead8
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 76b854e0-ad45-4e35-88b5-011b2ec9aff3
+      id: 10ebcfbf-9522-4de9-8083-76752337ead8
       version: -1
-      name: trendmicro-apex-usdo-list
-      script: '|||trendmicro-apex-usdo-list'
+      name: trendmicro-apex-udso-list
+      description: Retrieve a list of User-Defined Suspicious Objects from the Apex Central server.
+      script: '|||trendmicro-apex-udso-list'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      content_filter: {}
+      type: {}
     separatecontext: false
     view: |-
       {
@@ -93,11 +102,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: feb3a81b-8afb-49df-8082-44f89aaa5187
+    taskid: b9974e04-3e70-4ea8-8494-61294d6bdf77
     type: condition
     task:
-      elasticcommonfields: {}
-      id: feb3a81b-8afb-49df-8082-44f89aaa5187
+      id: b9974e04-3e70-4ea8-8494-61294d6bdf77
       version: -1
       name: Verify Outputs
       type: condition
@@ -113,7 +121,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: TrendMicroApex.USDO.type
+              simple: TrendMicroApex.UDSO.type
             iscontext: true
           right:
             value:
@@ -121,7 +129,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: TrendMicroApex.USDO.content
+              simple: TrendMicroApex.UDSO.content
             iscontext: true
           right:
             value:
@@ -130,7 +138,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: TrendMicroApex.USDO.scan_action
+              simple: TrendMicroApex.UDSO.scan_action
             iscontext: true
           right:
             value:
@@ -149,14 +157,14 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 61cb3714-b6b4-4410-8801-9363dd9a2346
+    taskid: af97918c-fb39-46a6-877f-e8184471f857
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 61cb3714-b6b4-4410-8801-9363dd9a2346
+      id: af97918c-fb39-46a6-877f-e8184471f857
       version: -1
-      name: trendmicro-apex-usdo-add
-      script: '|||trendmicro-apex-usdo-add'
+      name: trendmicro-apex-udso-add
+      description: Add suspicious file SHA-1, IP address, domain, or URL objects to the User-Defined Suspicious Object list.
+      script: '|||trendmicro-apex-udso-add'
       type: regular
       iscommand: true
       brand: ""
@@ -188,14 +196,14 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 26c6f766-0b2c-4c86-8c06-00565da57f5d
+    taskid: 53c26ffb-7b08-4ea2-8577-96000b41dfc3
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 26c6f766-0b2c-4c86-8c06-00565da57f5d
+      id: 53c26ffb-7b08-4ea2-8577-96000b41dfc3
       version: -1
-      name: trendmicro-apex-usdo-delete
-      script: '|||trendmicro-apex-usdo-delete'
+      name: trendmicro-apex-udso-delete
+      description: Delete suspicious file SHA-1, IP address, domain, or URL objects from the User-Defined Suspicious Object list.
+      script: '|||trendmicro-apex-udso-delete'
       type: regular
       iscommand: true
       brand: ""
@@ -222,11 +230,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: f7314d2c-b735-4c9a-8599-0d0a8cc84585
+    taskid: db94078e-97d9-41b0-8413-6a85564afec4
     type: regular
     task:
-      elasticcommonfields: {}
-      id: f7314d2c-b735-4c9a-8599-0d0a8cc84585
+      id: db94078e-97d9-41b0-8413-6a85564afec4
       version: -1
       name: trendmicro-apex-isolate
       script: '|||trendmicro-apex-isolate'
@@ -248,7 +255,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1770
         }
       }
@@ -259,11 +266,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 1c4c1702-e1c3-4c50-8c75-589bdd458d36
+    taskid: 857c8ff2-b50a-433d-89a7-da7c55dc1ba2
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 1c4c1702-e1c3-4c50-8c75-589bdd458d36
+      id: 857c8ff2-b50a-433d-89a7-da7c55dc1ba2
       version: -1
       name: trendmicro-apex-restore
       script: '|||trendmicro-apex-restore'
@@ -272,7 +278,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "18"
     scriptarguments:
       entity_id: {}
       host_name: {}
@@ -285,7 +291,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1945
         }
       }
@@ -296,11 +302,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 03fe8849-dfcb-4019-832e-e81179046a27
+    taskid: 91f7d994-1faf-4c27-85ce-a583ad0b74b5
     type: title
     task:
-      elasticcommonfields: {}
-      id: 03fe8849-dfcb-4019-832e-e81179046a27
+      id: 91f7d994-1faf-4c27-85ce-a583ad0b74b5
       version: -1
       name: Test Done
       type: title
@@ -310,8 +315,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 265,
+          "y": 2840
         }
       }
     note: false
@@ -321,11 +326,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 81bfd2c3-59e1-4f96-8a05-189b272c4f4a
+    taskid: 772c0622-66b9-4eb4-8851-5a90c6e2a198
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 81bfd2c3-59e1-4f96-8a05-189b272c4f4a
+      id: 772c0622-66b9-4eb4-8851-5a90c6e2a198
       version: -1
       name: GenerateIP
       description: Generates random IP address
@@ -351,11 +355,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: e7fad176-a8af-4a40-897f-799b2da0af80
+    taskid: b9874ba3-b760-4a0e-8555-cf3cbc9da5e2
     type: regular
     task:
-      elasticcommonfields: {}
-      id: e7fad176-a8af-4a40-897f-799b2da0af80
+      id: b9874ba3-b760-4a0e-8555-cf3cbc9da5e2
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -376,7 +379,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1245
         }
       }
@@ -387,14 +390,14 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: c2bd420a-0ec0-4fbf-8398-638c6b76782d
+    taskid: 6a3617a4-7cf9-4787-851c-e27c134d56ba
     type: regular
     task:
-      elasticcommonfields: {}
-      id: c2bd420a-0ec0-4fbf-8398-638c6b76782d
+      id: 6a3617a4-7cf9-4787-851c-e27c134d56ba
       version: -1
       name: trendmicro-apex-usdo-list
-      script: '|||trendmicro-apex-usdo-list'
+      description: Retrieve a list of User-Defined Suspicious Objects from the Apex Central server.
+      script: '|||trendmicro-apex-udso-list'
       type: regular
       iscommand: true
       brand: ""
@@ -410,7 +413,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1420
         }
       }
@@ -421,11 +424,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 1188dd3a-8ca4-4f58-87be-336a53a15eb0
+    taskid: a4711e57-bce5-4a22-8634-a648141a0def
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 1188dd3a-8ca4-4f58-87be-336a53a15eb0
+      id: a4711e57-bce5-4a22-8634-a648141a0def
       version: -1
       name: Verify Outputs
       type: condition
@@ -441,7 +443,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: TrendMicroApex.USDO.content
+              simple: TrendMicroApex.UDSO.content
             iscontext: true
           right:
             value:
@@ -450,7 +452,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1595
         }
       }
@@ -459,13 +461,348 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "13":
+    id: "13"
+    taskid: d84fceb3-e9df-4dcb-8819-f15fc7cbaf24
+    type: regular
+    task:
+      id: d84fceb3-e9df-4dcb-8819-f15fc7cbaf24
+      version: -1
+      name: Create sample file
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      data:
+        simple: test
+      entryId: {}
+      filename:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: c0f4376c-fba3-4779-8c91-3ece844542c0
+    type: regular
+    task:
+      id: c0f4376c-fba3-4779-8c91-3ece844542c0
+      version: -1
+      name: trendmicro-apex-udso-file-add
+      description: Adds the uploaded file information to the User-Defined Suspicious Objects list. If the file is already exist, it will be updated with the new arguments.
+      script: '|||trendmicro-apex-udso-file-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+      file_scan_action:
+        simple: Log
+      note:
+        simple: Test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: dad82e1e-913e-4194-8815-3f3903aa2f3c
+    type: regular
+    task:
+      id: dad82e1e-913e-4194-8815-3f3903aa2f3c
+      version: -1
+      name: trendmicro-apex-udso-list
+      description: Retrieve a list of User-Defined Suspicious Objects from the Apex Central server.
+      script: '|||trendmicro-apex-udso-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      content_filter: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: b5f3914f-1720-4ce4-8525-a2af3c307408
+    type: condition
+    task:
+      id: b5f3914f-1720-4ce4-8525-a2af3c307408
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: TrendMicroApex.UDSO.type
+            iscontext: true
+          right:
+            value:
+              simple: file
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: TrendMicroApex.UDSO.scan_action
+            iscontext: true
+          right:
+            value:
+              simple: log
+      - - operator: isEqualString
+          left:
+            value:
+              simple: TrendMicroApex.UDSO.notes
+            iscontext: true
+          right:
+            value:
+              simple: Test
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: ff5275c6-e564-4a31-8d7b-b4455f15524e
+    type: regular
+    task:
+      id: ff5275c6-e564-4a31-8d7b-b4455f15524e
+      version: -1
+      name: trendmicro-apex-usdo-delete
+      description: Delete suspicious file SHA-1, IP address, domain, or URL objects from the User-Defined Suspicious Object list.
+      script: '|||trendmicro-apex-udso-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      content:
+        simple: ${File.SHA1}
+      type:
+        simple: file_sha1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: d311cd0d-0910-4cc1-8a5a-3e9b46709132
+    type: regular
+    task:
+      id: d311cd0d-0910-4cc1-8a5a-3e9b46709132
+      version: -1
+      name: trendmicro-apex-list-logs
+      description: Retrieves a maximum of 1000 logs of detection types from the server. The `Pattern Update Status` and `Engine Update Status` log types returns all logs (no maximum) from the specified "since_time".
+      script: '|||trendmicro-apex-list-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      limit: {}
+      log_type:
+        simple: Web Violation
+      page_token: {}
+      since_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: c131d807-0de5-4cda-8c36-424f544a93ff
+    type: regular
+    task:
+      id: c131d807-0de5-4cda-8c36-424f544a93ff
+      version: -1
+      name: trendmicro-apex-endpoint-sensors-list
+      description: Retrieves a list of Security Agents with the Endpoint Sensor feature enabled.
+      script: '|||trendmicro-apex-endpoint-sensors-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      filter_by_endpoint_name: {}
+      filter_by_endpoint_type: {}
+      filter_by_ip_address: {}
+      filter_by_operating_system: {}
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 4bdb488a-59da-45dc-8cb3-1ae772bf78a8
+    type: regular
+    task:
+      id: 4bdb488a-59da-45dc-8cb3-1ae772bf78a8
+      version: -1
+      name: trendmicro-apex-managed-servers-list
+      description: Retrieves a list of managed product servers reporting to Apex Central.
+      script: '|||trendmicro-apex-managed-servers-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      entity_id: {}
+      host_name: {}
+      ip_address: {}
+      mac_address: {}
+      product: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: fab92233-9c6a-4b30-8cd3-fd6aff92570d
+    type: regular
+    task:
+      id: fab92233-9c6a-4b30-8cd3-fd6aff92570d
+      version: -1
+      name: trendmicro-apex-security-agents-list
+      description: Retrieves a list of Security Agents.
+      script: '|||trendmicro-apex-security-agents-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      entity_id: {}
+      host_name: {}
+      ip_address: {}
+      mac_address: {}
+      managing_server_id: {}
+      product: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
-        "width": 380,
+        "height": 2855,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -473,3 +810,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
