@@ -2,15 +2,22 @@ commonfields:
   id: IndicatorMaliciousRatioCalculation
   version: -1
 name: IndicatorMaliciousRatioCalculation
-script: |-
+script: >-
   import json, hashlib
 
+
   APPEARS_IN_MIN_NUMBER_OF_INCIDENTS = int(demisto.args()['appearsInMinNumberOfIncidents'])
+
   MAX_INCIDENTS = int(demisto.args()['maxIncidents'])
+
   MAX_INDICATORS = int(demisto.args()['maxIndicators'])
+
   QUERY = demisto.args()['query']
+
   MAX_RESULTS = int(demisto.args()['maxDisplayResults'])
+
   GENERATE_FILE_RESULT = (demisto.args()['fileResult'] == 'yes')
+
 
   def get_incident_labels_map(labels):
       if labels is None:
@@ -47,10 +54,15 @@ script: |-
 
 
   res = demisto.executeCommand("findIndicators", {'query': QUERY, 'size': MAX_INDICATORS})
+
   indicators = res[0]['Contents']
+
   indicators_result = map(get_indicator_data, indicators)
+
   res = demisto.executeCommand("getIncidents", {'query': QUERY.replace('incident.', ''), 'size': MAX_INCIDENTS})
+
   incidents = res[0]['Contents']['data']
+
   if incidents:
       incidents_result = map(get_incident_data, incidents)
       resolved_incident_ids = set(map(lambda x: x['id'], incidents_result))
@@ -122,6 +134,6 @@ scripttarget: 0
 timeout: 300ns
 runas: DBotRole
 runonce: false
-fromversion: "3.5.0"
+fromversion: "5.0.0"
 tests:
 - No tests (auto formatted)
