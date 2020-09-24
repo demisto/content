@@ -483,4 +483,3 @@ script:
 tests:
 - Azure SecurityCenter - Test
 fromversion: 5.0.0
-
