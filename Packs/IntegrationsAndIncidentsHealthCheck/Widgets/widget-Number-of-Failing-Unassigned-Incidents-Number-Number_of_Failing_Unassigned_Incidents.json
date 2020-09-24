@@ -13,7 +13,7 @@
   },
   "toDate": "0001-01-01T00:00:00Z"
  },
- "description": "Showing a number widget of the total unassigned Failed incidents",
+ "description": "A number widget showing the total unassigned failed incidents.",
  "id": "Number-of-Failing-Unassigned-Incidents-Number",
  "isPredefined": true,
  "name": "Number of Failed Unassigned Incidents",
