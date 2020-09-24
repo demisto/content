@@ -1,4 +1,4 @@
-comment: Data output script for populating dashboard pie graph widget with the top
+comment: Data output script for populating the dashboard pie graph widget with the top
   failing incident commands.
 commonfields:
   id: IncidentsCheck-Widget-CommandsNames
