@@ -7,23 +7,24 @@ Set a value in context under the key you entered.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
+| Demisto Version | 5.0.0 |
 
 ## Used In
 ---
 Sample usage of this script can be found in the following playbooks and scripts.
-* Calculate Severity - 3rd-party integrations
-* Calculate Severity By Email Authenticity
-* California - Breach Notification
-* Detonate File - VirusTotal
-* Employee Status Survey
-* IP Whitelist - AWS Security Group
-* PANW - Hunting and threat detection by indicator type
-* Splunk Indicator Hunting
-* TIM - Process Domain Age With Whois
-* Vulnerability Management - Qualys (Job)
+* Arcsight - Get events related to the Case
+* Detonate File - BitDam
+* Endace Search Archive Download PCAP v2
+* Illinois - Breach Notification
+* Illusive - Incident Escalation
+* Malware Investigation - Generic - Setup
+* QRadar - Get offense correlations v2
+* QRadar Indicator Hunting
+* SafeBreach - Create Incidents per Insight and Associate Indicators
+* Wait Until Datetime
 
 <!--
-Use in list was truncated. Full list commented out for reference:
+Used In: list was truncated. Full list commented out for reference:
 
 ATD - Detonate File
 Accessdata: Dump memory for malicious process
@@ -130,4 +131,5 @@ There are no outputs for this script.
 ```
 
 ## Human Readable Output
-Key Data(val.ID == obj.ID) set
+
+>Key Data(val.ID == obj.ID) set
