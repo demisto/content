@@ -1,12 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-listData = demisto.executeCommand("getList", {"listName": "XSOAR Failed - Checked Integrations"})
-listContent = list(listData[0].get('Contents').split(","))
-failingincident_count = len(listContent)
+list_data = demisto.executeCommand("getList", {"listName": "XSOAR Failed - Checked Integrations"})
+list_content = list_data[0].get('Contents').split(",")
+failing_incident_count = len(list_content)
 
-if listContent == ['']:
+if list_content == ['']:
     demisto.results(0)
 
 else:
-    demisto.results(failingincident_count)
+    demisto.results(list_content)
