@@ -4,8 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: '2000000'
-  display: Sensitivity threshold for configuring which domains are suspicious versus
-    trusted.
+  display: Sensitivity threshold for configuring which domains are suspicious versus trusted.
   name: threshold
   required: true
   type: 0
@@ -17,8 +16,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Alexa provides website ranking information that can be useful in determining
-  if the domain in question has a strong web presence.
+description: Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence.
 display: Alexa Rank Indicator
 name: Alexa Rank Indicator
 script:
@@ -69,4 +67,4 @@ script:
   subtype: python2
 tests:
 - Alexa Test Playbook
-fromversion: 3.5.0
+fromversion: 5.0.0

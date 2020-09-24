@@ -3,16 +3,20 @@ commonfields:
   version: -1
 name: ParseWordDoc
 comment: Takes an input docx file (entryID) as an input and saves an output text file (file entry) with the original file's contents.
-script: |
+script: >
   from docx import Document
+
   from docx.opc.exceptions import PackageNotFoundError
 
+
   res = []
+
   errEntry = {
       "Type": entryTypes["error"],
       "ContentsFormat": formats["text"],
       "Contents": ""
   }
+
 
   try:
       cmd_res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
@@ -46,3 +50,4 @@ args:
   description: Docx file to parse
 scripttarget: 0
 dockerimage: demisto/word-parser
+fromversion: 5.0.0

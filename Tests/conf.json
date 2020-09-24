@@ -452,10 +452,6 @@
             "playbookID": "SymantecMC_TestPlaybook"
         },
         {
-            "integrations": "Tufin",
-            "playbookID": "Tufin-Test"
-        },
-        {
             "integrations": "Looker",
             "playbookID": "Test-Looker"
         },
@@ -576,7 +572,7 @@
             "playbookID": "secureworks_test"
         },
         {
-            "integrations": "ServiceNow",
+            "integrations": "ServiceNow v2",
             "playbookID": "servicenow_test_new"
         },
         {
@@ -643,7 +639,7 @@
         {
             "integrations": "QRadar",
             "playbookID": "test playbook - QRadarCorrelations",
-            "timeout": 600,
+            "timeout": 1000,
             "fromversion": "5.0.0"
         },
         {
@@ -1206,6 +1202,24 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "McAfee ESM v2",
+            "instance_names": "v10.2.0",
+            "playbookID": "McAfee ESM Watchlists - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "McAfee ESM v2",
+            "instance_names": "v10.3.0",
+            "playbookID": "McAfee ESM Watchlists - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "McAfee ESM v2",
+            "instance_names": "v11.3",
+            "playbookID": "McAfee ESM Watchlists - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
             "timeout": 240,
@@ -1553,12 +1567,12 @@
         },
         {
             "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Test",
+            "playbookID": "Microsoft Graph Security Test",
             "instance_names": "ms_graph_security_dev"
         },
         {
             "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Test",
+            "playbookID": "Microsoft Graph Security Test",
             "instance_names": "ms_graph_security_prod"
         },
         {
@@ -3014,6 +3028,11 @@
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Talos Feed",
+            "playbookID": "FeedTalosTestPlaybook",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3152,7 +3171,6 @@
         "SCADAfence CNM": "Issue 18376",
         "ArcSight ESM v2": "Issue #18328",
         "AlienVault USM Anywhere": "Issue #18273",
-        "Tufin": "Issue 16441",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Netskope": "instance is down",
         "Service Manager": "Expired license",

@@ -1,12 +1,12 @@
-comment: Call tableToMarkdown from CommonServerPython with sample data dictionary
-  that has nested dictionary whose values contain non-ascii characters.
+comment: Call tableToMarkdown from CommonServerPython with sample data dictionary that has nested dictionary whose values contain non-ascii characters.
 commonfields:
   id: CallTableToMarkdown
   version: -1
 enabled: false
 name: CallTableToMarkdown
-script: |-
+script: >-
   ''' GLOBAL VARS '''
+
 
   SAMPLE_DATA = {
       'Status': 5,
@@ -39,7 +39,9 @@ script: |-
   }
 
 
+
   ''' FUNCTIONS '''
+
 
 
   def tbl_to_md_with_non_ascii_chars_nested_dict():
@@ -69,7 +71,9 @@ script: |-
 
   ''' EXECUTION '''
 
+
   # python2 uses __builtin__ python3 uses builtins
+
   if __name__ == "__builtin__" or __name__ == "builtins":
       output_of_test_tbl_to_md()
 system: false
@@ -79,3 +83,4 @@ subtype: python2
 tags: []
 tests:
 - No test
+fromversion: 5.0.0
