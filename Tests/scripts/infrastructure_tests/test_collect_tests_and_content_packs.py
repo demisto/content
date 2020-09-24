@@ -516,7 +516,7 @@ def test_skipped_integration_should_not_be_tested(mocker):
     filtered_tests = get_test_list_and_content_packs_to_install(
         files_string='',
         branch_name='dummy_branch',
-        two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+        minimum_server_version=TWO_BEFORE_GA_VERSION,
         conf=TestConf(mock_conf_dict),
         id_set=fake_id_set
     )
@@ -568,7 +568,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
         get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
-            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            minimum_server_version=TWO_BEFORE_GA_VERSION,
             conf=fake_conf,
             id_set=fake_id_set
         )
@@ -623,7 +623,7 @@ def test_conf_has_modified(mocker):
         get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
-            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            minimum_server_version=TWO_BEFORE_GA_VERSION,
             conf=fake_conf,
             id_set=fake_id_set
         )
@@ -689,7 +689,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
         filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
-            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            minimum_server_version=TWO_BEFORE_GA_VERSION,
             conf=fake_conf,
             id_set=fake_id_set
         )
@@ -764,7 +764,7 @@ class TestExtractMatchingObjectFromIdSet:
             filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
                 files_string='',
                 branch_name='dummy_branch',
-                two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+                minimum_server_version=TWO_BEFORE_GA_VERSION,
                 conf=fake_conf,
                 id_set=fake_id_set
             )
@@ -827,7 +827,7 @@ def test_modified_integration_content_pack_is_collected(mocker):
         filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
             files_string="",
             branch_name="dummy-branch",
-            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            minimum_server_version=TWO_BEFORE_GA_VERSION,
             conf=fake_conf,
             id_set=fake_id_set
         )
