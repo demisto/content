@@ -342,7 +342,7 @@ def __get_integration_config(client, integration_name, prints_manager, thread_in
         res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
                                                       method='POST', body=body)
     except ApiException as conn_error:
-        prints_manager.add_print_job(conn_error,body, print, thread_index)
+        prints_manager.add_print_job(conn_error.body, print, thread_index)
         return None
 
     res = ast.literal_eval(res_raw[0])
