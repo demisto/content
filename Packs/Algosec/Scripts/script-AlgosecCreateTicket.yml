@@ -2,9 +2,10 @@ commonfields:
   id: AlgosecCreateTicket
   version: -1
 name: AlgosecCreateTicket
-script: |2
+script: >2
 
   resp = demisto.executeCommand("algosec-create-ticket", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -38,8 +39,7 @@ args:
   predefined:
   - "0"
   - "1"
-  description: 'The device action to perform for the traffic. This can be either of
-    the following: 1 - Allow the traffic, 0 - Block the traffic'
+  description: 'The device action to perform for the traffic. This can be either of the following: 1 - Allow the traffic, 0 - Block the traffic'
 - name: destAddress
   required: true
   description: The destination address to perform the action on
@@ -54,8 +54,7 @@ args:
   description: The change request's title
 - name: service
   required: true
-  description: The device service or port for the connection, for example, "http"
-    or "tcp/123"
+  description: The device service or port for the connection, for example, "http" or "tcp/123"
 - name: user
   required: true
   description: The user for the connection
@@ -67,3 +66,4 @@ timeout: 0s
 dependson:
   must:
   - algosec-create-ticket
+fromversion: 5.0.0

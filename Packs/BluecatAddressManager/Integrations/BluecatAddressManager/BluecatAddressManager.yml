@@ -74,8 +74,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '0'
-      description: Start index from which to get the response policies. Default is
-        0.
+      description: Start index from which to get the response policies. Default is 0.
       isArray: false
       name: start
       required: false
@@ -102,8 +101,7 @@ script:
       description: Time to live (TTL) of the response policy.
       type: Unknown
     - contextPath: BlueCat.AddressManager.ResponsePolicies.Type
-      description: Type of the response policy (BLACKLIST, BLACKHOLE, WHITELIST, or
-        REDIRECT).
+      description: Type of the response policy (BLACKLIST, BLACKHOLE, WHITELIST, or REDIRECT).
       type: String
     - contextPath: BlueCat.AddressManager.ResponsePolicies.RedirectTarget
       description: Target of redirect, in case of REDIRECT policy type.
@@ -130,8 +128,7 @@ script:
       description: Time to live (TTL) of the response policy
       type: Unknown
     - contextPath: BlueCat.AddressManager.ResponsePolicies.Type
-      description: Type of the responce policy ( BLACKLIST, BLACKHOLE, WHITELIST,
-        or REDIRECT).
+      description: Type of the responce policy ( BLACKLIST, BLACKHOLE, WHITELIST, or REDIRECT).
       type: String
     - contextPath: BlueCat.AddressManager.ResponsePolicies.RedirectTarget
       description: Target of redirect, in case of REDIRECT policy type.
@@ -213,3 +210,4 @@ script:
   type: python
 tests:
 - Bluecat Address Manager test
+fromversion: 5.0.0

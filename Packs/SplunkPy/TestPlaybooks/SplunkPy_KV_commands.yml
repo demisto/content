@@ -2,7 +2,7 @@ id: SplunkPy KV commands
 version: -1
 name: SplunkPy KV commands
 starttaskid: "0"
-fromversion: '4.1.0'
+fromversion: '5.0.0'
 description: testing splunk Kv commands
 tasks:
   "0":
@@ -145,8 +145,7 @@ tasks:
       id: 02fe4e0e-b8b5-4996-8012-5bebc8aaeb4d
       version: -1
       name: data_list
-      description: Lists all of the data within a specific KV store collection or
-        collections
+      description: Lists all of the data within a specific KV store collection or collections
       script: 'splunk-kv-store-collection-data-list'
       type: regular
       iscommand: true
@@ -349,8 +348,7 @@ tasks:
       id: e351ca10-b20a-440c-8c95-71d481d3ef1a
       version: -1
       name: delete_data_by_query
-      description: Delete specific object in store. Search can be basic key value
-        or use a full query.
+      description: Delete specific object in store. Search can be basic key value or use a full query.
       script: 'splunk-kv-store-collection-delete-entry'
       type: regular
       iscommand: true
@@ -389,8 +387,7 @@ tasks:
       id: 5b285dd8-2e02-4e7f-8e78-75bf555c368a
       version: -1
       name: search_entry
-      description: Search for specific object in store. Search can be basic key value
-        or use a full query.
+      description: Search for specific object in store. Search can be basic key value or use a full query.
       script: 'splunk-kv-store-collection-search-entry'
       type: regular
       iscommand: true
@@ -464,8 +461,7 @@ tasks:
       id: 1a74f787-11db-4b70-85fa-139b4451440b
       version: -1
       name: collection_data_delete
-      description: Delete all of the data within a specific KV store collection or
-        collections.
+      description: Delete all of the data within a specific KV store collection or collections.
       script: 'splunk-kv-store-collection-data-delete'
       type: regular
       iscommand: true
@@ -498,8 +494,7 @@ tasks:
       id: f6ba1a1c-294b-4388-8e24-8b286cea228d
       version: -1
       name: get_data_list
-      description: Lists all of the data within a specific KV store collection or
-        collections
+      description: Lists all of the data within a specific KV store collection or collections
       script: 'splunk-kv-store-collection-data-list'
       type: regular
       iscommand: true

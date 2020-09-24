@@ -1,8 +1,7 @@
 id: Set - Test
 version: -1
 name: Set - Test
-description: A test for the Set command. Tests the Stringify parameter too. Don't
-  know why nobody ever made a test for this before.
+description: A test for the Set command. Tests the Stringify parameter too. Don't know why nobody ever made a test for this before.
 starttaskid: "0"
 tasks:
   "0":
@@ -179,10 +178,7 @@ tasks:
       - "4"
     scriptarguments:
       message:
-        simple: The number was not saved as string, or the number was saved as string
-          instead of a number. Does your PR change the Stringify parameter of the
-          Set command? Or was Demisto suddenly able to save the number 14444444444444444444
-          as the actual number it is?
+        simple: The number was not saved as string, or the number was saved as string instead of a number. Does your PR change the Stringify parameter of the Set command? Or was Demisto suddenly able to save the number 14444444444444444444 as the actual number it is?
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -287,3 +283,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
