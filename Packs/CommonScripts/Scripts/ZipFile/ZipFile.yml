@@ -6,8 +6,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: 'Name of the output file, for example: zipName="test" would result
-    in output file "test.zip"'
+  description: 'Name of the output file, for example: zipName="test" would result in output file "test.zip"'
   isArray: false
   name: zipName
   required: false
@@ -38,3 +37,4 @@ type: python
 subtype: python3
 dockerimage: demisto/python_zipfile:1.0.0.7600
 runonce: false
+fromversion: 5.0.0

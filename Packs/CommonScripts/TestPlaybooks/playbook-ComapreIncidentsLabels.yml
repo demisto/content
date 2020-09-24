@@ -401,8 +401,7 @@ tasks:
       id: 931254fd-55df-43ef-82ee-737d158ecdcf
       version: -1
       name: Check the first 2 labels
-      description: Compares the labels of two incidents. Returns the different labels
-        in them.
+      description: Compares the labels of two incidents. Returns the different labels in them.
       scriptName: CompareIncidentsLabels
       type: regular
       iscommand: false
@@ -466,8 +465,7 @@ tasks:
       id: aa681551-105e-4adc-8756-d4b0f992523a
       version: -1
       name: Check the last 2 labels
-      description: Compares the labels of two incidents. Returns the different labels
-        in them.
+      description: Compares the labels of two incidents. Returns the different labels in them.
       scriptName: CompareIncidentsLabels
       type: regular
       iscommand: false
@@ -564,3 +562,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

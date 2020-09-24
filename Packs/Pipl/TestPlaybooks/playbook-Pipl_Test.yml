@@ -181,8 +181,7 @@ tasks:
       brand: ""
     scriptarguments:
       expectedValue:
-        simple: '"10-1 Hickory Lane, Smallville, Kansas\n1000-355 Broadway, Metropolis,
-          Kansas\n"'
+        simple: '"10-1 Hickory Lane, Smallville, Kansas\n1000-355 Broadway, Metropolis, Kansas\n"'
       fields: {}
       path:
         simple: Account.[0].Addresses
@@ -237,3 +236,4 @@ view: |-
     }
   }
 inputs: []
+fromversion: 5.0.0

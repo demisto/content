@@ -2,10 +2,13 @@ commonfields:
   id: CBLiveFetchFiles
   version: -1
 name: CBLiveFetchFiles
-script: |-
+script: >-
   import json
+
   res = []
+
   fileLocations = json.loads(demisto.args()['filelocations'])
+
   for md5 in fileLocations:
       res += demisto.executeCommand('CBLiveGetFile',{'path': fileLocations[md5][0], 'hostname': fileLocations[md5][1]})
   demisto.results(res)
@@ -14,8 +17,7 @@ subtype: python2
 tags:
 - carbon-black
 - endpoint
-comment: Fetch all of the files from the endpoints where they were found using Cb
-  Live.
+comment: Fetch all of the files from the endpoints where they were found using Cb Live.
 system: true
 args:
 - name: filelocations
@@ -27,3 +29,4 @@ dependson:
   must:
   - CBLiveGetFile
 timeout: 0s
+fromversion: 5.0.0

@@ -4,8 +4,7 @@ commonfields:
 name: Exchange 2016 Compliance Search
 display: Exchange 2016 Compliance Search
 category: Messaging
-description: Exchange Server 2016 Compliance Search enables you to search for and
-  delete an email message from all mailboxes in your organization.
+description: Exchange Server 2016 Compliance Search enables you to search for and delete an email message from all mailboxes in your organization.
 configuration:
 - display: DOMAIN\USERNAME (e.g., DEMISTO.INT\admin)
   name: credentials
@@ -80,3 +79,4 @@ script:
   runonce: false
 tests:
 - No test
+fromversion: 5.0.0

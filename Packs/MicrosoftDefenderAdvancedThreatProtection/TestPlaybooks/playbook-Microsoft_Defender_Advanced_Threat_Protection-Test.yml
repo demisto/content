@@ -179,8 +179,7 @@ tasks:
       id: 233e1eda-117f-4372-8b57-17be17e2803a
       version: -1
       name: Get machines by health status
-      description: Retrieves a collection of machines that have communicated with
-        WDATP cloud on the last 30 days
+      description: Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
       script: '|||microsoft-atp-get-machines'
       type: regular
       iscommand: true
@@ -608,8 +607,7 @@ tasks:
       id: 5de1b894-9f4c-409e-8acc-2e949c42462e
       version: -1
       name: Get machine action data
-      description: Return the machine's actions. If you set an action id it will return
-        the info on the specific action
+      description: Return the machine's actions. If you set an action id it will return the info on the specific action
       script: '|||microsoft-atp-list-machine-actions-details'
       type: regular
       iscommand: true
@@ -959,3 +957,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
