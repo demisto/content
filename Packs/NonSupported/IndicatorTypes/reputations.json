@@ -39,7 +39,7 @@
         "IPReputation"
       ],
       "fromVersion": "3.1.0",
-      "toVersion": "4.5.0"
+      "toVersion": "4.5.9"
     },
     {
       "id": "ipRepEscaped",
@@ -55,7 +55,7 @@
       ],
       "formatScript": "UnEscapeIPs",
       "fromVersion": "3.5.1",
-      "toVersion": "4.5.0"
+      "toVersion": "4.5.9"
     },
     {
       "id": "emailRep",
@@ -68,7 +68,7 @@
       "enhancementScriptNames": [
         "EmailReputation"
       ],
-      "toVersion": "4.5.0"
+      "toVersion": "4.5.9"
     },
     {
       "id": "urlRep",
@@ -111,7 +111,7 @@
       "contextPath": "URL(val.Data && val.Data === obj.Data)",
       "contextValue": "Data",
       "fromVersion": "3.5.1",
-      "toVersion": "4.5.0"
+      "toVersion": "4.5.9"
     },
     {
       "id": "registryRep",
@@ -169,7 +169,7 @@
         "DomainReputation"
       ],
       "formatScript": "ExtractFQDNFromUrlAndEmail",
-      "toVersion": "4.5.0"
+      "toVersion": "4.5.9"
     },
     {
       "id": "domainRep2",
