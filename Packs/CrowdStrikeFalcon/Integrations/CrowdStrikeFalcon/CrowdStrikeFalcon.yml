@@ -46,9 +46,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API),
-  enables fetching and resolving detections, searching devices, getting behaviors
-  by ID, containing hosts, and lifting host containment.
+description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
 script:
@@ -58,8 +56,7 @@ script:
     - name: filter
       description: Returns devices that match the query.
     - name: ids
-      description: A comma separated list of device IDs to limit by which to limit
-        the results.
+      description: A comma separated list of device IDs to limit by which to limit the results.
     - name: status
       auto: PREDEFINED
       predefined:
@@ -79,8 +76,7 @@ script:
       - Windows
       - Mac
       - Linux
-      description: 'Returns devices that match the specified platform name. Can be:
-        "Windows","Mac", or "Linux".'
+      description: 'Returns devices that match the specified platform name. Can be: "Windows","Mac", or "Linux".'
     - name: site_name
       description: Returns devices that match the specified site name.
     outputs:
@@ -158,8 +154,7 @@ script:
   - name: cs-falcon-search-detection
     arguments:
     - name: ids
-      description: IDs of the detections to search. If provided, will override other
-        arguments.
+      description: IDs of the detections to search. If provided, will override other arguments.
       isArray: true
     - name: filter
       description: |-
@@ -219,8 +214,7 @@ script:
     - contextPath: CrowdStrike.Detection.ProcessStartTime
       description: The start time of the process that generated the detection.
       type: Date
-    description: Search for details of specific detections, either using a filter
-      query, or by providing the IDs of the detections.
+    description: Search for details of specific detections, either using a filter query, or by providing the IDs of the detections.
   - name: cs-falcon-resolve-detection
     arguments:
     - name: ids
@@ -243,34 +237,27 @@ script:
       - "false"
       description: If set to true, will display the dectection in the UI.
     - name: username
-      description: Username to resolve resolve detections of (This is usually the
-        user’s email address, but may vary based on your configuration).
+      description: Username to resolve resolve detections of (This is usually the user’s email address, but may vary based on your configuration).
     description: Resolves and updates a detection.
   - name: cs-falcon-contain-host
     arguments:
     - name: ids
       required: true
-      description: The host agent ID (AID) of the host to contain. Get an agent ID
-        from a detection.
+      description: The host agent ID (AID) of the host to contain. Get an agent ID from a detection.
       isArray: true
-    description: Contains or lifts containment for a specified host. When contained,
-      a host can only communicate with the CrowdStrike cloud and any IPs specified
-      in your containment policy.
+    description: Contains or lifts containment for a specified host. When contained, a host can only communicate with the CrowdStrike cloud and any IPs specified in your containment policy.
   - name: cs-falcon-lift-host-containment
     arguments:
     - name: ids
       required: true
-      description: The host agent ID (AID) of the host you want to contain. Get an
-        agent ID from a detection
+      description: The host agent ID (AID) of the host you want to contain. Get an agent ID from a detection
       isArray: true
-    description: Lifts containment on the host, which returns its network communications
-      to normal.
+    description: Lifts containment on the host, which returns its network communications to normal.
   - name: cs-falcon-run-command
     arguments:
     - name: host_ids
       required: true
-      description: A comma separated list of host agent ID’s for which to run commands
-        (can be retrieved by running cs-falcon-search-device command).
+      description: A comma separated list of host agent ID’s for which to run commands (can be retrieved by running cs-falcon-search-device command).
     - name: command_type
       required: true
       description: The command type to run.
@@ -312,8 +299,7 @@ script:
       description: The full command.
       type: String
     - contextPath: CrowdStrike.Command.TaskID
-      description: (For single host) The ID of the command request which has been
-        accepted.
+      description: (For single host) The ID of the command request which has been accepted.
       type: string
     - contextPath: CrowdStrike.Command.Complete
       description: (For single host) True if the command has done.
@@ -333,10 +319,7 @@ script:
       - private
       - group
       - public
-      description: 'The permission type for the custom script. Can be: "private",
-        which is used only by the user who uploaded it, "group", which is used by
-        all RTR Admins, and "public", which is used by all active-responders and RTR
-        admins.'
+      description: 'The permission type for the custom script. Can be: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins.'
       defaultValue: private
     - name: content
       required: true
@@ -347,22 +330,18 @@ script:
     - name: entry_id
       required: true
       description: The file entry ID to upload.
-    description: Uploads a file to the CrowdStrike cloud (can be used for the RTR
-      `put` command).
+    description: Uploads a file to the CrowdStrike cloud (can be used for the RTR `put` command).
   - name: cs-falcon-delete-file
     arguments:
     - name: file_id
       required: true
-      description: The file ID to delete (can be retrieved by running cs-falcon-list-files
-        command).
-    description: Deletes a file based on the ID given. Can delete only one file at
-      a time.
+      description: The file ID to delete (can be retrieved by running cs-falcon-list-files command).
+    description: Deletes a file based on the ID given. Can delete only one file at a time.
   - name: cs-falcon-get-file
     arguments:
     - name: file_id
       required: true
-      description: A comma separated list of file IDs to get (can be retrieved by
-        running cs-falcon-list-files command).
+      description: A comma separated list of file IDs to get (can be retrieved by running cs-falcon-list-files command).
     outputs:
     - contextPath: CrowdStrike.File.ID
       description: The ID of the file.
@@ -389,8 +368,7 @@ script:
       description: The full file name.
       type: String
     - contextPath: CrowdStrike.File.Permission
-      description: 'The permission type of the file. Can be: "public", "group" or
-        "private".'
+      description: 'The permission type of the file. Can be: "public", "group" or "private".'
       type: String
     - contextPath: CrowdStrike.File.SHA256
       description: The SHA-256 hash of the file.
@@ -407,8 +385,7 @@ script:
     - contextPath: File.Size
       description: The size of the file in bytes.
       type: Number
-    description: Returns files based on the IDs given. These are used for the RTR
-      `put` command.
+    description: Returns files based on the IDs given. These are used for the RTR `put` command.
   - name: cs-falcon-list-files
     arguments: []
     outputs:
@@ -454,14 +431,12 @@ script:
     - contextPath: File.Size
       description: The size of the file in bytes.
       type: Number
-    description: Returns a list of put-file ID's that are available for the user in
-      the `put` command.
+    description: Returns a list of put-file ID's that are available for the user in the `put` command.
   - name: cs-falcon-get-script
     arguments:
     - name: script_id
       required: true
-      description: A comma separated list of script IDs to return (can be retrieved
-        by running cs-falcon-list-scripts command).
+      description: A comma separated list of script IDs to return (can be retrieved by running cs-falcon-list-scripts command).
     outputs:
     - contextPath: CrowdStrike.Script.ID
       description: The ID of the script.
@@ -497,22 +472,18 @@ script:
       description: The number of the successful script runs.
       type: Number
     - contextPath: CrowdStrike.Script.Platform
-      description: List of platforms OS for which the script can run. For example,
-        windows.
+      description: List of platforms OS for which the script can run. For example, windows.
       type: String
     - contextPath: CrowdStrike.Script.WriteAccess
       description: Whether the user has write access to the script.
       type: Boolean
-    description: Return custom scripts based on the ID. Used for the RTR `runscript`
-      command.
+    description: Return custom scripts based on the ID. Used for the RTR `runscript` command.
   - name: cs-falcon-delete-script
     arguments:
     - name: script_id
       required: true
-      description: Script ID to delete (can be retrieved by running cs-falcon-list-scripts
-        command).
-    description: Deletes a custom-script based on the ID given. Can delete only one
-      script at a time.
+      description: Script ID to delete (can be retrieved by running cs-falcon-list-scripts command).
+    description: Deletes a custom-script based on the ID given. Can delete only one script at a time.
   - name: cs-falcon-list-scripts
     arguments: []
     outputs:
@@ -550,22 +521,19 @@ script:
       description: The number of the script successful runs.
       type: Number
     - contextPath: CrowdStrike.Script.Platform
-      description: The list of OS platforms on which the script can run. For example,
-        Windows.
+      description: The list of OS platforms on which the script can run. For example, Windows.
       type: String
     - contextPath: CrowdStrike.Script.WriteAccess
       description: Whether the user has write access to the script.
       type: Boolean
-    description: Returns a list of custom script IDs that are available for the user
-      in the `runscript` command.
+    description: Returns a list of custom script IDs that are available for the user in the `runscript` command.
   - name: cs-falcon-run-script
     arguments:
     - name: script_name
       description: The name of the script to run.
     - name: host_ids
       required: true
-      description: A comma separated list of host agent IDs to run commands (can be
-        retrieved by running cs-falcon-search-device command).
+      description: A comma separated list of host agent IDs to run commands (can be retrieved by running cs-falcon-search-device command).
     - name: raw
       description: The PowerShell script code to run.
     outputs:
@@ -596,15 +564,13 @@ script:
       isArray: true
     - name: file_path
       required: true
-      description: Full path to the file that will be retrieved from each host in
-        the batch.
+      description: Full path to the file that will be retrieved from each host in the batch.
     - name: optional_hosts
       description: List of a subset of hosts to run the command on.
     - name: timeout
       description: Timeout for how long to wait for the request in seconds.
     - name: timeout_duration
-      description: Timeout duration for for how long to wait for the request, in duration
-        syntax.
+      description: Timeout duration for for how long to wait for the request, in duration syntax.
     outputs:
     - contextPath: CrowdStrike.Command.HostID
       description: The ID of the host for which the command was running.
@@ -640,8 +606,7 @@ script:
     - name: timeout
       description: Timeout for how long to wait for the request in seconds.
     - name: timeout_duration
-      description: Timeout duration for for how long to wait for the request, in duration
-        syntax.
+      description: Timeout duration for for how long to wait for the request, in duration syntax.
     outputs:
     - contextPath: CrowdStrike.File.ID
       description: The ID of the file.
@@ -778,7 +743,6 @@ script:
       required: true
       description: The ID of the host to extend the session
     description: Refresh a session timeout on a single host.
-  dockerimage45: demisto/python3:3.8.3.9324
   dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   longRunning: false
@@ -789,3 +753,4 @@ script:
   subtype: python3
 tests:
 - Test - CrowdStrike Falcon
+fromversion: 5.0.0

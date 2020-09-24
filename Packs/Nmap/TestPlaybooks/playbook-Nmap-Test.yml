@@ -72,8 +72,7 @@ tasks:
       id: 2c9015ee-deb7-4008-8ad4-d36df37aa554
       version: -1
       name: Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -193,8 +192,7 @@ tasks:
       id: 1b55deeb-0356-43ca-8dc9-803c125d8269
       version: -1
       name: check Hostname
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -255,3 +253,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

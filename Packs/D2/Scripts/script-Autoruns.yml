@@ -2,8 +2,9 @@ commonfields:
   id: Autoruns
   version: -1
 name: Autoruns
-script: |-
+script: >-
   respAR = demisto.executeCommand( 'D2Autoruns', { 'using' : demisto.args()['system'] } )
+
   if isError(respAR[0]):
       demisto.results(respAR)
   else:
@@ -48,3 +49,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

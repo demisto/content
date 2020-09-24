@@ -29,8 +29,7 @@ configuration:
   name: timeZone
   required: false
   type: 0
-description: Query the Symantec Endpoint Protection Manager using the official REST
-  API.
+description: Query the Symantec Endpoint Protection Manager using the official REST API.
 display: Symantec Endpoint Protection v2
 name: Symantec Endpoint Protection V2
 script:
@@ -493,3 +492,4 @@ script:
   subtype: python2
 tests:
 - SymantecEndpointProtection_Test
+fromversion: 5.0.0

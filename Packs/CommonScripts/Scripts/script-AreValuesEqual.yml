@@ -2,19 +2,25 @@ commonfields:
   id: AreValuesEqual
   version: -1
 name: AreValuesEqual
-script: |
+script: >
   if (args.left === undefined || args.right === undefined) {
       return 'no';
   }
 
+
   var left = (typeof args.left === 'string') ? args.left : args.left + '';
+
   var right = (typeof args.right === 'string') ? args.right : args.right + '';
+
   var answer = 'no';
+
   if (left === right) {
     answer = 'yes';
   }
 
+
   setContext('AreValuesEqual', answer)
+
   return answer;
 type: javascript
 tags:
@@ -36,3 +42,4 @@ scripttarget: 0
 comment: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0
