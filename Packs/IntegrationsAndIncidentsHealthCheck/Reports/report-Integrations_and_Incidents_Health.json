@@ -791,7 +791,7 @@
      "query": "IntegrationsCheck-Widget-IntegrationsCategory",
      "sort": null,
      "isPredefined": false,
-     "description": "Showing in a pie widget failing instances category",
+     "description": "A pie widget showing the category of failed instances.",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -841,7 +841,7 @@
      "query": "IntegrationsCheck-Widget-NumberChecked",
      "sort": null,
      "isPredefined": false,
-     "description": "Showing a number widget of checked integrations",
+     "description": "A number widget showing checked integrations.",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -891,7 +891,7 @@
      "query": "IntegrationsCheck-Widget-IntegrationsErrorsInfo",
      "sort": null,
      "isPredefined": false,
-     "description": "Showing in a table widget failing instances information",
+     "description": "A table widget showing information about failed instances.",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -941,7 +941,7 @@
      "query": "IntegrationsCheck-Widget-NumberFailingInstances",
      "sort": null,
      "isPredefined": false,
-     "description": "Showing a number widget of failing integrations",
+     "description": "A number widget showing failed failing integrations.",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -991,7 +991,7 @@
      "query": "IncidentsCheck-Widget-IncidentsErrorsInfo",
      "sort": null,
      "isPredefined": false,
-     "description": "Showing in a table widget failing incidents information",
+     "description": "A table widget showing information about failed incidents.",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -1041,7 +1041,7 @@
      "query": "IncidentsCheck-Widget-NumberofErrors",
      "sort": null,
      "isPredefined": false,
-     "description": "Showing a number widget of the total errors (entries ID)",
+     "description": "A number widget showing the number of total errors (entries ID).",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -1091,7 +1091,7 @@
      "query": "IncidentsCheck-Widget-UnassignedFailingIncidents",
      "sort": null,
      "isPredefined": false,
-     "description": "Showing a number widget of the total unassigned failing incidents",
+     "description": "A number widget showing total unassigned failed incidents.",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -1141,7 +1141,7 @@
      "query": "IncidentsCheck-Widget-CommandsNames",
      "sort": null,
      "isPredefined": false,
-     "description": "Showing in a pie chart top failing commands",
+     "description": "A pie chart showing the top failed commands.",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -1191,7 +1191,7 @@
      "query": "IncidentsCheck-Widget-PlaybookNames",
      "sort": null,
      "isPredefined": false,
-     "description": "Showing in a bar chart top failed playbook names",
+     "description": "A bar chart showing the top failed playbook names.",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -1274,7 +1274,7 @@
      "query": "IncidentsCheck-Widget-CreationDate",
      "sort": null,
      "isPredefined": false,
-     "description": "Showing in a line widget the creation date failing incidents",
+     "description": "A line widget showing the creation date for failed incidents.",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -1324,7 +1324,7 @@
      "query": "IncidentsCheck-Widget-NumberFailingIncidents",
      "sort": null,
      "isPredefined": false,
-     "description": "Showing a number widget of failing incidents",
+     "description": "A number widget showing failed incidents.",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -1346,7 +1346,7 @@
   ]
  },
  "fromVersion": "6.0.0",
- "description": "All failed enabled integrations and failed open incident.",
+ "description": "All failed enabled integrations and failed open incidents.",
  "tags": [],
  "createdBy": ""
 }
