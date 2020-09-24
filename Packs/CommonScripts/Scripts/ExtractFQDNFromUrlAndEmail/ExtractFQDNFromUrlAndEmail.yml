@@ -22,4 +22,5 @@ runas: DBotWeakRole
 runonce: false
 subtype: python3
 tests:
-  - ExtractFQDNFromUrlAndEmail-Test
+- ExtractFQDNFromUrlAndEmail-Test
+fromversion: 5.0.0

@@ -2,8 +2,9 @@ commonfields:
   id: SetSeverityByScore
   version: -1
 name: SetSeverityByScore
-script: |-
+script: >-
   sev = None
+
   if demisto.incidents():
       sev = int(demisto.get(demisto.incidents()[0], 'severity'))
   if sev is None:
@@ -13,12 +14,17 @@ script: |-
                 "bad_ips": float(demisto.args()['bad_ip_weight']),
                 "bad_hashes": float(demisto.args()['bad_hash_weight'])}
   tCritical = int(demisto.args()['threshold_critical'])
+
   tHigh = int(demisto.args()['threshold_high'])
+
   tMed = int(demisto.args()['threshold_medium'])
+
 
   score = demisto.get(demisto.args(), 'initialscore')
 
+
   # Must explicitly compare to None since 0 is a valid score
+
   if score is None:
       # Setting initial score based on severity. Severity "Unknown" yields score 0.
       score = sev * 25
@@ -30,6 +36,7 @@ script: |-
           score += len(v) * badWeights[badKey]
 
   demisto.setContext('score', score)
+
   if score >= tMed and sev < 2:
       demisto.log('tMed')
       if score >= tHigh and sev < 3:
@@ -73,8 +80,8 @@ args:
   description: Minimal score to raise severity to Medium (int)
 - name: initialscore
   required: true
-  description: Starting score to add onto. Can be set manually or mapped from context
-    in playbooks.
+  description: Starting score to add onto. Can be set manually or mapped from context in playbooks.
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0
