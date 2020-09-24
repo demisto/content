@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CrowdStrike Falcon Intel v2",
+            "playbookID": "CrowdStrike Falcon Intel v2 - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "SecurityIntelligenceServicesFeed",
             "playbookID": "SecurityIntelligenceServicesFeed - Test",
             "fromversion": "5.5.0"
