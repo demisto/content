@@ -1053,7 +1053,7 @@ def get_random_tests(tests_num, rand, conf=deepcopy(CONF), id_set=deepcopy(ID_SE
     if len(runnable_test_ids) <= tests_num:
         random_test_ids_to_run = runnable_test_ids
     else:
-        random_test_ids_to_run = random.sample(runnable_test_ids, k=tests_num)
+        random_test_ids_to_run = rand.sample(runnable_test_ids, k=tests_num)
 
     return set(random_test_ids_to_run)
 
@@ -1114,7 +1114,8 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
-def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=deepcopy(CONF),
+def get_test_list_and_content_packs_to_install(files_string, branch_name, minimum_server_version='0',
+                                               conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
 
@@ -1159,7 +1160,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if not tests:
         rand = random.Random(branch_name)
         tests = get_random_tests(
-            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
+            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=minimum_server_version)
         packs_to_install = get_content_pack_name_of_test(tests, id_set)
         if changed_common:
             logging.debug('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
@@ -1168,9 +1169,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
         else:
             logging.debug("Running Sanity check only")
 
-            tests.add('TestCommonPython')  # test with no integration configured
-            tests.add('HelloWorld-Test')  # test with integration configured
-            packs_to_install.add("HelloWorld")
+        tests.add('TestCommonPython')  # test with no integration configured
+        tests.add('HelloWorld-Test')  # test with integration configured
+        packs_to_install.add("HelloWorld")
 
     if changed_common:
         tests.add('TestCommonPython')
@@ -1291,7 +1292,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
-        minimum_server_version = AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
+        minimum_server_version = AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              minimum_server_version)
