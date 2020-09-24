@@ -3,8 +3,9 @@ commonfields:
   version: -1
 name: WildfireUpload
 deprecated: true
-script: |-
+script: >-
   var raw = executeCommand('wildfire-upload', {uploadfile: args.upload});
+
   if (!raw[0].Contents.wildfire || !raw[0].Contents.wildfire['upload-file-info']) {
       if (raw[0].Contents.indexOf('Failed to upload, error 418') > -1) {
           return {Contents: 'WildFire does not support this file type.',
@@ -14,7 +15,9 @@ script: |-
           return raw;
       }
   }
+
   var item = raw[0].Contents.wildfire['upload-file-info'];
+
   return {Contents: {
       Type: item.filetype,
       MD5: item.md5,
@@ -32,8 +35,7 @@ system: true
 args:
 - name: upload
   required: true
-  description: ID of a war room entry containing a file to be uploaded to the WildFire
-    service
+  description: ID of a war room entry containing a file to be uploaded to the WildFire service
 scripttarget: 0
 dependson:
   must:
@@ -41,3 +43,4 @@ dependson:
 timeout: 0s
 tests:
 - No tests
+fromversion: 5.0.0

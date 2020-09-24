@@ -2,16 +2,23 @@ commonfields:
   id: WhoisSummary
   version: -1
 name: WhoisSummary
-script: |-
+script: >-
   // A simple example script for parsing WHOIS data
+
   // Regexp for matching "<key>: <value>" pattern
+
   var re = /^([a-zA-Z\s]+):\s(.+)$/;
+
   function stringStartsWith (string, prefix) {
       return string.slice(0, prefix.length) == prefix;
   }
+
   var res = executeCommand('whois', {'using-brand': 'whois', 'query':args.query});
+
   var lines = res[0].Contents.split('\n');
+
   var out = '';
+
   for (var i=0; i < lines.length; ++i) {
       var str = lines[i];
       str.trim();
@@ -31,6 +38,7 @@ script: |-
           out += str + '\n';
       }
   }
+
   return out;
 type: javascript
 tags:
@@ -50,3 +58,4 @@ dependson:
   must:
   - whois
 timeout: 0s
+fromversion: 5.0.0

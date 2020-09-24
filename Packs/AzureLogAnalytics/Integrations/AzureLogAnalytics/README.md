@@ -133,7 +133,7 @@ Gets the saved searches of the Log Analytics workspace.
 ### Saved searches
 |Etag|Id|Category|Display Name|Function Alias|Function Parameters|Query|Tags|Version|Type|
 |---|---|---|---|---|---|---|---|---|---|
-| W/"datetime'2020-07-05T13%3A38%3A41.053438Z'" | test2 | kurwa | test2 | heartbeat_func | a:int=1 | Heartbeat \| summarize Count() by Computer \| take a | {'name': 'Group', 'value': 'Computer'} | 2 | Microsoft.OperationalInsights/savedSearches |
+| W/"datetime'2020-07-05T13%3A38%3A41.053438Z'" | test2 | category1 | test2 | heartbeat_func | a:int=1 | Heartbeat \| summarize Count() by Computer \| take a | {'name': 'Group', 'value': 'Computer'} | 2 | Microsoft.OperationalInsights/savedSearches |
 | W/"datetime'2020-07-28T18%3A43%3A56.8625448Z'" | test123 | Saved Search Test Category | test123 | heartbeat_func | a:int=1 | Heartbeat \| summarize Count() by Computer \| take a | {'name': 'Group', 'value': 'Computer'} | 2 | Microsoft.OperationalInsights/savedSearches |
 | W/"datetime'2020-07-30T11%3A41%3A35.1459664Z'" | test1234 | test | test |  |  | 	SecurityAlert<br/>\| summarize arg_max(TimeGenerated, *) by SystemAlertId<br/>\| where SystemAlertId in("TEST_SYSTEM_ALERT_ID") |  | 2 | Microsoft.OperationalInsights/savedSearches |
 
