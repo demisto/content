@@ -1,5 +1,5 @@
 Unified security management and advanced threat protection across hybrid cloud workloads.
-
+For more information see <a href="https://docs.microsoft.com/en-us/rest/api/securitycenter/">Azure Security Center documentation</a> 
 <h2>Use Case</h2>
 With Security Center, you can apply security policies across your workloads, limit your exposure to threats, and detect and respond to attacks.
 
@@ -65,6 +65,7 @@ For more details about the authentication used in this integration, see <a href=
   <li>azure-sc-list-storage</li>
   <li>azure-list-subscriptions</li>
   <li>azure-sc-list-location</li>
+  <li>azure-sc-get-alert</li>
 </ol>
 <h3>1. azure-sc-list-alert</h3>
 <hr>
@@ -1121,6 +1122,158 @@ There are no context output for this command.
     </tr>
   </tbody>
 </table>
+
+<h3>11. azure-sc-get-alert</h3>
+<hr>
+<p>Get an alert that is associated a resource group or a subscription.</p>
+<h5>Base Command</h5>
+<p>
+  <code>azure-sc-get-alert</code>
+</p>
+
+<h5> Input </h5>
+
+<table>
+<thead>
+<tr>
+<th><strong>Argument Name</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>resource_group_name</td>
+<td>The name of the resource group within the user&#39;s subscription. The name is case insensitive.</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>asc_location</td>
+<td>The location where Azure Security Center stores the data of the subscription. Run the &#39;azure-sc-list-location&#39; command to get the ascLocation. This command requires the resourceGroupName argument.</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>alert_id</td>
+<td>The alert ID.</td>
+<td>Optional</td>
+</tr>
+</tbody>
+</table>
+
+
+<h5> Context Output </h5>
+
+<table>
+<thead>
+<tr>
+<th><strong>Path</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AzureSecurityCenter.Alert.DisplayName</td>
+<td>string</td>
+<td>The display name of the alert.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.CompromisedEntity</td>
+<td>string</td>
+<td>The entity on which the incident occurred.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.DetectedTime</td>
+<td>date</td>
+<td>The time the vendor detected the incident.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.ReportedTime</td>
+<td>date</td>
+<td>The time the incident was reported to Microsoft.Security, in UTC.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.ReportedSeverity</td>
+<td>string</td>
+<td>The estimated severity of the alert.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.State</td>
+<td>string</td>
+<td>The alert state (Active, Dismissed, etc.).</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.ConfidenceScore</td>
+<td>string</td>
+<td>Level of confidence for the alert.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.ActionTaken</td>
+<td>string</td>
+<td>The action that was taken as a response to the alert (Active, Blocked etc.).</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.CanBeInvestigated</td>
+<td>string</td>
+<td>Whether this alert can be investigated using Azure Security Center.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.RemediationSteps</td>
+<td>string</td>
+<td>Recommended steps to remediate the incident.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.VendorName</td>
+<td>string</td>
+<td>Name of the vendor that discovered the incident.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.AssociatedResource</td>
+<td>string</td>
+<td>Azure resource ID of the associated resource.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.AlertName</td>
+<td>string</td>
+<td>Name of the alert type.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.InstanceID</td>
+<td>string</td>
+<td>Instance ID of the alert.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.ID</td>
+<td>string</td>
+<td>The alert ID.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.SubscriptionID</td>
+<td>string</td>
+<td>Azure subscription ID of the resource that had the security alert or the subscription ID of the workspace that this resource reports to.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.Description</td>
+<td>string</td>
+<td>Description and explanation of the incident.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.ExtendedProperties</td>
+<td>string</td>
+<td>Changing set of properties depending on the alert type.</td>
+</tr>
+<tr>
+<td>AzureSecurityCenter.Alert.Entities</td>
+<td>string</td>
+<td>Objects that are related to the alert.</td>
+</tr>
+</tbody>
+</table>
+
+<h5>Command Example</h5>
+<p>
+  <code>!azure-sc-get-alert asc_location="location" alert_id="alert_id"</code>
+</p>
 
 <!-- remove the following comments to manually add an image: -->
 <!--

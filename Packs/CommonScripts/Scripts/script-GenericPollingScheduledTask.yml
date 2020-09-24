@@ -2,7 +2,7 @@ commonfields:
   id: GenericPollingScheduledTask
   version: -1
 name: GenericPollingScheduledTask
-script: |-
+script: >-
   /**
    * GenericPollingScheduledTask
    *   This task is ment to be scheduled by the ScheduleGenericPolling automation
@@ -31,7 +31,9 @@ script: |-
       return v;
   }
 
+
   // https://stackoverflow.com/questions/16227197/compute-intersection-of-two-arrays-in-javascript#16227294
+
   function intersect(a, b) {
       var t;
       if (b.length > a.length) t = b, b = a, a = t; // indexOf to loop over shorter
@@ -41,6 +43,7 @@ script: |-
           return c.indexOf(e) === i;
       });
   }
+
 
   function finish(playbookId, tag, err) {
       var params = { 'id': tag };
@@ -54,6 +57,7 @@ script: |-
       }
       return executeCommand("taskComplete", params);
   }
+
 
   function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pendingIds, interval, timeout, tag, additionalArgNames, additionalArgValues) {
       var idsStr = ids.replace(/"/g, '\\"');
@@ -70,6 +74,7 @@ script: |-
           'times': 1
       });
   }
+
 
   try {
       if (args.timeout <= 0) {
@@ -134,14 +139,14 @@ script: |-
 
       return res;
   }
+
   catch (err) {
       finish(args.playbookId, args.tag, err);
       throw err;
   }
 type: javascript
 tags: []
-comment: Runs the polling command repeatedly, completes a blocking manual task when
-  polling is done.
+comment: Runs the polling command repeatedly, completes a blocking manual task when polling is done.
 enabled: true
 args:
 - name: ids
@@ -162,11 +167,9 @@ args:
   description: Polling frequency - how often the polling command should run (minutes)
 - name: timeout
   required: true
-  description: How much time to poll before declaring a timeout and resuming the playbook
-    (minutes)
+  description: How much time to poll before declaring a timeout and resuming the playbook (minutes)
 - name: playbookId
-  description: The ID of the playbook that contains the manual task which will be
-    completed once the polling is done.
+  description: The ID of the playbook that contains the manual task which will be completed once the polling is done.
 - name: tag
   required: true
   description: The tag of the blocking manual task ("Wait For Polling Task To Finish")
@@ -181,3 +184,4 @@ scripttarget: 0
 runonce: false
 tests:
 - No test
+fromversion: 5.0.0

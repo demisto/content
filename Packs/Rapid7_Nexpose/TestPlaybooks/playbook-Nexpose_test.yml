@@ -104,8 +104,7 @@ tasks:
       id: d71096c8-435a-45f7-8a93-4aa403b806e9
       version: -1
       name: nexpose-search-assets
-      description: Returns all assets for which you have access that match the given
-        search criteria.
+      description: Returns all assets for which you have access that match the given search criteria.
       script: Rapid7 Nexpose|||nexpose-search-assets
       type: regular
       iscommand: true
@@ -219,8 +218,7 @@ tasks:
       id: d2a06eee-9c71-49cd-8b05-9086b86304e7
       version: -1
       name: nexpose-create-assets-report
-      description: Generates a new report on given assets according to a template
-        and arguments.
+      description: Generates a new report on given assets according to a template and arguments.
       script: Rapid7 Nexpose|||nexpose-create-assets-report
       type: regular
       iscommand: true
@@ -255,8 +253,7 @@ tasks:
       id: 7e3979ea-3c52-458b-86bf-e16da6696594
       version: -1
       name: nexpose-create-assets-report-xml
-      description: Generates a new report on given assets according to a template
-        and arguments.
+      description: Generates a new report on given assets according to a template and arguments.
       script: Rapid7 Nexpose|||nexpose-create-assets-report
       type: regular
       iscommand: true
@@ -715,3 +712,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

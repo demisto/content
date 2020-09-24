@@ -1,10 +1,9 @@
 id: detonate_url_-_threatgrid
 version: -1
 name: Detonate URL - ThreatGrid
-description: Detonate one or more URLs using the Threat Grid integration. This playbook
-  returns relevant reports to the War Room and URL reputations to the context data.
+description: Detonate one or more URLs using the Threat Grid integration. This playbook returns relevant reports to the War Room and URL reputations to the context data.
 starttaskid: "0"
-fromversion: "4.0.0"
+fromversion: "5.0.0"
 tasks:
   "0":
     id: "0"
@@ -306,8 +305,7 @@ inputs:
 - key: Private
   value: {}
   required: false
-  description: The sample is marked private if this is present, and set to any value
-    other than false. private
+  description: The sample is marked private if this is present, and set to any value other than false. private
 - key: Source
   value: {}
   required: false
@@ -374,4 +372,4 @@ outputs:
 - contextPath: Sample.ID
   description: The sample ID
 tests:
-  - Detonate URL - Generic Test
+- Detonate URL - Generic Test

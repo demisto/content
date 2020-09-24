@@ -81,4 +81,5 @@ runas: DBotWeakRole
 dockerimage: demisto/python3:3.7.3.260
 subtype: python3
 tests:
-  - GDPRContactAuthorities Test
+- GDPRContactAuthorities Test
+fromversion: 5.0.0
