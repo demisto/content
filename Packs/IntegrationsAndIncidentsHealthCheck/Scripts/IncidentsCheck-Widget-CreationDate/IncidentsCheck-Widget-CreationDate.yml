@@ -1,4 +1,4 @@
-comment: Data output script for populating dashboard line graph widget with the creation
+comment: Data output script for populating the dashboard line graph widget with the creation
   date of failing incidents.
 commonfields:
   id: IncidentsCheck-Widget-CreationDate
