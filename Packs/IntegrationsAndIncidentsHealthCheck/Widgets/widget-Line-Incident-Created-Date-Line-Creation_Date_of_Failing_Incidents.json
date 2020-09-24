@@ -13,7 +13,7 @@
   },
   "toDate": "0001-01-01T00:00:00Z"
  },
- "description": "Showing in a line widget the creation date Failed incidents",
+ "description": "A line widget showing the creation date of the failed incidents.",
  "id": "Line-Incident-Created-Date-Line",
  "isPredefined": true,
  "name": "Creation Date of Failed Incidents",
