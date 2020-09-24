@@ -1048,14 +1048,14 @@ def is_test_uses_active_integration(integration_ids, conf=deepcopy(CONF)):
 
 def get_random_tests(tests_num, rand, conf=deepcopy(CONF), id_set=deepcopy(ID_SET), server_version='0'):
     """Gets runnable tests for the server version"""
-    tests = set([])
-    test_ids = conf.get_test_playbook_ids()
+    all_test_ids = conf.get_test_playbook_ids()
+    runnable_test_ids = [test_id for test_id in all_test_ids if is_test_runnable(test_id, id_set, conf, server_version)]
+    if len(runnable_test_ids) <= tests_num:
+        random_test_ids_to_run = runnable_test_ids
+    else:
+        random_test_ids_to_run = random.sample(runnable_test_ids, k=tests_num)
 
-    while len(tests) < tests_num:
-        test = rand.choice(test_ids)
-        if is_test_runnable(test, id_set, conf, server_version):
-            tests.add(test)
-    return tests
+    return set(random_test_ids_to_run)
 
 
 def get_tests_for_pack(pack_path):
@@ -1291,9 +1291,10 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
-        two_before_ga = AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
+        minimum_server_version = AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
 
-        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga)
+        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
+                                                                             minimum_server_version)
         tests_string = '\n'.join(tests)
         packs_to_install_string = '\n'.join(packs_to_install)
 

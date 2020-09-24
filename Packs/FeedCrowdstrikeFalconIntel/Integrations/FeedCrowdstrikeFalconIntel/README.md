@@ -11,6 +11,7 @@ The CrowdStrike intelligence team tracks the activities of threat actor groups a
 | client_id | The Crowdstrike API client ID | True |
 | feedReputation | Indicator reputation | False |
 | feedReliability | Source reliability | True |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
 | feedExpirationPolicy |  | False |
 | feedExpirationInterval |  | False |
 | feedIncremental | Incremental feed | False |
