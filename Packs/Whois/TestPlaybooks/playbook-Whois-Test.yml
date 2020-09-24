@@ -1,9 +1,8 @@
 id: whois_test
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: whois_test
-description: This is a test playbook for Whois. It will retrieve details for google.com
-  and confirm the domain name is the same.
+description: This is a test playbook for Whois. It will retrieve details for google.com and confirm the domain name is the same.
 starttaskid: "0"
 tasks:
   "0":

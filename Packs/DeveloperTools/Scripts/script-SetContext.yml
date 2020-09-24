@@ -2,12 +2,13 @@ commonfields:
   id: SetContext
   version: -1
 name: SetContext
-script: demisto.setContext(demisto.args()['key'], demisto.args()['value'])
+script: >-
+  demisto.setContext(demisto.args()['key'], demisto.args()['value'])
 type: python
 subtype: python2
 tags:
 - Utility
-comment: Sets key/value pair in incident's context
+comment: Deprecated. Sets key/value pair in incident's context
 system: true
 deprecated: true
 args:
@@ -21,3 +22,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

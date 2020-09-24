@@ -2,18 +2,25 @@ commonfields:
   id: EncodeToAscii
   version: -1
 name: EncodeToAscii
-script: |-
+script: >-
   """
+
   AsciiEncode - Demisto Automation
+
 
   Takes 'data' string as an input and outputs the data encoded in an ASCII string, while ignoring any characters that are unrecognizable.
 
+
   """
 
+
   # Grab 'data' from Demisto Arguments
+
   data = demisto.args()['data']
 
+
   # Encode the data, ignoring characters
+
   try:
       encoded_data = data.encode('ascii', 'ignore')
   except:
@@ -21,6 +28,7 @@ script: |-
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : myErrorText } )
 
   # Output the data and add results to war room
+
 
   demisto.results(
       {'ContentsFormat': formats['text'],
@@ -31,8 +39,7 @@ script: |-
 type: python
 subtype: python2
 tags: []
-comment: Input Text Data to Encode as ASCII (Ignores any chars that aren't interpreted
-  as ASCII)
+comment: Input Text Data to Encode as ASCII (Ignores any chars that aren't interpreted as ASCII)
 enabled: true
 args:
 - name: data
@@ -44,3 +51,4 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

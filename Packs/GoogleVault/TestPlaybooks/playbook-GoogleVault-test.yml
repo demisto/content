@@ -1,9 +1,7 @@
 id: Google-Vault-Generic-Test
 version: -1
 name: Google Vault Generic Test
-description: This is a test for the Google Vault integration. It calls a variety of
-  commands of the integration. If the whole playbook succeeds, then the integration
-  is working correctly.
+description: This is a test for the Google Vault integration. It calls a variety of commands of the integration. If the whole playbook succeeds, then the integration is working correctly.
 starttaskid: "0"
 tasks:
   "0":
@@ -38,9 +36,7 @@ tasks:
       id: 44d4e736-3325-4d15-8aa5-8c4c3c081480
       version: -1
       name: Create matter "playbook test matter + date"
-      description: Creates a new matter with the given name and description. The initial
-        state is open, and the owner is the method caller. First, checks if a matter
-        with the same name already exists.
+      description: Creates a new matter with the given name and description. The initial state is open, and the owner is the method caller. First, checks if a matter with the same name already exists.
       script: '|||gvault-create-matter'
       type: regular
       iscommand: true
@@ -73,8 +69,7 @@ tasks:
       id: df305835-e77d-4f7f-848b-077e717d3314
       version: -1
       name: Get created matter
-      description: Checks if we can get the matter information of the matter that
-        was previously created.
+      description: Checks if we can get the matter information of the matter that was previously created.
       script: '|||gvault-get-matter'
       type: regular
       iscommand: true
@@ -106,9 +101,7 @@ tasks:
       id: 99e04b36-1f84-459c-881a-7acc99bad1e6
       version: -1
       name: Delete Context
-      description: Deletes the current context to prevent interference of old remaining
-        data from failing the playbook. You can ignore this part, as it is only a
-        preventative measure for technical purposes.
+      description: Deletes the current context to prevent interference of old remaining data from failing the playbook. You can ignore this part, as it is only a preventative measure for technical purposes.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -316,8 +309,7 @@ tasks:
       id: 4d4132f9-3850-4087-8324-fddef1bef647
       version: -1
       name: Create mail export
-      description: Creates a Google Vault Export in order to perform search actions
-        on emails.
+      description: Creates a Google Vault Export in order to perform search actions on emails.
       script: '|||gvault-create-export-mail'
       type: regular
       iscommand: true
@@ -439,16 +431,7 @@ tasks:
       id: 25eea044-0b8d-4043-8d38-52ff6635b5a2
       version: -1
       name: GeneratePassword
-      description: "This function generates a password and allows various parameters
-        to customize the properties of the password depending on the use case (e.g.
-        password complexity requirements).  The default behavior is to generate a
-        password of  *random length* including all four character classes (upper,
-        lower, digits, symbols) with at least five and at most ten characters per
-        class. \n\nThe min_* values all default to 0. This means that if the command
-        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
-        a password of length zero could be generated. It is therefore recommended
-        to always include a min_* parameter that matches. \n\nThe debug parameter
-        will print certain properties of the command into the WarRoom for easy diagnostics."
+      description: "This function generates a password and allows various parameters to customize the properties of the password depending on the use case (e.g. password complexity requirements).  The default behavior is to generate a password of  *random length* including all four character classes (upper, lower, digits, symbols) with at least five and at most ten characters per class. \n\nThe min_* values all default to 0. This means that if the command is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that a password of length zero could be generated. It is therefore recommended to always include a min_* parameter that matches. \n\nThe debug parameter will print certain properties of the command into the WarRoom for easy diagnostics."
       scriptName: GeneratePassword
       type: regular
       iscommand: false
@@ -492,8 +475,7 @@ tasks:
       id: fac91494-a778-4072-8b89-ddd753c63343
       version: -1
       name: Create groups export
-      description: Creates a Google Vault Export in order to perform search actions
-        on emails.
+      description: Creates a Google Vault Export in order to perform search actions on emails.
       script: '|||gvault-create-export-groups'
       type: regular
       iscommand: true
@@ -546,8 +528,7 @@ tasks:
       id: 632f5c84-2db9-43c5-838c-373e5ccc5197
       version: -1
       name: Create drive export
-      description: Creates a Google Vault Export in order to perform search actions
-        on emails.
+      description: Creates a Google Vault Export in order to perform search actions on emails.
       script: '|||gvault-create-export-drive'
       type: regular
       iscommand: true
@@ -730,8 +711,7 @@ tasks:
         simple: ${GoogleVault.Matter.Export.[0].BucketName}
       maxResult: {}
       viewID:
-        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('drive') != -1
-          && val.Status == 'COMPLETED').ViewID}
+        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('drive') != -1 && val.Status == 'COMPLETED').ViewID}
     separatecontext: false
     view: |-
       {
@@ -760,8 +740,7 @@ tasks:
         simple: ${GoogleVault.Matter.Export.[0].BucketName}
       maxResult: {}
       viewID:
-        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('mail') != -1 &&
-          val.Status == 'COMPLETED').ViewID}
+        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('mail') != -1 && val.Status == 'COMPLETED').ViewID}
     separatecontext: false
     view: |-
       {
@@ -790,8 +769,7 @@ tasks:
         simple: ${GoogleVault.Matter.Export.[0].BucketName}
       maxResult: {}
       viewID:
-        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('groups') != -1
-          && val.Status == 'COMPLETED').ViewID}
+        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('groups') != -1 && val.Status == 'COMPLETED').ViewID}
     separatecontext: false
     view: |-
       {
@@ -841,8 +819,7 @@ tasks:
       id: 170b2010-0d0f-46d5-8a05-5579d7f95bb0
       version: -1
       name: Create empty drive export
-      description: Creates a Google Vault Export in order to perform search actions
-        on emails.
+      description: Creates a Google Vault Export in order to perform search actions on emails.
       script: '|||gvault-create-export-drive'
       type: regular
       iscommand: true
@@ -930,8 +907,7 @@ tasks:
       id: 860ede8b-9225-4fdb-83ba-6eed8e945cb3
       version: -1
       name: Create empty groups export
-      description: Creates a Google Vault Export in order to perform search actions
-        on emails.
+      description: Creates a Google Vault Export in order to perform search actions on emails.
       script: '|||gvault-create-export-groups'
       type: regular
       iscommand: true
@@ -985,8 +961,7 @@ tasks:
       id: 4114c295-a2fc-4161-8849-83cb608b38b0
       version: -1
       name: Create empty mail export
-      description: Creates a Google Vault Export in order to perform search actions
-        on emails.
+      description: Creates a Google Vault Export in order to perform search actions on emails.
       script: '|||gvault-create-export-mail'
       type: regular
       iscommand: true
@@ -1249,3 +1224,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

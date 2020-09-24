@@ -1,10 +1,11 @@
 id: playbook12
 version: -1
 system: true
-fromversion: 2.5.0
+fromversion: 5.0.0
 name: McAfee ePO Endpoint Compliance Playbook
-description: DEPRECATED. Use "McAfee ePO Endpoint Compliance Playbook v2" playbook instead. Discover endpoints that are not using the latest McAfee AV Signatures
+description: Deprecated. Use "McAfee ePO Endpoint Compliance Playbook v2" playbook instead. Discover endpoints that are not using the latest McAfee AV Signatures
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -172,8 +173,7 @@ tasks:
       id: 05cac450-0b26-47b5-82ab-23e64849c2c3
       version: -1
       description: ""
-      name: Open ServiceNow ticket with list of problematic endpoints to be handled
-        by the appropriate team
+      name: Open ServiceNow ticket with list of problematic endpoints to be handled by the appropriate team
       script: ServiceNow|||servicenow-incident-create
       type: regular
       iscommand: true
@@ -409,10 +409,7 @@ tasks:
       id: 370580ad-016e-4515-8a0e-e76cd0e55373
       version: -1
       name: Store system names to context key outdatedEndpoints
-      description: Takes the comments of a given entry ID and stores them in the incident
-        context, under a provided context key. For accessing the last executed task's
-        comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId
-        input parameter.
+      description: Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. For accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter.
       scriptName: commentsToContext
       type: regular
       iscommand: false
@@ -448,10 +445,7 @@ tasks:
       id: 2ea4d150-6e57-4bb3-812c-2b18efa693e6
       version: -1
       name: Store system names to context key endpointsToIsolate
-      description: Takes the comments of a given entry ID and stores them in the incident
-        context, under a provided context key. For accessing the last executed task's
-        comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId
-        input parameter.
+      description: Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. For accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter.
       scriptName: commentsToContext
       type: regular
       iscommand: false

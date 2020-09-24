@@ -1,0 +1,205 @@
+id: SecurityIntelligenceServicesFeed - Test
+version: -1
+name: SecurityIntelligenceServicesFeed - Test
+description: This playbook uses the Security Intelligence Services Feed integration
+  and tests the sis-get-indicators command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e52c130b-ff33-4083-865f-8eb6e6d9ec99
+    type: start
+    task:
+      id: e52c130b-ff33-4083-865f-8eb6e6d9ec99
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a4cadba1-467f-4cef-869e-e3b12c3f7c8f
+    type: regular
+    task:
+      id: a4cadba1-467f-4cef-869e-e3b12c3f7c8f
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2e422889-5ea1-400e-8777-434b47fc873b
+    type: regular
+    task:
+      id: 2e422889-5ea1-400e-8777-434b47fc873b
+      version: -1
+      name: sis-get-indicators
+      script: '|||sis-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      extend-context:
+        simple: Indicators=[]
+      feed_type:
+        simple: Phishing
+      limit:
+        simple: "2"
+      search: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0f42ec69-953c-420f-850e-9ad67149da8b
+    type: title
+    task:
+      id: 0f42ec69-953c-420f-850e-9ad67149da8b
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 69fe77a7-55e1-47c5-89e8-506da6bd4fbe
+    type: condition
+    task:
+      id: 69fe77a7-55e1-47c5-89e8-506da6bd4fbe
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicators.type
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Indicators.type
+            iscontext: true
+          right:
+            value:
+              simple: URL
+      - - operator: hasLength
+          left:
+            value:
+              simple: Indicators.value
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicators.rawJSON
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicators.fields
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 775,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

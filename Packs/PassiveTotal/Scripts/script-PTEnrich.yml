@@ -2,9 +2,11 @@ commonfields:
   id: PTEnrich
   version: -1
 name: PTEnrich
-script: |
+script: >
   var res = [];
+
   var commands = ['pt-get-subdomains', 'pt-passive-dns', 'pt-whois', 'pt-ssl-cert', 'pt-enrichment', 'pt-malware', 'pt-osint'];
+
   for (var i in commands) {
       var r = executeCommand(commands[i], {query: args.query});
       if (isError(r[0])) {
@@ -12,13 +14,14 @@ script: |
       }
       res.push(r[0]);
   }
+
   return res;
 type: javascript
 tags:
 - passive-total
 - server
 - threat-intel
-comment: Enrich the given IP or domain with metadata, malware, osint
+comment: Deprecated. Enrich the given IP or domain with metadata, malware, osint
 system: true
 args:
 - name: query
@@ -79,5 +82,5 @@ dependson:
 timeout: 0s
 tests:
 - No test
-fromversion: 4.1.0
+fromversion: 5.0.0
 deprecated: true

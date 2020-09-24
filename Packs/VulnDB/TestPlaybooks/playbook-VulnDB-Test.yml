@@ -124,8 +124,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: ColdFusion Application Server exprcalc.cfm OpenFilePath Parameter
-                Arbitrary File Disclosure
+              simple: ColdFusion Application Server exprcalc.cfm OpenFilePath Parameter Arbitrary File Disclosure
     view: |-
       {
         "position": {
@@ -171,8 +170,7 @@ tasks:
       id: d899304f-d27a-4b77-84ac-d7b705cad9c3
       version: -1
       name: vulndb-get-vuln-by-vendor-and-product-name - with data
-      description: Provides full details about a specific vulnerability by vendor
-        and product name
+      description: Provides full details about a specific vulnerability by vendor and product name
       script: VulnDB|||vulndb-get-vuln-by-vendor-and-product-name
       type: regular
       iscommand: true
@@ -245,8 +243,7 @@ tasks:
       id: 045fc651-e3b8-438c-8a85-f502dbe87ef2
       version: -1
       name: vulndb-get-vuln-by-vendor-and-product-id - with data
-      description: Provides full details about a specific vulnerability by vendor
-        and product id
+      description: Provides full details about a specific vulnerability by vendor and product id
       script: VulnDB|||vulndb-get-vuln-by-vendor-and-product-id
       type: regular
       iscommand: true
@@ -748,8 +745,7 @@ tasks:
       id: e2253204-ab2d-47bd-8c23-439ddc00101e
       version: -1
       name: vulndb-get-vendor (all) - with data
-      description: Provides all or specific vendor details to include vendor name
-        and id
+      description: Provides all or specific vendor details to include vendor name and id
       script: VulnDB|||vulndb-get-vendor
       type: regular
       iscommand: true
@@ -892,8 +888,7 @@ tasks:
       id: ab2f9764-1537-48ec-818c-cb942afedc24
       version: -1
       name: vulndb-get-vendor (id) - with data
-      description: Provides all or specific vendor details to include vendor name
-        and id
+      description: Provides all or specific vendor details to include vendor name and id
       script: VulnDB|||vulndb-get-vendor
       type: regular
       iscommand: true
@@ -926,8 +921,7 @@ tasks:
       id: 0b84d04c-1919-427a-80cf-6c7f8b2a1c42
       version: -1
       name: vulndb-get-vendor (name) - with data
-      description: Provides all or specific vendor details to include vendor name
-        and id
+      description: Provides all or specific vendor details to include vendor name and id
       script: VulnDB|||vulndb-get-vendor
       type: regular
       iscommand: true
@@ -1182,8 +1176,7 @@ tasks:
       id: cc1dd17b-134d-4617-8e7d-b2ddaf97cae7
       version: -1
       name: vulndb-get-version (name) - with data
-      description: Provides the versions for the specified product by product name
-        or id
+      description: Provides the versions for the specified product by product name or id
       script: VulnDB|||vulndb-get-version
       type: regular
       iscommand: true
@@ -1343,8 +1336,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Nagios html/rss-newsfeed.php Insecure Temporary File Symlink
-                Arbitrary File Overwrite
+              simple: Nagios html/rss-newsfeed.php Insecure Temporary File Symlink Arbitrary File Overwrite
     view: |-
       {
         "position": {
@@ -1400,8 +1392,7 @@ tasks:
     task:
       id: abeb2377-deb2-435e-85e3-e23ee28af5a2
       version: -1
-      name: vulndb-get-updates-by-dates-or-hours (start_date and end_date) - with
-        data
+      name: vulndb-get-updates-by-dates-or-hours (start_date and end_date) - with data
       description: Provides the recent vulnerabilities by dates or hours
       script: VulnDB|||vulndb-get-updates-by-dates-or-hours
       type: regular
@@ -1455,8 +1446,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Nagios html/rss-newsfeed.php Insecure Temporary File Symlink
-                Arbitrary File Overwrite
+              simple: Nagios html/rss-newsfeed.php Insecure Temporary File Symlink Arbitrary File Overwrite
     view: |-
       {
         "position": {
@@ -1572,5 +1562,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 1.0.0
+fromversion: 5.0.0
 description: ''
