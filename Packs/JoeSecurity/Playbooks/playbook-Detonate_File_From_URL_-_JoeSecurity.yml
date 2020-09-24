@@ -1,7 +1,7 @@
 id: detonate_file_from_url_-_joesecurity
 version: -1
 name: Detonate File From URL - JoeSecurity
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: |-
   Detonates one or more remote files using the Joe Security sandbox integration.
   Returns relevant reports to the War Room and file reputations to the context data.
@@ -289,16 +289,11 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook
-    (in minutes)
+  description: The duration after which to stop pooling and to resume the playbook (in minutes)
 - key: Systems
   value: {}
   required: false
-  description: 'Operating system to run the analysis on (comma-separated). Supported
-    values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l,
-    w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64,
-    w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1,
-    lnxcentos1, android7_nougat'
+  description: 'Operating system to run the analysis on (comma-separated). Supported values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
 - key: Comments
   value: {}
   required: false
@@ -307,18 +302,12 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Enable internet access (boolean). True= internet access (default),
-    False= no internet access.
+  description: Enable internet access (boolean). True= internet access (default), False= no internet access.
 - key: ReportFileType
   value:
     simple: "html"
   required: false
-  description: 'The resource type to download. Default is html. Supported values are:
-    html, lighthtml, executive, pdf, classhtml, xml, lightxml, classxml, clusterxml,
-    irxml, json, jsonfixed, lightjson, lightjsonfixed, irjson, irjsonfixed, shoots
-    (screenshots), openioc, maec, misp, graphreports, memstrings, binstrings, sample,
-    cookbook, bins (dropped files), unpackpe (unpacked PE files), unpack, ida, pcap,
-    pcapslim, memdumps, yara'
+  description: 'The resource type to download. Default is html. Supported values are: html, lighthtml, executive, pdf, classhtml, xml, lightxml, classxml, clusterxml, irxml, json, jsonfixed, lightjson, lightjsonfixed, irjson, irjsonfixed, shoots (screenshots), openioc, maec, misp, graphreports, memstrings, binstrings, sample, cookbook, bins (dropped files), unpackpe (unpacked PE files), unpack, ida, pcap, pcapslim, memdumps, yara'
 outputs:
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
@@ -363,4 +352,4 @@ outputs:
   description: The actual score (only in case of report type=json).
   type: number
 tests:
-  - JoeSecurityTestDetonation
+- JoeSecurityTestDetonation

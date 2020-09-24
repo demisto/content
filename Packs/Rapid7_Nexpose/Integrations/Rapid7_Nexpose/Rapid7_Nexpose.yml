@@ -23,10 +23,7 @@ configuration:
   name: token
   required: false
   type: 0
-description: Rapid7's on-premise vulnerability management solution, Nexpose, helps
-  you reduce your threat exposure by enabling you to assess and respond to changes
-  in your environment real time and prioritizing risk across vulnerabilities, configurations,
-  and controls.
+description: Rapid7's on-premise vulnerability management solution, Nexpose, helps you reduce your threat exposure by enabling you to assess and respond to changes in your environment real time and prioritizing risk across vulnerabilities, configurations, and controls.
 display: Rapid7 Nexpose
 name: Rapid7 Nexpose
 script:
@@ -50,15 +47,13 @@ script:
       description: Id of the asset.
       type: number
     - contextPath: Nexpose.Asset.Hardware
-      description: The primary Media Access Control (MAC) address of the asset. The
-        format is six groups of two hexadecimal digits separated by colons.
+      description: The primary Media Access Control (MAC) address of the asset. The format is six groups of two hexadecimal digits separated by colons.
       type: string
     - contextPath: Nexpose.Asset.Aliases
       description: All host names or aliases discovered on the asset.
       type: unknown
     - contextPath: Nexpose.Asset.HostType
-      description: The type of asset, Valid values are unknown, guest, hypervisor,
-        physical, mobile
+      description: The type of asset, Valid values are unknown, guest, hypervisor, physical, mobile
       type: string
     - contextPath: Nexpose.Asset.Site
       description: Asset site name.
@@ -97,8 +92,7 @@ script:
       description: The product running the service.
       type: string
     - contextPath: Nexpose.Asset.Services.protocol
-      description: The protocol of the service, valid values are ip, icmp, igmp, ggp,
-        tcp, pup, udp, idp, esp, nd, raw
+      description: The protocol of the service, valid values are ip, icmp, igmp, ggp, tcp, pup, udp, idp, esp, nd, raw
       type: string
     - contextPath: Nexpose.Asset.Users.FullName
       description: The full name of the user account.
@@ -113,8 +107,7 @@ script:
       description: The identifier of the vulnerability.
       type: number
     - contextPath: Nexpose.Asset.Vulnerability.Instances
-      description: The number of vulnerable occurrences of the vulnerability. This
-        does not include invulnerable instances.
+      description: The number of vulnerable occurrences of the vulnerability. This does not include invulnerable instances.
       type: number
     - contextPath: Nexpose.Asset.Vulnerability.Title
       description: The title (summary) of the vulnerability.
@@ -129,21 +122,16 @@ script:
       description: The CVSS exploit score.
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Risk
-      description: The risk score of the vulnerability, rounded to a maximum of to
-        digits of precision. If using the default Rapid7 Real Risk™ model, this value
-        ranges from 0-1000.
+      description: The risk score of the vulnerability, rounded to a maximum of to digits of precision. If using the default Rapid7 Real Risk™ model, this value ranges from 0-1000.
       type: number
     - contextPath: Nexpose.Asset.Vulnerability.PublishedOn
-      description: The date the vulnerability was first published or announced. The
-        format is an ISO 8601 date, YYYY-MM-DD.
+      description: The date the vulnerability was first published or announced. The format is an ISO 8601 date, YYYY-MM-DD.
       type: date
     - contextPath: Nexpose.Asset.Vulnerability.ModifiedOn
-      description: The last date the vulnerability was modified. The format is an
-        ISO 8601 date, YYYY-MM-DD.
+      description: The last date the vulnerability was modified. The format is an ISO 8601 date, YYYY-MM-DD.
       type: date
     - contextPath: Nexpose.Asset.Vulnerability.Severity
-      description: 'The severity of the vulnerability, one of: "Moderate", "Severe",
-        "Critical".'
+      description: 'The severity of the vulnerability, one of: "Moderate", "Severe", "Critical".'
       type: string
     - contextPath: Endpoint.IP
       description: Endpoint IP address.
@@ -159,10 +147,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Multiple criteria of <string> The criteria to sort the records
-        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
-        Multiple sort criteria can be specified using multiple sort query parameters
-        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      description: 'Multiple criteria of <string> The criteria to sort the records by, in the format: property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
       isArray: false
       name: sort
       required: false
@@ -191,12 +176,10 @@ script:
       description: Asset site name.
       type: string
     - contextPath: Nexpose.Asset.Exploits
-      description: The number of distinct exploits that can exploit any of the vulnerabilities
-        on the asset.
+      description: The number of distinct exploits that can exploit any of the vulnerabilities on the asset.
       type: number
     - contextPath: Nexpose.Asset.Malware
-      description: The number of distinct malware kits that vulnerabilities on the
-        asset are susceptible to.
+      description: The number of distinct malware kits that vulnerabilities on the asset are susceptible to.
       type: number
     - contextPath: Nexpose.Asset.OperatingSystem
       description: Operating system of the asset.
@@ -208,8 +191,7 @@ script:
       description: The risk score (with criticality adjustments) of the asset.
       type: number
     - contextPath: Nexpose.Asset.Assessed
-      description: Whether the asset has been assessed for vulnerabilities at least
-        once.
+      description: Whether the asset has been assessed for vulnerabilities at least once.
       type: boolean
     - contextPath: Nexpose.Asset.LastScanDate
       description: Last scan date of the asset.
@@ -228,10 +210,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Multiple criteria of <string> Filter to match assets, according
-        to the Search Criteria API standard. multiple filters can be provided using
-        '';'' separator. For example: ''ip-address in range 1.2.3.4,1.2.3.8;host-name
-        is myhost''. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
+      description: 'Multiple criteria of <string> Filter to match assets, according to the Search Criteria API standard. multiple filters can be provided using '';'' separator. For example: ''ip-address in range 1.2.3.4,1.2.3.8;host-name is myhost''. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
       isArray: false
       name: query
       required: false
@@ -243,10 +222,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Multiple criteria of <string> The criteria to sort the records
-        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
-        Multiple sort criteria can be specified using multiple sort query parameters
-        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      description: 'Multiple criteria of <string> The criteria to sort the records by, in the format: property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
       isArray: false
       name: sort
       required: false
@@ -284,9 +260,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: <string> Operator to determine how to match filters. all requires
-        that all filters match for an asset to be included. any requires only one
-        filter to match for an asset to be included.
+      description: <string> Operator to determine how to match filters. all requires that all filters match for an asset to be included. any requires only one filter to match for an asset to be included.
       isArray: false
       name: match
       predefined:
@@ -295,8 +269,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns all assets for which you have access that match the given
-      search criteria.
+    description: Returns all assets for which you have access that match the given search criteria.
     execution: false
     name: nexpose-search-assets
     outputs:
@@ -313,12 +286,10 @@ script:
       description: Asset site name.
       type: string
     - contextPath: Nexpose.Asset.Exploits
-      description: The number of distinct exploits that can exploit any of the vulnerabilities
-        on the asset.
+      description: The number of distinct exploits that can exploit any of the vulnerabilities on the asset.
       type: number
     - contextPath: Nexpose.Asset.Malware
-      description: The number of distinct malware kits that vulnerabilities on the
-        asset are susceptible to.
+      description: The number of distinct malware kits that vulnerabilities on the asset are susceptible to.
       type: number
     - contextPath: Nexpose.Asset.OperatingSystem
       description: Operating system of the asset.
@@ -330,8 +301,7 @@ script:
       description: The risk score (with criticality adjustments) of the asset.
       type: number
     - contextPath: Nexpose.Asset.Assessed
-      description: Whether the asset has been assessed for vulnerabilities at least
-        once.
+      description: Whether the asset has been assessed for vulnerabilities at least once.
       type: boolean
     - contextPath: Nexpose.Asset.LastScanDate
       description: Last scan date of the asset.
@@ -376,8 +346,7 @@ script:
       description: The duration of the scan in minutes.
       type: string
     - contextPath: Nexpose.Scan.Status
-      description: The scan status. Valid values are aborted, unknown, running, finished,
-        stopped, error, paused, dispatched, integrating
+      description: The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating
       type: string
     - contextPath: Nexpose.Scan.Completed
       description: The end time of the scan in ISO8601 format.
@@ -408,8 +377,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns the details and possible remediations for an asset's given
-      vulnerability.
+    description: Returns the details and possible remediations for an asset's given vulnerability.
     execution: false
     name: nexpose-get-asset-vulnerability
     outputs:
@@ -423,13 +391,10 @@ script:
       description: The title (summary) of the vulnerability.
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Severity
-      description: 'The severity of the vulnerability, one of: "Moderate", "Severe",
-        "Critical".'
+      description: 'The severity of the vulnerability, one of: "Moderate", "Severe", "Critical".'
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.RiskScore
-      description: The risk score of the vulnerability, rounded to a maximum of to
-        digits of precision. If using the default Rapid7 Real Risk™ model, this value
-        ranges from 0-1000.
+      description: The risk score of the vulnerability, rounded to a maximum of to digits of precision. If using the default Rapid7 Real Risk™ model, this value ranges from 0-1000.
       type: number
     - contextPath: Nexpose.Asset.Vulnerability.CVSS
       description: The CVSS vector(s) for the vulnerability.
@@ -438,16 +403,13 @@ script:
       description: The CVSS v3 vector.
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Published
-      description: The date the vulnerability was first published or announced. The
-        format is an ISO 8601 date, YYYY-MM-DD.
+      description: The date the vulnerability was first published or announced. The format is an ISO 8601 date, YYYY-MM-DD.
       type: date
     - contextPath: Nexpose.Asset.Vulnerability.Added
-      description: The date the vulnerability coverage was added. The format is an
-        ISO 8601 date, YYYY-MM-DD.
+      description: The date the vulnerability coverage was added. The format is an ISO 8601 date, YYYY-MM-DD.
       type: date
     - contextPath: Nexpose.Asset.Vulnerability.Modified
-      description: The last date the vulnerability was modified. The format is an
-        ISO 8601 date, YYYY-MM-DD.
+      description: The last date the vulnerability was modified. The format is an ISO 8601 date, YYYY-MM-DD.
       type: date
     - contextPath: Nexpose.Asset.Vulnerability.CVSSScore
       description: The CVSS score, which ranges from 0-10.
@@ -465,26 +427,19 @@ script:
       description: The port of the service the result was discovered on.
       type: number
     - contextPath: Nexpose.Asset.Vulnerability.Check.Protocol
-      description: The protocol of the service the result was discovered on, valid
-        values ip, icmp, igmp, ggp, tcp, pup, udp, idp, esp, nd, raw
+      description: The protocol of the service the result was discovered on, valid values ip, icmp, igmp, ggp, tcp, pup, udp, idp, esp, nd, raw
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Check.Since
-      description: The date and time the result was first recorded, in the ISO8601
-        format. If the result changes status this value is the date and time of the
-        status change.
+      description: The date and time the result was first recorded, in the ISO8601 format. If the result changes status this value is the date and time of the status change.
       type: date
     - contextPath: Nexpose.Asset.Vulnerability.Check.Proof
       description: The proof explaining why the result was found vulnerable.
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Check.Status
-      description: The status of the vulnerability check result. Valid values are,
-        unknown, not-vulnerable, vulnerable, vulnerable-version, vulnerable-potential,
-        vulnerable-with-exception-applied, vulnerable-version-with-exception-applied,
-        vulnerable-potential-with-exception-applied
+      description: The status of the vulnerability check result. Valid values are, unknown, not-vulnerable, vulnerable, vulnerable-version, vulnerable-potential, vulnerable-with-exception-applied, vulnerable-version-with-exception-applied, vulnerable-potential-with-exception-applied
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.Type
-      description: 'The type of the solution. One of: "Configuration", "Rollup patch",
-        "Patch".'
+      description: 'The type of the solution. One of: "Configuration", "Rollup patch", "Patch".'
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.Summary
       description: The summary of the solution.
@@ -496,8 +451,7 @@ script:
       description: The estimated duration to apply the solution, in minutes.
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.AdditionalInformation
-      description: Additional information or resources that can assist in applying
-        the remediation
+      description: Additional information or resources that can assist in applying the remediation
       type: string
     - contextPath: CVE.ID
       description: Common Vulnerabilities and Exposures ids
@@ -516,15 +470,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Multiple criteria of <string> Specify asset addresses to be included
-        in site scans
+      description: Multiple criteria of <string> Specify asset addresses to be included in site scans
       isArray: true
       name: assets
       required: true
       secret: false
     - default: false
-      description: '<string> The identifier of a scan template. Use nexpose-get-report-templates
-        to get all templates,  default scan template is selected when not specified. '
+      description: '<string> The identifier of a scan template. Use nexpose-get-report-templates to get all templates,  default scan template is selected when not specified. '
       isArray: false
       name: scanTemplateId
       required: false
@@ -569,10 +521,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Multiple criteria of <string> The criteria to sort the records
-        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
-        Multiple sort criteria can be specified using multiple sort query parameters
-        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      description: 'Multiple criteria of <string> The criteria to sort the records by, in the format: property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
       isArray: false
       name: sort
       required: false
@@ -618,22 +567,17 @@ script:
       description: The description of the report template.
       type: string
     - contextPath: Nexpose.Template.Type
-      description: The type of the report template. document is a templatized, typically
-        printable, report that has various sections of content. export is data-oriented
-        output, typically CSV. file is a printable report template using a report
-        template file.
+      description: The type of the report template. document is a templatized, typically printable, report that has various sections of content. export is data-oriented output, typically CSV. file is a printable report template using a report template file.
       type: string
   - arguments:
     - default: false
-      description: Multiple criteria of integer<int64> Asset ids to create the report
-        on, comma separated.
+      description: Multiple criteria of integer<int64> Asset ids to create the report on, comma separated.
       isArray: false
       name: assets
       required: true
       secret: false
     - default: false
-      description: <string> Report template id to create the report with. If none
-        is provided, the first template available will be used.
+      description: <string> Report template id to create the report with. If none is provided, the first template available will be used.
       isArray: false
       name: template
       required: false
@@ -658,8 +602,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Generates a new report on given assets according to a template and
-      arguments.
+    description: Generates a new report on given assets according to a template and arguments.
     execution: false
     name: nexpose-create-assets-report
     outputs:
@@ -683,15 +626,13 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Multiple criteria of integer<int32> Site ids to create the report
-        on, comma separated.
+      description: Multiple criteria of integer<int32> Site ids to create the report on, comma separated.
       isArray: false
       name: sites
       required: true
       secret: false
     - default: false
-      description: <string> Report template id to create the report with. If none
-        is provided, the first template available will be used.
+      description: <string> Report template id to create the report with. If none is provided, the first template available will be used.
       isArray: false
       name: template
       required: false
@@ -716,8 +657,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Generates a new report on given sites according to a template and
-      arguments.
+    description: Generates a new report on given sites according to a template and arguments.
     execution: false
     name: nexpose-create-sites-report
     outputs:
@@ -747,8 +687,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: <string> Report template id to create the report with. If none
-        is provided, the first template available will be used.
+      description: <string> Report template id to create the report with. If none is provided, the first template available will be used.
       isArray: false
       name: template
       required: false
@@ -803,9 +742,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Multiple criteria of <string> The hosts that should be included
-        as a part of the scan. This should be a mixture of IP Addresses and host names
-        as a comma separated string array.
+      description: Multiple criteria of <string> The hosts that should be included as a part of the scan. This should be a mixture of IP Addresses and host names as a comma separated string array.
       isArray: true
       name: hosts
       required: false
@@ -840,8 +777,7 @@ script:
       description: The end time of the scan in ISO8601 format.
       type: date
     - contextPath: Nexpose.Scan.Status
-      description: The scan status. Valid values are aborted, unknown, running, finished,
-        stopped, error, paused, dispatched, integrating
+      description: The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating
       type: string
     - contextPath: Nexpose.Scan.Vulnerabilities.Critical
       description: The number of critical vulnerabilities.
@@ -898,8 +834,7 @@ script:
       description: The end time of the scan in ISO8601 format.
       type: date
     - contextPath: Nexpose.Scan.Status
-      description: The scan status. Valid values are aborted, unknown, running, finished,
-        stopped, error, paused, dispatched, integrating
+      description: The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating
       type: string
     - contextPath: Nexpose.Scan.Vulnerabilities.Critical
       description: The number of critical vulnerabilities.
@@ -966,10 +901,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Multiple criteria of <string> The criteria to sort the records
-        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
-        Multiple sort criteria can be specified using multiple sort query parameters
-        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      description: 'Multiple criteria of <string> The criteria to sort the records by, in the format: property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
       isArray: false
       name: sort
       required: false
@@ -998,14 +930,13 @@ script:
       description: The end time of the scan in ISO8601 format.
       type: date
     - contextPath: Nexpose.Scan.Status
-      description: The scan status. Valid values are aborted, unknown, running, finished,
-        stopped, error, paused, dispatched, integrating
+      description: The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating
       type: string
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python2
-fromversion: 3.6.0
+fromversion: 5.0.0
 tests:
-  - nexpose_test
+- nexpose_test

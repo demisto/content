@@ -400,8 +400,7 @@ tasks:
             value:
               complex:
                 root: GoogleCloudTranslate
-                accessor: TranslateText(val.text=="there is no justice, there is just
-                  me")
+                accessor: TranslateText(val.text=="there is no justice, there is just me")
             iscontext: true
           right:
             value:
@@ -430,3 +429,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

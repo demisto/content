@@ -108,8 +108,7 @@ tasks:
       id: 69356d1f-4850-4f81-8cc8-a0c337ff3a81
       version: -1
       name: Both values exist in array
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -240,8 +239,7 @@ tasks:
       id: 583d4e43-5d38-423d-8a93-24623e778876
       version: -1
       name: Both values exist in array
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -345,8 +343,7 @@ tasks:
       id: b3a182f9-c634-4c36-83c4-b11ac4e08bd1
       version: -1
       name: Both objects exist
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -450,8 +447,7 @@ tasks:
       id: df03d00f-21d2-4ced-8aff-aa87a5375244
       version: -1
       name: All objects exist
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -463,8 +459,7 @@ tasks:
       - "15"
     scriptarguments:
       value:
-        simple: ${HTMLTables(val.kuku == 'a' && val.kaka == '1' || val.kuku == 'b'
-          && val.kaka == '2')}
+        simple: ${HTMLTables(val.kuku == 'a' && val.kaka == '1' || val.kuku == 'b' && val.kaka == '2')}
     separatecontext: false
     view: |-
       {
@@ -516,3 +511,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

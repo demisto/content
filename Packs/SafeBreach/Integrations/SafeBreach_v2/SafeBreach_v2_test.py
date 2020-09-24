@@ -1,4 +1,5 @@
 import json
+import pytest
 import demistomock as demisto
 from CommonServerPython import *
 from SafeBreach_v2 import get_insights_command, get_remediation_data_command, rerun_simulation_command, \
@@ -139,7 +140,7 @@ def test_get_indicators(requests_mock, mocker):
     insight_category = ['Endpoint', 'Web']
     insight_data_type = ['Hash', 'Domain']
     hash_to_search = '109c702578b261d0eda01506625423f5a2b8cc107b0d8dfad84d39fb02bfa5cb'
-    res = get_indicators_command(client, insight_category, insight_data_type, demisto.args())
+    res = get_indicators_command(client, insight_category, insight_data_type, 'AMBER', demisto.args())
     assert demisto.results.call_count == 0
     assert res[0]['value'] == hash_to_search
     assert res[0]['type'] == 'File'
@@ -198,14 +199,17 @@ def test_rerun_simulation(requests_mock, mocker):
     assert context['SafeBreach.Simulation(val.Id == obj.Id)']['Rerun']['Id'] == response['data']['runId']
 
 
-def test_feed_tags(requests_mock, mocker):
+@pytest.mark.parametrize('tlp_color', ['', None, 'AMBER'])
+def test_feed_tags_and_tlp_color(requests_mock, mocker, tlp_color):
     """
     Given:
     - client which has tag params
+    - different values for tlp_color
     When:
     - Executing get indicators command on feed
     Then:
     - Validate the tags supplied are added to the tags list in addition to the tags that were there before
+    - Validate that trafficlightprotocol indicator type is assigned correctly
     """
     mocker.patch.object(demisto, 'args', return_value={'limit': '10'})
     mocker.patch.object(demisto, 'results')
@@ -223,5 +227,9 @@ def test_feed_tags(requests_mock, mocker):
         json=NODES)
     insight_category = ['Endpoint', 'Web']
     insight_data_type = ['Hash', 'Domain']
-    res = get_indicators_command(client, insight_category, insight_data_type, demisto.args())
+    res = get_indicators_command(client, insight_category, insight_data_type, tlp_color, demisto.args())
     assert all(elem in res[0]['fields']['tags'] for elem in ['tag1', 'tag2'])
+    if tlp_color:
+        assert res[0]['fields']['trafficlightprotocol'] == tlp_color
+    else:
+        assert not res[0]['fields'].get('trafficlightprotocol')
