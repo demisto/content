@@ -13,7 +13,7 @@
   },
   "toDate": "0001-01-01T00:00:00Z"
  },
- "description": "Showing in a table widget Failed instances information",
+ "description": "A table widget showing the failed instances information.",
  "id": "Failing-Instances-Info-Table",
  "isPredefined": true,
  "name": "Failed Instances Information",
