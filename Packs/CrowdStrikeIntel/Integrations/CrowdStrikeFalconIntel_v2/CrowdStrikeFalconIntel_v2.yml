@@ -8,7 +8,6 @@ description: CrowdStrike Threat intelligence service integration helps organizat
 configuration:
 - display: Client ID
   name: credentials
-  displaypassword: Client Secret
   required: true
   type: 9
 - display: Indicator Threshold. Minimum malicious confidence from Falcon Intel to

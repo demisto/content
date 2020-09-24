@@ -34,7 +34,7 @@ class CrowdStrikeClient(BaseClient):
                                  error in errors)
             if 'Failed to issue access token - Not Authorized' in err_msg:
                 err_msg = err_msg.replace('Failed to issue access token - Not Authorized',
-                                          f'Client Secret is invalid.')
+                                          'Client Secret is invalid.')
             elif 'Failed to generate access token for clientID' in err_msg:
                 err_msg = err_msg.replace('Failed to generate access token for clientID=', 'Client ID (')
                 if err_msg.endswith('.'):

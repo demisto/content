@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from datetime import datetime, timezone
-from typing import Union, Any, Dict, Tuple
+from typing import Union, Any, Dict
 from dateparser import parse
 
 import urllib3
