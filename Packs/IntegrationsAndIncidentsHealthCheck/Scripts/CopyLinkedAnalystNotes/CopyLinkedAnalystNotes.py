@@ -4,48 +4,50 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 incident = demisto.incidents()[0]
-incidentID = incident.get('id')
+incident_id = incident.get('id')
 custom_fields = incident.get('CustomFields')
-LinkedIncident = custom_fields.get('similarincident')
+linked_incident = custom_fields.get('similarincident')
 
-if LinkedIncident:
-    newerLink = max(LinkedIncident)
-    linkedlistData = demisto.executeCommand("getIncidents", {'id': newerLink})
-    linkedContent = linkedlistData[0].get("Contents", {}).get("data")[0]
-    linkedCreatedDate = linkedContent.get("created", {}).split("T")[0]
-    linkedIntegrationsData = linkedContent.get("CustomFields").get("integrationstestgrid",
-                                                                   {})  # table of the linked incident
+if linked_incident:
+    latest_related_incident_id = max(linked_incident)
+    linked_list_data = demisto.executeCommand("getIncidents", {'id': latest_related_incident_id})
+    linked_content = linked_list_data[0].get("Contents", {}).get("data")[0]
+    linked_created_date = linked_content.get("created", {}).split("T")[0]
+    linked_integrations_data = linked_content.get("CustomFields").get("integrationstestgrid",
+                                                                      {})  # table of the linked incident
 
-    integrationsData = {}
-    for row in linkedIntegrationsData:
-        integrationsData[row.get("instance")] = row.get("analystnote", "")
+    integrations_data = {}
+    for row in linked_integrations_data:
+        instance_id = row.get("instance")
+        integrations_data[instance_id] = row.get("analystnote", "")
 
-    mainIntegrationGrid = custom_fields.get("integrationstestgrid")  # Main incident table for integrations
-    for mainRow in mainIntegrationGrid:
-        if not mainRow.get("analystnote"):
-            mainRow["analystnote"] = integrationsData.get(mainRow.get('instance'), '')
-            if mainRow.get("analystnote"):
-                mainRow["analystnote"] = "(" + str(linkedCreatedDate) + ") " + integrationsData.get(
-                    mainRow.get('instance'), '')
+    main_integration_grid = custom_fields.get("integrationstestgrid")  # Main incident table for integrations
+    for main_row in main_integration_grid:
+        if not main_row.get("analystnote"):
+            last_analyst_note = integrations_data.get(main_row.get('instance'), '')
+            if last_analyst_note:
+                main_row["analystnote"] = f'({str(linked_created_date)}) "' \
+                                          f'{integrations_data.get(main_row.get("instance"), "")}'
 
-    incidentsData: Dict[str, tuple] = {}
-    linkedIncidentsData = linkedContent.get("CustomFields").get("playbooktaskserrors",
-                                                                {})  # table of the linked incident
-    for row in linkedIncidentsData:
-        incidentsData[row.get("incidentid")] = (row.get('task_id'), row.get("analystnote", ""))
+    incidents_data: Dict[str, tuple] = {}
+    linked_incidentsD_data = linked_content.get("CustomFields").get("playbooktaskserrors",
+                                                                    {})  # table of the linked incident
+    for row in linked_incidentsD_data:
+        incidents_data[row.get("incidentid")] = (row.get('task_id'), row.get("analystnote", ""))
 
-    mainIncidentGrid = custom_fields.get("playbooktaskserrors")  # Main incident table for incidents
-    for mainRow in mainIncidentGrid:
-        if mainRow.get('incidentid') not in incidentsData:
+    main_incident_grid = custom_fields.get("playbooktaskserrors")  # Main incident table for incidents
+    for main_row in main_incident_grid:
+        if main_row.get('incidentid') not in incidents_data:
+            # Does not appear in the last incident
             continue
 
-        mainRow['task_id'] = incidentsData[mainRow.get('incidentid')][0]
+        main_row['task_id'] = incidents_data[main_row.get('incidentid')][0]
 
-        if not mainRow.get("analystnote"):
-            mainRow["analystnote"] = incidentsData[mainRow.get('incidentid')][1]
-            if mainRow.get("analystnote"):
-                mainRow["analystnote"] = "(" + str(linkedCreatedDate) + ") " + \
-                                         incidentsData[mainRow.get('incidentid')][1]
+        if not main_row.get("analystnote"):
+            last_analyst_note = incidents_data[main_row.get('incidentid')][1]
+            if last_analyst_note:
+                main_row["analystnote"] = f'({str(linked_created_date)}) ' \
+                                          f'{incidents_data[main_row.get("incidentid")][1]}'
 
-    demisto.executeCommand("setIncident", {'customFields': {'integrationstestgrid': mainIntegrationGrid}})
-    demisto.executeCommand("setIncident", {'customFields': {'playbooktaskserrors': mainIncidentGrid}})
+    demisto.executeCommand("setIncident", {'customFields': {'integrationstestgrid': main_integration_grid}})
+    demisto.executeCommand("setIncident", {'customFields': {'playbooktaskserrors': main_incident_grid}})
