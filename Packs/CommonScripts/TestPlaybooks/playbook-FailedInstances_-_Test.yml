@@ -73,8 +73,7 @@ tasks:
       id: 0a4ccb93-1732-4c4f-89d5-95c475d2e12d
       version: -1
       name: Check for Failed Instances
-      description: Executes test for all integration instances available and returns
-        a detailed table about failed integration instances
+      description: Executes test for all integration instances available and returns a detailed table about failed integration instances
       scriptName: FailedInstances
       type: regular
       iscommand: false
@@ -278,3 +277,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

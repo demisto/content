@@ -2,7 +2,7 @@ id: Office 365 Search and Delete
 version: -1
 name: Office 365 Search and Delete
 description: "Run a ComplianceSearch on Office 365 and delete the results."
-fromversion: 4.0.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -94,8 +94,7 @@ tasks:
       Timeout:
         simple: "10080"
       dt:
-        simple: EWS.ComplianceSearch(val.Status === "InProgress" || val.Status ===
-          "Running" || val.Status === "Starting").Name
+        simple: EWS.ComplianceSearch(val.Status === "InProgress" || val.Status === "Running" || val.Status === "Starting").Name
     separatecontext: true
     loop:
       iscommand: false
@@ -349,4 +348,4 @@ inputs:
   description: Compliance Search query
 outputs: []
 tests:
-  - No test
+- No test

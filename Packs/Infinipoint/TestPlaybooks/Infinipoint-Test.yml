@@ -240,8 +240,7 @@ tasks:
       id: 07e6dd49-771a-405d-8e13-f2aee77fcb18
       version: -1
       name: Validate Output (infinipoint-get-assets-hardware)
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1581,3 +1580,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
