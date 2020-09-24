@@ -15,7 +15,7 @@ for full_date in list_content:
     date_only = full_date.split(" ")[0]
     datesOnlyList.append(date_only)
 
-lists_data = []
+lists_data: List = []
 if list_content != ['']:
     list_collections: Counter = collections.Counter(datesOnlyList)
     top_lists = list_collections.most_common(10)
