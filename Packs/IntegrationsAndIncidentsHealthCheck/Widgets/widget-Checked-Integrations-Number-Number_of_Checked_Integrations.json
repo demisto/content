@@ -13,7 +13,7 @@
   },
   "toDate": "0001-01-01T00:00:00Z"
  },
- "description": "Showing a number widget of checked integrations",
+ "description": "A widget showing the number of checked integrations.",
  "id": "Checked-Integrations-Number",
  "isPredefined": true,
  "name": "Number of Checked Integrations",
