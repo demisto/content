@@ -1334,7 +1334,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Not throwing error when sending URL that points to a file.
+      description: Not throwing an error when sending a URL, which points to a file.
       defaultValue: "false"
     outputs:
     - contextPath: File.SHA256
