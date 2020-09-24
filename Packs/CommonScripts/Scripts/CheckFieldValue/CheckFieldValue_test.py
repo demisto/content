@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from PollingField import poll_field
+from CheckFieldValue import poll_field
 
 incident_contains_field_in_custom_fields = {
     'id': 1,
