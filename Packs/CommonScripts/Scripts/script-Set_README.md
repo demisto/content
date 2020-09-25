@@ -7,7 +7,6 @@ Set a value in context under the key you entered.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 5.0.0 |
 
 ## Used In
 ---
