@@ -4017,7 +4017,6 @@ def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None
 
 CONTEXT_UPDATE_RETRY_TIMES = 3
 MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
-MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT = '83267'
 
 
 def merge_lists(original_list, updated_list, key):
@@ -4112,9 +4111,7 @@ def is_versioned_context_available():
     :rtype: ``bool``
     :return: Whether versioned integration context is available
     """
-    return \
-        is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT) or \
-        is_demisto_version_ge('5.5.0', MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT)
+    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
 
 
 def set_to_integration_context_with_retries(context, object_keys=None, sync=True,
