@@ -1,5 +1,5 @@
-"""HelloWorld Integration for Cortex XSOAR (aka Demisto)
-HelloWorld API
+"""Kubernetes Integration for Cortex XSOAR (aka Demisto)
+Kubernete API
 --------------
 """
 
@@ -13,7 +13,10 @@ import dateparser
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 from kubernetes import client, config
-from kubernetes.client import ApiClient
+from kubernetes.client import api, models, ApiClient, Configuration
+from kubernetes.client.api import CoreV1Api
+from kubernetes.client.models import V1PodList
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -26,19 +29,28 @@ MAX_INCIDENTS_TO_FETCH = 50
 HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 
-def kubernetes_client_setup(cluster_host_url:str, cluster_token:str) -> ApiClient:
-    """ Setup Kubernetes client using specified configutation
+class Client(BaseClient):
+    """Client class to interact with the Kubernetes API. """
+    cluster_host_url: str = ''
+    cluster_token: str = ''
+    ns: str = ''
+    configuration: Configuration = None
+    api_client: ApiClient = None
+    api: CoreV1Api = None
 
-    Args:
-        cluster_host_url: Json configuration file content from IAM.
-    Returns:
-        ApiClient: client for Kubernetes cluster API.
-    """
-    configuration = client.Configuration()
-    configuration.host = cluster_host_url
-    configuration.api_key["authorization"] = cluster_token
-    configuration.api_key_prefix['authorization'] = 'Bearer'
-    return client.ApiClient(configuration=configuration)
+    def __init__(self, h, t, ns):
+        self.cluster_host_url = h
+        self.cluster_token = t
+        self.configuration = client.Configuration()
+        self.configuration.host = self.cluster_host_url
+        self.configuration.api_key["authorization"] = self.cluster_token
+        self.configuration.api_key_prefix['authorization'] = 'Bearer'
+        self.api_client = client.ApiClient(configuration=self.configuration)
+        self.api = client.CoreV1Api(api_client=self.api_client)
+        self.ns = ns
+
+    def list_pods(self) -> V1PodList:
+        return self.api.list_namespaced_pod(self.ns)
 
 
 ''' MAIN FUNCTION '''
