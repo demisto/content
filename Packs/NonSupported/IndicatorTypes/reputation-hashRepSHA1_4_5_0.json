@@ -11,5 +11,5 @@
     "SplunkPySearch"
   ],
   "fromVersion": "3.1.0",
-  "toVersion": "4.5.0"
+  "toVersion": "4.5.9"
 }
