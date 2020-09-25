@@ -17,11 +17,14 @@ LACEWORK_API_KEY = demisto.params()['lacework_api_key']
 LACEWORK_API_SECRET = demisto.params()['lacework_api_secret']
 LACEWORK_EVENT_SEVERITY = demisto.params()['lacework_event_severity']
 
-lacework_client = LaceworkClient(instance=LACEWORK_INSTANCE,
-                                 api_key=LACEWORK_API_KEY,
-                                 api_secret=LACEWORK_API_SECRET)
+try:
+    lacework_client = LaceworkClient(instance=LACEWORK_INSTANCE,
+                                     api_key=LACEWORK_API_KEY,
+                                     api_secret=LACEWORK_API_SECRET)
+except Exception as error:
+    demisto.results("Lacework API authentication failed. Please validate Instance Name, API Key, and API Secret.")
 
-''' HELPER FUNCTION '''
+''' HELPER FUNCTIONS '''
 
 
 def get_event_severity_threshold():
@@ -44,6 +47,10 @@ def get_event_severity_threshold():
 
 
 def create_entry(title, data, ec):
+    """
+    Simplify the output/contents
+    """
+
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
@@ -55,13 +62,27 @@ def create_entry(title, data, ec):
 
 
 def format_compliance_data(compliance_data):
+    """
+    Simplify the output/contents for Compliance reports
+    """
 
     if len(compliance_data['data']) > 0:
-        return CommandResults(
-            outputs_prefix='Lacework.ComplianceReport.recommendations',
-            outputs_key_field=['reportTime'],
-            outputs=compliance_data['data'][0]['recommendations']
-        )
+
+        compliance_data = compliance_data['data'][0]
+
+        # Build Human Readable Output
+        readable_output = tableToMarkdown("Compliance Summary",
+                                          compliance_data['summary'])
+
+        ec = {"Lacework.Compliance(val.reportTime === obj.reportTime)": compliance_data}
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': compliance_data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': readable_output,
+            'EntryContext': ec
+        }
     else:
         return {
             "Type": entryTypes["error"],
@@ -221,6 +242,7 @@ def get_container_vulnerabilities():
     fixable = demisto.args().get('fixable', None)
     start_time = demisto.args().get('start_time', None)
     end_time = demisto.args().get('end_time', None)
+    limit = demisto.args().get('limit', None)
 
     if id_type == 'image_digest':
         response = lacework_client.vulnerabilities.get_container_vulnerabilities(image_digest=image_digest,
@@ -236,6 +258,18 @@ def get_container_vulnerabilities():
                                                                                  end_time=end_time)
     else:
         raise Exception('Invalid Container Image ID Type.')
+
+    # If a limit is set, then use it
+    if limit:
+        try:
+            limit = int(limit)
+            response['data'] = response['data'][0:limit]
+        except Exception:
+            return {
+                "Type": entryTypes["error"],
+                "ContentsFormat": formats["text"],
+                "Contents": "The provided limit parameter was invalid."
+            }
 
     ec = {"Lacework.Vulnerability.Container(val.last_evaluation_time === obj.last_evaluation_time)": response['data']}
     return create_entry("Lacework Vulnerability Data for Container " + str(image_digest) + str(image_id),
@@ -265,10 +299,17 @@ def get_host_vulnerabilities():
 
     # If a limit is set, then use it
     if limit:
-        limit = int(limit)
-        response['data'] = response['data'][0:limit]
+        try:
+            limit = int(limit)
+            response['data'] = response['data'][0:limit]
+        except Exception:
+            return {
+                "Type": entryTypes["error"],
+                "ContentsFormat": formats["text"],
+                "Contents": "The provided limit parameter was invalid."
+            }
 
-    ec = {"Lacework.Vulnerability.Host(val.last_evaluation_time === obj.last_evaluation_time)": response['data']}
+    ec = {"Lacework.Vulnerability.Host(val.cve_id === obj.cve_id)": response['data']}
     return create_entry("Lacework Host Vulnerability Data",
                         response['data'],
                         ec)
