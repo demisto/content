@@ -1,4 +1,5 @@
 from jmespath_transformer import jmespath_search
+import json
 
 
 def test_search():
@@ -14,6 +15,31 @@ def test_search():
             }]
         }
     }
+    result = jmespath_search(expression, value)
+    assert result == [
+        {
+            "Value": "1.1.1.1",
+            "Type": "IPV4_ADDRESS"
+        },
+        {
+            "Value": "2.2.2.2",
+            "Type": "IPV4_ADDRESS"
+        }
+    ]
+
+def test_search_string():
+    expression = "AutoFocus.IP[?IndicatorType=='IPV4_ADDRESS'].{Value: IndicatorValue, Type: IndicatorType}"
+    value = json.dumps({
+        "AutoFocus": {
+            "IP": [{
+                "IndicatorType": "IPV4_ADDRESS",
+                "IndicatorValue": "1.1.1.1",
+            }, {
+                "IndicatorType": "IPV4_ADDRESS",
+                "IndicatorValue": "2.2.2.2",
+            }]
+        }
+    })
     result = jmespath_search(expression, value)
     assert result == [
         {

@@ -3,7 +3,7 @@ from CommonServerPython import *
 import jmespath
 
 
-def jmespath_search(expression: str, value: dict) -> dict:
+def jmespath_search(expression: str, value: [dict, list]) -> dict:
     try:
         expression_compiled = jmespath.compile(expression)
     except Exception as err:
@@ -15,6 +15,11 @@ def jmespath_search(expression: str, value: dict) -> dict:
 def main():
     args = demisto.args()
     value = args.get("value")
+    if type(value) == str:
+        try:
+            value = json.loads(value)
+        except Exception as err:
+            return_error("The input is not valid JSON")
     expression = args.get("expression")
     result = jmespath_search(expression, value)
     return_results(result)
