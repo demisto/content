@@ -1,13 +1,20 @@
-"""Kubernetes Integration for Cortex XSOAR
-Kubernete API
+"""Kubernetes Integration for Cortex XSOAR.
+
+This is an integration with the Python/REST API of a Kubernetes cluster.
+
+Kubernetes API
 --------------
 """
-
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
+###########
+# IMPORTS #
+###########
+# std packages
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
+# local packages
+import demistomock as demisto
+from CommonServerPython import *  
+from CommonServerUserPython import * 
+# 3rd-party packages
 from kubernetes import client, config
 from kubernetes.client import api, models, ApiClient, Configuration
 from kubernetes.client.api import CoreV1Api
@@ -43,8 +50,46 @@ class Client(BaseClient):
         return self.api.list_namespaced_pod(self.ns)
 
     def list_services(self) -> V1ServiceList:
-        return self.api.list_namespaced_service
+        return self.api.list_namespaced_service(self.ns)
 
+
+def list_pods_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """ command: Returns list of running pods in the cluster.
+
+    :type client: ``Client``
+    :param Client: Kubernetes client to use.
+
+    :type args: ``Dict[str, Any]``
+    :param args: All command arguments, usually passed from ``demisto.args()``.
+    
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains the hello world message
+
+    :rtype: ``CommandResults``
+    """
+    ns = args.get('namespace', None)
+
+    result = client.list_pods()
+
+    # Create the human readable output.
+    # It will  be in markdown format - https://www.markdownguide.org/basic-syntax/
+    # More complex output can be formatted using ``tableToMarkDown()`` defined
+    # in ``CommonServerPython.py``
+    readable_output = f'## {result}'
+
+    # More information about Context:
+    # https://xsoar.pan.dev/docs/integrations/context-and-outputs
+    # We return a ``CommandResults`` object, and we want to pass a custom
+    # markdown here, so the argument ``readable_output`` is explicit. If not
+    # passed, ``CommandResults``` will do a ``tableToMarkdown()`` do the data
+    # to generate the readable output.
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='hello',
+        outputs_key_field='',
+        outputs=result
+    )
 
 ''' MAIN FUNCTION '''
 
