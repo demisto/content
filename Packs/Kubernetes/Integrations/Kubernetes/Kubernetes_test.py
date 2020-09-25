@@ -52,9 +52,8 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 
 """
 
-from kubernetes import client, config
-
-def test_say_hello():
+def test_kubernetes_client_setup():
+    #assert no n
     # v1 = client.CoreV1Api()
-    c = client.Configuration()
+    # c = client.Configuration()
     assert True
