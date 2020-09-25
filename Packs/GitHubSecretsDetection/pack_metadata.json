@@ -1,0 +1,14 @@
+{
+    "name": "GitHub Secrets Detection",
+    "description": "This is an XSOAR automation pack for GitHub Secrets Detection. This is the list of the features:\n\n    It can automatically detect the new commits in a branch of a repository.\n    It supports GitHub.com and GitHub Enterprise.\n    It can scan all the commit histories of an existing repository.\n    It supports customized file name and secret key patterns.\n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Matthew Kwong",
+    "url": "",
+    "email": "",
+    "created": "2020-09-25T22:25:32Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
