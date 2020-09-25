@@ -1,4 +1,4 @@
-"""Kubernetes Integration for Cortex XSOAR (aka Demisto)
+"""Kubernetes Integration for Cortex XSOAR
 Kubernete API
 --------------
 """
@@ -7,26 +7,16 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import json
-import urllib3
-import dateparser
-import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 from kubernetes import client, config
 from kubernetes.client import api, models, ApiClient, Configuration
 from kubernetes.client.api import CoreV1Api
-from kubernetes.client.models import V1PodList
-
-# Disable insecure warnings
-urllib3.disable_warnings()
-
+from kubernetes.client.models import V1PodList, V1ServiceList
 
 ''' CONSTANTS '''
 
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INCIDENTS_TO_FETCH = 50
-HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 
 class Client(BaseClient):
@@ -51,6 +41,9 @@ class Client(BaseClient):
 
     def list_pods(self) -> V1PodList:
         return self.api.list_namespaced_pod(self.ns)
+
+    def list_services(self) -> V1ServiceList:
+        return self.api.list_namespaced_service
 
 
 ''' MAIN FUNCTION '''
