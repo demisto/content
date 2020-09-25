@@ -757,12 +757,10 @@ class RCS:
 
         SDL, RET, RDL, rcs, rmsg = self._parse(rcs)
         if RDL is None:
-            print(
-                "ARIA: remediation configuraton string (RCS) is invalid -- this will prevent remediation to ARIA PI devices from working (rcs={0}:: rmsg={1})".format(
-                    rcs_save, rmsg))
+            #print("ARIA: remediation configuraton string (RCS) is invalid -- this will prevent remediation to ARIA PI devices from working (rcs={0}:: rmsg={1})".format(rcs_save, rmsg))
             return False
 
-        print("ARIA: remediation configuraton string (RCS) is valid (rcs={0})".format(rcs_save))
+        #print("ARIA: remediation configuraton string (RCS) is valid (rcs={0})".format(rcs_save))
 
         return True
 
