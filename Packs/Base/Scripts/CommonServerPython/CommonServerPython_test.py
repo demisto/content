@@ -15,8 +15,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT, \
-    get_demisto_version_as_str, get_x_content_info_headers
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers
 
 try:
     from StringIO import StringIO
@@ -2334,8 +2333,6 @@ def test_merge_lists():
                          [
                              ({'version': '5.5.0'}, False),
                              ({'version': '6.0.0'}, True),
-                             ({'version': '5.5.0', 'buildNumber': MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT}, True),
-                             ({'version': '5.5.0', 'buildNumber': str(int(MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT) - 1)}, False)
                          ]
                          )
 def test_is_versioned_context_available(mocker, version, expected):
