@@ -92,22 +92,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returned incidents that were created on or after the specified
-        date/time, in the format 2019-12-31T23:59:00.
+      description: Returned incidents that were created on or after the specified date/time, in the format 2019-12-31T23:59:00.
       isArray: false
       name: gte_creation_time
       required: false
       secret: false
     - default: false
-      description: Filters returned incidents that were created on or before the specified
-        date/time, in the format 2019-12-31T23:59:00.
+      description: Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.
       isArray: false
       name: lte_modification_time
       required: false
       secret: false
     - default: false
-      description: Filters returned incidents that were modified on or after the specified
-        date/time, in the format 2019-12-31T23:59:00.
+      description: Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.
       isArray: false
       name: gte_modification_time
       required: false
@@ -119,23 +116,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters returned incidents that were created on or after the specified
-        date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+      description: Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
       isArray: false
       name: since_creation_time
       required: false
       secret: false
     - default: false
-      description: Filters returned incidents that were modified on or after the specified
-        date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+      description: Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
       isArray: false
       name: since_modification_time
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sorts returned incidents by the date/time that the incident was
-        last modified ("asc" - ascending, "desc" - descending).
+      description: Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending).
       isArray: false
       name: sort_by_modification_time
       predefined:
@@ -145,8 +139,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sorts returned incidents by the date/time that the incident was
-        created ("asc" - ascending, "desc" - descending).
+      description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
       isArray: false
       name: sort_by_creation_time
       predefined:
@@ -163,8 +156,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Maximum number of incidents to return per page. The default and
-        maximum is 100.
+      description: Maximum number of incidents to return per page. The default and maximum is 100.
       isArray: false
       name: limit
       required: false
@@ -180,8 +172,7 @@ script:
       description: Unique ID assigned to each returned incident.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
-      description: Incident severity assigned by the user. This does not affect the
-        calculated severity. Can be "low", "medium", "high"
+      description: Incident severity assigned by the user. This does not affect the calculated severity. Can be "low", "medium", "high"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_description
       description: Incident description provided by the user.
@@ -255,8 +246,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns additional data for the specified incident, for example,
-      related alerts, file artifacts, network artifacts, and so on.
+    description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
     execution: false
     name: xdr-get-incident-extra-data
     outputs:
@@ -342,8 +332,7 @@ script:
       description: Calculated name of the alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.category
-      description: Category of the alert, for example, Spyware Detected via Anti-Spyware
-        profile.
+      description: Category of the alert, for example, Spyware Detected via Anti-Spyware profile.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.description
       description: Textual description of the alert.
@@ -538,8 +527,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: XDR incident ID. You can get the incident ID from the output of
-        the 'xdr-get-incidents' command or the 'xdr-get-incident-extra-details' command.
+      description: XDR incident ID. You can get the incident ID from the output of the 'xdr-get-incidents' command or the 'xdr-get-incident-extra-details' command.
       isArray: false
       name: incident_id
       required: true
@@ -584,8 +572,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comment explaining why the incident was resolved. This should be
-        set when the incident is resolved.
+      description: Comment explaining why the incident was resolved. This should be set when the incident is resolved.
       isArray: false
       name: resolve_comment
       required: false
@@ -696,16 +683,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Upload alerts in CEF format from external alert sources. After you
-      map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in
-      related incidents and views. You can send 600 requests per minute. Each request
-      can contain a maximum of 60 alerts.
+    description: Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
     execution: false
     name: xdr-insert-cef-alerts
   - arguments:
     - default: false
-      description: The endpoint ID (string) to isolate. You can retrieve the string
-        from the xdr-get-endpoints command.
+      description: The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints command.
       isArray: false
       name: endpoint_id
       required: true
@@ -720,8 +703,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The endpoint ID (string) for which to reverse the isolation. You
-        can retrieve it from the xdr-get-endpoints command.
+      description: The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints command.
       isArray: false
       name: endpoint_id
       required: true
@@ -854,16 +836,14 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Maximum number of endpoints to return per page. The default and
-        maximum is 30.
+      description: Maximum number of endpoints to return per page. The default and maximum is 30.
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether to sort endpoints by the first time or last time
-        they were seen. Can be "first_seen" or "last_seen".
+      description: Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen".
       isArray: false
       name: sort_by
       predefined:
@@ -874,8 +854,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: asc
-      description: The order by which to sort results. Can be "asc" (ascending) or
-        "desc" ( descending). Default set to asc.
+      description: The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc.
       isArray: false
       name: sort_order
       predefined:
@@ -962,8 +941,7 @@ script:
       description: Endpoint OS.
       type: String
   - deprecated: false
-    description: Gets a list of all the agent versions to use for creating a distribution
-      list.
+    description: Gets a list of all the agent versions to use for creating a distribution list.
     execution: false
     name: xdr-get-distribution-versions
     outputs:
@@ -1009,8 +987,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: agent_version returned from xdr-get-distribution-versions. Not
-        required for Android platfom
+      description: agent_version returned from xdr-get-distribution-versions. Not required for Android platfom
       isArray: false
       name: agent_version
       required: true
@@ -1022,10 +999,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates an installation package. This is an asynchronous call that
-      returns the distribution ID. This does not mean that the creation succeeded.
-      To confirm that the package has been created, check the status of the distribution
-      by running the Get Distribution Status API.
+    description: Creates an installation package. This is an asynchronous call that returns the distribution ID. This does not mean that the creation succeeded. To confirm that the package has been created, check the status of the distribution by running the Get Distribution Status API.
     execution: false
     name: xdr-create-distribution
     outputs:
@@ -1191,17 +1165,14 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Maximum number of audit logs to return per page. The default and
-        maximum is 30.
+      description: Maximum number of audit logs to return per page. The default and maximum is 30.
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies the field by which to sort the results. By default the
-        sort is defined as creation-time and DESC. Can be "type", "sub_type", "result",
-        or "timestamp".
+      description: Specifies the field by which to sort the results. By default the sort is defined as creation-time and DESC. Can be "type", "sub_type", "result", or "timestamp".
       isArray: false
       name: sort_by
       predefined:
@@ -1284,8 +1255,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The report type. Can be "Installation", "Policy", "Action", "Agent
-        Service", "Agent Modules", or "Agent Status".
+      description: The report type. Can be "Installation", "Policy", "Action", "Agent Service", "Agent Modules", or "Agent Status".
       isArray: true
       name: type
       predefined:
@@ -1339,8 +1309,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The result type. Can be "Success" or "Fail". If not passed, returns
-        all event reports.
+      description: The result type. Can be "Success" or "Fail". If not passed, returns all event reports.
       isArray: true
       name: result
       predefined:
@@ -1380,16 +1349,14 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: The maximum number of reports to return. Default and maximum is
-        30.
+      description: The maximum number of reports to return. Default and maximum is 30.
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The field by which to sort results. Can be "type", "category",
-        "trapsversion", "timestamp", or "domain").
+      description: The field by which to sort results. Can be "type", "category", "trapsversion", "timestamp", or "domain").
       isArray: false
       name: sort_by
       predefined:
@@ -1457,8 +1424,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: String that represents a list of hashed files you want to blacklist.
-        Must be a valid SHA256 hash.
+      description: String that represents a list of hashed files you want to blacklist. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
@@ -1470,14 +1436,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Blacklists requested files which have not already been blacklisted
-      or whitelisted.
+    description: Blacklists requested files which have not already been blacklisted or whitelisted.
     execution: false
     name: xdr-blacklist-files
   - arguments:
     - default: false
-      description: String that represents a list of hashed files you want to whitelist.
-        Must be a valid SHA256 hash.
+      description: String that represents a list of hashed files you want to whitelist. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
@@ -1489,8 +1453,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Whitelists requested files which have not already been blacklisted
-      or whitelisted.
+    description: Whitelists requested files which have not already been blacklisted or whitelisted.
     execution: false
     name: xdr-whitelist-files
   - arguments:
@@ -1507,15 +1470,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: String that represents the file’s hash. Must be a valid SHA256
-        hash.
+      description: String that represents the file’s hash. Must be a valid SHA256 hash.
       isArray: false
       name: file_hash
       required: true
       secret: false
     deprecated: false
-    description: Quarantines a file on selected endpoints. You can select up to 1000
-      endpoints.
+    description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     execution: false
     name: xdr-quarantine-files
   - arguments:
@@ -1543,16 +1504,13 @@ script:
     name: xdr-get-quarantine-status
   - arguments:
     - default: false
-      description: String that represents the file in hash. Must be a valid SHA256
-        hash.
+      description: String that represents the file in hash. Must be a valid SHA256 hash.
       isArray: false
       name: file_hash
       required: true
       secret: false
     - default: false
-      description: String that represents the endpoint ID. If you do not enter a specific
-        endpoint ID, the request will run restore on all endpoints which relate to
-        the quarantined file you defined.
+      description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
       isArray: false
       name: endpoint_id
       required: false
@@ -1645,8 +1603,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Runs a scan on a selected endpoint. To scan all endpoints, run this
-      command with no filters.
+    description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with no filters.
     execution: true
     name: xdr-endpoint-scan
   - deprecated: false
@@ -1688,7 +1645,7 @@ script:
   type: python
 tests:
 - Test XDR Playbook
-fromversion: 4.1.0
+fromversion: 5.0.0
 defaultclassifier: Cortex XDR - IR
 defaultmapperin: Cortex XDR - IR-mapper
 defaultmapperout: Cortex XDR - IR-out-mapper
