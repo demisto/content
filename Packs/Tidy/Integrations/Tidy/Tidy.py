@@ -6,7 +6,6 @@ This integration based on:
 
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 from ansible_runner import run, Runner
 from paramiko import AutoAddPolicy, AuthenticationException, SSHClient, SSHException
@@ -88,7 +87,8 @@ class TidyClient:
                       f" ansible_ssh_pass=\"{self.password}\" ansible_connection=ssh",
             verbosity=2,
             extravars=extra_vars,
-            json_mode=False)
+            json_mode=False,
+            quiet=True)
 
         return runner
 
@@ -229,7 +229,8 @@ class TidyClient:
 ''' HELPER FUNCTIONS '''
 
 
-def parse_response(response: Runner, human_readable_name: str, installed_software: str, additional_vars=None) -> DemistoResult:
+def parse_response(response: Runner, human_readable_name: str, installed_software: str,
+                   additional_vars=None) -> DemistoResult:
     """ Parse anible-runner Runner object to demisto
 
     Args:
@@ -241,6 +242,16 @@ def parse_response(response: Runner, human_readable_name: str, installed_softwar
     Returns:
          DemistoResult: Demisto structured response.
     """
+    stdout = f'\n\n### Stdout:\n```\n{"".join(response.stdout.readlines())}\n```'
+    if response.status == 'failed' or response.rc != 0:
+        demisto.results({
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': {},
+            'ReadableContentsFormat': EntryFormat.MARKDOWN,
+            'HumanReadable': stdout,
+        })
+        raise DemistoException(f'Installing {installed_software} has failed with return code {response.rc}, See stdout.')
     result = {
         'Status': response.status,
         'ReturnCode': response.rc,
@@ -251,23 +262,22 @@ def parse_response(response: Runner, human_readable_name: str, installed_softwar
         'InstalledSoftware': installed_software,
         'AdditionalInfo': additional_vars
     }
-    stdout = f'\n\n### Stdout:\n```\n{"".join(response.stdout.readlines())}\n```'
     human_readable = tableToMarkdown(human_readable_name, result, removeNull=True) + stdout
 
     return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': 'result',
+        'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
-        'EntryContext': {'Ansible.Install': 'result'}
+        'EntryContext': {'Ansible.Install': result}
     }
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: TidyClient, **kwargs) -> DemistoResult:
+def test_module(client: TidyClient, **_) -> DemistoResult:
     """Check endpoint configuration is right, Could detect the following:
         1. Hostname isn't accessible from network.
         2. User or password isn't right.
@@ -281,7 +291,7 @@ def test_module(client: TidyClient, **kwargs) -> DemistoResult:
     """
     client.test()
 
-    return 'ok', {}, {}
+    return 'ok'
 
 
 def tidy_pyenv_command(client: TidyClient, **kwargs) -> DemistoResult:
@@ -294,14 +304,16 @@ def tidy_pyenv_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
+    versions = kwargs.get('versions')
+    global_versions = kwargs.get('globals')
     runner: Runner = client.anyenv(env=AnyEnvs.pyenv,
-                                   versions=argToList(kwargs.get("versions")),
-                                   global_versions=argToList(kwargs.get("globals")))
+                                   versions=argToList(versions),
+                                   global_versions=argToList(global_versions))
 
     return parse_response(response=runner,
-                          human_readable_name="",
-                          installed_software="",
-                          additional_vars={})
+                          human_readable_name="PyEnv installation",
+                          installed_software="Pyenv",
+                          additional_vars={'versions': versions, 'globals': global_versions})
 
 
 def tidy_goenv_command(client: TidyClient, **kwargs) -> DemistoResult:
@@ -314,14 +326,16 @@ def tidy_goenv_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
+    versions = kwargs.get('versions')
+    global_versions = kwargs.get('globals')
     runner: Runner = client.anyenv(env=AnyEnvs.goenv,
-                                   versions=argToList(kwargs.get("versions")),
-                                   global_versions=argToList(kwargs.get("globals")))
+                                   versions=argToList(versions),
+                                   global_versions=argToList(global_versions))
 
     return parse_response(response=runner,
-                          human_readable_name="",
-                          installed_software="",
-                          additional_vars={})
+                          human_readable_name="GoEnv Installation",
+                          installed_software="GoEnv",
+                          additional_vars={'versions': versions, 'globals': global_versions})
 
 
 def tidy_nodenv_command(client: TidyClient, **kwargs) -> DemistoResult:
@@ -334,14 +348,16 @@ def tidy_nodenv_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
+    versions = kwargs.get('versions')
+    global_versions = kwargs.get('globals')
     runner: Runner = client.anyenv(env=AnyEnvs.nodenv,
-                                   versions=argToList(kwargs.get("versions")),
-                                   global_versions=argToList(kwargs.get("globals")))
+                                   versions=argToList(versions),
+                                   global_versions=argToList(global_versions))
 
     return parse_response(response=runner,
-                          human_readable_name="",
-                          installed_software="",
-                          additional_vars={})
+                          human_readable_name="NodeEnv Installation",
+                          installed_software="NodeEnv",
+                          additional_vars={'versions': versions, 'globals': global_versions})
 
 
 def tidy_homebrew_command(client: TidyClient, **kwargs) -> DemistoResult:
@@ -354,14 +370,15 @@ def tidy_homebrew_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
-    raw_response = client.homebrew(apps=argToList(kwargs.get('apps')),
-                                   cask_apps=argToList(kwargs.get('cask_apps')))
+    apps = kwargs.get('apps')
+    cask_apps = kwargs.get('cask_apps')
+    raw_response = client.homebrew(apps=argToList(apps),
+                                   cask_apps=argToList(cask_apps))
 
     return parse_response(response=raw_response,
-                          human_readable_name="",
-                          installed_software="",
+                          human_readable_name="HomeBrew Command Results",
+                          installed_software=','.join([apps, cask_apps]),
                           additional_vars={})
-
 
 
 def tidy_github_ssh_key_command(client: TidyClient, **kwargs) -> DemistoResult:
@@ -377,8 +394,8 @@ def tidy_github_ssh_key_command(client: TidyClient, **kwargs) -> DemistoResult:
     runner: Runner = client.github_ssh_key(github_access_token=kwargs.get("access_token"))
 
     return parse_response(response=runner,
-                          human_readable_name="",
-                          installed_software="",
+                          human_readable_name="Github SSH Key Creation Results",
+                          installed_software="Github SSH Key",
                           additional_vars={})
 
 
@@ -392,15 +409,19 @@ def tidy_git_clone_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
-    runner: Runner = client.git_clone(repo=kwargs.get("repo"),
-                                      dest=kwargs.get("dest"),
-                                      force=kwargs.get("force"),
-                                      update=kwargs.get("update"))
+    repo = kwargs.get("repo")
+    dest = kwargs.get("dest")
+    force = kwargs.get("force")
+    update = kwargs.get("update")
+    runner: Runner = client.git_clone(repo=repo,
+                                      dest=dest,
+                                      force=force,
+                                      update=update)
 
     return parse_response(response=runner,
-                          human_readable_name="",
-                          installed_software="",
-                          additional_vars={})
+                          human_readable_name="Cloning GithubRepository Results",
+                          installed_software="Git Repository",
+                          additional_vars={'repo': repo, 'Destination': dest, 'Force': force, 'Update': update})
 
 
 def tidy_git_config_command(client: TidyClient, **kwargs) -> DemistoResult:
@@ -413,14 +434,19 @@ def tidy_git_config_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
-    runner: Runner = client.git_config(key=kwargs.get("key"),
-                                       value=kwargs.get("value"),
-                                       scope=kwargs.get("scope"))
+    key = kwargs.get("key")
+    value = kwargs.get("value")
+    scope = kwargs.get("scope")
+    runner: Runner = client.git_config(key=key,
+                                       value=value,
+                                       scope=scope)
 
     return parse_response(response=runner,
-                          human_readable_name="",
-                          installed_software="",
-                          additional_vars={})
+                          human_readable_name="Git Config Modification Results",
+                          installed_software="Git Configuration",
+                          additional_vars={'Configuration Key': key,
+                                           'Configuration Value': value,
+                                           'Configuration Scope': scope})
 
 
 def tidy_zsh_command(client: TidyClient, **kwargs) -> DemistoResult:
@@ -435,8 +461,8 @@ def tidy_zsh_command(client: TidyClient, **kwargs) -> DemistoResult:
     """
     runner: Runner = client.zsh()
     return parse_response(response=runner,
-                          human_readable_name="",
-                          installed_software="",
+                          human_readable_name="Oh My Zsh Installation Results",
+                          installed_software='OhMyZsh',
                           additional_vars={})
 
 
@@ -450,15 +476,19 @@ def tidy_block_in_file_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
-    runner: Runner = client.block_in_file(path=kwargs.get("path"),
-                                          block=kwargs.get("block"),
-                                          marker=kwargs.get("marker"),
-                                          create=kwargs.get("create"))
+    path = kwargs.get("path")
+    block = kwargs.get("block")
+    marker = kwargs.get("marker")
+    create = kwargs.get("create")
+    runner: Runner = client.block_in_file(path=path,
+                                          block=block,
+                                          marker=marker,
+                                          create=create)
 
     return parse_response(response=runner,
-                          human_readable_name="",
-                          installed_software="",
-                          additional_vars={})
+                          human_readable_name="Adding Block In File Results",
+                          installed_software="Block In File",
+                          additional_vars={"FilePath": path, 'Block': block, 'Marker': marker, 'Create': create})
 
 
 def tidy_exec_command(client: TidyClient, **kwargs) -> DemistoResult:
@@ -471,13 +501,15 @@ def tidy_exec_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
-    runner: Runner = client.exec(command=kwargs.get("command"),
-                                 working_dir=kwargs.get("chdir"))
+    command = kwargs.get("command")
+    working_dir = kwargs.get("chdir")
+    runner: Runner = client.exec(command=command,
+                                 working_dir=working_dir)
 
     return parse_response(response=runner,
-                          human_readable_name="",
-                          installed_software="",
-                          additional_vars={})
+                          human_readable_name="Exec Results",
+                          installed_software="Execution",
+                          additional_vars={'Command': command, 'WorkingDirectory': working_dir})
 
 
 ''' MAIN FUNCTION '''
@@ -511,7 +543,7 @@ def main() -> None:
         demisto.debug(f'Command being called is {command}')
         demisto.results(commands[command](client, **demisto.args()))
     # Log exceptions and return errors
-    except Exception as e:
+    except DemistoException as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 

@@ -928,6 +928,31 @@ script:
       - stackless-3.7.5
       required: true
       secret: false
+    outputs:
+    - contextPath: Ansible.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Ansible.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Ansible.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Ansible.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Ansible.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Ansible.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Ansible.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Ansible.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
     deprecated: false
     description: Install Python versions, Using Pyenv.
     execution: false
@@ -1219,6 +1244,31 @@ script:
       - 1.15.2
       required: true
       secret: false
+    outputs:
+    - contextPath: Ansible.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Ansible.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Ansible.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Ansible.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Ansible.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Ansible.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Ansible.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Ansible.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
     deprecated: false
     description: Install GoLang versions, Using Goenv.
     execution: false
@@ -2553,6 +2603,31 @@ script:
       - v8-canary
       required: true
       secret: false
+    outputs:
+    - contextPath: Ansible.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Ansible.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Ansible.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Ansible.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Ansible.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Ansible.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Ansible.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Ansible.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
     deprecated: false
     description: Install Node.js versions, Using nodenv.
     execution: false
@@ -2588,6 +2663,31 @@ script:
       name: cask_apps
       required: false
       secret: false
+    outputs:
+    - contextPath: Ansible.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Ansible.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Ansible.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Ansible.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Ansible.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Ansible.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Ansible.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Ansible.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
     deprecated: false
     description: Install and configure homebrew, Install additional homebrew/-cask
       packages.
@@ -2618,6 +2718,31 @@ script:
       name: access_token
       required: true
       secret: false
+    outputs:
+    - contextPath: Ansible.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Ansible.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Ansible.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Ansible.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Ansible.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Ansible.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Ansible.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Ansible.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
     deprecated: false
     description: Generate private/public key, Configure ssh client, and deploy keys
       to your GitHub account.
@@ -2665,6 +2790,7 @@ script:
       - 'no'
       required: true
       secret: false
+      description: If yes, any modified files in the working repository will be discarded
     - auto: PREDEFINED
       default: false
       defaultValue: 'yes'
@@ -2676,6 +2802,31 @@ script:
       - 'no'
       required: false
       secret: false
+    outputs:
+    - contextPath: Ansible.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Ansible.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Ansible.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Ansible.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Ansible.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Ansible.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Ansible.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Ansible.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
     deprecated: false
     description: Clone git repository to destination.
     execution: false
@@ -2728,6 +2879,31 @@ script:
       - system
       required: true
       secret: false
+    outputs:
+    - contextPath: Ansible.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Ansible.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Ansible.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Ansible.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Ansible.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Ansible.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Ansible.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Ansible.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
     deprecated: false
     description: Configure git cli.
     execution: false
@@ -2751,6 +2927,31 @@ script:
       name: password
       required: false
       secret: false
+    outputs:
+    - contextPath: Ansible.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Ansible.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Ansible.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Ansible.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Ansible.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Ansible.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Ansible.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Ansible.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
     deprecated: false
     description: Install zsh, oh-my-zsh, p10k.
     execution: false
@@ -2804,6 +3005,31 @@ script:
       - 'no'
       required: true
       secret: false
+    outputs:
+    - contextPath: Ansible.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Ansible.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Ansible.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Ansible.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Ansible.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Ansible.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Ansible.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Ansible.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
     deprecated: false
     description: Insert/update/remove a block of multi-line text surrounded by customizable
       marker lines.
@@ -2841,6 +3067,31 @@ script:
       name: chdir
       required: true
       secret: false
+    outputs:
+    - contextPath: Ansible.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Ansible.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Ansible.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Ansible.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Ansible.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Ansible.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Ansible.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Ansible.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
     deprecated: false
     description: Run command in host.
     execution: false
@@ -2854,5 +3105,3 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultmapperin: HelloWorld-mapper
-defaultclassifier: HelloWorld
