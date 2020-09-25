@@ -21,7 +21,7 @@ try:
     lacework_client = LaceworkClient(instance=LACEWORK_INSTANCE,
                                      api_key=LACEWORK_API_KEY,
                                      api_secret=LACEWORK_API_SECRET)
-except Exception as error:
+except Exception:
     demisto.results("Lacework API authentication failed. Please validate Instance Name, API Key, and API Secret.")
 
 ''' HELPER FUNCTIONS '''
