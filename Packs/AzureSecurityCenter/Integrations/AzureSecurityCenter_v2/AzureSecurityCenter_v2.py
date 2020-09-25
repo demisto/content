@@ -8,7 +8,22 @@ requests.packages.urllib3.disable_warnings()
 """ GLOBAL VARS """
 
 APP_NAME = "ms-azure-sc"
-
+SUB_ID_REQUIRING_CMD = (
+    "azure-sc-get-alert",
+    "azure-sc-list-alert",
+    "azure-sc-update-alert",
+    "azure-sc-list-location",
+    "azure-sc-update-atp",
+    "azure-sc-get-atp",
+    "azure-sc-update-aps",
+    "azure-sc-list-aps",
+    "azure-sc-get-aps",
+    "azure-sc-list-jit",
+    "azure-sc-get-jit",
+    "azure-sc-initiate-jit",
+    "azure-sc-delete-jit",
+    "azure-sc-list-storage",
+)
 # API Versions
 SUBSCRIPTION_API_VERSION = "2015-01-01"
 ALERT_API_VERSION = "2019-01-01"
@@ -100,37 +115,6 @@ class MsClient:
         return self.ms_client.http_request(
             method="GET", url_suffix=cmd_url, params=params)
 
-    def get_alerts(self, resource_group_name, asc_location, filter_query, select_query, expand_query):
-        """
-        Args:
-            resource_group_name (str): ResourceGroupName
-            asc_location (str): Azure Security Center location
-            filter_query (str): what to filter
-            select_query (str): what to select
-            expand_query (str): what to expand
-
-        Returns:
-            dict: contains response body
-        """
-        if resource_group_name:
-            cmd_url = f"/resourceGroups/{resource_group_name}/providers/Microsoft.Security"
-            # ascLocation must be using with specifying resourceGroupName
-            if asc_location:
-                cmd_url += f"/locations/{asc_location}"
-            cmd_url += "/alerts"
-        else:
-            cmd_url = "/providers/Microsoft.Security/alerts"
-
-        params = {'api-version': ALERT_API_VERSION}
-        if filter_query:
-            params['$filter'] = filter_query
-        if select_query:
-            params['$select'] = select_query
-        if expand_query:
-            params['$expand'] = expand_query
-
-        return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
-
     def list_alerts(self, resource_group_name, asc_location, filter_query, select_query, expand_query):
         """Listing alerts
 
@@ -145,9 +129,7 @@ class MsClient:
             dict: contains response body
         """
         if resource_group_name:
-            cmd_url = "/resourceGroups/{}/providers/Microsoft.Security".format(
-                resource_group_name
-            )
+            cmd_url = f"/resourceGroups/{resource_group_name}/providers/Microsoft.Security"
             # ascLocation must be using with specifying resourceGroupName
             if asc_location:
                 cmd_url += f"/locations/{asc_location}"
@@ -286,6 +268,8 @@ class MsClient:
             full_url = f"{self.server}/providers/Microsoft.Management/managementGroups/{management_group}"
             full_url += cmd_url
             return self.ms_client.http_request(method="GET", full_url=full_url, url_suffix="", params=params)
+        if not self.subscription_id:
+            raise DemistoException("A subscription ID must be provided.")
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
     def get_ipp(self, policy_name, management_group):
@@ -1280,6 +1264,18 @@ def list_sc_subscriptions_command(client: MsClient):
 """ Subscriptions end """
 
 
+def test_module(client: MsClient):
+    """
+       Performs basic GET request to check if the API is reachable and authentication is successful.
+       Returns ok if successful.
+       """
+    if client.subscription_id:
+        client.list_locations()
+    else:
+        client.list_sc_subscriptions()
+    demisto.results('ok')
+
+
 def main():
     params: dict = demisto.params()
     server = params.get('server_url', '').rstrip('/') + '/'
@@ -1293,17 +1289,15 @@ def main():
     ok_codes = (200, 201, 202, 204)
 
     try:
-        if not subscription_id:
-            raise Exception("A subscription ID must be provided.")
-
+        if demisto.command() in SUB_ID_REQUIRING_CMD and not subscription_id:
+            raise DemistoException("A subscription ID must be provided.")
         client = MsClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME, proxy=proxy,
                           server=server, verify=use_ssl, self_deployed=self_deployed, subscription_id=subscription_id,
                           ok_codes=ok_codes)
 
         if demisto.command() == "test-module":
             # If the command will fail, error will be thrown from the request itself
-            client.list_locations()
-            demisto.results("ok")
+            test_module(client)
         elif demisto.command() == "azure-sc-get-alert":
             get_alert_command(client, demisto.args())
         elif demisto.command() == "azure-sc-list-alert":
