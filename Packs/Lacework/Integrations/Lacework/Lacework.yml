@@ -883,6 +883,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '100'
       description: An integer representing the maximum number of results to return.
       isArray: false
       name: limit
@@ -1066,6 +1067,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '100'
       description: An integer representing the maximum number of results to return.
       isArray: false
       name: limit
