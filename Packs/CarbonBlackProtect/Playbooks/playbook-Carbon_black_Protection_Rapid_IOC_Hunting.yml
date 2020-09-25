@@ -1,10 +1,9 @@
 id: playbook17
-fromversion: 2.5.0
+fromversion: 5.0.0
 system: true
 version: -1
 name: Carbon black Protection Rapid IOC Hunting
-description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon
-  black Protection (Bit9).
+description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon black Protection (Bit9).
 starttaskid: "0"
 tasks:
   "0":
@@ -75,10 +74,7 @@ tasks:
       id: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
       version: -1
       name: Check if the hashes are included in any Bit9 rules
-      description: If the hashes have been approved or blocked in the past, they will
-        be in existing rules. It is useful to see whether the hash was in some blacklist
-        or whitelist or a person marked them as such, possibly with a comment explaining
-        their reasons.
+      description: If the hashes have been approved or blocked in the past, they will be in existing rules. It is useful to see whether the hash was in some blacklist or whitelist or a person marked them as such, possibly with a comment explaining their reasons.
       scriptName: CBPFindRule
       type: regular
       iscommand: false
@@ -110,8 +106,7 @@ tasks:
       id: ec572e1b-78cf-4daf-8185-688d7b04041b
       version: -1
       name: Is CarbonBlack Protection v2 enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -170,8 +165,7 @@ tasks:
       id: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
       version: -1
       name: Do we have files to hunt?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -215,4 +209,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - no test
+- no test

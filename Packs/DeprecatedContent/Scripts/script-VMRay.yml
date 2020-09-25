@@ -2,11 +2,15 @@ commonfields:
   id: 7b02fa0f-94ff-48c7-8350-b4e353702e73
   version: -1
 name: VMRay
-script: |-
+script: >-
   import json
+
   import time
+
   res = []
+
   entry_id = demisto.args()['entry_id']
+
   try:
     data = demisto.executeCommand("upload_sample", {"entry_id":entry_id})[0]["Contents"]["data"]
     if data:
@@ -43,3 +47,4 @@ timeout: 0s
 deprecated: true
 tests:
 - No tests
+fromversion: 5.0.0

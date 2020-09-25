@@ -1,9 +1,8 @@
 id: block_file_-_generic
 version: -1
 name: Block File - Generic
-fromversion: 4.0.0
-description: Deprecated. Use "Block File - Generic v2" playbook instead. A generic playbook for blocking files from running on endpoints. This
-  playbook currently supports Carbon Black Enterprise Response.
+fromversion: 5.0.0
+description: Deprecated. Use "Block File - Generic v2" playbook instead. A generic playbook for blocking files from running on endpoints. This playbook currently supports Carbon Black Enterprise Response.
 starttaskid: "0"
 hidden: true
 tasks:
@@ -110,4 +109,4 @@ outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
   description: Last block sensor ID
 tests:
-  - block_indicators_-_generic_-_test
+- block_indicators_-_generic_-_test
