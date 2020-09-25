@@ -30,14 +30,15 @@ def kubernetes_client_setup(cluster_host_url:str, cluster_token:str) -> ApiClien
     """ Setup Kubernetes client using specified configutation
 
     Args:
-        cluster_api_url: Json configuration file content from IAM.
+        cluster_host_url: Json configuration file content from IAM.
     Returns:
-        ClusterManagerClient: client manager.
+        ApiClient: client for Kubernetes cluster API.
     """
-    c = client.Configuration()
-    c.host = cluster_host_url
-    c.api_key["authorization"] = cluster_token
-    return client.ApiClient(configuration=c)
+    configuration = client.Configuration()
+    configuration.host = cluster_host_url
+    configuration.api_key["authorization"] = cluster_token
+    configuration.api_key_prefix['authorization'] = 'Bearer'
+    return client.ApiClient(configuration=configuration)
 
 
 ''' MAIN FUNCTION '''
