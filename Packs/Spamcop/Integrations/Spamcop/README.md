@@ -1,5 +1,6 @@
-SpamCop is an email spam reporting service, integration allow checking the reputation of an IP address
-This integration was integrated and tested with Spamcop
+SpamCop is an email spam reporting service. The integration allows checking the reputation of an IP address.
+This integration was integrated and tested with Spamcop.
+
 ## Configure Spamcop on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -66,4 +67,3 @@ Get IP details from Spamcop service
 >|indicator|
 >|---|
 >| xxx.xxx.xxx.xxx |
-
