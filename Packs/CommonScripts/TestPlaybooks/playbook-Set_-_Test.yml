@@ -521,7 +521,6 @@ tasks:
           "y": 2050
         }
       }
-version: -1
 view: |-
   {
     "linkLabelsPosition": {
