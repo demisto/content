@@ -16,6 +16,7 @@ LACEWORK_INSTANCE = demisto.params().get('lacework_instance')
 LACEWORK_API_KEY = demisto.params()['lacework_api_key']
 LACEWORK_API_SECRET = demisto.params()['lacework_api_secret']
 LACEWORK_EVENT_SEVERITY = demisto.params()['lacework_event_severity']
+LACEWORK_EVENT_HISTORY_DAYS = demisto.params()['lacework_event_history']
 
 try:
     lacework_client = LaceworkClient(instance=LACEWORK_INSTANCE,
@@ -347,7 +348,7 @@ def fetch_incidents():
 
     # Generate ISO8601 Timestamps
     end_time = now.strftime(date_format)
-    start_time = now - timedelta(days=7)
+    start_time = now - timedelta(days=int(LACEWORK_EVENT_HISTORY_DAYS))
     start_time = start_time.strftime(date_format)
 
     # Get the event severity threshold

@@ -35,6 +35,20 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultvalue: '7'
+  display: Lacework Event History to Import (in days)
+  hidden: false
+  name: lacework_event_history
+  options:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  required: false
+  type: 15
 description: Lacework is focused on giving customers visibility and control over their
   cloud operations at cloud scale to the monitoring of all activities across all cloud
   components.
