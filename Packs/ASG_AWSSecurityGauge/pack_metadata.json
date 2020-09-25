@@ -1,0 +1,14 @@
+{
+    "name": "ASG: AWS Security Gauge",
+    "description": "ASG (AWS Security Gauge) Playbook",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "ASG",
+    "url": "",
+    "email": "",
+    "created": "2020-09-25T13:35:55Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

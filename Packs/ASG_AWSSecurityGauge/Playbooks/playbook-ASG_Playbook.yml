@@ -1,0 +1,56 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 9d76c6db-16ca-4fb2-817d-a7e6c7599d5e
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: ASG Playbook
+inputs: []
+name: ASG Playbook
+outputs: []
+rolename:
+- Administrator
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 85ecf392-ef6c-4724-8f2e-79fc838100f6
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 85ecf392-ef6c-4724-8f2e-79fc838100f6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 65,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
