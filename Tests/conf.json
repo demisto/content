@@ -1771,6 +1771,10 @@
             "playbookID": "FireEye HX Test"
         },
         {
+            "integrations": "FireEyeFeed",
+            "playbookID": "playbook-FeedFireEye_test"
+        },
+        {
             "integrations": "Phish.AI",
             "playbookID": "PhishAi-Test"
         },
