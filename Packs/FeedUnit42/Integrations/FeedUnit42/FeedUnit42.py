@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional, Set
+from typing import List, Dict, Optional
 
 from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
@@ -55,31 +55,18 @@ class Client(BaseClient):
         return data
 
 
-def get_object_type(objects: list, types: list) -> list:
-    """Get the object specified.
-    Args:
-      objects: a list of objects.
-      types: a list of the types.
-    Returns:
-        A list of a certain type.
-    """
-    return [item for item in objects if item.get('type') in types]
-
-
-def parse_indicators(objects: list, feed_tags: list = [], tlp_color: Optional[str] = None) -> list:
+def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: Optional[str] = None) -> list:
     """Parse the objects retrieved from the feed.
     Args:
-      objects: a list of objects containing the indicators.
+      indicator_objects: a list of objects containing the indicators.
       feed_tags: feed tags.
       tlp_color: Traffic Light Protocol color.
     Returns:
-        A list of indicators, containing the indicators.
+        A list of processed indicators.
     """
-    indicators_objects = [item for item in objects if item.get('type') == 'indicator']  # retrieve only indicators
-
     indicators = []
-    if indicators_objects:
-        for indicator_object in indicators_objects:
+    if indicator_objects:
+        for indicator_object in indicator_objects:
             pattern = indicator_object.get('pattern')
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
@@ -104,7 +91,7 @@ def parse_indicators(objects: list, feed_tags: list = [], tlp_color: Optional[st
     return indicators
 
 
-def parse_relationships(indicators: list, relationships: list = [], pivots: list = []) -> list:
+def parse_indicators_relationships(indicators: list, relationships: list = [], pivots: list = []) -> list:
     """Parse the relationships between indicators to attack-patterns, malware and campaigns.
     Args:
       indicators: a list of indicators.
@@ -159,79 +146,70 @@ def parse_relationships(indicators: list, relationships: list = [], pivots: list
     return indicators
 
 
-class PlaybookProcessor:
-    base_url = 'https://pan-unit42.github.io/playbook_viewer/playbook_json/'
+def sort_objects_by_type(objects):
+    """Get lists of objects by their type.
 
-    def __init__(self, feed_tags: List, tlp_color: Optional[str]):
-        self.feed_tags = feed_tags
-        self.tlp_color = tlp_color
-        self.playbook_suffixes = self.get_playbooks_urls()
+    Args:
+      objects: a list of objects.
 
-    @staticmethod
-    def get_playbooks_urls():
-        return [
-            'chafer.json',
-            'cozyduke.json',
-            'darkhydrus.json',
-            'dragonok.json',
-            'hangover.json',
-            'inception.json',
-            'konni.json',
-            'menupass.json',
-            'oilrig.json',
-            'patchwork.json',
-            'pickaxe.json',
-            'pkplug.json',
-            'rancor.json',
-            'reaper.json',
-            'sofacy.json',
-            'th3bug.json',
-            'tick.json',
-            'windshift.json',
-        ]
+    Returns:
+        List. Objects of type report.
+        List. Objects of type indicator.
+        List. Objects of type malware.
+        List. Objects of type campaign.
+        List. Objects of type relationship.
+        List. Objects of type attack-pattern.
+    """
+    main_report_objects = []
+    sub_report_objects = []
+    campaign_objects = []
+    malware_objects = []
+    indicator_objects = []
+    relationship_objects = []
+    attack_pattern_objects = []
 
-    def get_playbook_data(self, url):
-        json_url = PlaybookProcessor.base_url + url
-        raw_json = requests.get(json_url)
+    for obj in objects:
+        if obj['type'] == 'report':
+            for object_id in obj.get('object_refs'):
+                if object_id.startswith('report'):
+                    main_report_objects.append(obj)
+                    continue
 
-        try:
-            bundle = raw_json.json()
+            sub_report_objects.append(obj)
 
-            if bundle.get('type', '') == 'bundle' and bundle.get('spec_version', '') == '2.0':
-                return bundle
-            else:
-                return_error('{} - no valid stix 2.0 bundle found'.format(url))
-        except Exception as e:
-            return_error('{} - could not parse json from file\n{}'.format(url, e))
+        elif obj['type'] == 'indicator':
+            indicator_objects.append(obj)
 
-        return {}
+        elif obj['type'] == 'malware':
+            malware_objects.append(obj)
 
-    def sort_objects(self, all_objects):
-        report_object = {}
-        malware_objects = []
-        indicator_objects = []
-        relationship_objects = []
-        attack_pattern_objects = []
+        elif obj['type'] == 'campaign':
+            campaign_objects.append(obj)
 
-        for obj in all_objects:
-            if obj['type'] == 'report':
-                report_object = objz
+        elif obj['type'] == 'relationship':
+            relationship_objects.append(obj)
 
-            elif obj['type'] == 'indicator':
-                indicator_objects.append(obj)
+        elif obj['type'] == 'attack-pattern':
+            attack_pattern_objects.append(obj)
 
-            elif obj['type'] == 'malware':
-                malware_objects.append(obj)
+    return main_report_objects, sub_report_objects, campaign_objects, malware_objects, indicator_objects, \
+           relationship_objects, attack_pattern_objects
 
-            elif obj['type'] == 'relationship':
-                relationship_objects.append(obj)
 
-            elif obj['type'] == 'attack-pattern':
-                attack_pattern_objects.append(obj)
+def parse_reports(report_objects: list, feed_tags: list = [], tlp_color: Optional[str] = None) -> list:
+    """Parse the objects retrieved from the feed.
 
-        return report_object, malware_objects, indicator_objects, relationship_objects, attack_pattern_objects
+    Args:
+      report_objects: a list of objects containing the reports.
+      feed_tags: feed tags.
+      tlp_color: Traffic Light Protocol color.
 
-    def process_report(self, report_object: Dict):
+    Returns:
+        A list of processed reports.
+    """
+    reports = []
+
+    for report_object in report_objects:
         report = dict()  # type: Dict[str, Any]
 
         report['type'] = 'STIX Report'
@@ -241,10 +219,10 @@ class PlaybookProcessor:
             'published': report_object.get('published'),
             'stixdescription': report_object.get('description', ''),
             "reportedby": 'Unit42',
-            "tags": list((set(report_object.get('labels'))).union(set(self.feed_tags))),
+            "tags": list((set(report_object.get('labels'))).union(set(feed_tags))),
         }
-        if self.tlp_color:
-            report['fields']['trafficlightprotocol'] = self.tlp_color
+        if tlp_color:
+            report['fields']['trafficlightprotocol'] = tlp_color
 
         report['rawJSON'] = {
             'unit42_id': report_object.get('id'),
@@ -256,46 +234,89 @@ class PlaybookProcessor:
             'unit42_object_refs': report_object.get('object_refs')
         }
 
-        connected_objects_ids = [obj_id for obj_id in report_object.get('object_refs') if obj_id.startswith('indicator')]
+        reports.append(report)
 
-        return report, connected_objects_ids
+    return reports
 
-    def process_connected_objects(self, indicator_objects: List, connected_objects_ids: List):
-        raw_indicators = []
 
-        for indicator in indicator_objects:
-            if indicator.get('id') in connected_objects_ids:
-                raw_indicators.append(indicator)
+def parse_reports_relationships(reports: list, sub_reports: list = [], relationships: list = [], pivots: list = []) \
+        -> list:
+    """Parse the relationships between reports' malware to attack-patterns and indicators.
 
-        return parse_indicators(raw_indicators)
+    Args:
+      reports: a list of reports.
+      sub_reports: a list of sub-reports.
+      relationships: a list of relationships.
+      pivots: a list of attack-patterns, malware and campaigns.
 
-    def process_playbook(self, bundle: Dict):
-        objects = bundle.get('objects', [])
+    Returns:
+        A list of processed reports.
+    """
+    for report in reports:
+        related_sub_reports = [object_id for object_id in report.get('rawJSON', {}).get('unit42_object_refs', [])
+                               if object_id.startswith('report')]
 
-        report_object, malware_objects, indicator_objects, relationship_objects, attack_pattern_objects = \
-            PlaybookProcessor.sort_objects(objects)
+        report_malware_list = []
 
-        report, connected_objects_ids = self.process_report(report_object)
-        related_indicators = self.process_connected_objects(indicator_objects, connected_objects_ids)
+        for sub_report in sub_reports:
+            if sub_report.get('id') in related_sub_reports:
+                for object_id in sub_report.get('object_refs', []):
+                    if object_id.startswith('malware'):
+                        report_malware_list.append(object_id)
 
-        if report:
-            report = parse_relationships([report], relationship_objects, malware_objects + attack_pattern_objects)
-            return report
+        report['fields']['feedrelatedindicators'] = []
 
-        return {}
+        for p in pivots:
+            if p.get('id') in report_malware_list:
+                report['fields']['feedrelatedindicators'].extend([{
+                    'type': 'Malware',
+                    'value': p.get('name'),
+                    'description': p.get('description', 'No description provided.')
+                }])
 
-    def process_playbooks(self):
-        reports = []
+        for relationship in relationships:
+            reference = ''
+            if relationship.get('source_ref') in report_malware_list:
+                reference = relationship.get('target_ref', '')
 
-        suffixes = self.get_playbooks_urls()
-        for suffix in suffixes:
-            bundle = self.get_playbook_data(suffix)
-            report = self.process_playbook(bundle)
+            elif relationship.get('target_ref') in report_malware_list:
+                reference = relationship.get('source_ref', '')
 
-            if report:
-                reports.append(report)
+            field = ''
+            type_name = ''
+            if reference:  # if there is a reference, get the relevant pivot
+                if reference.startswith('attack-pattern'):
+                    type_name = 'MITRE ATT&CK'
+                    field = 'external_references'
+                elif reference.startswith('indicator'):
+                    type_name = 'Indicator'
+                    field = 'name'
+                elif reference.startswith('malware'):
+                    type_name = 'Malware'
+                    field = 'name'
 
-        return reports
+            if field:  # if there is a pivot, map the relevant data accordingly
+                for pivot in pivots:
+                    if pivot.get('id') == reference:
+                        pivot_field = pivot.get(field)
+
+                        if isinstance(pivot_field, str):
+                            report['fields']['feedrelatedindicators'].extend([{
+                                'type': type_name,
+                                'value': pivot_field,
+                                'description': pivot.get('description', 'No description provided.')
+                            }])
+
+                        else:
+                            for item in pivot_field:
+                                if 'url' in item or 'external_id' in item:
+                                    report['fields']['feedrelatedindicators'].extend([{
+                                        'type': type_name,
+                                        'value': item.get('external_id'),
+                                        'description': item.get('url')
+                                    }])
+
+    return reports
 
 
 def test_module(client: Client) -> str:
@@ -322,12 +343,20 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     """
     objects: list = client.get_stix_objects()
     demisto.info(str(f'Fetched Unit42 Indicators. {str(len(objects))} Objects were received.'))
-    indicators = parse_indicators(objects, feed_tags, tlp_color)
-    relationships = get_object_type(objects, types=['relationship'])
-    pivots = get_object_type(objects, types=['attack-pattern', 'malware', 'campaign'])
-    indicators = parse_relationships(indicators, relationships, pivots)
-    demisto.debug(str(f'{str(len(indicators))} Demisto Indicators were created.'))
-    return indicators
+
+    main_report_objects, sub_report_objects, campaign_objects, malware_objects, indicator_objects, \
+    relationship_objects, attack_pattern_objects = sort_objects_by_type(objects)
+
+    pivots = campaign_objects + malware_objects + attack_pattern_objects
+    indicators = parse_indicators(indicator_objects, feed_tags, tlp_color)
+    indicators = parse_indicators_relationships(indicators, relationship_objects, pivots)
+
+    pivots = malware_objects + attack_pattern_objects + indicator_objects
+    reports = parse_reports(main_report_objects, feed_tags, tlp_color)
+    reports = parse_reports_relationships(reports, sub_report_objects, relationship_objects, pivots)
+
+    demisto.debug(str(f'{str(len(indicators) + len(reports))} Demisto Indicators were created.'))
+    return indicators + reports
 
 
 def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = [],
@@ -344,7 +373,10 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list
     """
     limit = int(args.get('limit', '10'))
     objects: list = client.get_stix_objects(test=True)
-    indicators = parse_indicators(objects, feed_tags, tlp_color)
+
+    _, _, _, _, indicator_objects, _, _ = sort_objects_by_type(objects)
+
+    indicators = parse_indicators(indicator_objects, feed_tags, tlp_color)
     limited_indicators = indicators[:limit]
 
     readable_output = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value'])
