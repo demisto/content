@@ -1,30 +1,31 @@
 """Kubernetes Integration for Cortex XSOAR.
 
-This is an integration with the Python/REST API of a Kubernetes cluster.
+Integration with the Python/REST API of a Kubernetes cluster.
 
 Kubernetes API
 --------------
+- Pods: Retrieve details of pods and their containers
 """
 ###########
 # IMPORTS #
 ###########
-# std packages
+# std
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
-# local packages
+from datetime import datetime, timezone
+# local
 import demistomock as demisto
 from CommonServerPython import *  
 from CommonServerUserPython import * 
-# 3rd-party packages
+# 3rd-party
 from kubernetes import client, config
 from kubernetes.client import api, models, ApiClient, Configuration
 from kubernetes.client.api import CoreV1Api
 from kubernetes.client.models import V1PodList, V1ServiceList
 
-''' CONSTANTS '''
-
-
+####################
+# CONSTANTS #
+####################
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
 
 class Client(BaseClient):
     """Client class to interact with the Kubernetes API. """
@@ -54,9 +55,16 @@ class Client(BaseClient):
 
     def list_pods_readable(self) -> List[Dict[str, Any]]:
         ret = self.list_pods()
-        return [{'Name':p.metadata.name, 'Status': p.status.phase} for p in ret.items]
+        return [{
+                'Name':p.metadata.name, 
+                'Status': p.status.phase, 
+                'Containers': len(p.status.container_statuses),
+                'Ready': len ([ s for s in p.status.container_statuses if s.ready]), 
+                'Restarts': sum ([ s.restart_count for s in p.status.container_statuses]),
+                'Start': p.status.start_time,
+                'Age': str(datetime.now(timezone.utc) - p.status.start_time)
+                } for p in ret.items]
         
-
 def list_pods_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ command: Returns list of running pods in the cluster.
 
