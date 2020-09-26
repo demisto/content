@@ -40,7 +40,7 @@ class Client(BaseClient):
         self.cluster_token = t
         self.configuration = client.Configuration()
         self.configuration.host = self.cluster_host_url
-        self.configuration.api_key["authorization"] = self.cluster_token
+        self.configuration.api_key['authorization'] = self.cluster_token
         self.configuration.api_key_prefix['authorization'] = 'Bearer'
         self.api_client = client.ApiClient(configuration=self.configuration)
         self.api = client.CoreV1Api(api_client=self.api_client)
@@ -52,6 +52,10 @@ class Client(BaseClient):
     def list_services(self) -> V1ServiceList:
         return self.api.list_namespaced_service(self.ns)
 
+    def list_pods_readable(self) -> List[Dict[str, Any]]:
+        ret = self.list_pods()
+        return [{'Name':p.metadata.name, 'Status': p.status.phase} for p in ret.items]
+        
 
 def list_pods_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ command: Returns list of running pods in the cluster.
