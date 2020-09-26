@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CrowdStrike Falcon Intel v2",
+            "playbookID": "CrowdStrike Falcon Intel v2 - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "SecurityIntelligenceServicesFeed",
             "playbookID": "SecurityIntelligenceServicesFeed - Test",
             "fromversion": "5.5.0"
@@ -567,7 +572,7 @@
             "playbookID": "secureworks_test"
         },
         {
-            "integrations": "ServiceNow",
+            "integrations": "ServiceNow v2",
             "playbookID": "servicenow_test_new"
         },
         {
@@ -1758,6 +1763,10 @@
         {
             "integrations": "FireEye HX",
             "playbookID": "FireEye HX Test"
+        },
+        {
+            "integrations": "FireEyeFeed",
+            "playbookID": "playbook-FeedFireEye_test"
         },
         {
             "integrations": "Phish.AI",
@@ -3198,7 +3207,7 @@
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "Lastline": "issue 20323",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
+        "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
 
