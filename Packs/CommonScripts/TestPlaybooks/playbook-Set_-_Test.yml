@@ -1,7 +1,8 @@
+description: A test for the Set command. Tests the Stringify parameter too.
 id: Set - Test
-version: -1
+inputs: []
 name: Set - Test
-description: A test for the Set command. Tests the Stringify parameter too. Don't know why nobody ever made a test for this before.
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
@@ -16,12 +17,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9f8b4a8f-c83c-46cc-8d22-e17762327435
+      id: d4343368-209f-4fb3-8d32-d417151b7996
       iscommand: false
       name: ""
       version: -1
-      description: ''
-    taskid: 9f8b4a8f-c83c-46cc-8d22-e17762327435
+    taskid: d4343368-209f-4fb3-8d32-d417151b7996
     timertriggers: []
     type: start
     view: |-
@@ -52,13 +52,13 @@ tasks:
     task:
       brand: ""
       description: Sets a value into the context with the given context key
-      id: f3ff2f09-23c2-409d-856d-ee12e2438526
+      id: b65c2503-b3c3-447d-8d51-a7f08a8dd62c
       iscommand: false
       name: Set number as number
       script: Set
       type: regular
       version: -1
-    taskid: f3ff2f09-23c2-409d-856d-ee12e2438526
+    taskid: b65c2503-b3c3-447d-8d51-a7f08a8dd62c
     timertriggers: []
     type: regular
     view: |-
@@ -90,13 +90,13 @@ tasks:
     task:
       brand: ""
       description: Sets a value into the context with the given context key
-      id: d9fccb57-3355-48bd-8286-1805e4b5f5bd
+      id: c1295684-04ff-4b37-8512-72c7c27e0d1c
       iscommand: false
       name: Set number as string
       script: Set
       type: regular
       version: -1
-    taskid: d9fccb57-3355-48bd-8286-1805e4b5f5bd
+    taskid: c1295684-04ff-4b37-8512-72c7c27e0d1c
     timertriggers: []
     type: regular
     view: |-
@@ -132,12 +132,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9984ded9-e141-476c-8cdf-b78a1551b833
+      id: ff36914c-f04a-4bbb-87a0-a52db41471f6
       iscommand: false
       name: Was the number saved as string?
       type: condition
       version: -1
-    taskid: 9984ded9-e141-476c-8cdf-b78a1551b833
+    taskid: ff36914c-f04a-4bbb-87a0-a52db41471f6
     timertriggers: []
     type: condition
     view: |-
@@ -159,13 +159,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a20b21d9-3f3b-40b9-854e-df7de2d8e5d6
+      id: cae5408c-78aa-4a22-8a26-82ce42940895
       iscommand: false
       name: Test DT
       type: title
       version: -1
-      description: ''
-    taskid: a20b21d9-3f3b-40b9-854e-df7de2d8e5d6
+    taskid: cae5408c-78aa-4a22-8a26-82ce42940895
     timertriggers: []
     type: title
     view: |-
@@ -195,13 +194,13 @@ tasks:
     task:
       brand: ""
       description: Prints an error entry with a given message
-      id: 96dcc68f-c9a2-49e9-8cd4-fa0752a31b8b
+      id: bb4843aa-8f84-4e7f-8991-1d3a5df2f225
       iscommand: false
       name: Fail the playbook
       script: PrintErrorEntry
       type: regular
       version: -1
-    taskid: 96dcc68f-c9a2-49e9-8cd4-fa0752a31b8b
+    taskid: bb4843aa-8f84-4e7f-8991-1d3a5df2f225
     timertriggers: []
     type: regular
     view: |-
@@ -237,12 +236,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 63eae3c1-3ee3-4c23-89d1-82c84c537d8b
+      id: 5285e6b8-ef58-4c47-89b2-345111bdb5f5
       iscommand: false
       name: Was the number saved as number?
       type: condition
       version: -1
-    taskid: 63eae3c1-3ee3-4c23-89d1-82c84c537d8b
+    taskid: 5285e6b8-ef58-4c47-89b2-345111bdb5f5
     timertriggers: []
     type: condition
     view: |-
@@ -274,13 +273,13 @@ tasks:
     task:
       brand: ""
       description: Delete field from context
-      id: 15bef098-988c-4539-843d-38dc3aa2e572
+      id: 9fdfda53-6c3a-44bf-81c2-d2f5cd82ae2d
       iscommand: false
       name: Clear the context
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 15bef098-988c-4539-843d-38dc3aa2e572
+    taskid: 9fdfda53-6c3a-44bf-81c2-d2f5cd82ae2d
     timertriggers: []
     type: regular
     view: |-
@@ -311,13 +310,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 4148e83c-f633-4e2d-8d31-0c317759162c
+      id: 450a4b59-dc85-42b3-88e0-287bcba194ae
       iscommand: false
       name: Set Object
       script: Set
       type: regular
       version: -1
-    taskid: 4148e83c-f633-4e2d-8d31-0c317759162c
+    taskid: 450a4b59-dc85-42b3-88e0-287bcba194ae
     timertriggers: []
     type: regular
     view: |-
@@ -341,20 +340,20 @@ tasks:
       left:
         simple: ${Data.Value}
       right:
-        simple: test_val2
+        simple: test_value
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
-      id: ca384316-9c61-4aeb-8a50-1cad2e3d3ebe
+      id: 4c2c20e6-0549-4345-8093-9d61ff74ab53
       iscommand: false
       name: Verify Context
       script: AreValuesEqual
       type: condition
       version: -1
-    taskid: ca384316-9c61-4aeb-8a50-1cad2e3d3ebe
+    taskid: 4c2c20e6-0549-4345-8093-9d61ff74ab53
     timertriggers: []
     type: condition
     view: |-
@@ -377,13 +376,13 @@ tasks:
     task:
       brand: ""
       description: Prints an error entry with a given message
-      id: 1210ae86-512f-45cc-8a59-47e860369cbf
+      id: c30ec61c-6ef4-4c3d-8c47-eb8ac5cd1f56
       iscommand: false
       name: Fail
       script: PrintErrorEntry
       type: regular
       version: -1
-    taskid: 1210ae86-512f-45cc-8a59-47e860369cbf
+    taskid: c30ec61c-6ef4-4c3d-8c47-eb8ac5cd1f56
     timertriggers: []
     type: regular
     view: |-
@@ -414,13 +413,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 5cb0315b-b124-43bd-8cc7-5e36c2362d61
+      id: 53c58f20-8f46-472a-8a13-2fc4721475fb
       iscommand: false
       name: Set - Update Object
       script: Set
       type: regular
       version: -1
-    taskid: 5cb0315b-b124-43bd-8cc7-5e36c2362d61
+    taskid: 53c58f20-8f46-472a-8a13-2fc4721475fb
     timertriggers: []
     type: regular
     view: |-
@@ -444,20 +443,20 @@ tasks:
       left:
         simple: ${Data.Value}
       right:
-        simple: test_value
+        simple: test_val2
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
-      id: 2c2bba00-10bd-4a99-8085-b638f212e81e
+      id: 9ea6f6f3-245c-4b8b-8899-11f5f58b438d
       iscommand: false
       name: Verify Context
       script: AreValuesEqual
       type: condition
       version: -1
-    taskid: 2c2bba00-10bd-4a99-8085-b638f212e81e
+    taskid: 9ea6f6f3-245c-4b8b-8899-11f5f58b438d
     timertriggers: []
     type: condition
     view: |-
@@ -480,13 +479,13 @@ tasks:
     task:
       brand: ""
       description: Prints an error entry with a given message
-      id: 29b53dea-de08-46fd-8455-d62a16a55fe1
+      id: 5dbdb574-8e38-47e2-8e92-04d45b49e065
       iscommand: false
       name: Fail
       script: PrintErrorEntry
       type: regular
       version: -1
-    taskid: 29b53dea-de08-46fd-8455-d62a16a55fe1
+    taskid: 5dbdb574-8e38-47e2-8e92-04d45b49e065
     timertriggers: []
     type: regular
     view: |-
@@ -505,13 +504,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 79da208f-0303-4f1d-875a-824e4c381ce6
+      id: 552f24cc-4df2-45ed-82a4-7f4bd438449c
       iscommand: false
       name: All Good
       type: title
       version: -1
-      description: ''
-    taskid: 79da208f-0303-4f1d-875a-824e4c381ce6
+    taskid: 552f24cc-4df2-45ed-82a4-7f4bd438449c
     timertriggers: []
     type: title
     view: |-
@@ -521,6 +519,7 @@ tasks:
           "y": 2050
         }
       }
+version: -1
 view: |-
   {
     "linkLabelsPosition": {
@@ -536,6 +535,4 @@ view: |-
       }
     }
   }
-inputs: []
-outputs: []
 fromversion: 5.0.0
