@@ -873,7 +873,7 @@ script:
       default: false
       defaultValue: WINDOWS7
       description: The platform on which the submitted URL or file will be run. To obtain
-        a list supported platforms run the threatstream-get-sandbox-platforms command. Can be "WINDOWS7", or "WINDOWSXP". Default is "WINDOWS7".
+        a list supported platforms run the threatstream-supported-platforms command. Can be "WINDOWS7", or "WINDOWSXP". Default is "WINDOWS7".
       isArray: false
       name: report_platform
       predefined:
@@ -884,7 +884,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: file
-      description: The detonation type. Can be "file" or "url". Default is "file". 
+      description: The detonation type. Can be "file" or "url". Default is "file".
       isArray: false
       name: submission_type
       predefined:
@@ -1204,7 +1204,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: intelligence
-      description: The type of threat model entity on which to add the tag. Can be "actor", "campaign", "incident", "intelligence", 
+      description: The type of threat model entity on which to add the tag. Can be "actor", "campaign", "incident", "intelligence",
         "signature", "tipreport", "ttp", or "vulnerability". Default is "intelligence" (indicator).
       isArray: false
       name: model
