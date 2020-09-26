@@ -1,0 +1,6 @@
+!lgtm-get-project-by-id id=1512319787549
+!lgtm-get-project-by-url provider="g" org="my-devsecops" name="moon"
+!lgtm-run-commit-analysis commit_id="39eb3dc0c7e86d0b943df1be922b173068010bf5" project_id="1512319787549" language="python"
+!lgtm-get-analysis-status analysis_id="927d89b0392c332575d30a73ca0298317d68477c"
+!lgtm-run-project-query project_id="1512319787549" language="python" query=${lists.CodeQL-Queries-SQL_Injection}
+!lgtm-get-alerts-details analysis_id="927d89b0392c332575d30a73ca0298317d68477c"

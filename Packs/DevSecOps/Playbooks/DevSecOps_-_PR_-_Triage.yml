@@ -1,8 +1,8 @@
 id: 32f3be4c-4061-496b-894e-9f27641875cc
-version: 3
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: DevSecOps - PR - Triage
-description: A CodeQL Code Analysis Playbook
+description: A Git PR Triage Playbook
 starttaskid: "0"
 tasks:
   "0":

@@ -54,6 +54,7 @@ script:
     name: github-get-context
   - arguments:
     - default: false
+      description: GitHub Delivery
       isArray: false
       name: delivery
       required: false
@@ -88,3 +89,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

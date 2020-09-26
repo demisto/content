@@ -1,8 +1,8 @@
 id: e1d553c7-7053-479a-837a-229d80074674
-version: 20
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: DevSecOps - App Task - Analysis
-description: A CodeQL Code Analysis Playbook
+description: Git Task Analysis Playbook
 starttaskid: "0"
 tasks:
   "0":

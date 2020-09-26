@@ -1,8 +1,8 @@
 id: 4c670fb8-a21e-4311-8520-402585379c10
-version: 21
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: DevSecOps - LGTM - Analysis
-description: A CodeQL Code Analysis Playbook
+name: DevSecOps - LGTM Task - Analysis
+description: A CodeQL Task Analysis Playbook
 starttaskid: "0"
 tasks:
   "0":

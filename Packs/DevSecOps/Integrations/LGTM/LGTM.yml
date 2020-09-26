@@ -116,6 +116,7 @@ script:
     name: lgtm-run-commit-analysis
     outputs:
     - contextPath: LGTM.Tasks
+      description: LGTM Analysis Results
       type: Unknown
   - arguments:
     - default: false
@@ -182,8 +183,9 @@ script:
     name: lgtm-get-alerts-details
     outputs:
     - contextPath: LGTM.Alerts
+      description: LGTM Alerts Details
       type: Unknown
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false
@@ -192,4 +194,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-vcShouldKeepItemLegacyProdMachine: false
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
