@@ -53,14 +53,25 @@ class TidyClient:
             raise DemistoException(f"Hostname \"{self.hostname}\" isn't valid!.\nFull error: {e}")
 
     def _execute(self, playbook_name: str, extra_vars=None) -> Runner:
-        """
+        """ Execute synchronized ansible-playbook.
+
+        Notes:
+            Current availble playbooks:
+                1. anyenv.
+                2. blockinfile.
+                3. exec.
+                4. git-clone.
+                5. git-config.
+                6. github-ssh-key.
+                7. homebrew.
+                8. zsh.
 
         Args:
-            playbook_name:
-            extra_vars:
+            playbook_name: Playbook name to be execute (Locate in docker image path "/ansible")
+            extra_vars: Extra variables to pass the playbook.
 
         Returns:
-
+            Runner: anible-runner Runner object.
         """
         if extra_vars is None:
             extra_vars = {}
@@ -75,33 +86,16 @@ class TidyClient:
 
         return runner
 
-    def homebrew(self, apps: List[str], cask_apps: List[str]) -> Runner:
-        """
-
-        Args:
-            apps:
-            cask_apps:
-
-        Returns:
-
-        """
-        return self._execute(
-            playbook_name="homebrew",
-            extra_vars={
-                "homebrew_installed_packages": apps,
-                "homebrew_cask_apps": cask_apps
-            })
-
     def anyenv(self, env: str, versions: List[str], global_versions: List[str]) -> Runner:
-        """
+        """ Execute anyenv playbook, Availble envs defined by AnyEnvs object.
 
         Args:
-            env:
-            versions:
-            global_versions:
+            env: pyenv,goenv,nodenv
+            versions: Versions to be installed.
+            global_versions: Versions to define as globals in enviorment.
 
         Returns:
-
+            Runner: anible-runner Runner object.
         """
         return self._execute(playbook_name="anyenv",
                              extra_vars={
@@ -110,7 +104,49 @@ class TidyClient:
                                  "global_versions": global_versions
                              })
 
+    def homebrew(self, apps: List[str], cask_apps: List[str]) -> Runner:
+        """ Execute homebrew playbook.
+
+        Args:
+            apps: List of homebrew packages (https://formulae.brew.sh/)
+            cask_apps: List of homebrew cask packages (https://formulae.brew.sh/cask/)
+
+        Returns:
+            Runner: anible-runner Runner object.
+        """
+        return self._execute(
+            playbook_name="homebrew",
+            extra_vars={
+                "homebrew_installed_packages": apps,
+                "homebrew_cask_apps": cask_apps
+            })
+
+    def github_ssh_key(self, github_access_token: str) -> Runner:
+        """ Execute github-ssh-key playbook.
+
+        Args:
+            github_access_token: GitHub access token with public keys admin permissions.
+
+        Returns:
+            Runner: anible-runner Runner object.
+        """
+        return self._execute(playbook_name="github-ssh-key",
+                             extra_vars={
+                                 "github_access_token": github_access_token
+                             })
+
     def git_clone(self, repo: str, dest: str, force: str, update: str) -> Runner:
+        """ Execute git-clone playbook.
+
+        Args:
+            repo: Repository to be cloned (SSH/HTTPS).
+            dest: The path of where the repository should be checked out.
+            force: If yes, any modified files in the working repository will be discarded.
+            update: If no, do not retrieve new revisions from the origin repository.
+
+        Returns:
+            Runner: anible-runner Runner object.
+        """
         return self._execute(
             playbook_name="git-clone",
             extra_vars={
@@ -121,15 +157,15 @@ class TidyClient:
             })
 
     def git_config(self, key: str, value: str, scope: str) -> Runner:
-        """
+        """ Execute git-config playbook.
 
         Args:
-            key:
-            value:
-            scope:
+            key: Git config key to set.
+            value: Git key: value to set.
+            scope: Specify which scope to read/set values from.
 
         Returns:
-
+            Runner: anible-runner Runner object.
         """
         return self._execute(
             playbook_name="git-config",
@@ -139,39 +175,25 @@ class TidyClient:
                 "scope": scope
             })
 
-    def github_ssh_key(self, github_access_token: str) -> Runner:
-        """
-
-        Args:
-            github_access_token:
-
-        Returns:
-
-        """
-        return self._execute(playbook_name="github-ssh-key",
-                             extra_vars={
-                                 "github_access_token": github_access_token
-                             })
-
     def zsh(self) -> Runner:
-        """
+        """ Execute zsh playbook.
 
         Returns:
-
+            Runner: anible-runner Runner object.
         """
         return self._execute(playbook_name="zsh")
 
     def block_in_file(self, path: str, block: str, marker: str, create: str) -> Runner:
-        """
+        """ Execute blockinfile playbook.
 
         Args:
-            path:
-            block:
-            marker:
-            create:
+            path: The file to modify.
+            block: The text to insert inside the marker lines.
+            marker: Marker to manage block if needed to change in the future.
+            create: Create a new file if it does not exist.
 
         Returns:
-
+            Runner: anible-runner Runner object.
         """
         return self._execute(playbook_name="blockinfile",
                              extra_vars={
@@ -182,14 +204,14 @@ class TidyClient:
                              })
 
     def exec(self, command: str, working_dir: str) -> Runner:
-        """
+        """ Execute exec playbook.
 
         Args:
-            command:
-            working_dir:
+            command: Bash command to execute.
+            working_dir: Change directory before executing command.
 
         Returns:
-
+            Runner: anible-runner Runner object.
         """
         return self._execute(playbook_name="exec",
                              extra_vars={
@@ -257,14 +279,14 @@ def test_module(client: TidyClient, **kwargs) -> DemistoResult:
 
 
 def tidy_pyenv_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
+    """ Install Python versions, Using Pyenv.
 
     Args:
-        client:
-        **kwargs:
+        client: Tidy client obect.
+        **kwargs: command kwargs.
 
     Returns:
-
+        DemistoResults: Demisto structured response.
     """
     runner: Runner = client.anyenv(env=AnyEnvs.pyenv,
                                    versions=argToList(kwargs.get("versions")),
@@ -277,14 +299,14 @@ def tidy_pyenv_command(client: TidyClient, **kwargs) -> DemistoResult:
 
 
 def tidy_goenv_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
+    """ Install GoLang versions, Using Goenv.
 
     Args:
-        client:
-        **kwargs:
+        client: Tidy client obect.
+        **kwargs: command kwargs.
 
     Returns:
-
+        DemistoResults: Demisto structured response.
     """
     runner: Runner = client.anyenv(env=AnyEnvs.goenv,
                                    versions=argToList(kwargs.get("versions")),
@@ -297,14 +319,14 @@ def tidy_goenv_command(client: TidyClient, **kwargs) -> DemistoResult:
 
 
 def tidy_nodenv_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
+    """ Install Node.js versions, Using nodenv.
 
     Args:
-        client:
-        **kwargs:
+        client: Tidy client obect.
+        **kwargs: command kwargs.
 
     Returns:
-
+        DemistoResults: Demisto structured response.
     """
     runner: Runner = client.anyenv(env=AnyEnvs.nodenv,
                                    versions=argToList(kwargs.get("versions")),
@@ -317,7 +339,14 @@ def tidy_nodenv_command(client: TidyClient, **kwargs) -> DemistoResult:
 
 
 def tidy_homebrew_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
+    """ Install and configure homebrew, Install additional homebrew/-cask packages.
+
+    Args:
+        client: Tidy client obect.
+        **kwargs: command kwargs.
+
+    Returns:
+        DemistoResults: Demisto structured response.
     """
     raw_response = client.homebrew(apps=argToList(kwargs.get('apps')),
                                    cask_apps=argToList(kwargs.get('cask_apps')))
@@ -328,32 +357,16 @@ def tidy_homebrew_command(client: TidyClient, **kwargs) -> DemistoResult:
                           additional_vars={})
 
 
-def tidy_zsh_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
-
-    Args:
-        client:
-        **kwargs:
-
-    Returns:
-
-    """
-    runner: Runner = client.zsh()
-    return parse_response(response=runner,
-                          human_readable_name="",
-                          installed_software="",
-                          additional_vars={})
-
 
 def tidy_github_ssh_key_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
+    """ Generate private/public key, Configure ssh client, and deploy keys to your GitHub account.
 
     Args:
-        client:
-        **kwargs:
+        client: Tidy client obect.
+        **kwargs: command kwargs.
 
     Returns:
-
+        DemistoResults: Demisto structured response.
     """
     runner: Runner = client.github_ssh_key(github_access_token=kwargs.get("access_token"))
 
@@ -364,14 +377,14 @@ def tidy_github_ssh_key_command(client: TidyClient, **kwargs) -> DemistoResult:
 
 
 def tidy_git_clone_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
+    """ Clone git repository to destination.
 
     Args:
-        client:
-        **kwargs:
+        client: Tidy client obect.
+        **kwargs: command kwargs.
 
     Returns:
-
+        DemistoResults: Demisto structured response.
     """
     runner: Runner = client.git_clone(repo=kwargs.get("repo"),
                                       dest=kwargs.get("dest"),
@@ -385,14 +398,14 @@ def tidy_git_clone_command(client: TidyClient, **kwargs) -> DemistoResult:
 
 
 def tidy_git_config_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
+    """ Configure git cli.
 
     Args:
-        client:
-        **kwargs:
+        client: Tidy client obect.
+        **kwargs: command kwargs.
 
     Returns:
-
+        DemistoResults: Demisto structured response.
     """
     runner: Runner = client.git_config(key=kwargs.get("key"),
                                        value=kwargs.get("value"),
@@ -404,16 +417,32 @@ def tidy_git_config_command(client: TidyClient, **kwargs) -> DemistoResult:
                           additional_vars={})
 
 
-
-def tidy_block_in_file_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
+def tidy_zsh_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """ Install zsh, oh-my-zsh, p10k.
 
     Args:
-        client:
-        **kwargs:
+        client: Tidy client obect.
+        **kwargs: command kwargs.
 
     Returns:
+        DemistoResults: Demisto structured response.
+    """
+    runner: Runner = client.zsh()
+    return parse_response(response=runner,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
 
+
+def tidy_block_in_file_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """ Insert/update/remove a block of multi-line text surrounded by customizable marker lines.
+
+    Args:
+        client: Tidy client obect.
+        **kwargs: command kwargs.
+
+    Returns:
+        DemistoResults: Demisto structured response.
     """
     runner: Runner = client.block_in_file(path=kwargs.get("path"),
                                           block=kwargs.get("block"),
@@ -427,14 +456,14 @@ def tidy_block_in_file_command(client: TidyClient, **kwargs) -> DemistoResult:
 
 
 def tidy_exec_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
+    """ Run command in host.
 
     Args:
-        client:
-        **kwargs:
+        client: Tidy client obect.
+        **kwargs: command kwargs.
 
     Returns:
-
+        DemistoResults: Demisto structured response.
     """
     runner: Runner = client.exec(command=kwargs.get("command"),
                                  working_dir=kwargs.get("chdir"))
@@ -465,15 +494,15 @@ def main() -> None:
         "tidy-exec": tidy_exec_command
     }
 
+    # Tidy client configuration
     hostname = demisto.getParam("hostname") or demisto.getArg("hostname")
     user = demisto.getParam("user") or demisto.getArg("user")
     password = demisto.getParam("password") or demisto.getArg("password")
-
-    demisto.debug(f'Command being called is {command}')
+    client = TidyClient(hostname=hostname, user=user, password=password)
 
     # Command execution
-    client = TidyClient(hostname=hostname, user=user, password=password)
     try:
+        demisto.debug(f'Command being called is {command}')
         demisto.results(commands[command](client, **demisto.args()))
     # Log exceptions and return errors
     except Exception as e:

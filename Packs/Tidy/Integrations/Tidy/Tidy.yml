@@ -2583,7 +2583,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma seprated list of homebrew packages (https://formulae.brew.sh/cask/)
+      description: Comma seprated list of homebrew cask packages (https://formulae.brew.sh/cask/)
       isArray: true
       name: cask_apps
       required: false
@@ -2613,7 +2613,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: GitHub access token with public key admin permissions. (https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)
+      description: GitHub access token with public keys admin permissions.. (https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)
       isArray: false
       name: access_token
       required: true
@@ -2649,7 +2649,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Destination directory to clone the git repository. '
+      description: The path of where the repository should be checked out.
       isArray: false
       name: dest
       required: true
@@ -2657,6 +2657,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
+      description: If yes, any modified files in the working repository will be discarded.
       isArray: false
       name: force
       predefined:
@@ -2666,8 +2667,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'no'
-      description: If repository allready exists, Pull changes from remote.
+      defaultValue: 'yes'
+      description: If no, do not retrieve new revisions from the origin repository.
       isArray: false
       name: update
       predefined:
@@ -2700,7 +2701,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Git config key to set.
+      description: 'The name of the setting. '
       isArray: false
       name: key
       predefined:
@@ -2718,6 +2719,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: global
+      description: 'Specify which scope to read/set values from. '
       isArray: false
       name: scope
       predefined:
@@ -2773,7 +2775,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: File path to add text block.
+      description: The file to modify.
       isArray: false
       name: path
       required: true
@@ -2794,7 +2796,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'yes'
-      description: If file not exits, Create new file.
+      description: Create a new file if it does not exist.
       isArray: false
       name: create
       predefined:
@@ -2803,7 +2805,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Add managed (Block can be modified by marker) text block to file.
+    description: Insert/update/remove a block of multi-line text surrounded by customizable
+      marker lines.
     execution: false
     name: tidy-block-in-file
   - arguments:
