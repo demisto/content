@@ -1,22 +1,19 @@
-import demistomock as demisto
+# import demistomock as demisto
 from CommonServerPython import *
-
 
 import urllib3
 import dateparser
 import traceback
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, cast, Iterable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
 
-
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INCIDENTS_TO_FETCH = 50
-HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
+MAX_EVENTS_TO_FETCH = 20
+COGNNI_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 ''' CLIENT CLASS '''
 
@@ -28,7 +25,6 @@ class Client(BaseClient):
     Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
     """
 
     def fetch_key(self, api_key: str) -> Dict[str, Any]:
@@ -37,7 +33,9 @@ class Client(BaseClient):
             url_suffix=f"/api/v1/login/key/{api_key}"
         )
 
-    def graphql(self, query: str, variables: Dict[str, Any] = {}) -> Dict[str, Any]:
+    def graphql(self, query: str, variables: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        if not variables:
+            variables = {}
 
         graphql_operation = {
             "query": query,
@@ -58,33 +56,116 @@ class Client(BaseClient):
             query=query
         )
 
+    def fetch_events(self, min_severity: str, events_limit: int) -> List[Dict[str, Any]]:
+        query = """
+            query ($pagination: Pagination) {
+                events(filter: { pagination: $pagination }) {
+                    events {
+                        eventId: id
+                        description
+                        sourceApplication
+                        date
+                        severity
+                        items {
+                            itemId: id
+                            externalId
+                            type
+                            name
+                            clusterUID
+                            data
+                            createdAt
+                            labels {
+                                name
+                            }
+                        }
+                        insights {
+                            name
+                        }
+                    }
+                }
+            }
+        """
+
+        variables = {
+            "pagination": {
+                "limit": events_limit
+            }
+        }
+
+        res = self.graphql(
+            query=query,
+            variables=variables
+        )
+        return res['events']['events']
+
+    def get_event(self, event_id: str) -> Dict[str, Any]:
+        query = """
+            query ($event_id: ID!) {
+                event(id: $event_id){
+                    id
+                    description
+                    sourceApplication
+                    date
+                }
+            }
+        """
+
+        variables = {
+            "event_id": event_id
+        }
+
+        res = self.graphql(
+            query=query,
+            variables=variables
+        )
+        return res['event']
+
+    def fetch_insights(self, min_severity: int) -> List[Dict[str, Any]]:
+        query = """
+             query ($min_severity: Int) {
+                 insights(minSeverity: $min_severity){
+                     id
+                     description
+                     name
+                     severity
+                 }
+             }
+         """
+
+        variables = {
+            "min_severity": int(min_severity)
+        }
+
+        res = self.graphql(
+            query=query,
+            variables=variables
+        )
+        return res['insights']
+
+    def get_insight(self, insight_id: str) -> Dict[str, Any]:
+        query = """
+            query ($insight_id: ID!) {
+              insight(id: $insight_id) {
+                  id
+                  name
+                  description
+                  severity
+              }
+            }
+        """
+
+        variables = {
+            "insight_id": insight_id
+        }
+
+        res = self.graphql(
+            query=query,
+            variables=variables
+        )
+        return res['insight']
+
 
 ''' HELPER FUNCTIONS '''
-
-
-def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
-    """Converts whois date format to an ISO8601 string
-
-    Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
-    in a datetime. If a list is returned with multiple elements, takes only
-    the first one.
-
-    :type domain_date: ``Union[List[str],str]``
-    :param severity:
-        a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
-
-    :return: Parsed time in ISO8601 format
-    :rtype: ``Optional[str]``
-    """
-
-    if isinstance(domain_date, str):
-        # if str parse the value
-        return dateparser.parse(domain_date).strftime(date_format)
-    elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
-        # if list with at least one element, parse the first element
-        return dateparser.parse(domain_date[0]).strftime(date_format)
-    # in any other case return nothing
-    return None
 
 
 def convert_to_demisto_severity(severity: str) -> int:
@@ -108,8 +189,25 @@ def convert_to_demisto_severity(severity: str) -> int:
         'Low': 1,  # low severity
         'Medium': 2,  # medium severity
         'High': 3,  # high severity
-        'Critical': 4   # critical severity
+        'Critical': 4  # critical severity
     }[severity]
+
+
+def convert_to_demisto_severity_int(severity: int) -> int:
+    """Maps HelloWorld severity to Cortex XSOAR severity
+
+    Converts the HelloWorld alert severity level ('Low', 'Medium',
+    'High', 'Critical') to Cortex XSOAR incident severity (1 to 4)
+    for mapping.
+
+    :type severity: ``str``
+    :param severity: severity as returned from the HelloWorld API (str)
+
+    :return: Cortex XSOAR Severity (1 to 4)
+    :rtype: ``int``
+    """
+
+    return severity
 
 
 def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
@@ -200,10 +298,68 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
+def flatten_event_file_items(event: Dict[str, Any]):
+    if not event or not event['items']:
+        return []
+
+    return list(map(lambda item: {
+        "eventId": event.get('eventId'),
+        "fileName": item.get('name'),
+        "fileId": item.get('itemId'),
+        "name": item.get('name'),
+        "eventType": item.get('type'),
+        "description": event.get('description'),
+        # "insights"
+        # "information"
+        "severity": event.get('severity'),
+        # "created"
+        # "status"
+        "sourceApplication": event.get('sourceApplication')
+    }, event['items']))
+
+
+def convert_file_event_to_incident(file_event: Dict[str, Any]):
+    return {
+        'name': file_event.get('name'),
+        'details': file_event['description'],
+        'occurred': file_event.get('date'),
+        'rawJSON': json.dumps(file_event),
+        'severity': convert_to_demisto_severity_int(file_event.get('severity', 1)),
+        # 'CustomFields': {  # Map specific XSOAR Custom Fields
+        # }
+    }
+
+
+def convert_events_to_incidents(events: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    if not events:
+        return []
+
+    file_events: List[Dict[str, Any]] = sum(map(flatten_event_file_items, events), [])
+
+    incidents = list(map(convert_file_event_to_incident, file_events))
+
+    return incidents
+
+
+def find_latest_event(events: Iterable[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    last_date = 0
+    latest_event = None
+
+    for event in events:
+        event_date = date_to_timestamp(
+            date_str_or_dt=event.get('date', ''),
+            date_format='%Y-%m-%dT%H:%M:%S.000Z')
+        if last_date < event_date:
+            last_date = event_date
+            latest_event = event
+
+    return latest_event
+
+
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, first_fetch_time: int) -> str:
+def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -211,10 +367,7 @@ def test_module(client: Client, first_fetch_time: int) -> str:
     Raises exceptions if something goes wrong.
 
     :type client: ``Client``
-    :param Client: HelloWorld client to use
-
-    :type name: ``str``
-    :param name: name to append to the 'Hello' string
+    :param client: Cognni client to use
 
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
@@ -240,36 +393,26 @@ def test_module(client: Client, first_fetch_time: int) -> str:
 
 
 def ping_command(client: Client) -> CommandResults:
-    """helloworld-say-hello command: Returns Hello {somename}
+    """cognni-ping command: Prints ping
 
     :type client: ``Client``
-    :param Client: HelloWorld client to use
-
-    :type args: ``str``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['name']`` is used as input name
+    :param client: Cognni client to use
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains the hello world message
+        that contains the ping response
 
     :rtype: ``CommandResults``
     """
-
-    # INTEGRATION DEVELOPER TIP
-    # In this case 'name' is an argument set in the HelloWorld.yml file as mandatory,
-    # so the null check here as XSOAR will always check it before your code is called.
-    # Although it's not mandatory to check, you are welcome to do so.
 
     # Call the Client function and get the raw response
     result = client.ping()
 
     # Create the human readable output.
-    # It will  be in markdown format - https://www.markdownguide.org/basic-syntax/
+    # It will be in markdown format - https://www.markdownguide.org/basic-syntax/
     # More complex output can be formatted using ``tableToMarkDown()`` defined
     # in ``CommonServerPython.py``
-    readable_output = f'## ping: {result}'
+    readable_output = f'## ping: {result["ping"]}'
 
     # More information about Context:
     # https://xsoar.pan.dev/docs/integrations/context-and-outputs
@@ -280,8 +423,212 @@ def ping_command(client: Client) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Cognni.ping',
-        raw_response=result,
-        outputs=result
+        raw_response={},
+        outputs={}
+    )
+
+
+def fetch_incidents(client: Client, last_run: Dict[str, int],
+                    first_fetch_time: Optional[int],
+                    events_limit: int,
+                    min_severity: str
+                    ) -> Tuple[Dict[str, int], List[dict]]:
+    """This function retrieves new alerts every interval (default is 1 minute).
+
+    This function has to implement the logic of making sure that incidents are
+    fetched only once and no incidents are missed. By default it's invoked by
+    XSOAR every minute. It will use last_run to save the timestamp of the last
+    incident it processed. If last_run is not provided, it should use the
+    integration parameter first_fetch_time to determine when to start fetching
+    the first time.
+
+    :param events_limit:
+    :type client: ``Client``
+    :param client: Cognni client to use
+
+    :type last_run: ``Optional[Dict[str, int]]``
+    :param last_run:
+        A dict with a key containing the latest incident created time we got
+        from last fetch
+
+    :type first_fetch_time: ``Optional[int]``
+    :param first_fetch_time:
+        If last_run is None (first time we are fetching), it contains
+        the timestamp in milliseconds on when to start fetching incidents
+
+    :type min_severity: ``str``
+    :param min_severity:
+        minimum severity of the alert to search for.
+        Options are: "Low", "Medium", "High", "Critical"
+
+    :return:
+        A tuple containing two elements:
+            next_run (``Dict[str, int]``): Contains the timestamp that will be
+                    used in ``last_run`` on the next fetch.
+            incidents (``List[dict]``): List of incidents that will be created in XSOAR
+
+    :rtype: ``Tuple[Dict[str, int], List[dict]]``
+    """
+
+    # Get the last fetch time, if exists
+    # last_run is a dict with a single key, called last_fetch
+    last_fetch = last_run.get('last_fetch', None)
+
+    # Handle first fetch time
+    if last_fetch is None:
+        # if missing, use what provided via first_fetch_time
+        last_fetch = first_fetch_time
+    else:
+        # otherwise use the stored last fetch
+        last_fetch = int(last_fetch)
+
+    # for type checking, making sure that latest_created_time is int
+    latest_created_time = cast(int, last_fetch)
+
+    # Get the CSV list of severities from min_severity
+    # severity = ','.join(COGNNI_SEVERITIES[COGNNI_SEVERITIES.index(min_severity):])
+
+    events = client.fetch_events(
+        events_limit=events_limit,
+        # start_time=last_fetch,
+        min_severity=min_severity
+    )
+
+    if last_fetch:
+        new_events = list(filter(lambda event: date_to_timestamp(
+            date_str_or_dt=event.get('date'),
+            date_format='%Y-%m-%dT%H:%M:%S.000Z'
+        ) > last_fetch,
+            events))
+    else:
+        new_events = events
+
+    if not new_events:
+        next_run = {'last_fetch': latest_created_time}
+        return next_run, list()
+
+    latest_event = find_latest_event(new_events)
+    if latest_event:
+        latest_created_time = date_to_timestamp(
+            date_str_or_dt=latest_event.get('date', latest_created_time),
+            date_format='%Y-%m-%dT%H:%M:%S.000Z'
+        )
+
+    incidents = convert_events_to_incidents(new_events)
+
+    # Save the next_run as a dict with the last_fetch key to be stored
+    next_run = {'last_fetch': latest_created_time}
+    return next_run, incidents
+
+
+def fetch_incidents_command(client: Client, first_fetch_time: int, args: Dict[str, Any]) -> CommandResults:
+    events_limit = arg_to_int(
+        arg=args.get('events_limit'),
+        arg_name='events_limit',
+        required=False
+    )
+
+    if not events_limit or events_limit > MAX_EVENTS_TO_FETCH:
+        events_limit = MAX_EVENTS_TO_FETCH
+
+    next_run, incidents = fetch_incidents(client,
+                                          last_run={},
+                                          first_fetch_time=first_fetch_time,
+                                          events_limit=events_limit,
+                                          min_severity='Low'
+                                          )
+
+    readable_output = tableToMarkdown(f'Cognni {len(incidents)} incidents', incidents)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Cognni.incidents',
+        outputs=incidents
+    )
+
+
+def get_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """cognni-get-event command: Returns a Cognni event
+
+    :type client: ``Client``
+    :param client: Cognni client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['event_id']`` alert ID to return
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains an alert
+
+    :rtype: ``CommandResults``
+    """
+
+    event_id = args.get('event_id', None)
+    if not event_id:
+        raise ValueError('event_id not specified')
+
+    event = client.get_event(event_id=event_id)
+
+    # tableToMarkdown() is defined is CommonServerPython.py and is used very
+    # often to convert lists and dicts into a human readable format in markdown
+    readable_output = tableToMarkdown(f'Cognni event {event_id}', event)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Cognni.event',
+        outputs_key_field='id',
+        outputs=event
+    )
+
+
+def fetch_insights_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    min_severity = int(args.get('min_severity', 2))
+
+    insights = client.fetch_insights(min_severity=min_severity)
+
+    readable_output = tableToMarkdown(f'Cognni {len(insights)} insights', insights)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Cognni.insights',
+        outputs_key_field='id',
+        outputs=insights
+    )
+
+
+def get_insight_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """cognni-get-insight command: Returns a Cognni event
+
+    :type client: ``Client``
+    :param client: Cognni client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['event_id']`` alert ID to return
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains an alert
+
+    :rtype: ``CommandResults``
+    """
+
+    insight_id = args.get('insight_id', None)
+    if not insight_id:
+        raise ValueError('insight_id not specified')
+
+    insight = client.get_insight(insight_id=insight_id)
+
+    readable_output = tableToMarkdown(f'Cognni event {insight_id}', insight)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Cognni.insight',
+        outputs_key_field='id',
+        outputs=insight
     )
 
 
@@ -332,10 +679,10 @@ def main() -> None:
             proxy=proxy)
 
         fetch_key_res = client.fetch_key(api_key)
-        api_key = fetch_key_res['token']
+        access_token = fetch_key_res['token']
 
         headers = {
-            'Authorization': f'Bearer {api_key}',
+            'Authorization': f'Bearer {access_token}',
             'Content-Type': 'application/json',
         }
 
@@ -347,11 +694,50 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, first_fetch_time)
+            result = test_module(client)
             return_results(result)
 
         elif demisto.command() == 'cognni-ping':
             return_results(ping_command(client))
+
+        elif demisto.command() == 'cognni-fetch-incidents':
+            return_results(fetch_incidents_command(client, first_fetch_time, demisto.args()))
+
+        elif demisto.command() == 'fetch-incidents':
+            # Set and define the fetch incidents command to run after activated via integration settings.
+            min_severity = demisto.params().get('min_severity', None)
+
+            # Convert the argument to an int using helper function or set to MAX_EVENTS_TO_FETCH
+            events_limit = arg_to_int(
+                arg=demisto.params().get('events_limit'),
+                arg_name='events_limit',
+                required=False
+            )
+            if not events_limit or events_limit > MAX_EVENTS_TO_FETCH:
+                events_limit = MAX_EVENTS_TO_FETCH
+
+            next_run, incidents = fetch_incidents(
+                client=client,
+                events_limit=events_limit,
+                last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
+                first_fetch_time=first_fetch_time,
+                min_severity=min_severity
+            )
+
+            # saves next_run for the time fetch-incidents is invoked
+            demisto.setLastRun(next_run)
+            # fetch-incidents calls ``demisto.incidents()`` to provide the list
+            # of incidents to crate
+            demisto.incidents(incidents)
+
+        elif demisto.command() == 'cognni-get-event':
+            return_results(get_event_command(client, demisto.args()))
+
+        elif demisto.command() == 'cognni-fetch-insights':
+            return_results(fetch_insights_command(client, demisto.args()))
+
+        elif demisto.command() == 'cognni-get-insight':
+            return_results(get_insight_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
@@ -360,7 +746,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
