@@ -1,3 +1,9 @@
+""" Developer notes
+
+This integration based on:
+    1. Ansible-runner libary - https://ansible-runner.readthedocs.io/en/latest/
+"""
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -8,7 +14,7 @@ from socket import error
 
 from urllib3 import disable_warnings
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast, Callable
+from typing import Any, Dict, List, Callable
 
 # Disable insecure warnings
 disable_warnings()

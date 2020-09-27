@@ -1,3 +1,4 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+## Tidy project
+- Fix and Install endpoints device and build custom profiles for onboarding employees.
+- This integration require accessble endpoint url/ip and ssh server running in endpoint (In most OS configured by defualt).
+- Configure single endpoint for testing connection, Default endpoint override when executing command.
