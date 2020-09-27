@@ -1,0 +1,8 @@
+---
+- name: Homebrew
+  hosts: all
+  roles:
+    - role: geerlingguy.homebrew
+      vars:
+        homebrew_cask_apps: "{{ homebrew_cask_apps }}"
+        homebrew_installed_packages: "{{ homebrew_installed_packages }}"

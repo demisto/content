@@ -1,0 +1,34 @@
+---
+- name: zsh
+  hosts: all
+  tasks:
+    - name: Install auto suggestions and syntax high-lighting
+      git:
+        repo: "https://github.com/zsh-users/{{ item }}.git"
+        dest: ~/.oh-my-zsh/custom/plugins/{{ item }}
+      with_items:
+        - zsh-autosuggestions
+        - zsh-syntax-highlighting
+
+    - name: Install powerlevel10k
+      git:
+        repo: https://github.com/romkatv/powerlevel10k.git
+        dest: ~/.oh-my-zsh/themes/powerlevel10k
+        force: yes
+
+  roles:
+    - role: ctorgalson.oh-my-zsh
+      vars:
+        omz_install_zsh: true
+        omz_zsh_theme: "powerlevel10k/powerlevel10k"
+        omz_user:
+          name: "{{ ansible_env.USER }}"
+          group: "{{ ansible_effective_group_id }}"
+          settings: ""
+        omz_plugins:
+          - git
+          - pip
+          - docker
+          - virtualenv
+          - zsh-autosuggestions
+          - zsh-syntax-highlighting

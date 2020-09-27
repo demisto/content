@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from ansible_runner import run
+from ansible_runner import run, Runner
 from paramiko import AutoAddPolicy, AuthenticationException, SSHClient, SSHException
 from socket import error
 
@@ -15,7 +15,14 @@ disable_warnings()
 
 ''' CONSTANTS '''
 
-DemistoResult = Tuple[str, dict, dict]
+DemistoResult = Dict[str, Any]
+
+
+class AnyEnvs:
+    pyenv = "pyenv"
+    goenv = "goenv"
+    nodenv = "nodenv"
+
 
 ''' CLIENT CLASS '''
 
@@ -26,7 +33,12 @@ class TidyClient:
         self.username = user
         self.password = password
 
-    def test(self):
+    def test(self) -> None:
+        """
+
+        Returns:
+
+        """
         ssh = SSHClient()
         ssh.set_missing_host_key_policy(AutoAddPolicy())
 
@@ -40,10 +52,21 @@ class TidyClient:
         except SSHException as e:
             raise DemistoException(f"Hostname \"{self.hostname}\" isn't valid!.\nFull error: {e}")
 
-    def _execute(self, extra_vars: Dict[str, str]):
+    def _execute(self, playbook_name: str, extra_vars=None) -> Runner:
+        """
+
+        Args:
+            playbook_name:
+            extra_vars:
+
+        Returns:
+
+        """
+        if extra_vars is None:
+            extra_vars = {}
         runner = run(
             private_data_dir='/ansible',
-            playbook='playbook.yml',
+            playbook=f'playbook-{playbook_name}.yml',
             inventory=f"demisto ansible_host=\"{self.hostname}\" ansible_user=\"{self.username}\""
                       f" ansible_ssh_pass=\"{self.password}\" ansible_connection=ssh",
             verbosity=2,
@@ -52,41 +75,173 @@ class TidyClient:
 
         return runner
 
-    def homebrew(self):
-        pass
+    def homebrew(self, apps: List[str], cask_apps: List[str]) -> Runner:
+        """
 
-    def python(self, env: str, python_versions: List[str], global_python_versions: List[str], pyenv_setting_path: str):
-        return self._execute({
-            "env": env,
-            "pyenv_python_versions": python_versions,
-            "pyenv_global": global_python_versions,
-            "pyenv_setting_path": pyenv_setting_path
-        })
+        Args:
+            apps:
+            cask_apps:
 
-    def golang(self, version: str):
-        return self._execute({
-            "golang_version": version
-        })
+        Returns:
 
-    def git(self):
-        pass
+        """
+        return self._execute(
+            playbook_name="homebrew",
+            extra_vars={
+                "homebrew_installed_packages": apps,
+                "homebrew_cask_apps": cask_apps
+            })
 
-    def github_ssh_key(self):
-        pass
+    def anyenv(self, env: str, versions: List[str], global_versions: List[str]) -> Runner:
+        """
 
-    def env_vars(self):
-        pass
+        Args:
+            env:
+            versions:
+            global_versions:
 
-    def zsh(self):
-        pass
+        Returns:
+
+        """
+        return self._execute(playbook_name="anyenv",
+                             extra_vars={
+                                 "env": env,
+                                 "versions": versions,
+                                 "global_versions": global_versions
+                             })
+
+    def git_clone(self, repo: str, dest: str, force: str, update: str) -> Runner:
+        return self._execute(
+            playbook_name="git-clone",
+            extra_vars={
+                "repo": repo,
+                "dest": dest,
+                "force": force,
+                "update": update
+            })
+
+    def git_config(self, key: str, value: str, state: str, scope: str) -> Runner:
+        """
+
+        Args:
+            key:
+            value:
+            state:
+            scope:
+
+        Returns:
+
+        """
+        return self._execute(
+            playbook_name="git-config",
+            extra_vars={
+                "key": key,
+                "value": value,
+                "state": state,
+                "scope": scope
+            })
+
+    def github_ssh_key(self, github_access_token: str) -> Runner:
+        """
+
+        Args:
+            github_access_token:
+
+        Returns:
+
+        """
+        return self._execute(playbook_name="github-ssh-key",
+                             extra_vars={
+                                 "github_access_token": github_access_token
+                             })
+
+    def zsh(self) -> Runner:
+        """
+
+        Returns:
+
+        """
+        return self._execute(playbook_name="zsh")
+
+    def block_in_file(self, path: str, block: str, marker: str, create: str) -> Runner:
+        """
+
+        Args:
+            path:
+            block:
+            marker:
+            create:
+
+        Returns:
+
+        """
+        return self._execute(playbook_name="blockinfile",
+                             extra_vars={
+                                 "path": path,
+                                 "block": block,
+                                 "marker": marker,
+                                 "create": create
+                             })
+
+    def exec(self, command: str, working_dir: str) -> Runner:
+        """
+
+        Args:
+            command:
+            working_dir:
+
+        Returns:
+
+        """
+        return self._execute(playbook_name="exec",
+                             extra_vars={
+                                 "command": command,
+                                 "dir": working_dir
+                             })
 
 
 ''' HELPER FUNCTIONS '''
 
+
+def parse_response(response: Runner, human_readable_name: str, installed_software: str, additional_vars=None) -> DemistoResult:
+    """
+
+    Args:
+        response:
+        human_readable_name:
+        installed_software:
+        additional_vars:
+
+    Returns:
+
+    """
+    result = {
+        'Status': response.status,
+        'ReturnCode': response.rc,
+        'Canceled': response.canceled,
+        'Errored': response.errored,
+        'TimedOut': response.timed_out,
+        'Stats': response.stats,
+        'InstalledSoftware': installed_software,
+        'AdditionalInfo': additional_vars
+    }
+    stdout = f'\n\n### Stdout:\n```\n{"".join(response.stdout.readlines())}\n```'
+    human_readable = tableToMarkdown(human_readable_name, result, removeNull=True) + stdout
+
+    return {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': 'result',
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {'Ansible.Install': 'result'}
+    }
+
+
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: TidyClient, **kwargs):
+def test_module(client: TidyClient, **kwargs) -> DemistoResult:
     """Check endpoint configuration is right, Could detect the following:
         1. Hostname isn't accessible from network.
         2. User or password isn't right.
@@ -103,43 +258,193 @@ def test_module(client: TidyClient, **kwargs):
     return 'ok', {}, {}
 
 
-def tidy_homebrew_command(client: TidyClient, **kwargs):
-    pass
+def tidy_homebrew_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
+    """
+    raw_response = client.homebrew(apps=argToList(kwargs.get('apps')),
+                                   cask_apps=argToList(kwargs.get('cask_apps')))
+
+    return parse_response(response=raw_response,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
 
 
-def tidy_python_command(client: TidyClient, **kwargs) -> DemistoResult:
-    raw_response = client.python(env=kwargs.get('env'),
-                                 python_versions=argToList(kwargs.get("python_versions")),
-                                 global_python_versions=argToList(kwargs.get("global_python_versions")),
-                                 pyenv_setting_path=kwargs.get("pyenv_setting_path"))
-    entry_context = {}
-    human_readable = ""
+def tidy_zsh_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
 
-    return human_readable, entry_context, raw_response
+    Args:
+        client:
+        **kwargs:
 
+    Returns:
 
-def tidy_golang_command(client: TidyClient, **kwargs):
-    raw_response = client.golang(version=kwargs.get("version"))
-    entry_context = {}
-    human_readable = ""
-
-    return human_readable, entry_context, raw_response
+    """
+    runner: Runner = client.zsh()
+    return parse_response(response=runner,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
 
 
-def tidy_git_command(client: TidyClient):
-    pass
+def tidy_pyenv_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
+
+    Args:
+        client:
+        **kwargs:
+
+    Returns:
+
+    """
+    runner: Runner = client.anyenv(env=AnyEnvs.pyenv,
+                                   versions=argToList(kwargs.get("versions")),
+                                   global_versions=argToList(kwargs.get("globals")))
+
+    return parse_response(response=runner,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
 
 
-def tidy_github_ssh_key_command(client: TidyClient):
-    pass
+def tidy_goenv_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
+
+    Args:
+        client:
+        **kwargs:
+
+    Returns:
+
+    """
+    runner: Runner = client.anyenv(env=AnyEnvs.goenv,
+                                   versions=argToList(kwargs.get("versions")),
+                                   global_versions=argToList(kwargs.get("globals")))
+
+    return parse_response(response=runner,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
 
 
-def tidy_env_vars_command(client: TidyClient):
-    pass
+def tidy_nodenv_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
+
+    Args:
+        client:
+        **kwargs:
+
+    Returns:
+
+    """
+    runner: Runner = client.anyenv(env=AnyEnvs.nodenv,
+                                   versions=argToList(kwargs.get("versions")),
+                                   global_versions=argToList(kwargs.get("globals")))
+
+    return parse_response(response=runner,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
 
 
-def tidy_zsh_command(client: TidyClient):
-    pass
+def tidy_git_clone_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
+
+    Args:
+        client:
+        **kwargs:
+
+    Returns:
+
+    """
+    runner: Runner = client.git_clone(repo=kwargs.get("repo"),
+                                      dest=kwargs.get("dest"),
+                                      force=kwargs.get("force"),
+                                      update=kwargs.get("update"))
+
+    return parse_response(response=runner,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
+
+
+def tidy_git_config_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
+
+    Args:
+        client:
+        **kwargs:
+
+    Returns:
+
+    """
+    runner: Runner = client.git_config(key=kwargs.get("key"),
+                                       value=kwargs.get("value"),
+                                       state=kwargs.get("state"),
+                                       scope=kwargs.get("scope"))
+
+    return parse_response(response=runner,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
+
+
+def tidy_github_ssh_key_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
+
+    Args:
+        client:
+        **kwargs:
+
+    Returns:
+
+    """
+    runner: Runner = client.github_ssh_key(github_access_token=kwargs.get("access_token"))
+
+    return parse_response(response=runner,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
+
+
+def tidy_block_in_file_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
+
+    Args:
+        client:
+        **kwargs:
+
+    Returns:
+
+    """
+    runner: Runner = client.block_in_file(path=kwargs.get("path"),
+                                          block=kwargs.get("block"),
+                                          marker=kwargs.get("marker"),
+                                          create=kwargs.get("create"))
+
+    return parse_response(response=runner,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
+
+
+def tidy_exec_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
+
+    Args:
+        client:
+        **kwargs:
+
+    Returns:
+
+    """
+    runner: Runner = client.exec(command=kwargs.get("command"),
+                                 working_dir=kwargs.get("dir"))
+
+    return parse_response(response=runner,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
 
 
 ''' MAIN FUNCTION '''
@@ -150,17 +455,17 @@ def main() -> None:
     command = demisto.command()
     commands: Dict[str, Callable] = {
         "test-module": test_module,
-        "tidy-python": tidy_python_command,
-        "tidy-golang": tidy_golang_command,
-        "tidy-git": tidy_git_command,
+        "tidy-pyenv": tidy_pyenv_command,
+        "tidy-goenv": tidy_goenv_command,
+        "tidy-nodenv": tidy_nodenv_command,
         "tidy-homebrew": tidy_homebrew_command,
         "tidy-github-ssh-key": tidy_github_ssh_key_command,
-        "tidy-env-vars": tidy_env_vars_command,
+        "tidy-git-clone": tidy_git_clone_command,
+        "tidy-git-config": tidy_git_config_command,
         "tidy-zsh": tidy_zsh_command,
+        "tidy-block-in-file": tidy_block_in_file_command,
+        "tidy-exec": tidy_exec_command
     }
-
-    # Enpoint definition
-    proxy = demisto.params().get('proxy', False)
 
     hostname = demisto.getParam("hostname") or demisto.getArg("hostname")
     user = demisto.getParam("user") or demisto.getArg("user")
@@ -171,7 +476,7 @@ def main() -> None:
     # Command execution
     client = TidyClient(hostname=hostname, user=user, password=password)
     try:
-        return_results(commands[command](client, **demisto.args()))
+        demisto.results(commands[command](client, **demisto.args()))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())

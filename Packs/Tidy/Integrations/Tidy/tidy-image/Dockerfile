@@ -1,9 +1,12 @@
 
 FROM demisto/python3:3.8.5.10845
 
-COPY . .
+COPY requirements.txt /requirements.txt
 
-ENV ANSIBLE_HOST_KEY_CHECKING False
+
+RUN apk --update add --no-cache --virtual .build-dependencies python3-dev build-base wget git linux-headers libffi-dev openssl-dev \
+  && pip install --no-cache-dir -r requirements.txt \
+  && apk del .build-dependencies
 
 
 RUN echo "===> Installing sudo to emulate normal OS behavior..."  && \
@@ -12,17 +15,10 @@ RUN echo "===> Installing sudo to emulate normal OS behavior..."  && \
     \
     echo "===> Adding Python runtime..."  && \
     apk --update add python3 openssl ca-certificates    && \
-    apk --update add --virtual build-dependencies \
-                python3-dev libffi-dev openssl-dev build-base  && \
-    pip3 install --upgrade pip cffi                            && \
-    \
-    \
-    echo "===> Installing Ansible..."  && \
-    pip3 install ansible==2.9.1         && \
+    apk --update add --virtual build-dependencies python3-dev libffi-dev openssl-dev build-base  && \
     \
     \
     echo "===> Installing handy tools (not absolutely required)..."  && \
-    pip3 install --upgrade pywinrm                  && \
     apk --update add sshpass openssh-client rsync  && \
     \
     \
@@ -38,11 +34,8 @@ RUN echo "===> Installing sudo to emulate normal OS behavior..."  && \
     \
     echo "===> Adding Roles using ansible-galaxy..."  && \
     # Pyenv
-    ansible-galaxy install -c avanov.pyenv && \
-    ansible-galaxy install -c andrewrothstein.go && \
-    ansible-galaxy install -c geerlingguy.homebrew
+    ansible-galaxy install -c geerlingguy.homebrew && \
+    ansible-galaxy install -c ctorgalson.oh-my-zsh,v2.2.2 && \
+    ansible-galaxy install -c pddg.anyenv && \
+    ansible-galaxy install -c sawatani.github_ssh
 
-
-RUN apk --update add --no-cache --virtual .build-dependencies python3-dev build-base wget git linux-headers libffi-dev openssl-dev \
-  && pip install --no-cache-dir -r requirements.txt \
-  && apk del .build-dependencies
