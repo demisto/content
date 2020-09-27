@@ -599,7 +599,6 @@ def get_url_report_command():
         max_len = 50
 
     responses_dict = get_url_reports_with_retries(urls, all_info, retries, scan_finish_time_in_seconds)
-    # demisto.results(responses_dict)
     entries = []
 
     for url, res in responses_dict.iteritems():
@@ -627,20 +626,7 @@ def get_url_report_command():
             'HumanReadable': md
         })
 
-    # completed_responses = responses_dict.values()
-    # if len(completed_responses) == 1:
-    #     # This is done for backward compatibility
-    #     completed_responses = completed_responses[0]
-
     return entries
-    # return {
-    #     'Type': entryTypes['note'],
-    #     'Contents': completed_responses,
-    #     'ContentsFormat': formats['json'],
-    #     'ReadableContentsFormat': formats['markdown'],
-    #     'HumanReadable': md,
-    #     'EntryContext': ec
-    # }
 
 
 def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_in_seconds):
