@@ -160,7 +160,7 @@ def endpoint_certificate(endpoint: str, port: str) -> dict:
 
 def build_human_readable(entry_context: dict) -> str:
     human_readable = ""
-    entry_context = entry_context.get("TroubleShout", {})
+    entry_context = entry_context.get("TroubleShoot", {})
     # Engine docker container
     engine: dict = dict_safe_get(entry_context, ['Engine', 'SSL/TLS'], {}, dict)
     human_readable += "## Docker container engine - custom certificate\n"
@@ -185,7 +185,7 @@ def build_human_readable(entry_context: dict) -> str:
 def main():
     try:
         entry_context = {
-            "TroubleShout": {
+            "TroubleShoot": {
                 'Engine': {
                     'SSL/TLS': docker_container_details(),
                 },
@@ -198,7 +198,7 @@ def main():
 
         return_outputs(human_readable, entry_context, {})
     except Exception as e:
-        return_error(f'Failed to execute Certificate Troubleshout.\n Error: {str(e)}')
+        return_error(f'Failed to execute Certificate Troubleshoot.\n Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

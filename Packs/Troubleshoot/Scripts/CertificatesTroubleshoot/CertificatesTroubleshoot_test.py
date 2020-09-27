@@ -1,5 +1,5 @@
 def test_parse_all_certificates(datadir):
-    from CertificatesTroubleshout import parse_all_certificates
+    from CertificatesTroubleshoot import parse_all_certificates
     from pathlib import Path
     from json import load
     certificate = Path(datadir['CA.pem']).read_text()
