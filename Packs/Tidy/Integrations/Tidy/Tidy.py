@@ -120,13 +120,12 @@ class TidyClient:
                 "update": update
             })
 
-    def git_config(self, key: str, value: str, state: str, scope: str) -> Runner:
+    def git_config(self, key: str, value: str, scope: str) -> Runner:
         """
 
         Args:
             key:
             value:
-            state:
             scope:
 
         Returns:
@@ -137,7 +136,6 @@ class TidyClient:
             extra_vars={
                 "key": key,
                 "value": value,
-                "state": state,
                 "scope": scope
             })
 
@@ -258,35 +256,6 @@ def test_module(client: TidyClient, **kwargs) -> DemistoResult:
     return 'ok', {}, {}
 
 
-def tidy_homebrew_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
-    """
-    raw_response = client.homebrew(apps=argToList(kwargs.get('apps')),
-                                   cask_apps=argToList(kwargs.get('cask_apps')))
-
-    return parse_response(response=raw_response,
-                          human_readable_name="",
-                          installed_software="",
-                          additional_vars={})
-
-
-def tidy_zsh_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
-
-    Args:
-        client:
-        **kwargs:
-
-    Returns:
-
-    """
-    runner: Runner = client.zsh()
-    return parse_response(response=runner,
-                          human_readable_name="",
-                          installed_software="",
-                          additional_vars={})
-
-
 def tidy_pyenv_command(client: TidyClient, **kwargs) -> DemistoResult:
     """
 
@@ -347,6 +316,53 @@ def tidy_nodenv_command(client: TidyClient, **kwargs) -> DemistoResult:
                           additional_vars={})
 
 
+def tidy_homebrew_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
+    """
+    raw_response = client.homebrew(apps=argToList(kwargs.get('apps')),
+                                   cask_apps=argToList(kwargs.get('cask_apps')))
+
+    return parse_response(response=raw_response,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
+
+
+def tidy_zsh_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
+
+    Args:
+        client:
+        **kwargs:
+
+    Returns:
+
+    """
+    runner: Runner = client.zsh()
+    return parse_response(response=runner,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
+
+
+def tidy_github_ssh_key_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """
+
+    Args:
+        client:
+        **kwargs:
+
+    Returns:
+
+    """
+    runner: Runner = client.github_ssh_key(github_access_token=kwargs.get("access_token"))
+
+    return parse_response(response=runner,
+                          human_readable_name="",
+                          installed_software="",
+                          additional_vars={})
+
+
 def tidy_git_clone_command(client: TidyClient, **kwargs) -> DemistoResult:
     """
 
@@ -380,7 +396,6 @@ def tidy_git_config_command(client: TidyClient, **kwargs) -> DemistoResult:
     """
     runner: Runner = client.git_config(key=kwargs.get("key"),
                                        value=kwargs.get("value"),
-                                       state=kwargs.get("state"),
                                        scope=kwargs.get("scope"))
 
     return parse_response(response=runner,
@@ -388,23 +403,6 @@ def tidy_git_config_command(client: TidyClient, **kwargs) -> DemistoResult:
                           installed_software="",
                           additional_vars={})
 
-
-def tidy_github_ssh_key_command(client: TidyClient, **kwargs) -> DemistoResult:
-    """
-
-    Args:
-        client:
-        **kwargs:
-
-    Returns:
-
-    """
-    runner: Runner = client.github_ssh_key(github_access_token=kwargs.get("access_token"))
-
-    return parse_response(response=runner,
-                          human_readable_name="",
-                          installed_software="",
-                          additional_vars={})
 
 
 def tidy_block_in_file_command(client: TidyClient, **kwargs) -> DemistoResult:

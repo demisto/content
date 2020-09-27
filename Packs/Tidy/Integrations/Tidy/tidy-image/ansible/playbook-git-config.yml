@@ -7,5 +7,5 @@
         name: "{{ key }}"
         value: "{{ value }}"
         scope: "{{ scope }}"
-        state: "{{ state }}"
+        state: present"
 
