@@ -25,7 +25,10 @@ def test_get_file_response_queued_response(mocker, requests_mock):
 def test_get_url_multiple_results(mocker, requests_mock):
     mocker.patch.object(demisto, 'args', return_value={'resource': 'https://linkedin.com, https://twitter.com'})
     requests_mock.get('https://www.virustotal.com/vtapi/v2/url/report',
-                      json=load_test_data('./test_data/get_url_report.json'))
+                      [
+                          {'json': load_test_data('./test_data/get_url_report_linkedin.json'), 'status_code': 200},
+                          {'json': load_test_data('./test_data/get_url_report_twitter.json'), 'status_code': 200},
+                      ])
 
     vt = importlib.import_module("VirusTotal-Private_API")
 
