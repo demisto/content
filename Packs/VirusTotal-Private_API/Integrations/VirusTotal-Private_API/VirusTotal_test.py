@@ -34,5 +34,5 @@ def test_get_url_multiple_results(mocker, requests_mock):
 
     output = vt.get_url_report_command()
     assert len(output) == 2
-    assert isinstance(output[0]['DBotScore'], dict)
-    assert isinstance(output[1]['DBotScore'], dict)
+    assert isinstance(output[0]['EntryContext']['DBotScore'], dict)
+    assert isinstance(output[1]['EntryContext']['DBotScore'], dict)
