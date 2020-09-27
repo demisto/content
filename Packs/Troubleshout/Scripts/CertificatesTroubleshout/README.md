@@ -3,8 +3,7 @@ This automation will export all Custom Certificates related information from the
 ## Notes
 ---
 
-After using the following [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/configure-python-docker-integrations-to-trust-custom-certificates) to update custom certificate in `Demisto Server`/ `Demisto Engine`.
-Validate the configuration applied using using this script.
+After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/configure-python-docker-integrations-to-trust-custom-certificates) to update your custom certificate in `Demisto Server`/ `Demisto Engine`, Validate the configuration applied using this script.
 
 ## Script Data
 ---
