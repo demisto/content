@@ -118,7 +118,7 @@ def docker_container_details() -> dict:
             "SSL_CERT_FILE": os.environ.get('SSL_CERT_FILE'),
             "CERT_FILE": os.environ.get('REQUESTS_CA_BUNDLE'),
         },
-        "CustomCertificateAuthorities": parse_all_certificates(certificates)
+        "CustomCertificateAuthorities": parse_all_certificates(certificates),
     }
 
 
