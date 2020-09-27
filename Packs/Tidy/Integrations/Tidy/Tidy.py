@@ -224,16 +224,16 @@ class TidyClient:
 
 
 def parse_response(response: Runner, human_readable_name: str, installed_software: str, additional_vars=None) -> DemistoResult:
-    """
+    """ Parse anible-runner Runner object to demisto
 
     Args:
-        response:
-        human_readable_name:
-        installed_software:
+        response: anible-runner Runner object.
+        human_readable_name: Table header.
+        installed_software: SW installed in hostname
         additional_vars:
 
     Returns:
-
+         DemistoResult: Demisto structured response.
     """
     result = {
         'Status': response.status,
