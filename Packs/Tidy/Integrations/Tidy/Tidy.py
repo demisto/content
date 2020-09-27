@@ -22,7 +22,7 @@ disable_warnings()
 ''' CONSTANTS '''
 
 DemistoResult = Dict[str, Any]
-
+IMAGE_PLAYBOOKS_PATH = '/home/demisto/ansible'
 
 class AnyEnvs:
     pyenv = "pyenv"
@@ -82,9 +82,9 @@ class TidyClient:
         if extra_vars is None:
             extra_vars = {}
         runner = run(
-            private_data_dir='/ansible',
+            private_data_dir=IMAGE_PLAYBOOKS_PATH,
             playbook=f'playbook-{playbook_name}.yml',
-            inventory=f"demisto ansible_host=\"{self.hostname}\" ansible_user=\"{self.username}\""
+            inventory=f"{self.username}@{self.hostname} ansible_host=\"{self.hostname}\" ansible_user=\"{self.username}\""
                       f" ansible_ssh_pass=\"{self.password}\" ansible_connection=ssh",
             verbosity=2,
             extravars=extra_vars,
