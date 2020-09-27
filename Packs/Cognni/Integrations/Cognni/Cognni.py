@@ -708,17 +708,17 @@ def main() -> None:
             min_severity = demisto.params().get('min_severity', None)
 
             # Convert the argument to an int using helper function or set to MAX_EVENTS_TO_FETCH
-            events_limit = arg_to_int(
-                arg=demisto.params().get('events_limit'),
-                arg_name='events_limit',
+            max_fetch = arg_to_int(
+                arg=demisto.params().get('max_fetch'),
+                arg_name='max_fetch',
                 required=False
             )
-            if not events_limit or events_limit > MAX_EVENTS_TO_FETCH:
-                events_limit = MAX_EVENTS_TO_FETCH
+            if not max_fetch or max_fetch > MAX_EVENTS_TO_FETCH:
+                max_fetch = MAX_EVENTS_TO_FETCH
 
             next_run, incidents = fetch_incidents(
                 client=client,
-                events_limit=events_limit,
+                events_limit=max_fetch,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=first_fetch_time,
                 min_severity=min_severity

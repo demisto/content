@@ -12,10 +12,14 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: each event may return more than one incident
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: Each event may return more than one incident
   defaultvalue: '10'
   display: Maximum number of events per fetch
-  name: events_limit
+  name: max_fetch
   required: false
   type: 0
 - display: API Key
@@ -60,84 +64,98 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The event ID
       isArray: false
       name: event_id
       required: true
       secret: false
     deprecated: false
+    description: Fetch a single event by ID
     execution: false
     name: cognni-get-event
     outputs:
     - contextPath: Cognni.Event.id
+      description: id
       type: String
     - contextPath: Cognni.Event.date
+      description: date
       type: Date
     - contextPath: Cognni.Event.description
+      description: description
       type: String
     - contextPath: Cognni.Event.severity
+      description: severity
       type: Number
     - contextPath: Cognni.Event.sourceApplication
+      description: The source of the event
       type: String
   - arguments:
     - default: false
+      description: The insight ID
       isArray: false
       name: insight_id
       required: true
       secret: false
     deprecated: false
+    description: Fetch a single insight by ID
     execution: false
     name: cognni-get-insight
     outputs:
     - contextPath: Cognni.insight.id
+      description: ID
       type: String
     - contextPath: Cognni.insight.name
+      description: name
       type: String
     - contextPath: Cognni.insight.description
+      description: description
       type: String
     - contextPath: Cognni.insight.severity
+      description: severity
       type: Number
   - arguments:
     - default: false
       defaultValue: '2'
+      description: Minimum severity of insights to fetch
       isArray: false
       name: min_severity
       required: true
       secret: false
-    - default: false
-      defaultValue: '20'
-      isArray: false
-      name: events_limit
-      required: false
-      secret: false
     deprecated: false
+    description: Fetch insights
     execution: false
     name: cognni-fetch-insights
     outputs:
     - contextPath: Cognni.insights.id
+      description: id
       type: String
     - contextPath: Cognni.insights.name
+      description: name
       type: String
     - contextPath: Cognni.insights.description
+      description: description
       type: String
     - contextPath: Cognni.insights.severity
+      description: severity
       type: Number
   - arguments:
     - default: false
+      description: Fetch incidents starting from that date
       isArray: false
       name: from_date
       required: false
       secret: false
     - default: false
       defaultValue: '1'
+      description: Minimum severity of incidents to fetch
       isArray: false
       name: min_severity
       required: false
       secret: false
     deprecated: false
+    description: Fetch incidents
     execution: false
     name: cognni-fetch-incidents
-    outputs:
-    - type: Unknown
   dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
