@@ -46,7 +46,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
+description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API),
+  enables fetching and resolving detections, searching devices, getting behaviors
+  by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
 script:
@@ -219,6 +221,7 @@ script:
     arguments:
     - name: ids
       description: A comma separated list of one or more IDs to resolve.
+      required: true
     - name: status
       auto: PREDEFINED
       predefined:
@@ -229,7 +232,9 @@ script:
       - ignored
       description: The status to which you want to transition a detection.
     - name: assigned_to_uuid
-      description: ' A user ID, for example: 1234567891234567891. '
+      description: ' A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive.'
+    - name: comment
+      description: Optional comment to add to the detection. Comments are displayed with the detection in Falcon and usually used to provide context or notes for other Falcon users.
     - name: show_in_ui
       auto: PREDEFINED
       predefined:
@@ -237,7 +242,8 @@ script:
       - "false"
       description: If set to true, will display the dectection in the UI.
     - name: username
-      description: Username to resolve resolve detections of (This is usually the user’s email address, but may vary based on your configuration).
+      description: Username to assign the detections to (This is usually the
+        user’s email address, but may vary based on your configuration). username and assigned_to_uuid are mutually exclusive.
     description: Resolves and updates a detection.
   - name: cs-falcon-contain-host
     arguments:

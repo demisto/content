@@ -95,6 +95,42 @@ class WhereFieldEquals(unittest.TestCase):
         assert expected_result == received_result
 
     @staticmethod
+    def test_where_field_equals__no_stringify():
+        """
+        Given: list of dictionaries.
+        When: disabling the stringify option.
+        Then: Return a list of relevant field values.
+        """
+        args = {
+            "value": [
+                {
+                    "NetworkType": "Internal",
+                    "Address": "test1@demisto.com",
+                },
+                {
+                    "NetworkType": "Internal",
+                    "Address": "test2@demisto.com",
+                },
+                {
+                    "NetworkType": "External",
+                    "Address": "test3@demisto.com",
+                },
+                {
+                    "NetworkType": "Internal",
+                    "Address": "test4@demisto.com",
+                }
+            ],
+            "field": "NetworkType",
+            "equalTo": "Internal",
+            "getField": "Address",
+            "stringify": "false",
+        }
+        expected_result = ["test1@demisto.com", "test2@demisto.com", "test4@demisto.com"]
+
+        received_result = where_field_equals(args)
+        assert expected_result == received_result
+
+    @staticmethod
     def test_where_field_equals_malformed():
         """
         Given: list of dictionaries where some keys are not present in all dictionaries.
