@@ -187,10 +187,10 @@ def main():
         entry_context = {
             "TroubleShout": {
                 'Engine': {
-                    'SSL/TLS': docker_container_details()
+                    'SSL/TLS': docker_container_details(),
                 },
                 'Endpoint': {
-                    'SSL/TLS': endpoint_certificate("google.com", "443")
+                    'SSL/TLS': endpoint_certificate("google.com", "443"),
                 }
             }
         }
