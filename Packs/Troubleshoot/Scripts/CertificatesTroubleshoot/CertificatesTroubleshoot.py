@@ -164,8 +164,10 @@ def build_human_readable(entry_context: dict) -> str:
     # Engine docker container
     engine: dict = dict_safe_get(entry_context, ['Engine', 'SSL/TLS'], {}, dict)
     human_readable += "## Docker container engine - custom certificate\n"
-    readable_engine_issuer = [dict_safe_get(item, ('Decode', 'Issuer')) for item in engine.get('CustomCertificateAuthorities', {})]
-    readable_engine_subject = [dict_safe_get(item, ('Decode', 'Subject')) for item in engine.get('CustomCertificateAuthorities', {})]
+    readable_engine_issuer = [dict_safe_get(item, ('Decode', 'Issuer')) for item in
+                              engine.get('CustomCertificateAuthorities', {})]
+    readable_engine_subject = [dict_safe_get(item, ('Decode', 'Subject')) for item in
+                               engine.get('CustomCertificateAuthorities', {})]
     readable_engine_vars = engine.get('ShellVariables')
     human_readable += tableToMarkdown(name="Enviorment variables", t=readable_engine_vars)
     human_readable += tableToMarkdown(name="Issuer", t=readable_engine_issuer, removeNull=True)
