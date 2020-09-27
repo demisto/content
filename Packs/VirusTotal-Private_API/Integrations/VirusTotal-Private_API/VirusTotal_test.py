@@ -1,9 +1,15 @@
 import importlib
+import json
 import demistomock as demisto
 queued_response = {u'response_code': -2,
                    u'resource': u'YES_THIS_IS_A_UID',
                    u'scan_id': u'YES_THIS_IS_A_UID',
                    u'verbose_msg': u'Your resource is queued for analysis'}
+
+
+def load_test_data(json_path):
+    with open(json_path) as f:
+        return json.load(f)
 
 
 def test_get_file_response_queued_response(mocker, requests_mock):
@@ -18,7 +24,9 @@ def test_get_file_response_queued_response(mocker, requests_mock):
 
 def test_get_url_multiple_results(mocker, requests_mock):
     mocker.patch.object(demisto, 'args', return_value={'resource': 'https://linkedin.com, https://twitter.com'})
-    requests_mock.get('https://www.virustotal.com/vtapi/v2/url/report', json=queued_response)
+    requests_mock.get('https://www.virustotal.com/vtapi/v2/url/report',
+                      json=load_test_data('./test_data/get_url_report.json'))
+
     vt = importlib.import_module("VirusTotal-Private_API")
 
     output = vt.get_url_report_command()
