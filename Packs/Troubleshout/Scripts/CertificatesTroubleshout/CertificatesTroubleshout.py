@@ -2,7 +2,7 @@ import os
 import socket
 import ssl
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import demistomock as demisto  # noqa: F401
 import pem
