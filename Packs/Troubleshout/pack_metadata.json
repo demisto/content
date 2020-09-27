@@ -1,6 +1,6 @@
 {
     "name": "Troubleshout",
-    "description": "This pack include troubleshout tools.",
+    "description": "Use this pack to troubleshoot your environment.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
