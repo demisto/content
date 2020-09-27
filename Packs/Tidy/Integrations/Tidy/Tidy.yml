@@ -2772,6 +2772,36 @@ script:
       name: password
       required: false
       secret: false
+    - default: false
+      description: File path to add text block.
+      isArray: false
+      name: path
+      required: true
+      secret: false
+    - default: false
+      description: Text block to be added
+      isArray: false
+      name: block
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '" "'
+      description: Marker to manage block if needed to change in the future.
+      isArray: false
+      name: marker
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'yes'
+      description: If file not exits, Create new file.
+      isArray: false
+      name: create
+      predefined:
+      - 'yes'
+      - 'no'
+      required: true
+      secret: false
     deprecated: false
     description: Add managed (Block can be modified by marker) text block to file.
     execution: false
@@ -2794,6 +2824,19 @@ script:
       isArray: false
       name: password
       required: false
+      secret: false
+    - default: false
+      description: Bash command to execute.
+      isArray: false
+      name: command
+      required: true
+      secret: false
+    - default: false
+      defaultValue: $HOME
+      description: Change directory before executing command.
+      isArray: false
+      name: chdir
+      required: true
       secret: false
     deprecated: false
     description: Run command in host.

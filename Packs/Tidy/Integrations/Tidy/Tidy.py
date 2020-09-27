@@ -437,7 +437,7 @@ def tidy_exec_command(client: TidyClient, **kwargs) -> DemistoResult:
 
     """
     runner: Runner = client.exec(command=kwargs.get("command"),
-                                 working_dir=kwargs.get("dir"))
+                                 working_dir=kwargs.get("chdir"))
 
     return parse_response(response=runner,
                           human_readable_name="",
