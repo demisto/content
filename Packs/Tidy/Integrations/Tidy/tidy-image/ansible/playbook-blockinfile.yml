@@ -1,8 +1,8 @@
 ---
-- name: Git
+- name: Block in file
   hosts: all
   tasks:
-    - name: Add block to {{ path }}
+    - name: "Add block to {{ path }}"
       blockinfile:
         path: "{{ path }}"
         create: "{{ create }}"
