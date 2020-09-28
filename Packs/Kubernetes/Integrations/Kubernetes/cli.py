@@ -1,8 +1,16 @@
 import os
 import argparse
 import json
+import logging
 
 from Kubernetes import *
+
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logging.getLogger("urllib3").addHandler(ch)
+logging.getLogger("urllib3").setLevel(logging.DEBUG)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("namespace", help="The Kubernetes namespace to use.")

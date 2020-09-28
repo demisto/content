@@ -5,30 +5,34 @@ Python client: https://github.com/kubernetes-client/python/
 
 Kubernetes API
 --------------
-- Pods: Retrieve details of pods and their containers. Create new pods or stop running pods. 
+- Pods: Retrieve details of pods and their containers. Create new pods or stop running pods.
 - Services: Retrieve details of services. Create new services or delete existing services.
-- Routes: Retrieve details of routes Create new routes or delete existing routes. 
+- Routes: Retrieve details of routes Create new routes or delete existing routes.
+
 """
 
-''' IMPORTS ''' 
-# std
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 from datetime import date, datetime, timezone
 from json import dumps
-# local
+import urllib3
+
 import demistomock as demisto
 from CommonServerPython import *  
 from CommonServerUserPython import * 
-# 3rd-party
+
 from kubernetes import client, config
 from kubernetes.client import api, models, ApiClient, Configuration
 from kubernetes.client.api import CoreV1Api
 from kubernetes.client.models import V1PodList, V1ServiceList
 
+# Disable insecure warnings
+urllib3.disable_warnings()
+
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%d %H:%M:%SZ'
 
 ''' HELPERS '''
+
 def json_serial(obj):
     """JSON serializer for objects not serializable by default."""
     if isinstance(obj, (datetime, date)):
@@ -79,11 +83,15 @@ class Client(BaseClient):
                 'Containers': len(p['status']['container_statuses']),
                 'Ready': len ([ s for s in p['status']['container_statuses'] if s['ready'] ]), 
                 'Restarts': sum ([ s['restart_count'] for s in p['status']['container_statuses'] ]),
-                'Started': p['status']['start_time'].strftime(DATE_FORMAT),
+                'Started': p['status']['start_time'],
                 'Age': "%sh" % str(datetime.now(timezone.utc) - p['status']['start_time']).split(':')[0]
                 } for p in ret['items']]
         
 ''' COMMAND FUNCTIONS '''
+def test_module(client: Client) -> str:
+    client.list_pods_raw()
+    return 'ok'
+
 def list_pods_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ command: Returns list of running pods in the cluster.
 
@@ -96,14 +104,12 @@ def list_pods_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :return: A ``CommandResults`` object that is then passed to ``return_results``.
     :rtype: ``CommandResults``
     """
-    ns = args.get('namespace', None)
-
+    
     results = client.list_pods_raw().to_dict()
     return CommandResults(
         outputs_prefix='Kubernetes.Pods',
         outputs_key_field='Name',
-        outputs=results,
-        readable_output= tableToMarkdown(name="pods", t=client.list_pods_readable(results))
+        outputs= client.list_pods_readable(results)
     )
 
 ''' MAIN ''' 
@@ -111,18 +117,24 @@ def main() -> None:
     """main function, parses params and runs command functions.
     :return:
     :rtype:
-    """
     
+    """
+    demisto.debug(f'Command being called is {demisto.command()}')
     cluster_host_url = demisto.params().get('cluster_host_url')
     auth_token = demisto.params().get('auth_token')
     namespace = demisto.params().get('namespace')
-    k8s = Client(cluster_host_url, auth_token, namespace)
-    demisto.debug(f'Initialized k8s client for {cluster_host_url} using token {auth_token}...')
+    
+    try:
+        k8s = Client(cluster_host_url, auth_token, namespace)
+        demisto.debug(f'Initialized k8s client for {cluster_host_url} using token {auth_token}...')
+        if demisto.command() == 'test-module':
+             return_results(test_module(k8s))
+        if demisto.command() == 'k8s-fetch-pods':
+            return_results(list_pods_command(k8s, demisto.args()))
 
-    command = demisto.command()
-    #demisto.debug(f'Command being called is {command}')
-    #if command == 'list-pods':
-    #    k8s.
+    except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 ''' ENTRY POINT '''
 if __name__ in ('__main__', '__builtin__', 'builtins'):
