@@ -70,7 +70,7 @@ class Client(BaseClient):
     def get_api_versions(self) -> V1APIVersions:
         return client.CoreApi(api_client=self.api_client).get_api_versions()
 
-    def list_pods_raw(self, ns) -> V1PodList:
+    def get_pods_raw(self, ns) -> V1PodList:
         if not ns is None:
             return self.api.list_namespaced_pod(ns)
         else:
@@ -82,26 +82,26 @@ class Client(BaseClient):
         else:
             return self.api.list_service_for_all_namespaces()
 
-    def list_pods_readable(self, ret:Dict[str, Any]) -> List[Dict[str, Any]]:
+    def get_pods_readable(self, ret:Dict[str, Any]) -> List[Dict[str, Any]]:
         return [{
                 'Name':p['metadata']['name'],
                 'Status': p['status']['phase'],
                 'Containers': len(p['status']['container_statuses']),
                 'Ready': len ([ s for s in p['status']['container_statuses'] if s['ready'] ]),
                 'Restarts': sum ([ s['restart_count'] for s in p['status']['container_statuses'] ]),
-                'Started': p['status']['start_time'],
-                'Age': "%sh" % str(datetime.now(timezone.utc) - p['status']['start_time']).split(':')[0]
+                'Started': p['status']['start_time'].strftime(DATE_FORMAT)
                 } for p in ret['items']]
 
 ''' COMMAND FUNCTIONS '''
 def test_module(c: Client) -> str:
+    #c.list_pods_raw('victor')
     client.CoreApi(api_client=c.api_client).get_api_versions()
     return 'ok'
 
-def list_pods_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_pods_command(k8s: Client, args: Dict[str, Any]) -> CommandResults:
     """ command: Returns list of running pods in the cluster.
 
-    :type client: ``Client``
+    :type k8s: ``Client``
     :param Client: Kubernetes client to use.
 
     :type args: ``Dict[str, Any]``
@@ -111,11 +111,11 @@ def list_pods_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :rtype: ``CommandResults``
     """
     ns = args.get('ns', None)
-    results = client.list_pods_raw(ns).to_dict()
+    results = k8s.get_pods_raw(ns).to_dict()
     return CommandResults(
         outputs_prefix='Kubernetes.Pods',
         outputs_key_field='Name',
-        outputs= client.list_pods_readable(results)
+        outputs= k8s.get_pods_readable(results)
     )
 
 ''' MAIN '''
@@ -134,8 +134,8 @@ def main() -> None:
         demisto.debug(f'Initialized k8s client for {cluster_host_url} using token {auth_token}...')
         if demisto.command() == 'test-module':
              return_results(test_module(k8s))
-        if demisto.command() == 'k8s-fetch-pods':
-            return_results(list_pods_command(k8s, demisto.args()))
+        if demisto.command() == 'get-pods':
+            return_results(get_pods_command(k8s, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

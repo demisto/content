@@ -5,13 +5,6 @@ import logging
 
 from Kubernetes import *
 
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-logging.getLogger("urllib3").addHandler(ch)
-logging.getLogger("urllib3").setLevel(logging.DEBUG)
-
 parser = argparse.ArgumentParser()
 parser.add_argument("namespace", help="The Kubernetes namespace to use.")
 parser.add_argument("--pods", help="List pods in namespace.", action="store_true")
@@ -31,13 +24,13 @@ token = os.environ['KUBERNETES_CLUSTER_TOKEN']
 k8s = Client(cluster_host_url, token)
 
 if args.podscmd:
-    print(k8s.list_pods_readable(k8s.list_pods_raw(ns).to_dict()))
+    print(k8s.get_pods_readable(k8s.get_pods_raw(ns).to_dict()))
     exit()
 obj = ''
 ret = None
 if args.pods:
     obj = "Pod"
-    ret = k8s.list_pods_raw()
+    ret = k8s.get_pods_raw()
 elif args.services:
     obj = "Service"
     ret = k8s.list_services()
