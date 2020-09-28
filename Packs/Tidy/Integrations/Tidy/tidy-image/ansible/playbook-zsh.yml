@@ -18,6 +18,7 @@
 
   roles:
     - role: ctorgalson.oh-my-zsh
+      become: yes
       vars:
         omz_install_zsh: true
         omz_zsh_theme: "powerlevel10k/powerlevel10k"
