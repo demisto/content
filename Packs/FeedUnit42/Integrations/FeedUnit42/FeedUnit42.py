@@ -46,14 +46,12 @@ class Client(BaseClient):
         """
         data = []
 
-        # for api_root in self.server.api_roots:
-        api_root = self.server.api_roots[0]
-        for collection in api_root.collections:
-            for bundle in as_pages(collection.get_objects, per_request=100, **kwargs):
-                data.extend(bundle.get('objects'))
-                print('fetched another 100 ' + kwargs.get('type'))
-                if test:
-                    break
+        for api_root in self.server.api_roots:
+            for collection in api_root.collections:
+                for bundle in as_pages(collection.get_objects, per_request=100, **kwargs):
+                    data.extend(bundle.get('objects'))
+                    if test:
+                        break
         return data
 
 
@@ -93,57 +91,53 @@ def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: O
     return indicators
 
 
-def parse_indicators_relationships(indicators: list, relationships: list = [], pivots: list = []) -> list:
+def parse_indicators_relationships(indicators: List, matched_relationships: Dict, id_to_object: Dict):
     """Parse the relationships between indicators to attack-patterns, malware and campaigns.
+
     Args:
-      indicators: a list of indicators.
-      relationships: a list of relationships.
-      pivots: a list of attack-patterns, malware and campaigns.
+      indicators (List): a list of indicators.
+      matched_relationships (Dict): a dict of relationships in the form of `id: list(related_ids)`.
+      id_to_object: a dict in the form of `id: stix_object`.
+
     Returns:
         A list of indicators, containing the indicators and the relationships between them.
     """
     for indicator in indicators:
         indicator_id = indicator.get('fields', {}).get('indicatoridentification', '')
-        for relationship in relationships:
-            reference = ''
-            if indicator_id == relationship.get('source_ref'):
-                reference = relationship.get('target_ref', '')
+        for relation in matched_relationships.get(indicator_id, []):
+            relation_object = id_to_object.get(relation)
+            if not relation_object:
+                continue
 
-            elif indicator_id == relationship.get('target_ref'):
-                reference = relationship.get('source_ref', '')
+            if relation.startswith('attack-pattern'):
+                relation_value_field = relation_object.get('external_references')
+                field_type = 'feedrelatedindicators'
+                indicator['fields']['feedrelatedindicators'] = []
+            elif relation.startswith('campaign'):
+                relation_value_field = relation_object.get('name')
+                field_type = 'campaign'
+            elif relation.startswith('malware'):
+                relation_value_field = relation_object.get('name')
+                field_type = 'malwarefamily'
+            else:
+                continue
 
-            field = ''
-            if reference:  # if there is a reference, get the relevant pivot
-                if reference.startswith('attack-pattern'):
-                    field = 'external_references'
-                    field_type = 'feedrelatedindicators'
-                elif reference.startswith('campaign'):
-                    field = 'name'
-                    field_type = 'campaign'
-                elif reference.startswith('malware'):
-                    field = 'name'
-                    field_type = 'malwarefamily'
+            if isinstance(relation_value_field, str):
+                # multiple malware or campaign names can be associated to an indicator
+                if field_type in indicator.get('fields'):
+                    indicator['fields'][field_type].extend([relation_value_field])
+                else:
+                    indicator['fields'][field_type] = [relation_value_field]
 
-            if field:  # if there is a pivot, map the relevant data accordingly
-                for pivot in pivots:
-                    if pivot.get('id') == reference:
-                        pivot_field = pivot.get(field)
-                        if isinstance(pivot_field, str):
-                            # multiple malware or campaign names can be associated to an indicator
-                            if field_type in indicator.get('fields'):
-                                indicator['fields'][field_type].extend([pivot_field])
-                            else:
-                                indicator['fields'][field_type] = [pivot_field]
-                        else:  # a feedrelatedindicators is a list of dict
-                            indicator['fields'][field_type] = []
-                            for item in pivot_field:
-                                if 'url' in item or 'external_id' in item:
-                                    feedrelatedindicators_obj = {
-                                        'type': 'MITRE ATT&CK',
-                                        'value': item.get('external_id'),
-                                        'description': item.get('url')
-                                    }
-                                    indicator['fields'][field_type].extend([feedrelatedindicators_obj])
+            else:  # a feedrelatedindicators is a list of dict
+                for item in relation_value_field:
+                    if 'url' in item or 'external_id' in item:
+                        feedrelatedindicators_obj = {
+                            'type': 'MITRE ATT&CK',
+                            'value': item.get('external_id'),
+                            'description': item.get('url')
+                        }
+                        indicator['fields'][field_type].extend([feedrelatedindicators_obj])
 
     return indicators
 
@@ -221,8 +215,8 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
     Args:
       reports: a list of reports.
       sub_reports: a list of sub-reports.
-      relationships: a list of relationships.
-      pivots: a list of attack-patterns, malware and campaigns.
+      matched_relationships (Dict): a dict of relationships in the form of `id: list(related_ids)`.
+      id_to_object: a dict in the form of `id: stix_object`.
 
     Returns:
         A list of processed reports.
@@ -287,6 +281,14 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
 
 
 def match_relationships(relationships: List):
+    """Creates a dict that connects object_id to all objects_ids it has a relationship with.
+
+    Args:
+        relationships (List): A list of relationship objects.
+
+    Returns:
+        Dict. Connects object_id to all objects_ids it has a relationship with. In the form of `id: [related_ids]`
+    """
     matches: Dict[str, set] = {}
 
     for relationship in relationships:
@@ -304,47 +306,6 @@ def match_relationships(relationships: List):
             matches[target] = {source}
 
     return matches
-
-
-def parse_ind_relationships(indicators: List, matched_relationships: Dict, id_to_object: Dict):
-    for indicator in indicators:
-        indicator_id = indicator.get('fields', {}).get('indicatoridentification', '')
-        for relation in matched_relationships.get(indicator_id, []):
-            relation_object = id_to_object.get(relation)
-            if not relation_object:
-                continue
-
-            if relation.startswith('attack-pattern'):
-                relation_value_field = relation_object.get('external_references')
-                field_type = 'feedrelatedindicators'
-                indicator['fields']['feedrelatedindicators'] = []
-            elif relation.startswith('campaign'):
-                relation_value_field = relation_object.get('name')
-                field_type = 'campaign'
-            elif relation.startswith('malware'):
-                relation_value_field = relation_object.get('name')
-                field_type = 'malwarefamily'
-            else:
-                continue
-
-            if isinstance(relation_value_field, str):
-                # multiple malware or campaign names can be associated to an indicator
-                if field_type in indicator.get('fields'):
-                    indicator['fields'][field_type].extend([relation_value_field])
-                else:
-                    indicator['fields'][field_type] = [relation_value_field]
-
-            else:  # a feedrelatedindicators is a list of dict
-                for item in relation_value_field:
-                    if 'url' in item or 'external_id' in item:
-                        feedrelatedindicators_obj = {
-                            'type': 'MITRE ATT&CK',
-                            'value': item.get('external_id'),
-                            'description': item.get('url')
-                        }
-                        indicator['fields'][field_type].extend([feedrelatedindicators_obj])
-
-    return indicators
 
 
 def test_module(client: Client) -> str:
@@ -377,8 +338,8 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     attack_pattern_objects = client.get_stix_objects(test=False, type='attack-pattern')
     relationship_objects = client.get_stix_objects(test=False, type='relationship')
 
-    # fix this
-    demisto.info(str(f'Fetched Unit42 Indicators. {str(len([]))} Objects were received.'))
+    demisto.info('Fetched Unit42 Indicators and Reports. '
+                 f'{str(len(indicator_objects + report_objects))} Objects were received.')
 
     id_to_object = {
         obj.get('id'): obj for obj in
@@ -388,12 +349,12 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     matched_relationships = match_relationships(relationship_objects)
 
     indicators = parse_indicators(indicator_objects, feed_tags, tlp_color)
-    indicators = parse_ind_relationships(indicators, matched_relationships, id_to_object)
+    indicators = parse_indicators_relationships(indicators, matched_relationships, id_to_object)
 
     reports = parse_reports(main_report_objects, feed_tags, tlp_color)
     reports = parse_reports_relationships(reports, sub_report_objects, matched_relationships, id_to_object)
 
-    demisto.debug(str(f'{str(len(indicators) + len(reports))} Demisto Indicators were created.'))
+    demisto.debug(f'{str(len(indicators) + len(reports))} Demisto Indicators were created.')
     return indicators + reports
 
 
@@ -411,17 +372,12 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list
     """
     limit = int(args.get('limit', '10'))
 
-    reports = client.get_stix_objects(test=False, type='report')
-    indicators = client.get_stix_objects(test=False, type='indicator')
-    malwares = client.get_stix_objects(test=False, type='malware')
-    campaigns = client.get_stix_objects(test=False, type='campaign')
-    attack_patterns = client.get_stix_objects(test=False, type='attack-pattern')
-    relationships = client.get_stix_objects(test=False, type='relationship')
+    indicators = client.get_stix_objects(test=True, type='indicator')
 
     indicators = parse_indicators(indicators, feed_tags, tlp_color)
     limited_indicators = indicators[:limit]
 
-    readable_output = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value'])
+    readable_output = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value', 'fields'])
 
     command_results = CommandResults(
         outputs_prefix='',
