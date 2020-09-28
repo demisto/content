@@ -1,0 +1,393 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: bebb4c02-b79e-40ba-83e1-941444ff709b
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: (Lab2) Create Temp User Account
+inputs:
+- description: ""
+  key: Username
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: StartDate
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: EndDate
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: OU
+  playbookInputQuery:
+  required: false
+  value: {}
+name: (Lab2) Create Temp User Account
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dcf148bf-6020-439a-8e0b-15edd87eb23f
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: dcf148bf-6020-439a-8e0b-15edd87eb23f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: NEW_PASSWORD
+      stringify: {}
+      value:
+        simple: "0"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: f6a72062-efa0-4f3e-8605-ca0c542c9a85
+      iscommand: false
+      name: Reset Random Password Field
+      script: Set
+      type: regular
+      version: -1
+    taskid: f6a72062-efa0-4f3e-8605-ca0c542c9a85
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      debug: {}
+      max_digits:
+        simple: "5"
+      max_lcase:
+        simple: "5"
+      max_symbols:
+        simple: "1"
+      max_ucase:
+        simple: "0"
+      min_digits:
+        simple: "5"
+      min_lcase:
+        simple: "5"
+      min_symbols:
+        simple: "1"
+      min_ucase:
+        simple: "0"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "This function generates a password and allows various parameters\
+        \ to customize the properties of the password depending on the use case (e.g.\
+        \ password complexity requirements).  The default behavior is to generate\
+        \ a password of  *random length* including all four character classes (upper,\
+        \ lower, digits, symbols) with at least five and at most ten characters per\
+        \ class. \n\nThe min_* values all default to 0. This means that if the command\
+        \ is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible\
+        \ that a password of length zero could be generated. It is therefore recommended\
+        \ to always include a min_* parameter that matches. \n\nThe debug parameter\
+        \ will print certain properties of the command into the WarRoom for easy diagnostics."
+      id: 527fd36a-874d-49f3-8a57-e7efbf7024e0
+      iscommand: false
+      name: Generate New Random Password
+      script: GeneratePassword
+      type: regular
+      version: -1
+    taskid: 527fd36a-874d-49f3-8a57-e7efbf7024e0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: NewPW
+      stringify: {}
+      value:
+        complex:
+          root: NEW_PASSWORD
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "1"
+            operator: atIndex
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 7b437f99-9f70-4b66-897e-c88cec5602e4
+      iscommand: false
+      name: Get the Random Password
+      script: Set
+      type: regular
+      version: -1
+    taskid: 7b437f99-9f70-4b66-897e-c88cec5602e4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      DateTime:
+        simple: ${inputs.StartDate}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a1f6f2c4-5475-455d-88db-b3d353564c58
+      iscommand: false
+      name: Convert StartDate to Cron Format
+      script: DateTimeToCron
+      type: regular
+      version: -1
+    taskid: a1f6f2c4-5475-455d-88db-b3d353564c58
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 670
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      DateTime:
+        simple: ${inputs.EndDate}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8f3f63fd-1c34-4c5a-8c15-5247db80dd62
+      iscommand: false
+      name: Convert EndDate to Cron Format
+      script: DateTimeToCron
+      type: regular
+      version: -1
+    taskid: 8f3f63fd-1c34-4c5a-8c15-5247db80dd62
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 820
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      command:
+        simple: '!ad-create-user username="${inputs.Username}" display-name="${inputs.Username}"
+          password="${NewPW}" user-dn="cn=${inputs.Username},cn=Users,dc=services,dc=dom" '
+      cron:
+        complex:
+          root: CronString
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      endDate: {}
+      times:
+        simple: "1"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Schedule a command to run inside the war room at a future time
+        (once or reoccurring)
+      id: b14f2d88-05da-43e9-8ee8-4145a38f6471
+      iscommand: false
+      name: Setup Schedule Task for Account Creation
+      script: ScheduleCommand
+      type: regular
+      version: -1
+    taskid: b14f2d88-05da-43e9-8ee8-4145a38f6471
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1030
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      command:
+        simple: '!ad-delete-user user-dn="cn=${inputs.Username},cn=Users,dc=services,dc=dom"'
+      cron:
+        complex:
+          root: CronString
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "1"
+            operator: atIndex
+      endDate: {}
+      times:
+        simple: "1"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Schedule a command to run inside the war room at a future time
+        (once or reoccurring)
+      id: f6be8a25-d9e5-431e-885c-058459d41400
+      iscommand: false
+      name: Setup Schedule Task for Account Deletion
+      script: ScheduleCommand
+      type: regular
+      version: -1
+    taskid: f6be8a25-d9e5-431e-885c-058459d41400
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1030
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ba8e33f4-c474-4535-8cf6-84dd43396977
+      iscommand: false
+      name: Completed
+      type: title
+      version: -1
+      description: ''
+    taskid: ba8e33f4-c474-4535-8cf6-84dd43396977
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1220
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1205,
+        "width": 840,
+        "x": 220,
+        "y": 80
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

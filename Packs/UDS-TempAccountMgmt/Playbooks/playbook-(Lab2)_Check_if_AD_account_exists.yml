@@ -1,0 +1,201 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: bebb4c02-b79e-40ba-83e1-941444ff709b
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: (Lab2) Check if AD account exists
+inputs:
+- description: ""
+  key: Username
+  playbookInputQuery:
+  required: false
+  value: {}
+name: (Lab2) Check if AD account exists
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a7ece3c2-5f23-4210-8b48-c541e1e9e098
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: a7ece3c2-5f23-4210-8b48-c541e1e9e098
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Username
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              simple: ${ActiveDirectory.Users.sAMAccountName}
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7c57f461-3423-4286-887d-bd2cdbc73921
+      iscommand: false
+      name: Is the input in AD user list?
+      type: condition
+      version: -1
+    taskid: 7c57f461-3423-4286-887d-bd2cdbc73921
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: UsernameDuplicated
+      stringify: {}
+      value:
+        simple: "True"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 2dd6d9ab-d972-49e3-8575-7d587cc17e69
+      iscommand: false
+      name: Set Duplicate Flag to True
+      script: Set
+      type: regular
+      version: -1
+    taskid: 2dd6d9ab-d972-49e3-8575-7d587cc17e69
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 360
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: UsernameDuplicated
+      stringify: {}
+      value:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: e72a994a-a811-4b04-87a8-61b1ec7b17c3
+      iscommand: false
+      name: Set Duplicate Flag to False
+      script: Set
+      type: regular
+      version: -1
+    taskid: e72a994a-a811-4b04-87a8-61b1ec7b17c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 360
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 76824f02-89ae-44c4-85c1-fa0bd1fd313a
+      iscommand: false
+      name: Completed
+      type: title
+      version: -1
+      description: ''
+    taskid: 76824f02-89ae-44c4-85c1-fa0bd1fd313a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 575,
+        "width": 880,
+        "x": 220,
+        "y": 40
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

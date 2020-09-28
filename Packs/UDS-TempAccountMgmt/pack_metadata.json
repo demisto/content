@@ -1,0 +1,14 @@
+{
+    "name": "UDS-TempAccountMgmt",
+    "description": "Schedule AD Account Creation & Deletion using CSV data source",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Apple Li",
+    "url": "",
+    "email": "",
+    "created": "2020-09-28T08:21:17Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
