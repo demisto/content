@@ -4,15 +4,7 @@ commonfields:
 name: ARIA Packet Intelligence
 display: ARIA Packet Intelligence
 category: Network Security
-description: 'The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform
-  integrates with Demisto to add robustness when responding to incidents. The combination
-  of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software,
-  specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements
-  required to react instantly when an incident is detected. When integrated with the
-  ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify,
-  or delete rules automatically. These rule changes, which take effect immediately,
-  can block conversations, redirect packets to a recorder or VLAN, or perform a variety
-  of other actions.'
+description: 'The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform integrates with Demisto to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.'
 configuration:
 - display: SDSo Base URL (e.g. http://<IP address or FQDN of SDSo Node>:7443)
   name: sdso
@@ -38,14 +30,12 @@ script:
       required: true
       description: The source IP address.
     - name: src_port
-      description: The source port(s). This accepts a comma-separated list (e.g.,
-        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+      description: The source port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: target_ip
       required: true
       description: The destination IP address.
     - name: target_port
-      description: The destination port(s). This accepts a comma-separated list (e.g.,
-        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+      description: The destination port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: protocol
       description: The protocol used for the packets (e.g., TCP).
     - name: rule_name
@@ -61,11 +51,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.BlockConversation.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Creates a rule that drops all packets that match the specified 5-tuple
-      values.
+    description: Creates a rule that drops all packets that match the specified 5-tuple values.
   - name: aria-unblock-conversation
     arguments:
     - name: rule_name
@@ -81,31 +69,26 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.UnblockConversation.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Deletes a named rule from the 5-tuple logic block. This allows the
-      previously blocked conversation to resume.
+    description: Deletes a named rule from the 5-tuple logic block. This allows the previously blocked conversation to resume.
   - name: aria-record-conversation
     arguments:
     - name: src_ip
       required: true
       description: The source IP address.
     - name: src_port
-      description: The source port(s). This accepts a comma-separated list (e.g.,
-        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+      description: The source port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: target_ip
       required: true
       description: The destination IP address.
     - name: target_port
-      description: The destination port(s). This accepts a comma-separated list (e.g.,
-        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+      description: The destination port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: protocol
       description: The protocol used for the packets (e.g., TCP) .
     - name: vlan_id
       required: true
-      description: The VLAN ID that your network switch uses to forward packets to the
-        Packet Recorder.
+      description: The VLAN ID that your network switch uses to forward packets to the Packet Recorder.
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -114,8 +97,7 @@ script:
       predefined:
       - A
       - B
-      description: The letter of the interface on the SIA used for forwarding packets. Can be A or B.
-        If omitted, interface A is used.
+      description: The letter of the interface on the SIA used for forwarding packets. Can be A or B. If omitted, interface A is used.
     - name: transport_type
       auto: PREDEFINED
       predefined:
@@ -133,26 +115,9 @@ script:
       - re-trigger-count
       - re-trigger-timed-ms
       - re-trigger-timed-sec
-      description: 'The frequency of the alert. one-shot: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. After the alert triggers, it is disabled until
-        the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets that match the criteria reaches the threshold specified
-        in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met. re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the amount of time (in msecs)
-        defined in the trigger_value field. Once this time passes, the alert is triggered
-        again. re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the amount of time (in seconds) defined in the trigger_value field. After this
-        time passes, the alert is triggered again.'
+      description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
-      description: The threshold that must be met before the alert is triggered. The
-        value entered here depends on the trigger_type. If the trigger_type is one-shot
-        or retrigger-count, this is the total number of packets that must be received
-        before the alert is triggered. The valid range is 1-8191. If the trigger_type
-        is re-trigger-ms or re-triggersec, this is the total amount of time (in msecs or secs),
-        respectively, that must elapse before the alert is triggered again. The valid
-        range is 1-8191.
+      description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191. If the trigger_type is re-trigger-ms or re-triggersec, this is the total amount of time (in msecs or secs), respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
       description: 'The remediation configuration string.'
     outputs:
@@ -163,11 +128,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.RecordConversation.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Creates a rule that redirects a conversation that matches 5-tuple values
-      to the Packet Recorder. Packets are tagged with the VID specified in the instance.
+    description: Creates a rule that redirects a conversation that matches 5-tuple values to the Packet Recorder. Packets are tagged with the VID specified in the instance.
   - name: aria-stop-recording-conversation
     arguments:
     - name: rule_name
@@ -183,25 +146,21 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.StopRecordingConversation.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes the named rule from the 5-tuple block. This stops redirecting
-      traffic to the Packet Recorder.
+    description: Removes the named rule from the 5-tuple block. This stops redirecting traffic to the Packet Recorder.
   - name: aria-alert-conversation
     arguments:
     - name: src_ip
       required: true
       description: The source IP address.
     - name: src_port
-      description: The source port(s). This accepts a comma-separated list (e.g.,
-        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+      description: The source port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: target_ip
       required: true
       description: The destination IP address.
     - name: target_port
-      description: The destination port(s). This accepts a comma-separated list (e.g.,
-        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+      description: The destination port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: protocol
       description: The protocol used for the packets (e.g., TCP) .
     - name: rule_name
@@ -228,27 +187,10 @@ script:
       - re-trigger-count
       - re-trigger-timed-ms
       - re-trigger-timed-sec
-      description: 'The frequency of the alert. one-shot: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. After the alert triggers, it is disabled until
-        the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets that match the criteria reaches the threshold specified
-        in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met. re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the amount of time (in msecs)
-        defined in the trigger_value field. Once this time passes, the alert is triggered
-        again. re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the amount of time (in seconds) defined in the trigger_value field. After this
-        time passes, the alert is triggered again.'
+      description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
       required: true
-      description: The threshold that must be met before the alert is triggered. The
-        value entered here depends on the trigger_type. If the trigger_type is one-shot
-        or retrigger-count, this is the total number of packets that must be received
-        before the alert is triggered. The valid range is 1-8191. If the trigger_type
-        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
-        respectively, that must elapse before the alert is triggered again. The valid
-        range is 1-8191.
+      description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191. If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
       description: 'The remediation configuration string.'
     outputs:
@@ -259,11 +201,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.AlertConversation.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Adds a rule that generates an alert when a conversation that matches
-      the specified 5-tuple values is detected.
+    description: Adds a rule that generates an alert when a conversation that matches the specified 5-tuple values is detected.
   - name: aria-mute-alert-conversation
     arguments:
     - name: rule_name
@@ -279,17 +219,14 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.MuteAlertConversation.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the 5-tuple logic block, disabling the
-      alerts.
+    description: Removes a named rule from the 5-tuple logic block, disabling the alerts.
   - name: aria-block-dest-port
     arguments:
     - name: port_range
       required: true
-      description: The destination port(s) to block. This accepts a comma-separated list (e.g.,
-        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+      description: The destination port(s) to block. This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -303,11 +240,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.BlockDestPort.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Creates a rule that blocks packets destined for one or more specified
-      ports.
+    description: Creates a rule that blocks packets destined for one or more specified ports.
   - name: aria-unblock-dest-port
     arguments:
     - name: rule_name
@@ -323,21 +258,17 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.UnblockDestPort.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the destination port logic block. This
-      allows the previously blocked traffic to resume.
+    description: Removes a named rule from the destination port logic block. This allows the previously blocked traffic to resume.
   - name: aria-record-dest-port
     arguments:
     - name: port_range
       required: true
-      description: The destination port(s). This accepts a comma-separated list (e.g.,
-        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+      description: The destination port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: vlan_id
       required: true
-      description: The VLAN ID that your network switch uses to forward packets to the
-        Packet Recorder.
+      description: The VLAN ID that your network switch uses to forward packets to the Packet Recorder.
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -346,8 +277,7 @@ script:
       predefined:
       - A
       - B
-      description: The letter of the interface on the SIA used for forwarding packets.
-        Can be A or B. If omitted, interface A is used.
+      description: The letter of the interface on the SIA used for forwarding packets. Can be A or B. If omitted, interface A is used.
     - name: transport_type
       auto: PREDEFINED
       predefined:
@@ -365,26 +295,9 @@ script:
       - re-trigger-count
       - re-trigger-timed-ms
       - re-trigger-timed-sec
-      description: 'The frequency of the alert. one-shot: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. After the alert triggers, it is disabled until
-        the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets that match the criteria reaches the threshold specified
-        in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met. re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the amount of time (in msecs)
-        defined in the trigger_value field. Once this time passes, the alert is triggered
-        again. re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the amount of time (in seconds) defined in the trigger_value field. After this
-        time passes, the alert is triggered again.'
+      description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
-      description: The threshold that must be met before the alert is triggered. The
-        value entered here depends on the trigger_type. If the trigger_type is one-shot
-        or retrigger-count, this is the total number of packets that must be received
-        before the alert is triggered. The valid range is 1-8191, If the trigger_type
-        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
-        respectively, that must elapse before the alert is triggered again. The valid
-        range is 1-8191.
+      description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
       description: 'The remediation configuration string.'
     outputs:
@@ -395,11 +308,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.RecordDestPort.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Adds a rule that redirects traffic that is destined for one or more ports
-      to the Packet Recorder. Packets are tagged with the VID specified in the instance.
+    description: Adds a rule that redirects traffic that is destined for one or more ports to the Packet Recorder. Packets are tagged with the VID specified in the instance.
   - name: aria-stop-recording-dest-port
     arguments:
     - name: rule_name
@@ -415,17 +326,14 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.StopRecordingDestPort.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the destination port logic block. This
-      stops redirecting traffic to the Packet Recorder.
+    description: Removes a named rule from the destination port logic block. This stops redirecting traffic to the Packet Recorder.
   - name: aria-alert-dest-port
     arguments:
     - name: port_range
       required: true
-      description: The destination port(s). This accepts a comma-separated list (e.g.,
-        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+      description: The destination port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -450,27 +358,10 @@ script:
       - re-trigger-count
       - re-trigger-timed-ms
       - re-trigger-timed-sec
-      description: 'The frequency of the alert. one-shot: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. After the alert triggers, it is disabled until
-        the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets that match the criteria reaches the threshold specified
-        in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met. re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the amount of time (in msecs)
-        defined in the trigger_value field. Once this time passes, the alert is triggered
-        again. re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the amount of time (in seconds) defined in the trigger_value field. After this
-        time passes, the alert is triggered again.'
+      description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
       required: true
-      description: The threshold that must be met before the alert is triggered. The
-        value entered here depends on the trigger_type. If the trigger_type is one-shot
-        or retrigger-count, this is the total number of packets that must be received
-        before the alert is triggered. The valid range is 1-8191, If the trigger_type
-        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
-        respectively, that must elapse before the alert is triggered again. The valid
-        range is 1-8191.
+      description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
       description: 'The remediation configuration string.'
     outputs:
@@ -481,11 +372,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.AlertDestPort.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Creates a rule that generates an alert when traffic destined for
-      one or more ports is detected.
+    description: Creates a rule that generates an alert when traffic destined for one or more ports is detected.
   - name: aria-mute-alert-dest-port
     arguments:
     - name: rule_name
@@ -501,17 +390,14 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.MuteAlertDestPort.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the destination port logic block, disabling
-      the alerts.
+    description: Removes a named rule from the destination port logic block, disabling the alerts.
   - name: aria-block-src-port
     arguments:
     - name: port_range
       required: true
-      description: The source port(s). This accepts a comma-separated list (e.g.,
-        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+      description: The source port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -525,11 +411,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.BlockSrcPort.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Adds a rule that blocks packets originating from one or more specific
-      ports.
+    description: Adds a rule that blocks packets originating from one or more specific ports.
   - name: aria-unblock-src-port
     arguments:
     - name: rule_name
@@ -545,21 +429,17 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.UnblockSrcPort.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the source port logic block. This allows
-      the previously blocked traffic to resume.
+    description: Removes a named rule from the source port logic block. This allows the previously blocked traffic to resume.
   - name: aria-record-src-port
     arguments:
     - name: port_range
       required: true
-      description: The source port(s). This accepts a comma-separated list (e.g.,
-        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+      description: The source port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: vlan_id
       required: true
-      description: The VLAN ID your network switch uses to forward packets to the
-        Packet Recorder.
+      description: The VLAN ID your network switch uses to forward packets to the Packet Recorder.
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -568,8 +448,7 @@ script:
       predefined:
       - A
       - B
-      description: The letter of the interface on the SIA used for forwarding packets.
-        Can be A or B. If omitted, interface A is used.
+      description: The letter of the interface on the SIA used for forwarding packets. Can be A or B. If omitted, interface A is used.
     - name: transport_type
       auto: PREDEFINED
       predefined:
@@ -587,26 +466,9 @@ script:
       - re-trigger-count
       - re-trigger-timed-ms
       - re-trigger-timed-sec
-      description: 'The frequency of the alert. one-shot: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. After the alert triggers, it is disabled until
-        the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets that match the criteria reaches the threshold specified
-        in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met. re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the amount of time (in msecs)
-        defined in the trigger_value field. Once this time passes, the alert is triggered
-        again. re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the amount of time (in seconds) defined in the trigger_value field. After this
-        time passes, the alert is triggered again.'
+      description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
-      description: The threshold that must be met before the alert is triggered. The
-        value entered here depends on the trigger_type. If the trigger_type is one-shot
-        or retrigger-count, this is the total number of packets that must be received
-        before the alert is triggered. The valid range is 1-8191, If the trigger_type
-        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
-        respectively, that must elapse before the alert is triggered again. The valid
-        range is 1-8191.
+      description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
       description: 'The remediation configuration string.'
     outputs:
@@ -617,11 +479,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.RecordSrcPort.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Adds a rule that redirects traffic originating from one or more ports
-      to the Packet Recorder. Packets are tagged with the VID specified in the instance.
+    description: Adds a rule that redirects traffic originating from one or more ports to the Packet Recorder. Packets are tagged with the VID specified in the instance.
   - name: aria-stop-recording-src-port
     arguments:
     - name: rule_name
@@ -637,17 +497,14 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.StopRecordingSrcPort.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the source port logic block. This stops
-      redirecting traffic to the Packet Recorder.
+    description: Removes a named rule from the source port logic block. This stops redirecting traffic to the Packet Recorder.
   - name: aria-alert-src-port
     arguments:
     - name: port_range
       required: true
-      description: The source port(s). This accepts a comma-separated list (e.g.,
-        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+      description: The source port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -672,27 +529,10 @@ script:
       - re-trigger-count
       - re-trigger-timed-ms
       - re-trigger-timed-sec
-      description: 'The frequency of the alert. one-shot: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. After the alert triggers, it is disabled until
-        the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets that match the criteria reaches the threshold specified
-        in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met. re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the amount of time (in msecs)
-        defined in the trigger_value field. Once this time passes, the alert is triggered
-        again. re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the amount of time (in seconds) defined in the trigger_value field. After this
-        time passes, the alert is triggered again.'
+      description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
       required: true
-      description: The threshold that must be met before the alert is triggered. The
-        value entered here depends on the trigger_type. If the trigger_type is one-shot
-        or retrigger-count, this is the total number of packets that must be received
-        before the alert is triggered. The valid range is 1-8191, If the trigger_type
-        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
-        respectively, that must elapse before the alert is triggered again. The valid
-        range is 1-8191.
+      description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
       description: 'The remediation configuration string.'
     outputs:
@@ -703,11 +543,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.AlertSrcPort.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Creates a rule that generates an alert when traffic originating from
-      one or more ports is detected.
+    description: Creates a rule that generates an alert when traffic originating from one or more ports is detected.
   - name: aria-mute-alert-src-port
     arguments:
     - name: rule_name
@@ -723,17 +561,14 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.MuteAlertSrcPort.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the source port logic block, disabling
-      the alerts.
+    description: Removes a named rule from the source port logic block, disabling the alerts.
   - name: aria-block-dest-subnet
     arguments:
     - name: target_ip
       required: true
-      description: The IP address and mask of the destination IP address(es), in the
-        format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
+      description: The IP address and mask of the destination IP address(es), in the format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -747,11 +582,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.BlockDestSubnet.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Adds a rule that blocks packets destined for a specific IP address
-      or range of IP addresses.
+    description: Adds a rule that blocks packets destined for a specific IP address or range of IP addresses.
   - name: aria-unblock-dest-subnet
     arguments:
     - name: rule_name
@@ -767,21 +600,17 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.UnblockDestSubnet.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the destination subnet logic block. This
-      allows the previously blocked traffic to resume.
+    description: Removes a named rule from the destination subnet logic block. This allows the previously blocked traffic to resume.
   - name: aria-record-dest-subnet
     arguments:
     - name: target_ip
       required: true
-      description: The IP address and mask of the destination IP address(es), in the
-        format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
+      description: The IP address and mask of the destination IP address(es), in the format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
     - name: vlan_id
       required: true
-      description: The VLAN ID that your network switch uses to forward packets to the
-        Packet Recorder.
+      description: The VLAN ID that your network switch uses to forward packets to the Packet Recorder.
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -790,8 +619,7 @@ script:
       predefined:
       - A
       - B
-      description: The letter of the interface on the SIA used for forwarding packets.
-        Can be A or B. If omitted, interface A is used.
+      description: The letter of the interface on the SIA used for forwarding packets. Can be A or B. If omitted, interface A is used.
     - name: transport_type
       auto: PREDEFINED
       predefined:
@@ -809,26 +637,9 @@ script:
       - re-trigger-count
       - re-trigger-timed-ms
       - re-trigger-timed-sec
-      description: 'The frequency of the alert. one-shot: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. After the alert triggers, it is disabled until
-        the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets that match the criteria reaches the threshold specified
-        in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met. re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the amount of time (in msecs)
-        defined in the trigger_value field. Once this time passes, the alert is triggered
-        again. re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the amount of time (in seconds) defined in the trigger_value field. After this
-        time passes, the alert is triggered again.'
+      description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
-      description: The threshold that must be met before the alert is triggered. The
-        value entered here depends on the trigger_type. If the trigger_type is one-shot
-        or retrigger-count, this is the total number of packets that must be received
-        before the alert is triggered. The valid range is 1-8191, If the trigger_type
-        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
-        respectively, that must elapse before the alert is triggered again. The valid
-        range is 1-8191.
+      description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
       description: 'The remediation configuration string.'
     outputs:
@@ -839,12 +650,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.RecordDestSubnet.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Creates a rule that redirects traffic destined for a specific IP
-      address or range of IP addresses to the Packet Recorder. Packets are tagged
-      with the VID specified in the instance.
+    description: Creates a rule that redirects traffic destined for a specific IP address or range of IP addresses to the Packet Recorder. Packets are tagged with the VID specified in the instance.
   - name: aria-stop-recording-dest-subnet
     arguments:
     - name: rule_name
@@ -860,17 +668,14 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.StopRecordingDestSubnet.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the destination subnet logic block. This
-      stops redirecting traffic to the Packet Recorder.
+    description: Removes a named rule from the destination subnet logic block. This stops redirecting traffic to the Packet Recorder.
   - name: aria-alert-dest-subnet
     arguments:
     - name: target_ip
       required: true
-      description: The IP address and mask of the destination IP address(es), in the
-        format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
+      description: The IP address and mask of the destination IP address(es), in the format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -895,27 +700,10 @@ script:
       - re-trigger-count
       - re-trigger-timed-ms
       - re-trigger-timed-sec
-      description: 'The frequency of the alert. one-shot: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. After the alert triggers, it is disabled until
-        the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets that match the criteria reaches the threshold specified
-        in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met. re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the amount of time (in msecs)
-        defined in the trigger_value field. Once this time passes, the alert is triggered
-        again. re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the amount of time (in seconds) defined in the trigger_value field. After this
-        time passes, the alert is triggered again.'
+      description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
       required: true
-      description: The threshold that must be met before the alert is triggered. The
-        value entered here depends on the trigger_type. If the trigger_type is one-shot
-        or retrigger-count, this is the total number of packets that must be received
-        before the alert is triggered. The valid range is 1-8191, If the trigger_type
-        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
-        respectively, that must elapse before the alert is triggered again. The valid
-        range is 1-8191.
+      description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
       description: 'The remediation configuration string.'
     outputs:
@@ -926,11 +714,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.AlertDestSubnet.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Creates a rule that generates an alert when traffic destined for
-      a specific IP address or range of IP addresses is detected.
+    description: Creates a rule that generates an alert when traffic destined for a specific IP address or range of IP addresses is detected.
   - name: aria-mute-alert-dest-subnet
     arguments:
     - name: rule_name
@@ -946,17 +732,14 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.MuteAlertDestSubnet.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the destination subnet logic block, disabling
-      the alerts.
+    description: Removes a named rule from the destination subnet logic block, disabling the alerts.
   - name: aria-block-src-subnet
     arguments:
     - name: src_ip
       required: true
-      description: The IP address and mask of the source IP address(es), in the format
-        <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
+      description: The IP address and mask of the source IP address(es), in the format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -970,11 +753,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.BlockSrcSubnet.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Adds a rule that blocks packets originating from a specific IP address
-      or range of IP addresses.
+    description: Adds a rule that blocks packets originating from a specific IP address or range of IP addresses.
   - name: aria-unblock-src-subnet
     arguments:
     - name: rule_name
@@ -990,21 +771,17 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.UnblockSrcSubnet.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the source subnet logic block. This allows
-      the previously blocked traffic to resume.
+    description: Removes a named rule from the source subnet logic block. This allows the previously blocked traffic to resume.
   - name: aria-record-src-subnet
     arguments:
     - name: src_ip
       required: true
-      description: The IP address and mask of the source IP address(es), in the format
-        <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
+      description: The IP address and mask of the source IP address(es), in the format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
     - name: vlan_id
       required: true
-      description: The VLAN ID your network switch uses to forward packets to the
-        Packet Recorder.
+      description: The VLAN ID your network switch uses to forward packets to the Packet Recorder.
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -1013,8 +790,7 @@ script:
       predefined:
       - A
       - B
-      description: The letter of the interface on the SIA used for forwarding packets.
-        Can be A or B. If omitted, interface A is used.
+      description: The letter of the interface on the SIA used for forwarding packets. Can be A or B. If omitted, interface A is used.
     - name: transport_type
       auto: PREDEFINED
       predefined:
@@ -1032,26 +808,9 @@ script:
       - re-trigger-count
       - re-trigger-timed-ms
       - re-trigger-timed-sec
-      description: 'The frequency of the alert. one-shot: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. After the alert triggers, it is disabled until
-        the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets that match the criteria reaches the threshold specified
-        in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met. re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the amount of time (in msecs)
-        defined in the trigger_value field. Once this time passes, the alert is triggered
-        again. re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the amount of time (in seconds) defined in the trigger_value field. After this
-        time passes, the alert is triggered again.'
+      description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
-      description: The threshold that must be met before the alert is triggered. The
-        value entered here depends on the trigger_type. If the trigger_type is one-shot
-        or retrigger-count, this is the total number of packets that must be received
-        before the alert is triggered. The valid range is 1-8191, If the trigger_type
-        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
-        respectively, that must elapse before the alert is triggered again. The valid
-        range is 1-8191.
+      description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
       description: 'The remediation configuration string.'
     outputs:
@@ -1062,12 +821,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.RecordSrcSubnet.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Creates a rule that redirects traffic originating from one or more
-      specific IP addresses to the Packet Recorder. Packets are tagged with the VID
-      specified in the instance.
+    description: Creates a rule that redirects traffic originating from one or more specific IP addresses to the Packet Recorder. Packets are tagged with the VID specified in the instance.
   - name: aria-stop-recording-src-subnet
     arguments:
     - name: rule_name
@@ -1083,17 +839,14 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.StopRecordingSrcSubnet.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the source subnet logic block. This stops
-      redirecting traffic to the Packet Recorder.
+    description: Removes a named rule from the source subnet logic block. This stops redirecting traffic to the Packet Recorder.
   - name: aria-alert-src-subnet
     arguments:
     - name: src_ip
       required: true
-      description: The IP address and mask of the source IP address(es), in the format
-        <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
+      description: The IP address and mask of the source IP address(es), in the format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -1118,27 +871,10 @@ script:
       - re-trigger-count
       - re-trigger-timed-ms
       - re-trigger-timed-sec
-      description: 'The frequency of the alert. one-shot: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. After the alert triggers, it is disabled until
-        the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets that match the criteria reaches the threshold specified
-        in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met. re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the amount of time (in msecs)
-        defined in the trigger_value field. Once this time passes, the alert is triggered
-        again. re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the amount of time (in seconds) defined in the trigger_value field. After this
-        time passes, the alert is triggered again.'
+      description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
       required: true
-      description: The threshold that must be met before the alert is triggered. The
-        value entered here depends on the trigger_type. If the trigger_type is one-shot
-        or retrigger-count, this is the total number of packets that must be received
-        before the alert is triggered. The valid range is 1-8191, If the trigger_type
-        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
-        respectively, that must elapse before the alert is triggered again. The valid
-        range is 1-8191.
+      description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
       description: 'The remediation configuration string.'
     outputs:
@@ -1149,11 +885,9 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.AlertSrcSubnet.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Adds a rule that generates an alert when traffic originating from
-      a specific IP address or range of IP addresses is detected.
+    description: Adds a rule that generates an alert when traffic originating from a specific IP address or range of IP addresses is detected.
   - name: aria-mute-alert-src-subnet
     arguments:
     - name: rule_name
@@ -1169,12 +903,11 @@ script:
       description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.MuteAlertSrcSubnet.Endpoints
-      description: 'Endpoint information, such as the IP address, about the
-        SIAs that were modified based on the rule change.'
+      description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
-    description: Removes a named rule from the source subnet logic block, disabling
-      the alerts.
+    description: Removes a named rule from the source subnet logic block, disabling the alerts.
   dockerimage: demisto/python3:3.8.5.10845
   runonce: false
 tests:
-  - No test
+- No test
+fromversion: 5.0.0
