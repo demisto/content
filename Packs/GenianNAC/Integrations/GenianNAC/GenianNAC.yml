@@ -1,10 +1,10 @@
 commonfields:
-  id: Genians
+  id: Genian NAC
   version: -1
-name: Genians
-display: Genians
+name: Genian NAC
+display: Genian NAC
 category: Network Security
-description: Use the Genians integration to block IP using assign tag and unassign tag.
+description: Use the Genian NAC integration to block IP addresses using the assign tag.
 detaileddescription:
 configuration:
 - display: Server IP (e.g. 172.29.62.26)
@@ -34,29 +34,29 @@ configuration:
   required: false
 script:
   commands:
-  - name: genians-assign-ip-tag
+  - name: geniannac-assign-ip-tag
     arguments:
     - name: ip
       required: true
       description: Threat IP Address (e.g. 192.168.100.87)
     outputs:
-    - contextPath: genians.tag.nodeId
+    - contextPath: geniannac.tag.nodeId
       description: nodeid of IP
       type: string
-    - contextPath: genians.tag.Name
+    - contextPath: geniannac.tag.Name
       description: Tag name
       type: string
     description: Assigns a tag to the Node specified.
-  - name: genians-unassign-ip-tag
+  - name: geniannac-unassign-ip-tag
     arguments:
     - name: ip
       required: true
       description: IP Address (e.g. 192.168.100.87)
     outputs:
-    - contextPath: genians.tag.nodeId
+    - contextPath: geniannac.tag.nodeId
       description: nodeid of IP
       type: string
-    - contextPath: genians.tag.Name
+    - contextPath: geniannac.tag.Name
       description: Tag name
       type: string
     description: Removes the tag(s) from the Node specified.

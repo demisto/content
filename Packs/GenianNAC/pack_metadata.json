@@ -1,6 +1,6 @@
 {
-    "name": "Genians",
-    "description": "Use the Genians integration to block IP using assign tag and unassign tag.",
+    "name": "Genian NAC",
+    "description": "Use the Genian NAC integration to block IP addresses using the assign tag.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Genians",
@@ -15,3 +15,4 @@
     "keywords": [],
     "githubUser": "genians-rnd"
 }
+

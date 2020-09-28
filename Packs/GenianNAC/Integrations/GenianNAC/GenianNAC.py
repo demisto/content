@@ -45,7 +45,7 @@ def http_request(method, url, body=None):
             verify=USE_SSL,
         )
         if result.status_code < 200 or result.status_code >= 300:
-            raise Exception("Error in Genian NAC Integration API Call. Code: {0}".format(str(result.status_code)))
+            raise Exception("Error in Genian NAC Integration API Call. Code: {0}".format(str(result.s
 
         json_result = result.json()
 
@@ -120,7 +120,7 @@ def assign_ip_tag_command():
                 'ReadableContentsFormat': formats['text'],
                 'HumanReadable': hr,
                 'EntryContext': {
-                    "genians.tag.(val.Tag == obj.Tag)": assign_tag
+                    "geniannac.tag.(val.Tag == obj.Tag)": assign_tag
                 }
             })
         else:
@@ -167,7 +167,7 @@ def unassign_ip_tag_command():
                         'ReadableContentsFormat': formats['text'],
                         'HumanReadable': hr,
                         'EntryContext': {
-                            "genians.tag.(val.Tag == obj.Tag)": unassign_tag
+                            "geniannac.tag.(val.Tag == obj.Tag)": unassign_tag
                         }
                     })
                 else:
@@ -187,9 +187,9 @@ def main():
         if demisto.command() == "test-module":
             get_ip_nodeid('8.8.8.8')
             demisto.results('ok')
-        elif demisto.command() == 'genians-assign-ip-tag':
+        elif demisto.command() == 'geniannac-assign-ip-tag':
             assign_ip_tag_command()
-        elif demisto.command() == 'genians-unassign-ip-tag':
+        elif demisto.command() == 'geniannac-unassign-ip-tag':
             unassign_ip_tag_command()
         else:
             raise NotImplementedError("Command {} was not implemented.".format(demisto.command()))
@@ -204,3 +204,4 @@ def main():
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == '__builtin__' or __name__ == 'builtins':
     main()
+
