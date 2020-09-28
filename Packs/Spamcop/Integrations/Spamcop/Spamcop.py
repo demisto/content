@@ -4,50 +4,61 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 
-import socket
+from socket import gaierror, gethostbyname
+
+import requests
 
 
 def results_return(command, thingtoreturn):
-    ip_reputation = {
-        'indicator': thingtoreturn['Address'],
-    }
-    try:
-        if thingtoreturn['Malicious']['Vendor']:
-            score = Common.DBotScore.BAD
-    except LookupError:
-        score = Common.DBotScore.NONE
-    dbot_score = Common.DBotScore(
-        indicator=thingtoreturn['Address'],
-        indicator_type=DBotScoreType.IP,
-        integration_name='Spamcop',
-        score=score
-    )
-    ip = Common.IP(
-        ip=thingtoreturn['Address'],
-        dbot_score=dbot_score
-    )
-    results = CommandResults(
-        outputs_prefix='Spamcop.' + str(command),
-        outputs_key_field='indicator',
-        outputs=ip_reputation,
-        indicators=[ip]
-    )
-    return_results(results)
+    for item in thingtoreturn:
+        ip_reputation = {
+            'indicator': item['Address'],
+        }
+        try:
+            if item['Malicious']['Vendor']:
+                score = Common.DBotScore.BAD
+        except LookupError:
+            score = Common.DBotScore.NONE
+        dbot_score = Common.DBotScore(
+            indicator=item['Address'],
+            indicator_type=DBotScoreType.IP,
+            integration_name='Spamcop',
+            score=score
+        )
+        ip = Common.IP(
+            ip=item['Address'],
+            dbot_score=dbot_score
+        )
+        results = CommandResults(
+            outputs_prefix='Spamcop.' + str(command),
+            outputs_key_field='indicator',
+            outputs=ip_reputation,
+            indicators=[ip]
+        )
+        return_results(results)
 
 
 def get_ip_details(ip):
-    reverselist = str(ip).split('.')
-    address = reverselist[3] + '.' + reverselist[2] + '.' + reverselist[1] + '.' + reverselist[0] + '.bl.spamcop.net'
-    try:
-        result = socket.gethostbyname(address)
-        if result == '127.0.0.2':
-            data = {'Address': ip,
-                    'Malicious': {'Vendor': 'Spamcop',
-                                  'Description': 'IP was found to be on the Spamcop block list'}}
-            return data
-    except Exception:
-        data = {'Address': ip}
-        return data
+    finaldata = []
+    listofips = str(ip).split(',')
+    for item in listofips:
+        reverselist = str(item).split('.')
+        address = reverselist[3] + '.' + reverselist[2] + '.' + reverselist[1] + '.' + reverselist[0] + '.bl.spamcop.net'
+        try:
+            result = socket.gethostbyname(address)
+            if result == '127.0.0.2':
+                data = {'Address': item,
+                        'Malicious': {'Vendor': 'Spamcop',
+                                      'Description': 'IP was found to be on the Spamcop block list'}}
+                finaldata.append(data)
+        except gaierror:
+            data = {'Address': item}
+            finaldata.append(data)
+        except exception as e:
+            f"Error, {e.message}. With Args {e.args}."
+            return
+
+    return finaldata
 
 
 def test_module():
@@ -62,8 +73,10 @@ def test_module():
     try:
         testresult = socket.gethostbyname(address)
         return 'Test Failed. Spamcop is blocklisted ' + str(testresult)
-    except Exception:
+    except gaierror:
         return 'ok'
+    except exception as e:
+        return f"Error, {e.message}. With Args {e.args}."
 
 
 def main():
