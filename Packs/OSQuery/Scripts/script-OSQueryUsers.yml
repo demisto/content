@@ -2,8 +2,9 @@ commonfields:
   id: OSQueryUsers
   version: -1
 name: OSQueryUsers
-script: |-
+script: >-
   QUERY = "select * from users;"
+
 
   demisto.results(demisto.executeCommand("OSQueryBasicQuery", {'query':QUERY, 'system':demisto.args()['system']}))
 type: python
@@ -22,3 +23,4 @@ dependson:
   must:
   - OSQueryBasicQuery
 timeout: 0s
+fromversion: 5.0.0
