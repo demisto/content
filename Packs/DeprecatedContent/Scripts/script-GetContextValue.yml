@@ -2,8 +2,9 @@ commonfields:
   id: GetContextValue
   version: -1
 name: GetContextValue
-script: |+
+script: >+
   contextValue = demisto.get(demisto.context(), demisto.args()['key'])
+
 
   if contextValue:
       demisto.results(contextValue)
@@ -27,3 +28,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

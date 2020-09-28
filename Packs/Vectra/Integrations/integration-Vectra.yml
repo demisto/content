@@ -31,11 +31,15 @@ configuration:
   type: 13
   required: false
 script:
-  script: |-
+  script: >-
     var username = params.credentials.identifier;
+
     var password = params.credentials.password;
+
     var server = params.server.replace(/[\/]+$/, '');
+
     var insecure = params.insecure;
+
     var sendRequest = function(method, url, queryName) {
         var res = http(
                 url,
@@ -52,6 +56,7 @@ script:
         }
         return res;
     };
+
 
     var urlDict = {
         'vectra-detections': '/api/detections/',
@@ -70,6 +75,7 @@ script:
         'vec-get-host-by-id':'/api/hosts/',     //deprecate
     };
 
+
     var createIncidentFromDetection = function(incident) {
         var keys = Object.keys(incident);
         var labels = [];
@@ -82,6 +88,7 @@ script:
             "rawJSON": JSON.stringify(incident)
         };
     };
+
 
     var fetchIncidents = function(){
         var lastRun = getLastRun();
@@ -100,6 +107,7 @@ script:
         return JSON.stringify(incidents);
     };
 
+
     var isEmpty = function(object) {
         if(Array.isArray(object)){
             return object.length === 0;
@@ -112,10 +120,12 @@ script:
         return true;
     };
 
+
     var splitToID = function(str){
         var temp = str.split('/');
         return temp[temp.length -1];
     };
+
 
     var removeFromArray = function(keys, array){
         for(var i=0; i<keys.length; i++){
@@ -123,6 +133,7 @@ script:
         }
         return array;
     };
+
 
     var vectraDetections = function(result){
         var res = JSON.parse(result.Body);
@@ -213,6 +224,7 @@ script:
         };
     };
 
+
     var vectraHosts = function(result){
         var res;
 
@@ -268,6 +280,7 @@ script:
         };
     };
 
+
     var vectraSettings = function(result){
         var res = JSON.parse(result.Body);
         var keys = removeFromArray(['url'],Object.keys(res.results[0]));
@@ -280,6 +293,7 @@ script:
             HumanReadable: md
         };
     };
+
 
     var vectraTriage = function(result){
         var res = (JSON.parse(result.Body)).results;
@@ -352,6 +366,7 @@ script:
 
     };
 
+
     var vectraSensors = function(result){
         var res = JSON.parse(result.Body);
         var keys = removeFromArray(['url','health_stats'], Object.keys(res.results[0]));
@@ -385,6 +400,7 @@ script:
         };
     };
 
+
     var funcDict = {
         'vectra-detections':  vectraDetections,
         'vectra-hosts':       vectraHosts,
@@ -400,7 +416,9 @@ script:
         'vec-get-detetctions-by-id': vectraDetections  //deprecated
     };
 
+
     var result;
+
 
     switch (command) {
         case 'fetch-incidents':
@@ -427,6 +445,7 @@ script:
             result = sendRequest('GET', server + urlDict[command] + encodeToURLQuery(args), urlDict[command]);
     }
 
+
     return funcDict[command](result);
   type: javascript
   commands:
@@ -442,9 +461,7 @@ script:
     - name: page_size
       description: Page size. Possible values are a positive integer or all
     - name: ordering
-      description: Orders records by last timestamp, threat score and certainty score.
-        The default out sorts threat and certainty score in ascending order. Scores
-        can sorted in descending order by prepending the query with “minus” symbol
+      description: Orders records by last timestamp, threat score and certainty score. The default out sorts threat and certainty score in ascending order. Scores can sorted in descending order by prepending the query with “minus” symbol
     - name: min_id
       description: '>= the id provided'
     - name: max_id
@@ -526,8 +543,7 @@ script:
       description: The detection last time stamp
     - contextPath: Vectra.Detections.HostID
       description: The detection host id
-    description: Detection objects contain all the information related to security
-      events detected on the network
+    description: Detection objects contain all the information related to security events detected on the network
   - name: vectra-detections
     arguments:
     - name: detection_id
@@ -539,9 +555,7 @@ script:
     - name: page_size
       description: Page size. Possible values are a positive integer or all
     - name: ordering
-      description: Orders records by last timestamp, threat score and certainty score.
-        The default out sorts threat and certainty score in ascending order. Scores
-        can sorted in descending order by prepending the query with “minus” symbol
+      description: Orders records by last timestamp, threat score and certainty score. The default out sorts threat and certainty score in ascending order. Scores can sorted in descending order by prepending the query with “minus” symbol
     - name: min_id
       description: '>= the id provided'
     - name: max_id
@@ -623,8 +637,7 @@ script:
       description: The detection last time stamp
     - contextPath: Vectra.Detections.HostID
       description: The detection host id
-    description: Detection objects contain all the information related to security
-      events detected on the network
+    description: Detection objects contain all the information related to security events detected on the network
   - name: vec-hosts
     deprecated: true
     arguments:
@@ -637,9 +650,7 @@ script:
     - name: page_size
       description: Page size. Possible values are a positive integer or all
     - name: ordering
-      description: Orders records by last timestamp, threat score and certainty score.
-        The default out sorts threat and certainty score in ascending order. Scores
-        can sorted in descending order by prepending the query with “minus” symbol
+      description: Orders records by last timestamp, threat score and certainty score. The default out sorts threat and certainty score in ascending order. Scores can sorted in descending order by prepending the query with “minus” symbol
     - name: name
       description: filter by name
     - name: state
@@ -657,8 +668,7 @@ script:
     - name: last_detection_timestamp
       description: filter by last_detection_timestamp
     - name: tags
-      description: filter by a tag or a comma-separated list of tags (returns hosts
-        that contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
+      description: filter by a tag or a comma-separated list of tags (returns hosts that contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
     - name: key_assest
       description: 'filter by key asset: True, False'
     - name: mac_address
@@ -680,8 +690,7 @@ script:
       description: The current threat score correlated to this host
     - contextPath: Endpoint.CScore
       description: The current certainty score correlated to this host
-    description: Host information includes data that correlates the host data to detected
-      security events
+    description: Host information includes data that correlates the host data to detected security events
   - name: vectra-hosts
     arguments:
     - name: host_id
@@ -693,9 +702,7 @@ script:
     - name: page_size
       description: Page size. Possible values are a positive integer or all
     - name: ordering
-      description: Orders records by last timestamp, threat score and certainty score.
-        The default out sorts threat and certainty score in ascending order. Scores
-        can sorted in descending order by prepending the query with “minus” symbol
+      description: Orders records by last timestamp, threat score and certainty score. The default out sorts threat and certainty score in ascending order. Scores can sorted in descending order by prepending the query with “minus” symbol
     - name: name
       description: filter by name
     - name: state
@@ -713,8 +720,7 @@ script:
     - name: last_detection_timestamp
       description: filter by last_detection_timestamp
     - name: tags
-      description: filter by a tag or a comma-separated list of tags (returns hosts
-        that contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
+      description: filter by a tag or a comma-separated list of tags (returns hosts that contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
     - name: key_assest
       description: 'filter by key asset: True, False'
     - name: mac_address
@@ -736,30 +742,25 @@ script:
       description: The current threat score correlated to this host
     - contextPath: Endpoint.CScore
       description: The current certainty score correlated to this host
-    description: Host information includes data that correlates the host data to detected
-      security events
+    description: Host information includes data that correlates the host data to detected security events
   - name: vec-settings
     deprecated: true
     arguments: []
-    description: The settings information includes S-series sensor and X-series configurations
-      input by the administrator
+    description: The settings information includes S-series sensor and X-series configurations input by the administrator
   - name: vectra-settings
     arguments: []
-    description: he settings information includes S-series sensor and X-series configurations
-      input by the administrator
+    description: he settings information includes S-series sensor and X-series configurations input by the administrator
   - name: vec-health
     deprecated: true
     arguments:
     - name: path
       description: the path to query
-    description: The health configuration can be used to retrieve system health statistics
-      such as subnet counts, traffic bandwidth, headend and sensor information
+    description: The health configuration can be used to retrieve system health statistics such as subnet counts, traffic bandwidth, headend and sensor information
   - name: vectra-health
     arguments:
     - name: path
       description: the path to query
-    description: The health configuration can be used to retrieve system health statistics
-      such as subnet counts, traffic bandwidth, headend and sensor information
+    description: The health configuration can be used to retrieve system health statistics such as subnet counts, traffic bandwidth, headend and sensor information
   - name: vec-triage
     deprecated: true
     arguments: []
@@ -796,8 +797,7 @@ script:
       description: Kerberos Account
     - contextPath: Vectra.Rule.Remote.Kerberos.Service
       description: Kerberos Service
-    description: The rules branch can be used to retrieve a listing of configured
-      Triage rules
+    description: The rules branch can be used to retrieve a listing of configured Triage rules
   - name: vectra-triage
     arguments: []
     outputs:
@@ -833,8 +833,7 @@ script:
       description: Kerberos Account
     - contextPath: Vectra.Rule.Remote.Kerberos.Service
       description: Kerberos Service
-    description: The rules branch can be used to retrieve a listing of configured
-      Triage rules
+    description: The rules branch can be used to retrieve a listing of configured Triage rules
   - name: vec-sensors
     deprecated: true
     arguments: []
@@ -861,8 +860,7 @@ script:
       description: The URI of the brain the sensor is paired
     - contextPath: Vectra.Sensor.LastSeen
       description: Timestamp of the last connection by the sensor to the brain
-    description: The sensors branch can retrieve a listing of sensors that collect
-      and feed data to the X-series
+    description: The sensors branch can retrieve a listing of sensors that collect and feed data to the X-series
   - name: vectra-sensors
     arguments: []
     outputs:
@@ -888,8 +886,7 @@ script:
       description: The URI of the brain the sensor is paired
     - contextPath: VectraSensor.LastSeen
       description: Timestamp of the last connection by the sensor to the brain
-    description: The sensors branch can retrieve a listing of sensors that collect
-      and feed data to the X-series
+    description: The sensors branch can retrieve a listing of sensors that collect and feed data to the X-series
   - name: vec-get-host-by-id
     deprecated: true
     arguments:
@@ -923,4 +920,5 @@ script:
     description: Get detections by host id
   isfetch: true
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

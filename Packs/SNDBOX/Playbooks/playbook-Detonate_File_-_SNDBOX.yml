@@ -1,7 +1,7 @@
 id: Detonate File - SNDBOX
 version: -1
 name: Detonate File - SNDBOX
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: |-
   Detonates a File using the SNDBOX.
   Advanced Threat Defense supports the following File Types:
@@ -648,4 +648,4 @@ outputs:
   description: File Extension
   type: string
 tests:
-  - Detonate File - SNDBOX - Test
+- Detonate File - SNDBOX - Test

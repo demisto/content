@@ -38,7 +38,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     function getArgName(args) {
         options = ['md5', 'sha1', 'sha256'];
         for (var k in options) {
@@ -48,6 +48,7 @@ script:
         }
         throw 'You must provide either sha1, sha256 or md5';
     }
+
 
     indicatorsCommands = {
         'ip': {
@@ -130,6 +131,7 @@ script:
         },
     };
 
+
     searchCommands = {
         'alienvault-search-pulses': {
             url: 'search/pulses',
@@ -166,6 +168,7 @@ script:
         },
     }
 
+
     var mapObjFunction = function(mapFields) {
         var transformSingleObj= function(obj) {
             var res = {};
@@ -185,6 +188,7 @@ script:
             return transformSingleObj(obj);
         }
     }
+
 
     var createContext = function(data) {
         var createContextSingle = function(obj) {
@@ -213,13 +217,16 @@ script:
         return createContextSingle(data);
     }
 
+
     function domain_from_url(url) {
         res = url.replace(/(.*:\/\/.*)[\?\/#].*/, '$1');
         return res;
     }
 
 
+
     baseUrl = params.server.replace(/[\/]+$/, '') + ':' + params.port + '/api/v1/';
+
     function sendRequest(url) {
         res = http(
                     baseUrl + url,
@@ -247,23 +254,30 @@ script:
         return res.Body ? JSON.parse(res.Body) : 'empty';
     }
 
+
     function queryIndicators(type, indicator, section) {
         return sendRequest('indicators/' + type + '/' + domain_from_url(indicator) + '/general');
     }
+
 
     if (command === 'test-module') {
         res = queryIndicators('IPv4', '8.8.8.8');
         return res !== 'Not found' ? 'ok' : 'Not found';
     }
 
+
     currentCommand = indicatorsCommands[command] || searchCommands[command];
+
     argName = currentCommand.argName instanceof Function ? currentCommand.argName(args) : currentCommand.argName;
+
     var raw;
+
     if (indicatorsCommands[command]) {
         raw = queryIndicators(currentCommand.type, args[argName]);
     } else {
         raw = sendRequest(replaceInTemplatesAndRemove(currentCommand.url, args));
     }
+
     entry = {
         Type: entryTypes.note,
         Contents: raw,
@@ -271,10 +285,15 @@ script:
         ReadableContentsFormat: formats.markdown,
     };
 
+
     translator = currentCommand.translator instanceof Function ? currentCommand.translator(args) : currentCommand.translator;
+
     tableTitle = currentCommand.tableTitle instanceof Function ? currentCommand.tableTitle(args) : currentCommand.tableTitle;
+
     translated = mapObjFunction(translator)(currentCommand.innerPath ? raw[currentCommand.innerPath] : raw);
+
     entry.HumanReadable = tableToMarkdown(replaceInTemplates(tableTitle, translated), translated);
+
     if (currentCommand.contextKey) {
         ec = {};
         contextKey = currentCommand.getContextKey instanceof Function ? currentCommand.contextKey(args) : currentCommand.contextKey;
@@ -307,6 +326,7 @@ script:
             ];
         }
     }
+
 
     return entry;
   type: javascript
@@ -459,6 +479,6 @@ script:
       description: 'URL '
     description: Query url in AlienVault OTX
   runonce: false
-fromversion: 3.0.1
+fromversion: 5.0.0
 tests:
-  - No tests
+- No tests
