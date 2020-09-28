@@ -47,7 +47,7 @@ script:
       description: Age
       type: String
   dockerimage: demisto/python3:3.8.5.10845
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
