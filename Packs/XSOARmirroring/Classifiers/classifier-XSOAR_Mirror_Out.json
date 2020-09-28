@@ -1,107 +1,87 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "55ce5558-5ad8-4012-8932-e49cc3955360",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"mapping": {
-		"Pong": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"frompong": {
-					"complex": null,
-					"simple": ".='true'"
-				},
-				"type": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "type",
-						"transformers": [
-							{
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": ".*"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "Ping"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							}
-						]
-					},
-					"simple": ""
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"category": {
-					"complex": null,
-					"simple": "category"
-				},
-				"closenotes": {
-					"complex": null,
-					"simple": "closeNotes"
-				},
-				"closereason": {
-					"complex": null,
-					"simple": "closeReason"
-				},
-				"details": {
-					"complex": null,
-					"simple": "details"
-				},
-				"name": {
-					"complex": null,
-					"simple": "rawName"
-				},
-				"phase": {
-					"complex": null,
-					"simple": "phase"
-				},
-				"severity": {
-					"complex": null,
-					"simple": "severity"
-				},
-				"type": {
-					"complex": null,
-					"simple": "type"
-				}
-			}
-		}
-	},
-	"name": "XSOAR Mirror Out",
-	"nameRaw": "XSOAR Mirror Out",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-outgoing",
-	"unclassifiedCases": null,
-	"version": -1
+ "description": "",
+ "feed": false,
+ "fromVersion": "6.0.0",
+ "id": "55ce5558-5ad8-4012-8932-e49cc3955360",
+ "mapping": {
+  "Pong": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "category": {
+     "complex": null,
+     "simple": "category"
+    },
+    "closenotes": {
+     "complex": null,
+     "simple": "closeNotes"
+    },
+    "closereason": {
+     "complex": null,
+     "simple": "closeReason"
+    },
+    "details": {
+     "complex": null,
+     "simple": "details"
+    },
+    "frompong": {
+     "complex": null,
+     "simple": "false"
+    },
+    "name": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "name",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "occurred": {
+     "complex": null,
+     "simple": "occurred"
+    },
+    "owner": {
+     "complex": null,
+     "simple": "owner"
+    },
+    "phase": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "phase",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "severity": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "severity",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "type": {
+     "complex": null,
+     "simple": "Ping"
+    }
+   }
+  }
+ },
+ "name": "XSOAR Mirror Out",
+ "type": "mapping-outgoing",
+ "version": -1
 }

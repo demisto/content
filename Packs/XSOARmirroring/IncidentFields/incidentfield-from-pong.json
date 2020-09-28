@@ -30,7 +30,7 @@
 		"useAsKpi": false,
 		"locked": false,
 		"system": false,
-		"content": false,
+		"content": true,
 		"group": 0,
 		"mergeStrategy": "",
 		"hidden": false,
@@ -47,5 +47,6 @@
 		"sla": 0,
 		"threshold": 72,
 		"breachScript": "",
+		"fromVersion": "6.0.0",
 		"validatedError": ""
 }

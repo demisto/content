@@ -1,33 +1,19 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "1dce4921-d58d-4f29-8721-f44caede8eb4",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"Ping": "Pong"
-	},
-	"locked": false,
-	"mapping": null,
-	"name": "XSOAR Mirror",
-	"nameRaw": "XSOAR Mirror",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": "type"
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+ "description": "",
+ "feed": false,
+ "fromVersion": "6.0.0",
+ "id": "1dce4921-d58d-4f29-8721-f44caede8eb4",
+ "keyTypeMap": {
+  "Ping": "Pong"
+ },
+ "name": "XSOAR Mirror",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": null,
+  "simple": "type"
+ },
+ "type": "classification",
+ "version": -1
 }

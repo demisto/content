@@ -1,110 +1,109 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "95bc3302-27bf-443d-8f3a-b187ab0f4ba9",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"mapping": {
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"dbotMirrorDirection": {
-					"complex": null,
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"complex": null,
-					"simple": "id"
-				},
-				"dbotMirrorInstance": {
-					"complex": null,
-					"simple": "mirror_instance"
-				},
-				"dbotMirrorTags": {
-					"complex": null,
-					"simple": ".='ping'"
-				},
-				"details": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "details",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"name": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "name",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"occurred": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "occurred",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"owner": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "owner",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"phase": {
-					"complex": null,
-					"simple": "phase"
-				},
-				"severity": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "severity",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"sourceBrand": {
-					"complex": null,
-					"simple": "sourceBrand"
-				},
-				"sourceInstance": {
-					"complex": null,
-					"simple": "sourceInstance"
-				}
-			}
-		}
-	},
-	"name": "XSOAR Mirror In",
-	"nameRaw": "XSOAR Mirror In",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+ "description": "",
+ "feed": false,
+ "fromVersion": "6.0.0",
+ "id": "95bc3302-27bf-443d-8f3a-b187ab0f4ba9",
+ "mapping": {
+  "Pong": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "dbotMirrorDirection": {
+     "complex": null,
+     "simple": "mirror_direction"
+    },
+    "dbotMirrorId": {
+     "complex": null,
+     "simple": "id"
+    },
+    "dbotMirrorInstance": {
+     "complex": null,
+     "simple": "mirror_instance"
+    },
+    "dbotMirrorTags": {
+     "complex": null,
+     "simple": "mirror_tag"
+    },
+    "details": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "details",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "name": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "name",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "occurred": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "occurred",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "owner": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "owner",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "phase": {
+     "complex": null,
+     "simple": "phase"
+    },
+    "severity": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "severity",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "sourceBrand": {
+     "complex": null,
+     "simple": "sourceBrand"
+    },
+    "sourceInstance": {
+     "complex": null,
+     "simple": "sourceInstance"
+    }
+   }
+  }
+ },
+ "name": "XSOAR Mirror In",
+ "type": "mapping-incoming",
+ "version": -1
 }

@@ -310,6 +310,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     for incident in incidents:
         incident['mirror_direction'] = MIRROR_DIRECTION[mirror_direction]
         incident['mirror_instance'] = demisto.integrationInstance()
+        incident['mirror_tag'] = demisto.params().get('mirror_tag')
 
         incident_result = {
             'name': incident.get('name', 'XSOAR Mirror'),
@@ -481,7 +482,7 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
                                             or incident_type_name in field.get('associatedTypes')):  # type: ignore
                 incident_field = incident_type_scheme.add_field(name=field.get('cliName'),
                                                                 description=f"{field.get('name')} - "
-                                                                f"{field.get('type')} - {field.get('description')}")
+                                                                            f"{field.get('type')}")
                 incident_type_scheme.add_field(incident_field)
 
         all_mappings.add_scheme_type(incident_type_scheme)
@@ -491,8 +492,7 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     for field in incident_fields:
         if field.get('group') == 0 and field.get('associatedToAll'):
             incident_field = default_scheme.add_field(name=field.get('cliName'),
-                                                      description=f"{field.get('name')} - "
-                                                      f"{field.get('type')} - {field.get('description')}")
+                                                      description=f"{field.get('name')} - {field.get('type')}")
             default_scheme.add_field(incident_field)
 
     all_mappings.add_scheme_type(default_scheme)
@@ -667,8 +667,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     if parsed_args.entries:
         for entry in parsed_args.entries:
-            demisto.debug(f'Sending entry {entry.get("id")}')
-            client.add_incident_entry(incident_id=new_incident_id, entry=entry)
+            if demisto.params().get('mirror_tag') in entry.get('tags', []):
+                demisto.debug(f'Sending entry {entry.get("id")}')
+                client.add_incident_entry(incident_id=new_incident_id, entry=entry)
 
     # Close incident if relevant
     if updated_incident and parsed_args.inc_status == IncidentStatus.DONE:
