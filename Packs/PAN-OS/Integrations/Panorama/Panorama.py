@@ -123,7 +123,7 @@ class PAN_OS_Not_Found(Exception):
 
 
 def http_request(uri: str, method: str, headers: Dict = {},
-                 body: Dict = {}, params: Dict = {}, files=None) -> Any:
+                 body: Dict = {}, params: Dict = {}, files=None, is_pcap: bool = False) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -142,7 +142,7 @@ def http_request(uri: str, method: str, headers: Dict = {},
             'Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
     # if pcap download
-    if params.get('type') == 'export':
+    if is_pcap:
         return result
 
     json_result = json.loads(xml2json(result.text))
@@ -3122,7 +3122,7 @@ def panorama_list_pcaps_command():
     elif demisto.args()['pcapType'] == 'dlp-pcap':
         raise Exception('can not provide dlp-pcap without password')
 
-    result = http_request(URL, 'GET', params=params)
+    result = http_request(URL, 'GET', params=params, is_pcap=True)
     json_result = json.loads(xml2json(result.text))['response']
     if json_result['@status'] != 'success':
         raise Exception('Request to get list of Pcaps Failed.\nStatus code: ' + str(
@@ -3211,7 +3211,7 @@ def panorama_get_pcap_command():
     if not file_name:
         file_name = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
 
-    result = http_request(URL, 'GET', params=params)
+    result = http_request(URL, 'GET', params=params, is_pcap=True)
 
     # due pcap file size limitation in the product, for more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':
