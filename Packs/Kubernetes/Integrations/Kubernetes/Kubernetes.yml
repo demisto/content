@@ -15,16 +15,15 @@ configuration:
   name: namspace
   required: true
   type: 0  
-description: |-
-  Kubernetes integration for managing and scanning clusters for security vulnerabilities. 
+description: foo
 display: Kubernetes
 name: Kubernetes
 script:
   commands:
+  - name: k8s-list-pods
     deprecated: false
     description: List pods in cluster.
     execution: false
-    name: k8s-list-pods
     outputs:
     - contextPath: Kubernetes.Pods.Name
       description: Name
@@ -55,6 +54,4 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultclassifier: HelloWorld
-defaultmapperin: HelloWorld-mapper
 fromversion: 5.0.0
