@@ -785,9 +785,7 @@ tasks:
       id: d60dd6cf-86bb-4d6f-89a5-e56eb64b84a6
       version: -1
       name: isError
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -999,8 +997,7 @@ tasks:
       id: dc9cfea6-6d4e-419d-8791-c2417fd7ea75
       version: -1
       name: ssl-get-certificate - When no extention info available
-      description: For some certificates, the result does not contain extended info
-        and the script should fall back to the simple details.
+      description: For some certificates, the result does not contain extended info and the script should fall back to the simple details.
       script: '|||circl-ssl-get-certificate'
       type: regular
       iscommand: true
@@ -1240,3 +1237,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

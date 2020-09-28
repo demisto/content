@@ -27,4 +27,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - Impossible Traveler - Test
+- Impossible Traveler - Test
+fromversion: 5.0.0
