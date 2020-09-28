@@ -391,3 +391,27 @@ def test_enrich_single_offense_res_with_source_and_destination_address__with_enr
     assert offense['source_address_ids'] == [src_adrs[254]]
     assert offense['local_destination_address_ids'] == [dst_adrs[4]]
     assert expected_assets == actual
+
+
+def test_get_mapping_fields(mocker):
+    """Check keys available in the mapping
+
+    Given:
+    - One custom field
+
+    When:
+    - Calling get-mapping-fields from the UI
+
+    Then:
+    - Validate main keys are in
+    - Validate custom field came back as intended
+    """
+    from QRadar_v2 import get_mapping_fields
+    custom_fields = [{'name': 'bloop', 'property_type': 'string'}]
+    mocker.patch.object(QRadarClient, 'get_custom_fields', return_value=custom_fields)
+    client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
+    response = get_mapping_fields(client)
+    assert response['offense']
+    assert response['events: builtin fields']
+    assert response['assets']
+    assert response['events: custom fields']['events']['bloop'] == 'string'

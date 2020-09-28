@@ -1300,6 +1300,10 @@ script:
       initial fetch state (will try to fetch first available offense).
     execution: false
     name: qradar-reset-last-run
+  - deprecated: false
+    description: Returns the list of fields for an incident type. This command should be used for debugging purposes.
+    execution: false
+    name: get-mapping-fields
   dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: false
@@ -1310,6 +1314,7 @@ script:
   subtype: python3
   type: python
   isFetchSamples: true
+  ismappable: true
 defaultmapperin: QRadar-mapper
 defaultclassifier: QRadar
 fromversion: 6.0.0
