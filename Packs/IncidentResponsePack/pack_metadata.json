@@ -1,0 +1,14 @@
+{
+    "name": "Incident Response Pack",
+    "description": "Indicator extraction and enrichment is one of the most common scenarios in cyber security operations. Incident response teams spend a lot of time in repetitive tasks such as investigating each incident, hunting for threats and extracting indicators of compromise that needs to be thoroughly investigated for each alert. The Incident response playbook can be used by the SOC teams to automate response actions where there is a need to extract and enrich domain information from Google Chronicle alerts using RiskIQ\u2019s passivetotal integration with XSOAR. Further the playbook automatically adds the indicators to SIEM allow list or block list depending on its reputation results returned by Passivetotal API. \n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Arpitha",
+    "url": "",
+    "email": "",
+    "created": "2020-09-28T18:51:53Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
