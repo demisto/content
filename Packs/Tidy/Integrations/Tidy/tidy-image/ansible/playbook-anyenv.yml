@@ -1,15 +1,7 @@
 ---
 - name: anyenv
   hosts: all
-
-  roles:
-    - name: pddg.anyenv
-      var:
-        anyenv_plugins:
-          - repo: https://github.com/znz/anyenv-update
-            version: master
-
-  tasks:
+  pre_tasks:
     - name: add init to ~/.zshrc and ~/.bash_profile
       blockinfile:
         path: "{{ item }}"
@@ -21,7 +13,17 @@
       loop:
         - "~/.zshrc"
         - "~/.bash_profile"
+    - name: Sourcing
+      shell: source ~/.bash_profile
 
+  roles:
+    - name: pddg.anyenv
+      var:
+        anyenv_plugins:
+          - repo: https://github.com/znz/anyenv-update
+            version: master
+
+  tasks:
     - name: Install {{ env }}
       shell: source ~/.bash_profile && anyenv install {{ env }} -s
       args:

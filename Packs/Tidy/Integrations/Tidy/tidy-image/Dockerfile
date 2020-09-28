@@ -28,4 +28,5 @@ RUN echo 'localhost' > /etc/ansible/hosts
 RUN ansible-galaxy install -c geerlingguy.homebrew
 RUN ansible-galaxy install -c ctorgalson.oh-my-zsh,v2.2.2
 RUN ansible-galaxy install -c pddg.anyenv
+RUN ansible-galaxy install -c elliotweiser.osx-command-line-tools
 COPY ansible /home/demisto/ansible

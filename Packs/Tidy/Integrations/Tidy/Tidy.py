@@ -92,6 +92,14 @@ class TidyClient:
 
         return runner
 
+    def osx_command_line_tools(self) -> Runner:
+        """ Execute osx-command-line-tools playbook, Availble envs defined by AnyEnvs object.
+
+        Returns:
+            Runner: anible-runner Runner object.
+        """
+        return self._execute(playbook_name="osx-command-line-tools")
+
     def anyenv(self, env: str, versions: List[str], global_versions: List[str]) -> Runner:
         """ Execute anyenv playbook, Availble envs defined by AnyEnvs object.
 
@@ -292,6 +300,24 @@ def test_module(client: TidyClient, **_) -> DemistoResult:
     client.test()
 
     return 'ok'
+
+
+def tidy_osx_command_line_tools_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """ Install OSX command line tools
+
+    Args:
+        client: Tidy client obect.
+        **kwargs: command kwargs.
+
+    Returns:
+        DemistoResults: Demisto structured response.
+    """
+    runner: Runner = client.osx_command_line_tools()
+
+    return parse_response(response=runner,
+                          human_readable_name="OSx command line tools",
+                          installed_software="command line tools",
+                          additional_vars={})
 
 
 def tidy_pyenv_command(client: TidyClient, **kwargs) -> DemistoResult:
@@ -520,6 +546,7 @@ def main() -> None:
     command = demisto.command()
     commands: Dict[str, Callable] = {
         "test-module": test_module,
+        "tidy-osx-command-line-tools": tidy_osx_command_line_tools_command,
         "tidy-pyenv": tidy_pyenv_command,
         "tidy-goenv": tidy_goenv_command,
         "tidy-nodenv": tidy_nodenv_command,

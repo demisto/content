@@ -24,7 +24,6 @@
         block: |
           Host *
             AddKeysToAgent yes
-            UseKeychain yes
             IdentityFile ~/.ssh/id_rsa_ansible
         marker: "# {mark} TIDY MANAGED BLOCK - ssh config"
 
@@ -68,7 +67,6 @@
       register: key
 
     - name: Post github key with api access
-      become: yes
       uri:
         url: https://api.github.com/user/keys
         method: post
