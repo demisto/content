@@ -28,10 +28,10 @@ ns = args.namespace
 
 cluster_host_url = os.environ['KUBERNETES_CLUSTER_HOST_URL']
 token = os.environ['KUBERNETES_CLUSTER_TOKEN']
-k8s = Client(cluster_host_url, token, ns)
+k8s = Client(cluster_host_url, token)
 
 if args.podscmd:
-    print(k8s.list_pods_readable(k8s.list_pods_raw().to_dict()))
+    print(k8s.list_pods_readable(k8s.list_pods_raw(ns).to_dict()))
     exit()
 obj = ''
 ret = None

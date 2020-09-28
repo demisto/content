@@ -11,19 +11,23 @@ Kubernetes API
 
 """
 
+''' IMPORTS '''
+# std
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 from datetime import date, datetime, timezone
 from json import dumps
 import urllib3
 
+# internal
 import demistomock as demisto
 from CommonServerPython import *  
 from CommonServerUserPython import * 
 
+# 3rd-party
 from kubernetes import client, config
 from kubernetes.client import api, models, ApiClient, Configuration
 from kubernetes.client.api import CoreV1Api
-from kubernetes.client.models import V1PodList, V1ServiceList
+from kubernetes.client.models import V1APIVersions, V1PodList, V1ServiceList
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -53,7 +57,7 @@ class Client(BaseClient):
     api_client: ApiClient = None
     api: CoreV1Api = None
 
-    def __init__(self, h, t, ns=None):
+    def __init__(self, h, t):
         self.cluster_host_url = h
         self.cluster_token = t
         self.configuration = client.Configuration()
@@ -62,12 +66,14 @@ class Client(BaseClient):
         self.configuration.api_key_prefix['authorization'] = 'Bearer'
         self.api_client = client.ApiClient(configuration=self.configuration)
         self.api = client.CoreV1Api(api_client=self.api_client)
-        self.namespace = ns
 
-    def list_pods_raw(self) -> V1PodList:
-        if not self.namespace is None:
-            return self.api.list_namespaced_pod(self.namespace)
-        else: 
+    def get_api_versions(self) -> V1APIVersions:
+        return client.CoreApi(api_client=self.api_client).get_api_versions()
+
+    def list_pods_raw(self, ns) -> V1PodList:
+        if not ns is None:
+            return self.api.list_namespaced_pod(ns)
+        else:
             return self.api.list_pod_for_all_namespaces()
 
     def list_services(self) -> V1ServiceList:
@@ -78,18 +84,18 @@ class Client(BaseClient):
 
     def list_pods_readable(self, ret:Dict[str, Any]) -> List[Dict[str, Any]]:
         return [{
-                'Name':p['metadata']['name'], 
-                'Status': p['status']['phase'], 
+                'Name':p['metadata']['name'],
+                'Status': p['status']['phase'],
                 'Containers': len(p['status']['container_statuses']),
-                'Ready': len ([ s for s in p['status']['container_statuses'] if s['ready'] ]), 
+                'Ready': len ([ s for s in p['status']['container_statuses'] if s['ready'] ]),
                 'Restarts': sum ([ s['restart_count'] for s in p['status']['container_statuses'] ]),
                 'Started': p['status']['start_time'],
                 'Age': "%sh" % str(datetime.now(timezone.utc) - p['status']['start_time']).split(':')[0]
                 } for p in ret['items']]
-        
+
 ''' COMMAND FUNCTIONS '''
-def test_module(client: Client) -> str:
-    client.list_pods_raw()
+def test_module(c: Client) -> str:
+    client.CoreApi(api_client=c.api_client).get_api_versions()
     return 'ok'
 
 def list_pods_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -100,32 +106,31 @@ def list_pods_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     :type args: ``Dict[str, Any]``
     :param args: All command arguments, usually passed from ``demisto.args()``.
-    
+
     :return: A ``CommandResults`` object that is then passed to ``return_results``.
     :rtype: ``CommandResults``
     """
-    
-    results = client.list_pods_raw().to_dict()
+    ns = args.get('ns', None)
+    results = client.list_pods_raw(ns).to_dict()
     return CommandResults(
         outputs_prefix='Kubernetes.Pods',
         outputs_key_field='Name',
         outputs= client.list_pods_readable(results)
     )
 
-''' MAIN ''' 
+''' MAIN '''
 def main() -> None:
     """main function, parses params and runs command functions.
     :return:
     :rtype:
-    
+
     """
     demisto.debug(f'Command being called is {demisto.command()}')
     cluster_host_url = demisto.params().get('cluster_host_url')
     auth_token = demisto.params().get('auth_token')
-    namespace = demisto.params().get('namespace')
-    
+
     try:
-        k8s = Client(cluster_host_url, auth_token, namespace)
+        k8s = Client(cluster_host_url, auth_token)
         demisto.debug(f'Initialized k8s client for {cluster_host_url} using token {auth_token}...')
         if demisto.command() == 'test-module':
              return_results(test_module(k8s))

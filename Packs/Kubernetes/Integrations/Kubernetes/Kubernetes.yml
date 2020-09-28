@@ -46,7 +46,7 @@ script:
     - contextPath: Kubernetes.Pods.Age
       description: Age
       type: String
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.5.11789
   isfetch: false
   longRunning: false
   longRunningPort: false
