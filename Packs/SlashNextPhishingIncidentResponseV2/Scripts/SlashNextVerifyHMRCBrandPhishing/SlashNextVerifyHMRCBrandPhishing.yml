@@ -1,0 +1,27 @@
+args:
+- description: 'Forensic file EntryID '
+  name: ForensicFileEntry
+  required: true
+comment: Takes the forensics data from SlashNext Phishing Incident Response scan report
+  and determines if the phishing attack is targeted at HMRC brand.
+commonfields:
+  id: SlashNextVerifyHMRCBrandPhishing
+  version: -1
+dockerimage: demisto/python3:3.8.5.10845
+enabled: true
+name: SlashNextVerifyHMRCBrandPhishing
+outputs:
+- contextPath: SlashNext.PhishingBrand
+  description: Target brand of phishing URL
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- phishing
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
