@@ -370,8 +370,8 @@ def tidy_homebrew_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
-    apps = kwargs.get('apps')
-    cask_apps = kwargs.get('cask_apps')
+    apps = kwargs.get('apps', '')
+    cask_apps = kwargs.get('cask_apps', '')
     raw_response = client.homebrew(apps=argToList(apps),
                                    cask_apps=argToList(cask_apps))
 
