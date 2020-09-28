@@ -6,7 +6,7 @@ deprecated: true
 display: Cylance Protect (Deprecated)
 category: Endpoint
 system: true
-fromversion: 2.0.1
+fromversion: 5.0.0
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAiCAYAAACUcR1DAAADTUlEQVR4Ae3ZA+xcSxTH8fe3nm3bthU826ht27Zt/q3atqPGtW1Pv0kmyWRyseqmtzlJPovZc2dmz2+91ymlxDXMuCIkYCEBCwlYSMBCAhYSsJCAJeAqG95Pw614HEMwHz3xNB5GgjQygAHrAAdjMwbhJyhDWxzEanTDvdLQYAVcAqWNwzdQ2hm0gDJ0l4YGK+BFUNpol4DPQWljQlnwwQcfTEa6ixSzNsT5MoPYePadgXQtTUvREhzqUyLpm1fA86G0UfjWJ+CRIdypP1CIHAf56GjVf4kuSHCZrx76W2P18XwUjX8T2RiK2z3qbsEwFOEpl5pn0NgaexyTkYsc5KIA+cjGRDxqHVPBo28FaBZtwBPwJZR2Hs1x3g7YpyFL8AYewEMO7raOuQ3jkI8bjfFE9MV03G8dMw4fRhhuFhbhSzTDUI/a6hiAX7EC9zvUvINsa6wfmls9eEx7HI8h1ai/D0vxvEvfHsad0Qa8DU9hLRRWowdUGAE/jPwIG98ei/EwkpGPUUh1qB2O9yJcpwF66ctJmIO3XWrbopy+XAbzcbNV8xbGWmMj8VEYe3oGOf61EQZsmIgXsRU9sCvMgB/UwSRH2PxyWIlP8YdzXeQBc8xdWIR7jLGvke9S3wqVjeuNUIwUn4CH44sw9vUUJuE21ERdrQZujV3AQCt8gWNQcQzYbGpvfT3WAXdDfYfxbHzjF7Ae64FRcQz4llgGfB6r8APqQ8XpJdqcoyJ6+dSMxOthzvs0ZiPL4bbXMB2pfgHr8bHooi+/hPFX60v0YijDUJTiBF7GaCjD2BA+ZC32+ZB1l88cNdHfp2YI6nus8aD1MpqE0fjdY85+qGaNdUANh9o0lKIhymC0w1zN/PYX5oesOyIJuABK24T2UNpaPIN9UFrnWH9Ncjj+W1Txe0kzvn7kWHIxCQ8Z9Q9gMBI85nwEg63G/4OvXepvwkgU4BXrtscwyWN/2Q5fk8pfia9Jj2EWFEqRB2V4BWuhMB53xOGHjkh/SDClIcF6BieGMF8KEuKxv7j80KFDTkYzTMBcKMPbyEZZXS+C+nchId6EIVCGF5ER/CZIwObfhnUxF/8gMfgNkICFBCwkYCEBCwlYSMBCApaAhQQsAuMypEm2YIZjn78AAAAASUVORK5CYII=
 description: Deprecated. Manage Endpoints using Cylance protect
 detaileddescription: |-
@@ -57,8 +57,9 @@ configuration:
   type: 13
   required: false
 script:
-  script: |-
+  script: >-
     var server = params.server.replace(/[\/]+$/, '') + '/' + params.version + '/';
+
     var sendRequest = function(url, body, token) {
         var httpParams = {
                 Method: 'POST',
@@ -85,7 +86,9 @@ script:
         }
         return res.Body ? JSON.parse(res.Body) : 'empty';
     };
+
     var commandsThatTakeSha256AsArray = ['cylance-protect-update-device-threats', 'cylance-protect-delete-hash-from-lists', 'cylance-protect-update-hash-at-lists', 'cylance-protect-upload-threat','cp-update-device-threats', 'cp-delete-hash-from-lists', 'cp-update-hash-at-lists', 'cp-upload-threat'];
+
     var buildBodyForCommand = function(command, args) {
         if (!args) {
             return undefined;
@@ -118,6 +121,7 @@ script:
         }
         return JSON.stringify(body);
     }
+
     var runAndParseCommand = function(command, args, path, contextFunc) {
         var headers = argToList(args.headers);
         var context = {};
@@ -142,6 +146,7 @@ script:
         md = tblToMd(command, body, headers);
         return {Type: entryTypes.note, Contents: body, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown, EntryContext: context};
     }
+
 
     var parseEndpoint = function(body) {
         var context = {};
@@ -188,6 +193,7 @@ script:
         return context;
     }
 
+
     var parsePolicy = function(body) {
         var context = {};
         context.Cylance = {};
@@ -205,6 +211,7 @@ script:
 
         return context;
     }
+
 
     var parseGeneric = function(contextType) {
         return function (body) {
@@ -231,6 +238,7 @@ script:
         }
     }
 
+
     var parseList = function(body) {
         var context = {};
         context.Cylance = {};
@@ -256,6 +264,7 @@ script:
         return context;
     }
 
+
     var parseZone = function(body) {
         var context = {};
         context.Cylance = {};
@@ -279,6 +288,7 @@ script:
         return context;
     }
 
+
     var createIncidentFromThreat = function(threat) {
         var incident = {
             name: threat.priority + ' ' + threat.name,
@@ -295,6 +305,7 @@ script:
         }
         return incident;
     }
+
     var createFilters = function(lastCall, firstQuery) {
         var retObject = {
                         Field: params.timeField,
@@ -313,6 +324,7 @@ script:
         }
         return JSON.stringify([retObject]);
     }
+
     var urlDictionary = {
         'cylance-protect-get-list': 'globallist/get',
         'cylance-protect-get-devices': 'device/get',
@@ -349,6 +361,7 @@ script:
         'cp-get-policies': 'policy/get',
         'cp-get-policy-details': 'policydetail/get'
     };
+
     var auth = sendRequest('token/get',
                             JSON.stringify({
                                 Username: params.credentials.identifier, Password:
@@ -463,11 +476,9 @@ script:
     - name: page_number
       description: The page number
     - name: sorts
-      description: Array of the sore object (includes field name in Field, and Direction
-        - either Ascending or Descending)
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
     - name: filters
-      description: Array of filters - either simple or composite (more information
-        on filter usage can be found in Cylance API documentation)
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
     - name: headers
       description: The headers columns to show by order
     description: 'Gets one of two Global Lists: Safe List and Global Quarantine List'
@@ -498,15 +509,12 @@ script:
     - name: page_number
       description: The page number
     - name: sorts
-      description: Array of the sore object (includes field name in Field, and Direction
-        - either Ascending or Descending)
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
     - name: filters
-      description: Array of filters - either simple or composite (more information
-        on filter usage can be found in Cylance API documentation)
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
     - name: headers
       description: The headers columns to show by order
-    description: Gets information about all the devices with CylancePROTECT Agent
-      installed
+    description: Gets information about all the devices with CylancePROTECT Agent installed
     outputs:
     - contextPath: Endpoint.OS
       description: Endpoint OS
@@ -528,11 +536,9 @@ script:
     - name: page_number
       description: The page number
     - name: sorts
-      description: Array of the sore object (includes field name in Field, and Direction
-        - either Ascending or Descending)
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
     - name: filters
-      description: Array of filters - either simple or composite (more information
-        on filter usage can be found in Cylance API documentation)
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
     - name: headers
       description: The headers columns to show by order
     description: Gets information about Cylance protect threats
@@ -599,11 +605,9 @@ script:
     - name: page_number
       description: The page number
     - name: sorts
-      description: Array of the sore object (includes field name in Field, and Direction
-        - either Ascending or Descending)
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
     - name: filters
-      description: Array of filters - either simple or composite (more information
-        on filter usage can be found in Cylance API documentation)
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
     - name: headers
       description: The headers columns to show by order
     description: Gets threats for a specific device
@@ -722,8 +726,7 @@ script:
       required: true
       default: true
       description: A list or single value of hash/es
-    description: Allows to create an Upload request for a set of hashes that will
-      be executed by endpoints eventually (not synced)
+    description: Allows to create an Upload request for a set of hashes that will be executed by endpoints eventually (not synced)
   - name: cylance-protect-get-threated-devices
     deprecated: true
     arguments:
@@ -736,15 +739,12 @@ script:
     - name: page_number
       description: The page number
     - name: sorts
-      description: Array of the sore object (includes field name in Field, and Direction
-        - either Ascending or Descending)
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
     - name: filters
-      description: Array of filters - either simple or composite (more information
-        on filter usage can be found in Cylance API documentation)
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
     - name: headers
       description: The headers columns to show by order
-    description: Given a threat, retrieve a list of all devices on which the threat
-      was found
+    description: Given a threat, retrieve a list of all devices on which the threat was found
     outputs:
     - contextPath: Endpoint.OS
       description: Endpoint OS
@@ -815,15 +815,11 @@ script:
     - name: zone_name
       required: true
       default: true
-      description: ￼ Name of the Zone. Cannot be Unzoned or the name of an existing
-        Zone. The maximum number of characters for a Zone Name is 32
+      description: ￼ Name of the Zone. Cannot be Unzoned or the name of an existing Zone. The maximum number of characters for a Zone Name is 32
     - name: policy_id
-      description: The Policy ID associated with this Zone. If omitted, it will default
-        to the Default Policy
+      description: The Policy ID associated with this Zone. If omitted, it will default to the Default Policy
     - name: zone_criticality
-      description: ￼ The name of the Zone Criticality, which can be Low, Normal or
-        Field Name ￼￼￼ Type ￼￼ Description ￼￼ ￼￼￼￼￼String, UUID ￼￼￼￼￼ Field Name ￼￼￼
-        Type ￼￼￼ Description ￼ String, UUID High. If omitted, it will default to Normal
+      description: ￼ The name of the Zone Criticality, which can be Low, Normal or Field Name ￼￼￼ Type ￼￼ Description ￼￼ ￼￼￼￼￼String, UUID ￼￼￼￼￼ Field Name ￼￼￼ Type ￼￼￼ Description ￼ String, UUID High. If omitted, it will default to Normal
     - name: headers
       description: The headers columns to show by order
     description: Create a zone
@@ -845,21 +841,17 @@ script:
     arguments:
     - name: zone_name
       required: true
-      description: ￼ Name of the Zone. Cannot be Unzoned or the name of an existing
-        Zone. The maximum number of characters for a Zone Name is 32
+      description: ￼ Name of the Zone. Cannot be Unzoned or the name of an existing Zone. The maximum number of characters for a Zone Name is 32
     - name: zone_id
       required: true
       default: true
       description: The ID of the Zone to update
     - name: policy_id
-      description: The Policy ID associated with this Zone. If omitted, will default
-        to the Default Policy
+      description: The Policy ID associated with this Zone. If omitted, will default to the Default Policy
     - name: zone_criticality
-      description: The name of the Zone Criticality, which can be Low, Normal or High.
-        If omitted, it will default to Normal
+      description: The name of the Zone Criticality, which can be Low, Normal or High. If omitted, it will default to Normal
     - name: apply_policy_change_to_devices
-      description: Defaults to False. Tells whether or not to update the Zone Devices
-        to use the new policy. This will only apply if this field is True
+      description: Defaults to False. Tells whether or not to update the Zone Devices to use the new policy. This will only apply if this field is True
     - name: headers
       description: The headers columns to show by order
     description: Update a zone
@@ -881,14 +873,12 @@ script:
     deprecated: true
     arguments:
     - name: policy_id
-      description: The Policy ID. This information supersedes the Policy Name, if
-        both are included
+      description: The Policy ID. This information supersedes the Policy Name, if both are included
     - name: policy_name
       description: The Policy Name
     - name: headers
       description: The headers columns to show by order
-    description: Get a specific policy details. If no args supplied, default policy
-      is retrieved
+    description: Get a specific policy details. If no args supplied, default policy is retrieved
     outputs:
     - contextPath: Cylance.Policy.ID
       description: Policy ID
@@ -910,11 +900,9 @@ script:
     - name: page_number
       description: The page number
     - name: sorts
-      description: Array of the sore object (includes field name in Field, and Direction
-        - either Ascending or Descending)
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
     - name: filters
-      description: Array of filters - either simple or composite (more information
-        on filter usage can be found in Cylance API documentation)
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
     description: 'Gets one of two Global Lists: Safe List and Global Quarantine List'
   - name: cp-get-devices
     deprecated: true
@@ -924,13 +912,10 @@ script:
     - name: page_number
       description: The page number
     - name: sorts
-      description: Array of the sore object (includes field name in Field, and Direction
-        - either Ascending or Descending)
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
     - name: filters
-      description: Array of filters - either simple or composite (more information
-        on filter usage can be found in Cylance API documentation)
-    description: Gets information about all the devices with CylancePROTECT Agent
-      installed
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
+    description: Gets information about all the devices with CylancePROTECT Agent installed
   - name: cp-get-threats
     deprecated: true
     arguments:
@@ -939,11 +924,9 @@ script:
     - name: page_number
       description: The page number
     - name: sorts
-      description: Array of the sore object (includes field name in Field, and Direction
-        - either Ascending or Descending)
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
     - name: filters
-      description: Array of filters - either simple or composite (more information
-        on filter usage can be found in Cylance API documentation)
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
     description: Gets information about Cylance protect threats
   - name: cp-download-threat
     deprecated: true
@@ -981,11 +964,9 @@ script:
     - name: page_number
       description: The page number
     - name: sorts
-      description: Array of the sore object (includes field name in Field, and Direction
-        - either Ascending or Descending)
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
     - name: filters
-      description: Array of filters - either simple or composite (more information
-        on filter usage can be found in Cylance API documentation)
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
     description: Gets threats for a specific device
   - name: cp-update-device-threats
     deprecated: true
@@ -1048,8 +1029,7 @@ script:
       required: true
       default: true
       description: A list or single value of hash/es
-    description: Allows to create an Upload request for a set of hashes that will
-      be executed by endpoints eventually (not synced)
+    description: Allows to create an Upload request for a set of hashes that will be executed by endpoints eventually (not synced)
   - name: cp-get-threated-devices
     deprecated: true
     arguments:
@@ -1062,13 +1042,10 @@ script:
     - name: page_number
       description: The page number
     - name: sorts
-      description: Array of the sore object (includes field name in Field, and Direction
-        - either Ascending or Descending)
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
     - name: filters
-      description: Array of filters - either simple or composite (more information
-        on filter usage can be found in Cylance API documentation)
-    description: Given a threat, retrieve a list of all devices on which the threat
-      was found
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
+    description: Given a threat, retrieve a list of all devices on which the threat was found
   - name: cp-get-zones
     deprecated: true
     arguments: []
@@ -1079,36 +1056,28 @@ script:
     - name: zone_name
       required: true
       default: true
-      description: ￼ Name of the Zone. Cannot be Unzoned or the name of an existing
-        Zone. The maximum number of characters for a Zone Name is 32
+      description: ￼ Name of the Zone. Cannot be Unzoned or the name of an existing Zone. The maximum number of characters for a Zone Name is 32
     - name: policy_id
-      description: The Policy ID associated with this Zone. If omitted, it will default
-        to the Default Policy
+      description: The Policy ID associated with this Zone. If omitted, it will default to the Default Policy
     - name: zone_criticality
-      description: ￼ The name of the Zone Criticality, which can be Low, Normal or
-        Field Name ￼￼￼ Type ￼￼ Description ￼￼ ￼￼￼￼￼String, UUID ￼￼￼￼￼ Field Name ￼￼￼
-        Type ￼￼￼ Description ￼ String, UUID High. If omitted, it will default to Normal
+      description: ￼ The name of the Zone Criticality, which can be Low, Normal or Field Name ￼￼￼ Type ￼￼ Description ￼￼ ￼￼￼￼￼String, UUID ￼￼￼￼￼ Field Name ￼￼￼ Type ￼￼￼ Description ￼ String, UUID High. If omitted, it will default to Normal
     description: Create a zone
   - name: cp-update-zone
     deprecated: true
     arguments:
     - name: zone_name
       required: true
-      description: ￼ Name of the Zone. Cannot be Unzoned or the name of an existing
-        Zone. The maximum number of characters for a Zone Name is 32
+      description: ￼ Name of the Zone. Cannot be Unzoned or the name of an existing Zone. The maximum number of characters for a Zone Name is 32
     - name: zone_id
       required: true
       default: true
       description: The ID of the Zone to update
     - name: policy_id
-      description: The Policy ID associated with this Zone. If omitted, will default
-        to the Default Policy
+      description: The Policy ID associated with this Zone. If omitted, will default to the Default Policy
     - name: zone_criticality
-      description: The name of the Zone Criticality, which can be Low, Normal or High.
-        If omitted, it will default to Normal
+      description: The name of the Zone Criticality, which can be Low, Normal or High. If omitted, it will default to Normal
     - name: apply_policy_change_to_devices
-      description: Defaults to False. Tells whether or not to update the Zone Devices
-        to use the new policy. This will only apply if this field is True
+      description: Defaults to False. Tells whether or not to update the Zone Devices to use the new policy. This will only apply if this field is True
     description: Update a zone
   - name: cp-get-policies
     deprecated: true
@@ -1118,11 +1087,9 @@ script:
     deprecated: true
     arguments:
     - name: policy_id
-      description: The Policy ID. This information supersedes the Policy Name, if
-        both are included
+      description: The Policy ID. This information supersedes the Policy Name, if both are included
     - name: policy_name
       description: The Policy Name
-    description: Get a specific policy details. If no args supplied, default policy
-      is retrieved
+    description: Get a specific policy details. If no args supplied, default policy is retrieved
   isfetch: true
 hidden: false

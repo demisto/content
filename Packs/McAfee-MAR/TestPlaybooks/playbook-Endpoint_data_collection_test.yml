@@ -95,8 +95,7 @@ tasks:
       id: 01887448-e6dc-4f5c-8638-f6e1ab159d2a
       version: -1
       name: Endpoint data collection
-      description: Generic playbook to collect data from endpoints for IR purposes.
-        Will use whichever integrations are configured and available.
+      description: Generic playbook to collect data from endpoints for IR purposes. Will use whichever integrations are configured and available.
       playbookName: Endpoint data collection
       type: playbook
       iscommand: false
@@ -188,3 +187,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
