@@ -7,7 +7,7 @@ This integration was integrated and tested with version 6.0 of XSOAR
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for XSOAR Mirroring.
 3. Click **Add instance** to create and configure a new integration instance.
-4. Go to the tenant to which you want to mirror the content and install the XSOAR Mirroring Client pack. This is where you can define which content you want to ingest from the Cortex XSOAR tenant. 
+4. Go to the tenant to which you want to mirror the content and install the XSOAR Mirroring pack. This is where you can define which content you want to ingest from the Cortex XSOAR tenant. 
 
 The mirroring instance in the first tenant contains a new incident type, called Ping. You can use the following query to ingest those incidents into the XSOAR mirroring client tenant `-status:closed and type:Ping and -frompong:true`
 

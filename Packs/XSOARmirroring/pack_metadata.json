@@ -1,5 +1,5 @@
 {
-    "name": "XSOAR Mirroring Server",
+    "name": "XSOAR Mirroring",
     "description": "Allows mirroring of XSOAR incidents between different instances.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
