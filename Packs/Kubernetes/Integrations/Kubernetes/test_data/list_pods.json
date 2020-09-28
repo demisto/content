@@ -1,0 +1,778 @@
+{
+    "api_version": "v1",
+    "items": [
+        {
+            "api_version": null,
+            "kind": null,
+            "metadata": {
+                "annotations": {
+                    "k8s.v1.cni.cncf.io/network-status": "[{\n    \"name\": \"openshift-sdn\",\n    \"interface\": \"eth0\",\n    \"ips\": [\n        \"10.131.12.51\"\n    ],\n    \"default\": true,\n    \"dns\": {}\n}]",
+                    "k8s.v1.cni.cncf.io/networks-status": "[{\n    \"name\": \"openshift-sdn\",\n    \"interface\": \"eth0\",\n    \"ips\": [\n        \"10.131.12.51\"\n    ],\n    \"default\": true,\n    \"dns\": {}\n}]",
+                    "kubernetes.io/limit-ranger": "LimitRanger plugin set: cpu, memory request for container selma; cpu, memory limit for container selma",
+                    "openshift.io/deployment-config.latest-version": "17",
+                    "openshift.io/deployment-config.name": "selma",
+                    "openshift.io/deployment.name": "selma-17",
+                    "openshift.io/generated-by": "OpenShiftNewApp",
+                    "openshift.io/scc": "restricted"
+                },
+                "cluster_name": null,
+                "creation_timestamp": "2020-09-23T16:04:51+00:00",
+                "deletion_grace_period_seconds": null,
+                "deletion_timestamp": null,
+                "finalizers": null,
+                "generate_name": "selma-17-",
+                "generation": null,
+                "initializers": null,
+                "labels": {
+                    "app": "selma",
+                    "deployment": "selma-17",
+                    "deploymentconfig": "selma"
+                },
+                "managed_fields": [
+                    {
+                        "api_version": "v1",
+                        "fields": null,
+                        "manager": "kube-controller-manager",
+                        "operation": "Update",
+                        "time": "2020-09-23T16:04:51+00:00"
+                    },
+                    {
+                        "api_version": "v1",
+                        "fields": null,
+                        "manager": "multus",
+                        "operation": "Update",
+                        "time": "2020-09-23T16:05:12+00:00"
+                    },
+                    {
+                        "api_version": "v1",
+                        "fields": null,
+                        "manager": "kubelet",
+                        "operation": "Update",
+                        "time": "2020-09-23T16:06:19+00:00"
+                    }
+                ],
+                "name": "selma-17-z76gt",
+                "namespace": "victor",
+                "owner_references": [
+                    {
+                        "api_version": "v1",
+                        "block_owner_deletion": true,
+                        "controller": true,
+                        "kind": "ReplicationController",
+                        "name": "selma-17",
+                        "uid": "7a3c3655-0c1d-49b5-934e-f680a41ddb17"
+                    }
+                ],
+                "resource_version": "342616535",
+                "self_link": "/api/v1/namespaces/victor/pods/selma-17-z76gt",
+                "uid": "60178cf8-5f6a-445c-a5f4-d8b9a840f9cb"
+            },
+            "spec": {
+                "active_deadline_seconds": null,
+                "affinity": null,
+                "automount_service_account_token": null,
+                "containers": [
+                    {
+                        "args": null,
+                        "command": null,
+                        "env": [
+                            {
+                                "name": "MONGODB",
+                                "value": "172.30.48.222",
+                                "value_from": null
+                            },
+                            {
+                                "name": "PGSQL",
+                                "value": "172.30.199.82",
+                                "value_from": null
+                            },
+                            {
+                                "name": "WITAI",
+                                "value": "4DMATWRKPI5UC4ARO63CAZQSCIMWFG3X",
+                                "value_from": null
+                            }
+                        ],
+                        "env_from": null,
+                        "image": "image-registry.openshift-image-registry.svc:5000/victor/selma@sha256:5bb8ab809e8be3f443d28eae1d4c857e2d9ca109db1dac27495771212f31d950",
+                        "image_pull_policy": "Always",
+                        "lifecycle": null,
+                        "liveness_probe": null,
+                        "name": "selma",
+                        "ports": [
+                            {
+                                "container_port": 8080,
+                                "host_ip": null,
+                                "host_port": null,
+                                "name": null,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "readiness_probe": null,
+                        "resources": {
+                            "limits": {
+                                "cpu": "1",
+                                "memory": "512Mi"
+                            },
+                            "requests": {
+                                "cpu": "20m",
+                                "memory": "256Mi"
+                            }
+                        },
+                        "security_context": {
+                            "allow_privilege_escalation": null,
+                            "capabilities": {
+                                "add": null,
+                                "drop": [
+                                    "KILL",
+                                    "MKNOD",
+                                    "SETGID",
+                                    "SETUID"
+                                ]
+                            },
+                            "privileged": null,
+                            "proc_mount": null,
+                            "read_only_root_filesystem": null,
+                            "run_as_group": null,
+                            "run_as_non_root": null,
+                            "run_as_user": 1002720000,
+                            "se_linux_options": null,
+                            "windows_options": null
+                        },
+                        "stdin": null,
+                        "stdin_once": null,
+                        "termination_message_path": "/dev/termination-log",
+                        "termination_message_policy": "File",
+                        "tty": null,
+                        "volume_devices": null,
+                        "volume_mounts": [
+                            {
+                                "mount_path": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "mount_propagation": null,
+                                "name": "default-token-b9ncq",
+                                "read_only": true,
+                                "sub_path": null,
+                                "sub_path_expr": null
+                            }
+                        ],
+                        "working_dir": null
+                    }
+                ],
+                "dns_config": null,
+                "dns_policy": "ClusterFirst",
+                "enable_service_links": true,
+                "host_aliases": null,
+                "host_ipc": null,
+                "host_network": null,
+                "host_pid": null,
+                "hostname": null,
+                "image_pull_secrets": [
+                    {
+                        "name": "default-dockercfg-xz94x"
+                    },
+                    {
+                        "name": "12798362-victor2-pull-secret"
+                    }
+                ],
+                "init_containers": null,
+                "node_name": "ip-10-0-146-92.us-east-2.compute.internal",
+                "node_selector": null,
+                "preemption_policy": null,
+                "priority": 0,
+                "priority_class_name": null,
+                "readiness_gates": null,
+                "restart_policy": "Always",
+                "runtime_class_name": null,
+                "scheduler_name": "default-scheduler",
+                "security_context": {
+                    "fs_group": 1002720000,
+                    "run_as_group": null,
+                    "run_as_non_root": null,
+                    "run_as_user": null,
+                    "se_linux_options": {
+                        "level": "s0:c52,c34",
+                        "role": null,
+                        "type": null,
+                        "user": null
+                    },
+                    "supplemental_groups": null,
+                    "sysctls": null,
+                    "windows_options": null
+                },
+                "service_account": "default",
+                "service_account_name": "default",
+                "share_process_namespace": null,
+                "subdomain": null,
+                "termination_grace_period_seconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "toleration_seconds": 300,
+                        "value": null
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "toleration_seconds": 300,
+                        "value": null
+                    },
+                    {
+                        "effect": "NoSchedule",
+                        "key": "node.kubernetes.io/memory-pressure",
+                        "operator": "Exists",
+                        "toleration_seconds": null,
+                        "value": null
+                    }
+                ],
+                "volumes": [
+                    {
+                        "aws_elastic_block_store": null,
+                        "azure_disk": null,
+                        "azure_file": null,
+                        "cephfs": null,
+                        "cinder": null,
+                        "config_map": null,
+                        "csi": null,
+                        "downward_api": null,
+                        "empty_dir": null,
+                        "fc": null,
+                        "flex_volume": null,
+                        "flocker": null,
+                        "gce_persistent_disk": null,
+                        "git_repo": null,
+                        "glusterfs": null,
+                        "host_path": null,
+                        "iscsi": null,
+                        "name": "default-token-b9ncq",
+                        "nfs": null,
+                        "persistent_volume_claim": null,
+                        "photon_persistent_disk": null,
+                        "portworx_volume": null,
+                        "projected": null,
+                        "quobyte": null,
+                        "rbd": null,
+                        "scale_io": null,
+                        "secret": {
+                            "default_mode": 420,
+                            "items": null,
+                            "optional": null,
+                            "secret_name": "default-token-b9ncq"
+                        },
+                        "storageos": null,
+                        "vsphere_volume": null
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "last_probe_time": null,
+                        "last_transition_time": "2020-09-23T16:04:51+00:00",
+                        "message": null,
+                        "reason": null,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "last_probe_time": null,
+                        "last_transition_time": "2020-09-23T16:06:19+00:00",
+                        "message": null,
+                        "reason": null,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "last_probe_time": null,
+                        "last_transition_time": "2020-09-23T16:06:19+00:00",
+                        "message": null,
+                        "reason": null,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "last_probe_time": null,
+                        "last_transition_time": "2020-09-23T16:04:51+00:00",
+                        "message": null,
+                        "reason": null,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "container_statuses": [
+                    {
+                        "container_id": "cri-o://7de245f79a82ef221053ec09aa59959c6c69ec25b0c86a14228b53ed5bb87a90",
+                        "image": "image-registry.openshift-image-registry.svc:5000/victor/selma@sha256:5bb8ab809e8be3f443d28eae1d4c857e2d9ca109db1dac27495771212f31d950",
+                        "image_id": "image-registry.openshift-image-registry.svc:5000/victor/selma@sha256:5bb8ab809e8be3f443d28eae1d4c857e2d9ca109db1dac27495771212f31d950",
+                        "last_state": {
+                            "running": null,
+                            "terminated": null,
+                            "waiting": null
+                        },
+                        "name": "selma",
+                        "ready": true,
+                        "restart_count": 0,
+                        "state": {
+                            "running": {
+                                "started_at": "2020-09-23T16:06:17+00:00"
+                            },
+                            "terminated": null,
+                            "waiting": null
+                        }
+                    }
+                ],
+                "host_ip": "10.0.146.92",
+                "init_container_statuses": null,
+                "message": null,
+                "nominated_node_name": null,
+                "phase": "Running",
+                "pod_ip": "10.131.12.51",
+                "qos_class": "Burstable",
+                "reason": null,
+                "start_time": "2020-09-23T16:04:51+00:00"
+            }
+        },
+        {
+            "api_version": null,
+            "kind": null,
+            "metadata": {
+                "annotations": {
+                    "k8s.v1.cni.cncf.io/network-status": "[{\n    \"name\": \"openshift-sdn\",\n    \"interface\": \"eth0\",\n    \"ips\": [\n        \"10.131.6.54\"\n    ],\n    \"default\": true,\n    \"dns\": {}\n}]",
+                    "k8s.v1.cni.cncf.io/networks-status": "[{\n    \"name\": \"openshift-sdn\",\n    \"interface\": \"eth0\",\n    \"ips\": [\n        \"10.131.6.54\"\n    ],\n    \"default\": true,\n    \"dns\": {}\n}]",
+                    "kubernetes.io/limit-ranger": "LimitRanger plugin set: cpu request for container postgresql; cpu limit for container postgresql",
+                    "openshift.io/deployment-config.latest-version": "1",
+                    "openshift.io/deployment-config.name": "smapp",
+                    "openshift.io/deployment.name": "smapp-1",
+                    "openshift.io/scc": "restricted"
+                },
+                "cluster_name": null,
+                "creation_timestamp": "2020-09-23T15:41:46+00:00",
+                "deletion_grace_period_seconds": null,
+                "deletion_timestamp": null,
+                "finalizers": null,
+                "generate_name": "smapp-1-",
+                "generation": null,
+                "initializers": null,
+                "labels": {
+                    "deployment": "smapp-1",
+                    "deploymentconfig": "smapp",
+                    "name": "smapp"
+                },
+                "managed_fields": [
+                    {
+                        "api_version": "v1",
+                        "fields": null,
+                        "manager": "kube-controller-manager",
+                        "operation": "Update",
+                        "time": "2020-09-23T15:41:46+00:00"
+                    },
+                    {
+                        "api_version": "v1",
+                        "fields": null,
+                        "manager": "kube-scheduler",
+                        "operation": "Update",
+                        "time": "2020-09-23T15:41:46+00:00"
+                    },
+                    {
+                        "api_version": "v1",
+                        "fields": null,
+                        "manager": "multus",
+                        "operation": "Update",
+                        "time": "2020-09-23T15:45:06+00:00"
+                    },
+                    {
+                        "api_version": "v1",
+                        "fields": null,
+                        "manager": "kubelet",
+                        "operation": "Update",
+                        "time": "2020-09-23T15:45:43+00:00"
+                    }
+                ],
+                "name": "smapp-1-b7f5s",
+                "namespace": "victor",
+                "owner_references": [
+                    {
+                        "api_version": "v1",
+                        "block_owner_deletion": true,
+                        "controller": true,
+                        "kind": "ReplicationController",
+                        "name": "smapp-1",
+                        "uid": "6cbe59d5-5f4d-42a2-aaf5-09b723147447"
+                    }
+                ],
+                "resource_version": "342595100",
+                "self_link": "/api/v1/namespaces/victor/pods/smapp-1-b7f5s",
+                "uid": "2bc4a80f-3087-4664-a502-692fa96fafc3"
+            },
+            "spec": {
+                "active_deadline_seconds": null,
+                "affinity": null,
+                "automount_service_account_token": null,
+                "containers": [
+                    {
+                        "args": null,
+                        "command": null,
+                        "env": [
+                            {
+                                "name": "POSTGRESQL_USER",
+                                "value": null,
+                                "value_from": {
+                                    "config_map_key_ref": null,
+                                    "field_ref": null,
+                                    "resource_field_ref": null,
+                                    "secret_key_ref": {
+                                        "key": "database-user",
+                                        "name": "smapp",
+                                        "optional": null
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POSTGRESQL_PASSWORD",
+                                "value": null,
+                                "value_from": {
+                                    "config_map_key_ref": null,
+                                    "field_ref": null,
+                                    "resource_field_ref": null,
+                                    "secret_key_ref": {
+                                        "key": "database-password",
+                                        "name": "smapp",
+                                        "optional": null
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POSTGRESQL_DATABASE",
+                                "value": null,
+                                "value_from": {
+                                    "config_map_key_ref": null,
+                                    "field_ref": null,
+                                    "resource_field_ref": null,
+                                    "secret_key_ref": {
+                                        "key": "database-name",
+                                        "name": "smapp",
+                                        "optional": null
+                                    }
+                                }
+                            }
+                        ],
+                        "env_from": null,
+                        "image": "image-registry.openshift-image-registry.svc:5000/openshift/postgresql@sha256:a145b5c2f38e25e832bef0be3a01a92a1f62d5c39c5edfcf074332f8642cb68f",
+                        "image_pull_policy": "IfNotPresent",
+                        "lifecycle": null,
+                        "liveness_probe": {
+                            "_exec": {
+                                "command": [
+                                    "/usr/libexec/check-container",
+                                    "--live"
+                                ]
+                            },
+                            "failure_threshold": 3,
+                            "http_get": null,
+                            "initial_delay_seconds": 120,
+                            "period_seconds": 10,
+                            "success_threshold": 1,
+                            "tcp_socket": null,
+                            "timeout_seconds": 10
+                        },
+                        "name": "postgresql",
+                        "ports": [
+                            {
+                                "container_port": 5432,
+                                "host_ip": null,
+                                "host_port": null,
+                                "name": null,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "readiness_probe": {
+                            "_exec": {
+                                "command": [
+                                    "/usr/libexec/check-container"
+                                ]
+                            },
+                            "failure_threshold": 3,
+                            "http_get": null,
+                            "initial_delay_seconds": 5,
+                            "period_seconds": 10,
+                            "success_threshold": 1,
+                            "tcp_socket": null,
+                            "timeout_seconds": 1
+                        },
+                        "resources": {
+                            "limits": {
+                                "cpu": "1",
+                                "memory": "512Mi"
+                            },
+                            "requests": {
+                                "cpu": "20m",
+                                "memory": "256Mi"
+                            }
+                        },
+                        "security_context": {
+                            "allow_privilege_escalation": null,
+                            "capabilities": {
+                                "add": null,
+                                "drop": [
+                                    "KILL",
+                                    "MKNOD",
+                                    "SETGID",
+                                    "SETUID"
+                                ]
+                            },
+                            "privileged": false,
+                            "proc_mount": null,
+                            "read_only_root_filesystem": null,
+                            "run_as_group": null,
+                            "run_as_non_root": null,
+                            "run_as_user": 1002720000,
+                            "se_linux_options": null,
+                            "windows_options": null
+                        },
+                        "stdin": null,
+                        "stdin_once": null,
+                        "termination_message_path": "/dev/termination-log",
+                        "termination_message_policy": "File",
+                        "tty": null,
+                        "volume_devices": null,
+                        "volume_mounts": [
+                            {
+                                "mount_path": "/var/lib/pgsql/data",
+                                "mount_propagation": null,
+                                "name": "smapp-data",
+                                "read_only": null,
+                                "sub_path": null,
+                                "sub_path_expr": null
+                            },
+                            {
+                                "mount_path": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "mount_propagation": null,
+                                "name": "default-token-b9ncq",
+                                "read_only": true,
+                                "sub_path": null,
+                                "sub_path_expr": null
+                            }
+                        ],
+                        "working_dir": null
+                    }
+                ],
+                "dns_config": null,
+                "dns_policy": "ClusterFirst",
+                "enable_service_links": true,
+                "host_aliases": null,
+                "host_ipc": null,
+                "host_network": null,
+                "host_pid": null,
+                "hostname": null,
+                "image_pull_secrets": [
+                    {
+                        "name": "default-dockercfg-xz94x"
+                    },
+                    {
+                        "name": "12798362-victor2-pull-secret"
+                    }
+                ],
+                "init_containers": null,
+                "node_name": "ip-10-0-132-141.us-east-2.compute.internal",
+                "node_selector": null,
+                "preemption_policy": null,
+                "priority": 0,
+                "priority_class_name": null,
+                "readiness_gates": null,
+                "restart_policy": "Always",
+                "runtime_class_name": null,
+                "scheduler_name": "default-scheduler",
+                "security_context": {
+                    "fs_group": 1002720000,
+                    "run_as_group": null,
+                    "run_as_non_root": null,
+                    "run_as_user": null,
+                    "se_linux_options": {
+                        "level": "s0:c52,c34",
+                        "role": null,
+                        "type": null,
+                        "user": null
+                    },
+                    "supplemental_groups": null,
+                    "sysctls": null,
+                    "windows_options": null
+                },
+                "service_account": "default",
+                "service_account_name": "default",
+                "share_process_namespace": null,
+                "subdomain": null,
+                "termination_grace_period_seconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "toleration_seconds": 300,
+                        "value": null
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "toleration_seconds": 300,
+                        "value": null
+                    },
+                    {
+                        "effect": "NoSchedule",
+                        "key": "node.kubernetes.io/memory-pressure",
+                        "operator": "Exists",
+                        "toleration_seconds": null,
+                        "value": null
+                    }
+                ],
+                "volumes": [
+                    {
+                        "aws_elastic_block_store": null,
+                        "azure_disk": null,
+                        "azure_file": null,
+                        "cephfs": null,
+                        "cinder": null,
+                        "config_map": null,
+                        "csi": null,
+                        "downward_api": null,
+                        "empty_dir": null,
+                        "fc": null,
+                        "flex_volume": null,
+                        "flocker": null,
+                        "gce_persistent_disk": null,
+                        "git_repo": null,
+                        "glusterfs": null,
+                        "host_path": null,
+                        "iscsi": null,
+                        "name": "smapp-data",
+                        "nfs": null,
+                        "persistent_volume_claim": {
+                            "claim_name": "smapp",
+                            "read_only": null
+                        },
+                        "photon_persistent_disk": null,
+                        "portworx_volume": null,
+                        "projected": null,
+                        "quobyte": null,
+                        "rbd": null,
+                        "scale_io": null,
+                        "secret": null,
+                        "storageos": null,
+                        "vsphere_volume": null
+                    },
+                    {
+                        "aws_elastic_block_store": null,
+                        "azure_disk": null,
+                        "azure_file": null,
+                        "cephfs": null,
+                        "cinder": null,
+                        "config_map": null,
+                        "csi": null,
+                        "downward_api": null,
+                        "empty_dir": null,
+                        "fc": null,
+                        "flex_volume": null,
+                        "flocker": null,
+                        "gce_persistent_disk": null,
+                        "git_repo": null,
+                        "glusterfs": null,
+                        "host_path": null,
+                        "iscsi": null,
+                        "name": "default-token-b9ncq",
+                        "nfs": null,
+                        "persistent_volume_claim": null,
+                        "photon_persistent_disk": null,
+                        "portworx_volume": null,
+                        "projected": null,
+                        "quobyte": null,
+                        "rbd": null,
+                        "scale_io": null,
+                        "secret": {
+                            "default_mode": 420,
+                            "items": null,
+                            "optional": null,
+                            "secret_name": "default-token-b9ncq"
+                        },
+                        "storageos": null,
+                        "vsphere_volume": null
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "last_probe_time": null,
+                        "last_transition_time": "2020-09-23T15:44:19+00:00",
+                        "message": null,
+                        "reason": null,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "last_probe_time": null,
+                        "last_transition_time": "2020-09-23T15:45:43+00:00",
+                        "message": null,
+                        "reason": null,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "last_probe_time": null,
+                        "last_transition_time": "2020-09-23T15:45:43+00:00",
+                        "message": null,
+                        "reason": null,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "last_probe_time": null,
+                        "last_transition_time": "2020-09-23T15:44:19+00:00",
+                        "message": null,
+                        "reason": null,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "container_statuses": [
+                    {
+                        "container_id": "cri-o://8c75983f5feae83f08d3d163e873204dbecc23f59944ec2c60eeee7bd352905e",
+                        "image": "image-registry.openshift-image-registry.svc:5000/openshift/postgresql@sha256:a145b5c2f38e25e832bef0be3a01a92a1f62d5c39c5edfcf074332f8642cb68f",
+                        "image_id": "image-registry.openshift-image-registry.svc:5000/openshift/postgresql@sha256:a145b5c2f38e25e832bef0be3a01a92a1f62d5c39c5edfcf074332f8642cb68f",
+                        "last_state": {
+                            "running": null,
+                            "terminated": null,
+                            "waiting": null
+                        },
+                        "name": "postgresql",
+                        "ready": true,
+                        "restart_count": 0,
+                        "state": {
+                            "running": {
+                                "started_at": "2020-09-23T15:45:31+00:00"
+                            },
+                            "terminated": null,
+                            "waiting": null
+                        }
+                    }
+                ],
+                "host_ip": "10.0.132.141",
+                "init_container_statuses": null,
+                "message": null,
+                "nominated_node_name": null,
+                "phase": "Running",
+                "pod_ip": "10.131.6.54",
+                "qos_class": "Burstable",
+                "reason": null,
+                "start_time": "2020-09-23T15:44:19+00:00"
+            }
+        }
+    ],
+    "kind": "PodList",
+    "metadata": {
+        "_continue": null,
+        "remaining_item_count": null,
+        "resource_version": "345492700",
+        "self_link": "/api/v1/namespaces/victor/pods"
+    }
+}

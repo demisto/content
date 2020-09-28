@@ -1,5 +1,6 @@
 import os
 import argparse
+import json
 
 from Kubernetes import *
 
@@ -11,28 +12,33 @@ parser.add_argument("--services", help="List services in namespace.", action="st
 parser.add_argument("--spec", help="List all properties of an object's specification.", action="store_true")
 parser.add_argument("--meta", help="List all properties of an object's metadata.", action="store_true")
 parser.add_argument("--status", help="List all properties of an object's status.", action="store_true")
+parser.add_argument("--json", help="Print an object as JSON.", action="store_true")
 parser.add_argument("--prop", type=str, help="Print a specific property.")
 args = parser.parse_args()
 ns = args.namespace
+
 
 cluster_host_url = os.environ['KUBERNETES_CLUSTER_HOST_URL']
 token = os.environ['KUBERNETES_CLUSTER_TOKEN']
 k8s = Client(cluster_host_url, token, ns)
 
 if args.podscmd:
-    print(k8s.list_pods_readable())
+    print(k8s.list_pods_readable(k8s.list_pods_raw().to_dict()))
     exit()
 obj = ''
 ret = None
 if args.pods:
     obj = "Pod"
-    ret = k8s.list_pods()
+    ret = k8s.list_pods_raw()
 elif args.services:
     obj = "Service"
     ret = k8s.list_services()
 else: exit()
 
 if len(ret.items) > 0:
+    if args.json:
+        print(dict_to_json(ret.to_dict()))
+        exit()
     if args.spec:            
         if args.prop is None:
             print ("%s spec: %s" % (obj, [ x for x in dir(ret.items[0].spec) if not x.startswith('_')]))
