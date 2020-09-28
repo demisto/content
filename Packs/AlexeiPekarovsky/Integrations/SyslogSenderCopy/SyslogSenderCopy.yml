@@ -1,0 +1,187 @@
+category: Analytics & SIEM
+commonfields:
+  id: Syslog Sender
+  version: -1
+configuration:
+- display: IP Address (e.g., 127.0.0.1)
+  name: address
+  required: false
+  type: 0
+- defaultvalue: "514"
+  display: Port
+  name: port
+  required: false
+  type: 0
+- defaultvalue: UDP
+  display: Protocol
+  name: protocol
+  options:
+  - TCP
+  - UDP
+  required: false
+  type: 15
+- defaultvalue: LOG_USER
+  display: Facility
+  name: facility
+  options:
+  - LOG_AUTH
+  - LOG_AUTHPRIV
+  - LOG_CRON
+  - LOG_DAEMON
+  - LOG_FTP
+  - LOG_KERN
+  - LOG_LPR
+  - LOG_MAIL
+  - LOG_NEWS
+  - LOG_SYSLOG
+  - LOG_USER
+  - LOG_UUCP
+  - LOG_LOCAL0
+  - LOG_LOCAL1
+  - LOG_LOCAL2
+  - LOG_LOCAL3
+  - LOG_LOCAL4
+  - LOG_LOCAL5
+  - LOG_LOCAL6
+  - LOG_LOCAL7
+  required: false
+  type: 15
+- defaultvalue: LOG_INFO
+  display: Log priority to send
+  name: priority
+  options:
+  - LOG_DEBUG
+  - LOG_INFO
+  - LOG_WARNING
+  - LOG_ERR
+  - LOG_CRIT
+  required: false
+  type: 15
+- defaultvalue: Low
+  display: Minimum severity of incidents to send messages on
+  name: severity
+  options:
+  - Unknown
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: false
+  type: 15
+- display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+- display: Port mapping (<port> or <host port>:<docker port>)
+  name: longRunningPort
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Use the Syslog Sender integration to send messages and mirror incident
+  War Room entries to Syslog.
+display: Syslog Sender
+name: Syslog Sender
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: The mirroring type. Can be "all", which mirrors everything, "chat",
+        which mirrors only chats (not commands), or "none", which stops all mirroring.
+      name: type
+      predefined:
+      - all
+      - chat
+      - none
+    description: Mirrors the investigation's War Room to Syslog.
+    name: mirror-investigation
+  - arguments:
+    - default: true
+      description: The message content.
+      name: message
+    - description: An entry ID to send as a link.
+      name: entry
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to include a URL to the relevant component in Demisto.
+        Can be "true" or "false". The default value is "false'.
+      name: ignoreAddURL
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR",
+        or "CRITICAL".
+      name: level
+      predefined:
+      - DEBUG
+      - INFO
+      - WARNING
+      - ERROR
+      - CRITICAL
+    description: Sends a message to Syslog. Used by the mirroring functionality.
+    name: send-notification
+  - arguments:
+    - description: The message content.
+      name: message
+      required: true
+    - auto: PREDEFINED
+      description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR",
+        or "CRITICAL".
+      name: level
+      predefined:
+      - DEBUG
+      - INFO
+      - WARNING
+      - ERROR
+      - CRITICAL
+    - description: The Syslog server address.
+      name: address
+    - auto: PREDEFINED
+      description: The protocol to use. Can be "TCP" or "UDP".
+      name: protocol
+      predefined:
+      - TCP
+      - UDP
+    - description: The Syslog server port.
+      name: port
+    - auto: PREDEFINED
+      description: The Syslog facility.
+      name: facility
+      predefined:
+      - LOG_AUTH
+      - LOG_AUTHPRIV
+      - LOG_CRON
+      - LOG_DAEMON
+      - LOG_FTP
+      - LOG_KERN
+      - LOG_LPR
+      - LOG_MAIL
+      - LOG_NEWS
+      - LOG_SYSLOG
+      - LOG_USER
+      - LOG_UUCP
+      - LOG_LOCAL0
+      - LOG_LOCAL1
+      - LOG_LOCAL2
+      - LOG_LOCAL3
+      - LOG_LOCAL4
+      - LOG_LOCAL5
+      - LOG_LOCAL6
+      - LOG_LOCAL7
+    description: Sends a message to Syslog.
+    name: syslog-send
+  dockerimage: demisto/python3:3.8.2.6981
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

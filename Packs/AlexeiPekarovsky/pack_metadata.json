@@ -1,0 +1,14 @@
+{
+    "name": "Alexei Pekarovsky",
+    "description": "This content pack is set to be a \"toolbox\" for organisations with \"Air Gap\" networks. There are currently two use-cases in this \"toolbox\".\nOne is indicators \"reputation\" query from internal , air gapped network. This is done by getting the indicators across the \"Air Gap\" by using unidirectional diode that can pass UDP traffic. The answer will return as a JSON Feed file and will be transferred back in via another unidirectional diode that can pass files.\nThe second use-case is automating \"Offline Panorama content updates\" like AV, Apps and threats or even Wildfire content updates. External network Panorama will pull the content updates forward them to XSOAR. Then they will be checked for threats and moved by a unidirectional diode into the internal network where they will be automatically installed on the Panorama server and pushed to the firewalls.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Alex Pekarovsky",
+    "url": "",
+    "email": "",
+    "created": "2020-09-28T22:48:58Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
