@@ -55,8 +55,7 @@ def get_ip_details(ip):
             data = {'Address': item}
             finaldata.append(data)
         except exception as e:
-            f"Error, {e.message}. With Args {e.args}."
-            return
+            return_error(f'Error, {e.message}. With Args {e.args}.')
 
     return finaldata
 
@@ -76,7 +75,7 @@ def test_module():
     except gaierror:
         return 'ok'
     except exception as e:
-        return f"Error, {e.message}. With Args {e.args}."
+        return f'Error, {e.message}. With Args {e.args}.'
 
 
 def main():
