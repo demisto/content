@@ -345,7 +345,7 @@ def multiprocessing_wrapper_get_stix_objects(client: Client, type_: str):
 
 
 def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[str] = None) -> List[Dict]:
-    """Retrieves indicators from the feed
+    """Retrieves indicators and reports from the feed
 
     Args:
         client: Client object with request
