@@ -16,12 +16,14 @@ STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN', '')
 FILES_TO_REMOVE = ['content-descriptor.json', 'doc-CommonServer.json', 'doc-howto.json', 'reputations.json',
                    'tools-o365.zip', 'tools-exchange.zip', 'tools-winpmem.zip']
-CONTENT_ZIP_PATH = f'{ARTIFACTS_PATH}/content_new.zip'
-ORIGINAL_CONTENT_ZIP_PATH = f'{ARTIFACTS_PATH}/original_content_new.zip'
+CONTENT_NEW_ZIP_PATH = f'{ARTIFACTS_PATH}/content_new.zip'
+ALL_CONTENT_ZIP_PATH = f'{ARTIFACTS_PATH}/all_content.zip'
+
+ORIGINAL_CONTENT_NEW_ZIP_PATH = f'{ARTIFACTS_PATH}/original_content_new.zip'
+ORIGINAL_ALL_CONTENT_ZIP_PATH = f'{ARTIFACTS_PATH}/original_all_content.zip'
 
 
 def http_request(method, url, params=None):
-
     r = requests.request(
         method=method,
         url=url,
@@ -139,16 +141,16 @@ def download_zip_file_from_gcp(current_feature_content_zip_file_path, zip_destin
     return ''
 
 
-def merge_zip_files(feature_branch_content_zip_file_path):
+def merge_zip_files(feature_branch_content_zip_file_path, artifacts_zip_path, original_zip_path):
     """Merge content_new zip files and remove the unnecessary files.
 
     Args:
         feature_branch_content_zip_file_path: Feature content_new.zip file path
 
     """
-    os.rename(CONTENT_ZIP_PATH, ORIGINAL_CONTENT_ZIP_PATH)
-    unified_zip = z.ZipFile(CONTENT_ZIP_PATH, 'a', z.ZIP_DEFLATED)
-    with z.ZipFile(ORIGINAL_CONTENT_ZIP_PATH, 'r') as master_zip:
+    os.rename(artifacts_zip_path, original_zip_path)
+    unified_zip = z.ZipFile(artifacts_zip_path, 'a', z.ZIP_DEFLATED)
+    with z.ZipFile(original_zip_path, 'r') as master_zip:
         feature_zip = z.ZipFile(feature_branch_content_zip_file_path, 'r')
         for name in feature_zip.namelist():
             if name not in FILES_TO_REMOVE:
@@ -175,6 +177,21 @@ def get_new_feature_zip_file_path(feature_branch_name, job_num):
     return new_feature_content_zip_file_path, zip_destination_path
 
 
+def get_all_content_feature_zip_file_path(feature_branch_name, job_num):
+    """Merge all_content zip files and remove the unnecessary files.
+
+    Args:
+        feature_branch_name (str): The name of the feature branch.
+        job_num (str): Last successful create instance job of the feature branch.
+
+    """
+    current_feature_all_content_zip_file_path = f'content/{feature_branch_name}/{job_num}/0/all_content.zip'
+    zip_destination_path = f'{ARTIFACTS_PATH}feature_all_content_zip'
+    feature_all_content_zip_file_path = download_zip_file_from_gcp(current_feature_all_content_zip_file_path,
+                                                                   zip_destination_path)
+    return feature_all_content_zip_file_path, zip_destination_path
+
+
 def remove_directory(dir_path):
     shutil.rmtree(dir_path, ignore_errors=True)
 
@@ -197,16 +214,28 @@ def main():
         print("Couldn't find successful workflow for this branch")
 
     create_instances_job_num = get_job_num(feature_branch_successful_workflow_id)
-    new_feature_content_zip_file_path, zip_destination_path = \
+
+    new_feature_content_zip_file_path, content_new_zip_destination_path = \
         get_new_feature_zip_file_path(feature_branch_name, create_instances_job_num)
 
-    if new_feature_content_zip_file_path:
-        merge_zip_files(new_feature_content_zip_file_path)
-        remove_directory(zip_destination_path)
+    current_feature_all_content_zip_file_path, all_content_zip_destination_path = \
+        get_all_content_feature_zip_file_path(feature_branch_name, create_instances_job_num)
 
+    if new_feature_content_zip_file_path:
+        merge_zip_files(new_feature_content_zip_file_path, artifacts_zip_path=CONTENT_NEW_ZIP_PATH,
+                        original_zip_path=ORIGINAL_CONTENT_NEW_ZIP_PATH)
+        remove_directory(content_new_zip_destination_path)
         print('Done merging content_new.zip files')
     else:
         print(f'Failed to download content_new.zip from feature branch {feature_branch_name}')
+
+    if current_feature_all_content_zip_file_path:
+        merge_zip_files(current_feature_all_content_zip_file_path, artifacts_zip_path=ALL_CONTENT_ZIP_PATH,
+                        original_zip_path=ORIGINAL_ALL_CONTENT_ZIP_PATH)
+        remove_directory(all_content_zip_destination_path)
+        print('Done merging all_content.zip files')
+    else:
+        print(f'Failed to download all_content.zip from feature branch {feature_branch_name}')
 
 
 if __name__ == "__main__":
