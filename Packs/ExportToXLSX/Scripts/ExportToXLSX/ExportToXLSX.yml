@@ -32,7 +32,7 @@ comment: Export data to xlsx file
 commonfields:
   id: ExportToXLSX
   version: -1
-dockerimage: demisto/xslxwriter:1.0.0.11939
+dockerimage: demisto/xslxwriter:1.0.0.11942
 enabled: true
 name: ExportToXLSX
 runas: DBotWeakRole
