@@ -26,5 +26,5 @@ tags:
 - transformer
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.3.8715
+dockerimage: demisto/python3:3.8.5.11789
 fromversion: 5.0.0
