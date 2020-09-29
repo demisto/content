@@ -2,6 +2,8 @@ from typing import List, Dict, Optional
 
 from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
+from multiprocessing import Pool, cpu_count
+from itertools import product
 
 from CommonServerPython import *
 
@@ -33,8 +35,7 @@ class Client(BaseClient):
         super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify)
         self._api_key = api_key
         self._proxies = handle_proxy()
-        self.server = Server(url=self._base_url, auth=TokenAuth(key=self._api_key), verify=self._verify,
-                             proxies=self._proxies)
+        self.objects_data = {}
 
     def get_stix_objects(self, test: bool = False, **kwargs) -> list:
         """Retrieves all entries from the feed.
@@ -46,13 +47,17 @@ class Client(BaseClient):
         """
         data = []
 
-        for api_root in self.server.api_roots:
+        server = Server(url=self._base_url, auth=TokenAuth(key=self._api_key), verify=self._verify,
+                        proxies=self._proxies)
+
+        for api_root in server.api_roots:
             for collection in api_root.collections:
                 for bundle in as_pages(collection.get_objects, per_request=100, **kwargs):
                     data.extend(bundle.get('objects'))
                     if test:
-                        break
-        return data
+                        return data
+
+        self.objects_data[kwargs.get('type')] = data
 
 
 def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: Optional[str] = None) -> list:
@@ -269,13 +274,21 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                 }])
 
             else:
+                all_urls = []
+                external_id = ''
+
                 for item in relation_value_field:
-                    if 'url' in item or 'external_id' in item:
-                        report['fields']['feedrelatedindicators'].extend([{
-                            'type': type_name,
-                            'value': item.get('external_id'),
-                            'description': item.get('url')
-                        }])
+                    if 'url' in item:
+                        all_urls.append(item.get('url'))
+
+                        if 'external_id' in item:
+                            external_id = item.get('external_id')
+
+                report['fields']['feedrelatedindicators'].extend([{
+                    'type': type_name,
+                    'value': external_id,
+                    'description': ','.join(all_urls)
+                }])
 
     return reports
 
@@ -320,6 +333,17 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
+def multiprocessing_wrapper_get_stix_objects(client: Client, type_: str):
+    """Wrapper function for multiprocessing the get_stix_objects method
+
+    Args:
+        client: Client object with request
+        type_: objects type to fetch from feed.
+
+    """
+    client.get_stix_objects(test=False, type=type_)
+
+
 def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[str] = None) -> List[Dict]:
     """Retrieves indicators from the feed
 
@@ -330,25 +354,25 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     Returns:
         Indicators.
     """
-    report_objects = client.get_stix_objects(test=False, type='report')
-    main_report_objects, sub_report_objects = sort_report_objects_by_type(report_objects)
-    indicator_objects = client.get_stix_objects(test=False, type='indicator')
-    malware_objects = client.get_stix_objects(test=False, type='malware')
-    campaign_objects = client.get_stix_objects(test=False, type='campaign')
-    attack_pattern_objects = client.get_stix_objects(test=False, type='attack-pattern')
-    relationship_objects = client.get_stix_objects(test=False, type='relationship')
+    with Pool(cpu_count()) as pool:
+        pool.starmap(multiprocessing_wrapper_get_stix_objects,
+                     product([client], ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship'])
+                     )
+
+    main_report_objects, sub_report_objects = sort_report_objects_by_type(client.objects_data['report'])
 
     demisto.info('Fetched Unit42 Indicators and Reports. '
-                 f'{str(len(indicator_objects + report_objects))} Objects were received.')
+                 f"{len(client.objects_data['indicator'] + client.objects_data['report'])} Objects were received.")
 
     id_to_object = {
         obj.get('id'): obj for obj in
-        report_objects + indicator_objects + malware_objects + campaign_objects + attack_pattern_objects
+        client.objects_data['report'] + client.objects_data['indicator'] + client.objects_data['malware'] +
+        client.objects_data['campaign'] + client.objects_data['attack-pattern']
     }
 
-    matched_relationships = match_relationships(relationship_objects)
+    matched_relationships = match_relationships(client.objects_data['relationship'])
 
-    indicators = parse_indicators(indicator_objects, feed_tags, tlp_color)
+    indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
     indicators = parse_indicators_relationships(indicators, matched_relationships, id_to_object)
 
     reports = parse_reports(main_report_objects, feed_tags, tlp_color)
