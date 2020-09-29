@@ -5,6 +5,9 @@ import logging
 
 from Kubernetes import *
 
+def get_local_ubuntu_packages():
+    return os.system("""dpkg-query -W -f='${Status} ${Package} ${Version} ${Architecture}\\n'|awk '($1 == "install") && ($2 == "ok") {print $4" "$5" "$6}'""")
+
 parser = argparse.ArgumentParser()
 parser.add_argument("namespace", help="The Kubernetes namespace to use.")
 parser.add_argument("--pods", help="List pods in namespace.", action="store_true")
@@ -17,6 +20,9 @@ parser.add_argument("--json", help="Print an object as JSON.", action="store_tru
 parser.add_argument("--prop", type=str, help="Print a specific property.")
 parser.add_argument("--podname", type=str, help="Select a pod for an operation.")
 parser.add_argument("--podexec", type=str, help="Execute a command inside a pod.")
+parser.add_argument("--podos", help="Detect the operating system of a pod.", action='store_true')
+parser.add_argument("--localpkgs", help="Get local packages", action="store_true")
+parser.add_argument("--podpkgs", help="Get pod packages", action="store_true")
 args = parser.parse_args()
 ns = args.namespace
 
@@ -33,6 +39,20 @@ elif args.podexec:
     else:
         print(k8s.pod_exec(ns, args.podname, args.podexec))
     exit()
+elif args.localpkgs:
+    print(get_local_ubuntu_packages())
+    exit()
+elif args.podos:
+    if args.podname is None:
+        raise ValueError(f'Pod name must be specified.')
+    print(k8s.pod_detect_os(ns, args.podname))
+    exit()
+elif args.podpkgs:
+    if args.podname is None:
+        raise ValueError(f'Pod name must be specified.')
+    print(k8s.pod_get_os_packages_raw(ns, args.podname))
+    exit()
+
 obj = ''
 ret = None
 if args.pods:

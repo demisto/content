@@ -18,10 +18,10 @@ from datetime import date, datetime, timezone
 from json import dumps
 import urllib3
 
-# internal
+# local
 import demistomock as demisto
-from CommonServerPython import *  
-from CommonServerUserPython import * 
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 # 3rd-party
 from kubernetes import client, config
@@ -101,6 +101,38 @@ class Client(BaseClient):
                   stdout=True, tty=False)
         return resp
 
+    def pod_detect_os(self, ns, pod_name) -> str:
+        version = self.pod_exec(ns, pod_name, "cat /etc/os-release")
+        if version:
+            reFamily = re.search("^ID=\"?(\w+)\"?",version,re.MULTILINE)
+            if reFamily:
+                osFamily = reFamily.group(1).lower()
+            else:
+                return ''
+            reVersion = re.search("^VERSION_ID=\"?(\w+)(.\w+)?\"?",version,re.MULTILINE)
+            if reVersion:
+                osVersion = ''.join([s.lower() for s in reVersion.groups()])
+            else:
+                return osFamily
+            return f'{osFamily}:{osVersion}'
+
+    def pod_get_os_packages_raw(self, ns, pod_name) -> Dict[str, Any]:
+        osinfo = self.pod_detect_os(ns, pod_name)
+        if osinfo == '':
+            return []
+        name, version = osinfo.split(':')[0], osinfo.split(':')[1]
+        cmd = ''
+        if name in ('rhel', 'centos', 'oraclelinux', 'suse', 'fedora'):
+            cmd = """rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\\n'"""
+        elif name in ('debian','ubuntu', 'kali', 'linuxmint'):
+            cmd = """dpkg-query -W -f='${Status} ${Package} ${Version} ${Architecture}\\n'|awk '($1 == "install") && ($2 == "ok") {print $4" "$5" "$6}'"""
+        else: 
+            return []
+        active_kernel = self.pod_exec(ns, pod_name, "uname -r")
+        package_list = self.pod_exec(ns, pod_name, cmd).splitlines()
+        packages = [package for package in package_list if not (package == '0' or package== '' or package.startswith("kernel-") or package == "kernel-%s" % active_kernel)]
+        return {'os': name, 'version':version, 'package':packages }
+
     def list_services(self) -> V1ServiceList:
         if not self.namespace is None:
             return self.api.list_namespaced_service(self.namespace)
@@ -164,6 +196,27 @@ def pod_exec_command(k8s: Client, args: Dict[str, Any]) -> CommandResults:
         outputs=resp,
         readable_output=resp)
 
+def pod_detect_os_command(k8s: Client, args: Dict[str, Any]) -> CommandResults:
+    """ command: Detect pod operating system.
+
+    :type k8s: ``Client``
+    :param Client: Kubernetes client to use.
+
+    :type args: ``Dict[str, Any]``
+    :param args: All command arguments, usually passed from ``demisto.args()``.
+
+    :return: A ``CommandResults`` object that is then passed to ``return_results``.
+    :rtype: ``CommandResults``
+    """
+    ns = args.get('ns', k8s.namespace)
+    pod_name = args['pod_name']
+    resp = k8s.pod_detect_os(ns, pod_name)
+    return CommandResults(
+        outputs_prefix='Kubernetes.Pod.OS',
+        outputs_key_field='',
+        outputs=resp,
+        readable_output=resp)
+
 ''' MAIN '''
 def main() -> None:
     """main function, parses params and runs command functions.
@@ -185,7 +238,8 @@ def main() -> None:
             return_results(get_pods_command(k8s, demisto.args()))
         if demisto.command() == 'pod-exec':
             return_results(pod_exec_command(k8s, demisto.args()))
-
+        if demisto.command() == 'pod-detect-os':
+            return_results(pod_detect_os_command(k8s, demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command in cluster {cluster_host_url}.\nError:\n{str(e)}')
