@@ -1,43 +1,48 @@
 id: Impossible Traveler
 version: -1
 name: Impossible Traveler
-description: "This playbook investigates an event whereby a user has multiple application\
-  \ login attempts from various locations in a short time period (impossible traveler).\
-  \ The playbook gathers user, timestamp and IP information\nassociated with the multiple\
-  \ application login attempts.\n\nThe playbook then measures the time difference\
-  \ between the multiple login attempts and computes the distance between the two\
-  \ locations to verify whether it is possible the user could traverse the distance\n\
-  in the amount of time determined. Also, it takes steps to remediate the incident\
-  \ by blocking the offending IPs and disabling the user account, if chosen to do\
-  \ so."
-starttaskid: '0'
+description: |-
+  This playbook investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveler). The playbook gathers user, timestamp and IP information
+  associated with the multiple application login attempts.
+
+  The playbook then measures the time difference between the multiple login attempts and computes the distance between the two locations to verify whether it is possible the user could traverse the distance
+  in the amount of time determined. Also, it takes steps to remediate the incident by blocking the offending IPs and disabling the user account, if chosen to do so.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: 279586da-ee4e-4bb6-831e-d9ffab1b57f4
+  "0":
+    id: "0"
+    taskid: 89164d19-18a8-41d4-8f40-cd6cde0b0135
     type: start
     task:
-      id: 279586da-ee4e-4bb6-831e-d9ffab1b57f4
+      id: 89164d19-18a8-41d4-8f40-cd6cde0b0135
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '62'
-      - '61'
+      - "62"
+      - "61"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": -560\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -560
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '29':
-    id: '29'
-    taskid: 09f24959-1fbf-4314-86e4-e187658d0df6
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: fbd79de9-bdbb-4048-878b-f14aec5a8ef8
     type: regular
     task:
-      id: 09f24959-1fbf-4314-86e4-e187658d0df6
+      id: fbd79de9-bdbb-4048-878b-f14aec5a8ef8
       version: -1
       name: Calculate geographical distance between logins
       description: Compute the distance between two sets of coordinates in miles.
@@ -46,10 +51,10 @@ tasks:
       scriptName: CalculateGeoDistance
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '63'
+      - "63"
     scriptarguments:
       dest_coords:
         complex:
@@ -63,16 +68,24 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -740,\n    \"y\": 1490\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 1620
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '30':
-    id: '30'
-    taskid: 1ed29c55-64ab-4bca-8ba5-7f75a951c470
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 7b361c68-abe6-4c83-88b4-ca2bc253e297
     type: regular
     task:
-      id: 1ed29c55-64ab-4bca-8ba5-7f75a951c470
+      id: 7b361c68-abe6-4c83-88b4-ca2bc253e297
       version: -1
       name: Calculate time difference between logins
       description: Calculate the time difference, in minutes.
@@ -81,10 +94,10 @@ tasks:
       scriptName: CalculateTimeDifference
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '63'
+      - "63"
     scriptarguments:
       end_time:
         complex:
@@ -100,46 +113,62 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 200,\n    \"y\": 1490\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 1620
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '32':
-    id: '32'
-    taskid: f41e8485-7d37-4331-8675-46283a5e4d06
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: f2a7691c-df68-41af-8a05-825aed028836
     type: title
     task:
-      id: f41e8485-7d37-4331-8675-46283a5e4d06
+      id: f2a7691c-df68-41af-8a05-825aed028836
       version: -1
       name: Containment
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '36'
+      - "36"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3065\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3265
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '34':
-    id: '34'
-    taskid: a1c09ea2-4966-47ff-868e-5e412effa507
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 3d27c29a-1136-4c00-89f6-ae243d901d7f
     type: regular
     task:
-      id: a1c09ea2-4966-47ff-868e-5e412effa507
+      id: 3d27c29a-1136-4c00-89f6-ae243d901d7f
       version: -1
       name: Disable user account
       description: Disables the account of the offending user, using Active Directory.
       script: '|||ad-disable-account'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '38'
+      - "38"
     scriptarguments:
       base-dn: {}
       username:
@@ -148,18 +177,26 @@ tasks:
           accessor: username
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3950\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 4150
+        }
+      }
     note: true
     timertriggers:
     - fieldname: remediationsla
       action: start
     ignoreworker: false
-  '36':
-    id: '36'
-    taskid: cdbbfe88-0f18-43cc-841c-646e6c580454
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: a7114ae3-88f9-4ee9-8e1d-6760bec70749
     type: regular
     task:
-      id: cdbbfe88-0f18-43cc-841c-646e6c580454
+      id: a7114ae3-88f9-4ee9-8e1d-6760bec70749
       version: -1
       name: Update incident details and set severity
       description: Updates the incident details to say that the user is an impossible
@@ -170,7 +207,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '74'
+      - "74"
     scriptarguments:
       addLabels: {}
       affecteddata: {}
@@ -218,7 +255,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       country: {}
       countrywherebusinesshasitsmainestablishment: {}
       countrywherethebreachtookplace: {}
@@ -322,7 +359,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       previousip: {}
       previoussignindatetime: {}
       previoussourceip: {}
@@ -402,33 +439,41 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3210\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3410
+        }
+      }
     note: false
     timertriggers:
     - fieldname: detectionsla
       action: stop
     ignoreworker: false
-  '38':
-    id: '38'
-    taskid: 81bcf6f0-7966-475a-80a8-f9c99a8bb8ce
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 39db20af-3fdb-45dc-8905-a2042bb4c515
     type: condition
     task:
-      id: 81bcf6f0-7966-475a-80a8-f9c99a8bb8ce
+      id: 39db20af-3fdb-45dc-8905-a2042bb4c515
       version: -1
       name: Should the source IPs be blocked automatically?
       description: Checks whether the source IPs that the user used to login from
         can be blocked automatically, according to the playbook inputs.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '79'
-      'yes':
-      - '71'
+      - "79"
+      "yes":
+      - "71"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -438,28 +483,36 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 4130\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 4330
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '49':
-    id: '49'
-    taskid: fda33d67-1286-4602-8bbd-dec192b4e1d0
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 9f5e52fe-9abb-4cbe-8a6d-3f1e09424888
     type: playbook
     task:
-      id: fda33d67-1286-4602-8bbd-dec192b4e1d0
+      id: 9f5e52fe-9abb-4cbe-8a6d-3f1e09424888
       version: -1
       name: IP Enrichment - Generic v2
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '51'
+      - "51"
     scriptarguments:
       IP:
         complex:
@@ -469,83 +522,108 @@ tasks:
           - operator: uniq
       InternalRange: {}
       ResolveIP:
-        simple: 'True'
+        simple: "True"
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": 1680,\n    \"y\": -90\n  }\n}"
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": -90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '50':
-    id: '50'
-    taskid: 2fd3af58-fb2c-4120-8f2b-40189302f3e9
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 06854db3-617e-4bb3-8772-2c2b3f3bfdd7
     type: title
     task:
-      id: 2fd3af58-fb2c-4120-8f2b-40189302f3e9
+      id: 06854db3-617e-4bb3-8772-2c2b3f3bfdd7
       version: -1
       name: Travel Information Enrichment
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '49'
-      - '80'
-      - '91'
-      - '90'
+      - "49"
+      - "80"
+      - "91"
+      - "90"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 510,\n    \"y\": -230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -230
+        }
+      }
     note: false
     timertriggers:
     - fieldname: detectionsla
       action: start
     ignoreworker: false
-  '51':
-    id: '51'
-    taskid: a637c80f-f562-42dc-85f1-dc19e1289489
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: d7cd290c-80c0-476d-85e9-0b8777bd4d5a
     type: title
     task:
-      id: a637c80f-f562-42dc-85f1-dc19e1289489
+      id: d7cd290c-80c0-476d-85e9-0b8777bd4d5a
       version: -1
       name: Investigation
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '52'
+      - "52"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 805\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 805
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '52':
-    id: '52'
-    taskid: c53d55de-4c42-4b3c-8aa2-01725f6d28a5
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 651c4db4-919c-46fb-8b2a-c1bc4640e6e5
     type: condition
     task:
-      id: c53d55de-4c42-4b3c-8aa2-01725f6d28a5
+      id: 651c4db4-919c-46fb-8b2a-c1bc4640e6e5
       version: -1
       name: Are there coordinates for the source IPs?
       description: Checks whether coordinates were retrieved for the IPs that the
         user used to login.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '54'
-      'yes':
-      - '58'
-      - '59'
+      - "54"
+      "yes":
+      - "58"
+      - "59"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -595,16 +673,24 @@ tasks:
                       value:
                         simple: Location
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 945\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 945
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '54':
-    id: '54'
-    taskid: f32a2a0a-a7cf-4f12-8abd-ce9d28b149bc
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: f104955a-88f7-4cb8-87c7-34572cd5daf8
     type: regular
     task:
-      id: f32a2a0a-a7cf-4f12-8abd-ce9d28b149bc
+      id: f104955a-88f7-4cb8-87c7-34572cd5daf8
       version: -1
       name: Manually investigate the incident
       description: Manually investigate the incident. Try to understand the locations
@@ -612,31 +698,39 @@ tasks:
         Contain the incident, if needed.
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '70'
+      - "70"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1380,\n    \"y\": 1130\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 1130
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '58':
-    id: '58'
-    taskid: 01219670-caf0-4a29-8042-dcc86459e5e7
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: ebac010f-b093-4500-828f-11a42f9cbc4d
     type: regular
     task:
-      id: 01219670-caf0-4a29-8042-dcc86459e5e7
+      id: ebac010f-b093-4500-828f-11a42f9cbc4d
       version: -1
       name: Save source IP geolocation data
       description: Saves the geolocation of the IP associated with the user's login.
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '73'
+      - "73"
     scriptarguments:
       append: {}
       key:
@@ -672,19 +766,27 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 1130\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 1130
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '59':
-    id: '59'
-    taskid: 87d065fc-ac14-4f6b-8f43-1f3fb4b962c2
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 28eefc43-ae17-466c-8719-b0d9bc5efb2c
     type: regular
     task:
-      id: 87d065fc-ac14-4f6b-8f43-1f3fb4b962c2
+      id: 28eefc43-ae17-466c-8719-b0d9bc5efb2c
       version: -1
       name: Save previous source IP geolocation data
       description: Saves the geolocation of the IP associated with the previous user
@@ -692,10 +794,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '73'
+      - "73"
     scriptarguments:
       append: {}
       key:
@@ -731,19 +833,27 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -510,\n    \"y\": 1130\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -510,
+          "y": 1130
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '61':
-    id: '61'
-    taskid: c7f3f7c8-ea8c-4454-87ce-d51a1d5a9240
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 1964cbf7-a1b1-417e-81b3-6ffca7076405
     type: regular
     task:
-      id: c7f3f7c8-ea8c-4454-87ce-d51a1d5a9240
+      id: 1964cbf7-a1b1-417e-81b3-6ffca7076405
       version: -1
       name: Get previous login IP location information
       description: Gets geolocation information about the previous IP that the user
@@ -751,10 +861,10 @@ tasks:
       script: '|||ip'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '50'
+      - "50"
     scriptarguments:
       days: {}
       fullResponse: {}
@@ -773,16 +883,24 @@ tasks:
       wait: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 740,\n    \"y\": -400\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": -400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '62':
-    id: '62'
-    taskid: 561660d5-04a4-4695-84eb-57db82b404ae
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 5b5ea973-d7d3-4110-8659-5de212e778de
     type: regular
     task:
-      id: 561660d5-04a4-4695-84eb-57db82b404ae
+      id: 5b5ea973-d7d3-4110-8659-5de212e778de
       version: -1
       name: Get login IP location information
       description: Gets geolocation information about the IP that the user logged
@@ -790,10 +908,10 @@ tasks:
       script: '|||ip'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '50'
+      - "50"
     scriptarguments:
       days: {}
       fullResponse: {}
@@ -812,31 +930,39 @@ tasks:
       wait: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 290,\n    \"y\": -400\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": -400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '63':
-    id: '63'
-    taskid: 3c33b8c9-3f92-4ba1-8eb2-ce8462c3a58b
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: b5f9fe73-ecaa-4f9a-8799-d51cc0591cbf
     type: condition
     task:
-      id: 3c33b8c9-3f92-4ba1-8eb2-ce8462c3a58b
+      id: b5f9fe73-ecaa-4f9a-8799-d51cc0591cbf
       version: -1
       name: Did the user travel more than the allowed MPH?
       description: Checks whether the user traveled faster than the allowed speed
         in MPH.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '66'
-      'yes':
-      - '84'
+      - "66"
+      "yes":
+      - "84"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: greaterThan
           left:
@@ -855,22 +981,30 @@ tasks:
                   args:
                     by:
                       value:
-                        simple: '60'
+                        simple: "60"
             iscontext: true
           right:
             value:
               simple: inputs.MaxMilesPerHourAllowed
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": -270,\n    \"y\": 1780\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1980
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '66':
-    id: '66'
-    taskid: 9d4e51c3-ed66-4f0c-87a7-692997df4651
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: 62ef2221-0863-4e24-8a14-de995bf906cb
     type: regular
     task:
-      id: 9d4e51c3-ed66-4f0c-87a7-692997df4651
+      id: 62ef2221-0863-4e24-8a14-de995bf906cb
       version: -1
       name: Update incident details and set severity
       description: Updates the incident details to say that the user is a legitimate
@@ -881,7 +1015,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '70'
+      - "70"
     scriptarguments:
       addLabels: {}
       affecteddata: {}
@@ -929,7 +1063,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       country: {}
       countrywherebusinesshasitsmainestablishment: {}
       countrywherethebreachtookplace: {}
@@ -1032,7 +1166,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       previousip: {}
       previoussignindatetime: {}
       previoussourceip: {}
@@ -1112,33 +1246,41 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -940,\n    \"y\": 3065\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -940,
+          "y": 3265
+        }
+      }
     note: false
     timertriggers:
     - fieldname: detectionsla
       action: stop
     ignoreworker: false
-  '67':
-    id: '67'
-    taskid: 1d4b34cb-9c47-4c9c-8eba-c5ce1c4ddf34
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 5aff0009-233a-4263-825c-bb3c0540d3e9
     type: condition
     task:
-      id: 1d4b34cb-9c47-4c9c-8eba-c5ce1c4ddf34
+      id: 5aff0009-233a-4263-825c-bb3c0540d3e9
       version: -1
       name: Did the user login from whitelisted IP addresses?
       description: Checks whether both user login events originated from whitelisted
         IP addresses.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '32'
-      'yes':
-      - '69'
+      - "32"
+      "yes":
+      - "69"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: in
           left:
@@ -1180,46 +1322,62 @@ tasks:
                       value:
                         simple: ','
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 10,\n    \"y\": 2810\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 3010
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '68':
-    id: '68'
-    taskid: b82256fd-77ba-46a4-825d-c9ab3347aa69
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: e6335721-25ca-4a6b-8173-d10b03b301a3
     type: condition
     task:
-      id: b82256fd-77ba-46a4-825d-c9ab3347aa69
+      id: e6335721-25ca-4a6b-8173-d10b03b301a3
       version: -1
       name: Are there whitelisted IPs configured?
       description: Checks whether whitelisted IPs were configured.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '32'
-      'yes':
-      - '67'
+      - "32"
+      "yes":
+      - "67"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: inputs.WhitelistedIPs
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 2600\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 2800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '69':
-    id: '69'
-    taskid: 1789d555-822d-4e40-897b-a9bfb23ba0d8
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: a3ac527f-81e5-476b-8537-ce081304e047
     type: regular
     task:
-      id: 1789d555-822d-4e40-897b-a9bfb23ba0d8
+      id: a3ac527f-81e5-476b-8537-ce081304e047
       version: -1
       name: Update incident details and set severity
       description: Updates the incident details to say that the user is a legitimate
@@ -1231,7 +1389,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '70'
+      - "70"
     scriptarguments:
       addLabels: {}
       affecteddata: {}
@@ -1279,7 +1437,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       country: {}
       countrywherebusinesshasitsmainestablishment: {}
       countrywherethebreachtookplace: {}
@@ -1383,7 +1541,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       previousip: {}
       previoussignindatetime: {}
       previoussourceip: {}
@@ -1463,18 +1621,26 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -430,\n    \"y\": 3065\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 3265
+        }
+      }
     note: false
     timertriggers:
     - fieldname: detectionsla
       action: stop
     ignoreworker: false
-  '70':
-    id: '70'
-    taskid: bfe4ebc4-f732-4e64-875a-2f836d058242
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: 51a959c2-f2f6-42ff-852c-781f4b88f3be
     type: regular
     task:
-      id: bfe4ebc4-f732-4e64-875a-2f836d058242
+      id: 51a959c2-f2f6-42ff-852c-781f4b88f3be
       version: -1
       name: Close investigation
       description: Closes the investigation.
@@ -1494,28 +1660,36 @@ tasks:
       timefield1: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 550,\n    \"y\": 4620\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 4820
+        }
+      }
     note: false
     timertriggers:
     - fieldname: remediationsla
       action: stop
     ignoreworker: false
-  '71':
-    id: '71'
-    taskid: 60b4aab9-6bb9-412a-83cc-256789a9936b
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: 098f8f47-ab0a-44b5-8791-0d407f959f99
     type: playbook
     task:
-      id: 60b4aab9-6bb9-412a-83cc-256789a9936b
+      id: 098f8f47-ab0a-44b5-8791-0d407f959f99
       version: -1
       name: Block IP - Generic v2
       playbookName: Block IP - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '70'
+      - "70"
     scriptarguments:
       IP:
         complex:
@@ -1544,28 +1718,37 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": 10,\n    \"y\": 4320\n  }\n}"
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 4520
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '72':
-    id: '72'
-    taskid: abf73ffa-84f4-480f-8933-54d98d7d56b7
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: e9ca09c0-257f-4b66-82f9-e23bff61c711
     type: regular
     task:
-      id: abf73ffa-84f4-480f-8933-54d98d7d56b7
+      id: e9ca09c0-257f-4b66-82f9-e23bff61c711
       version: -1
       name: Generate travel map link
       description: Creates a travel map link and saves it in the context.
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '89'
+      - "96"
     scriptarguments:
       append: {}
       key:
@@ -1605,53 +1788,69 @@ tasks:
                   simple: ','
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -270,\n    \"y\": 1470\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1470
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '73':
-    id: '73'
-    taskid: f73c845a-80a4-47eb-8dac-988c55049ec3
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: 5dad711b-cb0e-44d6-8590-5c614f67f1ea
     type: title
     task:
-      id: f73c845a-80a4-47eb-8dac-988c55049ec3
+      id: 5dad711b-cb0e-44d6-8590-5c614f67f1ea
       version: -1
       name: Process Travel Data
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '30'
-      - '72'
-      - '29'
+      - "30"
+      - "72"
+      - "29"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -270,\n    \"y\": 1300\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1300
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '74':
-    id: '74'
-    taskid: 2a735eb6-0f6f-4b71-8415-b8e3eab1d9bd
+    skipunavailable: false
+    quietmode: 0
+  "74":
+    id: "74"
+    taskid: 7c3addd4-ff4e-4a28-81e5-1638ff78ac08
     type: condition
     task:
-      id: 2a735eb6-0f6f-4b71-8415-b8e3eab1d9bd
+      id: 7c3addd4-ff4e-4a28-81e5-1638ff78ac08
       version: -1
       name: Can the user be disabled automatically?
       description: Checks whether the user can be disabled automatically, as configured
         in the playbook inputs.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '75'
-      'yes':
-      - '95'
+      - "75"
+      "yes":
+      - "95"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -1661,97 +1860,129 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3380\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3580
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '75':
-    id: '75'
-    taskid: fdcd8ec4-d701-469a-8b43-ce15152f0a00
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 34d2d123-14a3-4df9-86f1-7882efa15006
     type: condition
     task:
-      id: fdcd8ec4-d701-469a-8b43-ce15152f0a00
+      id: 34d2d123-14a3-4df9-86f1-7882efa15006
       version: -1
       name: Get approval for disabling user
       description: You should now contain the incident of the offending user. Please
         get approval to automatically disable the user account in Active Directory.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       Approved:
-      - '95'
+      - "95"
       Unapproved:
-      - '76'
+      - "76"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 3560\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 3760
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '76':
-    id: '76'
-    taskid: 03607bd4-a69c-4ffe-8800-aa190cdf53c1
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: 15285aa7-279f-436a-8a41-46798ef04b6f
     type: regular
     task:
-      id: 03607bd4-a69c-4ffe-8800-aa190cdf53c1
+      id: 15285aa7-279f-436a-8a41-46798ef04b6f
       version: -1
       name: Manually disable user account
       description: Please take manual steps to disable the user account, or expire
         his or her password.
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '38'
+      - "38"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 3950\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 4150
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '79':
-    id: '79'
-    taskid: 9a9e3f9d-a33c-4e62-8c5f-d361b3a3bf9f
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: f0a8d131-1f51-4c25-8b94-9cad739b12a3
     type: regular
     task:
-      id: 9a9e3f9d-a33c-4e62-8c5f-d361b3a3bf9f
+      id: f0a8d131-1f51-4c25-8b94-9cad739b12a3
       version: -1
       name: Manually block IPs
       description: Please take manual steps to block the offending IPs.
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '70'
+      - "70"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 550,\n    \"y\": 4320\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 4520
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '80':
-    id: '80'
-    taskid: c345d9c6-e5bf-47e5-8e62-1c3a99b8d3da
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: 154d7a46-5386-460e-8910-1950ff1f720d
     type: condition
     task:
-      id: c345d9c6-e5bf-47e5-8e62-1c3a99b8d3da
+      id: 154d7a46-5386-460e-8910-1950ff1f720d
       version: -1
       name: Can the account be enriched?
       description: Checks whether there is a username for the offending user in context,
         and whether Active Directory v2 is enabled.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '51'
-      'yes':
-      - '81'
+      - "51"
+      "yes":
+      - "81"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -1781,16 +2012,24 @@ tasks:
             value:
               simple: incident.username
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": -90\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '81':
-    id: '81'
-    taskid: 60a52413-4588-4700-8bc0-922ab52e5f82
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 37665c74-3bde-4e06-8e0a-a9af77d1cb53
     type: regular
     task:
-      id: 60a52413-4588-4700-8bc0-922ab52e5f82
+      id: 37665c74-3bde-4e06-8e0a-a9af77d1cb53
       version: -1
       name: Enrich offending user account
       description: Gets details about the offending username from Active Directory.
@@ -1799,10 +2038,10 @@ tasks:
       script: '|||ad-get-user'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '94'
+      - "94"
     scriptarguments:
       attributes: {}
       custom-field-data: {}
@@ -1820,31 +2059,39 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 80\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 80
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '84':
-    id: '84'
-    taskid: 4499d74d-a473-4710-8b2e-6c1422bde45d
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: b144d5df-6b2c-41d2-81f4-8de96a5259f9
     type: condition
     task:
-      id: 4499d74d-a473-4710-8b2e-6c1422bde45d
+      id: b144d5df-6b2c-41d2-81f4-8de96a5259f9
       version: -1
       name: Can the manager be contacted for travel approval?
       description: Checks whether an email address was retrieved for the manger of
         the offending user.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '68'
-      'yes':
-      - '86'
+      - "68"
+      "yes":
+      - "86"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1860,18 +2107,26 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 1950\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 2150
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '86':
-    id: '86'
-    taskid: 74a40dfa-bb9c-430e-8d0f-6eabd22915c9
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: 968c5886-7ee0-499c-8fd6-c656e6b6937f
     type: regular
     task:
-      id: 74a40dfa-bb9c-430e-8d0f-6eabd22915c9
+      id: 968c5886-7ee0-499c-8fd6-c656e6b6937f
       version: -1
       name: Ask manager if travel was expected
       description: Ask a user a question via email and process the reply directly
@@ -1879,10 +2134,10 @@ tasks:
       scriptName: EmailAskUser
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '87'
+      - "87"
     scriptarguments:
       additionalOptions: {}
       attachIds: {}
@@ -1911,16 +2166,24 @@ tasks:
         simple: TravelQuestion
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 590,\n    \"y\": 2140\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 2340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '87':
-    id: '87'
-    taskid: a2636351-dafa-4e59-83e2-1000af044c4d
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: 994657de-7b7a-4897-874c-be24fddac9d8
     type: condition
     task:
-      id: a2636351-dafa-4e59-83e2-1000af044c4d
+      id: 994657de-7b7a-4897-874c-be24fddac9d8
       version: -1
       name: Get manager response
       description: Gets a response from the manager as to whether the travel done
@@ -1930,23 +2193,31 @@ tasks:
       - TravelQuestion
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      'No':
-      - '68'
-      'yes':
-      - '88'
+      "No":
+      - "68"
+      "yes":
+      - "88"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 590,\n    \"y\": 2320\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 2520
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '88':
-    id: '88'
-    taskid: c9829d88-f3b2-45c0-8b9e-289e6171495c
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: b9ea26ae-e772-4b55-8223-f6fbe74a5427
     type: regular
     task:
-      id: c9829d88-f3b2-45c0-8b9e-289e6171495c
+      id: b9ea26ae-e772-4b55-8223-f6fbe74a5427
       version: -1
       name: Update incident details and set severity
       description: Updates the incident details to say that the manager of the user
@@ -1957,7 +2228,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '70'
+      - "70"
     scriptarguments:
       addLabels: {}
       affecteddata: {}
@@ -2005,7 +2276,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       country: {}
       countrywherebusinesshasitsmainestablishment: {}
       countrywherethebreachtookplace: {}
@@ -2108,7 +2379,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       previousip: {}
       previoussignindatetime: {}
       previoussourceip: {}
@@ -2188,28 +2459,36 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 2600\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 2800
+        }
+      }
     note: false
     timertriggers:
     - fieldname: detectionsla
       action: stop
     ignoreworker: false
-  '89':
-    id: '89'
-    taskid: ebb78788-b984-401d-8e4b-0eea1afcab71
+    skipunavailable: false
+    quietmode: 0
+  "89":
+    id: "89"
+    taskid: 354bc65e-950f-4ba9-8771-4953ae438540
     type: regular
     task:
-      id: ebb78788-b984-401d-8e4b-0eea1afcab71
+      id: 354bc65e-950f-4ba9-8771-4953ae438540
       version: -1
       name: Create travel map image
       description: Converts the contents of a URL to an image file or a PDF file.
       script: '|||rasterize'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '63'
+      - "63"
     scriptarguments:
       height: {}
       type: {}
@@ -2219,33 +2498,41 @@ tasks:
           transformers:
           - operator: uniq
       wait_time:
-        simple: '15'
+        simple: "15"
       width: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -270,\n    \"y\": 1610\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 1800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '90':
-    id: '90'
-    taskid: ee733667-ac74-4cb8-8aa3-950f460bbfc2
+    skipunavailable: false
+    quietmode: 0
+  "90":
+    id: "90"
+    taskid: 290f01c1-5e82-4d10-890e-250d669ab805
     type: condition
     task:
-      id: ee733667-ac74-4cb8-8aa3-950f460bbfc2
+      id: 290f01c1-5e82-4d10-890e-250d669ab805
       version: -1
       name: Is there a country for the source IP?
       description: Checks if there is a country associated with the source IP address.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '51'
-      'yes':
-      - '92'
+      - "51"
+      "yes":
+      - "92"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -2281,33 +2568,41 @@ tasks:
                   args:
                     index:
                       value:
-                        simple: '0'
+                        simple: "0"
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 1200,\n    \"y\": -90\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": -90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '91':
-    id: '91'
-    taskid: 4c280395-25e9-4b15-84b3-b76ce163a46b
+    skipunavailable: false
+    quietmode: 0
+  "91":
+    id: "91"
+    taskid: e5bac47f-93ef-4aae-89f0-3220a9b32ee2
     type: condition
     task:
-      id: 4c280395-25e9-4b15-84b3-b76ce163a46b
+      id: e5bac47f-93ef-4aae-89f0-3220a9b32ee2
       version: -1
       name: Is there a country for the previous source IP?
       description: Checks if there is a country associated with the previous source
         IP address.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '51'
-      'yes':
-      - '93'
+      - "51"
+      "yes":
+      - "93"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -2343,18 +2638,26 @@ tasks:
                   args:
                     index:
                       value:
-                        simple: '0'
+                        simple: "0"
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": -90\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": -90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '92':
-    id: '92'
-    taskid: effdb780-8443-4fdb-85a8-2ef4d3cd8e35
+    skipunavailable: false
+    quietmode: 0
+  "92":
+    id: "92"
+    taskid: 879713f5-f8e3-4a31-8704-0223c0764c1b
     type: regular
     task:
-      id: effdb780-8443-4fdb-85a8-2ef4d3cd8e35
+      id: 879713f5-f8e3-4a31-8704-0223c0764c1b
       version: -1
       name: Update incident details with source country
       description: Updates the incident details with the country from which the user
@@ -2365,7 +2668,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '51'
+      - "51"
     scriptarguments:
       account: {}
       accountid: {}
@@ -2431,7 +2734,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       countrywherebusinesshasitsmainestablishment: {}
       countrywherethebreachtookplace: {}
       criticalassets: {}
@@ -2597,16 +2900,24 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1200,\n    \"y\": 145\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 145
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '93':
-    id: '93'
-    taskid: 2a7891ad-ef6c-4609-8306-25583eec9095
+    skipunavailable: false
+    quietmode: 0
+  "93":
+    id: "93"
+    taskid: 050e413d-74f0-46e7-8c07-502e88f1a5d1
     type: regular
     task:
-      id: 2a7891ad-ef6c-4609-8306-25583eec9095
+      id: 050e413d-74f0-46e7-8c07-502e88f1a5d1
       version: -1
       name: Update incident details with previous source country
       description: Updates the incident details with the country from which the user
@@ -2617,7 +2928,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '51'
+      - "51"
     scriptarguments:
       account: {}
       accountid: {}
@@ -2767,7 +3078,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       previoussignindatetime: {}
       previoussourceip: {}
       prismacloudid: {}
@@ -2850,26 +3161,35 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 145\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 145
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '94':
-    id: '94'
-    taskid: d8d048c4-518c-40d1-85b8-2c451aeb5b84
+    skipunavailable: false
+    quietmode: 0
+  "94":
+    id: "94"
+    taskid: b1de0ac1-d045-40f3-8def-512ad3c9be0d
     type: playbook
     task:
-      id: d8d048c4-518c-40d1-85b8-2c451aeb5b84
+      id: b1de0ac1-d045-40f3-8def-512ad3c9be0d
       version: -1
       name: Active Directory - Get User Manager Details
+      description: Takes an email address or a username of a user account in Active
+        Directory, and returns the email address of the user's manager.
       playbookName: Active Directory - Get User Manager Details
       type: playbook
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '51'
+      - "51"
     scriptarguments:
       UserEmail: {}
       Username:
@@ -2879,32 +3199,41 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 230\n  }\n}"
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '95':
-    id: '95'
-    taskid: 4fe95b3d-df2d-40d0-885d-8575dbab981c
+    skipunavailable: true
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: ca38e4df-48b7-40a9-8cc3-8248b7ca5743
     type: condition
     task:
-      id: 4fe95b3d-df2d-40d0-885d-8575dbab981c
+      id: ca38e4df-48b7-40a9-8cc3-8248b7ca5743
       version: -1
       name: Is Active Directory enabled?
       description: Checks whether the Active Directory Query v2 integration is enabled.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '76'
-      'yes':
-      - '34'
+      - "76"
+      "yes":
+      - "34"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -2929,38 +3258,131 @@ tasks:
                       value:
                         simple: active
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3745\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3945
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"38_71_yes\": 0.35,\n    \"52_54_#default#\"\
-  : 0.43,\n    \"52_58_yes\": 0.84,\n    \"52_59_yes\": 0.9,\n    \"63_66_#default#\"\
-  : 0.18,\n    \"67_32_#default#\": 0.44,\n    \"67_69_yes\": 0.76,\n    \"68_32_#default#\"\
-  : 0.25,\n    \"68_67_yes\": 0.42,\n    \"74_75_#default#\": 0.33,\n    \"74_95_yes\"\
-  : 0.48,\n    \"75_76_Unapproved\": 0.42,\n    \"80_51_#default#\": 0.33,\n    \"\
-  80_81_yes\": 0.56,\n    \"84_86_yes\": 0.44,\n    \"87_68_No\": 0.29,\n    \"87_88_Yes\"\
-  : 0.24,\n    \"90_51_#default#\": 0.21,\n    \"90_92_yes\": 0.46,\n    \"91_51_#default#\"\
-  : 0.1,\n    \"91_93_yes\": 0.51,\n    \"95_34_yes\": 0.46\n  },\n  \"paper\": {\n\
-  \    \"dimensions\": {\n      \"height\": 5275,\n      \"width\": 3000,\n      \"\
-  x\": -940,\n      \"y\": -560\n    }\n  }\n}"
+    skipunavailable: false
+    quietmode: 0
+  "96":
+    id: "96"
+    taskid: a4857973-adc0-4a7f-884d-271532c50b08
+    type: condition
+    task:
+      id: a4857973-adc0-4a7f-884d-271532c50b08
+      version: -1
+      name: Is Rasterize enabled?
+      description: "Checks whether the Rasterize integration is enabled."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "63"
+      "yes":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Rasterize
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "38_71_yes": 0.35,
+      "52_54_#default#": 0.43,
+      "52_58_yes": 0.84,
+      "52_59_yes": 0.9,
+      "63_66_#default#": 0.18,
+      "67_32_#default#": 0.44,
+      "67_69_yes": 0.76,
+      "68_32_#default#": 0.25,
+      "68_67_yes": 0.42,
+      "74_75_#default#": 0.33,
+      "74_95_yes": 0.48,
+      "75_76_Unapproved": 0.42,
+      "80_51_#default#": 0.33,
+      "80_81_yes": 0.56,
+      "84_86_yes": 0.44,
+      "87_68_No": 0.29,
+      "90_51_#default#": 0.21,
+      "90_92_yes": 0.46,
+      "91_51_#default#": 0.1,
+      "91_93_yes": 0.51,
+      "95_34_yes": 0.46,
+      "96_63_#default#": 0.31,
+      "96_89_yes": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5475,
+        "width": 3000,
+        "x": -940,
+        "y": -560
+      }
+    }
+  }
 inputs:
 - key: MaxMilesPerHourAllowed
   value:
-    simple: '600'
+    simple: "600"
   required: false
   description: The maximum miles per hour that is still considered reasonable. If
     the geographical distance and difference in time between logins is greater than
     this value, the user will be considered an impossible traveler.
+  playbookInputQuery:
 - key: WhitelistedIPs
   value: {}
   required: false
   description: CSV of IP addresses that are allowed to be used across long distances.
+  playbookInputQuery:
 - key: AutomaticallyBlockIPs
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether to automatically block the source IPs that the login originated
     from. Can be False or True.
+  playbookInputQuery:
 - key: DefaultMapLink
   value:
     simple: https://bing.com/maps/default.aspx?rtp=pos.SOURCE~pos.DESTINATION
@@ -2968,18 +3390,21 @@ inputs:
   description: The default link from which to create a travel map. The "SOURCE" and
     "DESTINATION" words are replaced with the previous coordinates and current coordinates
     of the traveler, respectively.
+  playbookInputQuery:
 - key: AutomaticallyDisableUser
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether to automatically disable the impossible traveler account using
     Active Directory.
+  playbookInputQuery:
 - key: ContactUserManager
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether to ask the user manager for the legitimacy of the login events,
     in case of an alleged impossible traveler.
+  playbookInputQuery:
 outputs:
 - contextPath: Account.Email.Address
   description: The email address object associated with the Account

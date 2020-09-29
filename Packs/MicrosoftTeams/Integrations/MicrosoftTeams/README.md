@@ -36,6 +36,11 @@ The integration instance name, `teams` in this example, needs to be configured i
 
 The port to be configured in [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto) step should be any available port that is not used by another service.
 
+In addition, make sure ***Instance execute external*** is enabled. 
+
+1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
+2. In the **Server Configuration** section, verify that the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** (`instance.execute.external.teams` in this example) key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+
  - Note: This option is available from Cortex XSOAR v5.5.0 and later.
 
 ### 2. Using NGINX as reverse proxy
@@ -107,7 +112,7 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
 9. From the left-side navigation pane, under Capabilities, click **Bots > Set up**.
 10. Configure the settings under the **Scope** section, and click **Create bot**.
   - In the **Name** field, enter *Demisto Bot*.
-  - Select all checkboxes.
+  - In the **Scope** section, select the following checkboxes: `Personal`, `Team`, and `Group Chat`. 
 
 11. Record the **Bot ID**, which you will need when configuring the integration in Demisto.
 ![image](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/MSTeams-BotID.png)
@@ -405,10 +410,14 @@ Note: Like every message in a mirrored channel, in order for it to be passed to 
 
 For example, in order to check the reputation of the IP address 8.8.8.8, run the following: `@Demisto Bot !ip ip=8.8.8.8`
 
+![image](https://raw.githubusercontent.com/demisto/content/c7d516e68459f04102fd31ebfadd6574d775f436/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/cmd.png)
+
 ## Direct messages commands
 You can chat with the bot in direct messages in order to retrieve data (list incidents and tasks) and run operations (create incident and mirror an investigation) related to Cortex XSOAR.
 
 You can send the message `help` in order to see the supported commands:
+
+![image](https://raw.githubusercontent.com/demisto/content/c7d516e68459f04102fd31ebfadd6574d775f436/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/dm.png)
 
 ## Troubleshooting
 
@@ -438,7 +447,8 @@ You can send the message `help` in order to see the supported commands:
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
 
+3. Since the integration works based on Docker port mapping, it can't function if the Docker is set to run with the host networking (`--network=host`). For more details, refer to the [Docker documentation](https://docs.docker.com/network/host/).
+
 ## Download Demisto Bot
 
 [Demisto Bot zip](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/DemistoBot.zip)
-

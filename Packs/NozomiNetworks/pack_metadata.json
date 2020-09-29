@@ -1,0 +1,24 @@
+{
+    "name": "Nozomi Networks",
+    "description": "An Integration Pack of Nozomi Networks OT Security Tools",
+    "support": "Nozomi Networks",
+    "author": "Nozomi Networks",
+    "url": "https://www.nozominetworks.com",
+    "currentVersion": "1.0.0",
+    "email": "support@nozominetworks.com",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "ot",
+        "iot",
+        "nozomi"
+    ],
+    "created": "2020-07-07T07:35:05Z",
+    "updated": "2020-07-74T07:35:05Z",
+    "beta": false,
+    "deprecated": false,
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {}
+}

@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 13
 script:
-  script: |-
+  script: >-
     function buildIncident(incidentType) {
         var incident = {
             severity: getSeverity(),
@@ -64,6 +64,7 @@ script:
     }
 
 
+
     switch (command) {
         case 'test-module':
             return 'ok';
@@ -94,6 +95,7 @@ script:
     }
 
 
+
     function getIncidentType (number) {
         var num = number || Math.floor(Math.random() * 3) + 1;
         switch (num) {
@@ -108,10 +110,12 @@ script:
         }
     }
 
+
     function getSeverity (number) {
         return number || Math.floor(Math.random() * 5);
     }
   type: javascript
   isfetch: true
 tests:
-    - No test
+- No test
+fromversion: 5.0.0

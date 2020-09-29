@@ -1,4 +1,4 @@
-Blocks malicious IP addresses using all integrations that you have enabled.
+DEPRECATED. Use "Block IP - Generic v2" playbook instead. Blocks malicious IP addresses using all integrations that you have enabled.
 
 Supported integrations for this playbook:
 * Check Point Firewall

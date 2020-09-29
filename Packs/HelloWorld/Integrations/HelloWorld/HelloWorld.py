@@ -240,19 +240,18 @@ variable is ``__main__`` , ``__builtin__`` (for Python 2) or ``builtins`` (for
 Python 3) and then calls the ``main()`` function. Just keep this convention.
 
 """
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
-import requests
+import urllib3
 import dateparser
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''

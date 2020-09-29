@@ -1,12 +1,13 @@
 id: Email Address Enrichment - Generic v2
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Email Address Enrichment - Generic v2
 description: |-
-  Enrich email addresses.  Email address enrichment involves:
+  Deprecated. Use "Email Address Enrichment - Generic v2.1" playbook instead. Enrich email addresses.  Email address enrichment involves:
   - Getting information from Active Directory for internal addresses
   - Getting the domain-squatting reputation for external addresses
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -122,10 +123,7 @@ tasks:
       id: 17c82691-cc28-445a-8aea-129217f589d6
       version: -1
       name: Classify email addresses as internal or external
-      description: Adds a NetworkType attribute to all email addresses. The NetworkType
-        attribute determines whether the email address is an internal or external
-        email address, according to the domains that were passed as arguments
-        to this playbook.
+      description: Adds a NetworkType attribute to all email addresses. The NetworkType attribute determines whether the email address is an internal or external email address, according to the domains that were passed as arguments to this playbook.
       scriptName: IsEmailAddressInternal
       type: regular
       iscommand: false
@@ -217,8 +215,7 @@ tasks:
       id: 5499e24d-dd70-4b65-88af-eeca45b06f9f
       version: -1
       name: Get email address info from Active Directory
-      description: Uses Active Directory to get user information for internal emails.
-        addresses.
+      description: Uses Active Directory to get user information for internal emails. addresses.
       scriptName: ADGetUser
       type: regular
       iscommand: false
@@ -273,8 +270,7 @@ tasks:
       id: 2d740d11-a326-4913-83f1-8df803c0a3eb
       version: -1
       name: Are there any external email addresses?
-      description: Checks whether there are email addresses with a NetworkType attribute
-        value of "External".
+      description: Checks whether there are email addresses with a NetworkType attribute value of "External".
       scriptName: Exists
       type: condition
       iscommand: false
@@ -320,8 +316,7 @@ tasks:
       id: e521733d-b152-4a1f-8050-e7658405a187
       version: -1
       name: Are there any internal email addresses?
-      description: Checks whether there are email addresses with a NetworkType attribute
-        value of "Internal".
+      description: Checks whether there are email addresses with a NetworkType attribute value of "Internal".
       scriptName: Exists
       type: condition
       iscommand: false
@@ -367,8 +362,7 @@ tasks:
       id: 14d9b7c3-73b3-49e7-887a-82c080a62d38
       version: -1
       name: Check email addresses for domain-squatting
-      description: Checks if an email address's domain is trying to squat other domains
-        using Levenshtein distance algorithm.
+      description: Checks if an email address's domain is trying to squat other domains using Levenshtein distance algorithm.
       scriptName: EmailDomainSquattingReputation
       type: regular
       iscommand: false
@@ -553,8 +547,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: A CSV list of internal domains. The list will be used
-    to determine whether an email address is internal or external.
+  description: A CSV list of internal domains. The list will be used to determine whether an email address is internal or external.
 - key: Email
   value:
     complex:
@@ -622,4 +615,4 @@ outputs:
   description: The DBot score.
   type: number
 tests:
-  - Email Address Enrichment - Generic v2 - Test
+- No tests

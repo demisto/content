@@ -1,0 +1,1153 @@
+id: Darkfeed IOC detonation and proactive blocking
+version: -1
+name: Darkfeed IOC detonation and proactive blocking
+description: Download malicious files from a Darkfeed IOC, detonate them in automated
+  sandboxes, and extract and block any additional indicators and files.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9bfe42b8-f272-4cdd-87a7-222c68dc194b
+    type: start
+    task:
+      id: 9bfe42b8-f272-4cdd-87a7-222c68dc194b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c1f15436-7eba-4256-8aef-41e8eb717385
+    type: condition
+    task:
+      id: c1f15436-7eba-4256-8aef-41e8eb717385
+      version: -1
+      name: Check if VT API is enabled
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "21"
+      - "27"
+      "yes":
+      - "23"
+      - "22"
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal - Private API
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 661c34b2-046f-4e66-8099-f028a92ece30
+    type: condition
+    task:
+      id: 661c34b2-046f-4e66-8099-f028a92ece30
+      version: -1
+      name: Are there hashes?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 636adce6-9629-4167-8e28-a68e9a9d31d2
+    type: regular
+    task:
+      id: 636adce6-9629-4167-8e28-a68e9a9d31d2
+      version: -1
+      name: Download SHA-256 file from Virustotal
+      description: Downloads a file from VirusTotal's store given one of its hashes.
+        This call can be used in conjuction with the file searching call in order
+        to download samples that match a given set of criteria.
+      script: '|||vt-private-download-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      hash:
+        simple: ${inputs.File.SHA256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "9":
+    id: "9"
+    taskid: 4004e6b2-ee9f-4ab1-8b24-c9761aa37e41
+    type: condition
+    task:
+      id: 4004e6b2-ee9f-4ab1-8b24-c9761aa37e41
+      version: -1
+      name: Are there SHA-256 hashes?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.File.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 8a14b31c-106a-4804-8fa2-7d2bebdbdc86
+    type: title
+    task:
+      id: 8a14b31c-106a-4804-8fa2-7d2bebdbdc86
+      version: -1
+      name: Detonate file
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: b203e1bf-a3c7-409b-84fd-7fca587b99f9
+    type: playbook
+    task:
+      id: b203e1bf-a3c7-409b-84fd-7fca587b99f9
+      version: -1
+      name: Detonate File - Generic
+      description: Detonate file through active integrations that support file detonation
+      playbookName: Detonate File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: File
+          accessor: EntryID
+      File:
+        complex:
+          root: File
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "12":
+    id: "12"
+    taskid: 4c8828c4-638d-48a0-8e07-3694f982c8ae
+    type: condition
+    task:
+      id: 4c8828c4-638d-48a0-8e07-3694f982c8ae
+      version: -1
+      name: Are there downloaded files?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 1c2ae049-4c5d-4e81-855d-b8a24ff972b5
+    type: title
+    task:
+      id: 1c2ae049-4c5d-4e81-855d-b8a24ff972b5
+      version: -1
+      name: Block malicious indicators found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 560288c4-abdc-455b-8858-164f35859ecf
+    type: playbook
+    task:
+      id: 560288c4-abdc-455b-8858-164f35859ecf
+      version: -1
+      name: Block Indicators - Generic v2
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IPBlacklistMiner: {}
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URLBlacklistMiner: {}
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 5251a632-1945-40ed-8273-af73f4342795
+    type: playbook
+    task:
+      id: 5251a632-1945-40ed-8273-af73f4342795
+      version: -1
+      name: Block File - Generic v2
+      playbookName: Block File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      EventId: {}
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: d1136233-b785-4d82-8e9a-187dbb8844de
+    type: condition
+    task:
+      id: d1136233-b785-4d82-8e9a-187dbb8844de
+      version: -1
+      name: Are there URLs to download files?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 89a32190-ca51-43fd-84a8-59830c2ce9d1
+    type: condition
+    task:
+      id: 89a32190-ca51-43fd-84a8-59830c2ce9d1
+      version: -1
+      name: Is manual download enabled
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Manual download
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: b6ad5c26-8b8a-4a7a-8e07-6d6729716caa
+    type: collection
+    task:
+      id: b6ad5c26-8b8a-4a7a-8e07-6d6729716caa
+      version: -1
+      name: Ask to upload file to warroom
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst,Administrator
+      subject:
+        simple: Please upload the downloaded file from Darkfeed_010 to the XSOAR incident
+          warroom
+      body:
+        simple: 'Please upload the downloaded file from Darkfeed_010 to the XSOAR
+          incident warroom: ${inputs.URL}'
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Did you successfully download the file and upload it to the warroom?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: If not, why?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Did you successfully download the file and upload it to the warroom?
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 4ba56b12-96fa-4c6d-8ae9-9efc3a39090c
+    type: condition
+    task:
+      id: 4ba56b12-96fa-4c6d-8ae9-9efc3a39090c
+      version: -1
+      name: Was the file uploaded to the warroom?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Did you upload the downloaded file?.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 8df2ea32-f267-40af-8c49-50d10e8c4fe7
+    type: title
+    task:
+      id: 8df2ea32-f267-40af-8c49-50d10e8c4fe7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 63e64654-5aa7-4fc4-8c7d-66a9563e3084
+    type: condition
+    task:
+      id: 63e64654-5aa7-4fc4-8c7d-66a9563e3084
+      version: -1
+      name: Are there MD5 hashes?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.File.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -737.5,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 171d2016-cb9a-494b-8bd1-dc8e8d4eb963
+    type: condition
+    task:
+      id: 171d2016-cb9a-494b-8bd1-dc8e8d4eb963
+      version: -1
+      name: Are there SHA-1 hashes?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.File.SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 6e804c7a-2323-4932-870a-dd2c7246b0ab
+    type: regular
+    task:
+      id: 6e804c7a-2323-4932-870a-dd2c7246b0ab
+      version: -1
+      name: Download SHA-1 file from Virustotal
+      description: Downloads a file from VirusTotal's store given one of its hashes.
+        This call can be used in conjuction with the file searching call in order
+        to download samples that match a given set of criteria.
+      script: '|||vt-private-download-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      hash:
+        complex:
+          root: inputs.File
+          accessor: SHA1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "25":
+    id: "25"
+    taskid: 27ffce27-2939-4b0a-8e6e-cb08705a187b
+    type: regular
+    task:
+      id: 27ffce27-2939-4b0a-8e6e-cb08705a187b
+      version: -1
+      name: Download MD5 file from Virustotal
+      description: Downloads a file from VirusTotal's store given one of its hashes.
+        This call can be used in conjuction with the file searching call in order
+        to download samples that match a given set of criteria.
+      script: '|||vt-private-download-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      hash:
+        simple: ${inputs.File.MD5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "26":
+    id: "26"
+    taskid: 30f90e8b-444d-4cde-826b-111dd18f5f85
+    type: title
+    task:
+      id: 30f90e8b-444d-4cde-826b-111dd18f5f85
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 1b63b056-70e1-4d5d-80ff-611d5ce4da35
+    type: playbook
+    task:
+      id: 1b63b056-70e1-4d5d-80ff-611d5ce4da35
+      version: -1
+      name: Darkfeed Threat hunting-research
+      playbookName: Darkfeed Threat hunting-research
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      IP: {}
+      Is automated blocking activated?:
+        simple: "no"
+      Is automated endpoint isolation activated?:
+        simple: "no"
+      Maximum number of IOCs:
+        simple: "50"
+      Query time lookup:
+        simple: 3 day ago
+      URL:
+        complex:
+          root: URL
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 2b8b5406-f168-42f8-8329-5453f993d398
+    type: condition
+    task:
+      id: 2b8b5406-f168-42f8-8329-5453f993d398
+      version: -1
+      name: Is download from Virustotal enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.VTdownload
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 6a8337d5-09a1-413f-8e01-1137ed24f77b
+    type: condition
+    task:
+      id: 6a8337d5-09a1-413f-8e01-1137ed24f77b
+      version: -1
+      name: Is automated indicator blocking enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutomatedIndicatorBlocking
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: dbceb339-e5fe-458a-8c03-1d292d6a9524
+    type: regular
+    task:
+      id: dbceb339-e5fe-458a-8c03-1d292d6a9524
+      version: -1
+      name: Manually block indicators
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1965,
+        "width": 2327.5,
+        "x": -737.5,
+        "y": -30
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: File hash (MD5, SHA-1, SHA-256) from Darkfeed
+  playbookInputQuery: null
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: URL
+  value:
+    complex:
+      root: URL
+      filters:
+      - - operator: notStartWith
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: https://attack.mitre.org
+      - - operator: notStartWith
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: https://virustotal.com
+      - - operator: notStartWith
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: https://portal.cybersixgill.com
+  required: false
+  description: URL from Darkfeed_010 - Malware available for download from the deep
+    and dark web
+  playbookInputQuery: null
+- key: Manual download
+  value:
+    simple: "true"
+  required: false
+  description: Set "true" if analyst can manually download malware from deep and dark
+    web filesharing site.
+  playbookInputQuery: null
+- key: VTdownload
+  value:
+    simple: "true"
+  required: false
+  description: Set "true" if you would like to automatically download file from Virustotal
+    API.
+  playbookInputQuery: null
+- key: AutomatedIndicatorBlocking
+  value:
+    simple: "true"
+  required: false
+  description: Set "true" if you would like to automatically block discovered malicious
+    indicators.
+  playbookInputQuery: null
+outputs: []
+quiet: true
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

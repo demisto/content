@@ -5,7 +5,7 @@ name: ConvertFile
 script: ''
 type: python
 subtype: python3
-fromversion: 4.5.0
+fromversion: 5.0.0
 tags:
 - Utility
 comment: 'Converts a file from one format to a different format by using the convert-to function of Libre Office. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
@@ -23,9 +23,7 @@ args:
   predefined:
   - "yes"
   - "no"
-  description: If "yes", will return all generated files. If "no", will return only the main file. Relevant
-    for formats that might generate multiple files, such as html (which will generate
-    image files additionally to the main html file). Default is "no".
+  description: If "yes", will return all generated files. If "no", will return only the main file. Relevant for formats that might generate multiple files, such as html (which will generate image files additionally to the main html file). Default is "no".
   defaultValue: "no"
 outputs:
 - contextPath: File.Name
@@ -45,6 +43,5 @@ outputs:
   type: String
 scripttarget: 0
 runonce: false
-dockerimage45: demisto/office-utils:1.0.0.2553
-dockerimage: demisto/office-utils:2.0.0.5206
+dockerimage: demisto/office-utils:2.0.0.5456
 runas: DBotWeakRole

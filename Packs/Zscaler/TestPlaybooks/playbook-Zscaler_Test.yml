@@ -338,7 +338,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "24"
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
@@ -607,3 +607,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

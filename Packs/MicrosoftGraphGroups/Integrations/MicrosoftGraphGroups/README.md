@@ -6,11 +6,18 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph G
 <h2>Use Cases</h2>
 <ul>
 <li>Manage the organization groups.</li>
-</ul><h2>Detailed Description</h2>
-<ul>
-<li>To allow access to Microsoft Graph Groups, an administrator has to approve the Demisto app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-graph-groups).</li>
-<li>After authorizing the Demisto app, you will get an ID, Token, and Key, which needs to be added to the integration instance configuration's corresponding fields.</li>
 </ul>
+<h2>Authentication</h2>
+For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+
+<h3>Required Permissions</h3>
+<li>Directory.ReadWrite.All - Delegated</li>
+<li>Directory.ReadWrite.All - Application</li>
+<li>Group.ReadWrite.All - Application</li>
+
+<h2>Configure Microsoft Graph Groups on Cortex XSOAR</h2>
+
+<li>Manage the organization groups.</li>
 
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
@@ -32,21 +39,6 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph G
     Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
   </li>
 </ol>
-
-<h2>Use a Self-Deployed Azure Application</h2>
-<p>To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following Microsoft article:
-<a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app</a></p>
-<p>The Tenant ID, Client ID, and Client secret are required for the integration.
-When you configure the integration in Demisto enter those parameters in the appropriate fields (instead of how you received them from the admin consent in the current doc):
-<ul>
-<li>ID - Client ID</li>
-<li>Token - Tenant ID/li>
-<li>Key - Client Secret/li></ul>
-
-<h2>Required Permissions in the MS Graph Groups App:</h2>
-<li>Directory.ReadWrite.All - Delegated</li>
-<li>Directory.ReadWrite.All - Application</li>
-<li>Group.ReadWrite.All - Application</li>
 
 <h2>Commands</h2>
 <p>

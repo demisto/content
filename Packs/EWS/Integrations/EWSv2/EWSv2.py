@@ -324,10 +324,7 @@ credentials = None
 
 PUBLIC_FOLDERS_ERROR = 'Please update your docker image to use public folders'
 if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
-    if demisto.command() == 'test-module':
-        demisto.results(PUBLIC_FOLDERS_ERROR)
-        exit(3)
-    raise Exception(PUBLIC_FOLDERS_ERROR)
+    return_error(PUBLIC_FOLDERS_ERROR)
 
 
 # NOTE: Same method used in EWSMailSender
@@ -495,9 +492,9 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):
             )
             account.root.effective_rights.read  # pylint: disable=E1101
             return account
-        except Exception as original_exc:
+        except Exception as e:
             # fixing flake8 correction where original_exc is assigned but unused
-            original_exc = original_exc
+            original_exc = e
             pass
 
     try:
@@ -508,7 +505,7 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):
         return_error("Auto discovery failed. Check credentials or configure manually")
 
     autodiscover_result = create_context_dict(account)
-    if autodiscover_result == context_dict:
+    if autodiscover_result == context_dict and original_exc:
         raise original_exc  # pylint: disable=E0702
 
     if account_email == ACCOUNT_EMAIL:

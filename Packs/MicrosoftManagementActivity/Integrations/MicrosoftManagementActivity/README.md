@@ -1,28 +1,21 @@
-The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content and fetch new content as incidents.
+The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content and fetch new content as incidents. Through the integration you can subscribe to new content types or stop your subscription, list the available content of each content type, and most importantly - fetch new content records from content types of your choice as Demisto incidents.
+
 This integration was integrated and tested with version 1.0 of Microsoft Management Activity API (O365 Azure Events)
-
-## Authentication
-
-To read the integration's description and authentication instructions more conveniently, you are  welcome to browse them here:
-https://xsoar.pan.dev/docs/reference/integrations/microsoft-management-activity-api-(O365/Azure-Events)
-
-Microsoft Management Activity API (O365/Azure Events) should be used to retrieve content records from the various Microsoft Management Activity content types.
-Through the integration you can subscribe to new content types or stop your subscription, list the available content of each content type, and most importantly - fetch new content records from content types of your choice as Demisto incidents.
 
 ## Grant Demisto Authorization in Microsoft Management Activity API
 To allow us to access Microsoft Management Activity API you will be required to give us authorization to access it.
 
-1. To grant authorization, click the [HERE](https://oproxy.demisto.ninja/ms-management-api).
+1. To grant authorization, click [HERE](https://oproxy.demisto.ninja/ms-management-api).
 2. After you click the link, click the **Start Authorization Process** button.
 3. When prompted, accept the Microsoft authorization request for the required permissions.
-You will get an ID, Token, and Key, which you need to enter in the corresponding fields when configuring an integration instnace..
+You will get an ID, Token, and Key, which you need to enter in the corresponding fields when configuring an integration instance.
 
 ## Self-Deployed Configuration
-1. Enter the following URL.
-Note that CLIENT_ID and REDIRECT_URI should be replaced by your own client ID and redirect URI, accordingly.
-https://login.windows.net/common/oauth2/authorize?response_type=code&resource=https://manage.office.com&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI
-2. When prompted, accept the Microsoft authorization request for the required permissions.
-3. The URL will change and will have the following structure:
+1. Enter the following URL
+(**Note**: CLIENT_ID and REDIRECT_URI should be replaced by your own client ID and redirect URI, accordingly):
+`https://login.windows.net/common/oauth2/authorize?response_type=code&resource=https://manage.office.com&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI`
+1. When prompted, accept the Microsoft authorization request for the required permissions.
+2. The URL will change and will have the following structure:
 SOME_PREFIX?code=AUTH_CODE&session_state=SESSION_STATE
 Take the AUTH_CODE (without the “code=” prefix) and enter it to the instance configuration under the “Authentication” code section.
 Moreover, enter your client secret as the “Key” parameter and your client ID as the “ID” parameter. 
@@ -200,11 +193,12 @@ Returns all content of a specific content type.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | content_type | The content type for which to receive content. | Required | 
-| start_time | The earliest time to get content from. If start_time is specified, end_time must also be specified. The start_time must be before the end_time, can be at most 7 days ago, and has to be within 24 hours from end_time. Required format: YYYY-MM-DDTHH-MM-SS. If not specified, start time will be 24 hours ago. | Optional | 
-| end_time | The latest time to get content from. If end_time is specified, start_time must be also specified. The start_time must be before the end_time and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH-MM-SS. If not specified, end_time will be now. | Optional | 
+| start_time | The earliest time to get content from. If start_time is specified, end_time must also be specified. The start_time must be before the end_time, can be at most 7 days ago, and has to be within 24 hours from end_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, start time will be 24 hours ago. | Optional | 
+| end_time | The latest time to get content from. If end_time is specified, start_time must be also specified. The start_time must be before the end_time and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, end_time will be now. | Optional | 
 | record_types_filter | A comma-separated list of the record types to fetch. Content records with a record  type that isn&#x27;t specified will not be fetched. If this field is left empty, all record types will be fetched. | Optional | 
 | workloads_filter | A comma-separated list of the workloads to fetch. Content records with a workload that isn&#x27;t specified will not be fetched. If this field is left empty, all workloads will be fetched. | Optional | 
-| operations_filter | A comma-separated list of the operations to fetch. Content records with an operation that isn&#x27;t specified will not be fetched. If this field is left empty, all operations will be fetched. | Optional | 
+| operations_filter | A comma-separated list of the operations to fetch. Content records with an operation that isn&#x27;t specified will not be fetched. If this field is left empty, all operations will be fetched. | Optional |
+| timeout | The timeout for the content requesting http call. | Optional 
 
 
 ##### Context Output

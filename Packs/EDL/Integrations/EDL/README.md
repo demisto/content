@@ -35,7 +35,7 @@ To access the EDL service by instance name, make sure ***Instance execute extern
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
-3. In a web browser, go to **https://*<cortex-xsoar_address>*/instance/execute/*<instance_name>*** .
+3. In a web browser, go to `https://<cortex-xsoar_address>/instance/execute/<instance_name>` .
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI as part of an automation, or in a playbook.

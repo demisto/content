@@ -13,7 +13,7 @@ pytest-asyncio = "*"
 [packages]
 pytest = "*"
 requests = "*"
-py42 = "==0.4.2"
+py42 = "*"
 
 [requires]
 python_version = "3.7"

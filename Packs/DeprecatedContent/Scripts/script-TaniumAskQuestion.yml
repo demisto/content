@@ -3,9 +3,11 @@ commonfields:
   version: -1
 name: TaniumAskQuestion
 deprecated: true
-script: |-
+script: >-
   // An example script for asking Tanium a question
+
   /* name - The name of the Saved-Question in Tanium server (mandatory if no 'id' was specified)
+
   For example:
    Computer Name
    User Information
@@ -15,8 +17,11 @@ script: |-
    Installed Applications
    ...
   */
+
   // id - The ID of the Saved-Question in Tanium server (mandatory if no 'name' was specified)
+
   // timeout - seconds to wait while waiting for the question's result
+
 
   var entry = {
       Type: 1,
@@ -25,9 +30,11 @@ script: |-
       ReadableContentsFormat: formats.markdown,
       HumanReadable: ""
   };
+
   if (!args.name && !args.id)
       return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'You must provide name or id.' };
   var res = executeCommand('tn-result-info', args);
+
   if (res[0].Type !== entryTypes.error) {
       if (!res[0].Contents.result_infos) {
           return res[0].Contents.Envelope.Body.return.command;
@@ -98,27 +105,21 @@ script: |-
       entry.HumanReadable = tableToMarkdown(title, entry.Contents, headers);
       return entry;
   }
+
   return res;
 type: javascript
 tags:
 - tanium
-comment: Send a request for a formatted result of a saved question. To receive the
-  most up to date data, run the same command twice. See https://kb.tanium.com/SOAP
-  for more information
+comment: Deprecated. Send a request for a formatted result of a saved question. To receive the most up to date data, run the same command twice. See https://kb.tanium.com/SOAP for more information
 system: true
 args:
 - name: name
   default: true
-  description: Retrieve the question by its name. E.g. !TaniumAskQuestion name="Running
-    Services"
+  description: Retrieve the question by its name. E.g. !TaniumAskQuestion name="Running Services"
 - name: id
-  description: 'Retrieve the question by its ID.  To view ID in the Tanium console
-    go to: Authoring -> Saved Questions tab. This shows you a list of Saved Questions.
-    Click the edit button on a Saved Question and the ID will be shown in the lower
-    left corner'
+  description: 'Retrieve the question by its ID.  To view ID in the Tanium console go to: Authoring -> Saved Questions tab. This shows you a list of Saved Questions. Click the edit button on a Saved Question and the ID will be shown in the lower left corner'
 - name: timeout
-  description: Force Tanium to respond after x seconds (even if data was not collected
-    fully by Tanium).  Default is 30 seconds.
+  description: Force Tanium to respond after x seconds (even if data was not collected fully by Tanium).  Default is 30 seconds.
 - name: pollfreq
   description: Frequency of polling Tanium for more answers. Default is each second.
 - name: headers
@@ -129,3 +130,4 @@ dependson:
   - tn-result-data
   - tn-result-info
 timeout: 0s
+fromversion: 5.0.0

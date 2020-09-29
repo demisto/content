@@ -1,34 +1,25 @@
 {
-  "name": "Hunting",
-  "description": "Extracts IOCs from the incident details and attached files using regular expressions, and then hunts for hashes on endpoints using available tools.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-30T15:04:31Z",
-  "categories": [],
-  "tags": [
-    "Hunting",
-    "IOC",
-    "IOCs",
-    "Hunt",
-    "indicators",
-    "Hash",
-    "File",
-    "Extract"
-  ],
-  "useCases": [
-    "Hunting"
-  ],
-  "keywords": [
-    "Hunting",
-    "IOC",
-    "IOCs",
-    "Hunt",
-    "indicators",
-    "Hash",
-    "File",
-    "Extract"
-  ]
+    "name": "Hunting",
+    "description": "Extracts IOCs from the incident details and attached files using regular expressions, and then hunts for hashes on endpoints using available tools.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-30T15:04:31Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [
+        "Hunting"
+    ],
+    "keywords": [
+        "Hunting",
+        "IOC",
+        "IOCs",
+        "Hunt",
+        "indicators",
+        "Hash",
+        "File",
+        "Extract"
+    ]
 }

@@ -1,10 +1,10 @@
 id: PanoramaCommitConfiguration
 version: -1
 name: PanoramaCommitConfiguration
-fromversion: 4.0.0
-description: "DEPRECATED - Use PAN-OS Commit Configuration instead.\nIf specified
-  as Panorama, will also push the Policies to the specified Device Group in the instance. (please use pan-os-commit-configuration instead)"
+fromversion: 5.0.0
+description: Deprecated. - Use PAN-OS Commit Configuration instead.\nIf specified as Panorama, will also push the Policies to the specified Device Group in the instance. (please use pan-os-commit-configuration instead)
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -251,8 +251,7 @@ tasks:
       id: 2ff73215-8971-475b-860e-6920fe227658
       version: -1
       name: panorama-push-to-device-group
-      description: Push rules from Palo Alto Networks Panorama to the Palo Alto Networks configured
-        device group.
+      description: Push rules from Palo Alto Networks Panorama to the Palo Alto Networks configured device group.
       script: '|||panorama-push-to-device-group'
       type: regular
       iscommand: true
@@ -480,8 +479,7 @@ inputs:
   value:
     simple: Firewall
   required: false
-  description: Determines if the configured instance is Palo Alto Networks Firewall or
-    Panorama.
+  description: Determines if the configured instance is Palo Alto Networks Firewall or Panorama.
 outputs: []
 tests:
-- palo_alto_firewall_test_pb
+- No test - Deprecated playbook

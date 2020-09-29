@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
-  defaultvalue: true
+  defaultvalue: 'true'
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
@@ -32,6 +32,16 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
   type: 15
 - defaultvalue: indicatorType
   display: ""
@@ -67,7 +77,8 @@ configuration:
   name: auto_detect_type
   required: false
   type: 8
-- additionalinfo: Type of the indicator in the feed, If auto-detect is checked then the value set as Indicator Type will be ignored.
+- additionalinfo: Type of the indicator in the feed, If auto-detect is checked then
+    the value set as Indicator Type will be ignored.
   display: Indicator Type
   name: indicator_type
   required: false
@@ -91,8 +102,8 @@ configuration:
   name: ignore_regex
   required: false
   type: 0
-- additionalinfo: The names to apply to the fields in the CSV feed. The name for the field containing the indicator should be "value".
-  defaultvalue: value
+- additionalinfo: The names to apply to the fields in the CSV feed. The name for the
+    field containing the indicator should be "value".
   display: Field Names
   name: fieldnames
   required: false
@@ -126,6 +137,11 @@ configuration:
   name: skipinitialspace
   required: false
   type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - defaultvalue: ''
   display: Trust any certificate (not secure)
   name: insecure
@@ -149,7 +165,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The indicator type. If the configuration parameter 'Auto detect indicator type' is marked true for the integration instance, then this value will be ignored.
+      description: The indicator type. If the configuration parameter 'Auto detect
+        indicator type' is marked true for the integration instance, then this value
+        will be ignored.
       isArray: false
       name: indicator_type
       required: false
@@ -168,7 +186,7 @@ script:
     - contextPath: CSV.Indicator.rawJSON
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/jmespath:1.0.0.6980
+  dockerimage: demisto/jmespath:1.0.0.10854
   feed: true
   isfetch: false
   longRunning: false

@@ -1,10 +1,11 @@
 id: close_incident_if_duplicate_found
 version: -1
 name: DeDup incidents
-fromversion: "3.5.0"
+fromversion: "5.0.0"
 description: |
-  Check for duplicate incidents for the current incident, and close it if any duplicate has found.
+  Deprecated. Check for duplicate incidents for the current incident, and close it if any duplicate has found.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -172,15 +173,11 @@ inputs:
 - key: similarLabels
   value: {}
   required: false
-  description: "Identical\\Similar labels keys.\nYou allow difference in X words between
-    labels. For example, the input:\nEmail\\subject:2,Email\\from\nWill demand:\n1.
-    Email\\from to be identical \n2. Email\\subject to be similar with 2 max words
-    difference\n"
+  description: "Identical\\Similar labels keys.\nYou allow difference in X words between labels. For example, the input:\nEmail\\subject:2,Email\\from\nWill demand:\n1. Email\\from to be identical \n2. Email\\subject to be similar with 2 max words difference\n"
 - key: similarContextKeys
   value: {}
   required: false
-  description: "Identical\\Similar context keys.\nYou allow difference in X words
-    between values. "
+  description: "Identical\\Similar context keys.\nYou allow difference in X words between values. "
 - key: similarCustomFields
   value: {}
   required: false
@@ -196,4 +193,4 @@ outputs:
 - contextPath: isSimilarIncidentFound
   description: Is similar incident found? (true\false)
 tests:
-  - test_similar_incidents
+- No tests

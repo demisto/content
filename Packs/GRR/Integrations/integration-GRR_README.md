@@ -556,7 +556,7 @@
 <tbody>
 <tr>
 <td style="width: 139px;">query</td>
-<td style="width: 498px;">Search query string. See the <a href="https://github.com/google/grr-doc/blob/master/user_manual.adoc#searching-for-a-client" target="_blank" rel="noopener">GRR documentation</a> for more information.</td>
+<td style="width: 498px;">Search query string. See the <a href="https://grr-doc.readthedocs.io/en/latest/" target="_blank" rel="noopener">GRR documentation</a> for more information.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 <tr>

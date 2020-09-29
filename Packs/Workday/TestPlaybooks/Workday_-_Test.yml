@@ -6,15 +6,14 @@ description: Workday integration test playbook
 tasks:
   "0":
     id: "0"
-    taskid: 8312b048-319f-4c4d-8ed0-20f5e2b234cc
+    taskid: f35ce895-9241-4dde-8b23-1dbd40a868b3
     type: start
     task:
-      id: 8312b048-319f-4c4d-8ed0-20f5e2b234cc
+      id: f35ce895-9241-4dde-8b23-1dbd40a868b3
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -33,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 139f33f2-95f5-420c-84f7-22a4af86bd69
+    taskid: 804de471-5c66-43c6-8a6a-dabc615b044d
     type: regular
     task:
-      id: 139f33f2-95f5-420c-84f7-22a4af86bd69
+      id: 804de471-5c66-43c6-8a6a-dabc615b044d
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -69,10 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 8372fcb9-a641-478a-85f1-db1f3f2a15c0
+    taskid: 6608e557-ef47-4c60-8117-2c94af31b731
     type: regular
     task:
-      id: 8372fcb9-a641-478a-85f1-db1f3f2a15c0
+      id: 6608e557-ef47-4c60-8117-2c94af31b731
       version: -1
       name: List Workers
       description: List workers command - Returns information for specified workers.
@@ -104,10 +103,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: b85cabf3-1ee2-4ac4-8ab4-461ebd474832
+    taskid: bec8781c-4e4f-40cf-88e6-0ceb4dd93e16
     type: regular
     task:
-      id: b85cabf3-1ee2-4ac4-8ab4-461ebd474832
+      id: bec8781c-4e4f-40cf-88e6-0ceb4dd93e16
       version: -1
       name: List Worker by ID
       description: List workers command - Returns information for specified workers.
@@ -142,16 +141,15 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: ced7cd12-fdad-495d-87a6-b24f5bfa263a
+    taskid: 0b3c122c-a79f-4863-8051-39a64bf3ecd1
     type: title
     task:
-      id: ced7cd12-fdad-495d-87a6-b24f5bfa263a
+      id: 0b3c122c-a79f-4863-8051-39a64bf3ecd1
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -167,10 +165,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 5b8845ea-fd1c-4c67-8532-5fccb7b360b4
+    taskid: 693ea4c2-2faf-46af-843d-8d98f4da1d3e
     type: regular
     task:
-      id: 5b8845ea-fd1c-4c67-8532-5fccb7b360b4
+      id: 693ea4c2-2faf-46af-843d-8d98f4da1d3e
       version: -1
       name: Saving Worker_ID
       description: Sets a value into the context with the given context key
@@ -187,7 +185,11 @@ tasks:
         simple: Query_Worker_ID
       stringify: {}
       value:
-        simple: ${Workday.Worker.Worker_ID}
+        complex:
+          root: Workday
+          accessor: Worker.Worker_ID
+          transformers:
+          - operator: GetFirstObject
     separatecontext: false
     view: |-
       {
@@ -203,10 +205,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 93b2c86c-fb08-455c-87cc-e4313e3cb206
+    taskid: fd296f69-a5d8-410c-8049-f233191e76e9
     type: regular
     task:
-      id: 93b2c86c-fb08-455c-87cc-e4313e3cb206
+      id: fd296f69-a5d8-410c-8049-f233191e76e9
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -240,16 +242,16 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 9a3c9b24-2348-4cd2-8f90-a62ae8f5539c
+    taskid: 03702d33-6dfa-40cc-8876-bdfaceeba06d
     type: condition
     task:
-      id: 9a3c9b24-2348-4cd2-8f90-a62ae8f5539c
+      id: 03702d33-6dfa-40cc-8876-bdfaceeba06d
       version: -1
       name: Verify Results
+      description: Verify Results
       type: condition
       iscommand: false
       brand: ""
-      description: Verify Results
     nexttasks:
       "yes":
       - "7"
@@ -260,7 +262,11 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Workday.Worker.User_ID
+              complex:
+                root: Workday
+                accessor: Worker.Worker_ID
+                transformers:
+                - operator: GetFirstObject
             iscontext: true
     view: |-
       {
@@ -276,16 +282,16 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 729e7162-ded2-4463-89b6-f8647b33b60a
+    taskid: 5bfa11b3-f083-4557-8181-278b5deeecd3
     type: condition
     task:
-      id: 729e7162-ded2-4463-89b6-f8647b33b60a
+      id: 5bfa11b3-f083-4557-8181-278b5deeecd3
       version: -1
       name: Verify Results
+      description: Verify Results
       type: condition
       iscommand: false
       brand: ""
-      description: Verify Results
     nexttasks:
       "yes":
       - "5"
@@ -296,7 +302,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Workday.Worker.User_ID
+              simple: Workday.Worker.Worker_ID
             iscontext: true
     view: |-
       {

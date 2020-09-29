@@ -86,7 +86,7 @@ THREAT_MODEL_MAPPING = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None, headers=None, files=None):
+def http_request(method, url_suffix, params=None, data=None, headers=None, files=None, json=None, text_response=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
     """
@@ -98,6 +98,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, files
         data=data,
         headers=headers,
         files=files,
+        json=json
     )
     # Handle error responses gracefully
     if res.status_code in {401}:
@@ -113,6 +114,8 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, files
     elif res.status_code not in {200, 201, 202}:
         return_error(F"Error in API call to ThreatStream {res.status_code} - {res.text}")
 
+    if text_response:
+        return res.text
     return res.json()
 
 
@@ -614,7 +617,7 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
             params = build_params(datatext=import_value)
 
     # in case import_type is not file-id, http_requests will receive None as files
-    res = http_request("GET", "v1/intelligence/import/", params=params, data=data, files=files)
+    res = http_request("POST", "v1/intelligence/import/", params=params, data=data, files=files)
     # closing the opened file if exist
     if uploaded_file:
         uploaded_file.close()
@@ -625,6 +628,44 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
         return_outputs(F"The data was imported successfully. The ID of imported job is: {imported_id}", ec, res)
     else:
         return_outputs("The data was not imported. Check if valid arguments were passed", None)
+
+
+def import_ioc_without_approval(file_id, classification, confidence=None, allow_unresolved=None,
+                                source_confidence_weight=None, expiration_ts=None, severity=None,
+                                tags=None, trustedcircles=None):
+    """
+        Imports indicators data to ThreatStream.
+        file_id of uploaded file to war room or URL. Other fields are
+    """
+    if allow_unresolved:
+        allow_unresolved = allow_unresolved == 'yes'
+    if tags:
+        tags = argToList(tags)
+    if trustedcircles:
+        trustedcircles = argToList(trustedcircles)
+    try:
+        # entry id of uploaded file to war room
+        file_info = demisto.getFilePath(file_id)
+        with open(file_info['path'], 'rb') as uploaded_file:
+            ioc_to_import = json.load(uploaded_file)
+    except json.JSONDecodeError:
+        raise DemistoException(F"Entry {file_id} does not contain a valid json file.")
+    except Exception:
+        raise DemistoException(F"Entry {file_id} does not contain a file.")
+    ioc_to_import.update({'meta': assign_params(
+        classification=classification,
+        confidence=confidence,
+        allow_unresolved=allow_unresolved,
+        source_confidence_weight=source_confidence_weight,
+        expiration_ts=expiration_ts,
+        severity=severity,
+        tags=tags,
+        trustedcircles=trustedcircles
+    )})
+
+    params = build_params()
+    res = http_request("PATCH", "v1/intelligence/", params=params, json=ioc_to_import, text_response=True)
+    return_outputs("The data was imported successfully.", {}, res)
 
 
 def get_model_list(model, limit="50"):
@@ -897,6 +938,8 @@ def main():
             get_passive_dns(**args)
         elif command == 'threatstream-import-indicator-with-approval':
             import_ioc_with_approval(**args)
+        elif command == 'threatstream-import-indicator-without-approval':
+            import_ioc_without_approval(**args)
         elif command == 'threatstream-get-model-list':
             get_model_list(**args)
         elif command == 'threatstream-get-model-description':
@@ -930,5 +973,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("builtins", "__builtin__", "__main__"):
     main()

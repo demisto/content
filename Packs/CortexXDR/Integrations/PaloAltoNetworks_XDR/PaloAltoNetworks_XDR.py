@@ -33,7 +33,7 @@ def convert_datetime_to_epoch(the_time=0):
         if isinstance(the_time, datetime):
             return int(the_time.strftime('%s'))
     except Exception as err:
-        print(err)
+        demisto.debug(err)
         return 0
 
 
@@ -68,6 +68,11 @@ def clear_trailing_whitespace(res):
 
 
 class Client(BaseClient):
+
+    def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
+        self.timeout = timeout
+        super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
+
     def test_module(self, first_fetch_time):
         """
             Performs basic get request to get item samples
@@ -164,7 +169,8 @@ class Client(BaseClient):
         res = self._http_request(
             method='POST',
             url_suffix='/incidents/get_incidents/',
-            json_data={'request_data': request_data}
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
         incidents = res.get('reply').get('incidents', [])
 
@@ -186,7 +192,8 @@ class Client(BaseClient):
         reply = self._http_request(
             method='POST',
             url_suffix='/incidents/get_incident_extra_data/',
-            json_data={'request_data': request_data}
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
 
         incident = reply.get('reply')
@@ -225,7 +232,8 @@ class Client(BaseClient):
         self._http_request(
             method='POST',
             url_suffix='/incidents/update_incident/',
-            json_data={'request_data': request_data}
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
 
     def get_endpoints(self,
@@ -260,7 +268,8 @@ class Client(BaseClient):
             reply = self._http_request(
                 method='POST',
                 url_suffix='/endpoints/get_endpoints/',
-                json_data={}
+                json_data={},
+                timeout=self.timeout
             )
             endpoints = reply.get('reply')[search_from:search_to]
             for endpoint in endpoints:
@@ -375,7 +384,8 @@ class Client(BaseClient):
             reply = self._http_request(
                 method='POST',
                 url_suffix='/endpoints/get_endpoint/',
-                json_data={'request_data': request_data}
+                json_data={'request_data': request_data},
+                timeout=self.timeout
             )
 
             endpoints = reply.get('reply').get('endpoints', [])
@@ -389,7 +399,8 @@ class Client(BaseClient):
                 'request_data': {
                     'endpoint_id': endpoint_id
                 }
-            }
+            },
+            timeout=self.timeout
         )
 
     def unisolate_endpoint(self, endpoint_id):
@@ -400,7 +411,8 @@ class Client(BaseClient):
                 'request_data': {
                     'endpoint_id': endpoint_id
                 }
-            }
+            },
+            timeout=self.timeout
         )
 
     def insert_alerts(self, alerts):
@@ -411,7 +423,8 @@ class Client(BaseClient):
                 'request_data': {
                     'alerts': alerts
                 }
-            }
+            },
+            timeout=self.timeout
         )
 
     def insert_cef_alerts(self, alerts):
@@ -422,7 +435,8 @@ class Client(BaseClient):
                 'request_data': {
                     'alerts': alerts
                 }
-            }
+            },
+            timeout=self.timeout
         )
 
     def get_distribution_url(self, distribution_id, package_type):
@@ -434,7 +448,8 @@ class Client(BaseClient):
                     'distribution_id': distribution_id,
                     'package_type': package_type
                 }
-            }
+            },
+            timeout=self.timeout
         )
 
         return reply.get('reply').get('distribution_url')
@@ -447,7 +462,8 @@ class Client(BaseClient):
                 'request_data': {
                     'distribution_id': distribution_id
                 }
-            }
+            },
+            timeout=self.timeout
         )
 
         return reply.get('reply').get('status')
@@ -456,7 +472,8 @@ class Client(BaseClient):
         reply = self._http_request(
             method='POST',
             url_suffix='/distributions/get_versions/',
-            json_data={}
+            json_data={},
+            timeout=self.timeout
         )
 
         return reply.get('reply')
@@ -489,7 +506,8 @@ class Client(BaseClient):
             url_suffix='/distributions/create/',
             json_data={
                 'request_data': request_data
-            }
+            },
+            timeout=self.timeout
         )
 
         return reply.get('reply').get('distribution_id')
@@ -554,7 +572,8 @@ class Client(BaseClient):
         reply = self._http_request(
             method='POST',
             url_suffix='/audits/management_logs/',
-            json_data={'request_data': request_data}
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
 
         return reply.get('reply').get('data', [])
@@ -624,7 +643,8 @@ class Client(BaseClient):
         reply = self._http_request(
             method='POST',
             url_suffix='/audits/agents_reports/',
-            json_data={'request_data': request_data}
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
 
         return reply.get('reply').get('data', [])
@@ -640,6 +660,7 @@ class Client(BaseClient):
             url_suffix='/hash_exceptions/blacklist/',
             json_data={'request_data': request_data},
             ok_codes=(200, 201),
+            timeout=self.timeout
         )
         return reply.get('reply')
 
@@ -654,6 +675,7 @@ class Client(BaseClient):
             url_suffix='/hash_exceptions/whitelist/',
             json_data={'request_data': request_data},
             ok_codes=(201, 200),
+            timeout=self.timeout
         )
         return reply.get('reply')
 
@@ -678,7 +700,8 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/endpoints/quarantine/',
             json_data={'request_data': request_data},
-            ok_codes=(200, 201)
+            ok_codes=(200, 201),
+            timeout=self.timeout
         )
 
         return reply.get('reply')
@@ -693,13 +716,14 @@ class Client(BaseClient):
             url_suffix='/endpoints/restore/',
             json_data={'request_data': request_data},
             ok_codes=(200, 201),
+            timeout=self.timeout
         )
         return reply.get('reply')
 
     def endpoint_scan(self, endpoint_id_list=None, dist_name=None, gte_first_seen=None, gte_last_seen=None,
                       lte_first_seen=None,
                       lte_last_seen=None, ip_list=None, group_name=None, platform=None, alias=None, isolate=None,
-                      hostname=None):
+                      hostname: list = None):
         request_data: Dict[str, Any] = {}
         filters = []
 
@@ -797,7 +821,8 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/endpoints/scan/',
             json_data={'request_data': request_data},
-            ok_codes=(200, 201)
+            ok_codes=(200, 201),
+            timeout=self.timeout
         )
         return reply.get('reply')
 
@@ -811,7 +836,8 @@ class Client(BaseClient):
         reply = self._http_request(
             method='POST',
             url_suffix='/quarantine/status/',
-            json_data={'request_data': request_data}
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
 
         reply_content = reply.get('reply')
@@ -923,11 +949,22 @@ def get_incident_extra_data_command(client, args):
         'file_artifacts': file_artifacts,
         'network_artifacts': network_artifacts
     })
+    account_context_output = assign_params(**{
+        'Username': incident.get('users', '')
+    })
+    endpoint_context_output = assign_params(**{
+        'Hostname': incident.get('hosts', '')
+    })
+
+    context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
+    if account_context_output:
+        context_output['Account(val.Username==obj.Username)'] = account_context_output
+    if endpoint_context_output:
+        context_output['Endpoint(val.Hostname==obj.Hostname)'] = endpoint_context_output
+
     return (
         '\n'.join(readable_output),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident
-        },
+        context_output,
         raw_incident
     )
 
@@ -1034,12 +1071,25 @@ def get_endpoints_command(client, args):
             sort_by_first_seen=sort_by_first_seen,
             sort_by_last_seen=sort_by_last_seen
         )
-
     return (
         tableToMarkdown('Endpoints', endpoints),
-        {f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints},
+        {f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
+         'Endpoint(val.ID == obj.ID)': return_endpoint_standard_context(endpoints)},
         endpoints
     )
+
+
+def return_endpoint_standard_context(endpoints):
+    endpoints_context_list = []
+    for endpoint in endpoints:
+        endpoints_context_list.append(assign_params(**{
+            "Hostname": (endpoint['host_name'] if endpoint.get('host_name', '') else endpoint.get('endpoint_name')),
+            "ID": endpoint.get('endpoint_id'),
+            "IPAddress": endpoint.get('ip'),
+            "Domain": endpoint.get('domain'),
+            "OS": endpoint.get('os_type'),
+        }))
+    return endpoints_context_list
 
 
 def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
@@ -1572,7 +1622,7 @@ def endpoint_scan_command(client, args):
     platform = args.get('platform')
     alias = args.get('alias')
     isolate = args.get('isolate')
-    hostname = args.get('hostname')
+    hostname = argToList(args.get('hostname'))
 
     reply = client.endpoint_scan(
         endpoint_id_list=argToList(endpoint_id_list),
@@ -1600,7 +1650,7 @@ def endpoint_scan_command(client, args):
     )
 
 
-def fetch_incidents(client, first_fetch_time, last_run: dict = None):
+def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: int = 10):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
 
@@ -1610,7 +1660,7 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None):
 
     incidents = []
     raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
-                                         limit=50, sort_by_creation_time='asc')
+                                         limit=max_fetch, sort_by_creation_time='asc')
 
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
@@ -1644,6 +1694,16 @@ def main():
     base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
+    try:
+        timeout = int(demisto.params().get('timeout', 120))
+    except ValueError as e:
+        demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
+        timeout = 120
+    try:
+        max_fetch = int(demisto.params().get('max_fetch', 10))
+    except ValueError as e:
+        demisto.debug(f'Failed casting max fetch parameter to int, falling back to 10 - {e}')
+        max_fetch = 10
 
     # nonce, timestamp, auth = create_auth(API_KEY)
     nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
@@ -1663,7 +1723,8 @@ def main():
         base_url=base_url,
         proxy=proxy,
         verify=verify_cert,
-        headers=headers
+        headers=headers,
+        timeout=timeout
     )
 
     try:
@@ -1672,7 +1733,7 @@ def main():
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(client, first_fetch_time, demisto.getLastRun())
+            next_run, incidents = fetch_incidents(client, first_fetch_time, demisto.getLastRun(), max_fetch)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 

@@ -169,6 +169,7 @@ def test_feed_main_fetch_indicators(mocker, requests_mock):
     feed_url = 'https://www.spamhaus.org/drop/asndrop.txt'
     indicator_type = 'ASN'
     tags = 'tag1,tag2'
+    tlp_color = 'AMBER'
     feed_url_to_config = {
         'https://www.spamhaus.org/drop/asndrop.txt': {
             'indicator_type': indicator_type,
@@ -198,7 +199,8 @@ def test_feed_main_fetch_indicators(mocker, requests_mock):
             'url': feed_url,
             'ignore_regex': '^;.*',
             'feed_url_to_config': feed_url_to_config,
-            'feedTags': tags
+            'feedTags': tags,
+            'tlp_color': tlp_color
         }
     )
     mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
@@ -221,6 +223,7 @@ def test_feed_main_fetch_indicators(mocker, requests_mock):
             'asndrop_country': 'US',
             'asndrop_org': 'LAKSH CYBERSECURITY AND DEFENSE LLC',
             'tags': tags.split(','),
+            'trafficlightprotocol': 'AMBER',
             'type': indicator_type,
             'value': 'AS397539'
         },
@@ -243,6 +246,7 @@ def test_feed_main_test_module(mocker, requests_mock):
     feed_url = 'https://www.spamhaus.org/drop/asndrop.txt'
     indicator_type = 'ASN'
     tags = 'tag1,tag2'
+    tlp_color = 'AMBER'
     feed_url_to_config = {
         'https://www.spamhaus.org/drop/asndrop.txt': {
             'indicator_type': indicator_type,
@@ -272,7 +276,8 @@ def test_feed_main_test_module(mocker, requests_mock):
             'url': feed_url,
             'ignore_regex': '^;.*',
             'feed_url_to_config': feed_url_to_config,
-            'feedTags': tags
+            'feedTags': tags,
+            'tlp_color': tlp_color
         }
     )
     mocker.patch.object(demisto, 'command', return_value='test-module')

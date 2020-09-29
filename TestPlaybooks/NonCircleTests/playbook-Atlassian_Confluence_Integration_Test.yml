@@ -1,5 +1,6 @@
 id: Confluence Integration Test
 version: -1
+fromversion: 5.0.0
 name: Confluence Integration Test
 starttaskid: "0"
 tasks:

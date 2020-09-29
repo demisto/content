@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
   required: false
 - display: Indicator Reputation
@@ -32,6 +32,16 @@ configuration:
   required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
@@ -110,6 +120,11 @@ configuration:
   name: fusion_file_path
   required: false
   type: 0
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - additionalinfo: Time in seconds before HTTP requests timeout.
   defaultvalue: '20'
   display: Request Timeout
@@ -183,7 +198,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.5.10845
   feed: true
   isfetch: false
   longRunning: false

@@ -1,0 +1,351 @@
+id: IsUrlPartOfDomain Test
+version: 17
+vcShouldKeepItemLegacyProdMachine: false
+name: IsUrlPartOfDomain Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 366a6ea2-b8ba-453b-89e5-de2b16caf5f5
+    type: start
+    task:
+      id: 366a6ea2-b8ba-453b-89e5-de2b16caf5f5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0b960a74-d2b8-4e55-8e99-df766d3fafa0
+    type: regular
+    task:
+      id: 0b960a74-d2b8-4e55-8e99-df766d3fafa0
+      version: -1
+      name: IsUrlPartOfDomain
+      description: Checks if urls are in the domain.
+      scriptName: IsUrlPartOfDomain
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      domains:
+        simple: example.com,example.com
+      urls:
+        simple: md.example.com,http://example.com,www.example.com,example.com,www.example.com/index.html
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c9b93cd6-907a-47d8-8141-e1921ab14aea
+    type: condition
+    task:
+      id: c9b93cd6-907a-47d8-8141-e1921ab14aea
+      version: -1
+      name: Validate all URLs are internal.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: IsUrlPartOfDomain
+                filters:
+                - - operator: isFalse
+                    left:
+                      value:
+                        simple: IsUrlPartOfDomain.IsInternal
+                      iscontext: true
+                accessor: IsInternal
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e996afa4-be1e-4fd0-8ec4-933023ab6383
+    type: title
+    task:
+      id: e996afa4-be1e-4fd0-8ec4-933023ab6383
+      version: -1
+      name: Negative start
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: a36cab06-192f-4d76-87e6-0f645cf25cf1
+    type: regular
+    task:
+      id: a36cab06-192f-4d76-87e6-0f645cf25cf1
+      version: -1
+      name: IsUrlPartOfDomain
+      description: Checks if urls are in the domain.
+      scriptName: IsUrlPartOfDomain
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      domains:
+        simple: example.com
+      urls:
+        simple: notexample.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e41cb5fb-8410-4175-8d22-55819ffe268e
+    type: regular
+    task:
+      id: e41cb5fb-8410-4175-8d22-55819ffe268e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 2a9c9b47-14b7-4be4-8543-abfe93ba3e85
+    type: condition
+    task:
+      id: 2a9c9b47-14b7-4be4-8543-abfe93ba3e85
+      version: -1
+      name: Validate all URLs are internal.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: IsUrlPartOfDomain
+                filters:
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: IsUrlPartOfDomain.IsInternal
+                      iscontext: true
+                accessor: IsInternal
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 138323f3-7f63-4917-884e-df2b24d358f4
+    type: title
+    task:
+      id: 138323f3-7f63-4917-884e-df2b24d358f4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 077fd862-4847-4e40-8d68-76d5ab4d55a8
+    type: title
+    task:
+      id: 077fd862-4847-4e40-8d68-76d5ab4d55a8
+      version: -1
+      name: Positive Start
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 9d1d9c43-a3ae-4b2e-8642-dfb45ac763dc
+    type: regular
+    task:
+      id: 9d1d9c43-a3ae-4b2e-8642-dfb45ac763dc
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1550,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

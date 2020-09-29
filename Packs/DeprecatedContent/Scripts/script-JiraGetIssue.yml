@@ -3,9 +3,10 @@ commonfields:
   version: -1
 name: JiraGetIssue
 deprecated: true
-script: |2
+script: >2
 
   resp = demisto.executeCommand("jira-get-issue", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -21,7 +22,7 @@ type: python
 subtype: python2
 tags:
 - jira
-comment: Fetch issue from Jira
+comment: Deprecated. Fetch issue from Jira
 system: true
 args:
 - default: true
@@ -33,3 +34,4 @@ timeout: 0s
 dependson:
   must:
   - jira-get-issue
+fromversion: 5.0.0

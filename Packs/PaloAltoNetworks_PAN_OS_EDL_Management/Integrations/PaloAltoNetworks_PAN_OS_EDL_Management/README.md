@@ -2,6 +2,12 @@
   This integration enables you to manage and edit files located on a remote web
   server via SSH using integration context as Single Source of Truth.
 </p>
+
+<p>
+    This integration requires root access in order to execute ssh commands. 
+    If you've configured the server to run Docker images with a non-root internal user make sure to exclude the demisto/openssh Docker image as documented <a href="https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/cortex-xsoar-admin/docker/docker-hardening-guide/run-docker-with-non-root-internal-users.html"> here </a>
+</p>
+
 <h2>Palo Alto Networks PAN-OS EDL Management Playbook</h2>
 <p>PAN-OS EDL Setup</p>
 <h2>Use Cases</h2>

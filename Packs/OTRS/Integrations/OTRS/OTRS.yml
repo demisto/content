@@ -29,8 +29,7 @@ configuration:
   required: false
   type: 13
 - defaultvalue: Any
-  display: Queues to fetch tickets from  ("Any" fetches from all queues. CSV supported,
-    e.g., Misc,Raw)
+  display: Queues to fetch tickets from  ("Any" fetches from all queues. CSV supported, e.g., Misc,Raw)
   name: fetch_queue
   required: false
   type: 0
@@ -45,14 +44,12 @@ configuration:
   required: false
   type: 16
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   required: false
   type: 0
-description: Service management suite that comprises ticketing, workflow automation,
-  and notification.
-fromversion: 4.1.0
+description: Service management suite that comprises ticketing, workflow automation, and notification.
+fromversion: 5.0.0
 display: OTRS
 name: OTRS
 script:
@@ -183,15 +180,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter for a ticket created before this date. Given in format "<number>
-        <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
+      description: Filter for a ticket created before this date. Given in format "<number> <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
       isArray: false
       name: created_before
       required: false
       secret: false
     - default: false
-      description: Filter for a ticket created after this date. Given in format "<number>
-        <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
+      description: Filter for a ticket created after this date. Given in format "<number> <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
       isArray: false
       name: created_after
       required: false
@@ -326,15 +321,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Dynamic fields to apply to the new ticket, in the format: field1=value1,field2=value2.
-        For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
+      description: 'Dynamic fields to apply to the new ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
       isArray: false
       name: dynamic_fields
       required: false
       secret: false
     - default: false
-      description: 'File entry ID of the file to add as an attachment to the new ticket
-        in CSV format, e.g., 123@20,124@21 '
+      description: 'File entry ID of the file to add as an attachment to the new ticket in CSV format, e.g., 123@20,124@21 '
       isArray: false
       name: attachment
       required: false
@@ -444,15 +437,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Dynamic fields to apply to the updated ticket, in the format:
-        field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
+      description: 'Dynamic fields to apply to the updated ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
       isArray: false
       name: dynamic_fields
       required: false
       secret: false
     - default: false
-      description: 'File entry ID of the file to add as an attachment to the updated
-        ticket in CSV format, e.g., 123@20,124@21 '
+      description: 'File entry ID of the file to add as an attachment to the updated ticket in CSV format, e.g., 123@20,124@21 '
       isArray: false
       name: attachment
       required: false
@@ -525,7 +516,7 @@ script:
     - contextPath: OTRS.Ticket.Article.Body
       description: Ticket article body
       type: string
-  dockerimage: demisto/pyotrs:1.0.0.7536
+  dockerimage: demisto/pyotrs:1.0.0.10770
   feed: false
   isfetch: true
   longRunning: false
@@ -535,4 +526,4 @@ script:
   subtype: python3
   type: python
 tests:
- - OTRS Test
+- OTRS Test

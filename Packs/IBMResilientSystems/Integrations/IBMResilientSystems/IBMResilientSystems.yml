@@ -9,7 +9,7 @@ configuration:
   type: 0
 - display: Credentials
   name: credentials
-  required: true
+  required: false
   type: 9
 - display: Organization name
   name: org
@@ -33,11 +33,19 @@ configuration:
   type: 13
 - display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
   name: fetch_time
-  defaultvalue: ""
-  type: 0
   required: false
-description: Case management that enables visibility across your tools for continual
-  IR improvement
+  type: 0
+- display: API key ID
+  hidden: false
+  name: api_key_id
+  required: false
+  type: 9
+- display: API key secret
+  hidden: false
+  name: api_key_secret
+  required: false
+  type: 9
+description: Case management that enables visibility across your tools for continual IR improvement
 display: IBM Resilient Systems
 name: IBM Resilient Systems
 script:
@@ -50,30 +58,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: Created date of the incident before given date in format YYYY-MM-DDTHH:MM:SSZ,
-        e.g. 2018-05-07T10:59:07Z
+      description: Created date of the incident before given date in format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z
       isArray: false
       name: date-created-before
       required: false
       secret: false
     - default: false
-      description: Created date of the incident after given date in format YYYY-MM-DDTHH:MM:SSZ,
-        e.g. 2018-05-07T10:59:07Z
+      description: Created date of the incident after given date in format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z
       isArray: false
       name: date-created-after
       required: false
       secret: false
     - default: false
-      description: Created date of the incident within the last time frame (days/hours/minutes).
-        Should be given a number, along with with the timeframe argument.
+      description: Created date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument.
       isArray: false
       name: date-created-within-the-last
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Time frame to search within for incident. Should be given with
-        within-the-last/due-in argument. '
+      description: 'Time frame to search within for incident. Should be given with within-the-last/due-in argument. '
       isArray: false
       name: timeframe
       predefined:
@@ -83,22 +87,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Occurred date of the incident within the last time frame (days/hours/minutes).
-        Should be given a number, along with with the timeframe argument.
+      description: Occurred date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument.
       isArray: false
       name: date-occurred-within-the-last
       required: false
       secret: false
     - default: false
-      description: Occurred date of the incident before given date in format YYYY-MM-DDTHH:MM:SSZ,
-        e.g. 2018-05-07T10:59:07Z
+      description: Occurred date of the incident before given date in format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z
       isArray: false
       name: date-occurred-before
       required: false
       secret: false
     - default: false
-      description: Occurred date of the incident after given date in format YYYY-MM-DDTHH:MM:SSZ,
-        e.g. 2018-05-07T10:59:07Z
+      description: Occurred date of the incident after given date in format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z
       isArray: false
       name: date-occurred-after
       required: false
@@ -157,8 +158,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Due date of the incident in given timeframe (days/hours/minutes).
-        Should be given a number, along with with the timeframe argument.
+      description: Due date of the incident in given timeframe (days/hours/minutes). Should be given a number, along with with the timeframe argument.
       isArray: false
       name: due-in
       required: false
@@ -585,7 +585,7 @@ script:
     - contextPath: Resilient.Incidents.Tasks.Status
       description: Task status (Open/Closed)
       type: string
-  dockerimage: demisto/resilient:1.0.0.7764
+  dockerimage: demisto/resilient:1.0.0.9895
   feed: false
   isfetch: true
   longRunning: false
@@ -594,3 +594,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0

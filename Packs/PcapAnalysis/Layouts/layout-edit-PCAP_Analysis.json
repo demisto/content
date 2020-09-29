@@ -1,0 +1,137 @@
+{
+ "kind": "edit",
+ "layout": {
+  "id": "PCAP Analysis",
+  "kind": "edit",
+  "modified": "2020-06-17T21:02:12.850937086Z",
+  "name": "",
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_name",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_occurred",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_reminder",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_owner",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_roles",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_type",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_severity",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_playbookid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_labels",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_phase",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_details",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_pcapencryptionkey",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_pcapfile",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   }
+  ],
+  "system": false,
+  "typeId": "PCAP Analysis",
+  "version": -1
+ },
+ "typeId": "PCAP Analysis",
+ "version": -1,
+ "toVersion": "5.9.9",
+ "fromVersion": "5.0.0"
+}
