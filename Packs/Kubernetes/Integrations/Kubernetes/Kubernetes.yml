@@ -1,29 +1,42 @@
-category: IT Services
 commonfields:
   id: Kubernetes
   version: -1
+name: Kubernetes
+display: Kubernetes (Community Contribution)
+description: Manage a Kubernetes cluster and scan containers for vulnerabilities in
+  operating system packages and configuration.
+category: IT Services
 configuration:
-- display: Cluster host URL (e.g. https://api.us-east-2.starter.openshift-online.com:6443)
+- display: Cluster URL
   name: cluster_host_url
-  required: true
   type: 0
+  required: true
+  additionalinfo: The URL of your cluster e.g.  https://api.us-east-2.starter.openshift-online.com:6443.
 - display: Authentication token
   name: auth_token
-  required: true
   type: 4
-- display: Cluster namespace
-  name: namspace
   required: true
-  type: 0  
-description: foo
-display: Kubernetes
-name: Kubernetes
+  additionalinfo: An authentication token for your cluster.
+- display: Default namespace
+  name: namespace
+  type: 0
+  required: false
+  additionalinfo: This namespace will be used for commands if no other is specified.
+- display: Vulners API key
+  name: vulners_api_key
+  type: 4
+  required: false
+  additionalinfo: (Optional) An API key for the Vulners.com vulnerability scanner
+    available at https://vulners.com.
 script:
+  script: ''
+  type: python
   commands:
-  - name: k8s-list-pods
-    deprecated: false
-    description: List pods in cluster.
-    execution: false
+  - name: get-pods
+    arguments:
+    - name: ns
+      default: true
+      description: List pods in this namespace.
     outputs:
     - contextPath: Kubernetes.Pods.Name
       description: Name
@@ -43,15 +56,60 @@ script:
     - contextPath: Kubernetes.Pods.Started
       description: Started
       type: Date
-    - contextPath: Kubernetes.Pods.Age
-      description: Age
-      type: String
-  dockerimage: demisto/python3:3.8.5.11789
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+    description: List all pods in cluster.
+  - name: pod-exec
+    arguments:
+    - name: ns
+      description: The namespace the pod belongs to.
+    - name: pod_name
+      required: true
+      description: The name of the pod the container belongs to.
+    - name: cmd
+      required: true
+      description: The command to execute.
+    outputs:
+    - contextPath: Kubernetes.Pod.Exec
+      description: Command output
+      type: string
+    description: Execute a command in a pod's container.
+  - name: pod-detect-os
+    arguments:
+    - name: ns
+      description: The namespace the container's pod belongs to.
+    - name: pod_name
+      required: true
+      description: The name of the pod the container belongs to.
+    outputs:
+    - contextPath: Kubernetes.Pod.OS
+      description: Detected operating-system version.
+      type: string
+    description: Detect the operating system of the container running in a pod.
+  - name: pod-get-os-packages
+    arguments:
+    - name: ns
+      description: The namespace the container's pod belongs to.
+    - name: pod_name
+      required: true
+      description: The name of the pod the container belongs to.
+    outputs:
+    - contextPath: Kubernetes.Pod.OS.Packages
+      description: Packages.
+      type: string
+    description: Get the operating system packages installed in the container running
+      in a pod.
+  - name: pod-scan-os-packages
+    arguments:
+    - name: ns
+      description: The namespace the container's pod belongs to.
+    - name: pod_name
+      required: true
+      description: The name of the pod the container belongs to.
+    outputs:
+    - contextPath: Kubernetes.Pod.OS.Packages.Vulnerabilities.Package
+      description: Vulnerabilities.
+      type: string
+    description: Scan the operating system packages installed in a pod's container
+      for vulnerabilities.
+  dockerimage: demisto/kubernetes:latest
   runonce: false
-  script: '-'
   subtype: python3
-  type: python
-fromversion: 5.0.0

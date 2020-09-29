@@ -1,0 +1,1 @@
+Kubernetes integration for Cortex XSOAR.
