@@ -1,0 +1,612 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Prisma XDR EC2 isolation
+inputs: []
+name: Prisma XDR EC2 isolation
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 89c2f071-6025-4747-8577-ee03ca4843cc
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 89c2f071-6025-4747-8577-ee03ca4843cc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 10
+        }
+      }
+  "3":
+    continueonerror: true
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: |-
+          Affected resource - ${incident.policydescription}
+          Here is the policy description-  ${incident.policydescription}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 41be1658-2eb3-47a8-8c95-aa8373b2ebb0
+      iscommand: false
+      name: Print Prisma policy  description
+      script: Print
+      type: regular
+      version: -1
+    taskid: 41be1658-2eb3-47a8-8c95-aa8373b2ebb0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Recommendation - ${incident.prismapolicyrecommendation}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: fd2c18ee-c4cb-4a75-8b4c-642e4744b2a8
+      iscommand: false
+      name: Print Prisma recommendation
+      script: Print
+      type: regular
+      version: -1
+    taskid: fd2c18ee-c4cb-4a75-8b4c-642e4744b2a8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 365
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: aws_res
+      stringify: {}
+      value:
+        complex:
+          accessor: resource}
+          root: ${incident.labels
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: b96eee0a-2b20-4945-87b4-d6cc3ee1801c
+      iscommand: false
+      name: Parse  AWS data from incident field
+      script: Set
+      type: regular
+      version: -1
+    taskid: b96eee0a-2b20-4945-87b4-d6cc3ee1801c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 365
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.resourcecloudtype}
+          operator: isEqualString
+          right:
+            value:
+              simple: aws
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 58cc14ed-b15d-4587-8052-acbe57aeb649
+      iscommand: false
+      name: Is the alert from AWS cloud?
+      type: condition
+      version: -1
+    taskid: 58cc14ed-b15d-4587-8052-acbe57aeb649
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 160
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 33714762-72d4-41f3-8a33-678ceda4f97a
+      iscommand: false
+      name: Not an AWS incident - stop
+      type: regular
+      version: -1
+    taskid: 33714762-72d4-41f3-8a33-678ceda4f97a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 340
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.resourcetype
+          operator: isEqualString
+          right:
+            value:
+              simple: INSTANCE
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 62d63845-7ace-4ead-8a19-06138cac6eac
+      iscommand: false
+      name: Is the resource type - AWS instance?
+      type: condition
+      version: -1
+    taskid: 62d63845-7ace-4ead-8a19-06138cac6eac
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 490
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: 'Do you want to remediate the issue based on following recommendation:
+          ${incident.incident.policyrecommendation}?'
+      cc:
+      format: ""
+      methods: []
+      replyOptions:
+      - "Yes"
+      - "No"
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#default#':
+      - "13"
+      "Yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 194f4e5d-2352-47c1-85e2-cbb122b00066
+      iscommand: false
+      name: Ask analyst if  alert should be remediated
+      type: condition
+      version: -1
+    taskid: 194f4e5d-2352-47c1-85e2-cbb122b00066
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 720
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 827d1a7a-6cb6-48e6-8129-75ad0cbe5f7c
+      iscommand: false
+      name: Block instance public access
+      type: title
+      version: -1
+      description: ''
+    taskid: 827d1a7a-6cb6-48e6-8129-75ad0cbe5f7c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 890
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b819db94-56c6-4df9-8ed4-6873a09bc4d9
+      iscommand: false
+      name: Pass
+      type: title
+      version: -1
+      description: ''
+    taskid: b819db94-56c6-4df9-8ed4-6873a09bc4d9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -670,
+          "y": 860
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filters:
+        simple: group-id=${aws_res.data.securityGroups.groupId}
+      groupIds:
+        simple: ${aws_res.data.securityGroups.groupId}
+      groupNames: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Describes one or more of your security groups.
+      id: aaaf2e29-2004-41d0-85d9-bd183498f928
+      iscommand: true
+      name: Get security group details
+      script: '|||aws-ec2-describe-security-groups'
+      type: regular
+      version: -1
+    taskid: aaaf2e29-2004-41d0-85d9-bd183498f928
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 1210
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cidrIp:
+        simple: ${AWS.EC2.SecurityGroups.IpPermissions.IpRanges.CidrIp}
+      fromPort:
+        complex:
+          accessor: FromPort
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: AWS.EC2.SecurityGroups.IpPermissions.IpRanges.CidrIp
+              operator: isEqualString
+              right:
+                value:
+                  simple: 0.0.0.0/0
+          root: AWS.EC2.SecurityGroups.IpPermissions
+      groupId:
+        complex:
+          accessor: GroupId
+          root: AWS.EC2.SecurityGroups
+      ipProtocol:
+        complex:
+          accessor: IpProtocol
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: 'AWS.EC2.SecurityGroups.IpPermissions.IpRanges.CidrIp '
+              operator: isEqualString
+              right:
+                value:
+                  simple: 0.0.0.0/0
+          root: AWS.EC2.SecurityGroups.IpPermissions
+      region:
+        simple: ${aws_res.regionId}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      sourceSecurityGroupName: {}
+      toPort:
+        complex:
+          accessor: ToPort
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: AWS.EC2.SecurityGroups.IpPermissions.IpRanges.CidrIp
+              operator: isEqualString
+              right:
+                value:
+                  simple: 0.0.0.0/0
+          root: AWS.EC2.SecurityGroups.IpPermissions
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Removes egress rule from a security group. To remove a rule, the
+        values that you specify (for example, ports) must match the existing rule's
+        values exactly.
+      id: 242ef1ca-1d9b-4518-813f-bf2a39df6aad
+      iscommand: true
+      name: Revoke ingress security group
+      script: '|||aws-ec2-revoke-security-group-ingress-rule'
+      type: regular
+      version: -1
+    taskid: 242ef1ca-1d9b-4518-813f-bf2a39df6aad
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 1350
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e4fabfc1-6b86-4761-89ca-c970994e4c4a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: e4fabfc1-6b86-4761-89ca-c970994e4c4a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 1500
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      endpoint_id: {}
+      hostname: {}
+      ip_list:
+        complex:
+          accessor: privateIpAddress
+          root: aws_res.data
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9e2ab5e3-aea5-4f72-8cf3-e30e98c05838
+      iscommand: false
+      name: Cortex XDR - Isolate Endpoint
+      playbookId: Cortex XDR - Isolate Endpoint
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 9e2ab5e3-aea5-4f72-8cf3-e30e98c05838
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1220
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - EC2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fcb9ad90-7b4f-4019-8c87-cd88b1a2b567
+      iscommand: false
+      name: Is AWS EC2 integration enabled?
+      type: condition
+      version: -1
+    taskid: fcb9ad90-7b4f-4019-8c87-cd88b1a2b567
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 1020
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1555,
+        "width": 1510,
+        "x": -670,
+        "y": 10
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0

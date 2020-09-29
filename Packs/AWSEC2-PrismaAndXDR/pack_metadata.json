@@ -1,0 +1,14 @@
+{
+    "name": "AWS EC2 - Prisma and XDR",
+    "description": "Isolate AWS EC2 instance that does not meet policy requirement with help of Prisma and XDR",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "vermamanoj",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T18:50:24Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
