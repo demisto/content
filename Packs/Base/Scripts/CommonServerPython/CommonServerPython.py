@@ -317,6 +317,9 @@ def auto_detect_indicator_type(indicator_value):
     if re.match(cveRegex, indicator_value):
         return FeedIndicatorType.CVE
 
+    if re.match(sha512Regex, indicator_value):
+        return FeedIndicatorType.File
+
     try:
         no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
         if no_cache_extract(indicator_value).suffix:
@@ -961,6 +964,19 @@ def aws_table_to_markdown(response, table_header):
     return human_readable
 
 
+def stringUnEscape(st):
+    """
+       Unescape newline chars in the given string.
+
+       :type st: ``str``
+       :param st: The string to be modified (required).
+
+       :return: A modified string.
+       :rtype: ``str``
+    """
+    return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -1001,6 +1017,7 @@ class IntegrationLogger(object):
     def encode(self, message):
         try:
             res = str(message)
+            res = stringUnEscape(res)
         except UnicodeEncodeError as exception:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
@@ -1814,6 +1831,8 @@ def get_hash_type(hash_file):
         return 'sha1'
     elif (hash_len == 64):
         return 'sha256'
+    elif (hash_len == 128):
+        return 'sha512'
     else:
         return 'Unknown'
 
@@ -2993,6 +3012,7 @@ cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
 sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
+sha512Regex = re.compile(r'\b[0-9a-fA-F]{128}\b', regexFlags)
 
 pascalRegex = re.compile('([A-Z]?[a-z]+)')
 
@@ -3124,14 +3144,24 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
       :return: The parsed date range.
       :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
     """
-    range_split = date_range.split(' ')
+    range_split = date_range.strip().split(' ')
     if len(range_split) != 2:
         return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, '
                      'etc.)')
 
-    number = int(range_split[0])
-    if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
-        return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
+    try:
+        number = int(range_split[0])
+    except ValueError:
+        return_error('The time value is invalid. Must be an integer.')
+
+    unit = range_split[1].lower()
+    if unit not in ['minute', 'minutes',
+                    'hour', 'hours',
+                    'day', 'days',
+                    'month', 'months',
+                    'year', 'years',
+                    ]:
+        return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years.')
 
     if not isinstance(timezone, (int, float)):
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
@@ -3143,7 +3173,6 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         end_time = datetime.now() + timedelta(hours=timezone)
         start_time = datetime.now() + timedelta(hours=timezone)
 
-    unit = range_split[1]
     if 'minute' in unit:
         start_time = end_time - timedelta(minutes=number)
     elif 'hour' in unit:
@@ -3286,6 +3315,22 @@ class GetDemistoVersion:
 
 
 get_demisto_version = GetDemistoVersion()
+
+
+def get_demisto_version_as_str():
+    """Get the Demisto Server version as a string <version>-<build>. If unknown will return: 'Unknown'.
+    Meant to be use in places where we want to display the version. If you want to perform logic based upon vesrion
+    use: is_demisto_version_ge.
+
+    :return: Demisto version as string
+    :rtype: ``dict``
+    """
+    try:
+        ver_obj = get_demisto_version()
+        return '{}-{}'.format(ver_obj.get('version', 'Unknown'),
+                              ver_obj.get("buildNumber", 'Unknown'))
+    except AttributeError:
+        return "Unknown"
 
 
 def is_demisto_version_ge(version, build_number=''):
@@ -3972,7 +4017,6 @@ def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None
 
 CONTEXT_UPDATE_RETRY_TIMES = 3
 MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
-MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT = '83267'
 
 
 def merge_lists(original_list, updated_list, key):
@@ -4067,9 +4111,7 @@ def is_versioned_context_available():
     :rtype: ``bool``
     :return: Whether versioned integration context is available
     """
-    return \
-        is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT) or \
-        is_demisto_version_ge('5.5.0', MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT)
+    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
 
 
 def set_to_integration_context_with_retries(context, object_keys=None, sync=True,
@@ -4446,6 +4488,26 @@ def setup_outgoing_mirror_error(incident_id, error):
 
     demisto.setIntegrationContext(integration_cache)
     return incident_id
+
+
+def get_x_content_info_headers():
+    """Get X-Content-* headers to send in outgoing requests to use when performing requests to
+    external services such as oproxy.
+
+    :return: headers dict
+    :rtype: ``dict``
+    """
+    calling_context = demisto.callingContext.get('context', {})
+    brand_name = calling_context.get('IntegrationBrand', '')
+    instance_name = calling_context.get('IntegrationInstance', '')
+    headers = {
+        'X-Content-Version': CONTENT_RELEASE_VERSION,
+        'X-Content-Name': brand_name or instance_name or 'Name not found',
+        'X-Content-LicenseID': demisto.getLicenseID(),
+        'X-Content-Branch': CONTENT_BRANCH_NAME,
+        'X-Content-Server-Version': get_demisto_version_as_str(),
+    }
+    return headers
 
 
 class BaseWidget:

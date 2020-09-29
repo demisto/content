@@ -4,7 +4,8 @@
 	"associatedTypes": [
 		"Impossible Traveler",
 		"Brute Force",
-		"Microsoft CAS Alert"
+		"Microsoft CAS Alert",
+		"Trend Micro CAS Event"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

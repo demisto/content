@@ -123,7 +123,7 @@ class PAN_OS_Not_Found(Exception):
 
 
 def http_request(uri: str, method: str, headers: Dict = {},
-                 body: Dict = {}, params: Dict = {}, files=None) -> Any:
+                 body: Dict = {}, params: Dict = {}, files=None, is_pcap: bool = False) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -142,10 +142,14 @@ def http_request(uri: str, method: str, headers: Dict = {},
             'Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
     # if pcap download
-    if params.get('type') == 'export':
+    if is_pcap:
         return result
 
     json_result = json.loads(xml2json(result.text))
+
+    # handle raw response that doe not contain the response key, e.g xonfiguration export
+    if 'response' not in json_result or '@code' not in json_result['response']:
+        return json_result
 
     # handle non success
     if json_result['response']['@status'] != 'success':
@@ -197,25 +201,24 @@ def http_request(uri: str, method: str, headers: Dict = {},
             raise Exception('Request Failed.\n' + str(json_result['response']))
 
     # handle @code
-    if 'response' in json_result and '@code' in json_result['response']:
-        if json_result['response']['@code'] in PAN_OS_ERROR_DICT:
-            error_message = 'Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']]
-            if json_result['response']['@code'] == '7' and DEVICE_GROUP:
-                device_group_names = get_device_groups_names()
-                if DEVICE_GROUP not in device_group_names:
-                    error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
-                                      f' The available Device Groups for this instance:'
-                                      f' {", ".join(device_group_names)}.')
-                    raise PAN_OS_Not_Found(error_message)
-            return_warning('List not found and might be empty', True)
-        if json_result['response']['@code'] not in ['19', '20']:
-            # error code non exist in dict and not of success
-            if 'msg' in json_result['response']:
-                raise Exception(
-                    'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
-                        json_result['response']['msg']))
-            else:
-                raise Exception('Request Failed.\n' + str(json_result['response']))
+    if json_result['response']['@code'] in PAN_OS_ERROR_DICT:
+        error_message = 'Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']]
+        if json_result['response']['@code'] == '7' and DEVICE_GROUP:
+            device_group_names = get_device_groups_names()
+            if DEVICE_GROUP not in device_group_names:
+                error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
+                                  f' The available Device Groups for this instance:'
+                                  f' {", ".join(device_group_names)}.')
+                raise PAN_OS_Not_Found(error_message)
+        return_warning('List not found and might be empty', True)
+    if json_result['response']['@code'] not in ['19', '20']:
+        # error code non exist in dict and not of success
+        if 'msg' in json_result['response']:
+            raise Exception(
+                'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
+                    json_result['response']['msg']))
+        else:
+            raise Exception('Request Failed.\n' + str(json_result['response']))
 
     return json_result
 
@@ -3122,7 +3125,7 @@ def panorama_list_pcaps_command():
     elif demisto.args()['pcapType'] == 'dlp-pcap':
         raise Exception('can not provide dlp-pcap without password')
 
-    result = http_request(URL, 'GET', params=params)
+    result = http_request(URL, 'GET', params=params, is_pcap=True)
     json_result = json.loads(xml2json(result.text))['response']
     if json_result['@status'] != 'success':
         raise Exception('Request to get list of Pcaps Failed.\nStatus code: ' + str(
@@ -3211,7 +3214,7 @@ def panorama_get_pcap_command():
     if not file_name:
         file_name = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
 
-    result = http_request(URL, 'GET', params=params)
+    result = http_request(URL, 'GET', params=params, is_pcap=True)
 
     # due pcap file size limitation in the product, for more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':

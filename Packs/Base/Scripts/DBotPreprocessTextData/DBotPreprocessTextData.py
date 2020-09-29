@@ -136,10 +136,11 @@ def whitelist_dict_fields(data, fields):
     return new_data
 
 
-def remove_short_text(data, text_field, remove_short_threshold):
+def remove_short_text(data, text_field, target_text_field, remove_short_threshold):
     description = ""
     before_count = len(data)
     data = filter(lambda x: len(x[text_field].split(" ")) > remove_short_threshold, data)
+    data = filter(lambda x: len(x[target_text_field]) > 0, data)
     after_count = len(data)
     dropped_count = before_count - after_count
     if dropped_count > 0:
@@ -184,7 +185,7 @@ def main():
     data = pre_process(data, DBOT_TEXT_FIELD, DBOT_PROCESSED_TEXT_FIELD, remove_html_tags, pre_process_type, hash_seed)
 
     # remove short emails
-    data, desc = remove_short_text(data, DBOT_TEXT_FIELD, remove_short_threshold)
+    data, desc = remove_short_text(data, DBOT_TEXT_FIELD, DBOT_PROCESSED_TEXT_FIELD, remove_short_threshold)
     description += desc
 
     # remove duplicates

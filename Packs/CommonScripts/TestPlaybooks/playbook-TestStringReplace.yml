@@ -153,8 +153,7 @@ tasks:
       id: 87f142f7-e385-4243-82ef-d4bd46059284
       version: -1
       name: StringReplace- case-insensitive, multi-line
-      description: "case-Insensitive : true (default)\nreplace-All: false \nmulti-line:
-        true (default)"
+      description: "case-Insensitive : true (default)\nreplace-All: false \nmulti-line: true (default)"
       scriptName: StringReplace
       type: regular
       iscommand: false
@@ -236,8 +235,7 @@ tasks:
       id: a1a85db0-581d-4345-855f-03edbaebd0a4
       version: -1
       name: StringReplace- multi-line, replace-all
-      description: "case-Insensitive :false\nreplace-All: true \nmulti-line: true
-        (default)"
+      description: "case-Insensitive :false\nreplace-All: true \nmulti-line: true (default)"
       scriptName: StringReplace
       type: regular
       iscommand: false
@@ -319,8 +317,7 @@ tasks:
       id: 63b911f2-043e-4561-8ab6-1f55358a56f6
       version: -1
       name: StringReplace- no match
-      description: "case-Insensitive :true (default)\nreplace-All: true (default)
-        \nmulti-line: true (default)"
+      description: "case-Insensitive :true (default)\nreplace-All: true (default) \nmulti-line: true (default)"
       scriptName: StringReplace
       type: regular
       iscommand: false
@@ -404,3 +401,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
