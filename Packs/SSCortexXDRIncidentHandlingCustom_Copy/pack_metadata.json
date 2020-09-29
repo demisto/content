@@ -1,0 +1,14 @@
+{
+    "name": "_SS Cortex XDR Incident Handling Custom_copy",
+    "description": "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident.\n\nThe playbook syncs and updates new XDR alerts that construct the incident. It enriches indicators using Threat Intelligence integrations and Palo Alto Networks AutoFocus. The incident\u2019s severity is then updated based on the indicators reputation and an analyst is assigned for manual investigation. If chosen, automated remediation with Palo Alto Networks FireWall is initiated. After a manual review by the SOC analyst, the XDR incident is closed automatically.\n*** Note - The XDRSyncScript used by this playbook sets data in the XDR incident fields that were released to content from the Demisto server version 5.0.0.\n\nFor Demisto versions under 5.0.0, please follow the \u2018Palo Alto Networks Cortex XDR\u2019 documentation to upload the new fields manually.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Chaithanya K Sajja, Sanket Shah, Shane Markley",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T21:27:11Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

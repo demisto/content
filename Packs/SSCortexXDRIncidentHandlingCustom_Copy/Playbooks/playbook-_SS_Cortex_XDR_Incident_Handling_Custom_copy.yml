@@ -1,0 +1,1164 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 706548e1-9bae-4b12-82b1-ea26e28c1f2f
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR
+  incident. \nThe playbook syncs and updates new XDR alerts that construct the incident.
+  It enriches indicators using Threat Intelligence integrations and Palo Alto Networks
+  AutoFocus. The incident's severity is then updated based on the indicators reputation
+  and an analyst is assigned for manual investigation. If chosen, automated remediation
+  with Palo Alto Networks FireWall is initiated. After a manual review by the SOC
+  analyst, the XDR incident is closed automatically.\n\n*** Note - The XDRSyncScript
+  used by this playbook sets data in the XDR incident fields that were released to
+  content from the Demisto server version 5.0.0.\nFor Demisto versions under 5.0.0,
+  please follow the 'Palo Alto Networks Cortex XDR' documentation to upload the new
+  fields manually."
+id: 31f0bb4e-12cd-4523-82d1-8b2bc2dc5eed
+inputs: []
+name: _SS Cortex XDR Incident Handling Custom_copy
+outputs: []
+sourceplaybookid: Cortex XDR Incident Handling
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3950b70e-a795-4e11-89cb-ccfdda9ef46c
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 3950b70e-a795-4e11-89cb-ccfdda9ef46c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alert_count: {}
+      assigned_user_mail: {}
+      assigned_user_pretty_name: {}
+      description: {}
+      first: {}
+      high_severity_alert_count: {}
+      host_count: {}
+      incident_id:
+        simple: ${incident.xdrincidentid}
+      interval:
+        simple: "5"
+      low_severity_alert_count: {}
+      med_severity_alert_count: {}
+      notes: {}
+      playbook_to_run: {}
+      resolve_comment: {}
+      severity: {}
+      status: {}
+      user_count: {}
+      verbose: {}
+      xdr_alerts: {}
+      xdr_file_artifacts: {}
+      xdr_incident_from_previous_run: {}
+      xdr_incident_markdown_field: {}
+      xdr_network_artifacts: {}
+      xdr_url: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Syncs a single incident between Demisto and XDR. This script always
+        uses the xdr-get-incident-extra-data command and outputs to the context the
+        entire incident JSON. When the incident is updated in XDR, the Demisto incident
+        will be updated accordingly and the default playbook will rerun. When an incident
+        is updated in Demisto, the script will execute the xdr-update-incident command
+        and update the incident in XDR.
+      id: 3b55a37f-0ea5-4b52-81dd-26fa32753b88
+      iscommand: false
+      name: Perform XDR Alerts Sync with Incident
+      script: XDRSyncScript
+      type: regular
+      version: -1
+    taskid: 3b55a37f-0ea5-4b52-81dd-26fa32753b88
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assigned_user_mail: {}
+      assigned_user_pretty_name: {}
+      incident_id:
+        simple: ${incident.xdrincidentid}
+      manual_severity: {}
+      resolve_comment:
+        simple: Some comment here
+      status:
+        simple: RESOLVED_OTHER
+      unassign_user: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates one or more fields of a specified incident. Missing fields
+        are ignored. To remove the assignment for an incident, pass a null value in
+        assignee email argument.
+      id: 0c8bf856-0a69-4d70-872e-183077605610
+      iscommand: true
+      name: Close XDR incident
+      script: '|||xdr-update-incident'
+      type: regular
+      version: -1
+    taskid: 0c8bf856-0a69-4d70-872e-183077605610
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 155,
+          "y": 3080
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e1e247b5-7f1a-44a5-8133-9e6886e5b808
+      iscommand: false
+      name: File Analysis
+      type: title
+      version: -1
+    taskid: e1e247b5-7f1a-44a5-8133-9e6886e5b808
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Incident.file_artifacts.file_sha256
+                root: PaloAltoNetworksXDR
+                transformers:
+                - operator: uniq
+          operator: isExists
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "49"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 967f4bd1-b889-4b76-8ccb-0f8cf54651ec
+      iscommand: false
+      name: Are there files to analyze?
+      type: condition
+      version: -1
+    taskid: 967f4bd1-b889-4b76-8ccb-0f8cf54651ec
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "15":
+    continueonerror: true
+    id: "15"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      coverage: {}
+      filter_data: {}
+      id:
+        complex:
+          accessor: xdrfileartifacts.filesha256
+          root: incident
+          transformers:
+          - operator: uniq
+      os: {}
+      platforms: {}
+      sample_id:
+        complex:
+          accessor: xdrfileartifacts.filesha256
+          root: incident
+          transformers:
+          - operator: uniq
+      sections: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieve the sample analysis
+      id: ff4001a1-5dde-48e3-80b9-278a01cc2f55
+      iscommand: true
+      name: Perform file analysis with AutoFocus
+      script: '|||autofocus-sample-analysis'
+      type: regular
+      version: -1
+    taskid: ff4001a1-5dde-48e3-80b9-278a01cc2f55
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 515
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ae7b6f16-6fe1-4b4e-8639-29aa81b42995
+      iscommand: false
+      name: Analyst Manual Remediation
+      type: regular
+      version: -1
+    taskid: ae7b6f16-6fe1-4b4e-8639-29aa81b42995
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2850,
+          "y": 2490
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "23"
+      "Yes":
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 81ee7612-ce0a-49b5-8599-86e2e68d4f42
+      iscommand: false
+      name: Would you like to perform auto- remediation?
+      type: condition
+      version: -1
+    taskid: 81ee7612-ce0a-49b5-8599-86e2e68d4f42
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 2270
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8b291f4e-e63b-405e-8bf6-3aa3e937e17f
+      iscommand: false
+      name: Analyst Manual Review
+      type: regular
+      version: -1
+    taskid: 8b291f4e-e63b-405e-8bf6-3aa3e937e17f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3065,
+          "y": 2665
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+      mndadone: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: e08cac63-1ca6-4a40-8fc1-35c1092e5582
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: e08cac63-1ca6-4a40-8fc1-35c1092e5582
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 155,
+          "y": 3255
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      taskID:
+        simple: ${XDRSyncScriptTaskID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This stops the scheduled task whose ID is given in the taskID argument.
+      id: 02f0d28d-c85c-48e6-8e25-96250e3af9dd
+      iscommand: false
+      name: Stop XDR Alert Sync with Incident
+      script: StopScheduledTask
+      type: regular
+      version: -1
+    taskid: 02f0d28d-c85c-48e6-8e25-96250e3af9dd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3030,
+          "y": 2070
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 93c277bb-77cf-48a9-826a-f1a91355223f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 93c277bb-77cf-48a9-826a-f1a91355223f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 155,
+          "y": 3480
+        }
+      }
+  "31":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Autofocus
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AutoFocus V2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 954e6777-ff3c-4569-897a-f52f330761b0
+      iscommand: false
+      name: Is AutoFocus Integration enabled?
+      type: condition
+      version: -1
+    taskid: 954e6777-ff3c-4569-897a-f52f330761b0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 752.5,
+          "y": 340
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "False"
+      CustomURLCategory: {}
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          accessor: Address
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: IP.Malicious
+              operator: isExists
+          root: IP
+          transformers:
+          - operator: uniq
+      IPListName: {}
+      LogForwarding: {}
+      Miner: {}
+      StaticAddressGroup: {}
+      URL:
+        complex:
+          accessor: Data
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: URL.Malicious
+              operator: isExists
+          root: URL
+          transformers:
+          - operator: uniq
+      URLListName: {}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This Playbook performs malicious IOC remediation using Palo Alto
+        Networks integrations.
+      id: 9eccec5a-c3ab-4a7c-8f03-b2dc14c24a09
+      iscommand: false
+      name: Palo Alto Networks - Malware Remediation
+      playbookName: Palo Alto Networks - Malware Remediation
+      type: playbook
+      version: -1
+    taskid: 9eccec5a-c3ab-4a7c-8f03-b2dc14c24a09
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 3280,
+          "y": 2490
+        }
+      }
+  "39":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VirusTotal
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VirusTotal
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "54"
+      "yes":
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 07bfcc09-fdaf-4822-89a9-880dc1088399
+      iscommand: false
+      name: Is VirusTotal Integration enabled?
+      type: condition
+      version: -1
+    taskid: 07bfcc09-fdaf-4822-89a9-880dc1088399
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 1640
+        }
+      }
+  "40":
+    continueonerror: true
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "54"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file:
+        simple: ${incident.xdrfileartifacts.filesha256}
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VirusTotal
+      description: Checks the file reputation of the specified hash.
+      id: d63a73a3-8388-4201-88a7-9594176ecc07
+      iscommand: true
+      name: Perform file analysis with VirusTotal
+      script: VirusTotal|||file
+      type: regular
+      version: -1
+    taskid: d63a73a3-8388-4201-88a7-9594176ecc07
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 1830
+        }
+      }
+  "45":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Reviewed.Answers.0}
+          operator: isEqualString
+          right:
+            value:
+              simple: Unisolate the endpoint
+      label: Unisolate
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Reviewed.Answers.0}
+          operator: isEqualString
+          right:
+            value:
+              simple: Keep the endpoint isolated and notify user
+      label: Keep isolated
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Reviewed.Answers.0}
+          operator: isEqualString
+          right:
+            value:
+              simple: Escalate the incident to another analyst
+      label: Escalate
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      Escalate:
+      - "48"
+      Keep isolated:
+      - "47"
+      Unisolate:
+      - "46"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 66865aa1-8609-43e5-8d8b-14a93f6b6bdb
+      iscommand: false
+      name: Analyst decision
+      type: condition
+      version: -1
+    taskid: 66865aa1-8609-43e5-8d8b-14a93f6b6bdb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 155,
+          "y": 2430
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      endpoint_id:
+        simple: 9c077b5936ad4f32bab99d1e1b2eafe6
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex XDR - IR
+      description: Reverses the isolation of an endpoint.
+      id: e58611af-4663-4b07-8fd3-e08dff7bf094
+      iscommand: true
+      name: Unisolate the Endpoint
+      script: Cortex XDR - IR|||xdr-unisolate-endpoint
+      type: regular
+      version: -1
+    taskid: e58611af-4663-4b07-8fd3-e08dff7bf094
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 2640
+        }
+      }
+  "47":
+    id: "47"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject: {}
+      templateParams: {}
+      to:
+        simple: bob@cortex-xdr.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 0e039d65-839a-4a78-8715-e73fe1ef14d9
+      iscommand: true
+      name: Keep Isolated
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 0e039d65-839a-4a78-8715-e73fe1ef14d9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 2640
+        }
+      }
+  "48":
+    id: "48"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 51e3df07-6acc-4ec5-88ff-04b14c278c4a
+      iscommand: false
+      name: Escalate Incident
+      type: regular
+      version: -1
+    taskid: 51e3df07-6acc-4ec5-88ff-04b14c278c4a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 2630
+        }
+      }
+  "49":
+    id: "49"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hash:
+        complex:
+          accessor: Incident.file_artifacts.file_sha256
+          root: PaloAltoNetworksXDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: WildFire-v2
+      description: Returns a verdict for a hash.
+      id: 749e4808-bfe3-4397-8ea0-b5d866c44a85
+      iscommand: true
+      name: Send file to Wildfire for analysis
+      script: WildFire-v2|||wildfire-get-verdict
+      type: regular
+      version: -1
+    taskid: 749e4808-bfe3-4397-8ea0-b5d866c44a85
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 760
+        }
+      }
+  "50":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PaloAltoNetworksXDR.Incident.file_artifacts.file_wildfire_verdict
+          operator: inList
+          right:
+            value:
+              simple: GRAYWARE, MALWARE
+      label: GRAYWARE or MALWARE
+    id: "50"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "53"
+      GRAYWARE or MALWARE:
+      - "51"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2ba87ce6-35a2-48be-8c50-e1357b110258
+      iscommand: false
+      name: Is the file Grayware Malware or Benign?
+      type: condition
+      version: -1
+    taskid: 2ba87ce6-35a2-48be-8c50-e1357b110258
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 980
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "52"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hi Bob,
+
+          We just received an endpoint alert from your Laptop/Desktop. It looks like a malicious application was attempting to install on your system.
+
+          For security reasons, your Laptop/Desktop has been isolated. What this means is that your machine cannot go online, or communicate with any other device on the network.
+
+          If you need any assistance, please call IT Security at 1-800-PALO-XDR or email itsecurity@cortex-xdr.com if you can using another device.
+
+          IT Security is investigating, and will contact you soon.
+
+          Regards,
+          IT Security
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: Your Laptop/Desktop has been Isolated
+      templateParams: {}
+      to:
+        simple: bob@cortex-xdr.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 92b3304a-4a46-4442-8550-1fbec4e1b7ca
+      iscommand: true
+      name: Send email to victim
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 92b3304a-4a46-4442-8550-1fbec4e1b7ca
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 1260
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      endpoint_id:
+        simple: 9c077b5936ad4f32bab99d1e1b2eafe6
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Isolates the specified endpoint.
+      id: 77e68347-9208-4456-8752-cbe96bf83456
+      iscommand: true
+      name: Isolate machine
+      script: '|||xdr-isolate-endpoint'
+      type: regular
+      version: -1
+    taskid: 77e68347-9208-4456-8752-cbe96bf83456
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 1455
+        }
+      }
+  "53":
+    id: "53"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7ceced85-21d7-4fca-825f-0c334da3c7db
+      iscommand: false
+      name: Not Malware or Grayware
+      type: regular
+      version: -1
+    taskid: 7ceced85-21d7-4fca-825f-0c334da3c7db
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1455
+        }
+      }
+  "54":
+    form:
+      description: |
+        Please review the incident in XDR and make a choice below.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: "Virustotal info: \nAutofocus info\nUsername: ${incident.labels.users}\nComputer/hostname:
+            ${incident.labels.hosts}\nWildfire ${WildFire.[0].Verdicts.SHA256} ${
+            WildFire.Verdicts.[0].VerdictDescription}\n\nWhat action would you like
+            to take next?"
+        options:
+        - Unisolate the endpoint
+        - Keep the endpoint isolated and notify user
+        - Escalate the incident to another analyst
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: multiSelect
+      sender: Your SOC team
+      title: Reviewed
+      totalanswers: 0
+    formDisplay:
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+    id: "54"
+    ignoreworker: false
+    message:
+      bcc: null
+      body:
+        complex:
+          accessor: Incident.xdr_url
+          root: PaloAltoNetworksXDR
+      cc: null
+      format: html
+      methods:
+      - email
+      subject:
+        simple: New XDR incident has been created and endpoint isolated
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: itsecurity@cortex-xdr.com
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Perform manual investigation of the XDR incident. Enter the Cortex
+        XDR Incident page through the `https://sanket.xdr.us.paloaltonetworks.com/incidents`
+        incident field. Analyze the incident alerts, and perform the necessary remediation
+        steps.
+      id: aa358e8d-798a-4e9f-84c7-322c2d0b370e
+      iscommand: false
+      name: Analyst Manual Investigation
+      type: collection
+      version: -1
+    taskid: aa358e8d-798a-4e9f-84c7-322c2d0b370e
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 2000
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "31_15_yes": 0.66
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3495,
+        "width": 4000,
+        "x": -340,
+        "y": 50
+      }
+    }
+  }
