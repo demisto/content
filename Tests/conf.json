@@ -13,6 +13,12 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "RiskIQDigitalFootprint",
+            "playbookID": "RiskIQDigitalFootprint-Test",
+            "fromversion": "5.5.0",
+            "timeout": 500
+        },
+        {
             "integrations": [
                 "Mail Listener v2",
                 "Mail Sender (New)"
