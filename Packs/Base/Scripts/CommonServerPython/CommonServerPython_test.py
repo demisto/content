@@ -15,8 +15,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT, \
-    get_demisto_version_as_str, get_x_content_info_headers
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers
 
 try:
     from StringIO import StringIO
@@ -2106,7 +2105,8 @@ INDICATOR_VALUE_AND_TYPE = [
     ('2001:db8:0000:0000:0000:0000:0000:0000', 'IPv6'),
     ('112.126.94.107', 'IP'),
     ('a', None),
-    ('*castaneda-thornton.com', 'DomainGlob')
+    ('*castaneda-thornton.com', 'DomainGlob'),
+    ('53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b', 'File')
 ]
 
 
@@ -2333,8 +2333,6 @@ def test_merge_lists():
                          [
                              ({'version': '5.5.0'}, False),
                              ({'version': '6.0.0'}, True),
-                             ({'version': '5.5.0', 'buildNumber': MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT}, True),
-                             ({'version': '5.5.0', 'buildNumber': str(int(MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT) - 1)}, False)
                          ]
                          )
 def test_is_versioned_context_available(mocker, version, expected):

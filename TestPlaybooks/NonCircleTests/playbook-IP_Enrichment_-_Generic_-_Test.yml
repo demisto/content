@@ -1,6 +1,6 @@
 id: ip_enrichment_generic_test
 version: -1
-fromversion: 3.5.0
+fromversion: 5.0.0
 name: IP Enrichment - Generic - Test
 starttaskid: "0"
 tasks:
