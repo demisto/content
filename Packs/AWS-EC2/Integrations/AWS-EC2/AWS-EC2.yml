@@ -3288,14 +3288,14 @@ script:
       secret: false
     - default: false
       description: The start of port range for the TCP and UDP protocols. In case
-        ipProtocol is specified, This argument will be ignored.
+        ipProtocol is specified, this argument will be ignored.
       isArray: false
       name: fromPort
       required: false
       secret: false
     - default: false
       description: The end of port range for the TCP and UDP protocols. In case
-        ipProtocol is specified, This argument will be ignored.
+        ipProtocol is specified, this argument will be ignored.
       isArray: false
       name: toPort
       required: false
@@ -3463,14 +3463,14 @@ script:
       secret: false
     - default: false
       description: The start of port range for the TCP and UDP protocols. In case
-        ipProtocol is specified, This argument will be ignored.
+        ipProtocol is specified, this argument will be ignored.
       isArray: false
       name: fromPort
       required: false
       secret: false
     - default: false
       description: The end of port range for the TCP and UDP protocols. In case
-        ipProtocol is specified, This argument will be ignored.
+        ipProtocol is specified, this argument will be ignored.
       isArray: false
       name: toPort
       required: false
