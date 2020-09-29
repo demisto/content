@@ -788,11 +788,6 @@ script:
       description: Device IDs on which an indicator ran.
       type: string
     name: cs-device-ran-on
-  dockerimage: demisto/python3:3.8.5.11789
-      secret: false
-    deprecated: false
-    description: Refreshes a session timeout on a single host.
-    execution: false
   - arguments:
     - default: false
       description: The query for which to filter.
