@@ -34,9 +34,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Central repository to report and identify IP addresses that have been
-  associated with malicious activity online. Check the Detailed Information section
-  for more information on how to configure the integration.
+description: Central repository to report and identify IP addresses that have been associated with malicious activity online. Check the Detailed Information section for more information on how to configure the integration.
 display: AbuseIPDB
 name: AbuseIPDB
 script:
@@ -58,8 +56,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: The length of the report. "true" returns the full report, "false"
-        does not return reported categories. Default is "true".
+      description: The length of the report. "true" returns the full report, "false" does not return reported categories. Default is "true".
       isArray: false
       name: verbose
       predefined:
@@ -69,8 +66,7 @@ script:
       secret: false
     - default: false
       defaultValue: '80'
-      description: The minimum score from AbuseIPDB to consider whether the IP address
-        is malicious (must be greater than 20). Default is 80.
+      description: The minimum score from AbuseIPDB to consider whether the IP address is malicious (must be greater than 20). Default is 80.
       isArray: false
       name: threshold
       required: false
@@ -154,8 +150,7 @@ script:
       secret: false
     - default: false
       defaultValue: '80'
-      description: The minimum score from AbuseIPDB to consider whether the IP address
-        is malicious (must be greater than 20). Default is 80.
+      description: The minimum score from AbuseIPDB to consider whether the IP address is malicious (must be greater than 20). Default is 80.
       isArray: false
       name: threshold
       required: false
@@ -248,8 +243,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to save a list of blacklisted IPs in the Context Data in
-        Demisto. Default is false.
+      description: Whether to save a list of blacklisted IPs in the Context Data in Demisto. Default is false.
       isArray: false
       name: saveToContext
       predefined:
@@ -282,3 +276,4 @@ script:
   type: python
 tests:
 - AbuseIPDB Test
+fromversion: 5.0.0

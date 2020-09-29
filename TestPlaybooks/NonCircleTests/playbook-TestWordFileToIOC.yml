@@ -1,5 +1,6 @@
 id: TestWordFileToIOC
 version: -1
+fromversion: 5.0.0
 name: TestWordFileToIOC
 description: Creates a test docx word file, parses it and runs various IOC extraction
   tasks.
