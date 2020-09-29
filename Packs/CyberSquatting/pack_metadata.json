@@ -1,0 +1,14 @@
+{
+    "name": "Cyber Squatting",
+    "description": "Detecting Cyber squatting with XSOAR and OSINT tools",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "vermamanoj",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T20:44:16Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
