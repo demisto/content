@@ -1084,6 +1084,31 @@ script:
     description: Cisco email security get list entries
     execution: false
     name: cisco-email-security-list-entries-get
+    outputs:
+    - contextPath: CiscoEmailSecurity.ListEntries.Safelist.senderList
+      description: The safelist sender list.
+      type: String
+    - contextPath: CiscoEmailSecurity.ListEntries.Safelist.recipientAddresses
+      description: The safelist recipient addresses of sender list.
+      type: String
+    - contextPath: CiscoEmailSecurity.ListEntries.Safelist.recipientList
+      description: The safelist recipient list.
+      type: String
+    - contextPath: CiscoEmailSecurity.ListEntries.Safelist.senderAddresses
+      description: The safelist sender addresses of recipient list.
+      type: Number
+    - contextPath: CiscoEmailSecurity.ListEntries.Blocklist.senderList
+      description: The blocklist sender list.
+      type: String
+    - contextPath: CiscoEmailSecurity.ListEntries.Blocklist.recipientAddresses
+      description: The blocklist recipient addresses of sender list.
+      type: String
+    - contextPath: CiscoEmailSecurity.ListEntries.Blocklist.recipientList
+      description: The blocklist recipient list.
+      type: String
+    - contextPath: CiscoEmailSecurity.ListEntries.Blocklist.senderAddresses
+      description: The blocklist sender addresses of recipient list.
+      type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
