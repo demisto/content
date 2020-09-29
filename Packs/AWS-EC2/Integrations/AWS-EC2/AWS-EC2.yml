@@ -3287,13 +3287,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The start of port range for the TCP and UDP protocols.
+      description: The start of port range for the TCP and UDP protocols. In case
+        ipProtocol is specified, This argument will be ignored.
       isArray: false
       name: fromPort
       required: false
       secret: false
     - default: false
-      description: The end of port range for the TCP and UDP protocols.
+      description: The end of port range for the TCP and UDP protocols. In case
+        ipProtocol is specified, This argument will be ignored.
       isArray: false
       name: toPort
       required: false
@@ -3460,13 +3462,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The start of port range for the TCP and UDP protocols.
+      description: The start of port range for the TCP and UDP protocols. In case
+        ipProtocol is specified, This argument will be ignored.
       isArray: false
       name: fromPort
       required: false
       secret: false
     - default: false
-      description: The end of port range for the TCP and UDP protocols.
+      description: The end of port range for the TCP and UDP protocols. In case
+        ipProtocol is specified, This argument will be ignored.
       isArray: false
       name: toPort
       required: false
@@ -3478,7 +3482,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to specify all protocols.
+      description: The IP protocol name (tcp , udp , icmp) or number. Use -1 to specify all protocols.
       isArray: false
       name: ipProtocol
       required: false
