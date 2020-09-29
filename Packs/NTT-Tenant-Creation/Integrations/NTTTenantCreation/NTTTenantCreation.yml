@@ -1,0 +1,40 @@
+category: Utilities
+commonfields:
+  id: NTT-Tenant-Creation
+  version: -1
+configuration:
+- defaultvalue: https://soarmaster01.Addhost.net
+  display: XSOAR Master URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: "00000000000000"
+  display: XSOAR Master API Key
+  name: apikey
+  required: true
+  type: 4
+description: Create NTT Tenant as per inputs from Service Now Incidents.
+display: NTT-Tenant-Creation
+name: NTT-Tenant-Creation
+script:
+  commands:
+  - arguments:
+    - description: 'Customer ID of Customer '
+      name: Customer_Id
+      required: true
+    - description: Short Name of customer
+      name: Customer_Name
+      required: true
+    - description: Host where you want to host the Tenant
+      name: XSOAR_Host
+      required: true
+    description: Create NTT Tenant as per Service Now Incidents.
+    name: NTT-Tenant-Creation
+  dockerimage: demisto/python3:3.7.4.2245
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

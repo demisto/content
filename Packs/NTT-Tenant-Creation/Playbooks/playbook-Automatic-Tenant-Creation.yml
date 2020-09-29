@@ -1,0 +1,264 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Automatic-Tenant-Creation
+inputs: []
+name: Automatic-Tenant-Creation
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 809efbe0-b6bc-49a4-8355-e9e7cfe33e95
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 809efbe0-b6bc-49a4-8355-e9e7cfe33e95
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: xsoarhost=
+      listName:
+        simple: XSOAR-Hosts
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Get a list from lists repository
+      id: 7a37f987-4c8c-4c9d-8e01-30431eea586f
+      iscommand: true
+      name: Get - XSOAR Host List
+      script: Builtin|||getList
+      type: regular
+      version: -1
+    taskid: 7a37f987-4c8c-4c9d-8e01-30431eea586f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Customer_Id:
+        complex:
+          accessor: labels.u_client_id}
+          root: ${incident
+      Customer_Name:
+        complex:
+          accessor: labels.u_lgc_company}
+          root: ${incident
+          transformers:
+          - args:
+              to:
+                value:
+                  simple: '-'
+            operator: substringTo
+          - args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '-'
+              toReplace:
+                value:
+                  simple: ' '
+            operator: replace
+      XSOAR_Host:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: xsoarhost
+              operator: containsGeneral
+              right:
+                value:
+                  simple: ${Xhost}
+          root: xsoarhost
+          transformers:
+          - args:
+              from:
+                value:
+                  simple: ${Xhost}
+            operator: substringFrom
+          - args:
+              to:
+                value:
+                  simple: ','
+            operator: substringTo
+          - args:
+              from:
+                value:
+                  simple: '-'
+            operator: substringFrom
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: NTT-Tenant-Creation
+      description: Create NTT Tenant as per Service Now Incidents.
+      id: 5c310838-b797-4c3f-8cfb-9db656241e84
+      iscommand: true
+      name: Create Tenant
+      script: NTT-Tenant-Creation|||NTT-Tenant-Creation
+      type: regular
+      version: -1
+    taskid: 5c310838-b797-4c3f-8cfb-9db656241e84
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: Xhost
+      stringify: {}
+      value:
+        complex:
+          accessor: labels.short_description}
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ${incident.labels.short_description}
+              operator: containsGeneral
+              right:
+                value:
+                  simple: Region
+          root: ${incident
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: ':'
+            operator: split
+          - args:
+              index:
+                value:
+                  simple: "1"
+            operator: atIndex
+          - operator: trim
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: df8e8307-cc84-4781-893d-00516a7252a9
+      iscommand: false
+      name: Get HOST Region
+      script: Set
+      type: regular
+      version: -1
+    taskid: df8e8307-cc84-4781-893d-00516a7252a9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 6cdd660d-e51f-4dbb-8ab9-853d715b3350
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 6cdd660d-e51f-4dbb-8ab9-853d715b3350
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0

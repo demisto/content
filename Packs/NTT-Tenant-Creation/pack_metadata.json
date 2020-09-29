@@ -1,0 +1,14 @@
+{
+    "name": "NTT-Tenant-Creation",
+    "description": "This contains the XSOAR-Tenant-Creation Integration and Playbook. You will have to map the incoming Service Now incident accordingly in XSOAR, so that the playbook can be triggered.\nYou will have to create list in XSOAR with Host and region name.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ashish Bansal",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T18:46:32Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
