@@ -319,7 +319,6 @@ def test_module(client: Client) -> str:
             raise e
     except Exception as e:
         return f'Verification Error: could not load XM Cyber version.\n{e}'
-
     return 'ok'
 
 
@@ -499,8 +498,6 @@ def main() -> None:
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
-    msg = f'Command being called is {demisto.command()}'
-    demisto.log(msg)
     try:
         headers = {
             'X-Api-Key': api_key,
