@@ -1,0 +1,855 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: The Code42 Exfiltration playbook acts on Code42 Security Alerts, retrieves
+  file event data, and allows security teams to remediate file exfiltration events
+  by revoking access rights to cloud files or containing endpoints.
+id: XSOAR Data Exfiltration Response Playbook
+inputs:
+- description: Maximum number of network hosts to contain.
+  key: ContainHostsMax
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "2"
+- description: URL of Demisto instance for emails.
+  key: DemistoInstanceURL
+  playbookInputQuery:
+  required: false
+  value:
+    simple: https://dagobah.demisto.works/
+name: XSOAR Data Exfiltration Response Playbook
+outputs: []
+rolename:
+- Administrator
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "37"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ab4c0d6a-996e-415c-8f44-8a76d279ca15
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: ab4c0d6a-996e-415c-8f44-8a76d279ca15
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+      - "34"
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 97d515c7-feb7-48bc-80a6-f7b0c7f111fc
+      iscommand: false
+      name: Start Remediation Timer
+      tags:
+      - exfiltration
+      type: title
+      version: -1
+      description: ''
+    taskid: 97d515c7-feb7-48bc-80a6-f7b0c7f111fc
+    timertriggers:
+    - action: start
+      fieldname: remediationsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b6a7b214-a52b-48cc-8c0b-bc966c11ff90
+      iscommand: false
+      name: Malicious Behavior Determined
+      type: title
+      version: -1
+      description: ''
+    taskid: b6a7b214-a52b-48cc-8c0b-bc966c11ff90
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+  "8":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Resolve Code42 Alert
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: ${incident.labels.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 558246bf-8d13-4531-8aa4-0ef7a3f073dd
+      iscommand: true
+      name: Resolve Code42 Alert
+      script: '|||code42-alert-resolve'
+      type: regular
+      version: -1
+    taskid: 558246bf-8d13-4531-8aa4-0ef7a3f073dd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1680
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1905e906-499f-4c14-8ec1-9c02eb6ef22a
+      iscommand: false
+      name: Stop Remediation Timer
+      type: title
+      version: -1
+      description: ''
+    taskid: 1905e906-499f-4c14-8ec1-9c02eb6ef22a
+    timertriggers:
+    - action: stop
+      fieldname: remediationsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1535
+        }
+      }
+  "11":
+    continueonerror: true
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Locate endpoint
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      alias_name: {}
+      dist_name: {}
+      endpoint_id_list:
+        simple: e58304fffbeb4e428255b63a16be03ba
+      first_seen_gte: {}
+      first_seen_lte: {}
+      group_name: {}
+      hostname:
+        complex:
+          accessor: code42fileevents.oshostname
+          root: incident
+          transformers:
+          - operator: uniq
+      ip_list: {}
+      isolate: {}
+      last_seen_gte: {}
+      last_seen_lte: {}
+      limit: {}
+      page: {}
+      platform: {}
+      sort_by: {}
+      sort_order: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a list of endpoints, according to the passed filters. Filtering
+        by multiple fields will be concatenated using AND condition (OR is not supported).
+        Maximum result set size is 100. Offset is the zero-based number of endpoint
+        from the start of the result set (start by counting from 0).
+      id: 0f32d425-9cc9-4d07-891c-624126d028b2
+      iscommand: true
+      name: Locate XDR host
+      script: '|||xdr-get-endpoints'
+      type: regular
+      version: -1
+    taskid: 0f32d425-9cc9-4d07-891c-624126d028b2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1010
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: UserManagerEmail
+          operator: isExists
+      label: "yes"
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "33"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ce5fa797-bd44-48ba-8ebe-62cbe6f986e5
+      iscommand: false
+      name: Does Manager Email Exist?
+      type: condition
+      version: -1
+    taskid: ce5fa797-bd44-48ba-8ebe-62cbe6f986e5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      exposure: {}
+      hash: {}
+      hostname: {}
+      json: {}
+      results: {}
+      username:
+        simple: john.anderson@qrstinc.com
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Searches for a file in Security Data by JSON query, hash, username,
+        device hostname, exfiltration type, or a combination of parameters. At least
+        one argument must be passed in the command. If a JSON argument is passed,
+        it will be used to the exclusion of other parameters, otherwise parameters
+        will be combined with an AND clause.
+      id: 3e02d758-1c36-4c82-8710-709260aef061
+      iscommand: true
+      name: Retrieve alert details
+      script: '|||code42-securitydata-search'
+      type: regular
+      version: -1
+    taskid: 3e02d758-1c36-4c82-8710-709260aef061
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: All stakeholders have been updated
+      closeReason:
+        simple: Endpoint contained. Manager updated
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        complex:
+          accessor: id
+          root: incident
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 97ca62de-2914-474a-875c-ef3599470351
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 97ca62de-2914-474a-875c-ef3599470351
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2205
+        }
+      }
+  "29":
+    continueonerror: true
+    evidencedata:
+      customfields: {}
+      description:
+        simple: alert the manager
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Data exfiltration activity has been detected by Code42 for user ${incident.labels.actor}. File exfiltration details:
+
+          Files:
+          ${incident.code42fileevents.filename}
+
+          Paths:
+          ${incident.code42fileevents.filepath}
+
+          Exposures:
+          ${incident.code42fileevents.exposure}
+
+          If you have access to Demisto, you can view the incident details at ${inputs.DemistoInstanceURL}#/incident/${incident.id}
+      bodyType: {}
+      cc: {}
+      flag: {}
+      from: {}
+      headers: {}
+      htmlBody: {}
+      importance: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: ${incident.name}
+      templateParams: {}
+      to:
+        simple: ${UserManagerEmail}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: db8644e3-685d-4b27-884e-5cc2aca7d233
+      iscommand: true
+      name: Send email to manager
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: db8644e3-685d-4b27-884e-5cc2aca7d233
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1185
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ea60127b-366c-4a94-85db-339b32ca66c5
+      iscommand: false
+      name: Confirm Remediation Is Complete
+      type: regular
+      version: -1
+    taskid: ea60127b-366c-4a94-85db-339b32ca66c5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1360
+        }
+      }
+  "32":
+    continueonerror: true
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Isolate endpoint
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: |-
+          The isolation request has been submitted successfully on Endpoint e09d468dd74cfb4ad1480b6fc2a6773b.
+          To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list=e09d468dd74cfb4ad1480b6fc2a6773b and look at the [is_isolated] field.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 8e5692e7-d0b4-4dfd-8dab-904a2951d21f
+      iscommand: false
+      name: Cortex XDR Network Contain
+      script: Print
+      type: regular
+      version: -1
+    taskid: 8e5692e7-d0b4-4dfd-8dab-904a2951d21f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1185
+        }
+      }
+  "33":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Mail Sender (New)
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+        - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: EWS Mail Sender
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+        - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Gmail
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: df73e338-6ae3-4d35-8d01-76e97fc62866
+      iscommand: false
+      name: Is email integration enabled?
+      type: condition
+      version: -1
+    taskid: df73e338-6ae3-4d35-8d01-76e97fc62866
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1010
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 657fc1fc-1430-408d-8e3e-6dd0d3d8228d
+      iscommand: false
+      name: 67c4f402-755b-4fb9-8d0d-4981167a6ecf
+      playbookId: 67c4f402-755b-4fb9-8d0d-4981167a6ecf
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 657fc1fc-1430-408d-8e3e-6dd0d3d8228d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+  "35":
+    continueonerror: true
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name: {}
+      type: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        A script to generate investigation summary report in an automated way
+        Can be used in post-processing flow as well.
+      id: 224d2d54-c200-474e-824b-6ccde86e380d
+      iscommand: false
+      name: Generate Investigation Summary Report
+      script: GenerateInvestigationSummaryReport
+      type: regular
+      version: -1
+    taskid: 224d2d54-c200-474e-824b-6ccde86e380d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1855
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      bodyType: {}
+      cc: {}
+      flag: {}
+      from: {}
+      headers: {}
+      htmlBody: {}
+      importance: {}
+      raw_message: {}
+      replyTo: {}
+      subject: {}
+      templateParams: {}
+      to:
+        simple: pramukh@demisto.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 1b2f7a11-d17e-42fb-8348-caf08a541201
+      iscommand: true
+      name: Email summary report to the cross functional teams
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 1b2f7a11-d17e-42fb-8348-caf08a541201
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2030
+        }
+      }
+  "37":
+    continueonerror: true
+    defaultassigneecomplex: {}
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assignBy: {}
+      email: {}
+      onCall: {}
+      roles: {}
+      username:
+        simple: admin
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      id: a7ca53cc-d97e-40c9-8606-d8ff72c5e548
+      iscommand: false
+      name: Assign Incident Owner
+      script: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: a7ca53cc-d97e-40c9-8606-d8ff72c5e548
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 220
+        }
+      }
+  "38":
+    continueonerror: true
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      left:
+        simple: "1"
+      right:
+        simple: "1"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: cc42ce89-d3ae-4527-8da9-b8e9b7f5b447
+      iscommand: false
+      name: 'Is the employee part of the executive team ? '
+      script: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: cc42ce89-d3ae-4527-8da9-b8e9b7f5b447
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 515
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: ${incident.id}
+      name:
+        simple: Investigate employee
+      playbookName:
+        simple: Insider threat investigation
+      restricted: {}
+      roles:
+        simple: Administrator
+      usernames:
+        simple: admin,demisto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.add.child
+      id: fa7d4d11-8fbc-4f45-82ca-acb519307eb7
+      iscommand: true
+      name: Create a child investigation and reduce the scope of investigation
+      script: Builtin|||addChildInvestigation
+      type: regular
+      version: -1
+    taskid: fa7d4d11-8fbc-4f45-82ca-acb519307eb7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 700
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2250,
+        "width": 1810,
+        "x": -460,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
