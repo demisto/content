@@ -1,0 +1,51 @@
+args:
+- description: ' The existing JSON containing all Key/Value pairs for an existing
+    user in SFDC'
+  name: MirroredUserJSONString
+  required: true
+- description: The email address of the new user we are creating
+  name: Username
+  required: true
+- description: The nickname of the new user we are creating
+  name: CommunityNickname
+  required: true
+- description: First Name of the new user
+  name: FirstName
+- description: Last Name of the new user
+  name: LastName
+- description: Alias of the new user
+  name: Alias
+- description: Email of the new user
+  name: Email
+- description: Phone number of the new user
+  name: Phone
+- description: Mobile Phone number of the new user
+  name: MobilePhone
+- description: Employee  number of the new user
+  name: EmployeeNumber
+- description: The address of the new user
+  name: Address
+comment: 'This task takes in an existing JSON containing all Key/Value pairs for an
+  existing user in SFDC.  It then updates the username, email, first name, nickname,
+  etc. to match the values for the new user. '
+commonfields:
+  id: CreateNewUserJsonFromClone
+  version: -1
+dockerimage: demisto/python3:3.8.5.10845
+enabled: true
+name: CreateNewUserJsonFromClone
+outputs:
+- contextPath: ClonedUserJsonString
+  description: This is the JSON with the new user details taken from the mirrored
+    user. Can be used in a POST command to create a new user in Salesforce
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
