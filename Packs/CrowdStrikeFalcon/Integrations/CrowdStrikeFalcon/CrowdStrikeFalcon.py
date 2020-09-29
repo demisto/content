@@ -1031,13 +1031,14 @@ def get_username_uuid(username: str):
     return resources[0]
 
 
-def resolve_detection(ids, status, assigned_to_uuid, show_in_ui):
+def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
     """
         Sends a resolve detection request
         :param ids: Single or multiple ids in an array string format
         :param status: New status of the detection
         :param assigned_to_uuid: uuid to assign the detection to
         :param show_in_ui: Boolean flag in string format (true/false)
+        :param comment: Optional comment to add to the detection
         :return: Resolve detection response json
     """
     payload = {
@@ -1049,6 +1050,8 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui):
         payload['assigned_to_uuid'] = assigned_to_uuid
     if show_in_ui:
         payload['show_in_ui'] = show_in_ui
+    if comment:
+        payload['comment'] = comment
     # We do this so show_in_ui value won't contain ""
     data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"',
                                                                                                '"show_in_ui": true')
@@ -1291,21 +1294,17 @@ def resolve_detection_command():
     """
     args = demisto.args()
     ids = argToList(args.get('ids'))
-    usernames = argToList(args.get('username'))
-    if usernames and ids:
-        raise ValueError('Only one of the arguments ids or username should be provided, not both.')
-    if not usernames and not ids:
-        raise ValueError('One of the arguments ids or username must be provided, none given.')
-    if usernames:
-        ids = []
-        for username in usernames:
-            username_uuid = get_username_uuid(username)
-            ids.append(username_uuid)
+    username = args.get('username')
+    assigned_to_uuid = args.get('assigned_to_uuid')
+    comment = args.get('comment')
+    if username and assigned_to_uuid:
+        raise ValueError('Only one of the arguments assigned_to_uuid or username should be provided, not both.')
+    if username:
+        assigned_to_uuid = get_username_uuid(username)
 
     status = args.get('status')
-    assigned_to_uuid = args.get('assigned_to_uuid')
     show_in_ui = args.get('show_in_ui')
-    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui)
+    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment)
     args.pop('ids')
     hr = "Detection {0} updated\n".format(str(ids)[1:-1])
     hr += 'With the following values:\n'
@@ -1906,6 +1905,45 @@ def refresh_session_command():
     return create_entry_object(contents=response, hr=f'CrowdStrike Session Refreshed: {session_id}')
 
 
+def build_url_filter_for_device_id(args):
+    indicator_type = args.get('type')
+    indicator_value = args.get('value')
+    url_filter = f'/indicators/queries/devices/v1?type={indicator_type}&value={indicator_value}'
+    return url_filter
+
+
+def build_error_message(raw_res):
+    if raw_res.get('errors'):
+        error_data = raw_res.get('errors')[0]
+    else:
+        error_data = {"code": 'None', "message": 'something got wrong, please try again'}
+    error_code = error_data.get('code')
+    error_message = error_data.get('message')
+    return f'Error: error code: {error_code}, error_message: {error_message}.'
+
+
+def validate_response(raw_res):
+    return 'resources' in raw_res.keys()
+
+
+def get_indicator_device_id():
+    args = demisto.args()
+    url_filter = build_url_filter_for_device_id(args)
+    raw_res = http_request('GET', url_filter)
+    context_output = ''
+    if validate_response(raw_res):
+        context_output = raw_res.get('resources')
+    else:
+        error_message = build_error_message(raw_res)
+        return_error(error_message)
+    return CommandResults(
+        readable_output=context_output,
+        outputs_prefix='CrowdStrike.DeviceID',
+        outputs_key_field='DeviceID',
+        outputs=context_output
+    )
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -1920,6 +1958,8 @@ def main():
         if demisto.command() == 'test-module':
             get_token(new_token=True)
             demisto.results('ok')
+        elif demisto.command() == 'cs-device-ran-on':
+            return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':
             demisto.results(search_device_command())
         elif demisto.command() == 'cs-falcon-get-behavior':
