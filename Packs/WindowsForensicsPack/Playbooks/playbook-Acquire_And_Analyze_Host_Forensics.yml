@@ -1,0 +1,149 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: This playbook allows both the gathering of forensic data from a host
+  and the analysis of the acquired data by using the relevant forensics automations.
+id: Acquire And Analyze Host Forensics
+inputs: []
+name: Acquire And Analyze Host Forensics
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f3d8ffba-8c7a-4ab0-8c2d-c97699634359
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: f3d8ffba-8c7a-4ab0-8c2d-c97699634359
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1a6c5170-6559-4882-8004-0738f01ccd2c
+      iscommand: false
+      name: cda9d27a-90b8-4f48-8bb0-23f157b95893
+      playbookId: cda9d27a-90b8-4f48-8bb0-23f157b95893
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 1a6c5170-6559-4882-8004-0738f01ccd2c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 194aaf0f-782c-41fc-84d8-1f216f9a44cd
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 194aaf0f-782c-41fc-84d8-1f216f9a44cd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 680
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      PcapEntryID:
+        simple: ${PcapDetails.EntryID}
+      RegistryEntryId:
+        simple: ${RegistryDetails.EntryID}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook allows the user to analyze forensic evidence acquired
+        from a host. Such as registry files, memory dump files or PCAP files.
+      id: 72dbc757-02eb-4596-867b-7afc22403afa
+      iscommand: false
+      name: ef26de58-d77e-49fe-8672-93945c57235e
+      playbookId: ef26de58-d77e-49fe-8672-93945c57235e
+      type: playbook
+      version: -1
+    taskid: 72dbc757-02eb-4596-867b-7afc22403afa
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 695,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

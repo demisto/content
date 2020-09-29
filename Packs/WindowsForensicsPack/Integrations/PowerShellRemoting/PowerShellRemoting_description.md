@@ -1,0 +1,1 @@
+Username and password are both associated with the user in the target machine which are used to logged in to it.

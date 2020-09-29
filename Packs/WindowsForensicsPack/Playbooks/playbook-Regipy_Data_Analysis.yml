@@ -1,0 +1,148 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: This playbook leverages the Regipy tool to perform registry analysis
+  and extract forensic artifacts.  The Automation includes common registry objects
+  to extract which are useful for analyzing registry or a user provides registry path
+  to parse.
+id: Regipy Data Analysis
+inputs:
+- description: The entry id for the registry file to parse.
+  key: RegistryFileEntryID
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    This specifies which data to parse out of the registry and output to context, including
+    Users
+    LastLoggedOnUser
+    MachineRunOnce
+    MachineStartup
+    Timezone
+    USB
+    And all which selects all the options and the default option
+  key: RegistryData
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Custom registry path to parse.
+  key: CustomRegistryPaths
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Regipy Data Analysis
+outputs:
+- contextPath: RegistryForensicData
+  description: The data parsed from registry.
+  type: string
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3cc8f7bf-8d39-46eb-814a-afe87ac77fdb
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 3cc8f7bf-8d39-46eb-814a-afe87ac77fdb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      customRegistryPaths:
+        simple: ${inputs.CustomRegistryPaths}
+      entryID:
+        simple: ${inputs.RegistryFileEntryID}
+      registryData:
+        simple: ${inputs.RegistryData}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "This command uses the regipy tool to extract critical forensics\
+        \ data from a registry file. The essential values are specified by the argument.\
+        \ \n"
+      id: 9a06e356-06b3-4383-82b1-9829d92a5e9c
+      iscommand: false
+      name: Regipy Data parsing
+      script: b4f5ed98-212f-4cb5-8cf0-af32110d7451
+      tags:
+      - RegistryTable
+      type: regular
+      version: -1
+    taskid: 9a06e356-06b3-4383-82b1-9829d92a5e9c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1ddf64e3-7f52-4053-8cce-01f34c5bb463
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 1ddf64e3-7f52-4053-8cce-01f34c5bb463
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 435,
+        "width": 380,
+        "x": 450,
+        "y": 190
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
