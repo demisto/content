@@ -59,7 +59,7 @@ def http_cmd(url_suffix, data=None, files=None, parse_json=True):
             raise Exception('Your request failed with the following status code (%s) and error: %s.\n%s' % (res.status_code, res.reason, error_msg,))  # type:ignore
         except ValueError:
             # in case the respons is not parsed as JSON
-            raise Exception('Your request failed with the following status code (%s) and error: %s.' % (res.status_code, res.reason))
+            raise Exception('Your request failed with the following status code (%s) and error: %s.' % (res.status_code, res.reason))  # type:ignore
 
     if parse_json:
         return res.json()  # type:ignore
