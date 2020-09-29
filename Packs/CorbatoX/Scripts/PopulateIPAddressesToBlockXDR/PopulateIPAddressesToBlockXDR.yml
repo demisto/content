@@ -1,0 +1,20 @@
+args:
+- name: incident
+- name: field
+commonfields:
+  id: PopulateIPAddressesToBlockXDR
+  version: -1
+dockerimage: demisto/python3:3.8.1.5734
+enabled: true
+name: PopulateIPAddressesToBlockXDR
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-display
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

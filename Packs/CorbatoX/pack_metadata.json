@@ -1,0 +1,14 @@
+{
+    "name": "CorbatoX",
+    "description": "CorbatoX is preventing any sort of threat to your network. It provides protection for your whole Infrastructure, full coverage from Endpoint to your Cloud. CorbatoX is covering AWS, Azure and Google Cloud.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Jan Drzewinski",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T21:51:25Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

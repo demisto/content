@@ -1,0 +1,1534 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels: []
+id: CorbatoX
+inputs: []
+name: CorbatoX
+outputs:
+- contextPath: get assets
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+      - "26"
+      - "27"
+      - "31"
+      - "54"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d98bd2ff-2dff-4912-8a59-2477524ad23b
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: d98bd2ff-2dff-4912-8a59-2477524ad23b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -1010
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 10a168fc-67bd-4f07-8c8a-2c0cc756dc2c
+      iscommand: false
+      name: search_endpoints_by_hash_-_carbon_black_protection
+      playbookId: search_endpoints_by_hash_-_carbon_black_protection
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 10a168fc-67bd-4f07-8c8a-2c0cc756dc2c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": 2950
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c6207ea1-0976-41d3-8636-17088f23b054
+      iscommand: false
+      name: Manually deploy patch
+      type: regular
+      version: -1
+    taskid: c6207ea1-0976-41d3-8636-17088f23b054
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1300,
+          "y": 1180
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dateRange: {}
+      hostname: {}
+      ip: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tenable.io
+      description: Get a list of up to 5000 of the vulnerabilities recorded for a
+        given asset.
+      id: 21d68a40-919a-46aa-8f84-35d64b7ad6a8
+      iscommand: true
+      name: tenable-io-get-vulnerabilities-by-asset
+      script: Tenable.io|||tenable-io-get-vulnerabilities-by-asset
+      type: regular
+      version: -1
+    taskid: 21d68a40-919a-46aa-8f84-35d64b7ad6a8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 1870
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the list of Alerts from Carbon Black Enterprise Response. Supports
+        the same arguments as the cb-alerts command.
+      id: 30344d0b-2c20-4caa-8e52-9ba3f9f55d3a
+      iscommand: false
+      name: CBAlerts
+      script: CBAlerts
+      type: regular
+      version: -1
+    taskid: 30344d0b-2c20-4caa-8e52-9ba3f9f55d3a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": -375
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: List Carbon Black sensors
+      id: bcafa2fd-f827-4b40-8133-f247451fc74d
+      iscommand: false
+      name: CBSensors
+      script: CBSensors
+      type: regular
+      version: -1
+    taskid: bcafa2fd-f827-4b40-8133-f247451fc74d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 220
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      nmap scan:
+      - "25"
+      tenable scan:
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if Carbon black active in the system.
+      id: 27405cc3-bf4c-4879-87ad-880b99941e9a
+      iscommand: false
+      name: Is Carbon Black Enterprise Response enabled?
+      type: condition
+      version: -1
+    taskid: 27405cc3-bf4c-4879-87ad-880b99941e9a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 540
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 55dad16e-31b0-4f56-8c98-4e0cf181a5fc
+      iscommand: false
+      name: Query Carbon Black for events around the time of the incident
+      type: regular
+      version: -1
+    taskid: 55dad16e-31b0-4f56-8c98-4e0cf181a5fc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 2400
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      Isolate Endpoint:
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is Carbon Black Protection enabled?
+      id: 02afb0d8-e0fd-424d-83c6-44a15204351f
+      iscommand: false
+      name: Is Carbon Black Protection enabled?
+      type: condition
+      version: -1
+    taskid: 02afb0d8-e0fd-424d-83c6-44a15204351f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 1070
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 776bd5c0-2ac6-438c-8e4f-6bf3ec2ff8dd
+      iscommand: false
+      name: block_endpoint_-_carbon_black_response
+      playbookId: block_endpoint_-_carbon_black_response
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 776bd5c0-2ac6-438c-8e4f-6bf3ec2ff8dd
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 1395
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      detailed: {}
+      info: {}
+      scanId:
+        simple: ${TenableIO.Assets}${TenableIO.Assets.Hostname}${TenableIO.Assets.Vulnerabilities}${TenableIO.Vulnerabilities}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tenable.io
+      description: Retrive scan-report for the given scan.
+      id: c5a44898-9c0d-46a6-8783-91811271946b
+      iscommand: true
+      name: tenable-io-get-scan-report
+      script: Tenable.io|||tenable-io-get-scan-report
+      type: regular
+      version: -1
+    taskid: c5a44898-9c0d-46a6-8783-91811271946b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 810
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 328c781d-17f0-4074-8d00-753cab653cc9
+      iscommand: false
+      name: cve_enrichment_-_generic
+      playbookId: cve_enrichment_-_generic
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 328c781d-17f0-4074-8d00-753cab653cc9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 3640
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      options:
+        simple: "-4"
+      targets:
+        simple: https://ip-172-31-15-111.us-east-2.compute.internal:443/
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: nmap
+      description: Scan targets with the given parameters
+      id: 0c591cbc-2a45-476d-84f8-411dd4122d37
+      iscommand: true
+      name: nmap-scan
+      script: nmap|||nmap-scan
+      type: regular
+      version: -1
+    taskid: 0c591cbc-2a45-476d-84f8-411dd4122d37
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 855
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      AWS integration:
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |2-
+
+        Verifies that AWS - CloudWatchLogs integration is enabled.
+      id: 13bb94c4-2f2c-43a3-8373-bbab36d37258
+      iscommand: false
+      name: Is AWS - CloudWatchLogs integration enabled?
+      type: condition
+      version: -1
+    taskid: 13bb94c4-2f2c-43a3-8373-bbab36d37258
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -350
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user_id:
+        simple: ${incident.detectedusers}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Microsoft Graph Security Xmocky
+      description: Retrieve the properties and relationships of user object.
+      id: f7321c00-46e7-4328-8614-8823ea1632d1
+      iscommand: true
+      name: msg-get-user
+      script: Microsoft Graph Security Xmocky|||msg-get-user
+      type: regular
+      version: -1
+    taskid: f7321c00-46e7-4328-8614-8823ea1632d1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": -375
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      'az ':
+      - "47"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 92e7d5e2-3945-47fd-8c25-f3c0c8ba7016
+      iscommand: false
+      name: Is there a AzureIndicatorTagName input?
+      type: condition
+      version: -1
+    taskid: 92e7d5e2-3945-47fd-8c25-f3c0c8ba7016
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 555
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AzureIndicatorTagName: {}
+      OpenIncidentToReviewIndicatorsManually:
+        simple: "No"
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ea1e193b-a9c6-4dfa-88b5-71ea29560e5a
+      iscommand: false
+      name: TIM - Process Azure indicators
+      playbookId: TIM - Process Azure indicators
+      type: playbook
+      version: -1
+      description: ''
+    taskid: ea1e193b-a9c6-4dfa-88b5-71ea29560e5a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 2990
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      enable:
+        simple: "True"
+      resource:
+        simple: a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 80a94fe6-48bf-473c-8375-cd4cf7984bff
+      iscommand: false
+      name: aws-flow-logs
+      script: 64a3dab3-0537-417e-81c3-b2b315891d1f
+      type: regular
+      version: -1
+    taskid: 80a94fe6-48bf-473c-8375-cd4cf7984bff
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 110
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      googl cloud integration:
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the GoogleApps API integration is enabled.
+      id: fccc9307-616c-4005-8854-f9e18fb4f5ef
+      iscommand: false
+      name: Is GoogleApps API enabled?
+      type: condition
+      version: -1
+    taskid: fccc9307-616c-4005-8854-f9e18fb4f5ef
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2470,
+          "y": -970
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      cloud compute:
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether any roles were assigned to the user.
+      id: b1079179-f497-4b9a-8a88-85a6bdc9d642
+      iscommand: false
+      name: Does the Google user have any roles?
+      type: condition
+      version: -1
+    taskid: b1079179-f497-4b9a-8a88-85a6bdc9d642
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2370,
+          "y": 180
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: If the user has any admin roles in any application, make sure to
+        revoke those permissions. For example, the user may have a "help desk admin"
+        role in Google, or a domain-admin in Active Directory.
+      id: 5391abc0-c31e-4b25-8367-53123f422d3a
+      iscommand: false
+      name: Revoke administrative user roles
+      type: regular
+      version: -1
+    taskid: 5391abc0-c31e-4b25-8367-53123f422d3a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2450,
+          "y": 1210
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Backup important user emails, files and documents. Google Vault
+        is one service that can be used for that.
+      id: 78ecbacf-666e-4cdb-886b-aab2cf0ec058
+      iscommand: false
+      name: Copy, backup or download crucial user data
+      type: regular
+      version: -1
+    taskid: 78ecbacf-666e-4cdb-886b-aab2cf0ec058
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2380,
+          "y": 2950
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      admin roles:
+      - "33"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 159b97e1-3e77-41e7-8ca4-c527d5dd1f70
+      iscommand: false
+      name: Is Google Cloud Compute integration enabled?
+      type: condition
+      version: -1
+    taskid: 159b97e1-3e77-41e7-8ca4-c527d5dd1f70
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 760
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manually update Google Compute Engine alert.
+      id: 0e8b3b11-44a3-4b44-830f-f9493a739fc1
+      iscommand: false
+      name: Manually update Compute Engine
+      type: regular
+      version: -1
+    taskid: 0e8b3b11-44a3-4b44-830f-f9493a739fc1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2450,
+          "y": 1690
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manually update the Google Compute Engine alert.
+      id: 51d4f303-3ebc-43a6-8950-222410b42a40
+      iscommand: false
+      name: Manually update VPC network
+      type: regular
+      version: -1
+    taskid: 51d4f303-3ebc-43a6-8950-222410b42a40
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2360,
+          "y": 2250
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 10cd00b1-1902-41e8-822a-15467efc49e0
+      iscommand: false
+      name: Google-Vault-Display-Results
+      playbookId: Google-Vault-Display-Results
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 10cd00b1-1902-41e8-822a-15467efc49e0
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 3360
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: 2f3246cc-5898-425e-82af-12943c2de553
+      iscommand: false
+      name: closeInvestigation
+      type: title
+      version: -1
+    taskid: 2f3246cc-5898-425e-82af-12943c2de553
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 4650
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      aws check:
+      - "41"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ded851c7-5bc7-4f2e-8238-e57849966324
+      iscommand: false
+      name: Any IPs in AWS allow list that should be removed?
+      type: condition
+      version: -1
+    taskid: ded851c7-5bc7-4f2e-8238-e57849966324
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 470
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      ec2:
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 63f88ed9-a184-4062-8ed7-de7c170a81d8
+      iscommand: false
+      name: Any IPs to allow which are not already in AWS?
+      type: condition
+      version: -1
+    taskid: 63f88ed9-a184-4062-8ed7-de7c170a81d8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 760
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      aws sec group:
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8846755b-df88-477e-8075-dfbe8349b807
+      iscommand: false
+      name: Is AWS EC2 integration enabled?
+      type: condition
+      version: -1
+    taskid: 8846755b-df88-477e-8075-dfbe8349b807
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 1440
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      aws update:
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c998f782-d62b-40eb-841f-f2771d701dd6
+      iscommand: false
+      name: Is the AWS Security Group input set?
+      type: condition
+      version: -1
+    taskid: c998f782-d62b-40eb-841f-f2771d701dd6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 1900
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        1. Sign into the AWS console.
+        2. Select the specific region from the region drop down on the top right corner.
+        3. Navigate to the VPC Dashboard.
+        4. Click on Security Groups in the left window pane.
+        5. Click on the security group in question.
+        6. Make the appropriate changes..
+        7. Click Save rules.
+      id: 3681e8ec-3ee0-4a3d-8258-4c221cea314a
+      iscommand: false
+      name: Manually update security group
+      type: regular
+      version: -1
+    taskid: 3681e8ec-3ee0-4a3d-8258-4c221cea314a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 2320
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      ec2 integration:
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check to see if the EC2 integration is enabled. If EC2 integration
+        is not configured, automation cannot be performed.
+      id: 0686f462-5117-4462-879f-ad026bf49b94
+      iscommand: false
+      name: Is AWS - EC2 enabled?
+      type: condition
+      version: -1
+    taskid: 0686f462-5117-4462-879f-ad026bf49b94
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1050
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e28c6d2d-ed0b-43db-86d9-5ea4c1df097e
+      iscommand: false
+      name: ff2943d4-ffd4-4744-848c-f2b3b667072e
+      playbookId: ff2943d4-ffd4-4744-848c-f2b3b667072e
+      type: playbook
+      version: -1
+      description: ''
+    taskid: e28c6d2d-ed0b-43db-86d9-5ea4c1df097e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 2990
+        }
+      }
+  "47":
+    id: "47"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      email_address:
+        simple: a@contoso.com
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Fetch a user's Active Directory information by their email address
+      id: 293e27ed-66d9-4133-810c-010ef71d759b
+      iscommand: false
+      name: ADGetUserByEmail
+      script: e15c06da-9f49-4e8c-8e7c-9ef766f84e98
+      type: regular
+      version: -1
+    taskid: 293e27ed-66d9-4133-810c-010ef71d759b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 1040
+        }
+      }
+  "48":
+    id: "48"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field: {}
+      incident: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5662a600-2796-407d-8a9e-f0fe104b2f06
+      iscommand: false
+      name: PopulateIPAddressesToBlockXDR
+      script: 54938864-2d4f-4754-8736-85a338f938f5
+      type: regular
+      version: -1
+    taskid: 5662a600-2796-407d-8a9e-f0fe104b2f06
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": 220
+        }
+      }
+  "49":
+    id: "49"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "48"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      excluded_users: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: acece3f9-d885-4c49-8365-35ed2a615c1f
+      iscommand: false
+      name: ExtractUsersFromXDR
+      script: 8011c226-e767-4449-8338-66fb919374c5
+      type: regular
+      version: -1
+    taskid: acece3f9-d885-4c49-8365-35ed2a615c1f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": -105
+        }
+      }
+  "50":
+    id: "50"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "51"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      comment: {}
+      hash_list: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex XDR - IR
+      description: Blacklists requested files which have not already been blacklisted
+        or whitelisted.
+      id: ab13cd5b-6135-4bf7-8c7e-3c610ac35182
+      iscommand: true
+      name: xdr-blacklist-files
+      script: Cortex XDR - IR|||xdr-blacklist-files
+      type: regular
+      version: -1
+    taskid: ab13cd5b-6135-4bf7-8c7e-3c610ac35182
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1280,
+          "y": 495
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "52"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alias: {}
+      dist_name: {}
+      endpoint_id_list: {}
+      group_name: {}
+      gte_first_seen: {}
+      gte_last_seen: {}
+      hostname: {}
+      ip_list: {}
+      isolate: {}
+      lte_first_seen: {}
+      lte_last_seen: {}
+      platform: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex XDR - IR
+      description: Runs a scan on a selected endpoint. To scan all endpoints, run
+        this command with no filters.
+      id: e476f6e2-4861-4cd2-8d5a-4aa1f4df03ba
+      iscommand: true
+      name: xdr-endpoint-scan
+      script: Cortex XDR - IR|||xdr-endpoint-scan
+      type: regular
+      version: -1
+    taskid: e476f6e2-4861-4cd2-8d5a-4aa1f4df03ba
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 725
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      email: {}
+      limit: {}
+      page: {}
+      result: {}
+      sort_by: {}
+      sort_order: {}
+      sub_type: {}
+      timestamp_gte: {}
+      timestamp_lte: {}
+      type: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex XDR - IR
+      description: Gets management logs. You can filter by multiple fields, which
+        will be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of management logs from the
+        start of the result set (start by counting from 0).
+      id: 29cc1b34-66b4-411d-8130-d96d7a83515f
+      iscommand: true
+      name: xdr-get-audit-management-logs
+      script: Cortex XDR - IR|||xdr-get-audit-management-logs
+      type: regular
+      version: -1
+    taskid: 29cc1b34-66b4-411d-8130-d96d7a83515f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1300,
+          "y": 945
+        }
+      }
+  "54":
+    id: "54"
+    ignoreworker: false
+    nexttasks:
+      'local ':
+      - "57"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if Carbon black active in the system.
+      id: 27405cc3-bf4c-4879-87ad-880b99941e9a
+      iscommand: false
+      name: Is Carbon Black Enterprise Response enabled?
+      type: condition
+      version: -1
+    taskid: 27405cc3-bf4c-4879-87ad-880b99941e9a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -2300,
+          "y": -850
+        }
+      }
+  "55":
+    id: "55"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "56"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      eventTypes: {}
+      interval: {}
+      sinceSeconds: {}
+      sinceTime: {}
+      threatStatus: {}
+      threatType: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Proofpoint TAP v2
+      description: Fetches events for all clicks and messages relating to known threats
+        within the specified time period. Details as per clicks/blocked.
+      id: dce2490c-b75d-4fad-8408-c26e76a5fae7
+      iscommand: true
+      name: proofpoint-get-events
+      script: Proofpoint TAP v2|||proofpoint-get-events
+      type: regular
+      version: -1
+    taskid: dce2490c-b75d-4fad-8408-c26e76a5fae7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2300,
+          "y": 1395
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "60"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      campaignId: {}
+      includeCampaignForensics: {}
+      threatId: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Proofpoint TAP v2
+      description: Returns forensics evidence.
+      id: 1f9db23b-0102-438f-8146-23041982a938
+      iscommand: true
+      name: proofpoint-get-forensics
+      script: Proofpoint TAP v2|||proofpoint-get-forensics
+      type: regular
+      version: -1
+    taskid: 1f9db23b-0102-438f-8146-23041982a938
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2300,
+          "y": 2175
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "59"
+      - "49"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryid: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Identify whether the incident includes an email message attached
+        as an eml or msg file and return the answer to playbook. Also saves the identified
+        entry ID to context for use for later. Commonly used in automated playbooks
+        that handle phishing reports sent to a special phishing mailbox set up by
+        the security team.
+      id: e6b6aa2a-1d21-4420-81cf-e9321052deb7
+      iscommand: false
+      name: IdentifyAttachedEmail
+      script: IdentifyAttachedEmail
+      type: condition
+      version: -1
+    taskid: e6b6aa2a-1d21-4420-81cf-e9321052deb7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1810,
+          "y": -530
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "55"
+      "yes":
+      - "61"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      includeManual: {}
+      includeSuspicious: {}
+      maliciousQueryOverride: {}
+      queryIndicators: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if the investigation found any malicious indicators (file,
+        URL, IP address, domain, or email). Returns "yes" if at least one malicious
+        indicator is found.
+      id: b542f1dd-e0a3-4282-827d-d824eaeb08da
+      iscommand: false
+      name: IsMaliciousIndicatorFound
+      script: IsMaliciousIndicatorFound
+      type: condition
+      version: -1
+    taskid: b542f1dd-e0a3-4282-827d-d824eaeb08da
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -2300,
+          "y": 680
+        }
+      }
+  "59":
+    id: "59"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      email:
+        simple: a@cotoso.com
+      include_inactive: {}
+      threshold: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Anomali ThreatStream v2
+      description: Checks the reputation of the given email address.
+      id: c3f62a81-8506-40e3-8aed-1d785c4cf8a1
+      iscommand: true
+      name: threatstream-email-reputation
+      script: Anomali ThreatStream v2|||threatstream-email-reputation
+      type: regular
+      version: -1
+    taskid: c3f62a81-8506-40e3-8aed-1d785c4cf8a1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2290,
+          "y": 15
+        }
+      }
+  "60":
+    id: "60"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "62"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 55dad16e-31b0-4f56-8c98-4e0cf181a5fc
+      iscommand: false
+      name: Query Carbon Black for events around the time of the incident
+      type: regular
+      version: -1
+    taskid: 55dad16e-31b0-4f56-8c98-4e0cf181a5fc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2280,
+          "y": 2620
+        }
+      }
+  "61":
+    id: "61"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 47ca9d4e-dbf6-4685-828d-f07ae4fcbe2a
+      iscommand: false
+      name: Block File - Generic v2
+      playbookId: Block File - Generic v2
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 47ca9d4e-dbf6-4685-828d-f07ae4fcbe2a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -3680,
+          "y": 30
+        }
+      }
+  "62":
+    id: "62"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fd6b6108-340b-4704-8841-8ccc918383f9
+      iscommand: false
+      name: Endpoint Enrichment - Generic v2.1
+      playbookId: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      version: -1
+      description: ''
+    taskid: fd6b6108-340b-4704-8841-8ccc918383f9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -940,
+          "y": 3950
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "58_61_yes": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5725,
+        "width": 6530,
+        "x": -3680,
+        "y": -1010
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0

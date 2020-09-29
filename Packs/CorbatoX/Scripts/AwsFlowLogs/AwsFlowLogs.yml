@@ -1,0 +1,29 @@
+args:
+- description: Resource name
+  name: resource
+  required: true
+- auto: PREDEFINED
+  defaultValue: "True"
+  description: Enable (otherwise disable)
+  name: enable
+  predefined:
+  - "True"
+  - "False"
+  required: true
+commonfields:
+  id: aws-flow-logs
+  version: -1
+dockerimage: demisto/python3:3.7.4.977
+enabled: true
+name: aws-flow-logs
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Amazon
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
