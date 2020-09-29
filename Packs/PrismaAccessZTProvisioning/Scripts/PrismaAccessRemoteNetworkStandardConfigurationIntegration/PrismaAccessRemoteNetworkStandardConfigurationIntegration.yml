@@ -1,0 +1,17 @@
+comment: 'Configure the Standard configuration for Prisma Acess for Network '
+commonfields:
+  id: PrismaAccessRemoteNetworkStandardConfiguration_Integration
+  version: -1
+dockerimage: demisto/powershell:7.0.1.9103
+enabled: true
+name: PrismaAccessRemoteNetworkStandardConfiguration_Integration
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags:
+- Prisma Access
+type: powershell
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

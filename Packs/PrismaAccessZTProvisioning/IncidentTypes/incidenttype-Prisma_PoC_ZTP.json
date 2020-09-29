@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#C2195B",
+ "days": 0,
+ "daysR": 0,
+ "default": true,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "Prisma PoC ZTP",
+ "layout": "5e6b55cf-53de-4b2e-850d-893927406ecf",
+ "locked": false,
+ "name": "Prisma PoC ZTP",
+ "playbookId": "f72c59f6-f30b-4312-88ae-f699f2656fdb",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

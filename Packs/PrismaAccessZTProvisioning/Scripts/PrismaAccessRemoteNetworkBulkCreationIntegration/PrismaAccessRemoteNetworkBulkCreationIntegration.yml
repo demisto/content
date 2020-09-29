@@ -1,0 +1,35 @@
+args:
+- description: Remote Networks CSV File
+  name: csv
+  required: true
+- defaultValue: aes-128-cbc
+  name: Encryption
+  required: true
+- defaultValue: sha1
+  name: Hash
+  required: true
+- defaultValue: group2
+  name: DHGroup
+  required: true
+- defaultValue: "8"
+  name: Lifetime
+  required: true
+commonfields:
+  id: PrismaAccessRemoteNetworkBulkCreation_Integration
+  version: -1
+dockerimage: demisto/powershell:7.0.1.9103
+enabled: true
+name: PrismaAccessRemoteNetworkBulkCreation_Integration
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags:
+- Prisma Access
+- Bulk
+- Import
+- Remote Networks
+type: powershell
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

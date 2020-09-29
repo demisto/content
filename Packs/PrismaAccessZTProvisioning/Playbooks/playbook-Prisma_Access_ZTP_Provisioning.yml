@@ -1,0 +1,1383 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Prisma Access ZTP Provisioning
+inputs: []
+name: Prisma Access ZTP Provisioning
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eb44ba83-475d-4507-84ee-80048fe67507
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: eb44ba83-475d-4507-84ee-80048fe67507
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+  "2":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Prisma Access  Mobile Standard Configuration Completed
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      api:
+        simple: ${incident.panoramaapikey}
+      mobile_ip_pool:
+        simple: ${incident.prismauserippoolsubnet}
+      mobile_url:
+        simple: ${incident.prismauserdomain}
+      url:
+        simple: ${incident.panoramaipfqdn}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Configure Prisma Access for Mobile User with a standard configuration
+      id: 8a4cffe1-6378-4230-843a-c0c0832a67e0
+      iscommand: false
+      name: PrismaAccessMobileStandardConfiguration
+      script: 3f7657ce-b145-40f2-8330-23baa1fec373
+      type: regular
+      version: -1
+    taskid: 8a4cffe1-6378-4230-843a-c0c0832a67e0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 1360
+        }
+      }
+  "3":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Prisma Access Remote Network Standard Configuration Completed
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      api:
+        simple: ${incident.panoramaapikey}
+      url:
+        simple: ${incident.panoramaipfqdn}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Configure the Standard configuration for Prisma Acess for Network '
+      id: 6ad4a0cd-7138-4564-89d5-6babb84a2334
+      iscommand: false
+      name: PrismaAccessRemoteNetworkStandardConfiguration_Integration
+      script: 9dccef08-d47e-41fa-87a8-704590574c38
+      type: regular
+      version: -1
+    taskid: 6ad4a0cd-7138-4564-89d5-6babb84a2334
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 1360
+        }
+      }
+  "4":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Prisma Access Service Setup Configuration Completed
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+      - "21"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      api:
+        simple: ${incident.panoramaapikey}
+      mobile_infra_ip_subnet:
+        simple: ${incident.prismainfrastructuresubnet}
+      url:
+        simple: ${incident.panoramaipfqdn}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Configure Prisma Access with Standard configuration for Infrastructure
+        Setup and Service  Connection Template
+      id: 38badc10-49ed-4553-80aa-68c250119368
+      iscommand: false
+      name: PrismaAccessServiceSetupStandard_SC_Integration
+      script: dec580a4-76c2-4c27-8904-a202c24aa92b
+      type: regular
+      version: -1
+    taskid: 38badc10-49ed-4553-80aa-68c250119368
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1010
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d0f122da-a568-44ff-8fd0-3c7055ae0766
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: d0f122da-a568-44ff-8fd0-3c7055ae0766
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2205
+        }
+      }
+  "6":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Online Users Advised - Email Sent
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      medium:
+        simple: Email
+      message:
+        simple: Prisma Access ZTP Provisioning completed
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send message to Demisto online users over Email, Slack, Mattermost
+        or all.
+      id: 9623108d-c1d8-4f7b-84bb-86ebe48c19a1
+      iscommand: false
+      name: SendMessageToOnlineUsers
+      script: SendMessageToOnlineUsers
+      type: regular
+      version: -1
+    taskid: 9623108d-c1d8-4f7b-84bb-86ebe48c19a1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2030
+        }
+      }
+  "7":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: If you need Prisma Access for User , what is you Prisma Access for
+            User subdomain ?
+        options: []
+        optionsarg: []
+        placeholder: papoc
+        readonly: false
+        required: false
+        tooltip: for example papoc.gpcloudservices your answer is papoc
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: What is your Prisma Access Infrastructure Subnet
+        options: []
+        optionsarg: []
+        placeholder: 'EX : 10.60.110.0/24'
+        readonly: false
+        required: true
+        tooltip: /24 is require for the infrastructure Subnet
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: If you need Prisma Access for User , what is your Prisma Access
+            for User IP Pool Subnet ?
+        options: []
+        optionsarg: []
+        placeholder: 'EX : 10.60.128.0/20'
+        readonly: false
+        required: false
+        tooltip: /23 is a minimum requirement . We do suggest a /20
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: 'Do you need to do Bulk Import of Remote Network IPSEC Configurations?
+            If so, please upload a CSV. '
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: 'Format of the CSV required: Connection_Name,Location,Bandwith,Peer_IP,Subnet'
+        type: attachments
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "4"
+        label: ""
+        labelarg:
+          simple: 'Do you need to do Bulk Import of Service Connection Configurations?
+            If so, please upload a CSV. '
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: 'Format of the CSV required: Connection_Name,Location,Bandwith,Peer_IP,Subnet'
+        type: attachments
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "5"
+        label: ""
+        labelarg:
+          simple: 'Do you need Prisma Access for Remote Networks ? '
+        options:
+        - "No"
+        - "Yes"
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Requirements for Prisma Access
+      totalanswers: 0
+    id: "7"
+    ignoreworker: false
+    message:
+      bcc:
+      body: {}
+      cc:
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: Requirements for Prisma Access
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: Analyst,Administrator
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e636a5e3-aefb-4676-8070-a33f7781a911
+      iscommand: false
+      name: 'Prisma Access Form '
+      type: collection
+      version: -1
+    taskid: e636a5e3-aefb-4676-8070-a33f7781a911
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 515
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      addcctoemail: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      assignmentgroup: {}
+      associatedmaliciousdomains: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      attorneygeneralnotification: {}
+      blockedaction: {}
+      breachconfirmation: {}
+      bugtraq: {}
+      caller: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alertdescription: {}
+      code42alertid: {}
+      code42alertname: {}
+      code42alertstate: {}
+      code42alerttimestamp: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      code42severity: {}
+      code42username: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      consumerreportingagenciesnotification: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destinationports: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicehash: {}
+      devicename: {}
+      digitalguardianactivity: {}
+      digitalguardianalarmname: {}
+      digitalguardianarcuid: {}
+      digitalguardianattachmentfilename: {}
+      digitalguardianclassification: {}
+      digitalguardiancommandline: {}
+      digitalguardiancomputername: {}
+      digitalguardiandestinationaddress: {}
+      digitalguardiandestinationdnsdomain: {}
+      digitalguardianemailrecipient: {}
+      digitalguardianemailsender: {}
+      digitalguardianemailsubject: {}
+      digitalguardianfilename: {}
+      digitalguardianparentprocessname: {}
+      digitalguardianpolicy: {}
+      digitalguardianprocessname: {}
+      digitalguardianremoteport: {}
+      digitalguardiansensitivity: {}
+      digitalguardiansourceaddress: {}
+      digitalguardiansourceip: {}
+      digitalguardianthreattype: {}
+      digitalguardianusername: {}
+      dpoemailaddress: {}
+      dponotification: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      escalation: {}
+      eventid: {}
+      eventtype: {}
+      exactlywhathappenedandatwhattimes: {}
+      exfiltratedfiles: {}
+      expansebehaviorrule: {}
+      expansebusinessunit: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      extend-context:
+        simple: remotenetworkfile=${Requirements for Prisma Access.Answers.5.EntryID}::serviceconnectionfile=${Requirements
+          for Prisma Access.Answers.6.EntryID}
+      externaladdresses: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      faeredescription: {}
+      filehash: {}
+      filehashblocked: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstname: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      graphplot: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
+      howwastheincidentcontainedanderadicated: {}
+      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      id: {}
+      illusionblackattackerid: {}
+      illusionblackattacktype: {}
+      illusionblackdecoyid: {}
+      illusionblackevents: {}
+      illusionblackthreatparse: {}
+      illusivenetworksdeceptionfamilies: {}
+      illusivenetworkseventsnumber: {}
+      illusivenetworkshasforensics: {}
+      illusivenetworkshostname: {}
+      illusivenetworksid: {}
+      illusivenetworkslastseenuser: {}
+      illusivenetworkssourceoperatingsystem: {}
+      illusivenetworksstepstocrownjewel: {}
+      illusivenetworksstepstodomainadmin: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      individualsnotification: {}
+      infectedhostnames: {}
+      infectedhosts: {}
+      infinipointhostname: {}
+      infinipointpolicyid: {}
+      infinipointpolicyname: {}
+      internaladdresses: {}
+      investigationstage: {}
+      irondefenseaggregationcriteria: {}
+      irondefensealertid: {}
+      irondefensealertids: {}
+      irondefenseanalystexpectation: {}
+      irondefenseanalystseverity: {}
+      irondefenseappdomains: {}
+      irondefensebytesin: {}
+      irondefensebytesout: {}
+      irondefensecategory: {}
+      irondefensecommentdetails: {}
+      irondefenseconfidence: {}
+      irondefensecreated: {}
+      irondefensedomesharedtime: {}
+      irondefensedometags: {}
+      irondefensedstentityattribute: {}
+      irondefensedstentityattributetype: {}
+      irondefensedstip: {}
+      irondefensedstnetworkid: {}
+      irondefensedstport: {}
+      irondefenseendtime: {}
+      irondefenseeventcount: {}
+      irondefenseeventid: {}
+      irondefensefirsteventcreated: {}
+      irondefensehighcognitivesystemdetails: {}
+      irondefenseirondomecategory: {}
+      irondefenseirondomeid: {}
+      irondefenseisblacklisted: {}
+      irondefenseiswhitelisted: {}
+      irondefenselasteventcreated: {}
+      irondefensemismatchdetails: {}
+      irondefenseprimaryappprotocol: {}
+      irondefenserawdataformat: {}
+      irondefensesecondaryappprotocol: {}
+      irondefenseseverity: {}
+      irondefenseseveritydetails: {}
+      irondefenseseveritymaliciousdetails: {}
+      irondefenseseveritysuspiciousdetails: {}
+      irondefensesrcentityattribute: {}
+      irondefensesrcentityattributetype: {}
+      irondefensesrcip: {}
+      irondefensesrcnetworkid: {}
+      irondefensestarttime: {}
+      irondefensestatus: {}
+      irondefensesubcategory: {}
+      irondefensetotalbytes: {}
+      irondefenseupdated: {}
+      irondefensevueurl: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      logsource: {}
+      logzioalerteventid: {}
+      logzioalertid: {}
+      logzioalertsummary: {}
+      logziotags: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
+      malwarefamily: {}
+      managementnotification: {}
+      manageremail: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
+      mobiledevicemodel: {}
+      name: {}
+      niststage: {}
+      numberofports: {}
+      numberofuniqueports: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      os: {}
+      osversion: {}
+      otherpiidatabreached: {}
+      owner: {}
+      panoramaapikey: {}
+      panoramaipfqdn: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      pcapencryptionkey: {}
+      pcapendtime: {}
+      pcapfile: {}
+      pcapfilename: {}
+      pcapfilesize: {}
+      pcapflows: {}
+      pcapnumberofpackets: {}
+      pcapnumberofstreams: {}
+      pcapstarttime: {}
+      penteraoperationdetails: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      piidatatype: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      prismainfrastructuresubnet:
+        simple: ${Requirements for Prisma Access.Answers.1}
+      prismauserdomain:
+        simple: ${Requirements for Prisma Access.Answers.0}
+      prismauserippoolsubnet:
+        simple: ${Requirements for Prisma Access.Answers.2}
+      protocol: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      safebreachaffectedtargets: {}
+      safebreachaffectedtargetscount: {}
+      safebreachattackcount: {}
+      safebreachattackids: {}
+      safebreachinsightcategory: {}
+      safebreachinsightid: {}
+      safebreachinsightname: {}
+      safebreachinsightriskimpact: {}
+      safebreachlatestsimulation: {}
+      safebreachremediationaction: {}
+      safebreachremediationdata: {}
+      safebreachremediationdatacount: {}
+      safebreachremediationstatus: {}
+      safebreachresultslink: {}
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      safebreachsimulationid: {}
+      safebreachsimulationnumber: {}
+      safebreachthreatgroups: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
+      servicenowassignedto: {}
+      servicenowassignmentgroup: {}
+      servicenowcaller: {}
+      servicenowcategory: {}
+      servicenowcloseddate: {}
+      servicenowdescription: {}
+      servicenowduedate: {}
+      servicenowescalation: {}
+      servicenowimpact: {}
+      servicenownotify: {}
+      servicenowopeneddate: {}
+      servicenowpriority: {}
+      servicenowresolutionnotes: {}
+      servicenowresolvedtime: {}
+      servicenowseverity: {}
+      servicenowstate: {}
+      servicenowticketnumber: {}
+      servicenowurgency: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      state: {}
+      statecisonotification: {}
+      statewherethebreachtookplace: {}
+      subcategory: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      suggestionsanddiscussionofhowtoimprovetheteam: {}
+      suspiciousactivityendtime: {}
+      suspiciousactivityid: {}
+      suspiciousactivityseverity: {}
+      suspiciousactivitystarttime: {}
+      suspiciousactivitystatus: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
+      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
+      whataretheareasthatneedimprovement: {}
+      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
+      whatinformationwasneededsooner: {}
+      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
+      whatwasthescopeoftheincident: {}
+      whatwastheworkperformedduringrecovery: {}
+      whatweretheareaswherethecirtteamswereeffective: {}
+      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
+      whenwastheproblemfirstdetectedandbywhom: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 5e7f4f6f-e485-4b80-847c-9cba51ad643b
+      iscommand: true
+      name: Map Answers to Context
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 5e7f4f6f-e485-4b80-847c-9cba51ad643b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 690
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Requirements for Prisma Access.Answers.3
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: Requirements for Prisma Access.Answers.4
+          operator: isExists
+      label: Remote Networks and Service Connection
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Requirements for Prisma Access.Answers.3
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: Requirements for Prisma Access.Answers.4
+          operator: isNotExists
+      label: Remote Networks Only
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Requirements for Prisma Access.Answers.4
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: Requirements for Prisma Access.Answers.3
+          operator: isNotExists
+      label: Service Connection Only
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      Remote Networks Only:
+      - "18"
+      Remote Networks and Service Connection:
+      - "17"
+      Service Connection Only:
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a6af6053-8fb4-4f93-88df-55192b0b2556
+      iscommand: false
+      name: Custom File Configs Exist?
+      type: condition
+      version: -1
+    taskid: a6af6053-8fb4-4f93-88df-55192b0b2556
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1535
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      DHGroup: {}
+      Encryption: {}
+      Hash: {}
+      Lifetime: {}
+      api:
+        simple: ${incident.panoramaapikey}
+      csv:
+        simple: ${Requirements for Prisma Access.Answers.3.EntryID}
+      url:
+        simple: ${incident.panoramaipfqdn}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 63cf9d1d-921a-4eb8-801d-016ff4d4174a
+      iscommand: false
+      name: Prisma Remote Network Using Custom CSV
+      script: 46632a60-9d7c-43f5-89fa-c126296296e4
+      type: regular
+      version: -1
+    taskid: 63cf9d1d-921a-4eb8-801d-016ff4d4174a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1855
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      api:
+        simple: ${incident.panoramaapikey}
+      csv:
+        simple: ${Requirements for Prisma Access.Answers.4.EntryID}
+      url:
+        simple: ${incident.panoramaipfqdn}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ba2773b9-dc01-4863-89d9-0bf420424e2a
+      iscommand: false
+      name: Prisma Service Connection Using Custom CSV
+      script: e9caaf92-85e2-4b4a-8183-26d3e2caeeb2
+      type: regular
+      version: -1
+    taskid: ba2773b9-dc01-4863-89d9-0bf420424e2a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1855
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b0474942-19a1-4578-84a4-529ae02514d7
+      iscommand: false
+      name: Remote Networks and Service Connection Custom CSV
+      type: title
+      version: -1
+      description: ''
+    taskid: b0474942-19a1-4578-84a4-529ae02514d7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1710
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cad168f4-8375-4f07-8941-3f1eb0739701
+      iscommand: false
+      name: Remote Networks Only Custom CSV
+      type: title
+      version: -1
+      description: ''
+    taskid: cad168f4-8375-4f07-8941-3f1eb0739701
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1710
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: de27c651-fcd5-48c5-8417-01387b00aac2
+      iscommand: false
+      name: Service Connection Only Custom CSV
+      type: title
+      version: -1
+      description: ''
+    taskid: de27c651-fcd5-48c5-8417-01387b00aac2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1710
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Requirements for Prisma Access.Answers.0
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: Requirements for Prisma Access.Answers.2
+          operator: isExists
+      label: "Yes"
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "12"
+      "Yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b5e390a0-86f6-4a23-855e-363f0fdd7ae1
+      iscommand: false
+      name: Prisma For Mobile Users Required?
+      type: condition
+      version: -1
+    taskid: b5e390a0-86f6-4a23-855e-363f0fdd7ae1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Requirements for Prisma Access.Answers.5
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "Yes"
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "12"
+      "Yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1d520e31-3786-4f3c-8698-2c6957ac4466
+      iscommand: false
+      name: Prisma For Remote Networks Required?
+      type: condition
+      version: -1
+    taskid: 1d520e31-3786-4f3c-8698-2c6957ac4466
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1185
+        }
+      }
+  "22":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama_Hackathon_2020
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f45f317b-5b1e-4720-83f7-0807a06054cb
+      iscommand: false
+      name: Ensure Panorama is Enabled
+      type: condition
+      version: -1
+    taskid: f45f317b-5b1e-4720-83f7-0807a06054cb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 195
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3420f9d5-c434-43d1-82cf-d75b42d34483
+      iscommand: false
+      name: Collect Details
+      type: title
+      version: -1
+      description: ''
+    taskid: 3420f9d5-c434-43d1-82cf-d75b42d34483
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dc818e9b-1d4b-430b-8aba-b4c46a48bba5
+      iscommand: false
+      name: Standard Configuration for Prisma Access Infrastructure
+      type: title
+      version: -1
+      description: ''
+    taskid: dc818e9b-1d4b-430b-8aba-b4c46a48bba5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 865
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2220,
+        "width": 1250,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0

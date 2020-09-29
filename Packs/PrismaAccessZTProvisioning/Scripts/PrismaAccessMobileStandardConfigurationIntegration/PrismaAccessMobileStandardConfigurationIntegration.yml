@@ -1,0 +1,23 @@
+args:
+- description: Prisma Access for User IP POOL
+  name: mobile_ip_pool
+  required: true
+- description: Prisma Access GPCloudService subdomain
+  name: mobile_url
+  required: true
+comment: Configure Prisma Access for Mobile User with a standard configuration
+commonfields:
+  id: PrismaAccessMobileStandardConfiguration_Integration
+  version: -1
+dockerimage: demisto/powershell:7.0.1.9103
+enabled: true
+name: PrismaAccessMobileStandardConfiguration_Integration
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags: []
+type: powershell
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

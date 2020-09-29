@@ -1,0 +1,21 @@
+args:
+- description: Prisma Access Infrastructure Subnet
+  name: mobile_infra_ip_subnet
+  required: true
+comment: Configure Prisma Access with Standard configuration for Infrastructure Setup
+  and Service  Connection Template
+commonfields:
+  id: PrismaAccessServiceSetupStandard_SC_Integration
+  version: -1
+dockerimage: demisto/powershell:7.0.1.9103
+enabled: true
+name: PrismaAccessServiceSetupStandard_SC_Integration
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags: []
+type: powershell
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

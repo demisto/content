@@ -1,0 +1,23 @@
+args:
+- description: Service Connections CSV FIle
+  name: csv
+  required: true
+commonfields:
+  id: PrismaAccessServiceConnectionBulkCreation_Integration
+  version: -1
+dockerimage: demisto/powershell:7.0.1.9103
+enabled: true
+name: PrismaAccessServiceConnectionBulkCreation_Integration
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags:
+- Prisma Access
+- Bulk
+- Import
+- Remote Networks
+type: powershell
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

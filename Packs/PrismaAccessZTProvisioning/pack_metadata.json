@@ -1,0 +1,14 @@
+{
+    "name": "Prisma Access ZTProvisioning",
+    "description": "Deploying Prisma access is has a lot of moving parts and can be hard to remember all the details and what should be done in the right order. Leveraging Cortex XSOAR we can fully deploy Prisma Access!\n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Xavier Trepanier and Dilan Kapadia",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T16:32:59Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
