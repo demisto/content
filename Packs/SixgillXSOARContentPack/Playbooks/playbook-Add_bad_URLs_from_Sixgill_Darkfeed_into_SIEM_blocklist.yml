@@ -1,0 +1,300 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Add bad URLs from Sixgill Darkfeed into SIEM blocklist
+inputs:
+- description: ""
+  key: ""
+  playbookInputQuery:
+    daterange:
+      fromdate: "0001-01-01T00:00:00Z"
+      fromdatelicenseval: "0001-01-01T00:00:00Z"
+      period:
+        by: ""
+        byfrom: ""
+        byto: ""
+        field: ""
+        fromvalue:
+        tovalue:
+      todate: "0001-01-01T00:00:00Z"
+    query: sourceInstances:Sixgill_Darkfeed_instance_1 and type:URL
+    queryEntity: indicators
+    results:
+    runFromLastJobTime: false
+  required: false
+  value: {}
+name: Add bad URLs from Sixgill Darkfeed into SIEM blocklist
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1868a227-4e35-462b-861a-5d912a2a9afa
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 1868a227-4e35-462b-861a-5d912a2a9afa
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: playbookQuery.value
+          operator: isNotEmpty
+      label: "Yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+      "Yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 808ef4eb-79f9-4bdd-8d8c-25a2123143e0
+      iscommand: false
+      name: Are there filtered results ?
+      type: condition
+      version: -1
+    taskid: 808ef4eb-79f9-4bdd-8d8c-25a2123143e0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: QRadar
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "Yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "Yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6d9ef5e8-f8d6-4671-8844-5abea420a98c
+      iscommand: false
+      name: Is QRadar Enabled?
+      type: condition
+      version: -1
+    taskid: 6d9ef5e8-f8d6-4671-8844-5abea420a98c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 212a10d0-43cd-4651-8fec-93ae9201e0e4
+      iscommand: false
+      name: Check URL Reputation
+      type: title
+      version: -1
+      description: ''
+    taskid: 212a10d0-43cd-4651-8fec-93ae9201e0e4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      date_value: {}
+      ref_name:
+        simple: blocklist
+      source: {}
+      value:
+        complex:
+          accessor: value
+          root: playbookQuery
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar
+      description: Adds or updates a value in a reference set.
+      id: f74d496b-9360-46c3-878c-1f33625db1a8
+      iscommand: true
+      name: Add bad URLs  to QRadar reference set
+      script: QRadar|||qradar-update-reference-set-value
+      type: regular
+      version: -1
+    taskid: f74d496b-9360-46c3-878c-1f33625db1a8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          accessor: value
+          root: playbookQuery
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      id: c1bf6b36-033e-42c7-844f-bd4570732765
+      iscommand: true
+      name: Add SIEM tag
+      script: Builtin|||appendIndicatorField
+      type: regular
+      version: -1
+    taskid: c1bf6b36-033e-42c7-844f-bd4570732765
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 699f41a4-bcd8-49a0-84fb-3cb05e771978
+      iscommand: false
+      name: Completed
+      type: title
+      version: -1
+      description: ''
+    taskid: 699f41a4-bcd8-49a0-84fb-3cb05e771978
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_Yes": 0.41
+    },
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0

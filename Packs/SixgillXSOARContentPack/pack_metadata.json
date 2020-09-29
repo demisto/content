@@ -1,0 +1,14 @@
+{
+    "name": "Sixgill XSOAR Content Pack",
+    "description": "This XSOAR playbook is configured to run as a time triggered job that periodically adds bad indicators from Sixgill Darkfeed to SIEM blocklist. The playbook further adds a tag to each indicator that is successfully added to the blocklist. Using this tag one can easily identify and filter the indicators that are added to the blocklist.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "ArpithaSrinivas",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T19:36:01Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
