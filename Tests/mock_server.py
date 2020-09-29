@@ -9,7 +9,6 @@ import time
 import unicodedata
 import urllib3
 import demisto_client.demisto_api
-from demisto_client.demisto_api.rest import ApiException
 from subprocess import call, Popen, PIPE, check_call, check_output, CalledProcessError, STDOUT
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
     LOG_COLORS
@@ -219,7 +218,7 @@ class MITMProxy:
             'version': -1
         }
         response = demisto_client.generic_request_func(self=client, path='/system/config',
-                                                           method='POST', body=data)
+                                                       method='POST', body=data)
 
         return response
 
