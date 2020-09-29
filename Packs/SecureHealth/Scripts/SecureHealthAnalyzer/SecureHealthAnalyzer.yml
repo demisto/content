@@ -1,0 +1,22 @@
+comment: |-
+  The SecureHealthAnalyzer ingests data from Google Chronicle related to the incident, parses this information, and prepares new fields for ingestion by further Google Chronicle activities.
+
+  Currently, since the Google Chronicle event command was missing from my instance I had to synthetically generated dummy related event tracing for the period surrounding the first incident's asset.
+
+  The purpose of all of this is to provide the analyst with relevant critical information so that they may decide whether or not to escalate the event and unprovision the device.
+commonfields:
+  id: SecureHealthAnalyzer
+  version: -1
+dockerimage: demisto/python3:3.8.5.11786
+enabled: true
+name: SecureHealthAnalyzer
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

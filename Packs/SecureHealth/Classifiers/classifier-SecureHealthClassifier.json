@@ -1,0 +1,29 @@
+{
+ "defaultIncidentType": "SecureHealthIncident",
+ "description": "",
+ "feed": false,
+ "id": "2b84fa4a-8e65-4b83-8313-26fd5700d1fd",
+ "keyTypeMap": {
+  "DeviceDomainAccess": "SecureHealthIncident"
+ },
+ "name": "SecureHealthClassifier",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": {
+   "accessor": "",
+   "filters": [
+
+   ],
+   "root": "incidenttype",
+   "transformers": [
+
+   ]
+  },
+  "simple": ""
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

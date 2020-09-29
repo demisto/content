@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#d74315",
+ "days": 0,
+ "daysR": 0,
+ "default": true,
+ "disabled": false,
+ "hours": 1,
+ "hoursR": 0,
+ "id": "SecureHealthIncident",
+ "locked": false,
+ "name": "SecureHealthIncident",
+ "playbookId": "4505e27c-1880-4522-8475-8e6ff450cd4a",
+ "readonly": false,
+ "reputationCalc": 0,
+ "sla": 1,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}
