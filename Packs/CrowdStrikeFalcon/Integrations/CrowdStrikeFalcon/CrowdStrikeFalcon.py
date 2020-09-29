@@ -895,30 +895,26 @@ def create_ioc():
     return http_request('POST', '/indicators/entities/iocs/v1', params=payload, headers=headers)
 
 
-def search_iocs():
+def search_iocs(ioc_types=None, ioc_values=None, policies=None, sources=None, expiration_from=None,
+                expiration_to=None, limit=None, share_levels=None, ids=None):
     """
         UNTESTED IN OAUTH 2- Searches an IoC
         :return: IoCs that were found in the search
     """
-    args = demisto.args()
-    ids = args.get('ids')
     if not ids:
-        search_args = {
-            'types': str(args.get('ioc_types', '')).split(','),
-            'values': str(args.get('ioc_values', '')).split(','),
-            'policies': str(args.get('policy', '')),
-            'sources': str(args.get('sources', '')).split(','),
-            'from.expiration_timestamp': str(args.get('expiration_from', '')),
-            'to.expiration_timestamp': str(args.get('expiration_to', '')),
-            'limit': str(args.get('limit', 50))
-        }
-        payload = {}
-        for k, arg in search_args.items():
-            if type(arg) is list:
-                if arg[0]:
-                    payload[k] = arg
-            elif arg:
-                payload[k] = arg
+        payload = assign_params(
+            types=",".join(argToList(ioc_types)),
+            values=",".join(argToList(ioc_values)),
+            policies=",".join(argToList(policies)),
+            sources=",".join(argToList(sources)),
+            share_levels=",".join(argToList(share_levels)),
+            limit=limit or '50',
+        )
+        if expiration_from:
+            payload['from.expiration_timestamp'] = expiration_from
+        if expiration_to:
+            payload['to.expiration_timestamp'] = expiration_to
+
         ids = http_request('GET', '/indicators/queries/iocs/v1', payload).get('resources')
         if not ids:
             return None
@@ -1180,19 +1176,27 @@ def fetch_incidents():
 
 def create_ioc_command():
     """
-        UNTESTED - Creates an IoC
         :return: EntryObject of create IoC command
     """
     raw_res = create_ioc()
     return create_entry_object(contents=raw_res, hr="Custom IoC was created successfully.")
 
 
-def search_iocs_command():
+def search_iocs_command(types=None, values=None, policies=None, sources=None, from_expiration_date=None,
+                        to_expiration_date=None, share_levels=None, limit=None):
     """
-        UNTESTED IN OAUTH 2 - Searches for an ioc
-        :return: EntryObject of search IoC command
+
+    :param types: A list of indicator types. Separate multiple types by comma. Valid types are sha256, sha1, md5, domain, ipv4, ipv6
+    :param values: Comma-separated list of indicator values
+    :param policies: Comma-separated list of indicator policies
+    :param sources: Comma-separated list of IOC sources
+    :param from_expiration_date: Start of date range to search (YYYY-MM-DD format).
+    :param to_expiration_date: End of date range to search (YYYY-MM-DD format).
+    :param share_levels: A list of share levels. Only red is supported.
+    :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    :return:
     """
-    raw_res = search_iocs()
+    raw_res = search_iocs(types, values, policies, sources, from_expiration_date, to_expiration_date, limit, share_levels)
     if not raw_res:
         return create_entry_object(hr='Could not find any Indicators of Compromise.')
     iocs = raw_res.get('resources')
@@ -1907,62 +1911,66 @@ def refresh_session_command():
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
+LOG('Command being called is {}'.format(demisto.command()))
+
 
 def main():
-    LOG('Command being called is {}'.format(demisto.command()))
-
+    command = demisto.command()
     # should raise error in case of issue
-    if demisto.command() == 'fetch-incidents':
+    if command == 'fetch-incidents':
         demisto.incidents(fetch_incidents())
 
+    args = demisto.args()
     try:
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             get_token(new_token=True)
             demisto.results('ok')
-        elif demisto.command() == 'cs-falcon-search-device':
+        elif command == 'cs-falcon-search-device':
             demisto.results(search_device_command())
-        elif demisto.command() == 'cs-falcon-get-behavior':
+        elif command == 'cs-falcon-get-behavior':
             demisto.results(get_behavior_command())
-        elif demisto.command() == 'cs-falcon-search-detection':
+        elif command == 'cs-falcon-search-detection':
             demisto.results(search_detections_command())
-        elif demisto.command() == 'cs-falcon-resolve-detection':
+        elif command == 'cs-falcon-resolve-detection':
             demisto.results(resolve_detection_command())
-        elif demisto.command() == 'cs-falcon-contain-host':
+        elif command == 'cs-falcon-contain-host':
             demisto.results(contain_host_command())
-        elif demisto.command() == 'cs-falcon-lift-host-containment':
+        elif command == 'cs-falcon-lift-host-containment':
             demisto.results(lift_host_containment_command())
-        elif demisto.command() == 'cs-falcon-run-command':
+        elif command == 'cs-falcon-run-command':
             demisto.results(run_command())
-        elif demisto.command() == 'cs-falcon-upload-script':
+        elif command == 'cs-falcon-upload-script':
             demisto.results(upload_script_command())
-        elif demisto.command() == 'cs-falcon-get-script':
+        elif command == 'cs-falcon-get-script':
             demisto.results(get_script_command())
-        elif demisto.command() == 'cs-falcon-delete-script':
+        elif command == 'cs-falcon-delete-script':
             demisto.results(delete_script_command())
-        elif demisto.command() == 'cs-falcon-list-scripts':
+        elif command == 'cs-falcon-list-scripts':
             demisto.results(list_scripts_command())
-        elif demisto.command() == 'cs-falcon-upload-file':
+        elif command == 'cs-falcon-upload-file':
             demisto.results(upload_file_command())
-        elif demisto.command() == 'cs-falcon-delete-file':
+        elif command == 'cs-falcon-delete-file':
             demisto.results(delete_file_command())
-        elif demisto.command() == 'cs-falcon-get-file':
+        elif command == 'cs-falcon-get-file':
             demisto.results(get_file_command())
-        elif demisto.command() == 'cs-falcon-list-files':
+        elif command == 'cs-falcon-list-files':
             demisto.results(list_files_command())
-        elif demisto.command() == 'cs-falcon-run-script':
+        elif command == 'cs-falcon-run-script':
             demisto.results(run_script_command())
-        elif demisto.command() == 'cs-falcon-run-get-command':
+        elif command == 'cs-falcon-run-get-command':
             demisto.results(run_get_command())
-        elif demisto.command() == 'cs-falcon-status-get-command':
+        elif command == 'cs-falcon-status-get-command':
             demisto.results(status_get_command())
-        elif demisto.command() == 'cs-falcon-status-command':
+        elif command == 'cs-falcon-status-command':
             demisto.results(status_command())
-        elif demisto.command() == 'cs-falcon-get-extracted-file':
+        elif command == 'cs-falcon-get-extracted-file':
             demisto.results(get_extracted_file_command())
-        elif demisto.command() == 'cs-falcon-list-host-files':
+        elif command == 'cs-falcon-list-host-files':
             demisto.results(list_host_files_command())
-        elif demisto.command() == 'cs-falcon-refresh-session':
+        elif command == 'cs-falcon-refresh-session':
             demisto.results(refresh_session_command())
+        elif command == 'cs-falcon-search-iocs':
+            demisto.results(search_iocs_command(**args))
         # Log exceptions
     except Exception as e:
         return_error(str(e))

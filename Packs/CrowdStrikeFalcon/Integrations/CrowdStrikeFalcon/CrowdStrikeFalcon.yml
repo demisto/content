@@ -749,6 +749,34 @@ script:
       required: true
       description: The ID of the host to extend the session
     description: Refresh a session timeout on a single host.
+  - name: cs-falcon-search-iocs
+    arguments:
+    - name: types
+      description: A list of indicator types. Separate multiple types by comma. Valid types are sha256, sha1, md5, domain, ipv4, ipv6.
+      isArray: true
+    - name: values
+      description: Comma-separated list of indicator values.
+      isArray: true
+    - name: policies
+      description: Comma-separated list of indicator policies.
+      isArray: true
+    - name: share_levels
+      description: A list of share levels. Only red is supported.
+      isArray: true
+    - name: sources
+      description: Comma-separated list of IOC sources.
+      isArray: true
+    - name: from_expiration_date
+      description: Start of date range to search (YYYY-MM-DD format).
+    - name: to_expiration_date
+      description: End of date range to search (YYYY-MM-DD format).
+    - name: limit
+      description: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    outputs:
+      - contextPath: CrowdStrike.IoC.HostID
+        description: The ID of the host for which the command was running.
+        type: string
+    description: Returns a list of your uploaded IOCs that match the search criteria
   dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   longRunning: false
