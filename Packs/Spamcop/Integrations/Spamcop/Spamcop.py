@@ -83,7 +83,7 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
 
-    LOG(f'Command being called is {demisto.command()}')
+    demisto.info(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
