@@ -534,21 +534,9 @@ class QRadarClient:
             self, limit: Optional[int] = None) -> List[dict]:
         url = urljoin(self._server, "api/config/event_sources/custom_properties/regex_properties")
         headers = self._auth_headers
-        fields = []
-        # Paging
-        start = 0
-        stop = 49
-        while True:
-            headers['Range'] = f"items={start}-{stop}"
-            response = self.send_request("GET", url, headers=headers)
-            if not response:  # Out of fields
-                break
-            fields.extend(response)
-            if limit is not None and len(fields) > limit:
-                fields = fields[:limit]
-                break
-            start, stop = stop, stop * 2
-        return fields
+        if limit:
+            headers['Range'] = f"items=0-{limit-1}"
+        return self.send_request("GET", url, headers=headers)
 
     def enrich_source_addresses_dict(self, src_adrs):
         """
@@ -2096,10 +2084,10 @@ def get_mapping_fields(client: QRadarClient) -> dict:
         'events': {field['name']: field['property_type'] for field in client.get_custom_fields()}
     }
     fields = {
-        'offense': offense,
-        'events: builtin fields': events,
-        'events: custom fields': custom_fields,
-        'assets': assets,
+        'Offense': offense,
+        'Events: Builtin Fields': events,
+        'Events: Custom Fields': custom_fields,
+        'Assets': assets,
     }
     return fields
 

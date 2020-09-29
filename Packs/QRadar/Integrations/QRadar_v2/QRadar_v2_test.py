@@ -411,7 +411,7 @@ def test_get_mapping_fields(mocker):
     mocker.patch.object(QRadarClient, 'get_custom_fields', return_value=custom_fields)
     client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
     response = get_mapping_fields(client)
-    assert response['offense']
-    assert response['events: builtin fields']
-    assert response['assets']
-    assert response['events: custom fields']['events']['bloop'] == 'string'
+    assert response['Offense']
+    assert response['Events: Builtin Fields']
+    assert response['Assets']
+    assert response['Events: Custom Fields']['events']['bloop'] == 'string'

@@ -1357,7 +1357,8 @@ There is no context output for this command.
 ### get-mapping-fields
 ***
 Returns the list of fields for an incident type. This command is for debugging purposes.
-
+This command is used in [Classification & Mapping](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping/create-a-mapper.html) section.
+The scheme is divided to 4 sections. Offense (root), Events: Builtins, Events: Custom Fields and Assets.
 
 #### Base Command
 
