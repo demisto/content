@@ -127,7 +127,7 @@ def test_module(client):
         client._http_request('GET', 'wootassets')
         return 'ok'
     except Exception as e:
-        return 'not ok: {}'.format(e)
+        return 'Test failed: {}'.format(e)
 
 
 def fetch_single_alert(client, alert_id, type):
