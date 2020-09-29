@@ -1,0 +1,51 @@
+{
+ "associatedToAll": true,
+ "caseInsensitive": true,
+ "cliName": "clarotyassetname",
+ "closeForm": false,
+ "columns": [
+  {
+   "displayName": "Asset Name",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "assetname",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "longText",
+   "width": 150
+  }
+ ],
+ "content": true,
+ "defaultRows": [
+  {
+
+  },
+  {
+
+  },
+  {
+
+  }
+ ],
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_clarotyassetname",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Claroty Asset Name",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "grid",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}
