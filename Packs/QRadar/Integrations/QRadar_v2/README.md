@@ -1353,3 +1353,19 @@ There is no context output for this command.
 #### Human Readable Output
 
 >fetch-incidents was reset successfully.
+
+### get-mapping-fields
+***
+Returns the list of fields for an incident type. This command is for debugging purposes.
+
+
+#### Base Command
+
+`get-mapping-fields`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

@@ -1304,7 +1304,7 @@ script:
     description: Returns the list of fields for an incident type. This command should be used for debugging purposes.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.5.11789
   feed: false
   isfetch: false
   longRunning: true
