@@ -1,0 +1,14 @@
+{
+    "name": "Identity Threat Response Pack",
+    "description": "ImpossibleTravelRiskEvent Response using XSOAR and Silverfort\n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Pramukh Ganeshamurthy",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T20:36:41Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

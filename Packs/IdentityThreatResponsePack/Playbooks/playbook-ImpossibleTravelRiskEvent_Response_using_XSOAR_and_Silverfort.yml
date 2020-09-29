@@ -1,0 +1,1099 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: The Code42 Exfiltration playbook acts on Code42 Security Alerts, retrieves
+  file event data, and allows security teams to remediate file exfiltration events
+  by revoking access rights to cloud files or containing endpoints.
+id: ImpossibleTravelRiskEvent Response using XSOAR and Silverfort
+inputs:
+- description: Maximum number of network hosts to contain.
+  key: ContainHostsMax
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "2"
+- description: URL of Demisto instance for emails.
+  key: DemistoInstanceURL
+  playbookInputQuery:
+  required: false
+  value:
+    simple: https://dagobah.demisto.works/
+name: ImpossibleTravelRiskEvent Response using XSOAR and Silverfort
+outputs: []
+rolename:
+- Administrator
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ab4c0d6a-996e-415c-8f44-8a76d279ca15
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: ab4c0d6a-996e-415c-8f44-8a76d279ca15
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -1720
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a3129e1c-3764-4753-8e3d-cc047d3d032c
+      iscommand: false
+      name: 'Begin Investigation - Start Timer '
+      tags:
+      - exfiltration
+      type: title
+      version: -1
+      description: ''
+    taskid: a3129e1c-3764-4753-8e3d-cc047d3d032c
+    timertriggers:
+    - action: start
+      fieldname: remediationsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -200
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dbffe514-03bd-4aa0-8d56-4ea00eb5d889
+      iscommand: false
+      name: Analyst review
+      type: regular
+      version: -1
+    taskid: dbffe514-03bd-4aa0-8d56-4ea00eb5d889
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1680
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1905e906-499f-4c14-8ec1-9c02eb6ef22a
+      iscommand: false
+      name: Stop Remediation Timer
+      type: title
+      version: -1
+      description: ''
+    taskid: 1905e906-499f-4c14-8ec1-9c02eb6ef22a
+    timertriggers:
+    - action: stop
+      fieldname: remediationsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1535
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "51"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f0003712-c2a5-498b-8d2d-3855aacc2b90
+      iscommand: false
+      name: Enrich Event User Information
+      type: title
+      version: -1
+      description: ''
+    taskid: f0003712-c2a5-498b-8d2d-3855aacc2b90
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 270
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: All stakeholders have been updated
+      closeReason:
+        simple: Endpoint contained. Manager updated
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        complex:
+          accessor: id
+          root: incident
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 97ca62de-2914-474a-875c-ef3599470351
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 97ca62de-2914-474a-875c-ef3599470351
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2205
+        }
+      }
+  "29":
+    continueonerror: true
+    evidencedata:
+      customfields: {}
+      description:
+        simple: alert the manager
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Data exfiltration activity has been detected by Code42 for user ${incident.labels.actor}. File exfiltration details:
+
+          Files:
+          ${incident.code42fileevents.filename}
+
+          Paths:
+          ${incident.code42fileevents.filepath}
+
+          Exposures:
+          ${incident.code42fileevents.exposure}
+
+          If you have access to Demisto, you can view the incident details at ${inputs.DemistoInstanceURL}#/incident/${incident.id}
+      bodyType: {}
+      cc: {}
+      flag: {}
+      from: {}
+      headers: {}
+      htmlBody: {}
+      importance: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: ${incident.name}
+      templateParams: {}
+      to:
+        simple: ${UserManagerEmail}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+      using:
+        simple: Mail Sender (New)_instance_1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 2a556db2-6273-48a7-8fcf-595d08b25662
+      iscommand: true
+      name: Send email to manager
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 2a556db2-6273-48a7-8fcf-595d08b25662
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 920
+        }
+      }
+  "30":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Get details from service account manager/owner
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Get details from service account manager/owner
+      totalanswers: 0
+    id: "30"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: Get details from service account manager/owner
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: Administrator
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8c9d315a-8b4b-4662-87f2-ae96ad2428d5
+      iscommand: false
+      name: Get details from service account manager/owner
+      type: collection
+      version: -1
+    taskid: 8c9d315a-8b4b-4662-87f2-ae96ad2428d5
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 1115
+        }
+      }
+  "35":
+    continueonerror: true
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name: {}
+      type: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        A script to generate investigation summary report in an automated way
+        Can be used in post-processing flow as well.
+      id: 224d2d54-c200-474e-824b-6ccde86e380d
+      iscommand: false
+      name: Generate Investigation Summary Report
+      script: GenerateInvestigationSummaryReport
+      type: regular
+      version: -1
+    taskid: 224d2d54-c200-474e-824b-6ccde86e380d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1855
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      bodyType: {}
+      cc: {}
+      flag: {}
+      from: {}
+      headers: {}
+      htmlBody: {}
+      importance: {}
+      raw_message: {}
+      replyTo: {}
+      subject: {}
+      templateParams: {}
+      to:
+        simple: pramukh@demisto.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+      using:
+        simple: Mail Sender (New)_instance_1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 6e065121-01d8-4483-879f-97efabe774c8
+      iscommand: true
+      name: Email summary report to the cross functional teams
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 6e065121-01d8-4483-879f-97efabe774c8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2030
+        }
+      }
+  "37":
+    continueonerror: true
+    defaultassigneecomplex: {}
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "57"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assignBy:
+        simple: machine-learning
+      email: {}
+      onCall: {}
+      roles: {}
+      username:
+        simple: admin
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      id: a0d1f875-e205-43a8-8c51-bda180550471
+      iscommand: false
+      name: Assign Incident Owner
+      script: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: a0d1f875-e205-43a8-8c51-bda180550471
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -1550
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain: {}
+      email:
+        simple: ron@ad.acaws.silverfort.io
+      sam_account: {}
+      upn:
+        simple: ron@ad.acaws.silverfort.io
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: User risk commands - get the user entity risk.
+      id: 8b7e3992-ae75-40ef-8b05-b5070d0310e8
+      iscommand: true
+      name: Get Silverfort risk score and indicators
+      script: '|||silverfort-get-user-risk'
+      type: regular
+      version: -1
+    taskid: 8b7e3992-ae75-40ef-8b05-b5070d0310e8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 255
+        }
+      }
+  "45":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: "1"
+          operator: isEqualString
+          right:
+            value:
+              simple: "2"
+      label: "yes"
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "46"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1722f171-5685-4360-8de5-401403b660b8
+      iscommand: false
+      name: 'Is risk score critical ? '
+      type: condition
+      version: -1
+    taskid: 1722f171-5685-4360-8de5-401403b660b8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 480
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: User ron@ad.acaws.silverfort.io has been blocked
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 20280b4a-3dfa-4622-88c0-c12a3e96e9c3
+      iscommand: false
+      name: Block user
+      script: Print
+      type: regular
+      version: -1
+    taskid: 20280b4a-3dfa-4622-88c0-c12a3e96e9c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 1070
+        }
+      }
+  "48":
+    id: "48"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "49"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Impossible travel alert from XSOAR
+      domain: {}
+      email: {}
+      risk_name:
+        simple: Impossible Traveler
+      sam_account: {}
+      severity:
+        simple: high
+      upn:
+        simple: ron@ad.acaws.silverfort.io
+      valid_for:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the user entity risk.
+      id: e8f84db9-560b-4223-87e3-868a2dae243e
+      iscommand: true
+      name: Raise the risk score in Silverfort
+      script: '|||silverfort-update-user-risk'
+      type: regular
+      version: -1
+    taskid: e8f84db9-560b-4223-87e3-868a2dae243e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+  "49":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: "1"
+          operator: isEqualString
+          right:
+            value:
+              simple: "1"
+      label: "yes"
+    id: "49"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 715c5566-a27f-4341-8ee3-b96cb83c0b23
+      iscommand: false
+      name: Has the user identity been verified ?
+      type: condition
+      version: -1
+    taskid: 715c5566-a27f-4341-8ee3-b96cb83c0b23
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 900
+        }
+      }
+  "50":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: "1"
+          operator: isEqualString
+          right:
+            value:
+              simple: "2"
+      label: "yes"
+    id: "50"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 34cab94b-6745-4d9e-8bd1-9b87a950b2e4
+      iscommand: false
+      name: Check in Silverfort if its a service account ?
+      type: condition
+      version: -1
+    taskid: 34cab94b-6745-4d9e-8bd1-9b87a950b2e4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -20
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "52"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 57a22231-7542-40ea-8d61-c3dd25a05e4c
+      iscommand: false
+      name: Search Active Directory
+      type: regular
+      version: -1
+    taskid: 57a22231-7542-40ea-8d61-c3dd25a05e4c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 480
+        }
+      }
+  "52":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: "1"
+          operator: isEqualString
+          right:
+            value:
+              simple: "1"
+      label: "yes"
+    id: "52"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "53"
+      "yes":
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e7a3c0b6-235b-41e7-8571-1a88a3166014
+      iscommand: false
+      name: 'Does the service account have a manager/owner? '
+      type: condition
+      version: -1
+    taskid: e7a3c0b6-235b-41e7-8571-1a88a3166014
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 670
+        }
+      }
+  "53":
+    id: "53"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject: {}
+      templateParams: {}
+      to:
+        simple: pramukh@demisto.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 0547d8b3-b0ad-4ca1-8800-4a79b0d716ca
+      iscommand: true
+      name: Notify the SOC team
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 0547d8b3-b0ad-4ca1-8800-4a79b0d716ca
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 1090
+        }
+      }
+  "54":
+    id: "54"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "59"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dest_coords:
+        simple: 38.6582,-77.2497
+      src_coords:
+        simple: 47.1449,8.1551
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Compute the distance between two sets of coordinates, in miles.
+      id: 299d4073-da8a-4da8-85d1-0a063da4b649
+      iscommand: false
+      name: Calculate Geographical Distance
+      script: CalculateGeoDistance
+      type: regular
+      version: -1
+    taskid: 299d4073-da8a-4da8-85d1-0a063da4b649
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -950
+        }
+      }
+  "55":
+    id: "55"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "61"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      end_time:
+        simple: "2019-09-23T06:56:00.567622Z"
+      start_time:
+        simple: "2019-09-23T06:48:00.567622Z"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Calculate the time difference, in minutes
+      id: c98af5ef-2279-46bf-8aee-4f22cf852bfc
+      iscommand: false
+      name: Calculate Event Duration
+      script: CalculateTimeDifference
+      type: regular
+      version: -1
+    taskid: c98af5ef-2279-46bf-8aee-4f22cf852bfc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -600
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+      - "60"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dd936ba7-d76b-43cf-8a3a-7c93449d8e4d
+      iscommand: false
+      name: Enrich Event IP Address
+      type: title
+      version: -1
+      description: ''
+    taskid: dd936ba7-d76b-43cf-8a3a-7c93449d8e4d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -1340
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "54"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      IP:
+        simple: 104.196.188.170
+      InternalRange: {}
+      ResolveIP:
+        simple: "True"
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Enrich IP using one or more integrations.
+
+        IP enrichment includes:
+        * Resolve IP to Hostname (DNS)
+        * Threat information
+        * Separate internal and external addresses
+        * IP reputation
+        * For internal addresses, get host information
+      id: 74073054-c552-4609-8e30-7d9467b531cf
+      iscommand: false
+      name: ip_enrichment_generic
+      playbookId: ip_enrichment_generic
+      type: playbook
+      version: -1
+    taskid: 74073054-c552-4609-8e30-7d9467b531cf
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": -1120
+        }
+      }
+  "59":
+    id: "59"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "55"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cur_location:
+        simple: 47.1449,8.1551
+      prev_location:
+        simple: 38.6582,-77.2497
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Rasterize Bing map with two locations
+      id: ea847792-d0ed-4077-8df2-bc799de72eea
+      iscommand: false
+      name: Generate Location Map
+      script: ec991a66-236a-41f3-8f02-f523284866d8
+      type: regular
+      version: -1
+    taskid: ea847792-d0ed-4077-8df2-bc799de72eea
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -780
+        }
+      }
+  "60":
+    id: "60"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "54"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      IP:
+        simple: 176.10.104.240
+      InternalRange: {}
+      ResolveIP:
+        simple: "True"
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Enrich IP using one or more integrations.
+
+        IP enrichment includes:
+        * Resolve IP to Hostname (DNS)
+        * Threat information
+        * Separate internal and external addresses
+        * IP reputation
+        * For internal addresses, get host information
+      id: c4e0883a-2f91-42a2-8f31-4b53dae4120e
+      iscommand: false
+      name: ip_enrichment_generic
+      playbookId: ip_enrichment_generic
+      type: playbook
+      version: -1
+    taskid: c4e0883a-2f91-42a2-8f31-4b53dae4120e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": -1120
+        }
+      }
+  "61":
+    id: "61"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 742d6778-4fe1-4017-8432-d270effc5265
+      iscommand: false
+      name: Pause Playbook for Analyst Review and Approval
+      type: regular
+      version: -1
+    taskid: 742d6778-4fe1-4017-8432-d270effc5265
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -430
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4020,
+        "width": 1850,
+        "x": -580,
+        "y": -1720
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

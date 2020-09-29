@@ -1,0 +1,27 @@
+args:
+- description: 'Location data in format: Latitude,Longitude'
+  name: prev_location
+  required: true
+- description: 'Location data in format: Latitude,Longitude'
+  name: cur_location
+  required: true
+comment: Rasterize Bing map with two locations
+commonfields:
+  id: RasterizeGeoMap_v2
+  version: -1
+dependson:
+  must: []
+dockerimage: selenium:latest
+enabled: true
+name: RasterizeGeoMap_v2
+runas: DBotRole
+runonce: true
+script: ''
+scripttarget: 0
+subtype: python2
+tags:
+- Utilities
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
