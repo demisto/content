@@ -1,0 +1,1919 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: Master playbook for ransomware incidents. This playbook is a manual playbook.
+id: WannaCry Ransomware Response Playbook for ICS Systems
+inputs: []
+name: WannaCry Ransomware Response Playbook for ICS Systems
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "65"
+      - "66"
+      - "81"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6976d00a-5e1b-4a32-8f85-9c79656f82bc
+      iscommand: false
+      name: start_task
+      type: start
+      version: -1
+      description: ''
+    taskid: 6976d00a-5e1b-4a32-8f85-9c79656f82bc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -650
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "75"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        complex:
+          accessor: assetname
+          root: incident
+      bodyType: {}
+      cc: {}
+      flag: {}
+      from: {}
+      headers: {}
+      htmlBody: {}
+      importance: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: Ransomware attack has been detected on critical asset
+      templateParams: {}
+      to:
+        simple: pramukh@demisto.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 37995e1b-820c-42da-8fcd-507214dd7885
+      iscommand: true
+      name: Notify IT about the end user details for replacing device
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 37995e1b-820c-42da-8fcd-507214dd7885
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 865
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      Real Alert:
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        1. If a URL was flagged from the proxy logs or IDS or SIEM, check why: check for URL and IP reputation against threat feeds.
+         2. If the alert came in from a file check (mail server or web server) - check file reputation (hash) against threat feeds like Virustotal
+      id: 71747797-359b-48a7-81f0-e4d68a15b6e9
+      iscommand: false
+      name: Notify team lead to confirm if this incident is real or false positive?
+      type: condition
+      version: -1
+    taskid: 71747797-359b-48a7-81f0-e4d68a15b6e9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 405
+        }
+      }
+  "14":
+    form:
+      description: 'Are there any business critical information on the device? '
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: 'Are there any business critical information on the device? '
+        options:
+        - "Yes"
+        - "No"
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: 'Are there any business critical information on the device? '
+        type: multiSelect
+      sender: ""
+      title: Are there any business critical information on the device?
+      totalanswers: 0
+    id: "14"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: 'We are initiating a containment action on your device. You may get
+          disconnected. '
+      cc:
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: Ransomware has been detected on your device
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: Administrator
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Call user and notify them about the incident details. '
+      id: ab61264a-32c8-4d87-8370-7749b060e559
+      iscommand: false
+      name: Send questionnaire to the employee to get initial feedback captured
+      type: collection
+      version: -1
+    taskid: ab61264a-32c8-4d87-8370-7749b060e559
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3410
+        }
+      }
+  "15":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Network Contain of the End Point by Cortex XDR
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "78"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      endpoint_id:
+        simple: f8a2f58846b542579c12090652e79f3d
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Isolates the specified endpoint.
+      id: a455a35c-8312-45c1-8879-8d7c1625b294
+      iscommand: true
+      name: Execute local containment using Cortex XDR
+      script: '|||xdr-isolate-endpoint'
+      type: regular
+      version: -1
+    taskid: a455a35c-8312-45c1-8879-8d7c1625b294
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2875
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 84b656ee-7189-4192-851d-db05e77c4bf0
+      iscommand: false
+      name: 'Investigate if the ransomeware was delivered by an email ? '
+      type: title
+      version: -1
+      description: ''
+    taskid: 84b656ee-7189-4192-851d-db05e77c4bf0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3195
+        }
+      }
+  "21":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Related Incidents
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "80"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      NonEmptyFields: {}
+      fromDate: {}
+      incidentTypes:
+        simple: reportabuse
+      includeContext: {}
+      limit: {}
+      outputFormat: {}
+      populateFields: {}
+      query:
+        simple: playbook:"Cortex XSOAR Phishing investigation and response"
+      timeField: {}
+      toDate: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a list of incident objects and the associated incident outputs
+        that match the specified query and filters. The results are returned in a
+        structured data file.
+      id: eebf7674-e9ab-430a-8d67-ee23882c0fc4
+      iscommand: false
+      name: Query Cortex XSOAR to get associated suspicious email alerts
+      script: GetIncidentsByQuery
+      type: regular
+      version: -1
+    taskid: eebf7674-e9ab-430a-8d67-ee23882c0fc4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3340
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alias_name: {}
+      dist_name: {}
+      endpoint_id_list: {}
+      first_seen_gte: {}
+      first_seen_lte: {}
+      group_name: {}
+      hostname: {}
+      ip_list: {}
+      isolate: {}
+      last_seen_gte: {}
+      last_seen_lte: {}
+      limit: {}
+      page: {}
+      platform: {}
+      sort_by: {}
+      sort_order: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters it will return all endpoints. Filtering by multiple fields
+        will be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      id: 99ab5fd0-7b19-42f5-8e1e-ecfd522560f9
+      iscommand: true
+      name: Identify other impacted endpoints from Cortex XDR
+      script: '|||xdr-get-endpoints'
+      type: regular
+      version: -1
+    taskid: 99ab5fd0-7b19-42f5-8e1e-ecfd522560f9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3340
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "84"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      bodyType: {}
+      cc: {}
+      flag: {}
+      from: {}
+      headers: {}
+      htmlBody: {}
+      importance: {}
+      raw_message: {}
+      replyTo: {}
+      subject: {}
+      templateParams: {}
+      to:
+        simple: pramukh@demisto.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 40d8cc8f-2ca5-4bc6-8225-5dd9abc68ab4
+      iscommand: true
+      name: Provide end-user remediation guidance and link to training
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 40d8cc8f-2ca5-4bc6-8225-5dd9abc68ab4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3515
+        }
+      }
+  "48":
+    fieldMapping:
+    - incidentfield: Claroty Alert Type
+      output:
+        simple: ${Claroty.Alert.AlertType}
+    - incidentfield: Alert Type ID
+      output:
+        simple: ${Claroty.Alert.AlertTypeID}
+    - incidentfield: Claroty Description
+      output:
+        simple: ${Claroty.Alert.Description}
+    - incidentfield: Claroty Indicator
+      output:
+        simple: ${Claroty.Alert.Indicator}
+    - incidentfield: Claroty Network ID
+      output:
+        simple: ${Claroty.Alert.NetworkID}
+    - incidentfield: Claroty Alert Resolved
+      output:
+        simple: ${Claroty.Alert.Resolved}
+    - incidentfield: Claroty Resource ID
+      output:
+        simple: ${Claroty.Alert.ResourceID}
+    - incidentfield: severity
+      output:
+        simple: ${Claroty.Alert.Severity}
+    id: "48"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "49"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alert_rid:
+        complex:
+          accessor: labels.ResourceID}
+          root: ${incident
+      fields:
+        simple: all
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get a single alert from CTD.
+      id: 07019d55-579b-4e04-8b93-5508357b2a18
+      iscommand: true
+      name: Get Claroty alert details
+      script: '|||claroty-get-single-alert'
+      type: regular
+      version: -1
+    taskid: 07019d55-579b-4e04-8b93-5508357b2a18
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": -260
+        }
+      }
+  "49":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Asset Details
+    fieldMapping:
+    - incidentfield: Asset ID
+      output:
+        simple: ${Claroty.Asset.AssetID}
+    - incidentfield: Asset Type
+      output:
+        simple: ${Claroty.Asset.AssetType}
+    - incidentfield: Class Type
+      output:
+        simple: ${Claroty.Asset.ClassType}
+    - incidentfield: Criticality
+      output:
+        simple: ${Claroty.Asset.Criticality}
+    - incidentfield: Firmware Version
+      output:
+        simple: ${Claroty.Asset.FirmwareVersion}
+    - incidentfield: CVE
+      output:
+        simple: ${Claroty.Asset.HighestCVEScore}
+    - incidentfield: Device IP
+      output:
+        simple: ${Claroty.Asset.IP}
+    - incidentfield: Insight Name
+      output:
+        simple: ${Claroty.Asset.InsightName}
+    - incidentfield: Last Seen
+      output:
+        simple: ${Claroty.Asset.LastSeen}
+    - incidentfield: Device MAC Address
+      output:
+        simple: ${Claroty.Asset.MAC}
+    - incidentfield: Claroty Asset Name
+      output:
+        simple: ${Claroty.Asset.Name}
+    - incidentfield: Claroty Resource ID
+      output:
+        simple: ${Claroty.Asset.ResourceID}
+    - incidentfield: Vendor Product
+      output:
+        simple: ${Claroty.Asset.Vendor}
+    - incidentfield: Virtual Zone
+      output:
+        simple: ${Claroty.Asset.VirtualZone}
+    id: "49"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "92"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      asset_limit:
+        simple: "1"
+      assets_last_seen: {}
+      criticality:
+        simple: High
+      fields:
+        simple: all
+      insight_name: {}
+      should_enrich_assets:
+        simple: "True"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets all assets from CTD. You can apply one or more filters.
+      id: f5efdfce-d7d9-4179-8272-77203cbfe5f9
+      iscommand: true
+      name: Get Asset Details from Claroty
+      script: '|||claroty-get-assets'
+      type: regular
+      version: -1
+    taskid: f5efdfce-d7d9-4179-8272-77203cbfe5f9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": -70
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: afe258d8-f132-4311-8348-74fe9de0748a
+      iscommand: false
+      name: Perform Retroactive Analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: afe258d8-f132-4311-8348-74fe9de0748a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3195
+        }
+      }
+  "55":
+    id: "55"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 92f524f8-5dea-4577-882e-b3233cc224df
+      iscommand: false
+      name: Examine possibility for social engineering and document
+      type: title
+      version: -1
+      description: ''
+    taskid: 92f524f8-5dea-4577-882e-b3233cc224df
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3210
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "68"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: taskkill.exe /f /im sqlserver.exe
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: ebaf1caf-9e5c-4ef3-86ea-7895a7f7de48
+      iscommand: false
+      name: Examine the endpoint for running processes and print name of process arguments
+      script: Print
+      type: regular
+      version: -1
+    taskid: ebaf1caf-9e5c-4ef3-86ea-7895a7f7de48
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2205
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "71"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      arch: {}
+      credentialSet: {}
+      dmbPort: {}
+      engineName: {}
+      host:
+        simple: ${Claroty.Asset.IP}
+      name:
+        simple: EC2AMAZ-P7PPOI4
+      os:
+        simple: windows
+      password: {}
+      sshPort: {}
+      username: {}
+      workgroup: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Add a remote system (such as a desktop under investigation) to an investigation (this will allow you to install and agent on the system)
+      id: 575d4908-b07d-483d-8946-cff6af52bae4
+      iscommand: false
+      name: Connect XSOAR to the endpoint
+      script: IncidentAddSystem
+      type: regular
+      version: -1
+    taskid: 575d4908-b07d-483d-8946-cff6af52bae4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1525
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "84"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id: {}
+      name:
+        simple: |
+          Insider threat investigation
+      playbookName: {}
+      restricted: {}
+      roles: {}
+      usernames: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.add.child
+      id: a1b79c31-b479-44c7-867a-5c67f9c47bde
+      iscommand: true
+      name: Investigate for possible social engineering and insider threat
+      script: Builtin|||addChildInvestigation
+      type: regular
+      version: -1
+    taskid: a1b79c31-b479-44c7-867a-5c67f9c47bde
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3645
+        }
+      }
+  "60":
+    id: "60"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "61"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: mssecsvc.exe
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 969488a5-af0b-45f0-8b92-88e9b98e97b3
+      iscommand: false
+      name: Print the name of captured files from the infected endpoint
+      script: Print
+      type: regular
+      version: -1
+    taskid: 969488a5-af0b-45f0-8b92-88e9b98e97b3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1855
+        }
+      }
+  "61":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: File Reputation
+    id: "61"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "62"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      detailed: {}
+      file:
+        simple: db349b97c37d22f5ea1d1841e3c89eb4
+      hash:
+        simple: db349b97c37d22f5ea1d1841e3c89eb4
+      long:
+        simple: "true"
+      md5: {}
+      retries: {}
+      sha256: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: illuminate
+      description: Queries the illuminate REST API and enriches the given file with
+        illuminate indicator data.
+      id: cf3de7a5-2761-4bbc-8410-0ff2a5445eee
+      iscommand: true
+      name: Check file reputation
+      script: illuminate|||file
+      type: regular
+      version: -1
+    taskid: cf3de7a5-2761-4bbc-8410-0ff2a5445eee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2030
+        }
+      }
+  "62":
+    id: "62"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "63"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: db349b97c37d22f5ea1d1841e3c89eb4
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 8f9c941d-3e6d-40fe-8e8c-c260b99054a3
+      iscommand: false
+      name: 'Malicious files found? '
+      script: Exists
+      type: condition
+      version: -1
+    taskid: 8f9c941d-3e6d-40fe-8e8c-c260b99054a3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2205
+        }
+      }
+  "63":
+    id: "63"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "76"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: C:\WINDOWS\tasksche.exe
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: c72109ec-3a52-4298-8408-d300e95b4552
+      iscommand: false
+      name: Print the file path information
+      script: Print
+      type: regular
+      version: -1
+    taskid: c72109ec-3a52-4298-8408-d300e95b4552
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2380
+        }
+      }
+  "64":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Add Hashes to Quarantine List
+    id: "64"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "78"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      category: {}
+      listType:
+        simple: GlobalQuarantine
+      reason: {}
+      sha256:
+        simple: ED01EBFBC9EB5BBEA545AF4D01BF5F1071661840480439C6E5BABE8E080E41AA
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cylance Protect v2
+      description: Adds a convicted threat for a particular tenant to either the Global
+        Quarantine list or the Global Safe list.
+      id: b1640443-7110-4503-89c7-ad04d2b8e6cf
+      iscommand: true
+      name: Add hashes to global quarantine
+      script: Cylance Protect v2|||cylance-protect-add-hash-to-list
+      type: regular
+      version: -1
+    taskid: b1640443-7110-4503-89c7-ad04d2b8e6cf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2875
+        }
+      }
+  "65":
+    id: "65"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "48"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d651aefa-3993-4ffb-8445-c4fcaf2c9ea4
+      iscommand: false
+      name: Get Asset Details from Claroty
+      type: title
+      version: -1
+      description: ''
+    taskid: d651aefa-3993-4ffb-8445-c4fcaf2c9ea4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": -400
+        }
+      }
+  "66":
+    id: "66"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "91"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      id: 0d3d8f59-aac9-4161-8c8c-be504dea0697
+      iscommand: false
+      name: Assign Incident Ownership
+      type: title
+      version: -1
+    taskid: 0d3d8f59-aac9-4161-8c8c-be504dea0697
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": -400
+        }
+      }
+  "68":
+    id: "68"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "76"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1f05087f-f91e-4624-8c4d-6f747e70208d
+      iscommand: false
+      name: Check for malicious processes and take action
+      type: title
+      version: -1
+      description: ''
+    taskid: 1f05087f-f91e-4624-8c4d-6f747e70208d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2395
+        }
+      }
+  "71":
+    id: "71"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "60"
+      - "56"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: baed2844-5705-4200-8595-1357dfdcdec1
+      iscommand: false
+      name: Get the File and Process Information from the Endpoint
+      type: title
+      version: -1
+      description: ''
+    taskid: baed2844-5705-4200-8595-1357dfdcdec1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1710
+        }
+      }
+  "72":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Block IP at Firewall
+    id: "72"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "78"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      IPs:
+        simple: 172.16.99.5
+      persistent: {}
+      tag:
+        simple: dag1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Registers IP addresses to a tag.
+      id: 9f622f6d-0ccc-496e-85bb-d1068fff51b1
+      iscommand: true
+      name: Block IP
+      script: '|||panorama-register-ip-tag'
+      type: regular
+      version: -1
+    taskid: 9f622f6d-0ccc-496e-85bb-d1068fff51b1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2875
+        }
+      }
+  "73":
+    id: "73"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9a6e1114-5d92-42f2-8cb0-3cd2313c76ac
+      iscommand: false
+      name: Close Investigation
+      type: title
+      version: -1
+      description: ''
+    taskid: 9a6e1114-5d92-42f2-8cb0-3cd2313c76ac
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4390
+        }
+      }
+  "74":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: End Point Details
+    id: "74"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "57"
+      - "93"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      alias_name: {}
+      dist_name: {}
+      endpoint_id_list:
+        simple: "f8a2f58846b542579c12090652e79f3d\t"
+      first_seen_gte: {}
+      first_seen_lte: {}
+      group_name: {}
+      hostname: {}
+      ip_list: {}
+      isolate:
+        simple: unisolated
+      last_seen_gte: {}
+      last_seen_lte: {}
+      limit: {}
+      page: {}
+      platform:
+        simple: windows
+      sort_by: {}
+      sort_order: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters it will return all endpoints. Filtering by multiple fields
+        will be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      id: 8a125cce-50f1-403a-89de-30ca5b9cba57
+      iscommand: true
+      name: Get endpoint details from Cortex XDR
+      script: '|||xdr-get-endpoints'
+      type: regular
+      version: -1
+    taskid: 8a125cce-50f1-403a-89de-30ca5b9cba57
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1370
+        }
+      }
+  "75":
+    id: "75"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "74"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bcd97a4a-730a-487b-8f62-f0e4fec7fa51
+      iscommand: false
+      name: Get Associated HMI Endpoint Details from Cortex XDR
+      type: title
+      version: -1
+      description: ''
+    taskid: bcd97a4a-730a-487b-8f62-f0e4fec7fa51
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1090
+        }
+      }
+  "76":
+    id: "76"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "77"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 172b34c2-e41e-4c01-875d-4261e1bfaab8
+      iscommand: false
+      name: Analyst to Review
+      type: regular
+      version: -1
+    taskid: 172b34c2-e41e-4c01-875d-4261e1bfaab8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2555
+        }
+      }
+  "77":
+    id: "77"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+      - "64"
+      - "72"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2d98f888-c6cf-4882-81d1-144b8dc29d52
+      iscommand: false
+      name: Quarantine the Endpoint, Block malicious IP and Hashes
+      type: title
+      version: -1
+      description: ''
+    taskid: 2d98f888-c6cf-4882-81d1-144b8dc29d52
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2730
+        }
+      }
+  "78":
+    id: "78"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "51"
+      - "55"
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c12511fa-f8c2-4fca-810e-62b3dddfacc6
+      iscommand: false
+      name: Remediation Procedures
+      type: title
+      version: -1
+      description: ''
+    taskid: c12511fa-f8c2-4fca-810e-62b3dddfacc6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3050
+        }
+      }
+  "80":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: List of employees who received the same URL
+    id: "80"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "84"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      folder-path: {}
+      is-public: {}
+      limit: {}
+      message-id: {}
+      query:
+        simple: http://citysportsblog.ru-asdf-activity.bodegon.co/googledrive/contactform.php
+      selected-fields: {}
+      target-mailbox: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Searches for items in the specified mailbox. Specific permissions
+        are needed for this operation to search in a target mailbox other than the
+        default.
+      id: 975d8b4c-17af-413a-8f02-dadd5ad8113d
+      iscommand: true
+      name: Check if the URL was delivered to anyone else in the organization
+      script: '|||ews-search-mailbox'
+      type: regular
+      version: -1
+    taskid: 975d8b4c-17af-413a-8f02-dadd5ad8113d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3865
+        }
+      }
+  "81":
+    id: "81"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "82"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 86f0b43b-53df-4592-88d0-81f8226881dd
+      iscommand: false
+      name: Get CVE Information from Claroty
+      type: title
+      version: -1
+      description: ''
+    taskid: 86f0b43b-53df-4592-88d0-81f8226881dd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -400
+        }
+      }
+  "82":
+    id: "82"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "83"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: adf5dca6-a50a-4e24-8ee0-ea431d4e7db8
+      iscommand: false
+      name: 01245a74-3135-484b-8122-8b78abd9382f
+      playbookId: 01245a74-3135-484b-8122-8b78abd9382f
+      type: playbook
+      version: -1
+      description: ''
+    taskid: adf5dca6-a50a-4e24-8ee0-ea431d4e7db8
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -260
+        }
+      }
+  "83":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Asset CVE Information
+    id: "83"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "89"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      asset_limit:
+        simple: "2"
+      assets_last_seen: {}
+      criticality:
+        simple: High
+      fields:
+        simple: name
+      insight_name:
+        simple: Full Match CVEs
+      should_enrich_assets:
+        simple: "True"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets all assets from CTD. You can apply one or more filters.
+      id: d594ca05-937c-43f1-8ade-a490d7fba02b
+      iscommand: true
+      name: Get additional context from Claroty
+      script: '|||claroty-get-assets'
+      type: regular
+      version: -1
+    taskid: d594ca05-937c-43f1-8ade-a490d7fba02b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -70
+        }
+      }
+  "84":
+    id: "84"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "85"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incidentId: {}
+      name: {}
+      type: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        A script to generate investigation summary report in an automated way
+        Can be used in post-processing flow as well.
+      id: 36dbd743-90a9-4e7b-8313-14c6981d00f9
+      iscommand: false
+      name: Generate Investigation Summary Report
+      script: GenerateInvestigationSummaryReport
+      type: regular
+      version: -1
+    taskid: 36dbd743-90a9-4e7b-8313-14c6981d00f9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4040
+        }
+      }
+  "85":
+    id: "85"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "73"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      bodyType: {}
+      cc: {}
+      flag: {}
+      from: {}
+      headers: {}
+      htmlBody: {}
+      importance: {}
+      raw_message: {}
+      replyTo: {}
+      subject: {}
+      templateParams: {}
+      to:
+        simple: pramukh@demisto.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 0a7dc9ab-ce45-4fd8-8aea-b697a6c65b93
+      iscommand: true
+      name: Email the report to all stakeholders
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 0a7dc9ab-ce45-4fd8-8aea-b697a6c65b93
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4215
+        }
+      }
+  "86":
+    id: "86"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "87"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject: {}
+      templateParams: {}
+      to:
+        simple: pramukh@demisto.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 579f6f2b-10de-41ca-8ce2-bc4e0e31c2c8
+      iscommand: true
+      name: Notify vulnerability management team
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 579f6f2b-10de-41ca-8ce2-bc4e0e31c2c8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 460
+        }
+      }
+  "87":
+    id: "87"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "88"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: "39"
+      site_name: {}
+      site_type:
+        simple: master
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieve patch (fixlet) by id
+      id: a690c223-ca70-42f4-81e1-18d2e363bcb8
+      iscommand: true
+      name: 'Get Patch '
+      script: '|||bigfix-get-patch'
+      type: regular
+      version: -1
+    taskid: a690c223-ca70-42f4-81e1-18d2e363bcb8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 630
+        }
+      }
+  "88":
+    continueonerror: true
+    id: "88"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "75"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action_id:
+        simple: Action1
+      computer_ids:
+        simple: "2696130"
+      fixlet_id:
+        simple: "39"
+      site_name:
+        simple: ActionSite
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Create an action on BigFix that will run the given action from
+        the given fixlet on target computers.  The computerID parameter takes a comma-separated
+        list of BigFix computer IDs. If no computers are given, the action will be
+        run on the default computers configured on BigFix. If the action should run
+        on all computers set the computerID parameter to all.
+      id: 18ee67e5-1b18-4479-8515-2183d241912b
+      iscommand: true
+      name: Deploy patch
+      script: '|||bigfix-deploy-patch'
+      type: regular
+      version: -1
+    taskid: 18ee67e5-1b18-4479-8515-2183d241912b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 810
+        }
+      }
+  "89":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: CVE Information
+    fieldMapping:
+    - incidentfield: Vulnerability
+      output:
+        simple: ${CVE.ID}
+    id: "89"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "90"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${CVE.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 626ba20d-4f16-4c45-83f6-122301c2da98
+      iscommand: false
+      name: Print CVE IDs
+      script: Print
+      type: regular
+      version: -1
+    taskid: 626ba20d-4f16-4c45-83f6-122301c2da98
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 115
+        }
+      }
+  "90":
+    id: "90"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "86"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a2465881-dc86-4390-8cd1-8fe855cd4988
+      iscommand: false
+      name: Vulnerability Management Procedures
+      type: title
+      version: -1
+      description: ''
+    taskid: a2465881-dc86-4390-8cd1-8fe855cd4988
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 290
+        }
+      }
+  "91":
+    id: "91"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "75"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assignBy:
+        simple: machine-learning
+      email: {}
+      onCall: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      id: 7105e6fb-0756-4529-8ad8-9274b0cfa5f4
+      iscommand: false
+      name: Assign Incident to Analyst ( OT security SME )
+      script: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: 7105e6fb-0756-4529-8ad8-9274b0cfa5f4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 810
+        }
+      }
+  "92":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Impacted ICS Systems
+    fieldMapping:
+    - incidentfield: Impacted ICS Systems
+      output:
+        simple: ${Claroty.Asset.VirtualZone}
+    id: "92"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${Claroty.Asset.VirtualZone}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: aa90f156-3d92-40fa-83c6-444662c29ae6
+      iscommand: false
+      name: Print the List of Impacted ICS Systems
+      script: Print
+      type: regular
+      version: -1
+    taskid: aa90f156-3d92-40fa-83c6-444662c29ae6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 120
+        }
+      }
+  "93":
+    id: "93"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "94"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f96bc0f4-9a6b-4462-8cd1-25e308b5b089
+      iscommand: false
+      name: Maintain Business Continuity by Switching HMI  Workstations
+      type: title
+      version: -1
+      description: ''
+    taskid: f96bc0f4-9a6b-4462-8cd1-25e308b5b089
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1490
+        }
+      }
+  "94":
+    defaultassigneecomplex:
+      simple: demisto
+    id: "94"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "95"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    sla:
+      days: 0
+      hours: 1
+      weeks: 0
+    task:
+      brand: ""
+      description: commands.local.cmd.start.timer
+      id: feefbd5b-f865-46fd-8ef8-7625d368bf1d
+      iscommand: false
+      name: Start timer
+      type: title
+      version: -1
+    taskid: feefbd5b-f865-46fd-8ef8-7625d368bf1d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1630
+        }
+      }
+  "95":
+    id: "95"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "96"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Chemical_plant
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: fb30a2bb-499a-405b-826a-96e8214e4a62
+      iscommand: false
+      name: Analyst to Switch HMI Workstations
+      script: Print
+      type: regular
+      version: -1
+    taskid: fb30a2bb-499a-405b-826a-96e8214e4a62
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1770
+        }
+      }
+  "96":
+    id: "96"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "76"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b0979f54-6c4b-4ad5-8be0-68788ba2e59c
+      iscommand: false
+      name: Stop timer
+      type: title
+      version: -1
+      description: ''
+    taskid: b0979f54-6c4b-4ad5-8be0-68788ba2e59c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1920
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5105,
+        "width": 1410,
+        "x": 30,
+        "y": -650
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

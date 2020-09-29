@@ -1,0 +1,14 @@
+{
+    "name": "Ransomware Response Pack for ICS Systems using Cortex XSOAR and XDR",
+    "description": "The Cortex XSOAR, XDR and Claroty integration allows organizations to efficiently and effectively analyze, prioritize, and remediate potential threats in operational technology (OT) environments, lowering the risk to business-critical facilities and processes.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Pramukh Ganeshamurthy",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T20:05:24Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
