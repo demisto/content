@@ -1,0 +1,30 @@
+args:
+- default: false
+  description: The input url
+  isArray: false
+  name: value
+  required: true
+  secret: false
+comment: |-
+  Converts
+    https://example.com
+    into
+    https:%2F%2Fexample.com
+commonfields:
+  id: URLEncode
+  version: -1
+enabled: false
+name: URLEncode
+outputs:
+- contextPath: EncodedURL
+  description: Parsed url as key/value
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- transformer
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.3.8715
+fromversion: 5.0.0
