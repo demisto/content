@@ -16,7 +16,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 CLIENT_ID = demisto.params().get('client_id')
 SECRET_KEY = demisto.params().get('secret_key')
 SERVER = "https://api.wootuno.wootcloud.com"
-SSL_VERIFY = True
+USE_SSL = not demisto.params().get('insecure', False)
 # Service base URL
 API_VERSION = '/v1/'
 # Headers to be sent in requests
