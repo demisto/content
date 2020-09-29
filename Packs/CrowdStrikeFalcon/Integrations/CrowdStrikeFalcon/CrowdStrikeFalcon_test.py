@@ -1,5 +1,6 @@
 import pytest
 import os
+import json
 import demistomock as demisto
 from CommonServerPython import outputPaths, entryTypes
 
@@ -2288,3 +2289,45 @@ class TestIncidentFetch:
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[1][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:11Z'}
+
+
+def get_fetch_data():
+    with open('./test_data.json', 'r') as f:
+        return json.loads(f.read())
+
+
+test_data = get_fetch_data()
+
+
+def test_get_indicator_device_id(requests_mock):
+    from CrowdStrikeFalcon import get_indicator_device_id
+    requests_mock.get("https://4.4.4.4/indicators/queries/devices/v1?type=None&value=None",
+                      json=test_data['response_for_get_indicator_device_id'])
+    res = get_indicator_device_id()
+    assert res.outputs == test_data['context_output_for_get_indicator_device_id']
+    assert res.outputs_prefix == 'CrowdStrike.DeviceID'
+    assert res.outputs_key_field == 'DeviceID'
+
+
+def test_build_url_filter_for_device_id():
+    from CrowdStrikeFalcon import build_url_filter_for_device_id
+    res = build_url_filter_for_device_id({"type": "domain", "value": "google.com"})
+    assert res == '/indicators/queries/devices/v1?type=domain&value=google.com'
+
+
+def test_validate_response():
+    from CrowdStrikeFalcon import validate_response
+    true_res = validate_response({"resources": "1234"})
+    false_res = validate_response({"error": "404"})
+    assert true_res
+    assert not false_res
+
+
+def test_build_error_message():
+    from CrowdStrikeFalcon import build_error_message
+
+    res_error_data = build_error_message({'meta': 1234})
+    assert res_error_data == 'Error: error code: None, error_message: something got wrong, please try again.'
+
+    res_error_data_with_specific_error = build_error_message({'errors': [{"code": 1234, "message": "hi"}]})
+    assert res_error_data_with_specific_error == 'Error: error code: 1234, error_message: hi.'
