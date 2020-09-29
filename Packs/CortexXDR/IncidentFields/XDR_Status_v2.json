@@ -16,7 +16,7 @@
 	"fieldCalcScript": "",
 	"group": 0,
 	"hidden": false,
-	"id": "incident_xdrstatus_v2",
+	"id": "incident_xdrstatusv2",
 	"isReadOnly": false,
 	"locked": false,
 	"name": "XDR Status v2",
