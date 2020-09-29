@@ -56,10 +56,12 @@ def http_cmd(url_suffix, data=None, files=None, parse_json=True):
         try:
             LOG('result is: %s' % (res.json(),))  # type:ignore
             error_msg = res.json()['errors'][0]['msg']  # type:ignore
-            raise Exception('Your request failed with the following status code (%s) and error: %s.\n%s' % (res.status_code, res.reason, error_msg,))  # type:ignore
+            raise Exception('Your request failed with the following status code (%s) and error: %s.\n%s' %
+                            (res.status_code, res.reason, error_msg,))  # type:ignore
         except ValueError:
             # in case the response is not parsed as JSON
-            raise Exception('Your request failed with the following status code (%s) and error: %s.' % (res.status_code, res.reason))  # type:ignore
+            raise Exception('Your request failed with the following status code (%s) and error: %s.' %
+                            (res.status_code, res.reason))  # type:ignore
 
     if parse_json:
         return res.json()  # type:ignore
