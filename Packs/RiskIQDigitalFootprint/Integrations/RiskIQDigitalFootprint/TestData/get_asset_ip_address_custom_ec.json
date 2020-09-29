@@ -360,7 +360,7 @@
           "count": 2
         }
       ],
-      "webComponentName": "Acuity",
+      "webComponentName": "",
       "webComponentCategory": "Advertising",
       "current": true
     },
@@ -376,7 +376,7 @@
           "count": 2
         }
       ],
-      "webComponentName": "AcuityAds",
+      "webComponentName": "",
       "webComponentCategory": "DSP",
       "current": true
     },
