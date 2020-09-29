@@ -1,0 +1,14 @@
+{
+    "name": "SlashNext Phishing Incident Response",
+    "description": "SlashNext Abuse Inbox Management playbook for Automation Rising Hackathon.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Saadat Abid",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T07:10:57Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
