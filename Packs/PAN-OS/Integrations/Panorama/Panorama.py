@@ -147,76 +147,78 @@ def http_request(uri: str, method: str, headers: Dict = {},
 
     json_result = json.loads(xml2json(result.text))
 
+    # handle raw response that doe not contain the response key, e.g xonfiguration export
+    if 'response' not in json_result or '@code' not in json_result['response']:
+        return json_result
+
     # handle non success
-    if 'response' in json_result and '@code' in json_result['response']:
-        if json_result['response']['@status'] != 'success':
-            if 'msg' in json_result['response'] and 'line' in json_result['response']['msg']:
-                # catch non existing object error and display a meaningful message
-                if json_result['response']['msg']['line'] == 'No such node':
-                    raise Exception(
-                        'Object was not found, verify that the name is correct and that the instance was committed.')
-
-                #  catch urlfiltering error and display a meaningful message
-                elif str(json_result['response']['msg']['line']).find('test -> url') != -1:
-                    raise Exception('The URL filtering license is either expired or not active.'
-                                    ' Please contact your PAN-OS representative.')
-
-                # catch non valid jobID errors and display a meaningful message
-                elif isinstance(json_result['response']['msg']['line'], str) and \
-                        json_result['response']['msg']['line'].find('job') != -1 and \
-                        (json_result['response']['msg']['line'].find('not found') != -1
-                         or json_result['response']['msg']['line'].find('No such query job')) != -1:
-                    raise Exception('Invalid Job ID error: ' + json_result['response']['msg']['line'])
-
-                # catch already at the top/bottom error for rules and return this as an entry.note
-                elif str(json_result['response']['msg']['line']).find('already at the') != -1:
-                    demisto.results('Rule ' + str(json_result['response']['msg']['line']))
-                    sys.exit(0)
-
-                # catch already registered ip tags and return this as an entry.note
-                elif str(json_result['response']['msg']['line']).find('already exists, ignore') != -1:
-                    if isinstance(json_result['response']['msg']['line']['uid-response']['payload']['register']['entry'],
-                                  list):
-                        ips = [o['@ip'] for o in
-                               json_result['response']['msg']['line']['uid-response']['payload']['register']['entry']]
-                    else:
-                        ips = json_result['response']['msg']['line']['uid-response']['payload']['register']['entry']['@ip']
-                    demisto.results(
-                        'IP ' + str(ips) + ' already exist in the tag. All submitted IPs were not registered to the tag.')
-                    sys.exit(0)
-
-                # catch timed out log queries and return this as an entry.note
-                elif str(json_result['response']['msg']['line']).find('Query timed out') != -1:
-                    demisto.results(str(json_result['response']['msg']['line']) + '. Rerun the query.')
-                    sys.exit(0)
-
-            if '@code' in json_result['response']:
+    if json_result['response']['@status'] != 'success':
+        if 'msg' in json_result['response'] and 'line' in json_result['response']['msg']:
+            # catch non existing object error and display a meaningful message
+            if json_result['response']['msg']['line'] == 'No such node':
                 raise Exception(
-                    'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
-                        json_result['response']['msg']['line']))
-            else:
-                raise Exception('Request Failed.\n' + str(json_result['response']))
+                    'Object was not found, verify that the name is correct and that the instance was committed.')
+
+            #  catch urlfiltering error and display a meaningful message
+            elif str(json_result['response']['msg']['line']).find('test -> url') != -1:
+                raise Exception('The URL filtering license is either expired or not active.'
+                                ' Please contact your PAN-OS representative.')
+
+            # catch non valid jobID errors and display a meaningful message
+            elif isinstance(json_result['response']['msg']['line'], str) and \
+                    json_result['response']['msg']['line'].find('job') != -1 and \
+                    (json_result['response']['msg']['line'].find('not found') != -1
+                     or json_result['response']['msg']['line'].find('No such query job')) != -1:
+                raise Exception('Invalid Job ID error: ' + json_result['response']['msg']['line'])
+
+            # catch already at the top/bottom error for rules and return this as an entry.note
+            elif str(json_result['response']['msg']['line']).find('already at the') != -1:
+                demisto.results('Rule ' + str(json_result['response']['msg']['line']))
+                sys.exit(0)
+
+            # catch already registered ip tags and return this as an entry.note
+            elif str(json_result['response']['msg']['line']).find('already exists, ignore') != -1:
+                if isinstance(json_result['response']['msg']['line']['uid-response']['payload']['register']['entry'],
+                              list):
+                    ips = [o['@ip'] for o in
+                           json_result['response']['msg']['line']['uid-response']['payload']['register']['entry']]
+                else:
+                    ips = json_result['response']['msg']['line']['uid-response']['payload']['register']['entry']['@ip']
+                demisto.results(
+                    'IP ' + str(ips) + ' already exist in the tag. All submitted IPs were not registered to the tag.')
+                sys.exit(0)
+
+            # catch timed out log queries and return this as an entry.note
+            elif str(json_result['response']['msg']['line']).find('Query timed out') != -1:
+                demisto.results(str(json_result['response']['msg']['line']) + '. Rerun the query.')
+                sys.exit(0)
+
+        if '@code' in json_result['response']:
+            raise Exception(
+                'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
+                    json_result['response']['msg']['line']))
+        else:
+            raise Exception('Request Failed.\n' + str(json_result['response']))
 
     # handle @code
-    if 'response' in json_result and '@code' in json_result['response']:
-        if json_result['response']['@code'] in PAN_OS_ERROR_DICT:
-            error_message = 'Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']]
-            if json_result['response']['@code'] == '7' and DEVICE_GROUP:
-                device_group_names = get_device_groups_names()
-                if DEVICE_GROUP not in device_group_names:
-                    error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
-                                      f' The available Device Groups for this instance:'
-                                      f' {", ".join(device_group_names)}.')
-                    raise PAN_OS_Not_Found(error_message)
-            return_warning('List not found and might be empty', True)
-        if json_result['response']['@code'] not in ['19', '20']:
-            # error code non exist in dict and not of success
-            if 'msg' in json_result['response']:
-                raise Exception(
-                    'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
-                        json_result['response']['msg']))
-            else:
-                raise Exception('Request Failed.\n' + str(json_result['response']))
+    if json_result['response']['@code'] in PAN_OS_ERROR_DICT:
+        error_message = 'Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']]
+        if json_result['response']['@code'] == '7' and DEVICE_GROUP:
+            device_group_names = get_device_groups_names()
+            if DEVICE_GROUP not in device_group_names:
+                error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
+                                  f' The available Device Groups for this instance:'
+                                  f' {", ".join(device_group_names)}.')
+                raise PAN_OS_Not_Found(error_message)
+        return_warning('List not found and might be empty', True)
+    if json_result['response']['@code'] not in ['19', '20']:
+        # error code non exist in dict and not of success
+        if 'msg' in json_result['response']:
+            raise Exception(
+                'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
+                    json_result['response']['msg']))
+        else:
+            raise Exception('Request Failed.\n' + str(json_result['response']))
 
     return json_result
 
