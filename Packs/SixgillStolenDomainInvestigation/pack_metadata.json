@@ -1,0 +1,14 @@
+{
+    "name": "Sixgill stolen domain investigation",
+    "description": "This contribution pack contains a playbook to investigate stolen domains. it utilizes Sixgill, RiskIQ, virus total and few other integrations",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "vermamanoj",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T17:27:14Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

@@ -1,0 +1,915 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Sixgill domain hunt
+inputs:
+- description: How many records to be fetched?
+  key: Limit
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "2"
+name: Sixgill domain hunt
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f050b34a-0d02-47da-806b-4aaa683c1778
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: f050b34a-0d02-47da-806b-4aaa683c1778
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      addRandomSalt: {}
+      dontPopulateFields: {}
+      fieldsToHash: {}
+      limit:
+        simple: "15"
+      offset: {}
+      populateFields:
+        simple: id,score,investigationids,sixgillfeedid,sixgillpostreference,sixgilldescription
+      query:
+        simple: ${incident.details}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a list of indicator objects and the associated indicator outputs
+        that match the specified query and filters. The results are returned in a
+        structured data file.
+      id: a32cbe99-1df1-405b-84dc-2cbbdad4d9f3
+      iscommand: false
+      name: 'Get indicators - Sixgill '
+      script: GetIndicatorsByQuery
+      type: regular
+      version: -1
+    taskid: a32cbe99-1df1-405b-84dc-2cbbdad4d9f3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      encoding: {}
+      entryID:
+        simple: ${File.EntryID}
+      maxFileSize: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Load the contents of a file into context.
+      id: 8ae76665-f68d-4bc9-8a0d-0f49934b9729
+      iscommand: false
+      name: ReadFile
+      script: ReadFile
+      type: regular
+      version: -1
+    taskid: 8ae76665-f68d-4bc9-8a0d-0f49934b9729
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+      - "7"
+      - "13"
+      - "14"
+      - "15"
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: SixGill
+      stringify: {}
+      value:
+        complex:
+          root: FileData
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 6dd40f86-37a1-4c74-8030-2160de35bad1
+      iscommand: false
+      name: Set domain field
+      script: Set
+      type: regular
+      version: -1
+    taskid: 6dd40f86-37a1-4c74-8030-2160de35bad1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 505
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field:
+        simple: domain
+      query:
+        simple: ${incident.details}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PassiveTotal v2
+      description: Gets WHOIS information records based on field matching queries.
+      id: 5997b58a-2a14-4db2-8c99-fbf5a3dbb924
+      iscommand: true
+      name: Get domain details - PassiveTotal
+      script: PassiveTotal v2|||pt-whois-search
+      type: regular
+      version: -1
+    taskid: 5997b58a-2a14-4db2-8c99-fbf5a3dbb924
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 895
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: UpdatedDate
+                root: Domain.WHOIS
+                transformers:
+                - args:
+                    dayfirst: {}
+                    fuzzy: {}
+                    yearfirst: {}
+                  operator: DateStringToISOFormat
+          operator: isAfter
+          right:
+            iscontext: true
+            value:
+              complex:
+                accessor: created
+                root: incident
+                transformers:
+                - args:
+                    variation:
+                      value:
+                        simple: 2 months ago
+                  operator: ModifyDateTime
+                - args:
+                    dayfirst: {}
+                    fuzzy: {}
+                    yearfirst: {}
+                  operator: DateStringToISOFormat
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 16c9f23c-a311-4a20-87a9-b454f6e2c5bd
+      iscommand: false
+      name: Was the domain modified in last 2 months?
+      type: condition
+      version: -1
+    taskid: 16c9f23c-a311-4a20-87a9-b454f6e2c5bd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1245
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field:
+        simple: domain
+      query:
+        simple: ${incident.details}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PassiveTotal v2
+      description: Gets WHOIS information records based on field matching queries.
+      id: 6836b2fd-4239-4c15-87fa-4031ec0a1143
+      iscommand: true
+      name: Perform Whois on domains - Passive Total v2
+      script: PassiveTotal v2|||pt-whois-search
+      type: regular
+      version: -1
+    taskid: 6836b2fd-4239-4c15-87fa-4031ec0a1143
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 880
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Domain ${incident.details} was last updated on ${Domain.WHOIS.UpdatedDate}.
+          Check whois history to see if it seems like genuine update (look for organization
+          , email , country and other fields.)
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: cca5ef5f-041e-435c-8048-176f1ed155fa
+      iscommand: false
+      name: Potential suspicious domain, to be blocked?
+      script: Print
+      type: regular
+      version: -1
+    taskid: cca5ef5f-041e-435c-8048-176f1ed155fa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 1530
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c24c9be1-77f8-43a6-8706-67fe28de7221
+      iscommand: false
+      name: Pass
+      type: title
+      version: -1
+      description: ''
+    taskid: c24c9be1-77f8-43a6-8706-67fe28de7221
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1545
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      end: {}
+      query:
+        simple: ${incident.details}
+      start: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PassiveTotal v2
+      description: Retrieves the passive DNS results from active account sources.
+      id: e336794f-edea-43e4-84a9-609da820e0c5
+      iscommand: true
+      name: Get passive DNS - Passive Total v2
+      script: PassiveTotal v2|||pt-get-pdns-details
+      type: regular
+      version: -1
+    taskid: e336794f-edea-43e4-84a9-609da820e0c5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 895
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field:
+        simple: subjectCommonName
+      query:
+        simple: ${incident.details}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PassiveTotal v2
+      description: Retrieves SSL certificates for a given field value.
+      id: 7c820276-3cd8-42bf-8dbf-b6163d91979e
+      iscommand: true
+      name: Get SSL cert details - Pasive Total v2
+      script: PassiveTotal v2|||pt-ssl-cert-search
+      type: regular
+      version: -1
+    taskid: 7c820276-3cd8-42bf-8dbf-b6163d91979e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 720
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        simple: ${incident.details}
+      fullResponse: {}
+      threshold: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VirusTotal - Private API
+      description: Retrieves a report on a given domain (including the information
+        recorded by VirusTotal's passive DNS infrastructure). If the domain doesn't
+        exist in VT's dataset you would need to use Virus Total's (Public API integration)
+        url-scan command
+      id: 4625d419-ac55-4761-889e-236a3de0e74a
+      iscommand: true
+      name: Get domain report - Virus Total Private
+      script: VirusTotal - Private API|||vt-private-get-domain-report
+      type: regular
+      version: -1
+    taskid: 4625d419-ac55-4761-889e-236a3de0e74a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1502.5,
+          "y": 1070
+        }
+      }
+  "16":
+    fieldMapping:
+    - incidentfield: Detection Update Time
+      output:
+        simple: ${CurrentDateTime}
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieves the current date and time in UTC
+      id: 89a968d9-4892-43e9-8c38-d851bd09636d
+      iscommand: false
+      name: Get current date - set to detection update time
+      script: e7d6918b-3097-47bc-88ec-b32f8885daee
+      type: regular
+      version: -1
+    taskid: 89a968d9-4892-43e9-8c38-d851bd09636d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1070
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "Yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0f858d2b-8aba-4f84-856f-c3fb1a8886bd
+      iscommand: false
+      name: Was the domain hosting updated recently?
+      type: condition
+      version: -1
+    taskid: 0f858d2b-8aba-4f84-856f-c3fb1a8886bd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1070
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      includeManual: {}
+      includeSuspicious: {}
+      maliciousQueryOverride: {}
+      queryIndicators: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if the investigation found any malicious indicators (file,
+        URL, IP address, domain, or email). Returns "yes" if at least one malicious
+        indicator is found.
+      id: dfbe47c2-7850-4f69-88c3-e9a8c6fe971b
+      iscommand: false
+      name: Is malicious indicator found?
+      script: IsMaliciousIndicatorFound
+      type: condition
+      version: -1
+    taskid: dfbe47c2-7850-4f69-88c3-e9a8c6fe971b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 895
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Malicious indicators found
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: bc4f59da-cd83-488d-8102-7dce63c5019c
+      iscommand: false
+      name: 'Print - malicious '
+      script: Print
+      type: regular
+      version: -1
+    taskid: bc4f59da-cd83-488d-8102-7dce63c5019c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1072.5,
+          "y": 1070
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: No malicious indicators in certificate history
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 7255dcc1-e713-49bc-88e3-563c555c5145
+      iscommand: false
+      name: Print - not malicious
+      script: Print
+      type: regular
+      version: -1
+    taskid: 7255dcc1-e713-49bc-88e3-563c555c5145
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1320
+        }
+      }
+  "21":
+    continueonerror: true
+    id: "21"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      height: {}
+      max_page_load_time: {}
+      type: {}
+      url:
+        simple: ${incident.details}
+      wait_time: {}
+      width: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Converts the contents of a URL to an image file or a PDF file.
+      id: 383df5b3-cae6-4cfd-8a0e-bdc329be9aa5
+      iscommand: true
+      name: Take screenshot of URL
+      script: '|||rasterize'
+      type: regular
+      version: -1
+    taskid: 383df5b3-cae6-4cfd-8a0e-bdc329be9aa5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 370
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      EDLServerIP: {}
+      LogForwarding: {}
+      URL:
+        simple: ${incident.details}
+      URLBlacklistMiner: {}
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+      categories: {}
+      device-group: {}
+      type: {}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b5a59654-208f-49a2-8405-c39bd5f05b2a
+      iscommand: false
+      name: block_url_-_generic
+      playbookId: block_url_-_generic
+      type: playbook
+      version: -1
+      description: ''
+    taskid: b5a59654-208f-49a2-8405-c39bd5f05b2a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 1840
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Domain looks suspicious, please check  DNS change history and SSL
+          records and conform if domain - ${incident.details} - should be blocked
+      cc:
+      format: ""
+      methods: []
+      replyOptions:
+      - Block
+      - Don't block for now
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#default#':
+      - "24"
+      Block:
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: f8e2803a-d590-4c1e-8221-326e2b36c2dc
+      iscommand: false
+      name: Block suspicious domain?
+      type: condition
+      version: -1
+    taskid: f8e2803a-d590-4c1e-8221-326e2b36c2dc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 1660
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f63ca8b0-9ed4-4319-8f51-7d4cc5d2f401
+      iscommand: false
+      name: Don't block
+      type: regular
+      version: -1
+    taskid: f63ca8b0-9ed4-4319-8f51-7d4cc5d2f401
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1840
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 41e1041e-c636-436f-8c20-66efeb633762
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 41e1041e-c636-436f-8c20-66efeb633762
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 2060
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 562424b2-3eab-4c9a-8fbc-a995ff5b671b
+      iscommand: false
+      name: Manual investigation and confirmation to block
+      type: title
+      version: -1
+      description: ''
+    taskid: 562424b2-3eab-4c9a-8fbc-a995ff5b671b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1287.5,
+          "y": 1260
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: 'Threat feed details about domain ${incident.details} : ${domain.sixgilldescription}.
+          More details about this can be found at ${domain.sixgillpostreference}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 48c45d32-6e08-411d-85a0-3f8365952916
+      iscommand: false
+      name: Print domain threat details
+      script: Print
+      type: regular
+      version: -1
+    taskid: 48c45d32-6e08-411d-85a0-3f8365952916
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 750
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field:
+        simple: email
+      query:
+        simple: ${Domain.Admin.Email}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PassiveTotal v2
+      description: Gets WHOIS information records based on field matching queries.
+      id: 30299972-f2de-46c5-8d52-1e93a942c083
+      iscommand: true
+      name: Perform Whois on owner email - Passive Total v2
+      script: PassiveTotal v2|||pt-whois-search
+      type: regular
+      version: -1
+    taskid: 30299972-f2de-46c5-8d52-1e93a942c083
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 1060
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2075,
+        "width": 2252.5,
+        "x": -370,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0
