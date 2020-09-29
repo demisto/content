@@ -109,10 +109,10 @@ class Client(BaseClient):
             return result
         elif type == 'packet':
             return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
-            #used to be result['packet_alerts']
+            # used to be result['packet_alerts']
         else:
             return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
-            #used to be result['alerts']
+            # used to be result['alerts']
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -183,7 +183,7 @@ def main():
     LOG('Command being called is %s' % (demisto.command()))
 
     try:
-        client = Client(SERVER + API_VERSION, verify=SSL_VERIFY, headers=HEADERS, auth=(CLIENT_ID, SECRET_KEY))
+        client = Client(SERVER + API_VERSION, verify=USE_SSL, headers=HEADERS, auth=(CLIENT_ID, SECRET_KEY))
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
