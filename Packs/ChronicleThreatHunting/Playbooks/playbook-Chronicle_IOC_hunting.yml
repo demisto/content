@@ -1,0 +1,827 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Chronicle IOC hunting
+inputs: []
+name: Chronicle IOC hunting
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: df3d403d-1fc5-46fe-8bd1-2fcfb2e42dbb
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: df3d403d-1fc5-46fe-8bd1-2fcfb2e42dbb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "17"
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        simple: ${incident.details}
+      fullResponse: {}
+      include_inactive: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Google Chronicle Backstory_XMocky
+      description: Checks the reputation of a domain.
+      id: ec74c7bf-df4e-40e7-8e88-67252a59c179
+      iscommand: true
+      name: Find details about the domain
+      script: Google Chronicle Backstory_XMocky|||domain
+      type: regular
+      version: -1
+    taskid: ec74c7bf-df4e-40e7-8e88-67252a59c179
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 335
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+      - "8"
+      - "4"
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      artifact_value:
+        simple: ${GoogleChronicleBackstory.Domain.IoCQueried}
+      end_time: {}
+      page_size: {}
+      preset_time_range: {}
+      start_time: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Google Chronicle Backstory_XMocky
+      description: Returns a list of the assets that accessed the input artifact (IP,
+        domain, MD5, SHA1 and SHA256) during the specified time.
+      id: 81ba648f-e6ad-4824-8247-d634c3f21fdd
+      iscommand: true
+      name: Hunt for assets that reached to IOC domain
+      script: Google Chronicle Backstory_XMocky|||gcb-assets
+      type: regular
+      version: -1
+    taskid: 81ba648f-e6ad-4824-8247-d634c3f21fdd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 520
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      end_time: {}
+      page_size: {}
+      preset_time_range: {}
+      severity: {}
+      start_time:
+        complex:
+          accessor: Sources.FirstAccessedTime
+          root: GoogleChronicleBackstory.Domain
+          transformers:
+          - args:
+              variation:
+                value:
+                  simple: in 30 minutes
+            operator: ModifyDateTime
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: z
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Google Chronicle Backstory_XMocky
+      description: List all the alerts tracked within your enterprise for the specified
+        time range. Both the parsed alerts and their corresponding raw alert logs
+        are returned.
+      id: b015da20-e36b-4ab7-88ce-3ac4aad77af5
+      iscommand: true
+      name: Find alerts within 30 mins first activity of IOC
+      script: Google Chronicle Backstory_XMocky|||gcb-list-alerts
+      type: regular
+      version: -1
+    taskid: b015da20-e36b-4ab7-88ce-3ac4aad77af5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 1010
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      page_size: {}
+      preset_time_range: {}
+      start_time:
+        complex:
+          accessor: FirstAccessedTime}
+          root: ${GoogleChronicleBackstory.Domain.Sources
+          transformers:
+          - args:
+              variation:
+                value:
+                  simple: in 10 minutes
+            operator: ModifyDateTime
+          - args:
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy: {}
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+          - args:
+              prefix:
+                iscontext: true
+              suffix:
+                value:
+                  simple: z
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Google Chronicle Backstory_XMocky
+      description: Lists the IOC Domain matches within your enterprise for the specified
+        time interval. The indicator of compromise (IOC) domain matches lists for
+        which the domains that your security infrastructure has flagged as both suspicious
+        and that have been seen recently within your enterprise.
+      id: 7a2f6ced-e3da-4aba-8b65-db6c19966430
+      iscommand: true
+      name: Collect related telemetry and IOC [10 mins of first access]
+      script: Google Chronicle Backstory_XMocky|||gcb-list-iocs
+      type: regular
+      version: -1
+    taskid: 7a2f6ced-e3da-4aba-8b65-db6c19966430
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 845
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      desc: {}
+      description:
+        simple: Other IOCs detected at time of activity of IOC in question
+      entryIDs: {}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      id: 00460f7a-a448-49b7-8cbf-e95bd7b01520
+      iscommand: false
+      name: Add related telemetry and IOC to evidence board
+      script: AddEvidence
+      type: regular
+      version: -1
+    taskid: 00460f7a-a448-49b7-8cbf-e95bd7b01520
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1130
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      desc: {}
+      description:
+        simple: Assets that visited the IOC in question
+      entryIDs: {}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      id: 8a61eefe-690d-4efb-837c-0837df2ecb79
+      iscommand: false
+      name: Attach asset details to evidence board
+      script: AddEvidence
+      type: regular
+      version: -1
+    taskid: 8a61eefe-690d-4efb-837c-0837df2ecb79
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 1280
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bf37b968-4d55-4ff3-816f-6c9ff9269c99
+      iscommand: false
+      name: Restrict future access to that domain
+      type: title
+      version: -1
+      description: ''
+    taskid: bf37b968-4d55-4ff3-816f-6c9ff9269c99
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 660
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      EDLServerIP: {}
+      LogForwarding: {}
+      URL:
+        simple: ${GoogleChronicleBackstory.Domain.IoCQueried}
+      URLBlacklistMiner: {}
+      URLListName: {}
+      categories: {}
+      device-group: {}
+      type: {}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        This playbook blocks malicious URLs using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Palo Alto Networks Minemeld
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+      id: 9fc85d7d-0f04-446f-8ac7-32784d714ffe
+      iscommand: false
+      name: block_url_-_generic
+      playbookId: block_url_-_generic
+      type: playbook
+      version: -1
+    taskid: 9fc85d7d-0f04-446f-8ac7-32784d714ffe
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 800
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      desc: {}
+      description:
+        simple: Details about IOC ${incident.details}
+      entryIDs: {}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      id: 0fd76da8-43b4-47cc-8f2a-2d64668b7c84
+      iscommand: false
+      name: Add IOC details to evidence board
+      script: AddEvidence
+      type: regular
+      version: -1
+    taskid: 0fd76da8-43b4-47cc-8f2a-2d64668b7c84
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": 670
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "1"
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${incident.details}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: ed1e69dd-64f1-4ffc-8443-72e0cf27b21c
+      iscommand: false
+      name: Domain name exists?
+      script: Exists
+      type: condition
+      version: -1
+    taskid: ed1e69dd-64f1-4ffc-8443-72e0cf27b21c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 165
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 23d01aa7-f70f-4d91-8c59-143cdb2afd64
+      iscommand: false
+      name: No domain found - stop
+      type: title
+      version: -1
+      description: ''
+    taskid: 23d01aa7-f70f-4d91-8c59-143cdb2afd64
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2940,
+          "y": 350
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      desc: {}
+      description:
+        simple: List of alerts and assets during time of first activity of IOC in
+          question
+      entryIDs: {}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      id: 2faf36f9-b068-467e-8eec-2abc8699b901
+      iscommand: false
+      name: Add list of alerts and assets to evidence board
+      script: AddEvidence
+      type: regular
+      version: -1
+    taskid: 2faf36f9-b068-467e-8eec-2abc8699b901
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 1230
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      artifact_value:
+        simple: ${Domain.Name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Accepts an artifact indicator and returns any threat intelligence
+        associated with the artifact. The threat intelligence information is drawn
+        from your enterprise security systems and from Chronicle's IoC partners (for
+        example, the DHS threat feed).
+      id: 83285fba-426d-4fc8-880d-6865274ae90e
+      iscommand: true
+      name: Find details of IOCs detected in last step
+      script: '|||gcb-ioc-details'
+      type: regular
+      version: -1
+    taskid: 83285fba-426d-4fc8-880d-6865274ae90e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 1010
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      desc: {}
+      description:
+        simple: Details on other IOCs
+      entryIDs: {}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      id: c9c60d4c-f750-4aaf-8dd2-4b6e035ae0de
+      iscommand: false
+      name: Add to evidence board
+      script: AddEvidence
+      type: regular
+      version: -1
+    taskid: c9c60d4c-f750-4aaf-8dd2-4b6e035ae0de
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 1240
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eed295aa-7d20-41f8-8bc9-5ab6466e0a70
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: eed295aa-7d20-41f8-8bc9-5ab6466e0a70
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2360,
+          "y": 1980
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b5378b3f-81a8-455b-86d1-c3784d1c2dcc
+      iscommand: false
+      name: Review evidences & next steps
+      type: title
+      version: -1
+      description: ''
+    taskid: b5378b3f-81a8-455b-86d1-c3784d1c2dcc
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1920,
+          "y": 1510
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ae3947f2-909d-455c-8026-70e3d9a131fc
+      iscommand: false
+      name: Manual review of  obtained evidences and next steps
+      type: regular
+      version: -1
+    taskid: ae3947f2-909d-455c-8026-70e3d9a131fc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1920,
+          "y": 1795
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: No domain names found in incident to investigate
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 1ea43b45-aec7-4d78-8090-0d7fbee5ef80
+      iscommand: false
+      name: Print - no domain found in incident
+      script: Print
+      type: regular
+      version: -1
+    taskid: 1ea43b45-aec7-4d78-8090-0d7fbee5ef80
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2960,
+          "y": 800
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicator:
+        simple: ${incident.details}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add into the incident's context the system internal DBot score
+        for the input indicator
+      id: 297a75a9-686b-4b39-818e-9b7053845759
+      iscommand: false
+      name: DBot - get indicator score
+      script: GetIndicatorDBotScore
+      type: regular
+      version: -1
+    taskid: 297a75a9-686b-4b39-818e-9b7053845759
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2290,
+          "y": 460
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a513ea98-4182-40b0-8001-885867b2a39c
+      iscommand: false
+      name: ToDo - Should these assets be isolated?
+      type: title
+      version: -1
+      description: ''
+    taskid: a513ea98-4182-40b0-8001-885867b2a39c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 815
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assignBy:
+        simple: machine-learning
+      email: {}
+      onCall: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      id: 67ae7991-09ae-4506-8bb6-3d2e6126950a
+      iscommand: false
+      name: Assign Analyst by ML
+      script: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: 67ae7991-09ae-4506-8bb6-3d2e6126950a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1920,
+          "y": 1640
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1995,
+        "width": 2320,
+        "x": 1020,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0

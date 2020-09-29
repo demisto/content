@@ -1,0 +1,14 @@
+{
+    "name": "Chronicle threat hunting",
+    "description": "Google Chronicle based threat hunting of given IOC",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "vermamanoj",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T17:42:39Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
