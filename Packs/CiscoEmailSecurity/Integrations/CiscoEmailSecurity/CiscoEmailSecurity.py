@@ -529,13 +529,13 @@ def list_entries_get_command(client, args):
     url_params = build_url_filter_for_get_list_entries(args)
     list_entries_response = client.list_entries_get(url_params, list_type)
     list_entries = list_entries_response.get('data', [None])
-    list_entries_context = arrange_list_entries_for_context(list_entries)
+    # list_entries_context = arrange_list_entries_for_context(list_entries)
     output_prefix = list_type.title()
     return CommandResults(
         readable_output=list_entries,
         outputs_prefix=f'CiscoEmailSecurity.ListEntries.{output_prefix}',
         outputs_key_field='mid',
-        outputs=list_entries_context
+        outputs=list_entries
     )
 
 
@@ -587,8 +587,11 @@ def list_entries_delete_command(client, args):
     request_body = build_request_body_for_delete_list_entries(args)
     list_entries_response = client.list_entries_delete(list_type, request_body)
     list_entries = list_entries_response.get('data')
+    output_prefix = list_type.title()
     return CommandResults(
         readable_output=list_entries,
+        outputs_prefix=f'CiscoEmailSecurity.listEntries.{output_prefix}',
+        outputs_key_field='mid',
     )
 
 

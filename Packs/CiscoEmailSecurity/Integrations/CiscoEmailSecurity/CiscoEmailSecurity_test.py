@@ -342,7 +342,7 @@ def test_list_entries_get_command(requests_mock):
     res = list_entries_get_command(client, {"list_type": "safelist", "limit": "25", "order_by": "recipient",
                                             "view_by": "recipient"})
     assert res.outputs == test_data['get_list_entries_context']
-    assert res.outputs_prefix == 'CiscoEmailSecurity.ListEntriesGet'
+    assert res.outputs_prefix == 'CiscoEmailSecurity.ListEntries.Safelist'
 
 
 def test_build_request_body_for_add_list_entries():
@@ -428,4 +428,4 @@ def test_list_entries_delete_command(requests_mock):
     res = list_entries_delete_command(client, {"list_type": "safelist", "sender_list": "acme.com",
                                                "view_by": "recipient"})
     assert res.readable_output == test_data['delete_list_entries_context']
-    assert res.outputs_prefix == 'CiscoEmailSecurity.listEntriesDelete'
+    assert res.outputs_prefix == 'CiscoEmailSecurity.listEntries.Safelist'
