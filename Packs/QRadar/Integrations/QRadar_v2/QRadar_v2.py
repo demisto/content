@@ -544,7 +544,7 @@ class QRadarClient:
         url = urljoin(self._server, "api/config/event_sources/custom_properties/regex_properties")
         headers = self._auth_headers
         if limit is not None:
-            headers['Range'] = f"items=0-{limit}"
+            headers['Range'] = f"items=0-{limit-1}"
         return self.send_request("GET", url, headers=headers, params=params)
 
     def enrich_source_addresses_dict(self, src_adrs):
@@ -2102,7 +2102,8 @@ def get_mapping_fields(client: QRadarClient) -> dict:
 
 
 def get_custom_properties(
-        client: QRadarClient, limit: str, field_name: str, like: str, filter: str, fields: str) -> dict:
+        client: QRadarClient, limit: Optional[str] = None, field_name: Optional[str] = None,
+        like: Optional[str] = None, filter: Optional[str] = None, fields: Optional[str] = None) -> dict:
     limit = int(limit) if limit else None
     field_names = argToList(field_name)
     likes = argToList(like)
