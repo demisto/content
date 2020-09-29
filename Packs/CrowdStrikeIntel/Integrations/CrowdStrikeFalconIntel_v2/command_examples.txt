@@ -1,0 +1,7 @@
+!cs-actors limit=1 target_industries="Entertainment,Healthcare"
+!cs-indicators limit=1 type=ip_address malicious_confidence=high 
+!cs-reports limit=1 created_date="2016-09-30T19:15:53.000Z"
+!file file=c87172df108b5a15e693285c8b58f01c271e1e768e7e41b9da2f8b22cd784638
+!ip ip=185.203.116.58
+!domain domain=xeemoquo.top
+!url url=https://withifceale.top/treusparq.php
