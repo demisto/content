@@ -31,6 +31,12 @@ def test_set_limit(limit, expected):
     assert res == expected
 
 
+def test_set_var_to_output_prefix():
+    from CiscoEmailSecurity import set_var_to_output_prefix
+    res = set_var_to_output_prefix('mail_incoming_traffic_summary')
+    assert res == 'MailIncomingTrafficSummary'
+
+
 def test_build_url_params_for_list_report():
     """
     Given:
