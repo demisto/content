@@ -1,5 +1,6 @@
 id: TestSafeBreach
 version: -1
+fromversion: 5.0.0
 name: TestSafeBreach
 starttaskid: "0"
 tasks:

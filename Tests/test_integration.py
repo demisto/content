@@ -342,7 +342,7 @@ def __get_integration_config(client, integration_name, prints_manager, thread_in
         res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
                                                       method='POST', body=body)
     except ApiException as conn_error:
-        prints_manager.add_print_job(conn_error, print, thread_index)
+        prints_manager.add_print_job(conn_error.body, print, thread_index)
         return None
 
     res = ast.literal_eval(res_raw[0])
@@ -383,7 +383,7 @@ def __test_integration_instance(client, module_instance, prints_manager, thread_
             break
         except ApiException as conn_err:
             error_msg = 'Failed to test integration instance, error trying to communicate with demisto ' \
-                        'server: {} '.format(conn_err)
+                        'server: {} '.format(conn_err.body)
             prints_manager.add_print_job(error_msg, print_error, thread_index)
             return False, None
         except urllib3.exceptions.ReadTimeoutError:
@@ -462,9 +462,9 @@ def __delete_integration_instance_if_determined_by_name(client, instance_name, p
                                                        path='/settings/integration/search',
                                                        body={'size': 1000})
         int_instances = ast.literal_eval(int_resp[0])
-    except requests.exceptions.RequestException as conn_err:
+    except ApiException as conn_err:
         error_message = 'Failed to delete integrations instance, error trying to communicate with demisto server: ' \
-                        '{} '.format(conn_err)
+                        '{} '.format(conn_err.body)
         prints_manager.add_print_job(error_message, print_error, thread_index)
         return
     if int(int_resp[1]) != 200:
@@ -552,7 +552,7 @@ def __create_integration_instance(client, integration_name, integration_instance
                                                   body=module_instance)
     except ApiException as conn_err:
         error_message = 'Error trying to create instance for integration: {0}:\n {1}'.format(
-            integration_name, conn_err
+            integration_name, conn_err.body
         )
         prints_manager.add_print_job(error_message, print_error, thread_index)
         return None, error_message, None
@@ -600,7 +600,7 @@ def __disable_integrations_instances(client, module_instances, prints_manager, t
                                                       body=module_instance)
         except ApiException as conn_err:
             error_message = 'Failed to disable integration instance, error trying to communicate with demisto ' \
-                            'server: {} '.format(conn_err)
+                            'server: {} '.format(conn_err.body)
             prints_manager.add_print_job(error_message, print_error, thread_index)
             return
 
@@ -626,7 +626,7 @@ def __enable_integrations_instances(client, module_instances):
         except ApiException as conn_err:
             print_error(
                 'Failed to enable integration instance, error trying to communicate with demisto '
-                'server: {} '.format(conn_err)
+                'server: {} '.format(conn_err.body)
             )
 
         if res[1] != 200:
@@ -644,7 +644,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
     try:
         response = client.create_incident(create_incident_request=create_incident_request)
     except ApiException as err:
-        prints_manager.add_print_job(str(err), print_error, thread_index)
+        prints_manager.add_print_job(str(err.body), print_error, thread_index)
 
     try:
         inc_id = response.id
@@ -674,7 +674,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
         incidents = client.search_incidents(filter=search_filter)
         incident_search_responses.append(incidents)
     except ApiException as err:
-        prints_manager.add_print_job(err, print, thread_index)
+        prints_manager.add_print_job(err.body, print, thread_index)
         incidents = {'total': 0}
 
     # poll the incidents queue for a max time of 300 seconds
@@ -684,7 +684,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
             incidents = client.search_incidents(filter=search_filter)
             incident_search_responses.append(incidents)
         except ApiException as err:
-            prints_manager.add_print_job(err, print, thread_index)
+            prints_manager.add_print_job(err.body, print, thread_index)
         if time.time() > timeout:
             error_message = 'Got timeout for searching incident with id {}, ' \
                             'got {} incidents in the search'.format(inc_id, incidents['total'])
@@ -705,9 +705,9 @@ def __get_investigation_playbook_state(client, inv_id, prints_manager, thread_in
         investigation_playbook_raw = demisto_client.generic_request_func(self=client, method='GET',
                                                                          path='/inv-playbook/' + inv_id)
         investigation_playbook = ast.literal_eval(investigation_playbook_raw[0])
-    except requests.exceptions.RequestException as conn_err:
+    except ApiException as conn_err:
         error_message = 'Failed to get investigation playbook state, error trying to communicate with demisto ' \
-                        'server: {} '.format(conn_err)
+                        'server: {} '.format(conn_err.body)
         prints_manager.add_print_job(error_message, print_error, thread_index)
         return PB_Status.FAILED
 
@@ -728,9 +728,9 @@ def __delete_incident(client, incident, prints_manager, thread_index=0):
         }
         res = demisto_client.generic_request_func(self=client, method='POST',
                                                   path='/incident/batchDelete', body=body)
-    except requests.exceptions.RequestException as conn_err:
+    except ApiException as conn_err:
         error_message = 'Failed to delete incident, error trying to communicate with demisto server: {} ' \
-                        ''.format(conn_err)
+                        ''.format(conn_err.body)
         prints_manager.add_print_job(error_message, print_error, thread_index)
         return False
 
@@ -749,9 +749,9 @@ def __delete_integration_instance(client, instance_id, prints_manager, thread_in
         res = demisto_client.generic_request_func(self=client, method='DELETE',
                                                   path='/settings/integration/' + urllib.parse.quote(
                                                       instance_id))
-    except requests.exceptions.RequestException as conn_err:
+    except ApiException as conn_err:
         error_message = 'Failed to delete integration instance, error trying to communicate with demisto ' \
-                        'server: {} '.format(conn_err)
+                        'server: {} '.format(conn_err.body)
         prints_manager.add_print_job(error_message, print_error, thread_index)
         return False
     if int(res[1]) != 200:
@@ -778,9 +778,9 @@ def __print_investigation_error(client, playbook_id, investigation_id, prints_ma
         res = demisto_client.generic_request_func(self=client, method='POST',
                                                   path='/investigation/' + urllib.parse.quote(
                                                       investigation_id), body=empty_json)
-    except requests.exceptions.RequestException as conn_err:
+    except ApiException as conn_err:
         error_message = 'Failed to print investigation error, error trying to communicate with demisto ' \
-                        'server: {} '.format(conn_err)
+                        'server: {} '.format(conn_err.body)
         prints_manager.add_print_job(error_message, print_error, thread_index)
     if res and int(res[1]) == 200:
         resp_json = ast.literal_eval(res[0])
