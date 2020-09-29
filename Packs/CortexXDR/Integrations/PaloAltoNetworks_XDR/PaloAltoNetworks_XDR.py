@@ -26,7 +26,7 @@ XDR_INCIDENT_FIELDS = {
                               "investigation\",\"resolved_threat_handled\","
                               "\"resolved_known_issue\",\"resolved_duplicate\","
                               "\"resolved_false_positive\",\"resolved_other\"",
-               "xsoar_field_name": 'xdrstatus'},
+               "xsoar_field_name": 'xdrstatus_vv2'},
     "assigned_user_mail": {"description": "Email address of the assigned user.",
                            'xsoar_field_name': "xdrassigneduseremail"},
     "assigned_user_pretty_name": {"description": "Full name of the user assigned to the incident.",

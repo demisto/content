@@ -405,7 +405,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xdrstatus",
+                                "fieldId": "xdrstatusv2",
                                 "height": 24,
                                 "id": "4f80f5f0-ac7a-11e9-a30b-53d47e1ea7d7",
                                 "index": 2,
