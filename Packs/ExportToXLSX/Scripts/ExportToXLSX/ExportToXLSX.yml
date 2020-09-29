@@ -32,7 +32,7 @@ comment: Export data to xlsx file
 commonfields:
   id: ExportToXLSX
   version: -1
-dockerimage: docker.io/soarguardian/xlsxwriter:latest
+dockerimage: demisto/xslxwriter:1.0.0.11939
 enabled: true
 name: ExportToXLSX
 runas: DBotWeakRole
