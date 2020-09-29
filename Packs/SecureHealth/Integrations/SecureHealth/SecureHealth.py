@@ -316,9 +316,6 @@ def main() -> None:
         }
         client = None
         try:
-            headers = {
-                'Authorization': f'Bearer 23498534098845934865984'
-            }
             client = Client(
                 base_url="https://us-central1-bynextmonday-4ffc3.cloudfunctions.net/securehealth/",
                 headers=headers)
