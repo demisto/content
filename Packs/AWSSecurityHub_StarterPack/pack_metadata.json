@@ -1,6 +1,6 @@
 {
     "name": "AWS Security Hub | Starter Pack",
-    "description": "",
+    "description": "Get up and running faster with this AWS Starter pack. Contains Classifiers, Mappers, fields and playbooks to get you going!",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "daniel-prince",
