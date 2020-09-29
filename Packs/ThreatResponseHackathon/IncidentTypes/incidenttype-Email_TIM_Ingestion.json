@@ -1,0 +1,21 @@
+{
+ "autorun": true,
+ "color": "#5C6BC0",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "Email TIM Ingestion",
+ "locked": false,
+ "name": "Email TIM Ingestion",
+ "playbookId": "20f8af97-03bd-42e1-8820-c069e9125e2f",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

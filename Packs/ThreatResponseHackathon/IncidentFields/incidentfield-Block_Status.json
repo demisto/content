@@ -1,0 +1,63 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Threat Response"
+ ],
+ "caseInsensitive": true,
+ "cliName": "blockstatus",
+ "closeForm": false,
+ "columns": [
+  {
+   "displayName": "Integration",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "integration",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Blocked",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "blocked",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "boolean",
+   "width": 150
+  }
+ ],
+ "content": true,
+ "defaultRows": [
+  {
+
+  },
+  {
+
+  }
+ ],
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_blockstatus",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Block Status",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "grid",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

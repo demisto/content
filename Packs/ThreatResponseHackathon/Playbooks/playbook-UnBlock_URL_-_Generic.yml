@@ -1,0 +1,609 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: f31e67ff-ccf0-4801-87f1-4dc2e2749e82
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |-
+  This playbook blocks malicious URLs using all integrations that are enabled.
+
+  Supported integrations for this playbook:
+  * Palo Alto Networks Minemeld
+  * Palo Alto Networks PAN-OS
+  * Zscaler
+id: UnBlock URL - Generic
+inputs:
+- description: The name of the URL blacklist Miner in  Minemeld.
+  key: URLBlacklistMiner
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Array of malicious URLs to block.
+  key: URL
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: URL list from the instance context with which to override the remote
+    file.
+  key: URLListName
+  playbookInputQuery:
+  required: false
+  value:
+    simple: Demisto Remediation - URL EDL
+- description: Log Forwarding object name.
+  key: LogForwarding
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: EDL server IP address.
+  key: EDLServerIP
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    This input establishes whether to commit the configuration automatically.
+    Yes - Commit automatically.
+    No - Commit manually.
+  key: AutoCommit
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "No"
+- description: Custom URL Category name.
+  key: CustomURLCategory
+  playbookInputQuery:
+  required: false
+  value:
+    simple: Demisto Remediation - Malicious URLs
+- description: Custom URL category type. Insert "URL List"/ "Category Match".
+  key: type
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Device group for the Custom URL Category (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The list of categories. Relevant from PAN-OS v9.x.
+  key: categories
+  playbookInputQuery:
+  required: false
+  value: {}
+name: UnBlock URL - Generic
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 40
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1150
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+      - "17"
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 358e3959-7cdf-4b4b-8e9c-6e2ed502bbf1
+      iscommand: false
+      name: Unblock URLs
+      type: title
+      version: -1
+      description: ''
+    taskid: 358e3959-7cdf-4b4b-8e9c-6e2ed502bbf1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 425
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.URL
+          operator: isExists
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify that the playbook input includes at least one URL to block.
+      id: ad6bb4b2-ea87-4c6e-893c-a31e27e82e55
+      iscommand: false
+      name: Is there a URL to block?
+      type: condition
+      version: -1
+    taskid: ad6bb4b2-ea87-4c6e-893c-a31e27e82e55
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 175
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Indicator:
+        complex:
+          root: inputs.URL
+      MinerName:
+        complex:
+          root: inputs.URLBlacklistMiner
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2d0fc7d4-b827-43c9-8b7a-bf592e7a1c1f
+      iscommand: false
+      name: add_indicator_to_miner_-_palo_alto_mineMeld
+      playbookId: add_indicator_to_miner_-_palo_alto_mineMeld
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 2d0fc7d4-b827-43c9-8b7a-bf592e7a1c1f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 710
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Zscaler
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify that there is a valid instance of Zscaler enabled.
+      id: a2108a1a-7365-45e7-8c07-a5a6fcdd8b95
+      iscommand: false
+      name: Is Zscaler enabled?
+      type: condition
+      version: -1
+    taskid: a2108a1a-7365-45e7-8c07-a5a6fcdd8b95
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 730
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Zscaler
+      description: Removes URL from the blacklist.
+      id: f2e868b4-ec47-4310-8791-cfaea7f98a2f
+      iscommand: true
+      name: Unblock URL in Zscaler
+      script: Zscaler|||zscaler-undo-blacklist-url
+      type: regular
+      version: -1
+    taskid: f2e868b4-ec47-4310-8791-cfaea7f98a2f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 980
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      EDLServerIP:
+        complex:
+          root: inputs.EDLServerIP
+      IP: {}
+      IPListName: {}
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      URL:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+      URLListName:
+        complex:
+          root: inputs.URLListName
+      device-group:
+        complex:
+          root: inputs.device-group
+      inbound-or-outbound-rule:
+        simple: outbound
+      ip-pre-post-rulebase:
+        simple: pre-rulebase
+      ip-rule-position: {}
+      url-pre-post-rulebase:
+        simple: pre-rulebase
+      url-rule-position: {}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bc52f173-2761-41cc-8342-6c5b462c3011
+      iscommand: false
+      name: PAN-OS - Block IP and URL - External Dynamic List
+      playbookId: PAN-OS - Block IP and URL - External Dynamic List
+      type: playbook
+      version: -1
+      description: ''
+    taskid: bc52f173-2761-41cc-8342-6c5b462c3011
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 980
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 864f7b0f-798c-40d8-862d-c1b41fce36f0
+      iscommand: false
+      name: MineMeld
+      type: title
+      version: -1
+      description: ''
+    taskid: 864f7b0f-798c-40d8-862d-c1b41fce36f0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 570
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 59c2b2cb-4d8f-4e00-8140-751aec8dc2aa
+      iscommand: false
+      name: PAN-OS
+      type: title
+      version: -1
+      description: ''
+    taskid: 59c2b2cb-4d8f-4e00-8140-751aec8dc2aa
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 570
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 99eec4e5-301a-4b0a-83e3-d7c2f973eeea
+      iscommand: false
+      name: Zscaler
+      type: title
+      version: -1
+      description: ''
+    taskid: 99eec4e5-301a-4b0a-83e3-d7c2f973eeea
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 570
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.EDLServerIP
+          operator: isNotEmpty
+      label: "yes"
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8764a204-c1b6-454f-8b27-8d453cfcbb52
+      iscommand: false
+      name: Use EDL?
+      type: condition
+      version: -1
+    taskid: 8764a204-c1b6-454f-8b27-8d453cfcbb52
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 710
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocked:
+        simple: "False"
+      indicator:
+        simple: ${incident.blockedindicator}
+      integration:
+        simple: Zscaler
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the indicators block status for the given integration.
+      id: 4924de46-8662-42fa-81c3-b9277f1b0082
+      iscommand: false
+      name: Update Indicator Block Status
+      script: 08999e11-2eb8-48aa-81ba-cf607e0aa91d
+      type: regular
+      version: -1
+    taskid: 4924de46-8662-42fa-81c3-b9277f1b0082
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1170
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocked:
+        simple: "False"
+      indicator:
+        simple: ${incident.blockedindicator}
+      integration:
+        simple: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the indicators block status for the given integration.
+      id: 35b9eb48-f7ed-472b-80d7-9f26297f19a1
+      iscommand: false
+      name: Update Indicator Block Status
+      script: 08999e11-2eb8-48aa-81ba-cf607e0aa91d
+      type: regular
+      version: -1
+    taskid: 35b9eb48-f7ed-472b-80d7-9f26297f19a1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1215
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.48,
+      "8_2_#default#": 0.43
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1270,
+        "width": 1770,
+        "x": -560,
+        "y": 40
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

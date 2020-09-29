@@ -1,0 +1,25 @@
+args:
+- auto: PREDEFINED
+  name: block
+  predefined:
+  - "True"
+  - "False"
+  required: true
+comment: Creates a new TR incident type with the correct fields.
+commonfields:
+  id: processTRButton
+  version: -1
+dockerimage: demisto/python3:3.8.5.10845
+enabled: true
+name: processTRButton
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- indicator-action-button
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,521 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: f31e67ff-ccf0-4801-87f1-4dc2e2749e82
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |
+  This playbook Unblocks indicators using all integrations that are enabled.
+
+  Supported integrations for this playbook:
+  * Active Directory
+  * Check Point Firewall
+  * Palo Alto Networks Minemeld
+  * Palo Alto Networks Panorama
+  * Zscaler
+  * Carbon Black Enterprise Response
+id: Unblock Indicators - Generic
+inputs:
+- description: The name of the IP blacklist Miner in  Minemeld.
+  key: IPBlacklistMiner
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The name of the URL blacklist Miner in  Minemeld.
+  key: URLBlacklistMiner
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Array of malicious IPs to block.
+  key: IP
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: Indicator
+      filters:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: DBotScore.Type
+          operator: isEqualString
+          right:
+            value:
+              simple: ip
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "3"
+      root: DBotScore
+      transformers:
+      - operator: uniq
+- description: Array of malicious URLs to block.
+  key: URL
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: Indicator
+      filters:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: DBotScore.Type
+          operator: isEqualString
+          right:
+            value:
+              simple: url
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "3"
+      root: DBotScore
+      transformers:
+      - operator: uniq
+- description: Array of malicious usernames to block.
+  key: Username
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: Indicator
+      filters:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: DBotScore.Type
+          operator: isEqualString
+          right:
+            value:
+              simple: username
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "3"
+      root: DBotScore
+- description: ""
+  key: MD5
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: SHA1
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: AutoCommit
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "No"
+- description: ""
+  key: URLListName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: IPListName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: EDLServerIP
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Unblock Indicators - Generic
+outputs:
+- contextPath: CheckpointFWRule.Domain
+  description: Information about the domain the object belongs to.
+- contextPath: CheckpointFWRule.Enabled
+  description: Enable/Disable the rule.
+- contextPath: CheckpointFWRule.Name
+  description: Object name. Should be unique in domain.
+- contextPath: CheckpointFWRule.UID
+  description: Object unique identifier.
+- contextPath: CheckpointFWRule.Type
+  description: Type of the object.
+- contextPath: CheckpointFWRule.DestinationNegate
+  description: True if negate is set for destination.
+- contextPath: CheckpointFWRule.Action
+  description: Accept, Drop, Apply Layer, Ask, Info. The level of detail returned
+    depends on the details-level field of the request. This table shows the level
+    of detail shown when details-level is set to standard.
+- contextPath: CheckpointFWRule.Destination
+  description: Collection of Network objects identified by the name or UID. The level
+    of detail depends on the details-level field of the request. This table shows
+    the level of detail shown when details-level is set to standard.
+- contextPath: CheckpointFWRule.ActionSetting
+  description: Action settings.
+- contextPath: CheckpointFWRule.CustomFields
+  description: Custom fields.
+- contextPath: CheckpointFWRule.Data
+  description: The level of detail returned depends on the details-level field of
+    the request. This table shows the level of detail shown when details-level is
+    set to standard.
+- contextPath: CheckpointFWRule.DataDirection
+  description: On which direction the file types processing is applied.
+- contextPath: CheckpointFWRule.DataNegate
+  description: True if negate is set for data.
+- contextPath: CheckpointFWRule.Hits
+  description: Hits count object.
+- contextPath: PanoramaRule.Direction
+  description: Direction of the Panorama rule. Can be 'to','from', 'both'
+  type: string
+- contextPath: PanoramaRule.IP
+  description: The IP the Panorama rule blocks
+  type: string
+- contextPath: PanoramaRule.Name
+  description: Name of the Panorama rule
+  type: string
+- contextPath: CheckpointFWRule.Data.Name
+  description: Object name. Should be unique in domain.
+- contextPath: CheckpointFWRule.Data.Domain
+  description: Information about the domain the object belongs to.
+- contextPath: CheckpointFWRule.Domain.Name
+  description: Object name. Should be unique in domain.
+- contextPath: CheckpointFWRule.Domain.UID
+  description: Object unique identifier.
+- contextPath: CheckpointFWRule.Domain.Type
+  description: Domain type.
+- contextPath: CheckpointFWRule.Hits.FirstDate
+  description: First of hits.
+- contextPath: CheckpointFWRule.Hits.LastDate
+  description: Last date of hits.
+- contextPath: CheckpointFWRule.Hits.Level
+  description: Level of hits.
+- contextPath: CheckpointFWRule.Hits.Percentage
+  description: Percentage of hits
+- contextPath: CheckpointFWRule.Hits.Value
+  description: Value of hits.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 515
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+      - "10"
+      - "12"
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6f873004-f09c-447b-810a-3546f805f724
+      iscommand: false
+      name: Unblock IOCs
+      type: title
+      version: -1
+      description: ''
+    taskid: 6f873004-f09c-447b-810a-3546f805f724
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Tag: {}
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e9bcb55b-bdb0-4729-8ce0-12ffed0f7307
+      iscommand: false
+      name: 6b3b3ba5-ce84-4190-867d-3a4a1d86a803
+      playbookId: 6b3b3ba5-ce84-4190-867d-3a4a1d86a803
+      type: playbook
+      version: -1
+      description: ''
+    taskid: e9bcb55b-bdb0-4729-8ce0-12ffed0f7307
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          root: inputs.IP
+      IPBlacklistMiner:
+        complex:
+          root: inputs.IPBlacklistMiner
+      IPListName:
+        simple: Demisto-Remediation-IP-EDL
+      LogForwarding: {}
+      StaticAddressGroup:
+        simple: 18.219.190.57
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        This playbook blocks malicious IPs using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Check Point Firewall
+        * Palo Alto Networks Minemeld
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+      id: a8250397-3f63-4e43-84bb-f99e7746ed8c
+      iscommand: false
+      name: 78021820-d45a-4b57-86b6-d085f50ba6dd
+      playbookId: 78021820-d45a-4b57-86b6-d085f50ba6dd
+      type: playbook
+      version: -1
+    taskid: a8250397-3f63-4e43-84bb-f99e7746ed8c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      EDLServerIP:
+        simple: 18.219.190.57
+      LogForwarding: {}
+      URL:
+        complex:
+          accessor: blockedindicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: incident.blockedindicatortype
+              operator: isEqualString
+              right:
+                value:
+                  simple: URL
+          root: incident
+      URLBlacklistMiner:
+        complex:
+          root: inputs.URLBlacklistMiner
+      URLListName:
+        simple: Demisto-Remediation-URL-EDL
+      categories: {}
+      device-group: {}
+      type: {}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        This playbook blocks malicious URLs using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Palo Alto Networks Minemeld
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+      id: 67c31af5-03ec-4dfc-85b2-de4221846e68
+      iscommand: false
+      name: b0b937d2-eeb7-463b-880b-8d72552b12b0
+      playbookId: b0b937d2-eeb7-463b-880b-8d72552b12b0
+      type: playbook
+      version: -1
+    taskid: 67c31af5-03ec-4dfc-85b2-de4221846e68
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 340
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      EventId: {}
+      MD5:
+        complex:
+          accessor: MD5
+          root: input
+      SHA256:
+        complex:
+          accessor: SHA256
+          root: input
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2a137868-9e6a-421c-8932-bff7c1a571c0
+      iscommand: false
+      name: 0021e7fd-9dbe-44dd-8808-064b92d84de5
+      playbookId: 0021e7fd-9dbe-44dd-8808-064b92d84de5
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 2a137868-9e6a-421c-8932-bff7c1a571c0
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 530,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

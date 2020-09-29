@@ -1,0 +1,14 @@
+{
+    "name": "Threat Response Hackathon",
+    "description": "Use case demonstrating the natural extension of TIM: TIM + AR(Automatic response). SOC manager can take back control to block or unblock malicious indicators with the touch of a button in XSOAR",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "PatrickBayle-demisto",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T07:33:56Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

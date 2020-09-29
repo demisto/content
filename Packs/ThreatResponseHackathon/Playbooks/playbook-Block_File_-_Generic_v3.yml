@@ -1,0 +1,651 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: f31e67ff-ccf0-4801-87f1-4dc2e2749e82
+    propagationLabels: []
+    toServerVersion: ""
+description: "This playbook is used to block files from running on endpoints. \nThis\
+  \ playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Cybereason\n\
+  - Carbon Black Enterprise Response\n- Cylance Protect v2\n"
+id: Block File - Generic v3
+inputs:
+- description: The MD5 hash of the file you want to block.
+  key: MD5
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+- description: ""
+  key: SHA256
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      root: File
+- description: Traps event ID that contains the malicious file to block.
+  key: EventId
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Block File - Generic v3
+outputs:
+- contextPath: CbResponse.BlockedHashes.LastBlock.Time
+  description: Last block time
+- contextPath: CbResponse.BlockedHashes.LastBlock.Hostname
+  description: Last block hostname
+- contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
+  description: Last block sensor ID
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+      - "9"
+      - "10"
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 420a534c-a6e6-4cf5-8b86-ac7dd1a91441
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 420a534c-a6e6-4cf5-8b86-ac7dd1a91441
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      id: 24babe11-954f-4415-8d3d-a1100cdbb3df
+      iscommand: false
+      name: block_file_-_carbon_black_response
+      playbookId: block_file_-_carbon_black_response
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 24babe11-954f-4415-8d3d-a1100cdbb3df
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c8476a84-8d87-4ff2-8d6c-1dd1cccc503a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c8476a84-8d87-4ff2-8d6c-1dd1cccc503a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 580
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: This playbook accepts an MD5 hash and blocks the file using the
+        Cybereason integration.
+      id: 2efe2a1a-1d31-438c-828f-b6ae50f3899d
+      iscommand: false
+      name: Block File - Cybereason
+      playbookId: Block File - Cybereason
+      type: playbook
+      version: -1
+    taskid: 2efe2a1a-1d31-438c-828f-b6ae50f3899d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: This playbook accepts a SHA256 hash and adds the hash to the Global
+        Quarantine list using the Cylance Protect v2 integration.
+      id: a887370c-f94a-42f9-866f-2d80b7707f41
+      iscommand: false
+      name: Block File - Cylance Protect v2
+      playbookId: Block File - Cylance Protect v2
+      type: playbook
+      version: -1
+    taskid: a887370c-f94a-42f9-866f-2d80b7707f41
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 340
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b224545a-c0fa-4f0e-873c-5a95050376da
+      iscommand: false
+      name: Palo Alto Networks - XDR
+      type: title
+      version: -1
+      description: ''
+    taskid: b224545a-c0fa-4f0e-873c-5a95050376da
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 32d4b47a-e972-4e30-875b-b563130cc4ca
+      iscommand: false
+      name: Cybereason
+      type: title
+      version: -1
+      description: ''
+    taskid: 32d4b47a-e972-4e30-875b-b563130cc4ca
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0c07d0e1-59b1-436c-8e90-f2d0410df813
+      iscommand: false
+      name: Carbon Black Enterprise Response
+      type: title
+      version: -1
+      description: ''
+    taskid: 0c07d0e1-59b1-436c-8e90-f2d0410df813
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dcc8e191-213c-4ffd-8bc7-a8e1bc8894d7
+      iscommand: false
+      name: Cylance Protect v2
+      type: title
+      version: -1
+      description: ''
+    taskid: dcc8e191-213c-4ffd-8bc7-a8e1bc8894d7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 482e04a7-ca6f-44ba-8b40-25d072ed3a72
+      iscommand: false
+      name: 4ed5b3a6-e761-4c87-8d7c-3191419b6326
+      playbookId: 4ed5b3a6-e761-4c87-8d7c-3191419b6326
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 482e04a7-ca6f-44ba-8b40-25d072ed3a72
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "18"
+      Cortex XDR - IR:
+      - "15"
+      Cybereason:
+      - "14"
+      Cylance Protect V2:
+      - "16"
+      carbonblack-v2:
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        complex:
+          accessor: brand
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: modules.brand
+              operator: isEqualString
+              right:
+                value:
+                  simple: carbonblack-v2
+            - left:
+                iscontext: true
+                value:
+                  simple: modules.brand
+              operator: isEqualString
+              right:
+                value:
+                  simple: Cortex XDR - IR
+            - left:
+                iscontext: true
+                value:
+                  simple: modules.brand
+              operator: isEqualString
+              right:
+                value:
+                  simple: Cylance Protect V2
+            - left:
+                iscontext: true
+                value:
+                  simple: modules.brand
+              operator: isEqualString
+              right:
+                value:
+                  simple: Cybereason
+          - - left:
+                iscontext: true
+                value:
+                  simple: modules.state
+              operator: isEqualString
+              right:
+                value:
+                  simple: active
+          root: modules
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Gets a value and return it. This is to be used in playbook conditional\
+        \ tasks - get a value from incident field, label or context, and act accordingly.\
+        \ \nIf an array is returned. the first value will be the decision making value."
+      id: 4756858c-cff1-45b1-8aa1-b009909588f1
+      iscommand: false
+      name: Detect Integration
+      script: checkValue
+      type: condition
+      version: -1
+    taskid: 4756858c-cff1-45b1-8aa1-b009909588f1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 710
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocked:
+        simple: "True"
+      indicator:
+        simple: ${inputs.SHA256}
+      integration:
+        simple: Cybereason
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the indicators block status for the given integration.
+      id: b7b53cf1-a27d-4c64-8635-449cb1a7bd98
+      iscommand: false
+      name: Update Indicator Block Status
+      script: 08999e11-2eb8-48aa-81ba-cf607e0aa91d
+      type: regular
+      version: -1
+    taskid: b7b53cf1-a27d-4c64-8635-449cb1a7bd98
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 930
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocked:
+        simple: "True"
+      indicator:
+        simple: ${inputs.SHA256}
+      integration:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the indicators block status for the given integration.
+      id: 28417d31-4b59-43d6-809d-808a155d5bec
+      iscommand: false
+      name: Update Indicator Block Status
+      script: 08999e11-2eb8-48aa-81ba-cf607e0aa91d
+      type: regular
+      version: -1
+    taskid: 28417d31-4b59-43d6-809d-808a155d5bec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 930
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocked:
+        simple: "True"
+      indicator:
+        simple: ${inputs.SHA256}
+      integration:
+        simple: Cylance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the indicators block status for the given integration.
+      id: c8dcfb0c-a9e3-401e-8848-b667f5460ea5
+      iscommand: false
+      name: Update Indicator Block Status
+      script: 08999e11-2eb8-48aa-81ba-cf607e0aa91d
+      type: regular
+      version: -1
+    taskid: c8dcfb0c-a9e3-401e-8848-b667f5460ea5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 930
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocked:
+        simple: "True"
+      indicator:
+        simple: ${inputs.SHA256}
+      integration:
+        simple: Carbon Black
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the indicators block status for the given integration.
+      id: b7bc3015-9688-4e59-8c88-c385dfc867e7
+      iscommand: false
+      name: Update Indicator Block Status
+      script: 08999e11-2eb8-48aa-81ba-cf607e0aa91d
+      type: regular
+      version: -1
+    taskid: b7bc3015-9688-4e59-8c88-c385dfc867e7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 930
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 42fd3fcf-12fb-4bd3-883c-ce7eea07221a
+      iscommand: false
+      name: Fin
+      type: title
+      version: -1
+      description: ''
+    taskid: 42fd3fcf-12fb-4bd3-883c-ce7eea07221a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1120
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "18"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.SHA256}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: b151acae-f3e8-4620-8c49-c327d00080eb
+      iscommand: false
+      name: SHA256?
+      script: Exists
+      type: condition
+      version: -1
+    taskid: b151acae-f3e8-4620-8c49-c327d00080eb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 630
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1135,
+        "width": 1960,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

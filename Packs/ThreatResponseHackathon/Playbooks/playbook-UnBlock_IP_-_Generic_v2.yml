@@ -1,0 +1,706 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: f31e67ff-ccf0-4801-87f1-4dc2e2749e82
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |-
+  This playbook blocks malicious IPs using all integrations that are enabled.
+
+  Supported integrations for this playbook:
+  * Check Point Firewall
+  * Palo Alto Networks Minemeld
+  * Palo Alto Networks PAN-OS
+  * Zscaler
+id: UnBlock IP - Generic v2
+inputs:
+- description: The name of the IP blacklist Miner in  Minemeld.
+  key: IPBlacklistMiner
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Array of malicious IPs to block.
+  key: IP
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.
+    Specify True to use Custom Block Rules.
+  key: CustomBlockRule
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "True"
+- description: Panorama log forwarding object name.
+  key: LogForwarding
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    This input determines whether to commit the configuration automatically.
+    Yes - Commit automatically.
+    No - Commit manually.
+  key: AutoCommit
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "No"
+- description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
+    Specify the Static Address Group name for IP handling.
+  key: StaticAddressGroup
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
+    Specify the EDL name for IP handling.
+  key: IPListName
+  playbookInputQuery:
+  required: false
+  value:
+    simple: Demisto-Remediation-IP-EDL
+- description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:
+    * The IP address of the web server on which the files are stored.
+    * The web server IP address is configured in the integration instance.
+  key: EDLServerIP
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 18.219.190.57
+- description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
+    Specify the Dynamic Address Group tag name for IP handling.
+  key: DAG
+  playbookInputQuery:
+  required: false
+  value: {}
+name: UnBlock IP - Generic v2
+outputs:
+- contextPath: CheckpointFWRule.Destination
+  description: Rule Destination.
+- contextPath: CheckpointFWRule.DestinationNegate
+  description: Rule destination negate status (True/False).
+- contextPath: PanoramaRule.Direction
+  description: Direction of the Panorama rule. Can be 'to','from', 'both'
+  type: string
+- contextPath: PanoramaRule.IP
+  description: The IP the Panorama rule blocks
+  type: string
+- contextPath: CheckpointFWRule.Name
+  description: Rule name.
+- contextPath: PanoramaRule.Name
+  description: Name of the Panorama rule
+  type: string
+- contextPath: CheckpointFWRule.UID
+  description: Rule UID.
+- contextPath: PanoramaRule
+  description: List of Panorama rules
+- contextPath: CheckpointFWRule.Type
+  description: Rule Type.
+- contextPath: CheckpointFWRule.Action
+  description: 'Rule action (Valid values are: Accept, Drop, Apply Layer, Ask, Info).'
+- contextPath: CheckpointFWRule.ActionSetting
+  description: Rule action settings.
+- contextPath: CheckpointFWRule.CustomFields
+  description: Rule custom fields.
+- contextPath: CheckpointFWRule.Data
+  description: Rule data.
+- contextPath: CheckpointFWRule.DataDirection
+  description: Rule data direction.
+- contextPath: CheckpointFWRule.DataNegate
+  description: Rule data negate status (True/False).
+- contextPath: CheckpointFWRule.Domain
+  description: Rule domain.
+- contextPath: CheckpointFWRule.Enabled
+  description: Rule status.
+- contextPath: CheckpointFWRule.Hits
+  description: Rule hits count.
+- contextPath: CheckpointFWRule.Data.Name
+  description: Rule data object name.
+- contextPath: CheckpointFWRule.Data.Domain
+  description: Information about the domain the data object belongs to.
+- contextPath: CheckpointFWRule.Domain.Name
+  description: Rule domain name.
+- contextPath: CheckpointFWRule.Domain.UID
+  description: Rule domain UID.
+- contextPath: CheckpointFWRule.Domain.Type
+  description: Rule domain type.
+- contextPath: CheckpointFWRule.Hits.FirstDate
+  description: The date of the first hit for the rule.
+- contextPath: CheckpointFWRule.Hits.LastDate
+  description: The date of the last hit for the rule.
+- contextPath: CheckpointFWRule.Hits.Level
+  description: Level of rule hits.
+- contextPath: CheckpointFWRule.Hits.Percentage
+  description: Percentage of rule hits.
+- contextPath: CheckpointFWRule.Hits.Value
+  description: Value of rule hits.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1010
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+      - "19"
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7682886a-e98d-4358-8422-e9814df67e9f
+      iscommand: false
+      name: Block IP
+      type: title
+      version: -1
+      description: ''
+    taskid: 7682886a-e98d-4358-8422-e9814df67e9f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 370
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.IP
+          operator: isExists
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7d3edc30-8503-423f-86e4-8fc8fdb8ce79
+      iscommand: false
+      name: Is there an IP to Block?
+      type: condition
+      version: -1
+    taskid: 7d3edc30-8503-423f-86e4-8fc8fdb8ce79
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Indicator:
+        complex:
+          root: inputs.IP
+      MinerName:
+        complex:
+          root: inputs.IPBlacklistMiner
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dbee1e60-454a-4043-8676-7f5bb3006b00
+      iscommand: false
+      name: add_indicator_to_miner_-_palo_alto_mineMeld
+      playbookId: add_indicator_to_miner_-_palo_alto_mineMeld
+      type: playbook
+      version: -1
+      description: ''
+    taskid: dbee1e60-454a-4043-8676-7f5bb3006b00
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Zscaler
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify that there is a valid instance of Zscaler enabled.
+      id: 43617e2e-a00d-4569-8d43-80b6e732798e
+      iscommand: false
+      name: Is Zscaler enabled?
+      type: condition
+      version: -1
+    taskid: 43617e2e-a00d-4569-8d43-80b6e732798e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 660
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Zscaler
+      description: Removes IP address from the blacklist.
+      id: f4c45439-154e-4668-83a9-721ef2f5f436
+      iscommand: true
+      name: Zscaler Remove from Blacklist
+      script: Zscaler|||zscaler-undo-blacklist-ip
+      type: regular
+      version: -1
+    taskid: f4c45439-154e-4668-83a9-721ef2f5f436
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 835
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 901eaceb-8b70-4afa-81b8-cb26eb624fd2
+      iscommand: false
+      name: PAN-OS
+      type: title
+      version: -1
+      description: ''
+    taskid: 901eaceb-8b70-4afa-81b8-cb26eb624fd2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 515
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5ef9b8f5-62a4-415c-896d-a739062d19ad
+      iscommand: false
+      name: MineMeld
+      type: title
+      version: -1
+      description: ''
+    taskid: 5ef9b8f5-62a4-415c-896d-a739062d19ad
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 675
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c35db5b5-164d-466d-825c-144a961f4f9c
+      iscommand: false
+      name: Zscaler
+      type: title
+      version: -1
+      description: ''
+    taskid: c35db5b5-164d-466d-825c-144a961f4f9c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 515
+        }
+      }
+  "24":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.IPListName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.EDLServerIP
+          operator: isNotEmpty
+      label: "yes"
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5358db30-716f-46d9-86d5-bd22d496c93c
+      iscommand: false
+      name: Use External Dynamic List?
+      type: condition
+      version: -1
+    taskid: 5358db30-716f-46d9-86d5-bd22d496c93c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 660
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      'EDLManagementServerURL ':
+        simple: 18.219.190.57
+      IP:
+        complex:
+          accessor: indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: incident.indicator_type
+              operator: isEqualString
+              right:
+                value:
+                  simple: IP
+          root: incident
+          transformers:
+          - operator: uniq
+      IPListName:
+        simple: Demisto-Remediation-IP-EDL
+      LogForwarding: {}
+      URL:
+        complex:
+          accessor: indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: incident.indicator_type
+              operator: isEqualString
+              right:
+                value:
+                  simple: URL
+          root: incident
+          transformers:
+          - operator: uniq
+      URLListName:
+        simple: Demisto-Remediation-URL-EDL
+      device-group: {}
+      inbound-or-outbound-rule:
+        simple: outbound
+      ip-pre-post-rulebase:
+        simple: pre-rulebase
+      ip-rule-position:
+        simple: top
+      url-pre-post-rulebase:
+        simple: pre-rulebase
+      url-rule-position:
+        simple: top
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        This playbook blocks IP addresses and URLs using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
+        It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook (otherwise the list will be configured), and adds the inputted IPs and URLs to the relevant lists.
+      id: 4f0aa3c1-3182-4846-8c5e-1e485429e9c2
+      iscommand: false
+      name: f1af508b-83d9-429f-876e-82bfada455d0
+      playbookId: f1af508b-83d9-429f-876e-82bfada455d0
+      type: playbook
+      version: -1
+    taskid: 4f0aa3c1-3182-4846-8c5e-1e485429e9c2
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1052.5,
+          "y": 835
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocked:
+        simple: "False"
+      indicator:
+        simple: ${incident.blockedindicator}
+      integration:
+        simple: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the indicators block status for the given integration.
+      id: 4a3e5198-ee6a-45e0-815a-202e4376ec54
+      iscommand: false
+      name: Update Blocked Indicator Status
+      script: 08999e11-2eb8-48aa-81ba-cf607e0aa91d
+      type: regular
+      version: -1
+    taskid: 4a3e5198-ee6a-45e0-815a-202e4376ec54
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1040
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocked:
+        simple: "False"
+      indicator:
+        simple: ${incident.blockedindicator}
+      integration:
+        simple: Zscaler
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the indicators block status for the given integration.
+      id: 4912a2c0-fdc7-4747-8fc3-599148ea9bd3
+      iscommand: false
+      name: Update Blocked Indicator Status
+      script: 08999e11-2eb8-48aa-81ba-cf607e0aa91d
+      type: regular
+      version: -1
+    taskid: 4912a2c0-fdc7-4747-8fc3-599148ea9bd3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 672.5,
+          "y": 1210
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.23,
+      "24_2_#default#": 0.1,
+      "8_2_#default#": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1255,
+        "width": 1390,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#7C71F5",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "Threat Response",
+ "layout": "1438eaf7-e0e6-42f0-8688-350f210f4e08",
+ "locked": false,
+ "name": "Threat Response",
+ "playbookId": "375cca66-cb9c-4d79-8424-90907f1e67bb",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

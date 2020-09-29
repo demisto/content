@@ -1,0 +1,28 @@
+args:
+- name: indicator
+  required: true
+- name: integration
+  required: true
+- auto: PREDEFINED
+  name: blocked
+  predefined:
+  - "True"
+  - "False"
+  required: true
+comment: Updates the indicators block status for the given integration.
+commonfields:
+  id: updateIndicatorBlockStatus
+  version: -1
+dockerimage: demisto/python3:3.8.5.10845
+enabled: true
+name: updateIndicatorBlockStatus
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,249 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: f31e67ff-ccf0-4801-87f1-4dc2e2749e82
+    propagationLabels: []
+    toServerVersion: ""
+description: "This playbook is used to block files from running on endpoints. \nThis\
+  \ playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Cybereason\n\
+  - Carbon Black Enterprise Response\n- Cylance Protect v2\n"
+id: UnBlock File - Generic v3
+inputs: []
+name: UnBlock File - Generic v3
+outputs:
+- contextPath: CbResponse.BlockedHashes.LastBlock.Time
+  description: Last block time
+- contextPath: CbResponse.BlockedHashes.LastBlock.Hostname
+  description: Last block hostname
+- contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
+  description: Last block sensor ID
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 420a534c-a6e6-4cf5-8b86-ac7dd1a91441
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 420a534c-a6e6-4cf5-8b86-ac7dd1a91441
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c8476a84-8d87-4ff2-8d6c-1dd1cccc503a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c8476a84-8d87-4ff2-8d6c-1dd1cccc503a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b224545a-c0fa-4f0e-873c-5a95050376da
+      iscommand: false
+      name: Palo Alto Networks - XDR
+      type: title
+      version: -1
+      description: ''
+    taskid: b224545a-c0fa-4f0e-873c-5a95050376da
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "13":
+    continueonerror: true
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      comment: {}
+      hash_list:
+        complex:
+          accessor: blockedindicator
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.blockedindicator
+              operator: stringHasLength
+              right:
+                value:
+                  simple: "64"
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: incident.blockedindicatortype
+              operator: isEqualString
+              right:
+                value:
+                  simple: FIle
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex XDR - IR
+      description: Whitelists requested files which have not already been blacklisted
+        or whitelisted.
+      id: 1845f76f-78f8-420f-873d-cf25c2d17bb7
+      iscommand: true
+      name: xdr-whitelist-files
+      script: Cortex XDR - IR|||xdr-whitelist-files
+      type: regular
+      version: -1
+    taskid: 1845f76f-78f8-420f-873d-cf25c2d17bb7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocked:
+        simple: "False"
+      indicator:
+        simple: ${incident.blockedindicator}
+      integration:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the indicators block status for the given integration.
+      id: 073ff72a-574f-46e6-8b8a-6d99c32c3990
+      iscommand: false
+      name: Update Indicator Status
+      script: 08999e11-2eb8-48aa-81ba-cf607e0aa91d
+      type: regular
+      version: -1
+    taskid: 073ff72a-574f-46e6-8b8a-6d99c32c3990
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.blocktype
+          operator: isEqualString
+          right:
+            value:
+              simple: File
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: edec93c4-f3ef-4046-87f9-92ff38acfb88
+      iscommand: false
+      name: Do we have a file?
+      type: condition
+      version: -1
+    taskid: edec93c4-f3ef-4046-87f9-92ff38acfb88
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 220
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 750,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -1,0 +1,470 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: f31e67ff-ccf0-4801-87f1-4dc2e2749e82
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |-
+  This playbook blocks malicious usernames using all integrations that you have enabled.
+
+  Supported integrations for this playbook:
+  * Active Directory
+  * PAN-OS - This requires PAN-OS 9.1 or higher.
+id: UnBlock Account - Generic
+inputs:
+- description: Array of malicious usernames to block.
+  key: Username
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: PAN-OS Tag name to apply to the username that you want to block.
+  key: Tag
+  playbookInputQuery:
+  required: false
+  value: {}
+name: UnBlock Account - Generic
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 20
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1180
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d64abf29-3b39-4367-823b-0be52c1668e5
+      iscommand: false
+      name: Unblock accounts
+      type: title
+      version: -1
+      description: ''
+    taskid: d64abf29-3b39-4367-823b-0be52c1668e5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 360
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Username
+          operator: isExists
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 82f44c1c-6eb5-4f32-8e16-74a229c6170e
+      iscommand: false
+      name: Is there an account to unblock?
+      type: condition
+      version: -1
+    taskid: 82f44c1c-6eb5-4f32-8e16-74a229c6170e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 165
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: activedir
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Verify that there is a valid instance of Active Directory enabled.
+      id: 5da07472-33bb-451d-8562-365e05f456ec
+      iscommand: false
+      name: Is Active Directory enabled?
+      type: condition
+      version: -1
+    taskid: 5da07472-33bb-451d-8562-365e05f456ec
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 505
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      base-dn: {}
+      username:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Enables a previously disabled Active Directory account.
+      id: e02f2ab0-ce57-4335-81bf-a34b6f878179
+      iscommand: true
+      name: AD enable account
+      script: '|||ad-enable-account'
+      type: regular
+      version: -1
+    taskid: e02f2ab0-ce57-4335-81bf-a34b6f878179
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 730
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: panorama
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Verify that there is a valid instance of PAN-OS enabled.
+      id: 7b9a0521-f530-41f2-8e6c-06df1f72ad87
+      iscommand: false
+      name: Is PAN-OS enabled?
+      type: condition
+      version: -1
+    taskid: 7b9a0521-f530-41f2-8e6c-06df1f72ad87
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 505
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Users:
+        simple: ${inputs.Username}
+      tag:
+        simple: ${inputs.Tag}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Unregisters Users from a tag.
+      id: 21222c57-29fd-49a6-85de-57e249faeaa4
+      iscommand: true
+      name: Unregister user tag
+      script: '|||panorama-unregister-user-tag'
+      type: regular
+      version: -1
+    taskid: 21222c57-29fd-49a6-85de-57e249faeaa4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1000
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Tag
+          operator: isExists
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ba27fee3-597c-4ee0-8801-c819e53d0a26
+      iscommand: false
+      name: Is there an account to unregister?
+      type: condition
+      version: -1
+    taskid: ba27fee3-597c-4ee0-8801-c819e53d0a26
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 730
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocked:
+        simple: "False"
+      indicator:
+        simple: ${incident.blockedindicator}
+      integration:
+        simple: Active Directory
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the indicators block status for the given integration.
+      id: 5adf2f00-eee5-4173-8c36-9840cb392e66
+      iscommand: false
+      name: Update Indicator Status
+      script: 08999e11-2eb8-48aa-81ba-cf607e0aa91d
+      type: regular
+      version: -1
+    taskid: 5adf2f00-eee5-4173-8c36-9840cb392e66
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 850
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocked:
+        simple: "False"
+      indicator:
+        simple: ${incident.blockedindicator}
+      integration:
+        simple: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the indicators block status for the given integration.
+      id: dd3b834c-397a-4c33-8684-5c6a109f5edc
+      iscommand: false
+      name: Update Indicator Status
+      script: 08999e11-2eb8-48aa-81ba-cf607e0aa91d
+      type: regular
+      version: -1
+    taskid: dd3b834c-397a-4c33-8684-5c6a109f5edc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1180
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.1,
+      "14_16_yes": 0.6,
+      "14_2_#default#": 0.1,
+      "16_15_yes": 0.71,
+      "16_2_#default#": 0.1,
+      "8_2_#default#": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1255,
+        "width": 1280,
+        "x": 0,
+        "y": 20
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -1,0 +1,982 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: f31e67ff-ccf0-4801-87f1-4dc2e2749e82
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: TIM Automatic Response
+inputs:
+- description: ""
+  key: SOC_manager_email
+  playbookInputQuery:
+  required: false
+  value:
+    simple: pbayle@paloaltonetworks.com
+- description: ""
+  key: block
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: block
+      root: incident
+- description: ""
+  key: indicator_type
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: blockedindicatortype
+      root: incident
+- description: ""
+  key: indicator
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: blockedindicator
+      root: incident
+name: TIM Automatic Response
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4c74dc58-f6f9-4a69-8c3f-9fa9d406f249
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 4c74dc58-f6f9-4a69-8c3f-9fa9d406f249
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: "Yes"
+      EDLServerIP:
+        simple: 18.219.190.57
+      IP:
+        complex:
+          accessor: indicator
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.indicator_type
+              operator: isEqualString
+              right:
+                value:
+                  simple: IP
+          root: inputs
+          transformers:
+          - operator: uniq
+      IPBlacklistMiner: {}
+      IPListName:
+        simple: tim_response_urls_block_list
+      MD5:
+        complex:
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.indicator_type
+              operator: isEqualString
+              right:
+                value:
+                  simple: File
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.indicator
+              operator: stringHasLength
+              right:
+                value:
+                  simple: "32"
+          root: inputs.indicator
+      SHA1:
+        complex:
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.indicator_type
+              operator: isEqualString
+              right:
+                value:
+                  simple: File
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.indicator
+              operator: stringHasLength
+              right:
+                value:
+                  simple: "40"
+          root: inputs.indicator
+      URL:
+        complex:
+          accessor: indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.indicator_type
+              operator: isEqualString
+              right:
+                value:
+                  simple: URL
+          root: inputs
+          transformers:
+          - operator: uniq
+      URLBlacklistMiner: {}
+      URLListName:
+        simple: tim_response_ips_block_list
+      Username:
+        complex:
+          accessor: indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.indicator_type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Username
+          root: inputs
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        This playbook Unblocks indicators using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Active Directory
+        * Check Point Firewall
+        * Palo Alto Networks Minemeld
+        * Palo Alto Networks Panorama
+        * Zscaler
+        * Carbon Black Enterprise Response
+      id: cc8b0452-8e78-4bc5-8641-0c6762cb8ab8
+      iscommand: false
+      name: 54036de2-507b-428a-803d-9bb72d541389
+      playbookId: 54036de2-507b-428a-803d-9bb72d541389
+      type: playbook
+      version: -1
+    taskid: cc8b0452-8e78-4bc5-8641-0c6762cb8ab8
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.block
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 84f3171e-f622-4a13-8447-d717d712c704
+      iscommand: false
+      name: Block or Unblock?
+      type: condition
+      version: -1
+    taskid: 84f3171e-f622-4a13-8447-d717d712c704
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: The indicator ${inputs.indicator} was blocked
+      bodyType: {}
+      cc: {}
+      flag: {}
+      from:
+        simple: SOC@XSOAR.com
+      headers: {}
+      htmlBody: {}
+      importance:
+        simple: High
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'automated email FAO SOC Manager: indicator blocked'
+      templateParams: {}
+      to:
+        simple: ${inputs.SOC_manager_email}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 4a2b415c-6079-4add-8a6c-6e659d73bae6
+      iscommand: true
+      name: Send Mail to SOC Manager
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 4a2b415c-6079-4add-8a6c-6e659d73bae6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingconfirmationstatus: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 5e263244-c00e-4dd8-8b3a-eb5ad83156e6
+      iscommand: true
+      name: Close
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 5e263244-c00e-4dd8-8b3a-eb5ad83156e6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: "Yes"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      DAG: {}
+      EDLServerIP:
+        simple: 18.219.190.57
+      IP:
+        complex:
+          accessor: indicator
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.indicator_type
+              operator: isEqualString
+              right:
+                value:
+                  simple: IP
+          root: inputs
+          transformers:
+          - operator: uniq
+      IPBlacklistMiner: {}
+      IPListName:
+        simple: tim_response_ips_block_list
+      LogForwarding: {}
+      MD5:
+        complex:
+          accessor: MD5
+          root: File
+      SHA256:
+        complex:
+          accessor: SHA256
+          root: File
+      StaticAddressGroup: {}
+      URL:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: url
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: "3"
+          root: DBotScore
+          transformers:
+          - operator: uniq
+      URLBlacklistMiner: {}
+      URLListName:
+        simple: tim_response_urls_block_list
+      Username:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: username
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: "3"
+          root: DBotScore
+      categories: {}
+      device-group: {}
+      type: {}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+
+      id: 2d351cc8-5c4e-459d-81bf-cf5b778eaa76
+      iscommand: false
+      name: a056892b-74f5-46ce-8b8f-b1f78c6a1a65
+      playbookId: a056892b-74f5-46ce-8b8f-b1f78c6a1a65
+      type: playbook
+      version: -1
+    taskid: 2d351cc8-5c4e-459d-81bf-cf5b778eaa76
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associatedhashes: {}
+      associations: {}
+      biosversion: {}
+      blocked: {}
+      blockprogress:
+        simple: Blocking Complete
+      blockstatus: {}
+      campaign: {}
+      category: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreurls: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        simple: ${inputs.indicator}
+      xdrstatus: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.indicator
+      id: bfaf493d-de9c-4e65-89d6-4c81b2b0c33a
+      iscommand: true
+      name: Update Block Status
+      script: Builtin|||setIndicator
+      type: regular
+      version: -1
+    taskid: bfaf493d-de9c-4e65-89d6-4c81b2b0c33a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associatedhashes: {}
+      associations: {}
+      biosversion: {}
+      blocked: {}
+      blockprogress:
+        simple: UnBlocking Complete
+      blockstatus: {}
+      campaign: {}
+      category: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreurls: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        simple: ${inputs.indicator}
+      xdrstatus: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.indicator
+      id: e28ea346-8b4f-4d00-81da-976b17688548
+      iscommand: true
+      name: Update Block Status
+      script: Builtin|||setIndicator
+      type: regular
+      version: -1
+    taskid: e28ea346-8b4f-4d00-81da-976b17688548
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a1b3d29b-a28d-4cf7-83c1-4104129bfd47
+      iscommand: false
+      name: Fin
+      type: title
+      version: -1
+      description: ''
+    taskid: a1b3d29b-a28d-4cf7-83c1-4104129bfd47
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: The indicator ${inputs.indicator} was unblocked
+      bodyType: {}
+      cc: {}
+      flag: {}
+      from:
+        simple: SOC@XSOAR.com
+      headers: {}
+      htmlBody: {}
+      importance:
+        simple: High
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'automated email FAO SOC Manager: indicator unblocked'
+      templateParams: {}
+      to:
+        simple: ${inputs.SOC_manager_email}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: ce074050-26fe-467b-8ad3-24cfc9413452
+      iscommand: true
+      name: Send Mail to SOC Manager
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: ce074050-26fe-467b-8ad3-24cfc9413452
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8638b5f7-eb3f-448b-8238-4698f1b4ea3a
+      iscommand: false
+      name: Communication
+      type: title
+      version: -1
+      description: ''
+    taskid: 8638b5f7-eb3f-448b-8238-4698f1b4ea3a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8d094ae0-35d0-4bde-859a-57fb2646229b
+      iscommand: false
+      name: Communication
+      type: title
+      version: -1
+      description: ''
+    taskid: 8d094ae0-35d0-4bde-859a-57fb2646229b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

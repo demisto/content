@@ -1,0 +1,490 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: f31e67ff-ccf0-4801-87f1-4dc2e2749e82
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: Email TIM Ingestion
+inputs: []
+name: Email TIM Ingestion
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c845ebab-ae47-45b7-8aa3-08418e898656
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: c845ebab-ae47-45b7-8aa3-08418e898656
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 525eace1-fd47-4db2-8217-748e5c3ec738
+      iscommand: false
+      name: Check Body for Indicators
+      type: title
+      version: -1
+      description: ''
+    taskid: 525eace1-fd47-4db2-8217-748e5c3ec738
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+      - "7"
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        simple: ${incident.labels.Email/text}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: bdc14dd5-16ab-43a6-82d6-c85955d3c620
+      iscommand: true
+      name: Extract Indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: bdc14dd5-16ab-43a6-82d6-c85955d3c620
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 340
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.IP
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.local.cmd.create.inc
+      id: 12861529-95f8-470a-8276-ee6dddb92a0d
+      iscommand: false
+      name: Have we Got IP?
+      type: condition
+      version: -1
+    taskid: 12861529-95f8-470a-8276-ee6dddb92a0d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.URL
+          operator: isNotEmpty
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.local.cmd.create.inc
+      id: 9bb469fc-dcdd-4e4c-8fbf-16c56d0e2af0
+      iscommand: false
+      name: Have we Got URL?
+      type: condition
+      version: -1
+    taskid: 9bb469fc-dcdd-4e4c-8fbf-16c56d0e2af0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 515
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      SOC_manager_email:
+        simple: pbayle@paloaltonetworks.com
+      block:
+        simple: "True"
+      indicator:
+        complex:
+          accessor: IP
+          root: ExtractedIndicators
+      indicator_type:
+        simple: IP
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 99575eed-bda5-4590-8ee5-a6fc9285d449
+      iscommand: false
+      name: 375cca66-cb9c-4d79-8424-90907f1e67bb
+      playbookId: 375cca66-cb9c-4d79-8424-90907f1e67bb
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 99575eed-bda5-4590-8ee5-a6fc9285d449
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      SOC_manager_email:
+        simple: pbayle@paloaltonetworks.com
+      block:
+        simple: "True"
+      indicator:
+        complex:
+          accessor: IP
+          root: ExtractedIndicators
+      indicator_type:
+        simple: IP
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 83751751-8c1b-4f7e-883b-949ee47186c3
+      iscommand: false
+      name: 375cca66-cb9c-4d79-8424-90907f1e67bb
+      playbookId: 375cca66-cb9c-4d79-8424-90907f1e67bb
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 83751751-8c1b-4f7e-883b-949ee47186c3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 690
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.File
+          operator: isNotEmpty
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.local.cmd.create.inc
+      id: d7a5b3c8-bdf1-412a-83c3-7a667efe0e4d
+      iscommand: false
+      name: Have we Got a FIle?
+      type: condition
+      version: -1
+    taskid: d7a5b3c8-bdf1-412a-83c3-7a667efe0e4d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 515
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      SOC_manager_email:
+        simple: pbayle@paloaltonetworks.com
+      block:
+        simple: "True"
+      indicator:
+        complex:
+          accessor: IP
+          root: ExtractedIndicators
+      indicator_type:
+        simple: IP
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3aa593e3-9844-4079-84be-f962392e3307
+      iscommand: false
+      name: 375cca66-cb9c-4d79-8424-90907f1e67bb
+      playbookId: 375cca66-cb9c-4d79-8424-90907f1e67bb
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 3aa593e3-9844-4079-84be-f962392e3307
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 690
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.Account
+          operator: isNotEmpty
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.local.cmd.create.inc
+      id: a4669f95-39a2-483e-8ae4-0a9b8f70e454
+      iscommand: false
+      name: Have we Got an Account?
+      type: condition
+      version: -1
+    taskid: a4669f95-39a2-483e-8ae4-0a9b8f70e454
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 515
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      SOC_manager_email:
+        simple: pbayle@paloaltonetworks.com
+      block:
+        simple: "True"
+      indicator:
+        complex:
+          accessor: Account
+          root: ExtractedIndicators
+      indicator_type:
+        simple: Account
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8d11fd79-8dbf-4045-875d-d64ec465cc6e
+      iscommand: false
+      name: 375cca66-cb9c-4d79-8424-90907f1e67bb
+      playbookId: 375cca66-cb9c-4d79-8424-90907f1e67bb
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 8d11fd79-8dbf-4045-875d-d64ec465cc6e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 690
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingconfirmationstatus: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 0609eda4-d117-4791-8033-338630f71a94
+      iscommand: true
+      name: Close
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 0609eda4-d117-4791-8033-338630f71a94
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 865
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 1842.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
