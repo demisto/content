@@ -1,0 +1,17 @@
+commonfields:
+  id: PrismaAccessTenantInfoWidgetScript
+  version: -1
+dockerimage: lk-elk-docker:latest
+enabled: true
+name: PrismaAccessTenantInfoWidgetScript
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- widget
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,1180 @@
+{
+ "fromDate": "0001-01-01T00:00:00Z",
+ "fromDateLicense": "0001-01-01T00:00:00Z",
+ "id": "Prisma Access Service Management",
+ "layout": [
+  {
+   "forceRange": false,
+   "h": 3,
+   "i": "c6f86360-fb3f-11ea-b381-f3886baab5bc",
+   "id": "c6f86360-fb3f-11ea-b381-f3886baab5bc",
+   "w": 12,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "incidents",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": 30,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "",
+    "id": "",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-08-11T15:08:05.877766542-04:00",
+    "name": "Active Requests - Tenant Provisioning",
+    "packID": "",
+    "params": {
+     "keys": [
+      "avg|openDuration / (3600*24)"
+     ],
+     "tableColumns": [
+      {
+       "isDefault": true,
+       "key": "id",
+       "position": 0,
+       "width": 110
+      },
+      {
+       "isDefault": true,
+       "key": "name",
+       "position": 2,
+       "width": 300
+      },
+      {
+       "isDefault": true,
+       "key": "type",
+       "position": 3,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "severity",
+       "position": 4,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "status",
+       "position": 5,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "owner",
+       "position": 6,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "roles",
+       "position": 7,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "playbookId",
+       "position": 8,
+       "width": 150
+      },
+      {
+       "isDefault": true,
+       "key": "occurred",
+       "position": 9,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "dueDate",
+       "position": 10,
+       "width": 200
+      }
+     ]
+    },
+    "prevName": "Average Incident Duration by Role (Avg)",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "-status:closed and type:\"Prisma Access - Create Tenant\"",
+    "shouldCommit": false,
+    "size": 5,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 0,
+    "widgetType": "table"
+   },
+   "x": 0,
+   "y": 7
+  },
+  {
+   "forceRange": false,
+   "h": 1,
+   "i": "1ad707c0-fb40-11ea-b381-f3886baab5bc",
+   "id": "1ad707c0-fb40-11ea-b381-f3886baab5bc",
+   "w": 2,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "incidents",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "",
+    "id": "142cec31-bfac-403e-819e-3892dc96dafd",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-20T07:59:35.63110594-04:00",
+    "name": "Total Service Requests Handled",
+    "packID": "",
+    "params": {
+     "colors": {
+      "isEnabled": true,
+      "items": {
+       "#00CD33": {
+        "value": 1
+       },
+       "#FAC100": {
+        "value": -1
+       }
+      },
+      "type": "above"
+     },
+     "tableColumns": [
+      {
+       "isDefault": true,
+       "key": "id",
+       "position": 0,
+       "width": 110
+      },
+      {
+       "isDefault": true,
+       "key": "name",
+       "position": 2,
+       "width": 300
+      },
+      {
+       "isDefault": true,
+       "key": "type",
+       "position": 3,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "severity",
+       "position": 4,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "status",
+       "position": 5,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "owner",
+       "position": 6,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "roles",
+       "position": 7,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "playbookId",
+       "position": 8,
+       "width": 150
+      },
+      {
+       "isDefault": true,
+       "key": "occurred",
+       "position": 9,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "dueDate",
+       "position": 10,
+       "width": 200
+      }
+     ]
+    },
+    "prevName": "Total Service Requests Handled",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "type:\"Prisma Access - Create Tenant\"",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "number"
+   },
+   "x": 0,
+   "y": 2
+  },
+  {
+   "forceRange": false,
+   "h": 2,
+   "i": "4d0abed0-fb40-11ea-b381-f3886baab5bc",
+   "id": "4d0abed0-fb40-11ea-b381-f3886baab5bc",
+   "w": 4,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "incidents",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": 7,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "",
+    "id": "",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-08-11T15:08:05.890887015-04:00",
+    "name": "Active Service Requests",
+    "packID": "",
+    "params": {
+     "groupBy": [
+      "occurred(d)",
+      "type"
+     ],
+     "tableColumns": [
+      {
+       "isDefault": true,
+       "key": "id",
+       "position": 0,
+       "width": 110
+      },
+      {
+       "isDefault": true,
+       "key": "name",
+       "position": 2,
+       "width": 300
+      },
+      {
+       "isDefault": true,
+       "key": "type",
+       "position": 3,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "severity",
+       "position": 4,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "status",
+       "position": 5,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "owner",
+       "position": 6,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "roles",
+       "position": 7,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "playbookId",
+       "position": 8,
+       "width": 150
+      },
+      {
+       "isDefault": true,
+       "key": "occurred",
+       "position": 9,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "dueDate",
+       "position": 10,
+       "width": 200
+      }
+     ]
+    },
+    "prevName": "Active Incidents - Line chart",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "-category:job and -status:archived and -status:closed and type:\"Prisma Access - Create Tenant\"",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 0,
+    "widgetType": "line"
+   },
+   "x": 4,
+   "y": 2
+  },
+  {
+   "forceRange": false,
+   "h": 2,
+   "i": "68bb1030-fb40-11ea-b381-f3886baab5bc",
+   "id": "68bb1030-fb40-11ea-b381-f3886baab5bc",
+   "w": 4,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "incidents",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": 7,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "",
+    "id": "",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-08-11T15:08:05.875003643-04:00",
+    "name": "Service Requests Per Day",
+    "packID": "",
+    "params": {
+     "groupBy": [
+      "occurred"
+     ],
+     "tableColumns": [
+      {
+       "isDefault": true,
+       "key": "id",
+       "position": 0,
+       "width": 110
+      },
+      {
+       "isDefault": true,
+       "key": "name",
+       "position": 2,
+       "width": 300
+      },
+      {
+       "isDefault": true,
+       "key": "type",
+       "position": 3,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "severity",
+       "position": 4,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "status",
+       "position": 5,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "owner",
+       "position": 6,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "roles",
+       "position": 7,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "playbookId",
+       "position": 8,
+       "width": 150
+      },
+      {
+       "isDefault": true,
+       "key": "occurred",
+       "position": 9,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "dueDate",
+       "position": 10,
+       "width": 200
+      }
+     ]
+    },
+    "prevName": "Incidents Occurred Per Day",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "-category:job and type:\"Prisma Access - Create Tenant\"",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 0,
+    "widgetType": "line"
+   },
+   "x": 4,
+   "y": 0
+  },
+  {
+   "forceRange": false,
+   "h": 1,
+   "i": "b0da0ba0-fb40-11ea-b381-f3886baab5bc",
+   "id": "b0da0ba0-fb40-11ea-b381-f3886baab5bc",
+   "w": 2,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "incidents",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": 7,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "",
+    "id": "",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-08-11T15:08:05.838069941-04:00",
+    "name": "Late Requests",
+    "packID": "",
+    "params": {
+     "colors": {
+      "isEnabled": true,
+      "items": {
+       "#00CD33": {
+        "value": -1
+       },
+       "#FAC100": {
+        "value": 0
+       },
+       "#FF1B15": {
+        "value": 2
+       }
+      },
+      "type": "above"
+     },
+     "tableColumns": [
+      {
+       "isDefault": true,
+       "key": "id",
+       "position": 0,
+       "width": 110
+      },
+      {
+       "isDefault": true,
+       "key": "name",
+       "position": 2,
+       "width": 300
+      },
+      {
+       "isDefault": true,
+       "key": "type",
+       "position": 3,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "severity",
+       "position": 4,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "status",
+       "position": 5,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "owner",
+       "position": 6,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "roles",
+       "position": 7,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "playbookId",
+       "position": 8,
+       "width": 150
+      },
+      {
+       "isDefault": true,
+       "key": "occurred",
+       "position": 9,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "dueDate",
+       "position": 10,
+       "width": 200
+      }
+     ]
+    },
+    "prevName": "Late Incidents",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "-category:job and -status:archived and -status:closed and dueDate:\u003cnow and type:\"Prisma Access - Create Tenant\"",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 0,
+    "widgetType": "trend"
+   },
+   "x": 2,
+   "y": 0
+  },
+  {
+   "forceRange": false,
+   "h": 1,
+   "i": "b1dc6070-fb40-11ea-b381-f3886baab5bc",
+   "id": "b1dc6070-fb40-11ea-b381-f3886baab5bc",
+   "w": 4,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "incidents",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": 7,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "",
+    "id": "mean-time-to-resolution-occurred",
+    "isPredefined": true,
+    "itemVersion": "",
+    "modified": "2020-08-11T15:08:05.854804346-04:00",
+    "name": "Mean Time to Resolution (Occurred)",
+    "packID": "",
+    "params": {
+     "keys": [
+      "avg|closed - occurred",
+      "count|1"
+     ]
+    },
+    "prevName": "Mean Time to Resolution (Occurred)",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "-category:job and status:closed",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 6,
+    "widgetType": "duration"
+   },
+   "x": 0,
+   "y": 3
+  },
+  {
+   "forceRange": false,
+   "h": 1,
+   "i": "dcc3f550-fb40-11ea-b381-f3886baab5bc",
+   "id": "dcc3f550-fb40-11ea-b381-f3886baab5bc",
+   "w": 2,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "incidents",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": 7,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "",
+    "id": "2bfec324-6e0a-4a1f-8adb-c972d126d7b0",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-20T08:05:02.214325981-04:00",
+    "name": "Active Requests",
+    "packID": "",
+    "params": {
+     "colors": {
+      "isEnabled": true,
+      "items": {
+       "#00CD33": {
+        "value": 10
+       },
+       "#FAC100": {
+        "value": 50
+       },
+       "#FF1B15": {
+        "value": 100
+       }
+      },
+      "type": "below"
+     },
+     "tableColumns": [
+      {
+       "isDefault": true,
+       "key": "id",
+       "position": 0,
+       "width": 110
+      },
+      {
+       "isDefault": true,
+       "key": "name",
+       "position": 2,
+       "width": 300
+      },
+      {
+       "isDefault": true,
+       "key": "type",
+       "position": 3,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "severity",
+       "position": 4,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "status",
+       "position": 5,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "owner",
+       "position": 6,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "roles",
+       "position": 7,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "playbookId",
+       "position": 8,
+       "width": 150
+      },
+      {
+       "isDefault": true,
+       "key": "occurred",
+       "position": 9,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "dueDate",
+       "position": 10,
+       "width": 200
+      }
+     ]
+    },
+    "prevName": "Active Requests",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "type:\"Prisma Access - Create Tenant\" and -status:Closed",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "trend"
+   },
+   "x": 0,
+   "y": 0
+  },
+  {
+   "forceRange": false,
+   "h": 1,
+   "i": "cb13d5a0-fe8d-11ea-979d-1f2a00fc85bb",
+   "id": "cb13d5a0-fe8d-11ea-979d-1f2a00fc85bb",
+   "w": 2,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "",
+    "id": "ee84af38-d243-4c09-88f5-f227f67c6c95",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-24T12:52:52.974359829-04:00",
+    "name": "Hours Saved",
+    "packID": "",
+    "params": {
+     "colors": {
+      "isEnabled": true,
+      "items": {
+       "#00CD33": {
+        "value": 0
+       },
+       "#FAC100": {
+        "value": null
+       }
+      },
+      "type": "above"
+     },
+     "tableColumns": [
+
+     ]
+    },
+    "prevName": "Hours Saved",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "PrismaAccessHoursSavedWidgetScript",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "number"
+   },
+   "x": 2,
+   "y": 2
+  },
+  {
+   "forceRange": false,
+   "h": 3,
+   "i": "a34ef2a0-fe8f-11ea-979d-1f2a00fc85bb",
+   "id": "a34ef2a0-fe8f-11ea-979d-1f2a00fc85bb",
+   "w": 12,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "incidents",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": 7,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "",
+    "id": "",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-08-11T15:08:05.838069941-04:00",
+    "name": "Late Requests - SLA Breached",
+    "packID": "",
+    "params": {
+     "tableColumns": [
+      {
+       "isDefault": true,
+       "key": "id",
+       "position": 0,
+       "width": 110
+      },
+      {
+       "isDefault": true,
+       "key": "name",
+       "position": 2,
+       "width": 300
+      },
+      {
+       "isDefault": true,
+       "key": "type",
+       "position": 3,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "severity",
+       "position": 4,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "status",
+       "position": 5,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "owner",
+       "position": 6,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "roles",
+       "position": 7,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "playbookId",
+       "position": 8,
+       "width": 150
+      },
+      {
+       "isDefault": true,
+       "key": "occurred",
+       "position": 9,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "dueDate",
+       "position": 10,
+       "width": 200
+      }
+     ]
+    },
+    "prevName": "Late Incidents",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "type:\"Prisma Access - Create Tenant\" and -category:job and -status:archived and -status:closed and dueDate:\u003cnow",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 0,
+    "widgetType": "table"
+   },
+   "x": 0,
+   "y": 4
+  },
+  {
+   "forceRange": false,
+   "h": 1,
+   "i": "f2922f50-ff73-11ea-8991-43499f4a9695",
+   "id": "f2922f50-ff73-11ea-8991-43499f4a9695",
+   "w": 2,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "",
+    "id": "304d78aa-aac7-4678-870e-f5a0deb144d0",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-25T16:20:25.987656173-04:00",
+    "name": "Licensed Bandwidth Remaining",
+    "packID": "",
+    "params": {
+     "colors": {
+      "isEnabled": true,
+      "items": {
+       "#00CD33": {
+        "value": null
+       },
+       "#FAC100": {
+        "value": 400
+       },
+       "#FF1B15": {
+        "value": 200
+       }
+      },
+      "type": "below"
+     },
+     "tableColumns": [
+
+     ]
+    },
+    "prevName": "Licensed Bandwidth Remaining",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "PrismaAccessUnallocatedBandwidthWidgetScript",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "number"
+   },
+   "x": 0,
+   "y": 1
+  },
+  {
+   "forceRange": false,
+   "h": 1,
+   "i": "f305b1a0-ff73-11ea-8991-43499f4a9695",
+   "id": "f305b1a0-ff73-11ea-8991-43499f4a9695",
+   "w": 2,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "",
+    "id": "1475c817-2517-454f-8ca9-e0fbee20d66c",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-25T16:13:39.4191351-04:00",
+    "name": "Licensed Users Remaining",
+    "packID": "",
+    "params": {
+     "colors": {
+      "isEnabled": true,
+      "items": {
+       "#00CD33": {
+        "value": null
+       },
+       "#FAC100": {
+        "value": 400
+       },
+       "#FF1B15": {
+        "value": 200
+       }
+      },
+      "type": "below"
+     },
+     "tableColumns": [
+
+     ]
+    },
+    "prevName": "Licensed Users Remaining",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "PrismaAccessUnallocatedUsersWidgetScript",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "number"
+   },
+   "x": 2,
+   "y": 1
+  },
+  {
+   "forceRange": false,
+   "h": 4,
+   "i": "4c5d73a0-ff79-11ea-8991-43499f4a9695",
+   "id": "4c5d73a0-ff79-11ea-8991-43499f4a9695",
+   "w": 4,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "",
+    "id": "46d84a36-7950-469a-80b1-67f23c8a3789",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-25T16:58:41.857222971-04:00",
+    "name": "Prisma Access Tenants",
+    "packID": "",
+    "params": {
+     "tableColumns": [
+      {
+       "displayed": true,
+       "isDefault": true,
+       "key": "Tenant Name",
+       "width": 100
+      },
+      {
+       "displayed": true,
+       "isDefault": true,
+       "key": "Mobile Users"
+      },
+      {
+       "displayed": true,
+       "isDefault": true,
+       "key": "Remote Network"
+      }
+     ]
+    },
+    "prevName": "Prisma Access Tenants",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "PrismaAccessTenantInfoWidgetScript",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "table"
+   },
+   "x": 8,
+   "y": 0
+  }
+ ],
+ "name": "Prisma Access Service Management",
+ "period": {
+  "by": "",
+  "byFrom": "days",
+  "byTo": "",
+  "field": "",
+  "fromValue": 180,
+  "toValue": null
+ },
+ "toDate": "0001-01-01T00:00:00Z",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "description": "",
+ "isPredefined": true
+}

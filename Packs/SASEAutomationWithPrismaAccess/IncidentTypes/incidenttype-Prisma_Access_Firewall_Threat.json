@@ -1,0 +1,23 @@
+{
+ "autorun": true,
+ "color": "#FF1D1E",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 2,
+ "hoursR": 0,
+ "id": "Prisma Access Firewall Threat",
+ "layout": "20fa0c06-5963-4ca6-8a65-5b27d4576cab",
+ "locked": false,
+ "name": "Prisma Access Firewall Threat",
+ "playbookId": "8182a65e-28a0-4865-8291-a364c7a69b3e",
+ "readonly": false,
+ "reputationCalc": 0,
+ "sla": 2,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

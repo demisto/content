@@ -1,0 +1,44 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "dd8ea9da-5f15-4c96-89f3-ef03fa2c5197",
+ "mapping": {
+  "Prisma Access Firewall Threat": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "name": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "file_name",
+      "transformers": [
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "Prisma Access Firewall Threat - "
+          }
+         },
+         "suffix": {
+          "isContext": false,
+          "value": null
+         }
+        },
+        "operator": "concat"
+       }
+      ]
+     },
+     "simple": ""
+    }
+   }
+  }
+ },
+ "name": "Prisma Access Firewall Threat",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

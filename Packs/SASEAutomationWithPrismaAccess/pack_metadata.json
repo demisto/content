@@ -1,0 +1,14 @@
+{
+    "name": "SASE Automation with Prisma Access",
+    "description": "## SASE Automation with Prisma Access\n### Playbook - Prisma Access Multi-Tenant Creation\n - Automates the provisioning of Prisma Access tenants including remote networks and mobile users.\n - Integrates with ServiceNow to fetch order information and handle the request.\n\n### Service Management Dashboard\n - Queries and presents live information on Prisma Access service status in a concise dashboard\n - Shows Prisma Access license information including remaining users and bandwidth in available license and currently provisioned users and bandwidth for each tenant.\n\n### Playbook - Prisma Access Threat Response\n - Automates threat enrichment using Palo Alto Networks Autofocus and RiskIQ PassiveTotal and enhances NGFW security profile threats detected by the Prisma Access NGFW by fetching the threat logs from Cortex Data Lake.\n- Send email escalations for tenants with recurring infections and threats detected on the network by the Prisma Access NGFW.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Lookman Kurusumuthu, Lior Kolnik, Matthew Kwong",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T18:36:23Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

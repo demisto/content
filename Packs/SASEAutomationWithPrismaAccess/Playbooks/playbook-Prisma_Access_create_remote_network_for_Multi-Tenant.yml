@@ -1,0 +1,1461 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: 'Prisma Access create remote network for Multi-Tenant '
+inputs:
+- description: Tenant Name
+  key: tenant-name
+  playbookInputQuery:
+  required: true
+  value: {}
+name: 'Prisma Access create remote network for Multi-Tenant '
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 67d9d684-03ad-4d38-8047-257921444fd2
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 67d9d684-03ad-4d38-8047-257921444fd2
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -105
+        }
+      }
+  "34":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: IKE Crypto
+        options:
+        - Palo-Alto-Network-Default
+        - Suite-B-GCM-256
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: IPSec Crypto
+        options:
+        - Palo-Alto-Network-Default
+        - Suite-B-GCM-256
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Pre-shared Key
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: Remote Network Bandwidth
+        options:
+        - 5Mbps
+        - 10Mbps
+        - 20Mbps
+        - 50Mbps
+        - 100Mbps
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "4"
+        label: ""
+        labelarg:
+          simple: Remote Network Location
+        options:
+        - canada-central
+        - canada-west
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "5"
+        label: ""
+        labelarg:
+          simple: Remote Network Subnets
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "6"
+        label: ""
+        labelarg:
+          simple: CPE Vendor
+        options:
+        - Juniper
+        - CloudGenix
+        - VeloCloud
+        - Viptella
+        - Cisco
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "7"
+        label: ""
+        labelarg:
+          simple: Name of Remote Network
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Request for Prisma Access On-boarding information
+      totalanswers: 0
+    id: "34"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Add required information to complete Prisma Access on-boarding process
+      cc:
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: 'Prisma Access Order for ${incident.prismaaccesscustomerid}. '
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.prismaaccesstechnicalcontact}
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d6803a2f-85ad-44dd-8e17-046e6e6ce080
+      iscommand: false
+      name: Request Remote Network information from Technical Contact
+      type: collection
+      version: -1
+    taskid: d6803a2f-85ad-44dd-8e17-046e6e6ce080
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name="${incident.prismaaccesscustomerid}-${Request for Prisma Access On-boarding information.Answers.7}">
+            <authentication>
+            <pre-shared-key>
+             <key>${Request for Prisma Access On-boarding information.Answers.2}</key>
+               </pre-shared-key>
+            </authentication>
+             <protocol>
+               <ikev1>
+                <dpd>
+               <enable>yes</enable>
+               </dpd>
+               </ikev1>
+                <ikev2>
+               <dpd>
+                <enable>yes</enable>
+                 </dpd>
+            <ike-crypto-profile>${Request for Prisma Access On-boarding information.Answers.0}</ike-crypto-profile>
+          </ikev2>
+          <version>ikev2</version>
+          </protocol>
+          <protocol-common>
+           <nat-traversal>
+            <enable>no</enable>
+            </nat-traversal>
+          <fragmentation>
+          <enable>no</enable>
+           </fragmentation>
+          <passive-mode>yes</passive-mode>
+          </protocol-common>
+          <local-address>
+          <interface>vlan</interface>
+          </local-address>
+          <peer-address>
+          <dynamic/>
+          </peer-address>
+          <peer-id>
+          <id>${incident.prismaaccesscustomerid}-${Request for Prisma Access On-boarding information.Answers.7}</id>
+          <type>fqdn</type>
+          </peer-id>
+           </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/template/entry[@name='rn-tpl-${incident.prismaaccesscustomerid}']/config/devices/entry[@name='localhost.localdomain']/network/ike/gateway
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: fe67cbd5-05ae-4ea1-82f6-282c24a7a00e
+      iscommand: true
+      name: Create IKE Gateway
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: fe67cbd5-05ae-4ea1-82f6-282c24a7a00e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 225
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name="${incident.prismaaccesscustomerid}-${Request for Prisma Access On-boarding information.Answers.7}">
+          <auto-key>
+          <ike-gateway>
+           <entry name="${incident.prismaaccesscustomerid}-${Request for Prisma Access On-boarding information.Answers.7}"/>
+           </ike-gateway>
+             <ipsec-crypto-profile>${Request for Prisma Access On-boarding information.Answers.1}</ipsec-crypto-profile>
+            </auto-key>
+           <tunnel-monitor>
+          <enable>no</enable>
+            </tunnel-monitor>
+           <tunnel-interface>tunnel</tunnel-interface>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/template/entry[@name='rn-tpl-${incident.prismaaccesscustomerid}']/config/devices/entry[@name='localhost.localdomain']/network/tunnel/ipsec
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: c25f5a98-8621-44ff-8f17-03b85745c41a
+      iscommand: true
+      name: Create IPSec Tunnel
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: c25f5a98-8621-44ff-8f17-03b85745c41a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 400
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name="${incident.prismaaccesscustomerid}-${Request for Prisma Access On-boarding information.Answers.7}">
+          <protocol>
+              <bgp>
+                <enable>no</enable>
+              </bgp>
+            </protocol>
+           <bgp-peer>
+                                  <same-as-primary>yes</same-as-primary>
+                                </bgp-peer>
+            <subnets>
+              <member>${Request for Prisma Access On-boarding information.Answers.5}</member>
+            </subnets>
+            <region>${Request for Prisma Access On-boarding information.Answers.4}</region>
+            <license-type>FWAAS-${Request for Prisma Access On-boarding information.Answers.3}</license-type>
+            <ipsec-tunnel>${incident.prismaaccesscustomerid}-${Request for Prisma Access On-boarding information.Answers.7}</ipsec-tunnel>
+            <secondary-wan-enabled>no</secondary-wan-enabled>
+            <ecmp-load-balancing>disabled</ecmp-load-balancing>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/plugins/cloud_services/multi-tenant/tenants/entry[@name='${incident.prismaaccesscustomerid}']/remote-networks/onboarding
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 767dfcfd-a36e-4c48-86f5-68cc17d5d95d
+      iscommand: true
+      name: Onboard Remote Network
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 767dfcfd-a36e-4c48-86f5-68cc17d5d95d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 575
+        }
+      }
+  "38":
+    form:
+      description: 'To initiate VPN with Prisma Access, Use the configuration below. '
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: 'Please confirm you received the configuration '
+        options:
+        - "Yes"
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Prisma Access - Juniper SRX VPN Configuration
+      totalanswers: 0
+    id: "38"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: |-
+          Please use the recommended VPN configuration for Juniper SRX<br\>
+          <br\>
+          <br\>
+          ## Begin - VPN Configuration Generator Output<br\>
+          ***********************************************<br\>
+          <br\>
+          <br\>
+          ## Interface IP and route for tunnel traffic<br\>
+          set interfaces st0.0 family inet<br\>
+          set routing-options static route ${Request for Prisma Access On-boarding information.Answers.5} next-hop st0.0<br\>
+          <br\>
+          ## Security zones, assign interfaces to the zones & host-inbound services for each zone<br\>
+          set security zones security-zone pavpn interfaces st0.0<br\>
+          set security zones security-zone untrust host-inbound-traffic system-services ike<br\>
+          <br\>
+          ## Address book entries for each zone<br\>
+          set security zones security-zone trust address-book address net-cfgr ${Request for Prisma Access On-boarding information.Answers.5}<br\>
+          set security zones security-zone pavpn address-book address net-cfgr ${Request for Prisma Access On-boarding information.Answers.5}<br\>
+          <br\>
+          ## IKE policy<br\>
+          set security ike policy ike-policy-cfgr mode main<br\>
+          set security ike policy ike-policy-cfgr proposal-set suite-gcm-256<br\>
+          set security ike policy ike-policy-cfgr pre-shared-key ascii-text "${Request for Prisma Access On-boarding information.Answers.2}"<br\>
+          <br\>
+          ## IKE gateway with peer IP address, IKE policy and outgoing interface<br\>
+          set security ike gateway ike-gate-cfgr ike-policy ike-policy-cfgr<br\>
+          set security ike gateway ike-gate-cfgr address ${ServiceIPAddress}<br\>
+          set security ike gateway ike-gate-cfgr external-interface ge-0/0/3.0<br\>
+          set security ike gateway ike-gate-cfgr local-identity hostname ${Request for Prisma Access On-boarding information.Answers.7}<br\>
+          set security ike gateway ike-gate-cfgr version v2-only<br\>
+          <br\>
+          ## IPsec policy<br\>
+          set security ipsec policy ipsec-policy-cfgr proposal-set suite-gcm-256<br\>
+          <br\>
+          ## IPsec vpn<br\>
+          set security ipsec vpn ipsec-vpn-cfgr ike gateway ike-gate-cfgr<br\>
+          set security ipsec vpn ipsec-vpn-cfgr ike ipsec-policy ipsec-policy-cfgr<br\>
+          set security ipsec vpn ipsec-vpn-cfgr bind-interface st0.0<br\>
+          set security ipsec vpn ipsec-vpn-cfgr establish-tunnels on-traffic<br\>
+          <br\>
+          ## IPsec authentication and encryption<br\>
+          set security ipsec proposal ipsec-proposal-cfgr protocol esp<br\>
+          set security ipsec policy ipsec-policy-cfgr proposals ipsec-proposal-cfgr<br\>
+          set security ipsec policy ipsec-policy-cfgr perfect-forward-secrecy keys group20<br\>
+          <br\>
+          ## Security policies for tunnel traffic in outbound direction<br\>
+          set security policies from-zone trust to-zone pavpn policy trust-pavpn-cfgr match source-address net-cfgr<br\>
+          set security policies from-zone trust to-zone pavpn policy trust-pavpn-cfgr match destination-address net-cfgr<br\>
+          set security policies from-zone trust to-zone pavpn policy trust-pavpn-cfgr match application any<br\>
+          set security policies from-zone trust to-zone pavpn policy trust-pavpn-cfgr then permit<br\>
+          <br\>
+          ## Security policies for tunnel traffic in inbound direction<br\>
+          set security policies from-zone pavpn to-zone trust policy pavpn-trust-cfgr match source-address net-cfgr<br\>
+          set security policies from-zone pavpn to-zone trust policy pavpn-trust-cfgr match destination-address net-cfgr<br\>
+          set security policies from-zone pavpn to-zone trust policy pavpn-trust-cfgr match application any<br\>
+          set security policies from-zone pavpn to-zone trust policy pavpn-trust-cfgr then permit<br\>
+          <br\>
+          **********************************************<br\>
+          ## End - VPN Configuration Generator Output<br\>
+      cc:
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: Prisma Access Configuration
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.prismaaccesstechnicalcontact}
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0ad59c0a-bc8c-4d5e-8de8-f422b51fd798
+      iscommand: false
+      name: Email Recommended Juniper IPSec Configuration
+      type: collection
+      version: -1
+    taskid: 0ad59c0a-bc8c-4d5e-8de8-f422b51fd798
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 1500
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Commits a configuration to Palo Alto Firewall or Panorama, but
+        does not validate if the commit was successful. Committing to Panorama does
+        not push the configuration to the Firewalls. To push the configuration, run
+        the panorama-push-to-device-group command.
+      id: c13afee8-b36d-4ef8-84f5-9861b2cd6efb
+      iscommand: true
+      name: Commit to Panorama
+      script: Panorama|||panorama-commit
+      type: regular
+      version: -1
+    taskid: c13afee8-b36d-4ef8-84f5-9861b2cd6efb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 740
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "49"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: all
+      category: {}
+      cmd:
+        simple: <commit-all><shared-policy><merge-with-candidate-cfg>no</merge-with-candidate-cfg><include-template>yes</include-template><force-template-values>no</force-template-values><device-group><entry
+          name='rn-dg-${incident.prismaaccesscustomerid}'/></device-group></shared-policy></commit-all>
+      command: {}
+      dst: {}
+      element: {}
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: commit
+      where: {}
+      xpath: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 1c98e989-cd84-42d4-8a0e-a68201bd0ae3
+      iscommand: true
+      name: Push Remote Network Configuration to Prisma Access
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 1c98e989-cd84-42d4-8a0e-a68201bd0ae3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 920
+        }
+      }
+  "46":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Request for Prisma Access On-boarding information.Answers.6
+          operator: isEqualString
+          right:
+            value:
+              simple: Juniper
+      label: "Yes"
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "47"
+      "Yes":
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Gets a value and return it. This is to be used in playbook conditional\
+        \ tasks - get a value from incident field, label or context, and act accordingly.\
+        \ \nIf an array is returned. the first value will be the decision making value."
+      id: fc4d383b-8577-4680-8d16-c273bbcddb37
+      iscommand: false
+      name: Is this a Juniper CPE device?
+      type: condition
+      version: -1
+    taskid: fc4d383b-8577-4680-8d16-c273bbcddb37
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1290
+        }
+      }
+  "47":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Request for Prisma Access On-boarding information.Answers.6
+          operator: isEqualString
+          right:
+            value:
+              simple: Cisco
+      label: "Yes"
+    id: "47"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "52"
+      "Yes":
+      - "48"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Gets a value and return it. This is to be used in playbook conditional\
+        \ tasks - get a value from incident field, label or context, and act accordingly.\
+        \ \nIf an array is returned. the first value will be the decision making value."
+      id: c2fa0b89-b7d6-4894-8d0c-e5495c2e557b
+      iscommand: false
+      name: Is this a Cisco CPE device?
+      type: condition
+      version: -1
+    taskid: c2fa0b89-b7d6-4894-8d0c-e5495c2e557b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1460
+        }
+      }
+  "48":
+    form:
+      description: 'To initiate VPN with Prisma Access, Use the configuration below. '
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: 'Please confirm you received the configuration '
+        options:
+        - "Yes"
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Prisma Access - Juniper SRX VPN Configuration
+      totalanswers: 0
+    id: "48"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: |-
+          Please use the recommended VPN configuration for Cisco<br\>
+          <br\>
+          <br\>
+          ## Begin - VPN Configuration Generator Output<br\>
+          ***********************************************<br\>
+          <br\>
+          <br\>
+
+          **********************************************<br\>
+          ## End - VPN Configuration Generator Output<br\>
+      cc:
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: Prisma Access Configuration
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.prismaaccesstechnicalcontact}
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7c1d0523-a931-4dc5-88ff-f7b1085af52f
+      iscommand: false
+      name: Email Recommended Cisco IPSec Configuration
+      type: collection
+      version: -1
+    taskid: 7c1d0523-a931-4dc5-88ff-f7b1085af52f
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 1650
+        }
+      }
+  "49":
+    id: "49"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "51"
+      - "46"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      RemoteNetworkName:
+        simple: ${Request for Prisma Access On-boarding information.Answers.7}
+      TenantName:
+        simple: ${incident.prismaaccesscustomerid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6b4b5151-e1b5-4794-8319-becf3e68e455
+      iscommand: false
+      name: 1fb7b35d-21b0-42aa-83a9-112bdd492668
+      playbookId: 1fb7b35d-21b0-42aa-83a9-112bdd492668
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 6b4b5151-e1b5-4794-8319-becf3e68e455
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1090
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      appendMultiSelect: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      associatedmaliciousdomains: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      attorneygeneralnotification: {}
+      blockedaction: {}
+      breachconfirmation: {}
+      bugtraq: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alertdescription: {}
+      code42alertid: {}
+      code42alertname: {}
+      code42alertstate: {}
+      code42alerttimestamp: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      code42severity: {}
+      code42username: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      consumerreportingagenciesnotification: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      customerid: {}
+      cve: {}
+      cvss: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destinationports: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicehash: {}
+      devicename: {}
+      digitalguardianactivity: {}
+      digitalguardianalarmname: {}
+      digitalguardianarcuid: {}
+      digitalguardianattachmentfilename: {}
+      digitalguardianclassification: {}
+      digitalguardiancommandline: {}
+      digitalguardiancomputername: {}
+      digitalguardiandestinationaddress: {}
+      digitalguardiandestinationdnsdomain: {}
+      digitalguardianemailrecipient: {}
+      digitalguardianemailsender: {}
+      digitalguardianemailsubject: {}
+      digitalguardianfilename: {}
+      digitalguardianparentprocessname: {}
+      digitalguardianpolicy: {}
+      digitalguardianprocessname: {}
+      digitalguardianremoteport: {}
+      digitalguardiansensitivity: {}
+      digitalguardiansourceaddress: {}
+      digitalguardiansourceip: {}
+      digitalguardianthreattype: {}
+      digitalguardianusername: {}
+      dpoemailaddress: {}
+      dponotification: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      eventid: {}
+      eventtype: {}
+      exactlywhathappenedandatwhattimes: {}
+      exfiltratedfiles: {}
+      expansebehaviorrule: {}
+      expansebusinessunit: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      externaladdresses: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filehashblocked: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstname: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
+      howwastheincidentcontainedanderadicated: {}
+      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      id: {}
+      illusionblackattackerid: {}
+      illusionblackattacktype: {}
+      illusionblackdecoyid: {}
+      illusionblackevents: {}
+      illusionblackthreatparse: {}
+      illusivenetworksdeceptionfamilies: {}
+      illusivenetworkseventsnumber: {}
+      illusivenetworkshasforensics: {}
+      illusivenetworkshostname: {}
+      illusivenetworksid: {}
+      illusivenetworkslastseenuser: {}
+      illusivenetworkssourceoperatingsystem: {}
+      illusivenetworksstepstocrownjewel: {}
+      illusivenetworksstepstodomainadmin: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      individualsnotification: {}
+      infectedhostnames: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      logsource: {}
+      logzioalerteventid: {}
+      logzioalertid: {}
+      logzioalertsummary: {}
+      logziotags: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
+      malwarefamily: {}
+      managementnotification: {}
+      manageremail: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
+      mobiledevicemodel: {}
+      name: {}
+      niststage: {}
+      numberofports: {}
+      numberofuniqueports: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      os: {}
+      osversion: {}
+      otherpiidatabreached: {}
+      owner: {}
+      pacustomerid: {}
+      pamobileusers: {}
+      paremotenetworkbandwidth: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      pcapencryptionkey: {}
+      pcapendtime: {}
+      pcapfile: {}
+      pcapfilename: {}
+      pcapfilesize: {}
+      pcapflows: {}
+      pcapnumberofpackets: {}
+      pcapnumberofstreams: {}
+      pcapstarttime: {}
+      penteraoperationdetails: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      piidatatype: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismaaccesscustomerid:
+        simple: ${incident.prismaaccesscustomerid}
+      prismaaccessnumberofmobileusers:
+        simple: ${incident.prismaaccessnumberofmobileusers}
+      prismaaccessremotenetwork:
+        simple: ${Request for Prisma Access On-boarding information.Answers.7}
+      prismaaccessremotenetworkallocatedbw:
+        simple: ${Request for Prisma Access On-boarding information.Answers.3}
+      prismaaccessremotenetworkbandwidth:
+        simple: ${incident.prismaaccessremotenetworkbandwidth}
+      prismaaccessremotenetworklocation:
+        simple: ${Request for Prisma Access On-boarding information.Answers.4}
+      prismaaccessremotenetworkserviceip:
+        simple: ${ServiceIPAddress}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      protocol: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      safebreachaffectedtargets: {}
+      safebreachaffectedtargetscount: {}
+      safebreachattackcount: {}
+      safebreachattackids: {}
+      safebreachinsightcategory: {}
+      safebreachinsightid: {}
+      safebreachinsightname: {}
+      safebreachinsightriskimpact: {}
+      safebreachlatestsimulation: {}
+      safebreachremediationaction: {}
+      safebreachremediationdata: {}
+      safebreachremediationdatacount: {}
+      safebreachremediationstatus: {}
+      safebreachresultslink: {}
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      safebreachsimulationid: {}
+      safebreachsimulationnumber: {}
+      safebreachthreatgroups: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
+      servicenowid: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      statecisonotification: {}
+      statewherethebreachtookplace: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      suggestionsanddiscussionofhowtoimprovetheteam: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      tenantname: {}
+      terminatedaction: {}
+      testlookman: {}
+      threatactor: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
+      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
+      whataretheareasthatneedimprovement: {}
+      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
+      whatinformationwasneededsooner: {}
+      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
+      whatwasthescopeoftheincident: {}
+      whatwastheworkperformedduringrecovery: {}
+      whatweretheareaswherethecirtteamswereeffective: {}
+      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
+      whenwastheproblemfirstdetectedandbywhom: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: 078abdb4-6480-429e-838e-2ff8a43cab62
+      iscommand: true
+      name: Field Mapping for Dashboard
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 078abdb4-6480-429e-838e-2ff8a43cab62
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1100
+        }
+      }
+  "52":
+    form:
+      description: 'To initiate VPN with Prisma Access, Use the configuration below. '
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: 'Please confirm you received the configuration '
+        options:
+        - "Yes"
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Prisma Access - Juniper SRX VPN Configuration
+      totalanswers: 0
+    id: "52"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: |-
+          Please use the recommended VPN configuration <br\>
+
+          **********************************************<br\>
+          ## End - VPN Configuration Generator Output<br\>
+      cc:
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: Prisma Access Configuration
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.prismaaccesstechnicalcontact}
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d6875b52-2b45-4463-8f40-439feb780cd2
+      iscommand: false
+      name: Email Recommended Generic IPSec Configuration
+      type: collection
+      version: -1
+    taskid: d6875b52-2b45-4463-8f40-439feb780cd2
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1810
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "46_38_Yes": 0.45,
+      "47_48_Yes": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2010,
+        "width": 1170,
+        "x": -250,
+        "y": -105
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0

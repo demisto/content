@@ -1,0 +1,36 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "eb5c1684-53fb-47bb-881f-aeb0e13b05b3_custom-mapper",
+ "mapping": {
+  "Prisma Access - Create Tenant": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Prisma Access Customer ID": {
+     "complex": null,
+     "simple": "u_prisma_access_customer_id"
+    },
+    "Prisma Access Number of Mobile Users": {
+     "complex": null,
+     "simple": "u_prisma_access_mobile_user_license"
+    },
+    "Prisma Access Remote Network Bandwidth": {
+     "complex": null,
+     "simple": "u_prisma_access_remote_network_license"
+    },
+    "Prisma Access Technical Contact": {
+     "complex": null,
+     "simple": "u_technical_contact"
+    },
+    "Servicenow ID": {
+     "complex": null,
+     "simple": "number"
+    }
+   }
+  }
+ },
+ "name": "ServiceNow v2_instance_1 (custom) (mapper)",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

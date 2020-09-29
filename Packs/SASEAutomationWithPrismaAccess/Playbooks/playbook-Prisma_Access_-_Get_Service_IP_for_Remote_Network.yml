@@ -1,0 +1,229 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Prisma Access - Get Service IP for Remote Network
+inputs:
+- description: Tenant Name to use when generating a Prisma Access API Key from Panorama.
+  key: TenantName
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Remote Network to check for when polling and querying for the Service
+    IP to be created.
+  key: RemoteNetworkName
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Prisma Access - Get Service IP for Remote Network
+outputs:
+- contextPath: ServiceIPAddress
+  description: Service IP address
+  type: string
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d2ebd849-9379-428a-89c0-48fd48bc3415
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: d2ebd849-9379-428a-89c0-48fd48bc3415
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 395
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 91b7bc9b-b410-4e67-8b64-29db4e382577
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 91b7bc9b-b410-4e67-8b64-29db4e382577
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 1110
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input:
+        simple: '{"serviceType":"fwaas","tenantName":"${inputs.TenantName}"}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Will encode an input using Base64 format.
+      id: 0dffe667-24c9-483c-86e2-1fe36f1b3dd8
+      iscommand: false
+      name: Base64 Encode the Prisma Access parameters
+      script: Base64Encode
+      type: regular
+      version: -1
+    taskid: 0dffe667-24c9-483c-86e2-1fe36f1b3dd8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 570
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${inputs.TenantName}
+      Interval:
+        simple: "2"
+      PollingCommandArgName:
+        simple: tenant_name
+      PollingCommandName:
+        simple: prisma-access-get-networks-details
+      Timeout:
+        simple: "20"
+      dt:
+        simple: PrismaAccess.NetworkDetails(val['Service IP Address'] !== '${inputs.RemoteNetworkName}').TenantName
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 0390e1f0-c505-4942-8873-49a52cc3f3d3
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 0390e1f0-c505-4942-8873-49a52cc3f3d3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 750
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: ServiceIPAddress
+      stringify: {}
+      value:
+        complex:
+          accessor: Service IP Address
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: PrismaAccess.NetworkDetails.name
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.RemoteNetworkName
+          root: PrismaAccess.NetworkDetails
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 912c8e0b-0e00-4ef7-83f0-8ea1b53663c5
+      iscommand: false
+      name: Output service IP for requested Remote Network
+      script: Set
+      type: regular
+      version: -1
+    taskid: 912c8e0b-0e00-4ef7-83f0-8ea1b53663c5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 920
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 780,
+        "width": 380,
+        "x": 1030,
+        "y": 395
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0

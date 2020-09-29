@@ -1,0 +1,23 @@
+{
+ "autorun": true,
+ "color": "#a3c9ff",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 4,
+ "hoursR": 0,
+ "id": "Prisma Access - Create Tenant",
+ "layout": "c94a1470-a678-4c1d-8792-704605cd4b96",
+ "locked": false,
+ "name": "Prisma Access - Create Tenant",
+ "playbookId": "27190a21-8b7a-4260-8268-8241c14e6b80",
+ "readonly": false,
+ "reputationCalc": 0,
+ "sla": 4,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

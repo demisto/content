@@ -1,0 +1,3190 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Prisma Access Multi-Tenant Creation
+inputs:
+- description: Name of the Base Template / Day Zero Config to be cloned when provisioning
+    Service Connections
+  key: base-template-service-connection
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Name of the Base Template / Day Zero Config to be cloned when provisioning
+    Remote Networks
+  key: base-template-remote-network
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Name of the Base Template / Day Zero Config to be cloned when provisioning
+    Mobile  Users
+  key: base-template-mobile-user
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: BGP Autonomous System for Prisma Access service infrastructure. Default
+    is 65487.
+  key: Infrastructure BGP AS
+  playbookInputQuery:
+  required: true
+  value:
+    simple: "65487"
+- description: Subnet for Prisma Access service infrastructure. Default is 172.31.255.0/24.
+  key: Infrastructure Subnet
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 172.31.255.0/24
+- description: Set to "Yes" if a base template should be used to provision new tenants.
+    Otherwise "No".
+  key: base-template-exists
+  playbookInputQuery:
+  required: true
+  value:
+    simple: "Yes"
+- description: Name of the Base Device Group / Day Zero Config to be used when provisioning
+    Remote Networks
+  key: base-devicegroup-remote-network
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Name of the Base Device Group / Day Zero Config to be used when provisioning
+    Mobile Users
+  key: base-devicegroup-mobile-user
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Name of the Parent Device Group / Day Zero Config to be used when provisioning
+    Mobile Users
+  key: parent-devicegroup-mobile-user
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Name of the Parent Device Group / Day Zero Config to be used when provisioning
+    Remote Networks
+  key: parent-devicegroup-remote-network
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Set to "Yes" if a base device group should be used to provision new
+    tenants. Otherwise "No".
+  key: base-devicegroup-exists
+  playbookInputQuery:
+  required: true
+  value:
+    simple: "Yes"
+- description: Panorama URL to be used for emailing links to customers for follow-up
+    interaction.
+  key: panorama-url
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Minimum licensed users required to create a new tenant in Prisma Access
+  key: PrismaAccesMinimumUsers
+  playbookInputQuery:
+  required: true
+  value:
+    simple: "200"
+- description: Minimum licensed bandwidth required to create a new tenant in Prisma
+    Access
+  key: PrismaAccesMinimumBandwidth
+  playbookInputQuery:
+  required: true
+  value:
+    simple: "200"
+name: Prisma Access Multi-Tenant Creation
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "81"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 67d9d684-03ad-4d38-8047-257921444fd2
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 67d9d684-03ad-4d38-8047-257921444fd2
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": -150
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name="${incident.prismaaccesscustomerid}"><access-domain>${incident.prismaaccesscustomerid}</access-domain><bandwidth>${incident.prismaaccessremotenetworkbandwidth}</bandwidth>
+          <routing-preference><default/></routing-preference></entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/plugins/cloud_services/multi-tenant/tenants
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 9732f85e-c537-45b3-8c39-3f2625d902ca
+      iscommand: true
+      name: Create a Prisma Access tenant for Remote Network Only
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 9732f85e-c537-45b3-8c39-3f2625d902ca
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1245
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name="sc-tpl-${incident.prismaaccesscustomerid}">
+            <settings>
+              <default-vsys>vsys1</default-vsys>
+            </settings>
+            <description> Template (Use the Cloud Services plugin to edit)</description>
+            <config>
+              <devices>
+                <entry name="localhost.localdomain">
+                  <vsys>
+                    <entry name="vsys1"/>
+                  </vsys>
+                </entry>
+              </devices>
+            </config>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/template
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 78b06b9f-5f1f-434d-80c5-4f83918a1b3a
+      iscommand: true
+      name: Create Service Connection Template
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 78b06b9f-5f1f-434d-80c5-4f83918a1b3a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "77"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: <entry name="${incident.prismaaccesscustomerid}"></entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/mgt-config/access-domain
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 23e1aef9-f9b4-4594-83fd-11bbea8a0ee5
+      iscommand: true
+      name: Create Access Domain
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 23e1aef9-f9b4-4594-83fd-11bbea8a0ee5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 170
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name='sc-stk-${incident.prismaaccesscustomerid}'>
+            <templates>
+              <member>sc-tpl-${incident.prismaaccesscustomerid}</member>
+            </templates>
+            <description>Service Connection Template Stack (Use the Cloud Services plugin to edit)</description>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/template-stack
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: f97f805f-e812-49bb-8a35-efdb6f430179
+      iscommand: true
+      name: Create Service Connection Template Stack
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: f97f805f-e812-49bb-8a35-efdb6f430179
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: "<entry name='${incident.prismaaccesscustomerid}'>\n <templates>\n\
+          \  <member>sc-tpl-${incident.prismaaccesscustomerid}</member>\n  <member>sc-stk-${incident.prismaaccesscustomerid}</member>\
+          \ \n</templates>\n<device-groups>\n  <member>sc-dg-${incident.prismaaccesscustomerid}</member>\n\
+          </device-groups>\n</entry>"
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/mgt-config/access-domain
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: cf0e348a-feab-49f2-8055-8abc7ed3b993
+      iscommand: true
+      name: Assign Service Connection Template, Template Stack, Device Group to Access
+        Domain
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: cf0e348a-feab-49f2-8055-8abc7ed3b993
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |2-
+           <entry name="sc-dg-${incident.prismaaccesscustomerid}">
+              <description>Service Connection Device Group (Use the Cloud Services plugin to edit)</description>
+              <devices/>
+          <reference-templates>
+                      <member>sc-tpl-${incident.prismaaccesscustomerid}</member>
+           </reference-templates>  </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/device-group
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: dc8d28e5-929f-40ac-8dc7-ca217625d6f5
+      iscommand: true
+      name: Create Service Connection Device Group
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: dc8d28e5-929f-40ac-8dc7-ca217625d6f5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+      - "44"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: "<entry name=\"${incident.prismaaccesscustomerid}\">\n           \
+          \      <service-connection>\n                  <service-subnet>${inputs.Infrastructure\
+          \ Subnet}</service-subnet>\n                  <infra-bgp-as>${inputs.Infrastructure\
+          \ BGP AS}</infra-bgp-as>\n                  <template-stack>sc-stk-${incident.prismaaccesscustomerid}</template-stack>\n\
+          \                  <device-group>sc-dg-${incident.prismaaccesscustomerid}</device-group>\n\
+          \                   <internal-dns-list/>\n                 </service-connection>\n\
+          \ \t\t\t  </entry>"
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/plugins/cloud_services/multi-tenant/tenants
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: b61578c8-86fe-4331-8bac-95786beaea2a
+      iscommand: true
+      name: Cloud Plugin Initial Service Setup
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: b61578c8-86fe-4331-8bac-95786beaea2a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+  "22":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.prismaaccessremotenetworkbandwidth}
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: inputs.PrismaAccesMinimumBandwidth
+      label: "yes"
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      id: e6a42cc3-3f7b-46a8-8210-ed6090389e0f
+      iscommand: false
+      name: Configure Remote Network?
+      type: condition
+      version: -1
+    taskid: e6a42cc3-3f7b-46a8-8210-ed6090389e0f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name='rn-stk-${incident.prismaaccesscustomerid}'>
+            <templates>
+              <member>rn-tpl-${incident.prismaaccesscustomerid}</member>
+            </templates>
+            <description>Remote Network Template Stack (Use the Cloud Services plugin to edit)</description>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/template-stack
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 1edff5ed-76ac-46c6-888e-189ef49cabc3
+      iscommand: true
+      name: Create Remote Network Template Stack
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 1edff5ed-76ac-46c6-888e-189ef49cabc3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3345
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd:
+        simple: <load><config><partial><from-xpath>/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='${inputs.base-template-remote-network}']</from-xpath><to-xpath>/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='rn-tpl-${incident.prismaaccesscustomerid}']</to-xpath><mode>merge</mode><from>running-config.xml</from></partial></config></load>
+      command: {}
+      dst: {}
+      element: {}
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 1aef783d-9ae1-4470-8c1c-b26aeb2b77b1
+      iscommand: true
+      name: Clone Remote Network Template from base template
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 1aef783d-9ae1-4470-8c1c-b26aeb2b77b1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3170
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |2-
+           <entry name="rn-dg-${incident.prismaaccesscustomerid}">
+              <description>Remote Network Device Group for customer ${incident.prismaaccesscustomerid}</description>
+          <reference-templates>
+                      <member>rn-tpl-${incident.prismaaccesscustomerid}</member>
+           </reference-templates>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/device-group
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 2260fa38-48d4-408d-832a-a81b2606896b
+      iscommand: true
+      name: Create Remote Network Device Group
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 2260fa38-48d4-408d-832a-a81b2606896b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3520
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "47"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name="rn-tpl-${incident.prismaaccesscustomerid}">
+            <settings>
+              <default-vsys>vsys1</default-vsys>
+            </settings>
+            <description> Template (Use the Cloud Services plugin to edit)</description>
+            <config>
+              <devices>
+                <entry name="localhost.localdomain">
+                  <vsys>
+                    <entry name="vsys1"/>
+                  </vsys>
+                </entry>
+              </devices>
+            </config>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/template
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 4a4f1917-cc98-4d8f-8987-79e077bb9021
+      iscommand: true
+      name: Create Remote Network Template
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 4a4f1917-cc98-4d8f-8987-79e077bb9021
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd:
+        simple: <load><config><partial><from-xpath>/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='${inputs.base-template-remote-network}']</from-xpath><to-xpath>/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='rn-tpl-${incident.prismaaccesscustomerid}']</to-xpath><mode>merge</mode><from>running-config.xml</from></partial></config></load>
+      command: {}
+      dst: {}
+      element: {}
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 1fd43f03-e614-4b65-8fd8-ba9a5d3dee9c
+      iscommand: true
+      name: Clone Service Connection Template from base template
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 1fd43f03-e614-4b65-8fd8-ba9a5d3dee9c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1770
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd:
+        simple: <load><config><partial><from-xpath>/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='${inputs.base-devicegroup-remote-network}']</from-xpath><to-xpath>/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='rn-dg-${incident.prismaaccesscustomerid}']</to-xpath><mode>merge</mode><from>running-config.xml</from></partial></config></load>
+      command: {}
+      dst: {}
+      element: {}
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 109c31e8-e0a9-40ae-8735-bdb9f7dbbdc0
+      iscommand: true
+      name: Clone Remote Network Device Group
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 109c31e8-e0a9-40ae-8735-bdb9f7dbbdc0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 4045
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "51"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: "<entry name='${incident.prismaaccesscustomerid}'>\n <templates>\n\
+          \  <member>rn-tpl-${incident.prismaaccesscustomerid}</member>\n  <member>rn-stk-${incident.prismaaccesscustomerid}</member>\
+          \ \n</templates>\n<device-groups>\n  <member>rn-dg-${incident.prismaaccesscustomerid}</member>\n\
+          </device-groups>\n</entry>"
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/mgt-config/access-domain
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 0d4f7bfc-2cc0-487b-846b-6056be83a566
+      iscommand: true
+      name: Assign Remote Network Template, Template Stack, Device Group to Access
+        Domain
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 0d4f7bfc-2cc0-487b-846b-6056be83a566
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4220
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "50"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name="${incident.prismaaccesscustomerid}">
+          <remote-networks>
+                            <overlapped-subnets>no</overlapped-subnets>
+                            <template-stack>rn-stk-${incident.prismaaccesscustomerid}</template-stack>
+                            <device-group>rn-dg-${incident.prismaaccesscustomerid}</device-group>
+                            <trusted-zones>
+                              <member>RN-Trust</member>
+                            </trusted-zones>
+          </remote-networks>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/plugins/cloud_services/multi-tenant/tenants
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: e2e39e71-a044-44f3-87f2-a661da691c27
+      iscommand: true
+      name: Remote Network Service Setup
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: e2e39e71-a044-44f3-87f2-a661da691c27
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5095
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "48"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: move
+      category: {}
+      cmd:
+        simple: |-
+          <request>
+           <move-dg>
+                  <entry name="rn-dg-${incident.prismaaccesscustomerid}">
+                    <new-parent-dg>${inputs.parent-devicegroup-remote-network}</new-parent-dg>
+                    </entry>
+           </move-dg>
+          </request>
+      command: {}
+      dst: {}
+      element: {}
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: aa753838-0a59-49f6-89bc-e5123d0b7231
+      iscommand: true
+      name: Assign Remote Network Parent Device Group
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: aa753838-0a59-49f6-89bc-e5123d0b7231
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3695
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "73"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assigned_group: {}
+      assignee: {}
+      description:
+        simple: Prisma Access configuration has been completed
+      id: {}
+      number:
+        simple: ${incident.servicenowid}
+      query: {}
+      severity: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        This script is used to wrap the generic update-record command in ServiceNow.
+        You can add fields that you want to update the record with as script arguments or in the
+        code and work with the records easily.
+      id: 7183b0ce-2eda-4455-87c8-3b091a0e888a
+      iscommand: false
+      name: Update ServiceNow Incident
+      script: ServiceNowUpdateIncident
+      type: regular
+      version: -1
+    taskid: 7183b0ce-2eda-4455-87c8-3b091a0e888a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5665
+        }
+      }
+  "44":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.prismaaccessnumberofmobileusers}
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: inputs.PrismaAccesMinimumUsers
+      label: "yes"
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      id: 4d16cf70-1f23-4d39-832d-38ebc208dc27
+      iscommand: false
+      name: Configure Mobile User?
+      type: condition
+      version: -1
+    taskid: 4d16cf70-1f23-4d39-832d-38ebc208dc27
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 2645
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name="mu-tpl-${incident.prismaaccesscustomerid}">
+            <settings>
+              <default-vsys>vsys1</default-vsys>
+            </settings>
+            <description> Template (Use the Cloud Services plugin to edit)</description>
+            <config>
+              <devices>
+                <entry name="localhost.localdomain">
+                  <vsys>
+                    <entry name="vsys1"/>
+                  </vsys>
+                </entry>
+              </devices>
+            </config>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/template
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: e7e416ae-ee69-4ab9-803d-dc694dba48f4
+      iscommand: true
+      name: Create Mobile User Template
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: e7e416ae-ee69-4ab9-803d-dc694dba48f4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 2820
+        }
+      }
+  "46":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.base-template-exists
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 4365061b-c5c7-46df-8cad-960af58ea051
+      iscommand: false
+      name: Does Base Template (Best Practice) exist ?
+      type: condition
+      version: -1
+    taskid: 4365061b-c5c7-46df-8cad-960af58ea051
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+  "47":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${inputs.base-template-exists}
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "47"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 7e964bd0-7622-4c04-8fbc-a02ce6e36650
+      iscommand: false
+      name: Does Base Template (Best Practice) exist?
+      type: condition
+      version: -1
+    taskid: 7e964bd0-7622-4c04-8fbc-a02ce6e36650
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+  "48":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${inputs.base-devicegroup-exists}
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "48"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 9ea46fbd-3c39-4931-8f7e-702677973a4e
+      iscommand: false
+      name: Does Base Device Group exists?
+      type: condition
+      version: -1
+    taskid: 9ea46fbd-3c39-4931-8f7e-702677973a4e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3870
+        }
+      }
+  "49":
+    id: "49"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      tenant-name:
+        simple: ${incident.prismaaccesscustomerid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 00c7816f-0238-4b9c-85db-212c90841de1
+      iscommand: false
+      name: 18b004db-14c1-440b-8f2b-382b7e9e77e2
+      playbookId: 18b004db-14c1-440b-8f2b-382b7e9e77e2
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 00c7816f-0238-4b9c-85db-212c90841de1
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5445
+        }
+      }
+  "50":
+    id: "50"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "49"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Commits a configuration to Palo Alto Firewall or Panorama, but
+        does not validate if the commit was successful. Committing to Panorama does
+        not push the configuration to the Firewalls. To push the configuration, run
+        the panorama-push-to-device-group command.
+      id: 2f7c4f08-6b39-4e05-831a-4c45b642fbf6
+      iscommand: true
+      name: Commit to Panorama
+      script: Panorama|||panorama-commit
+      type: regular
+      version: -1
+    taskid: 2f7c4f08-6b39-4e05-831a-4c45b642fbf6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5270
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "54"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |2-
+           <entry name="rn-dg-${incident.prismaaccesscustomerid}">
+           <reference-templates>
+                      <member>rn-tpl-${incident.prismaaccesscustomerid}</member>
+           </reference-templates>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/device-group
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 70352211-1bc8-4f90-81b0-5b3b77aa7d3a
+      iscommand: true
+      name: Assign Remote Network Reference Templates
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 70352211-1bc8-4f90-81b0-5b3b77aa7d3a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4395
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |2-
+            <logging-service-regions>americas</logging-service-regions>
+            <enable>yes</enable>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/template/entry[@name='sc-tpl-${incident.prismaaccesscustomerid}']/config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting/logging/logging-service-forwarding
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: d93bb2ba-7b2d-4124-8051-41bc96fdd63f
+      iscommand: true
+      name: Prisma Access Log Configuration Region
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: d93bb2ba-7b2d-4124-8051-41bc96fdd63f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4920
+        }
+      }
+  "53":
+    id: "53"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "52"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |2-
+            <filter>All Logs</filter>
+            <send-to-panorama>yes</send-to-panorama>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/template/entry[@name='sc-tpl-${incident.prismaaccesscustomerid}']/config/shared/log-settings/system/match-list/entry[@name='system-gpcs-default']
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 7b21bc18-375e-48a6-8c77-bb2ea27ee089
+      iscommand: true
+      name: Prisma Access Log Configuration-Shared
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 7b21bc18-375e-48a6-8c77-bb2ea27ee089
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4745
+        }
+      }
+  "54":
+    id: "54"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |2
+
+          <templates>
+             <member>sc-stk-${incident.prismaaccesscustomerid}</member>
+              <member>rn-stk-${incident.prismaaccesscustomerid}</member>
+          </templates>
+          <device-groups>
+              <member>sc-dg-${incident.prismaaccesscustomerid}</member>
+               <member>rn-dg-${incident.prismaaccesscustomerid}</member>
+           </device-groups>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/plugins/cloud_services/multi-tenant/access-domain/entry[@name='${incident.prismaaccesscustomerid}']
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 3073eed5-bd67-44ba-87cd-0686e7ad065f
+      iscommand: true
+      name: Assign Multi Tenant Access Domain
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 3073eed5-bd67-44ba-87cd-0686e7ad065f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4570
+        }
+      }
+  "58":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${inputs.base-template-exists}
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "58"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "60"
+      "yes":
+      - "59"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: eddccd3d-6cef-4020-83a6-642863ecf200
+      iscommand: false
+      name: Does Base Template (Best Practice) exist?
+      type: condition
+      version: -1
+    taskid: eddccd3d-6cef-4020-83a6-642863ecf200
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 2995
+        }
+      }
+  "59":
+    id: "59"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "60"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd:
+        simple: <load><config><partial><from-xpath>/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='${inputs.base-template-mobile-user}']</from-xpath><to-xpath>/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='mu-tpl-${incident.prismaaccesscustomerid}']</to-xpath><mode>merge</mode><from>running-config.xml</from></partial></config></load>
+      command: {}
+      dst: {}
+      element: {}
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: f02e6400-ef79-4889-810b-77b50e7f52df
+      iscommand: true
+      name: Clone Mobile User Template
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: f02e6400-ef79-4889-810b-77b50e7f52df
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 3170
+        }
+      }
+  "60":
+    id: "60"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "61"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name='mu-stk-${incident.prismaaccesscustomerid}'>
+            <templates>
+              <member>mu-tpl-${incident.prismaaccesscustomerid}</member>
+            </templates>
+            <description>Mobile User Template Stack (Use the Cloud Services plugin to edit)</description>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/template-stack
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: dd15b8c4-a496-43bd-8cef-4a44a92742b7
+      iscommand: true
+      name: Create Mobile User Template Stack
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: dd15b8c4-a496-43bd-8cef-4a44a92742b7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3345
+        }
+      }
+  "61":
+    id: "61"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "62"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |2-
+           <entry name="mu-dg-${incident.prismaaccesscustomerid}">
+              <description>Mobile User Device Group for customer ${incident.prismaaccesscustomerid}</description>
+          <reference-templates>
+                      <member>mu-tpl-${incident.prismaaccesscustomerid}</member>
+           </reference-templates>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/device-group
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 793ba8e2-e2df-4f20-8e57-e6f4794c6f05
+      iscommand: true
+      name: Create Mobile User Device Group
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 793ba8e2-e2df-4f20-8e57-e6f4794c6f05
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3520
+        }
+      }
+  "62":
+    id: "62"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "63"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: move
+      category: {}
+      cmd:
+        simple: |-
+          <request>
+           <move-dg>
+                  <entry name="mu-dg-${incident.prismaaccesscustomerid}">
+                    <new-parent-dg>${inputs.parent-devicegroup-mobile-user}</new-parent-dg>
+                    </entry>
+           </move-dg>
+          </request>
+      command: {}
+      dst: {}
+      element: {}
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 654b18a9-abb3-4f43-88bf-15e18992775c
+      iscommand: true
+      name: Assign Mobile User Parent Device Group
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 654b18a9-abb3-4f43-88bf-15e18992775c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3695
+        }
+      }
+  "63":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${inputs.base-devicegroup-exists}
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "63"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "66"
+      "yes":
+      - "64"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: d6f6d729-0920-4d6b-8cb3-b7d4b48b3ff2
+      iscommand: false
+      name: Does Base Device Group exists?
+      type: condition
+      version: -1
+    taskid: d6f6d729-0920-4d6b-8cb3-b7d4b48b3ff2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3870
+        }
+      }
+  "64":
+    id: "64"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "66"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd:
+        simple: <load><config><partial><from-xpath>/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='${inputs.base-devicegroup-mobile-user}']</from-xpath><to-xpath>/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='mu-dg-${incident.prismaaccesscustomerid}']</to-xpath><mode>merge</mode><from>running-config.xml</from></partial></config></load>
+      command: {}
+      dst: {}
+      element: {}
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 01c3b432-1def-4253-8880-4219fca49ac2
+      iscommand: true
+      name: Clone Mobile User Device Group
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 01c3b432-1def-4253-8880-4219fca49ac2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 4045
+        }
+      }
+  "66":
+    id: "66"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "67"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: "<entry name='${incident.prismaaccesscustomerid}'>\n <templates>\n\
+          \  <member>mu-tpl-${incident.prismaaccesscustomerid}</member>\n  <member>mu-stk-${incident.prismaaccesscustomerid}</member>\
+          \ \n</templates>\n<device-groups>\n  <member>mu-dg-${incident.prismaaccesscustomerid}</member>\n\
+          </device-groups>\n</entry>"
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/mgt-config/access-domain
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: d22f14c0-1461-4650-8267-bfd0f64b799b
+      iscommand: true
+      name: Assign Mobile User Template, Template Stack, Device Group to Access Domain
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: d22f14c0-1461-4650-8267-bfd0f64b799b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 4220
+        }
+      }
+  "67":
+    id: "67"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "68"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |2-
+           <entry name="mu-dg-${incident.prismaaccesscustomerid}">
+           <reference-templates>
+                      <member>mu-tpl-${incident.prismaaccesscustomerid}</member>
+           </reference-templates>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/device-group
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: b98aa596-f460-4863-868b-8e29605fb6fb
+      iscommand: true
+      name: Assign Mobile User Reference Templates
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: b98aa596-f460-4863-868b-8e29605fb6fb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 4395
+        }
+      }
+  "68":
+    id: "68"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "69"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |2
+
+          <templates>
+             <member>sc-stk-${incident.prismaaccesscustomerid}</member>
+              <member>mu-stk-${incident.prismaaccesscustomerid}</member>
+          </templates>
+          <device-groups>
+              <member>sc-dg-${incident.prismaaccesscustomerid}</member>
+               <member>mu-dg-${incident.prismaaccesscustomerid}</member>
+           </device-groups>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/plugins/cloud_services/multi-tenant/access-domain/entry[@name='${incident.prismaaccesscustomerid}']
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 4473cd29-7e96-48be-8a66-73b5141c5ea3
+      iscommand: true
+      name: Assign Multi Tenant Access Domain
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 4473cd29-7e96-48be-8a66-73b5141c5ea3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 4570
+        }
+      }
+  "69":
+    id: "69"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "70"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |2-
+            <filter>All Logs</filter>
+            <send-to-panorama>yes</send-to-panorama>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/template/entry[@name='sc-tpl-${incident.prismaaccesscustomerid}']/config/shared/log-settings/system/match-list/entry[@name='system-gpcs-default']
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 43facdf8-04b6-40f0-843e-c1e14bc1eb32
+      iscommand: true
+      name: Prisma Access Log Configuration-Shared
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 43facdf8-04b6-40f0-843e-c1e14bc1eb32
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 4745
+        }
+      }
+  "70":
+    id: "70"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "71"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |2-
+            <logging-service-regions>americas</logging-service-regions>
+            <enable>yes</enable>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/template/entry[@name='sc-tpl-${incident.prismaaccesscustomerid}']/config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting/logging/logging-service-forwarding
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 2be0119f-df7f-4c83-8af9-841ec80735d5
+      iscommand: true
+      name: Prisma Access Log Configuration Region
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 2be0119f-df7f-4c83-8af9-841ec80735d5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 4920
+        }
+      }
+  "71":
+    id: "71"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "72"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name="${incident.prismaaccesscustomerid}">
+           <mobile-users>
+                            <template-stack>mu-stk-${incident.prismaaccesscustomerid}</template-stack>
+                            <device-group>mu-dg-${incident.prismaaccesscustomerid}</device-group>
+                            <trusted-zones>
+                              <member>MU-Trust</member>
+                            </trusted-zones>
+           </mobile-users>
+          </entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/plugins/cloud_services/multi-tenant/tenants
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: e2862a11-0e5c-4483-821c-98583c1bcb93
+      iscommand: true
+      name: Mobile User Service Setup
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: e2862a11-0e5c-4483-821c-98583c1bcb93
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 5095
+        }
+      }
+  "72":
+    id: "72"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "74"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Commits a configuration to Palo Alto Firewall or Panorama, but
+        does not validate if the commit was successful. Committing to Panorama does
+        not push the configuration to the Firewalls. To push the configuration, run
+        the panorama-push-to-device-group command.
+      id: b9e9bc13-52cf-40b2-88bd-6c030504c52e
+      iscommand: true
+      name: Commit to Panorama
+      script: Panorama|||panorama-commit
+      type: regular
+      version: -1
+    taskid: b9e9bc13-52cf-40b2-88bd-6c030504c52e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 5270
+        }
+      }
+  "73":
+    id: "73"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "87"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Prisma Access Order has been completed.
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: 21a794f5-6885-4b4f-8c00-a4954e92962b
+      iscommand: true
+      name: Close investigation - Complete Order Task
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 21a794f5-6885-4b4f-8c00-a4954e92962b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5840
+        }
+      }
+  "74":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Mobile User onboarding has been completed ?
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Confirm Manual onboarding of Mobile User
+      totalanswers: 0
+    id: "74"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: |
+          Please login to ${inputs.panorama-url} and follow the steps from STEP 06  in below document.  https://docs.paloaltonetworks.com/prisma/prisma-access/prisma-access-panorama-admin/prisma-access-for-users/configure-prisma-access-for-users
+      cc: {}
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: Attention Required - Prisma Access Mobile User Onboarding
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.prismaaccesstechnicalcontact}
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6c11622e-349c-40c9-854c-7803c3bf610a
+      iscommand: false
+      name: Mobile User Onboarding ( Manual Task )
+      type: collection
+      version: -1
+    taskid: 6c11622e-349c-40c9-854c-7803c3bf610a
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 5445
+        }
+      }
+  "75":
+    id: "75"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name="${incident.prismaaccesscustomerid}"><access-domain>${incident.prismaaccesscustomerid}</access-domain><bandwidth>${incident.prismaaccessremotenetworkbandwidth}</bandwidth><users>${incident.prismaaccessnumberofmobileusers}</users>
+          <routing-preference><default/></routing-preference></entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/plugins/cloud_services/multi-tenant/tenants
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: 886a9e33-7555-4dba-895d-7649c8961191
+      iscommand: true
+      name: Create a Prisma Access tenant for both Remote Network and Mobile Users
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: 886a9e33-7555-4dba-895d-7649c8961191
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1245
+        }
+      }
+  "77":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.prismaaccessremotenetworkbandwidth
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: inputs.PrismaAccesMinimumBandwidth
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.prismaaccessnumberofmobileusers
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: inputs.PrismaAccesMinimumUsers
+      label: "yes"
+    id: "77"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "78"
+      "yes":
+      - "82"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: e7db75e2-ff4d-438f-8e09-b87d3bf87f17
+      iscommand: false
+      name: 'Request meets minimum for Mobile User and Remote Network ? '
+      type: condition
+      version: -1
+    taskid: e7db75e2-ff4d-438f-8e09-b87d3bf87f17
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 345
+        }
+      }
+  "78":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.prismaaccessremotenetworkbandwidth
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: inputs.PrismaAccesMinimumBandwidth
+      label: "yes"
+    id: "78"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "79"
+      "yes":
+      - "83"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: ab3a04c4-c060-4588-8afb-40091d7ad1f2
+      iscommand: false
+      name: 'Request meets minimum for Remote Network ? '
+      type: condition
+      version: -1
+    taskid: ab3a04c4-c060-4588-8afb-40091d7ad1f2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 550
+        }
+      }
+  "79":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.prismaaccessnumberofmobileusers
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: inputs.PrismaAccesMinimumUsers
+      label: "yes"
+    id: "79"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "86"
+      "yes":
+      - "84"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 576fa5bb-155e-4383-8172-872280618f16
+      iscommand: false
+      name: 'Request meets minimum for  Mobile Users ? '
+      type: condition
+      version: -1
+    taskid: 576fa5bb-155e-4383-8172-872280618f16
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 720
+        }
+      }
+  "80":
+    id: "80"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: |-
+          <entry name="${incident.prismaaccesscustomerid}"><access-domain>${incident.prismaaccesscustomerid}</access-domain><users>${incident.prismaaccessnumberofmobileusers}</users>
+          <routing-preference><default/></routing-preference></entry>
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      where: {}
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/plugins/cloud_services/multi-tenant/tenants
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: d4f90468-1fc3-4b61-83c4-e628573fb3f2
+      iscommand: true
+      name: Create a Prisma Access tenant for Mobile Users Only
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: d4f90468-1fc3-4b61-83c4-e628573fb3f2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 1245
+        }
+      }
+  "81":
+    id: "81"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama_matthew
+      id: b5106650-46d2-45f5-8ef1-0758cc25fc81
+      iscommand: true
+      name: Get available Prisma Access License
+      script: Panorama_matthew|||panorama-get-unallocated-users-bandwidth
+      type: regular
+      version: -1
+    taskid: b5106650-46d2-45f5-8ef1-0758cc25fc81
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": -5
+        }
+      }
+  "82":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.UnallocatedBandwidth
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: incident.prismaaccessremotenetworkbandwidth
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.UnallocatedUsers
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: incident.prismaaccessnumberofmobileusers
+      label: "yes"
+    id: "82"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "85"
+      "yes":
+      - "75"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 065fb61b-4a99-4441-8a10-27e87cfb67f2
+      iscommand: false
+      name: Validate if enough license available?
+      type: condition
+      version: -1
+    taskid: 065fb61b-4a99-4441-8a10-27e87cfb67f2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 920
+        }
+      }
+  "83":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.UnallocatedBandwidth
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: incident.prismaaccessremotenetworkbandwidth
+      label: "yes"
+    id: "83"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "85"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ff122d76-8f54-46df-8af2-86bbdc0240ec
+      iscommand: false
+      name: Validate if enough license available?
+      type: condition
+      version: -1
+    taskid: ff122d76-8f54-46df-8af2-86bbdc0240ec
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 920
+        }
+      }
+  "84":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.UnallocatedUsers.[0]
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: incident.prismaaccessnumberofmobileusers
+      label: "yes"
+    id: "84"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "85"
+      "yes":
+      - "80"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 77f3530b-7f37-424b-8a75-b0e890ba4fc3
+      iscommand: false
+      name: Validate if enough license available?
+      type: condition
+      version: -1
+    taskid: 77f3530b-7f37-424b-8a75-b0e890ba4fc3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 920
+        }
+      }
+  "85":
+    id: "85"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody:
+        simple: |-
+          License requested :
+          Mobile Users : ${incident.prismaaccessnumberofmobileusers} - Available License : ${Panorama.UnallocatedUsers}
+
+          Remote Network Bandwidth: ${incident.prismaaccessremotenetworkbandwidth} - Available License : ${Panorama.UnallocatedBandwidth}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'Not enough Prisma Access License to turn up customer ${incident.prismaaccesscustomerid} '
+      templateParams: {}
+      to:
+        simple: ${incident.prismaaccesstechnicalcontact}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 5c849224-381c-4baa-8785-0096c8dd0501
+      iscommand: true
+      name: 'Send Email notification for Administrator '
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 5c849224-381c-4baa-8785-0096c8dd0501
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1100
+        }
+      }
+  "86":
+    id: "86"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody:
+        simple: |-
+          Received  the following request  which does not meet the minimum numbers for service provisioning:
+          Mobile Users : ${incident.prismaaccessnumberofmobileusers}
+          Remote Network Bandwidth:  ${incident.prismaaccessremotenetworkbandwidth}
+
+          Servicenow ID: ${incident.servicenowid}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: Prisma Access Customer ${incident.prismaaccesscustomerid} - Requested
+          users and bandwidth below required minimum
+      templateParams: {}
+      to:
+        simple: ${incident.prismaaccesstechnicalcontact}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 40fa9ab5-eac3-4cd5-88de-80eb2732bcb6
+      iscommand: true
+      name: 'Escalate via Email - Cannot proceed with Request  '
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 40fa9ab5-eac3-4cd5-88de-80eb2732bcb6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 920
+        }
+      }
+  "87":
+    id: "87"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e33e7b3f-a49d-46bd-8588-7a2cc2432773
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: e33e7b3f-a49d-46bd-8588-7a2cc2432773
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6000
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "77_82_yes": 0.24,
+      "82_75_yes": 0.41,
+      "82_85_#default#": 0.41,
+      "83_85_#default#": 0.14,
+      "84_85_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 6215,
+        "width": 2180,
+        "x": -540,
+        "y": -150
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0

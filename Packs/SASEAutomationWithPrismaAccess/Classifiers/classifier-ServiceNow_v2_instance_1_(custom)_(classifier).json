@@ -1,0 +1,16 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "eb5c1684-53fb-47bb-881f-aeb0e13b05b3_custom",
+ "keyTypeMap": {
+  "inquiry": "Prisma Access - Create Tenant"
+ },
+ "name": "ServiceNow v2_instance_1 (custom) (classifier)",
+ "transformer": {
+  "complex": null,
+  "simple": "category"
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}
