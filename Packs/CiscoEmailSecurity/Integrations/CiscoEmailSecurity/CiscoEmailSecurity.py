@@ -209,7 +209,7 @@ def list_report_command(client: Client, args: Dict[str, Any]):
     report_counter = args.get('report_counter')
     url_params = build_url_params_for_list_report(args, report_counter)
     report_response_data = client.list_report(url_params)
-    report_data = report_response_data.get('data', {}).get('resultSet', [None])[0]
+    report_data = report_response_data.get('data', {}).get('resultSet')
     counter_output_prefix = set_var_to_output_prefix(report_counter)
     return CommandResults(
         readable_output=f'{report_response_data}',
