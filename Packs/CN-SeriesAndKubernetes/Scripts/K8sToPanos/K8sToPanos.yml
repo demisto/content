@@ -1,0 +1,30 @@
+args:
+- description: Entire Kubernetes network policy as JSON text
+  name: KubernetesNetworkPolicy
+- description: Name of the Kubernetes cluster for naming
+  name: ClusterName
+commonfields:
+  id: K8sToPanos
+  version: -1
+dockerimage: demisto/python3:3.8.3.8494
+enabled: true
+name: K8sToPanos
+outputs:
+- contextPath: ConvertedPolicy.DAG.Name
+  type: Unknown
+- contextPath: ConvertedPolicy.DAG.Match
+  type: Unknown
+- contextPath: ConvertedPolicy.Rule.Name
+  type: Unknown
+- contextPath: ConvertedPolicy.Rule.Description
+  type: Unknown
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

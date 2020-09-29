@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#7c71f5",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "Kubernetes Network Policy Change",
+ "layout": "574b8eff-574e-4239-8104-84632c3267c9",
+ "locked": false,
+ "name": "Kubernetes Network Policy Change",
+ "playbookId": "58fd5b7a-1301-4b65-85be-f350edc29f7a",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

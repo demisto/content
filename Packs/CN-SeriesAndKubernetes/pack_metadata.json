@@ -1,0 +1,14 @@
+{
+    "name": "CN-Series and Kubernetes",
+    "description": "This pack contains a custom Kubernetes integration allows XSOAR to listen for Network Policy changes via the watch API. A change detected via the watch API triggers an XSOAR playbook that automatically converts Network Policy into Panorama policy and pushes the changes to a Panorama instance managing CN-Series firewalls.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "sserrata",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T20:44:45Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
