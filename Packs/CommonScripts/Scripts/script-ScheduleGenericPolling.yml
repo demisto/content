@@ -2,13 +2,17 @@ commonfields:
   id: ScheduleGenericPolling
   version: -1
 name: ScheduleGenericPolling
-fromversion: 4.0.0
-script: |-
+fromversion: 5.0.0
+script: >-
   import random, string, json, re
+
   from datetime import datetime, timedelta
 
+
   # Returns a comma-separated string representation of a list
+
   # Possible inputs: null, int, str, bytes, ["","",...], [int, int], 'a,b,...', '"a","b",...', '["","",...]'
+
   def parseIds(idsArg):
       if idsArg is None:
           return
@@ -22,16 +26,27 @@ script: |-
 
 
   args = demisto.args()
+
   ids = parseIds(args['ids'])
+
   dt = args['dt']
+
   pollingCommand = args['pollingCommand']
+
   pollingCommandArgName = args['pollingCommandArgName']
+
   tag = args['tag']
+
   playbookId = ' playbookId="{}"'.format(args['playbookId']) if 'playbookId' in args else ''
+
   interval = int(demisto.get(args, 'interval'))
+
   timeout = int(demisto.get(args, 'timeout'))
+
   args_names = ','.join(map(unicode.strip, demisto.getArg('additionalPollingCommandArgNames').split(',')))
+
   args_values = ','.join(map(unicode.strip, demisto.getArg('additionalPollingCommandArgValues').split(',')))
+
 
   if interval <= 0 or timeout <= 0 :
       demisto.results({
@@ -42,6 +57,7 @@ script: |-
       sys.exit(2)
 
   # Verify correct dt path (does not verify condition!)
+
   if not demisto.dt(demisto.context(), dt):
       if not demisto.dt(demisto.context(), re.sub('\(.*\)', '', dt)):
           return_error("Incorrect dt path: no ids found")
@@ -54,6 +70,7 @@ script: |-
       'cron': '*/{} * * * *'.format(interval),
       'times': 1
   })
+
   if isError(res[0]):
       demisto.results(res)
       sys.exit(1)
@@ -78,16 +95,14 @@ args:
   required: true
   description: DT filter for polling IDs
 - name: playbookId
-  description: The ID of the playbook that contains the manual task which will be
-    completed once the polling is done.
+  description: The ID of the playbook that contains the manual task which will be completed once the polling is done.
 - name: interval
   required: true
   description: Polling frequency - how often the polling command should run (minutes)
   defaultValue: "1"
 - name: timeout
   required: true
-  description: How much time to poll before declaring a timeout and resuming the playbook
-    (minutes)
+  description: How much time to poll before declaring a timeout and resuming the playbook (minutes)
   defaultValue: "60"
 - name: tag
   required: true

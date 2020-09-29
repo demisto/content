@@ -1210,3 +1210,175 @@ Gets a list of events related to the alarm.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 192.168.1.111 |  |  |  | 144115188075855872\|802641 | 2020-06-22T06:16:05Z | Failed User Logon |  | 25 | 11.11.11.11 |  |  | failure |
 
+### esm-create-watchlist  
+***  
+Create a new watchlist.  
+  
+  
+#### Base Command  
+  
+`esm-create-watchlist`  
+#### Input  
+  
+| **Argument Name** | **Description** | **Required** |  
+| --- | --- | --- |  
+| name | The new watchlist name. | Required |
+| type | The type of the new watchlist. | Required |   
+  
+#### Context Output  
+  
+| **Path** | **Type** | **Description** |  
+| --- | --- | --- |  
+| McAfeeESM.Watchlist.name | string | The watchlist name |
+| McAfeeESM.Watchlist.id | number | The watchlist id |
+| McAfeeESM.Watchlist.type | string | The watchlist type |   
+  
+#### Command Example  
+```!esm-create-watchlist name=test_watchlist type=IPAddress```  
+  
+#### Context Example  
+```  
+{
+	"McAfeeESM": {
+		"Watchlist": {
+			"id": 54,
+			"name": "test_watchlist",
+			"type": "IPAddress"
+		}
+	}
+}  
+```  
+  
+#### Human Readable Output  
+  
+>Watchlist test_watchlist created.  
+  
+### esm-delete-watchlist  
+***  
+Delete a watchlist.  
+  
+  
+#### Base Command  
+  
+`esm-delete-watchlist`  
+#### Input  
+  
+| **Argument Name** | **Description** | **Required** |  
+| --- | --- | --- |  
+| ids | the watch list ids to delete. | Optional |
+| names | the watch list names to delete. | Optional |   
+  
+#### Context Output  
+  
+There is no context output for this command.  
+  
+#### Command Example  
+```!esm-delete-watchlist names=test_watchlist```  
+    
+#### Human Readable Output  
+  
+>Watchlists removed  
+  
+### esm-watchlist-add-entry  
+***  
+Create a new watchlist entry.  
+  
+  
+#### Base Command  
+  
+`esm-watchlist-add-entry`  
+#### Input  
+  
+| **Argument Name** | **Description** | **Required** |  
+| --- | --- | --- |  
+| watchlist_name | The watchlist name. | Optional |
+| watchlist_id | The watchlist id. | Optional |
+| values | The values you want to add to watchlist. (CSV format) | Required |   
+  
+#### Context Output  
+  
+There is no context output for this command.  
+  
+#### Command Example  
+```!esm-watchlist-add-entry watchlist_name=test_watchlist values=1.1.1.1,2.2.2.2```  
+    
+#### Human Readable Output  
+  
+>Watchlist successfully updated.  
+  
+### esm-watchlist-delete-entry  
+***  
+Delete watchlist entry.  
+  
+  
+#### Base Command  
+  
+`esm-watchlist-delete-entry`  
+#### Input  
+  
+| **Argument Name** | **Description** | **Required** |  
+| --- | --- | --- |  
+| watchlist_name | The watchlist name. | Optional |
+| watchlist_id | The watchlist id. | Optional |
+| values | The values you want to remove from watchlist.  (CSV format) | Required |   
+  
+#### Context Output  
+  
+There is no context output for this command.  
+  
+#### Command Example  
+```!esm-watchlist-delete-entry watchlist_name=test_watchlist values=1.1.1.1,2.2.2.2```  
+  
+  
+#### Human Readable Output  
+  
+>Watchlist successfully updated.  
+  
+### esm-watchlist-list-entries  
+***  
+Get watchlist entries.  
+  
+  
+#### Base Command  
+  
+`esm-watchlist-list-entries`  
+#### Input  
+  
+| **Argument Name** | **Description** | **Required** |  
+| --- | --- | --- |  
+| watchlist_name | The watchlist name. | Optional |
+| watchlist_id | The watchlist id. | Optional |
+| limit | max count of values. | Required |
+| offset | values offset. | Required |   
+  
+#### Context Output  
+  
+| **Path** | **Type** | **Description** |  
+| --- | --- | --- |  
+| McAfeeESM.Watchlist.data | Unknown | The watchlist data | 
+| McAfeeESM.Watchlist.name | string | The watchlist name |   
+  
+#### Command Example  
+```!esm-watchlist-list-entries watchlist_name=test_watchlist```  
+  
+#### Context Example  
+```  
+{  
+	"McAfeeESM": {
+		"Watchlist": {
+			"data": [
+				"1.1.1.1",
+				"2.2.2.2"
+			],
+            "name": "test_watchlist"
+		}
+	}
+}  
+```  
+  
+#### Human Readable Output  
+  
+>### results from test_watchlist watchlist  
+>|data|  
+>|---|  
+>| 1.1.1.1,<br/>2.2.2.2,<br/> |

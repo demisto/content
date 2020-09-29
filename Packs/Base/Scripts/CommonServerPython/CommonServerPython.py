@@ -317,6 +317,9 @@ def auto_detect_indicator_type(indicator_value):
     if re.match(cveRegex, indicator_value):
         return FeedIndicatorType.CVE
 
+    if re.match(sha512Regex, indicator_value):
+        return FeedIndicatorType.File
+
     try:
         no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
         if no_cache_extract(indicator_value).suffix:
@@ -1828,6 +1831,8 @@ def get_hash_type(hash_file):
         return 'sha1'
     elif (hash_len == 64):
         return 'sha256'
+    elif (hash_len == 128):
+        return 'sha512'
     else:
         return 'Unknown'
 
@@ -3007,6 +3012,7 @@ cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
 sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
+sha512Regex = re.compile(r'\b[0-9a-fA-F]{128}\b', regexFlags)
 
 pascalRegex = re.compile('([A-Z]?[a-z]+)')
 
@@ -4011,7 +4017,6 @@ def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None
 
 CONTEXT_UPDATE_RETRY_TIMES = 3
 MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
-MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT = '83267'
 
 
 def merge_lists(original_list, updated_list, key):
@@ -4106,9 +4111,7 @@ def is_versioned_context_available():
     :rtype: ``bool``
     :return: Whether versioned integration context is available
     """
-    return \
-        is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT) or \
-        is_demisto_version_ge('5.5.0', MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT)
+    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
 
 
 def set_to_integration_context_with_retries(context, object_keys=None, sync=True,
