@@ -10,11 +10,7 @@ tags:
 - phishing
 - enhancement
 - file
-comment: Parse an email from an eml or msg file and populate all relevant context
-  data to investigate the email. Also extracts inner attachments and returns them
-  to the war room. The incident labels themselves are preserved and not modified -
-  only the "Label/x" context items that originated from the labels, and the best practice
-  is to rely on these for the remainder of the playbook.
+comment: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
 enabled: true
 args:
 - name: entryid
@@ -33,15 +29,13 @@ args:
   defaultValue: "3"
 outputs:
 - contextPath: Email.To
-  description: This shows to whom the message was addressed, but may not contain the
-    recipient's address.
+  description: This shows to whom the message was addressed, but may not contain the recipient's address.
   type: string
 - contextPath: Email.CC
   description: Email 'cc' addresses
   type: string
 - contextPath: Email.From
-  description: This displays who the message is from, however, this can be easily
-    forged and can be the least reliable.
+  description: This displays who the message is from, however, this can be easily forged and can be the least reliable.
   type: string
 - contextPath: Email.Subject
   description: Email subject
@@ -56,8 +50,7 @@ outputs:
   description: The depth of the email. Depth=0 for the first level email. If email1 contains email2 contains email3. Then email1 depth is 0, email2 depth is 1, email3 depth is 2
   type: number
 - contextPath: Email.Headers
-  description: Deprecated - use Email.HeadersMap output instead. The full email headers
-    as a single string
+  description: Deprecated - use Email.HeadersMap output instead. The full email headers as a single string
   type: string
 - contextPath: Email.HeadersMap
   description: The full email headers json
@@ -97,3 +90,4 @@ runonce: false
 runas: DBotWeakRole
 tests:
 - ParseEmailFiles-test
+fromversion: 5.0.0
