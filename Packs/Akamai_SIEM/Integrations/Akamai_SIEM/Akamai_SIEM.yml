@@ -51,25 +51,20 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Akamai WAF SIEM integration to retrieve security events from
-  Akamai Web Application Firewall (WAF) service.
+description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 display: Akamai WAF SIEM
 name: Akamai WAF SIEM
 script:
   commands:
   - arguments:
     - default: false
-      description: 'Unique identifier for each security configuration. To report on
-        more than one configuration, separate the integer identifiers with semicolons
-        (;), for example: 12892;29182;82912.'
+      description: 'Unique identifier for each security configuration. To report on more than one configuration, separate the integer identifiers with semicolons (;), for example: 12892;29182;82912.'
       isArray: false
       name: config_ids
       required: true
       secret: false
     - default: false
-      description: This token denotes the last message. If specified, this operation
-        fetches only security events that have occurred from the offset. This is a
-        required parameter for offset mode and you can’t use it in time-based requests.
+      description: This token denotes the last message. If specified, this operation fetches only security events that have occurred from the offset. This is a required parameter for offset mode and you can’t use it in time-based requests.
       isArray: false
       name: offset
       required: false
@@ -186,3 +181,4 @@ script:
   type: python
 tests:
 - Akamai_WAF_SIEM-Test
+fromversion: 5.0.0

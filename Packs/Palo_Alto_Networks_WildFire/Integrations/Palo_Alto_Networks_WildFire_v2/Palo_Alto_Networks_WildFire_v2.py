@@ -685,6 +685,9 @@ def wildfire_get_file_report(file_hash: str):
         json_res = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
     except NotFoundError:
         entry_context['Status'] = 'NotFound'
+        dbot_score_file = 0
+        dbot = [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'WildFire', 'Score': dbot_score_file},
+                {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'WildFire', 'Score': dbot_score_file}]
         demisto.results({
             'Type': entryTypes['note'],
             'HumanReadable': 'Report not found.',
@@ -692,7 +695,8 @@ def wildfire_get_file_report(file_hash: str):
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['text'],
             'EntryContext': {
-                "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": entry_context
+                "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": entry_context,
+                'DBotScore': dbot
             }
         })
         sys.exit(0)
