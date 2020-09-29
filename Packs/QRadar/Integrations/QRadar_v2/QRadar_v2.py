@@ -531,24 +531,21 @@ class QRadarClient:
         )
 
     def get_custom_fields(
-            self, limit: Optional[int] = None) -> List[dict]:
+            self, limit: Optional[int] = None, field_name: Optional[List[str]] = None,
+            likes: Optional[List[str]] = None, _filter: Optional[str] = None) -> List[dict]:
+        # Build filter if not given
+        if not _filter:
+            _filter = ''
+            for field in field_name:
+                _filter += f'name= "{field}" '
+            for like in likes:
+                _filter += f'name ILIKE "%{like}%"'
+        params = {'filter': _filter} if _filter else None
         url = urljoin(self._server, "api/config/event_sources/custom_properties/regex_properties")
         headers = self._auth_headers
-        fields = []
-        # Paging
-        start = 0
-        stop = 49
-        while True:
-            headers['Range'] = f"items={start}-{stop}"
-            response = self.send_request("GET", url, headers=headers)
-            if not response:  # Out of fields
-                break
-            fields.extend(response)
-            if limit is not None and len(fields) > limit:
-                fields = fields[:limit]
-                break
-            start, stop = stop, stop * 2
-        return fields
+        if limit is not None:
+            headers['Range'] = f"items=0-{limit}"
+        return self.send_request("GET", url, headers=headers, params=params)
 
     def enrich_source_addresses_dict(self, src_adrs):
         """
@@ -2104,8 +2101,39 @@ def get_mapping_fields(client: QRadarClient) -> dict:
     return fields
 
 
-def get_custom_properties(client: QRadarClient, field_name: Optional[str] = None, limit: Optional[str] = None):
-    client.get_custom_fields()
+def get_custom_properties(
+        client: QRadarClient, limit: str, field_name: str, like: str, filter: str, fields: str) -> dict:
+    limit = int(limit) if limit else None
+    field_names = argToList(field_name)
+    likes = argToList(like)
+    fields = argToList(fields)
+    if fields:
+        acceptable_fields = {'identifier', 'name', 'username', 'description', 'property_type', 'use_for_rule_engine',
+                             'datetime_format', 'locale', 'auto_discovered'}
+        wrong_fields = [field for field in fields if field not in acceptable_fields]
+        if wrong_fields:
+            raise DemistoException(f'Wrong `fields` were given. The wrong fields are "{", ".join(wrong_fields)}".'
+                                   f'Acceptable fields are {", ".join(acceptable_fields)}.')
+    response = client.get_custom_fields(limit, field_names, likes, filter)
+    # filter out fields
+    properties = [
+        {key: prop[key] for key in fields} for prop in response
+    ] if fields else response
+    # Convert epoch times
+    for i in range(len(properties)):
+        properties[i]['modification_date'] = epochToTimestamp(properties[i]['modification_date'])
+
+    return {
+        "Type": entryTypes["note"],
+        "Contents": response,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": tableToMarkdown(
+            "QRadar custom fields:",
+            properties
+        ),
+        "EntryContext": {'QRadar.Properties': properties},
+    }
 
 
 def main():
