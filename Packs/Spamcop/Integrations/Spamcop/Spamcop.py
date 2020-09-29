@@ -4,9 +4,7 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 
-from socket import gaierror, gethostbyname
-
-import requests
+from socket import gaierror
 
 
 def results_return(command, thingtoreturn):
@@ -25,7 +23,7 @@ def results_return(command, thingtoreturn):
             indicator=item['Address'],
             indicator_type=DBotScoreType.IP,
             integration_name='Spamcop',
-            malicious_description = description,
+            malicious_description=description,
             score=score
         )
         ip = Common.IP(
@@ -57,8 +55,8 @@ def get_ip_details(ip):
         except gaierror:
             data = {'Address': item}
             finaldata.append(data)
-        except exception as e:
-            return_error(f'Error, {e.message}. With Args {e.args}.')
+        except Exception as e:
+            return_error(f'Error from Spamcop - {str(e)}.')
 
     return finaldata
 
@@ -77,8 +75,8 @@ def test_module():
         return 'Test Failed. Spamcop is blocklisted ' + str(testresult)
     except gaierror:
         return 'ok'
-    except exception as e:
-        return f'Error, {e.message}. With Args {e.args}.'
+    except Exception as e:
+        return f'Error from Spamcop - {str(e)}.'
 
 
 def main():
