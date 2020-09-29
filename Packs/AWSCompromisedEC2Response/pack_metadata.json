@@ -1,0 +1,14 @@
+{
+    "name": "AWS Compromised EC2 Response",
+    "description": "This playbook handles initial remediation steps of a potentially compromised EC2 instance based on network indicators.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Thomas Burnette",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T20:20:18Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

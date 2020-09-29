@@ -1,0 +1,618 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: AWS Compromised EC2 Response
+inputs: []
+name: AWS Compromised EC2 Response
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 479732b7-e7b5-4772-8752-f6c5dd5ca1f5
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 479732b7-e7b5-4772-8752-f6c5dd5ca1f5
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -120
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device:
+        simple: xvdh
+      instanceId:
+        complex:
+          accessor: InstanceId
+          root: AWS.EC2.Instances.[1]
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      volumeId:
+        complex:
+          accessor: VolumeId
+          root: AWS.EC2.Volumes
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Attaches an EBS volume to a running or stopped instance and exposes
+        it to the instance with the specified device name.
+      id: 57dc5073-89ec-42fd-8d66-b335f36c7a6a
+      iscommand: true
+      name: Attach Volume from Offending Instance to Forensic Instance
+      script: AWS - EC2|||aws-ec2-attach-volume
+      type: regular
+      version: -1
+    taskid: 57dc5073-89ec-42fd-8d66-b335f36c7a6a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 1420
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      tags: {}
+      volumeId:
+        complex:
+          accessor: VolumeId
+          root: AWS.EC2.Instances.BlockDeviceMappings.[0].Ebs
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Creates a snapshot of an EBS volume and stores it in Amazon S3.
+        You can use snapshots for backups, to make copies of EBS volumes, and to save
+        data before shutting down an instance.
+      id: 7c19e42f-f35f-498d-86c7-1058dd7d28cd
+      iscommand: true
+      name: Create Snapshot of Offending Instance
+      script: AWS - EC2|||aws-ec2-create-snapshot
+      type: regular
+      version: -1
+    taskid: 7c19e42f-f35f-498d-86c7-1058dd7d28cd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filters: {}
+      instanceIds:
+        complex:
+          accessor: instanceId
+          root: incident.resource.instanceDetails
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Describes one or more of your instances.
+      id: 23cceaf7-3c13-4338-8393-063317ce3012
+      iscommand: true
+      name: Get Offending Instance Details
+      script: AWS - EC2|||aws-ec2-describe-instances
+      type: regular
+      version: -1
+    taskid: 23cceaf7-3c13-4338-8393-063317ce3012
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 25
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filters: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      subnetIds: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Describes one or more of your subnets.
+      id: a3da60ad-27a3-4780-839c-eee9f1ebb97b
+      iscommand: true
+      name: Describe Subnets
+      script: AWS - EC2|||aws-ec2-describe-subnets
+      type: regular
+      version: -1
+    taskid: a3da60ad-27a3-4780-839c-eee9f1ebb97b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filters: {}
+      ownerIds: {}
+      region: {}
+      restorableByUserIds: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      snapshotIds:
+        complex:
+          accessor: SnapshotId
+          root: AWS.EC2.Snapshots
+      waiterDelay: {}
+      waiterMaxAttempts: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: A waiter function that waits until the snapshot is complate
+      id: 52ee11b6-09f8-4a51-8cb9-517a970756d1
+      iscommand: true
+      name: Wait for Snapshot to Complete
+      script: AWS - EC2|||aws-ec2-waiter-snapshot_completed
+      type: regular
+      version: -1
+    taskid: 52ee11b6-09f8-4a51-8cb9-517a970756d1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 720
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      count:
+        simple: "1"
+      deviceName: {}
+      disableApiTermination: {}
+      ebsDeleteOnTermination: {}
+      ebsEncrypted: {}
+      ebsIops: {}
+      ebsKmsKeyId: {}
+      ebsOptimized: {}
+      ebsSnapshotId: {}
+      ebsVolumeSize: {}
+      ebsVolumeType: {}
+      iamInstanceProfileArn: {}
+      iamInstanceProfileName: {}
+      imageId: {}
+      instanceType: {}
+      keyName: {}
+      launchTemplateId:
+        simple: lt-07795554a551a20cf
+      launchTemplateName: {}
+      launchTemplateVersion: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      securityGroupIds: {}
+      securityGroups: {}
+      subnetId:
+        simple: subnet-034040456c85bd40b
+      tags: {}
+      userData: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Launches the specified number of instances using an AMI for which
+        you have permissions. You can create a launch template , which is a resource
+        that contains the parameters to launch an instance. When you launch an instance
+        using RunInstances , you can specify the launch template instead of specifying
+        the launch parameters. An instance is ready for you to use when its in the
+        running state. You can check the state of your instance using DescribeInstances.
+      id: 7e3aedc7-86e1-4343-8fa4-1bf525959187
+      iscommand: true
+      name: Run Forensic Instance
+      script: AWS - EC2|||aws-ec2-run-instances
+      type: regular
+      version: -1
+    taskid: 7e3aedc7-86e1-4343-8fa4-1bf525959187
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 1070
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      availabilityZone:
+        complex:
+          accessor: AvailabilityZone
+          root: AWS.EC2.Instances.Placement
+      encrypted: {}
+      iops: {}
+      kmsKeyId: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      size: {}
+      snapshotId:
+        complex:
+          accessor: SnapshotId
+          root: AWS.EC2.Snapshots
+      tags: {}
+      volumeType: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Creates an EBS volume that can be attached to an instance in the
+        same Availability Zone.
+      id: 71935b73-4ac5-4d7d-8009-46286417668f
+      iscommand: true
+      name: Convert Snapshot to Volume
+      script: AWS - EC2|||aws-ec2-create-volume
+      type: regular
+      version: -1
+    taskid: 71935b73-4ac5-4d7d-8009-46286417668f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 895
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filter: {}
+      instanceIds:
+        complex:
+          accessor: InstanceId
+          root: AWS.EC2.Instances.[1]
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      waiterDelay: {}
+      waiterMaxAttempts: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: A waiter function that runs every 15  seconds until a successful
+        state is reached.
+      id: 4d78360c-4262-4a90-8d5c-fd30993cfea6
+      iscommand: true
+      name: Wait for Forensic Instance Initialization
+      script: AWS - EC2|||aws-ec2-waiter-instance-running
+      type: regular
+      version: -1
+    taskid: 4d78360c-4262-4a90-8d5c-fd30993cfea6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 1245
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CidrBlock:
+        complex:
+          accessor: ipAddressV4
+          root: incident.service.action.networkConnectionAction.remoteIpDetails
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /32
+            operator: concat
+      Code: {}
+      DryRun: {}
+      Egress:
+        simple: "True"
+      From:
+        simple: "0"
+      Ipv6CidrBlock: {}
+      NetworkAclId:
+        simple: acl-0780ee09f0dbd6f7c
+      Protocol:
+        simple: "-1"
+      RuleAction:
+        simple: deny
+      RuleNumber:
+        simple: "1"
+      To:
+        simple: "65535"
+      Type: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Creates an entry (a rule) in a network ACL with the specified rule
+        number.
+      id: 4e646bda-4203-4c68-8118-9195f1e66be0
+      iscommand: true
+      name: Create Block ACL Entry for Offending IP (Outbound)
+      script: AWS - EC2|||aws-ec2-create-network-acl-entry
+      type: regular
+      version: -1
+    taskid: 4e646bda-4203-4c68-8118-9195f1e66be0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 720
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CidrBlock:
+        complex:
+          accessor: ipAddressV4
+          root: incident.service.action.networkConnectionAction.remoteIpDetails
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /32
+            operator: concat
+      Code: {}
+      DryRun: {}
+      Egress:
+        simple: "False"
+      From:
+        simple: "0"
+      Ipv6CidrBlock: {}
+      NetworkAclId:
+        simple: acl-0780ee09f0dbd6f7c
+      Protocol:
+        simple: "-1"
+      RuleAction:
+        simple: deny
+      RuleNumber:
+        simple: "1"
+      To:
+        simple: "65535"
+      Type: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Creates an entry (a rule) in a network ACL with the specified rule
+        number.
+      id: f8d05e1d-1365-46ac-8255-1a90db970bbb
+      iscommand: true
+      name: Create Block ACL Entry for Offending IP (Inbound)
+      script: AWS - EC2|||aws-ec2-create-network-acl-entry
+      type: regular
+      version: -1
+    taskid: f8d05e1d-1365-46ac-8255-1a90db970bbb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 895
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: actionType
+                root: incident.service.action
+          operator: isEqualString
+          right:
+            value:
+              simple: NETWORK_CONNECTION
+      label: "yes"
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e88eb14f-adc6-4b7c-8a9d-8da57ff33a54
+      iscommand: false
+      name: Confirm Action is "Network Connection"
+      type: condition
+      version: -1
+    taskid: e88eb14f-adc6-4b7c-8a9d-8da57ff33a54
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 545
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filters: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      vpcIds:
+        complex:
+          accessor: VpcId
+          root: AWS.EC2.Instances.NetworkInterfaces.[0]
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Describes one or more of your VPCs.
+      id: 9b040be1-23a6-4846-862e-c7edbd093534
+      iscommand: true
+      name: Describe VPC
+      script: AWS - EC2|||aws-ec2-describe-vpcs
+      type: regular
+      version: -1
+    taskid: 9b040be1-23a6-4846-862e-c7edbd093534
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 360
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1635,
+        "width": 910,
+        "x": -230,
+        "y": -120
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0
