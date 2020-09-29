@@ -118,7 +118,7 @@ list packet alerts generated in requested time span
 
 
 #### Command Example
-``` ```
+```!wootcloud-get-pkt-alerts date_range="7 days" severity="critical"```
 
 #### Human Readable Output
 
@@ -173,7 +173,7 @@ list bluetooth alerts generated in requested time span
 
 
 #### Command Example
-``` ```
+```!wootcloud-get-bt-alerts date_range="1 day"```
 
 #### Human Readable Output
 
@@ -241,7 +241,7 @@ list anomaly alerts generated in requested time span
 
 
 #### Command Example
-``` ```
+```!wootcloud-get-anomaly-alerts date_range="3 days" limit="5"```
 
 #### Human Readable Output
 
@@ -343,7 +343,7 @@ retrieve single packet alert given packet id
 
 
 #### Command Example
-``` ```
+```!wootcloud-fetch-packet-alert alert_id="EXMP001"```
 
 #### Human Readable Output
 
@@ -394,7 +394,7 @@ retrieve single bluetooth alert given packet id
 
 
 #### Command Example
-``` ```
+```!wootcloud-fetch-bluetooth-alert alert_id="EXMP001"```
 
 #### Human Readable Output
 
@@ -458,7 +458,7 @@ retrieve single anomaly alert given packet id
 
 
 #### Command Example
-``` ```
+```!wootcloud-fetch-anomaly-alert alert_id="EXMP001"```
 
 #### Human Readable Output
 
