@@ -1,0 +1,187 @@
+category: Utilities
+commonfields:
+  id: Tesla
+  version: -1
+configuration:
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Integration to Tesla Motors vehicles.
+display: Tesla
+name: Tesla
+script:
+  commands:
+  - arguments: []
+    description: Lists all Tesla vehicles in the account.
+    name: tesla-list-all-vehicles
+    outputs:
+    - contextPath: Tesla.Vehicles
+      description: List of vehicles
+  - arguments:
+    - description: use the “id_s” value and not the “vehicle_id” value.
+      name: id
+      required: true
+    description: Gets details from a single vehicle you specify
+    name: tesla-get-a-vehicle-details
+    outputs:
+    - contextPath: Tesla.Vehicle
+      description: Vehicles details
+  - arguments:
+    - name: id
+      required: true
+    description: Gets data for a single vehicle you specify
+    name: tesla-get-vehicle-data
+    outputs:
+    - contextPath: Tesla.VehicleData
+      description: Get all data from the car itself
+  - arguments:
+    - name: id
+      required: true
+    description: Gets the charge state for a vehicle.
+    name: tesla-get-charge-state
+    outputs:
+    - contextPath: Tesla.Charge
+      description: Get charge state from the car
+  - arguments:
+    - name: id
+      required: true
+    description: Gets climate state for a vehicle
+    name: tesla-get-climate-state
+    outputs:
+    - contextPath: Tesla.Climate
+      description: Gets the climate state from the car
+  - arguments:
+    - name: id
+      required: true
+    description: Gets the drive state for a vehicle
+    name: tesla-get-drive-state
+    outputs:
+    - contextPath: Tesla.Drive
+      description: Drive stats from the car
+  - arguments:
+    - name: id
+      required: true
+    description: Wakes up your Tesla car
+    name: tesla-wake-up
+    outputs:
+    - contextPath: Tesla.Wake-up
+      description: Wake up info from the car
+  - arguments:
+    - name: id
+      required: true
+    description: HONK HONK!
+    name: tesla-honk-horn
+    outputs:
+    - contextPath: Tesla.HonkHorn
+      description: Honk Horn output
+  - arguments:
+    - name: id
+      required: true
+    description: Flash the lights of your car
+    name: tesla-flash-lights
+    outputs:
+    - contextPath: Tesla.FlashLights
+      description: Flash Lights output
+  - arguments:
+    - name: id
+      required: true
+    description: Start AC
+    name: tesla-hvac-start
+    outputs:
+    - contextPath: Tesla.HVACStart
+      description: Start hvac output
+  - arguments:
+    - name: id
+      required: true
+    description: Stop AC
+    name: tesla-hvac-stop
+    outputs:
+    - contextPath: Tesla.HVACStop
+      description: Stop hvac output
+  - arguments:
+    - name: id
+      required: true
+    description: Start Charging
+    name: tesla-charge-start
+    outputs:
+    - contextPath: Tesla.ChargeStart
+      description: Start charge output
+  - arguments:
+    - name: id
+      required: true
+    description: Stop Charging
+    name: tesla-charge-stop
+    outputs:
+    - contextPath: Tesla.ChargeStop
+      description: Stop charge output
+  - arguments:
+    - name: id
+      required: true
+    description: Get Service Data for a car
+    name: tesla-get-service-data
+    outputs:
+    - contextPath: Tesla.ServiceData
+      description: 'Service Data '
+  - arguments:
+    - name: id
+      required: true
+    description: Get the GUI settings
+    name: tesla-get-gui-settings
+    outputs:
+    - contextPath: Tesla.GUISettings
+      description: GUI settings
+  - arguments:
+    - name: id
+      required: true
+    description: Unlock the doors
+    name: tesla-unlock-doors
+    outputs:
+    - contextPath: Tesla.UnlockDoors
+      description: Unlocked doors output
+  - arguments:
+    - name: id
+      required: true
+    description: Lock the doors
+    name: tesla-lock-doors
+    outputs:
+    - contextPath: Tesla.LockDoors
+  - arguments:
+    - description: ID of the vehicle
+      name: id
+      required: true
+    - defaultValue: "20"
+      description: Driver side temperature
+      name: driver_temp
+    - defaultValue: "20"
+      description: Passanger side temperature
+      name: passenger_temp
+    description: Set the temperature for HVAC in both sides of the car individually
+    name: tesla-set-temperature
+    outputs:
+    - contextPath: Tesla.SetTemperature
+  - arguments:
+    - name: id
+      required: true
+    - defaultValue: "80"
+      name: percent
+      required: true
+    name: tesla-set-charge-limit
+    outputs:
+    - contextPath: Tesla.ChargeLimit
+  dockerimage: demisto/python3:3.7.4.2245
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

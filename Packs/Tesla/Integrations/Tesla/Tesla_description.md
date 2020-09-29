@@ -1,0 +1,1 @@
+Use the same login credentials as you use to login to auth.tesla.com or their mobile app.
