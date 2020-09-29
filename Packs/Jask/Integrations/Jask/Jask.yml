@@ -53,9 +53,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get Insight details for a specific Insight ID. Insight details command
-      references SmartAlerts, which are the highest level abstractions in JASK SIEM
-      consisting of multiple signals, and records and relating to one or more assets.
+    description: Get Insight details for a specific Insight ID. Insight details command references SmartAlerts, which are the highest level abstractions in JASK SIEM consisting of multiple signals, and records and relating to one or more assets.
     execution: false
     name: jask-get-insight-details
     outputs:
@@ -145,8 +143,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get comments for a specific Insight ID. (Users can post and update
-      comments on the JASK SIEM portal for any Insight ID.)
+    description: Get comments for a specific Insight ID. (Users can post and update comments on the JASK SIEM portal for any Insight ID.)
     execution: false
     name: jask-get-insight-comments
     outputs:
@@ -176,9 +173,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get Signal details for a specific Signal ID. Signal details command
-      references signals in JASK which are created when records exhibit suspicious
-      properties and mate with patterns or other detection logic.
+    description: Get Signal details for a specific Signal ID. Signal details command references signals in JASK which are created when records exhibit suspicious properties and mate with patterns or other detection logic.
     execution: false
     name: jask-get-signal-details
     outputs:
@@ -346,8 +341,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: When the insight was last seen. Defaults to 'All time' if no time
-        arguments are specified.
+      description: When the insight was last seen. Defaults to 'All time' if no time arguments are specified.
       isArray: false
       name: last-seen
       predefined:
@@ -365,8 +359,7 @@ script:
       secret: false
     - default: false
       defaultValue: new,inprogress
-      description: 'comma separated list of values from the options: new, inprogress,
-        closed'
+      description: 'comma separated list of values from the options: new, inprogress, closed'
       isArray: false
       name: status
       required: false
@@ -457,8 +450,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: When the insight was last seen. Defaults to 'All time' if no time
-        arguments are specified.
+      description: When the insight was last seen. Defaults to 'All time' if no time arguments are specified.
       isArray: false
       name: last-seen
       predefined:
@@ -469,16 +461,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'comma separated list of values from options: threatintel, rule,
-        anomaly'
+      description: 'comma separated list of values from options: threatintel, rule, anomaly'
       isArray: false
       name: source
       required: false
       secret: false
     - default: false
-      description: 'comma separated list of values form options: Attack Stage, C2,
-        Defense Evasion,  Discovery, Exfiltration, Exploitation, External Recon, Internal
-        Recon, Lateral Movement, Threat Intelligence, Traffic Anomaly'
+      description: 'comma separated list of values form options: Attack Stage, C2, Defense Evasion,  Discovery, Exfiltration, Exploitation, External Recon, Internal Recon, Lateral Movement, Threat Intelligence, Traffic Anomaly'
       isArray: false
       name: category
       required: false
@@ -551,8 +540,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: When the insight was last seen. Defaults to 'All time' if no time
-        arguments are specified.
+      description: When the insight was last seen. Defaults to 'All time' if no time arguments are specified.
       isArray: false
       name: last-seen
       predefined:
@@ -563,8 +551,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'comma separated list of values from the options: username, hostname,
-        ip'
+      description: 'comma separated list of values from the options: username, hostname, ip'
       isArray: false
       name: entity-type
       required: false
@@ -650,3 +637,4 @@ script:
   subtype: python2
 tests:
 - No test
+fromversion: 5.0.0

@@ -417,8 +417,7 @@ tasks:
       id: 23613cf6-e540-4563-8023-437a4b93a3f2
       version: -1
       name: GitHub-get-download-count
-      description: Returns the total amount of downloads over all the releases of
-        the repository
+      description: Returns the total amount of downloads over all the releases of the repository
       script: '|||GitHub-get-download-count'
       type: regular
       iscommand: true
@@ -1274,9 +1273,7 @@ tasks:
       id: 42238f9a-622d-4a1e-8d5d-5d6e4c381bbd
       version: -1
       name: GitHub-is-pr-merged
-      description: 'Get if a pull request has been merged. If the pull request has
-        been merged the API returns ''Status: 204 No Content''. If the pull request
-        has not been merged the API returns ''Status: 404 Not Found'''
+      description: 'Get if a pull request has been merged. If the pull request has been merged the API returns ''Status: 204 No Content''. If the pull request has not been merged the API returns ''Status: 404 Not Found'''
       script: '|||GitHub-is-pr-merged'
       type: regular
       iscommand: true
@@ -1531,3 +1528,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

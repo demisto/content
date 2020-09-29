@@ -2,12 +2,16 @@ commonfields:
   id: NessusCreateScan
   version: -1
 name: NessusCreateScan
-script: |
+script: >
   from time import ctime
+
   res = []
 
+
   dArgs = demisto.args()
+
   resCmd = demisto.executeCommand("scan-create", dArgs)
+
   try:
       for entry in resCmd:
           if isError(entry):
@@ -25,8 +29,7 @@ type: python
 subtype: python2
 tags:
 - nessus
-comment: Deprecated.
-  Creates a new scan
+comment: Deprecated. Creates a new scan
 system: true
 args:
 - name: editor
@@ -52,20 +55,14 @@ args:
 - name: startTime
   description: The starting time and date for the scan (i.e. YYYYMMDDTHHMMSS).
 - name: rules
-  description: Expects a semi-colon delimited string comprised of three values. The
-    frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1
-    or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). To create
-    a scan that runs every three weeks on Monday Wednesday and Friday the string would
-    be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
+  description: Expects a semi-colon delimited string comprised of three values. The frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). To create a scan that runs every three weeks on Monday Wednesday and Friday the string would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
 - name: timeZone
   description: The timezone for the scan schedule
 - name: targets
   required: true
-  description: The list of targets to scan, Value can be single host or of comma separated
-    targets.
+  description: The list of targets to scan, Value can be single host or of comma separated targets.
 - name: emails
-  description: A comma separated list of accounts who will recieve the email summary
-    report
+  description: A comma separated list of accounts who will recieve the email summary report
 - name: acls
   description: An array containing permissions to apply to the scan
 - name: fileTargets
@@ -76,3 +73,4 @@ dependson:
   - Nessus|||scan-create
 timeout: 0s
 deprecated: true
+fromversion: 5.0.0
