@@ -1,0 +1,714 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: This playbook fully automates the identification and remediation of emails
+  sent to abuse inboxes by leveraging SlashNext’s patented behavioral phishing detection
+  technology that uses millions of virtual browsers to detect unknown threats, return
+  definitive verdicts, and forensics evidence of malicious phishing emails, at scale.
+  Dramatically reduce the time and effort involved in researching suspicious URLs
+  across digital sources with accurate, fully automated, and definitive URL analysis
+  on demand. Abuse inbox management is often a manual and complex operation. With
+  this playbook, teams can reduce up to 80% of the hours spent per week managing abuse
+  inboxes, which also provides detection and remediation for Microsoft Office 365
+  and similar secure email gateways.
+id: SlashNext - Abuse Inbox Management
+inputs: []
+name: SlashNext - Abuse Inbox Management
+outputs: []
+rolename:
+- Administrator
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 216cd100-f9e0-42cb-8cec-f1c28c1d90f2
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 216cd100-f9e0-42cb-8cec-f1c28c1d90f2
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9ecd85ed-b6a3-4725-8bd9-acacb61772db
+      iscommand: false
+      name: Running Abuse Inbox Playbook
+      type: title
+      version: -1
+      description: ''
+    taskid: 9ecd85ed-b6a3-4725-8bd9-acacb61772db
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 52cb564d-a1eb-4f89-85a9-cbd9192557be
+      iscommand: false
+      name: 92e53b7e-cc3b-46da-84d9-b9ccbc133140
+      playbookId: 92e53b7e-cc3b-46da-84d9-b9ccbc133140
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 52cb564d-a1eb-4f89-85a9-cbd9192557be
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 340
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+      - "11"
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 751e6fe1-2b7f-40cc-892c-c0d5244166ad
+      iscommand: false
+      name: Search and Quarantine in Abuse Inbox
+      type: title
+      version: -1
+      description: ''
+    taskid: 751e6fe1-2b7f-40cc-892c-c0d5244166ad
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 690
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folder-path:
+        simple: Inbox
+      is-public: {}
+      limit: {}
+      message-id: {}
+      query:
+        complex:
+          accessor: Domain.Value
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: SlashNext.Domain.Verdict
+              operator: isEqualString
+              right:
+                value:
+                  simple: Malicious
+          root: SlashNext
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: OR
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: Body:(
+              suffix:
+                value:
+                  simple: )
+            operator: concat
+      selected-fields: {}
+      target-mailbox: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: EWS v2
+      description: Searches for items in the specified mailbox. Specific permissions
+        are needed for this operation to search in a target mailbox other than the
+        default.
+      id: 482695b6-3e8f-465c-8eb6-a3a545369e69
+      iscommand: true
+      name: 'Search Emails with Malicious Domains '
+      script: EWS v2|||ews-search-mailbox
+      type: regular
+      version: -1
+    taskid: 482695b6-3e8f-465c-8eb6-a3a545369e69
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 830
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: SlashNext.Domain.Verdict
+          operator: containsGeneral
+          right:
+            value:
+              simple: Malicious
+        - left:
+            iscontext: true
+            value:
+              simple: SlashNext.IP.Verdict
+          operator: containsGeneral
+          right:
+            value:
+              simple: Malicious
+        - left:
+            iscontext: true
+            value:
+              simple: SlashNext.URL.Verdict
+          operator: containsGeneral
+          right:
+            value:
+              simple: Malicious
+      label: "Yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "Yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6634e381-05b0-42ad-85ac-c23d3baf5545
+      iscommand: false
+      name: Malicious Indicators Exist?
+      type: condition
+      version: -1
+    taskid: 6634e381-05b0-42ad-85ac-c23d3baf5545
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 515
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: EWS.Items
+          operator: isExists
+      label: "Yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "Yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3ed5850b-6853-43fb-8f6e-b6d005fa4155
+      iscommand: false
+      name: Any Emails Found?
+      type: condition
+      version: -1
+    taskid: 3ed5850b-6853-43fb-8f6e-b6d005fa4155
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1000
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      is-public: {}
+      item-id:
+        simple: ${EWS.Items.itemId}
+      target-folder-path:
+        simple: Inbox/Phishing
+      target-mailbox: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: EWS v2
+      description: Move an item to different folder in the mailbox.
+      id: 6cdca7b0-7f79-4934-8b26-7b2ae3c4d3eb
+      iscommand: true
+      name: Move and Quarantine in Phishing Folder
+      script: EWS v2|||ews-move-item
+      type: regular
+      version: -1
+    taskid: 6cdca7b0-7f79-4934-8b26-7b2ae3c4d3eb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1190
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: 02c8cb24-c5a4-4917-821c-b115e78cbd92
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 02c8cb24-c5a4-4917-821c-b115e78cbd92
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1535
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folder-path:
+        simple: Inbox
+      is-public: {}
+      limit: {}
+      message-id: {}
+      query:
+        complex:
+          accessor: IP.Value}
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: SlashNext.IP.Verdict
+              operator: isEqualString
+              right:
+                value:
+                  simple: Malicious
+          root: ${SlashNext
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: Body:(
+              suffix:
+                value:
+                  simple: )
+            operator: concat
+      selected-fields: {}
+      target-mailbox: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: EWS v2
+      description: Searches for items in the specified mailbox. Specific permissions
+        are needed for this operation to search in a target mailbox other than the
+        default.
+      id: 73ab63ee-3a4b-429b-8781-27b4c04b4e0a
+      iscommand: true
+      name: 'Search Emails with Malicious IPs '
+      script: EWS v2|||ews-search-mailbox
+      type: regular
+      version: -1
+    taskid: 73ab63ee-3a4b-429b-8781-27b4c04b4e0a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 830
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folder-path:
+        simple: Inbox
+      is-public: {}
+      limit: {}
+      message-id: {}
+      query:
+        complex:
+          accessor: URL.Value}
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: SlashNext.URL.Verdict
+              operator: isEqualString
+              right:
+                value:
+                  simple: Malicious
+          root: ${SlashNext
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: Body:(
+              suffix:
+                value:
+                  simple: )
+            operator: concat
+      selected-fields: {}
+      target-mailbox: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: EWS v2
+      description: Searches for items in the specified mailbox. Specific permissions
+        are needed for this operation to search in a target mailbox other than the
+        default.
+      id: 07c9b382-3ba6-463a-80aa-2ac8a1dd06ce
+      iscommand: true
+      name: 'Search Emails with Malicious URLs '
+      script: EWS v2|||ews-search-mailbox
+      type: regular
+      version: -1
+    taskid: 07c9b382-3ba6-463a-80aa-2ac8a1dd06ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1640,
+          "y": 830
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody:
+        simple: "<p style=\"color:black;\"><b>SlashNext Phishing Incident Response\
+          \ - Malicious Email Detected</b></p> \n\n<p>Dear Abuse Inbox Admin,\n<br>\n\
+          <br>\nThe following email has been detected to contain Malicious Indicators:\n\
+          <br>\n<b>Subject: ${incident.labels.Email/subject}</b>\n</p>\n\n<p><br>Click\
+          \ the link below to investigate the email and different indicators.</p>\n\
+          <p>Evidence Board:</p>\n<a href=\"${demistoUrls.evidenceBoard}\">${demistoUrls.evidenceBoard}</a>\n\
+          \n<p>All the emails that contain the same indicators have also also been\
+          \ quarantined in the <b>Inbox -> Phishing</b> folder.</p>"
+      replyTo: {}
+      subject:
+        simple: 'Abuse Inbox: Malicious Indicators Found in Reported Email'
+      to:
+        simple: ${incident.labels.Email}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: EWS Mail Sender
+      description: Sends an email using EWS.
+      id: 75242162-8018-4b47-882a-1462de6e5850
+      iscommand: true
+      name: Send Malicious Quarantine Reporting Email
+      script: EWS Mail Sender|||send-mail
+      type: regular
+      version: -1
+    taskid: 75242162-8018-4b47-882a-1462de6e5850
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1360
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody:
+        simple: "<p style=\"color:black;\"><b>SlashNext Phishing Incident Response\
+          \ - Malicious Email Detected</b></p> \n\n<p>Dear Abuse Inbox Admin,\n<br>\n\
+          <br>\nThe following email does not contain any Malicious Indicators:\n<br>\n\
+          <b>Subject: ${incident.labels.Email/subject}</b>\n</p>\n\n"
+      replyTo: {}
+      subject:
+        simple: 'Abuse Inbox: No Malicious Indicators Found in Reported Email'
+      to:
+        simple: ${incident.labels.Email}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: EWS Mail Sender
+      description: Sends an email using EWS.
+      id: 11c44768-b0e5-49bb-87fd-22bad4ffe874
+      iscommand: true
+      name: Send No-Malicious Reporting Email
+      script: EWS Mail Sender|||send-mail
+      type: regular
+      version: -1
+    taskid: 11c44768-b0e5-49bb-87fd-22bad4ffe874
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1360
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody:
+        simple: "<p style=\"color:black;\"><b>SlashNext Phishing Incident Response\
+          \ - Malicious Email Detected</b></p> \n\n<p>Dear Abuse Inbox Admin,\n<br>\n\
+          <br>\nThe following email has been detected to contain Malicious Indicators:\n\
+          <br>\n<b>Subject: ${incident.labels.Email/subject}</b>\n</p>\n\n<p><br>Click\
+          \ the link below to investigate the email and different indicators.</p>\n\
+          <p>Evidence Board:</p>\n<a href=\"${demistoUrls.evidenceBoard}\">${demistoUrls.evidenceBoard}</a>"
+      replyTo: {}
+      subject:
+        simple: 'Abuse Inbox: Malicious Indicators Found in Reported Email'
+      to:
+        simple: ${incident.labels.Email}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: EWS Mail Sender
+      description: Sends an email using EWS.
+      id: 03746af7-7d45-4ce1-850a-6936b3915857
+      iscommand: true
+      name: Send Malicious Reporting Email
+      script: EWS Mail Sender|||send-mail
+      type: regular
+      version: -1
+    taskid: 03746af7-7d45-4ce1-850a-6936b3915857
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1360
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d3dc13e9-dcc9-483e-8be1-cc5c34476d9a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: d3dc13e9-dcc9-483e-8be1-cc5c34476d9a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1710
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_14_#default#": 0.46,
+      "6_4_Yes": 0.55,
+      "7_15_#default#": 0.82,
+      "7_8_Yes": 0.36
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1725,
+        "width": 1642.5,
+        "x": 377.5,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
