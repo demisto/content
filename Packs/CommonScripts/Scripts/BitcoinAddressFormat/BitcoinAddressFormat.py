@@ -16,7 +16,7 @@ def decode_base58(bitcoin, length):
 def verify_is_bitcoin(bitcoin):
     try:
         bitcoin_bytes = decode_base58(bitcoin, 25)
-        '''Check if the last four bytes are equal to the 
+        '''Check if the last four bytes are equal to the
         first four bytes of a double SHA-256 digest of the previous 21 bytes.'''
         return bitcoin_bytes[-4:] == sha256(sha256(bitcoin_bytes[:-4]).digest()).digest()[:4]
     except Exception:
