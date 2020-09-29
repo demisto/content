@@ -8,7 +8,7 @@ This integration was integrated and tested with version 7.3.2 of QRadar
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| server | Server URL \(e.g. https://8.8.8.8) | True |
+| server | Server URL \(e.g. `https://8.8.8.8`) | True |
 | credentials | Username / API Key \(see '?'\) | False |
 | query | Query to fetch offenses | False |
 | offenses_per_fetch | Number of offenses to pull per API call \(max 50\) | False |
@@ -28,14 +28,14 @@ This integration was integrated and tested with version 7.3.2 of QRadar
 ## Troubleshooting Performance Issues
 In some cases, you might encounter performance issues when running QRadar AQL queries from Demisto. This issue is caused by QRadar API limitations. We recommend that you test the QRadar API performance by running several cURL scripts.
 #### 1. Creating a search
-Run the following command to use the QRadar API to create a new search.<br> Save the QUERY ID that is attached to the response for the next step.</br>
+Run the following command to use the QRadar API to create a new search.Save the QUERY ID that is attached to the response for the next step.
 ```
-curl -H "SEC: &lt;API KEY&gt;" -X POST &lt;QRADAR INSTANCE&gt;/api/ariel/searches?query_expression=&lt;QUERY IN URL SAFE ENCODING&gt;
+curl -H "SEC: <API KEY>" -X POST <QRADAR INSTANCE>/api/ariel/searches?query_expression=<QUERY IN URL SAFE ENCODING>
 ```
 #### 2. Check if the search status is Complete or Executing
 Use the following command to use the QRadar API to check the query status (EXECUTE, COMPLETED, or ERROR).
 ```
-curl -H "SEC: &lt;API KEY&gt;" -X GET &lt;QRADAR INSTANCE&gt;/api/ariel/searches?&lt;QUERY ID&gt;
+curl -H "SEC: <API KEY>" -X GET <QRADAR INSTANCE>/api/ariel/searches?<QUERY ID>
 ```
 
 ## Using API Token authentication
