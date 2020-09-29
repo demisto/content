@@ -1,0 +1,350 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: bebb4c02-b79e-40ba-83e1-941444ff709b
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Main-Playbook for Temp AD Account Management
+id: (Lab2) Temp AD Account Management
+inputs: []
+name: (Lab2) Temp AD Account Management
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b762fb1e-55f7-497d-8c26-db97c1e836bc
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: b762fb1e-55f7-497d-8c26-db97c1e836bc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 20
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      codec: {}
+      domains: {}
+      entryID:
+        simple: ${File.EntryID}
+      file: {}
+      hashes: {}
+      ips: {}
+      parseAll: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This script will parse a CSV file and place the unique IPs, Domains
+        and Hashes into the context.
+      id: 0df26724-f615-448e-85f6-616922b2b6b6
+      iscommand: false
+      name: Get Account Data from CSV
+      script: ParseCSV
+      type: regular
+      version: -1
+    taskid: 0df26724-f615-448e-85f6-616922b2b6b6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 160
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit:
+        simple: "100"
+      name: {}
+      user-account-control-out: {}
+      username: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      id: b21c6c04-3cec-46fa-89bf-844e26ef69b5
+      iscommand: true
+      name: Get AD User List
+      script: '|||ad-get-user'
+      type: regular
+      version: -1
+    taskid: b21c6c04-3cec-46fa-89bf-844e26ef69b5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 320
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Username:
+        simple: ${ParseCSV.ParsedCSV.Username}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6d4a4452-62d8-466a-80d8-85c6904bf943
+      iscommand: false
+      name: d1b31bc3-3fa1-4516-8d19-13ed28caddaf
+      playbookId: d1b31bc3-3fa1-4516-8d19-13ed28caddaf
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 6d4a4452-62d8-466a-80d8-85c6904bf943
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 500
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: UsernameDuplicated
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bd191307-f2a3-4768-8438-b5285e45d524
+      iscommand: false
+      name: Any duplicated username is found?
+      type: condition
+      version: -1
+    taskid: bd191307-f2a3-4768-8438-b5285e45d524
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 680
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: 'Error occurred while creating account. Reason : Duplicated username
+          is found.'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: d2d59b3e-dc67-4f7f-8575-3a99136b079f
+      iscommand: false
+      name: Print Error Message
+      script: Print
+      type: regular
+      version: -1
+    taskid: d2d59b3e-dc67-4f7f-8575-3a99136b079f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1040
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      EndDate:
+        simple: ${ParseCSV.ParsedCSV.EndDate}
+      OU:
+        simple: ${ParseCSV.ParsedCSV.OU}
+      StartDate:
+        simple: ${ParseCSV.ParsedCSV.StartDate}
+      Username:
+        simple: ${ParseCSV.ParsedCSV.Username}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 31191c08-3812-4c93-8a3e-50af91be6c13
+      iscommand: false
+      name: bd4f5776-c377-4c87-87ab-dfbc34d2e134
+      playbookId: bd4f5776-c377-4c87-87ab-dfbc34d2e134
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 31191c08-3812-4c93-8a3e-50af91be6c13
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 880
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Task Completed.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 00f296f2-facb-45ad-8ab5-96516407b2c1
+      iscommand: false
+      name: Print Task Completed
+      script: Print
+      type: regular
+      version: -1
+    taskid: 00f296f2-facb-45ad-8ab5-96516407b2c1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1040
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a3ccd983-3128-43f5-82f1-856992e48711
+      iscommand: false
+      name: Completed
+      type: title
+      version: -1
+      description: ''
+    taskid: a3ccd983-3128-43f5-82f1-856992e48711
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1250
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1295,
+        "width": 810,
+        "x": 510,
+        "y": 20
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
