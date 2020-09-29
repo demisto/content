@@ -3051,7 +3051,6 @@
         "SentinelOne V2 - test": "Issue 24933",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
-        "SNDBOX_Test": "Issue 24349",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance - Issue 27112",
@@ -3203,6 +3202,7 @@
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
+        "SNDBOX": "Issue 28826",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
