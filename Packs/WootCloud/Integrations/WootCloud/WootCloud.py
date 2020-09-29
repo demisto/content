@@ -109,9 +109,9 @@ class Client(BaseClient):
         if getAll:
             return result
         elif type == 'packet':
-            return CommandResults(outputs=result['packet_alerts'], outputs_prefix=prefix, outputs_key_field='id')
+            return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id') #used to be result['packet_alerts']
         else:
-            return CommandResults(outputs=result['alerts'], outputs_prefix=prefix, outputs_key_field='id')
+            return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id') #used to be result['alerts']
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
