@@ -5,9 +5,6 @@
 <li>Send and reply to emails.</li>
 </ul>
 
-<h2>Fetch Incidents</h2>
-<p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Demisto fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.</p>
-
 <h2>Authentication</h2>
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
@@ -18,6 +15,11 @@ The following permissions are required for all commands:
  <li>Mail.Send - Delegated</li>
  <li>User.Read - Delegated</li>
 </ul>
+
+<h2>Fetch Incidents</h2>
+<p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Demisto fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.</p>
+<p>NOTE: The integration fetches email messages as incidents by their modified date, and since marking an email as read (by reading the email in the mailbox) or unread considered to be email modification, the email message will be fetched again. We recommend handling that with Pre-Process rules to avoid duplicates.</p>
+
 <h2>Configure Microsoft Graph Mail Single User on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>

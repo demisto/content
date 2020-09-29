@@ -7,6 +7,11 @@ For more details about the authentication used in this integration, see [Microso
 * Mail.ReadWrite - Application
 * User.Read - Application
 
+## Fetch Incidents
+The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches Incidents option in the instance settings.
+
+NOTE: The integration fetches email messages as incidents by their modified date, and since marking an email as read (by reading the email in the mailbox) or unread considered to be email modification, the email message will be fetched again. We recommend handling that with Pre-Process rules to avoid duplicates.
+
 ### OData Usage
 The OData parameter can be used to create different queries for the ***msgraph-mail-list-emails*** and ***msgraph-mail-get-email*** commands. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
 Examples:
@@ -1050,3 +1055,4 @@ There is no context output for this command.
 
 ##### Human Readable Output
 ##### Draft with: "" id was sent successfully.
+
