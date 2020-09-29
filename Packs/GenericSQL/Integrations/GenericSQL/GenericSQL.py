@@ -8,6 +8,7 @@ import pymysql
 import traceback
 import hashlib
 import logging
+import urllib.parse
 from sqlalchemy.sql import text
 try:
     # if integration is using an older image (4.5 Server) we don't have expiringdict
@@ -81,9 +82,10 @@ class Client:
         """
         module = self._convert_dialect_to_module(self.dialect)
         port_part = ''
+        encoded_password = urllib.parse.quote_plus(self.password)
         if self.port:
             port_part = f':{self.port}'
-        db_preferences = f'{module}://{self.username}:{self.password}@{self.host}{port_part}/{self.dbname}'
+        db_preferences = f'{module}://{self.username}:{encoded_password}@{self.host}{port_part}/{self.dbname}'
         ssl_connection = {}
         if self.dialect == "Microsoft SQL Server":
             db_preferences += "?driver=FreeTDS"
@@ -270,7 +272,7 @@ def main():
             if client.connection:
                 client.connection.close()
         except Exception as ex:
-            demisto.error(f'Failed clossing connection: {str(ex)}')
+            demisto.error(f'Failed closing connection: {str(ex)}')
         if sql_loggers:
             for lgr in sql_loggers:
                 demisto.debug(f'setting back ERROR for logger: {repr(lgr)}')
