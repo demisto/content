@@ -3246,6 +3246,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "VirusTotal - Private API": "proxy failures with recording. related issue: ",
         "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",
         "BPA": "Playbook using GenericPolling which is inconsistent",
         "Mail Listener v2": "Integration has no proxy checkbox",
