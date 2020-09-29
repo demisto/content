@@ -1,0 +1,14 @@
+{
+    "name": "RiskIQ based investigation",
+    "description": "This pack contains playbook which performs investigation on domain based on RiskIQ passive total feeds and block malicious domains,",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "vermamanoj",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T17:21:27Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

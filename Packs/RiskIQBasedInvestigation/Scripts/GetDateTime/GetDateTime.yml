@@ -1,0 +1,22 @@
+comment: Retrieves the current date and time in UTC
+commonfields:
+  id: GetDateTime
+  version: -1
+dockerimage: demisto/python3:3.7.4.977
+enabled: true
+name: GetDateTime
+outputs:
+- contextPath: CurrentDateTime
+  type: date
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- date
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
