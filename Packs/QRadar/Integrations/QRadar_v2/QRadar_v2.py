@@ -2104,6 +2104,10 @@ def get_mapping_fields(client: QRadarClient) -> dict:
     return fields
 
 
+def get_custom_properties(client: QRadarClient, field_name: Optional[str] = None, limit: Optional[str] = None):
+    client.get_custom_fields()
+
+
 def main():
     params = demisto.params()
 
@@ -2174,6 +2178,7 @@ def main():
             "qradar-get-domains": get_domains_command,
             "qradar-get-domain-by-id": get_domains_by_id_command,
             "qradar-upload-indicators": upload_indicators_command,
+            "qradar-get-custom-properties": get_custom_properties
         }
         if command in normal_commands:
             args = demisto.args()
