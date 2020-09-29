@@ -11,7 +11,7 @@ comment: This script checks that a field exists (and contains data), and optiona
 commonfields:
   id: CheckFieldValue
   version: -1
-dockerimage: demisto/python3:3.8.5.10845
+dockerimage: demisto/python3:3.8.5.11789
 enabled: true
 name: CheckFieldValue
 outputs:
