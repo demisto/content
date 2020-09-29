@@ -1,0 +1,14 @@
+{
+    "name": "Identity Threat Response Pack",
+    "description": "Block Identity-Based Threats with Silverfort and Palo Alto Networks Cortex XSOAR integration. Automate your security operations and response to identity-based threats and behavior anomalies with Silverfort playbooks.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Pramukh Ganeshamurthy",
+    "url": "",
+    "email": "",
+    "created": "2020-09-29T20:26:16Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
