@@ -163,7 +163,7 @@ def test_list_get_message_details_command(requests_mock):
                                                     "end_date": "2017-02-14T09:51:46.000-0600"})
     assert res.outputs == test_data['get_message_details_context']
     assert res.outputs_prefix == 'CiscoEmailSecurity.Message'
-    assert res.outputs_key_field == 'messages.mid'
+    assert res.outputs_key_field == 'mid'
 
 
 def test_message_to_human_readable():
@@ -343,6 +343,7 @@ def test_list_entries_get_command(requests_mock):
                                             "view_by": "recipient"})
     assert res.outputs == test_data['get_list_entries_context']
     assert res.outputs_prefix == 'CiscoEmailSecurity.ListEntries.Safelist'
+    assert res.outputs_key_field == 'Safelist'
 
 
 def test_build_request_body_for_add_list_entries():
@@ -388,6 +389,7 @@ def test_list_entries_add_command(requests_mock):
                                             "sender_list": "acme.com", "view_by": "recipient"})
     assert res.readable_output == test_data['add_list_entries_context']
     assert res.outputs_prefix == 'CiscoEmailSecurity.listEntries.Safelist'
+    assert res.outputs_key_field == 'acme.com'
 
 
 def test_build_request_body_for_delete_list_entries():
@@ -429,3 +431,4 @@ def test_list_entries_delete_command(requests_mock):
                                                "view_by": "recipient"})
     assert res.readable_output == test_data['delete_list_entries_context']
     assert res.outputs_prefix == 'CiscoEmailSecurity.listEntries.Safelist'
+    assert res.outputs_key_field == 'acme.com'

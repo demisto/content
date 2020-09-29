@@ -49,7 +49,7 @@ script:
       default: false
       description: Fetch data from a specific counter.
       isArray: false
-      name: report_counter
+      name: counter
       predefined:
       - reporting_system
       - mail_incoming_traffic_summary
@@ -70,7 +70,100 @@ script:
       description: The number of outgoing malicious messages.
       type: Number
     - contextPath: CiscoEmailSecurity.Report.MailVofSpecificThreatSummary.threat_detected_virus_or_malware
-      description: The number of of the messages that threat detected virus or malware.
+      description: The number of the messages that threat detected virus or malware.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailVofThreatSummary.threat_detected
+      description: The number of the messages that threat detected virus or malware.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.ReportingSystem.heartbeat
+      description: The reporting system heartbeat.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.ReportingSystem.end_time
+      description: The reporting end time.
+      type: String
+    - contextPath: CiscoEmailSecurity.Report.ReportingSystem.begin_time
+      description: The reporting begin time.
+      type: String
+    - contextPath: CiscoEmailSecurity.Report.ReportingSystem.centralized_reporting_expired
+      description: The number of the messages that centralized reporting expired.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.ReportingSystem.centralized_reporting_enabled
+      description: The number of the messages that centralized reporting enabled.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.blocked_dmarc
+      description: The number of blocked dmarc messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.blocked_invalid_recipient
+      description: The number of blocked invalid recipient messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.blocked_reputation
+      description: The number of blocked reputation messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.bulk_mail
+      description: The number of bulk mail messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.detected_amp
+      description: The number of detected amp messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.detected_spam
+      description: The number of detected spam messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.detected_virus
+      description: The number of detected virus messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.malicious_url
+      description: The number of malicious url messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.marketing_mail
+      description: The number of blocked dmarc messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.social_mail
+      description: The number of marketing mail messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.threat_content_filter
+      description: The number of threat content filter messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.total_clean_recipients
+      description: The number of total clean recipients messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.total_graymail_recipients
+      description: The number of total graymail recipients messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.total_recipients
+      description: The number of total recipients messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.total_threat_recipients
+      description: The number of total threat recipients messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.verif_decrypt_fail
+      description: The number of verif decrypt fail messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.verif_decrypt_success
+      description: The number of verif decrypt success messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.detected_spam_suspect
+      description: The number of detected spam suspect messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.detected_spam_certain
+      description: The number of detected spam certain messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.failed_spf
+      description: The number of failed spf messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.failed_dkim
+      description: The number of failed dkim messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.total_spoofed_emails
+      description: The number of total spoofed emails messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.total_mailbox_auto_remediated_recipients
+      description: The number of total mailbox auto remediated recipients messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.detected_virus_per_msg
+      description: The number of detected virus per msg messages.
+      type: Number
+    - contextPath: CiscoEmailSecurity.Report.MailIncomingTrafficSummary.ims_spam_increment_over_case
+      description: The number of ims spam increment over case messages.
       type: Number
   - arguments:
     - default: false

@@ -148,7 +148,7 @@ def parse_dates_to_ces_format(date_str):
     full_date_time = splitted_date[1]
     date_time_without_ms = full_date_time.split('.')[0]
     date_time_without_seconds = date_time_without_ms[:-3]
-    date_time_with_zero_seconds = f'{date_time_without_seconds}:00.000'
+    date_time_with_zero_seconds = f'{date_time_without_seconds}:00.000Z'
 
     return f'{date_day}T{date_time_with_zero_seconds}'
 
@@ -206,11 +206,11 @@ def set_var_to_output_prefix(report_counter):
 
 
 def list_report_command(client: Client, args: Dict[str, Any]):
-    report_counter = args.get('report_counter')
-    url_params = build_url_params_for_list_report(args, report_counter)
+    counter = args.get('report_counter')
+    url_params = build_url_params_for_list_report(args, counter)
     report_response_data = client.list_report(url_params)
-    report_data = report_response_data.get('data', {}).get('resultSet')
-    counter_output_prefix = set_var_to_output_prefix(report_counter)
+    report_data = report_response_data.get('data', {}).get('resultSet', [None])[0]
+    counter_output_prefix = set_var_to_output_prefix(counter)
     return CommandResults(
         readable_output=f'{report_response_data}',
         outputs_prefix=f'CiscoEmailSecurity.Report.{counter_output_prefix}',
@@ -348,7 +348,7 @@ def list_get_message_details_command(client, args):
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='CiscoEmailSecurity.Message',
-        outputs_key_field='messages.mid',
+        outputs_key_field='mid',
         outputs=message_data
     )
 
@@ -360,7 +360,7 @@ def list_get_dlp_details_command(client, args):
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='CiscoEmailSecurity.Dlp',
-        outputs_key_field='messages.mid',
+        outputs_key_field='mid',
         outputs=message_data
     )
 
@@ -372,7 +372,7 @@ def list_get_amp_details_command(client, args):
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='CiscoEmailSecurity.Amp',
-        outputs_key_field='messages.mid',
+        outputs_key_field='mid',
         outputs=message_data
     )
 
@@ -384,7 +384,7 @@ def list_get_url_details_command(client, args):
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='CiscoEmailSecurity.Url',
-        outputs_key_field='messages.mid',
+        outputs_key_field='mid',
         outputs=message_data
     )
 
@@ -510,31 +510,16 @@ def build_url_filter_for_get_list_entries(args):
     return url_params
 
 
-def arrange_list_entries_for_context(list_entries):
-    sender_list = []
-    recipient_list = []
-    for obj in list_entries:
-        if 'senderList' in obj.keys():
-            sender_list.append(obj)
-
-        else:
-            recipient_list.append(obj)
-
-    list_entries_context = {'sender_lists': sender_list, 'recipient_lists': recipient_list}
-    return list_entries_context
-
-
 def list_entries_get_command(client, args):
     list_type = args.get('list_type')
     url_params = build_url_filter_for_get_list_entries(args)
     list_entries_response = client.list_entries_get(url_params, list_type)
     list_entries = list_entries_response.get('data', [None])
-    # list_entries_context = arrange_list_entries_for_context(list_entries)
     output_prefix = list_type.title()
     return CommandResults(
         readable_output=list_entries,
         outputs_prefix=f'CiscoEmailSecurity.ListEntries.{output_prefix}',
-        outputs_key_field='mid',
+        outputs_key_field=output_prefix,
         outputs=list_entries
     )
 
@@ -557,16 +542,21 @@ def build_request_body_for_add_list_entries(args):
     return request_body
 
 
+def set_outputs_key_field_for_list_entries(args):
+    return args.get('recipient_list') if args.get('recipient_list') else args.get('sender_list')
+
+
 def list_entries_add_command(client, args):
     list_type = args.get('list_type')
     request_body = build_request_body_for_add_list_entries(args)
     list_entries_response = client.list_entries_add(list_type, request_body)
     list_entries = list_entries_response.get('data')
     output_prefix = list_type.title()
+    outputs_key_field = set_outputs_key_field_for_list_entries(args)
     return CommandResults(
         readable_output=list_entries,
         outputs_prefix=f'CiscoEmailSecurity.listEntries.{output_prefix}',
-        outputs_key_field='mid',
+        outputs_key_field=outputs_key_field,
     )
 
 
@@ -588,10 +578,11 @@ def list_entries_delete_command(client, args):
     list_entries_response = client.list_entries_delete(list_type, request_body)
     list_entries = list_entries_response.get('data')
     output_prefix = list_type.title()
+    outputs_key_field = set_outputs_key_field_for_list_entries(args)
     return CommandResults(
         readable_output=list_entries,
         outputs_prefix=f'CiscoEmailSecurity.listEntries.{output_prefix}',
-        outputs_key_field='mid',
+        outputs_key_field=outputs_key_field,
     )
 
 
