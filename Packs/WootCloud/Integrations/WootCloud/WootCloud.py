@@ -77,7 +77,7 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
-    
+
     def get_woot_alerts(self, type, start, end, severity=None, skip=None, limit=None, site_id=None, getAll=False):
         """
         Lists/fetches packet, bluetooth, or anomaly alerts generated in requested time span.
@@ -104,14 +104,15 @@ class Client(BaseClient):
             "limit": int(limit) if limit else None,
             "site_id": str(site_id) if site_id else None
         }
-        
         result = self._http_request('POST', 'events/' + url, json_data=payload)
         if getAll:
             return result
         elif type == 'packet':
-            return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id') #used to be result['packet_alerts']
+            return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
+            #used to be result['packet_alerts']
         else:
-            return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id') #used to be result['alerts']
+            return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
+            #used to be result['alerts']
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -142,7 +143,6 @@ def fetch_single_alert(client, alert_id, type):
         prefix = 'WootCloud.AnomalyAlert'
     else:
         raise ValueError('{} is not one of the types'.format(type))
-    
     result = client._http_request('GET', f'events/{url}/{alert_id}')
     return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
 
