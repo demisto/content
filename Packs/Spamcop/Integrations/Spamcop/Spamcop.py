@@ -11,18 +11,21 @@ import requests
 
 def results_return(command, thingtoreturn):
     for item in thingtoreturn:
+        description = ''
         ip_reputation = {
             'indicator': item['Address'],
         }
         try:
             if item['Malicious']['Vendor']:
                 score = Common.DBotScore.BAD
+                description = ip_reputation['description'] = item['Malicious']['Description']
         except LookupError:
             score = Common.DBotScore.NONE
         dbot_score = Common.DBotScore(
             indicator=item['Address'],
             indicator_type=DBotScoreType.IP,
             integration_name='Spamcop',
+            malicious_description = description,
             score=score
         )
         ip = Common.IP(
