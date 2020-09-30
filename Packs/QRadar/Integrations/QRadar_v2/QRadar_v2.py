@@ -530,6 +530,7 @@ class QRadarClient:
             "POST", url, params=params, data=json.dumps(indicators_list)
         )
 
+
     def get_custom_fields(
             self, limit: Optional[int] = None, field_name: Optional[List[str]] = None,
             likes: Optional[List[str]] = None, _filter: Optional[str] = None, fields: Optional[List[str]] = None)\
@@ -2113,57 +2114,12 @@ def get_mapping_fields(client: QRadarClient) -> dict:
         'events': {field['name']: field['property_type'] for field in client.get_custom_fields()}
     }
     fields = {
-        'offense': offense,
-        'events: builtin fields': events,
-        'events: custom fields': custom_fields,
-        'assets': assets,
+        'Offense': offense,
+        'Events: Builtin Fields': events,
+        'Events: Custom Fields': custom_fields,
+        'Assets': assets,
     }
     return fields
-
-
-def get_custom_properties(
-        client: QRadarClient, limit: Optional[str] = None, field_name: Optional[str] = None,
-        like_name: Optional[str] = None, filter: Optional[str] = None, fields: Optional[str] = None) -> dict:
-    """Gives the user the regex event properties
-
-    Args:
-        client: QRadar Client
-        limit: Maximum of properties to fetch
-        field_name: exact name in `field`
-        like_name: contains and case insensitive name in `field`
-        filter: a custom filter query
-        fields: Fields to retrieve. if None, will retrieve them all
-
-    Returns:
-        CortexXSOAR entry.
-    """
-    limit = int(limit) if limit else None
-    field_names = argToList(field_name)
-    likes = argToList(like_name)
-    fields = argToList(fields)
-    if filter and (likes or field_names):
-        raise DemistoException('Can\'t send the `filter` argument with `field_name` or `like_name`')
-    response = client.get_custom_fields(limit, field_names, likes, filter, fields)
-    # Convert epoch times
-    if not fields:
-        for i in range(len(response)):
-            for key in ['creation_date', 'modification_date']:
-                try:
-                    response[i][key] = epochToTimestamp(response[i][key])
-                except KeyError:
-                    pass
-    return {
-        "Type": entryTypes["note"],
-        "Contents": response,
-        "ContentsFormat": formats["json"],
-        "ReadableContentsFormat": formats["markdown"],
-        "HumanReadable": tableToMarkdown(
-            "QRadar: Custom Properties:",
-            response,
-            removeNull=True
-        ),
-        "EntryContext": {'QRadar.Properties': response},
-    }
 
 
 def main():

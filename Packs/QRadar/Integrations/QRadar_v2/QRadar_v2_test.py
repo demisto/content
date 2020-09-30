@@ -411,6 +411,30 @@ def test_get_mapping_fields(mocker):
     mocker.patch.object(QRadarClient, 'get_custom_fields', return_value=custom_fields)
     client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
     response = get_mapping_fields(client)
+    assert response['Offense']
+    assert response['Events: Builtin Fields']
+    assert response['Assets']
+    assert response['Events: Custom Fields']['events']['bloop'] == 'string'
+
+
+def test_get_mapping_fields(mocker):
+    """Check keys available in the mapping
+
+    Given:
+    - One custom field
+
+    When:
+    - Calling get-mapping-fields from the UI
+
+    Then:
+    - Validate main keys are in
+    - Validate custom field came back as intended
+    """
+    from QRadar_v2 import get_mapping_fields
+    custom_fields = [{'name': 'bloop', 'property_type': 'string'}]
+    mocker.patch.object(QRadarClient, 'get_custom_fields', return_value=custom_fields)
+    client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
+    response = get_mapping_fields(client)
     assert response['offense']
     assert response['events: builtin fields']
     assert response['assets']
