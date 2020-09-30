@@ -1,0 +1,22 @@
+{
+ "autorun": false,
+ "color": "#536DFE",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "URL App-ID Mapping Tool",
+ "layout": "f30c2391-4446-41ce-8cfe-73df61815f1b",
+ "locked": false,
+ "name": "URL App-ID Mapping Tool",
+ "playbookId": "376d92ce-068a-4c74-8332-b9b78d065540",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

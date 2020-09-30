@@ -1,0 +1,21 @@
+args:
+- description: Incident object
+  name: incident
+- description: Field definition object
+  name: field
+commonfields:
+  id: AppIDOptions
+  version: -1
+enabled: true
+name: AppIDOptions
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-display
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

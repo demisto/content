@@ -1,0 +1,66 @@
+{
+ "associatedToAll": true,
+ "caseInsensitive": true,
+ "cliName": "endpointgrid",
+ "closeForm": false,
+ "columns": [
+  {
+   "displayName": "hostname",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "hostname",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Scan Complete",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "scancomplete",
+   "required": false,
+   "script": "",
+   "selectValues": [
+    "completed",
+    "not finished"
+   ],
+   "type": "singleSelect",
+   "width": 150
+  }
+ ],
+ "content": true,
+ "defaultRows": [
+  {
+
+  },
+  {
+
+  },
+  {
+
+  }
+ ],
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_endpointgrid",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Endpoint Grid",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "grid",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

@@ -1,0 +1,31 @@
+{
+ "associatedToAll": true,
+ "caseInsensitive": true,
+ "cliName": "compliancechecksubtype",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_compliancechecksubtype",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Compliance Check Sub-Type",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "selectValues": [
+  "",
+  "Full",
+  "Interim"
+ ],
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

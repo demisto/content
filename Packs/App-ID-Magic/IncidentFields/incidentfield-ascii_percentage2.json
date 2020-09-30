@@ -1,0 +1,29 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "App-ID Mapping Tool"
+ ],
+ "caseInsensitive": true,
+ "cliName": "asciipercentage2",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_asciipercentage2",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "ascii_percentage2",
+ "neverSetAsRequired": false,
+ "ownerOnly": true,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "number",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}
