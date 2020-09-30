@@ -196,6 +196,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: 'Check for a playbook input to instruct the sync mode'
     nexttasks:
       '#default#':
       - "8"

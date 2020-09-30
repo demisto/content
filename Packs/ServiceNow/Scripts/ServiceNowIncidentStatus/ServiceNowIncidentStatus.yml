@@ -1,7 +1,6 @@
 commonfields:
-  id: 2a2c4496-7336-4d9e-8833-4a2dbaa38d5d
-  version: 4
-vcShouldKeepItemLegacyProdMachine: false
+  id: ServiceNowIncidentStatus
+  version: -1
 name: ServiceNowIncidentStatus
 script: ''
 type: python
@@ -18,7 +17,7 @@ important:
 - related: ""
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.5.10845
 runas: DBotWeakRole
+fromversion: 5.0.0
