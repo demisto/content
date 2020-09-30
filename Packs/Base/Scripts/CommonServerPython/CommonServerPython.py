@@ -33,7 +33,6 @@ except Exception:
         # in python 2 an exception in the imports might still be raised even though it is caught.
         # for more info see https://cosmicpercolator.com/2016/01/13/exception-leaks-in-python-2-and-3/
         sys.exc_clear()
-    pass
 
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
