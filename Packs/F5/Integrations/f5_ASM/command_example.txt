@@ -3,7 +3,7 @@
 !f5-asm-policy-create name=Test_Policy_1 kind=parent
 !f5-asm-policy-apply policy_reference_link="https://192.168.30.76/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA?ver=15.1.0"
 !f5-asm-policy-export-file filename="exported_file.xml" policy_reference_link="https://192.168.30.76/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA?ver=15.1.0"
-!f5-asm-policy-delete policy_md5=JOUWVIcEjvePSjYEMXhL3A
+!f5-asm-policy-delete policy_md5=d2wbyiegGUJDigyNPELJuQ
 
 !f5-asm-policy-methods-list policy_md5=kpD2qFaUlGAbw8RhN5IFQA
 !f5-asm-policy-methods-add policy_md5=kpD2qFaUlGAbw8RhN5IFQA new_method_name="Posty" act_as_method="POST"
@@ -28,7 +28,7 @@
 !f5-asm-policy-blocking-settings-list policy_md5=kpD2qFaUlGAbw8RhN5IFQA endpoint=evasions
 !f5-asm-policy-blocking-settings-update policy_md5=kpD2qFaUlGAbw8RhN5IFQA endpoint=evasions description="Bad unescape"
 
-!f5-asm-policy-signatures-list policy_md5=kpD2qFaUlGAbw8RhN5IFQA
+!f5-asm-policy-signatures-list
 
 !f5-asm-policy-urls-list policy_md5=kpD2qFaUlGAbw8RhN5IFQA
 !f5-asm-policy-urls-add policy_md5=kpD2qFaUlGAbw8RhN5IFQA protocol=https name=validation

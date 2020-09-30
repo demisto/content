@@ -100,8 +100,8 @@ class Client(BaseClient):
                                        description: str, enabled: Optional[bool],
                                        learn: Optional[bool], alarm: Optional[bool],
                                        block: Optional[bool]):
-        object_id = self.get_id(policy_md5, action=endpoint, method_name=description,
-                                compare_value='description')
+        object_id = self.get_id(policy_md5, action=f'blocking-settings/{endpoint}',
+                                method_name=description, compare_value='description')
         json_body = {'enabled': enabled, 'learn': learn, 'alarm': alarm, 'block': block}
         url_suffix = f'asm/policies/{policy_md5}/blocking-settings/{endpoint}/{object_id}'
         return self._http_request(method='PATCH', url_suffix=url_suffix,
