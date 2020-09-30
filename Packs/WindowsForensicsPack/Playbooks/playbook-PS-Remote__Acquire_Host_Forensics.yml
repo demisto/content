@@ -128,6 +128,7 @@ tasks:
       name: Get network traffic?
       type: condition
       version: -1
+      description: ''
     taskid: 39431622-68e0-4d27-80a7-4d528ca034b6
     timertriggers: []
     type: condition
@@ -193,6 +194,7 @@ tasks:
       name: Get MFT?
       type: condition
       version: -1
+      description: ''
     taskid: 08cb5ef3-b602-4fce-8ef9-d925529760c2
     timertriggers: []
     type: condition
@@ -233,6 +235,7 @@ tasks:
       name: Get registry?
       type: condition
       version: -1
+      description: ''
     taskid: 29d038db-aef1-42f9-85ac-3f88d791e19b
     timertriggers: []
     type: condition

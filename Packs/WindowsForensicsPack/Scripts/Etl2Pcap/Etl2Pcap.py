@@ -1,11 +1,6 @@
-import argparse
-import math
 import os
-import struct
 import subprocess
-import sys
 import uuid
-from datetime import datetime
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401

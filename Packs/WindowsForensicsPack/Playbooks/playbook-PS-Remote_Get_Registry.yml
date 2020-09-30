@@ -110,6 +110,7 @@ tasks:
       name: Is PowerShell Remoting enabled?
       type: condition
       version: -1
+      description: ''
     taskid: d6775888-9ee4-4d5a-8fb8-7b63fea1d7a3
     timertriggers: []
     type: condition
@@ -172,6 +173,7 @@ tasks:
       name: Was a host specified?
       type: condition
       version: -1
+      description: ''
     taskid: 3b998e71-a03c-4f32-89f3-1707c75c89b6
     timertriggers: []
     type: condition
@@ -284,6 +286,7 @@ tasks:
       name: Was a registry file path specified?
       type: condition
       version: -1
+      description: ''
     taskid: bc816cf6-6e62-41e9-82aa-1be0f27057c3
     timertriggers: []
     type: condition
@@ -356,6 +359,7 @@ tasks:
       name: Was file zipped?
       type: condition
       version: -1
+      description: ''
     taskid: adef7f22-7280-4679-8eec-c2444dd323f2
     timertriggers: []
     type: condition

@@ -37,7 +37,7 @@ def parse_reg_value(value):
         if value.startswith("dword"):
             return str(int("0x" + value[value.find(":") + 1:], 16))
         return value
-    except:
+    except Exception:
         return value
 
 
@@ -48,16 +48,16 @@ def get_registry(entry_id):
         data = myfile.read()
 
     cfg = configparser.ConfigParser(strict=False, allow_no_value=True)
-    cfg.optionxform = str
+    cfg.optionxform = str  # type: ignore[assignment, assignment]
     cfg.read_string(data[data.find("["):], )
-    reg = {}
+    reg = {}  # type: ignore[var-annotated]
     for section in cfg.sections():
         try:
             if section not in reg:
                 reg[section] = {}
             items = cfg.items(section)
             reg[section].update(dict(items))
-        except:
+        except Exception:
             reg[section] = {}
             continue
 
@@ -65,8 +65,6 @@ def get_registry(entry_id):
 
 
 def get_sub_keys(reg, key, folder_output_key):
-    registry_keys_values = reg.get(key)
-    all_registry_keys_values = []
     all_folders = {k for k in reg if k.startswith(key)}
     users = []
     records = []
@@ -101,8 +99,8 @@ def get_reg_services(reg):
 
 
 def get_reg_results(reg, type_to_keys):
-    records = []
-    type_records = {}
+    records = []  # type: ignore[var-annotated]
+    type_records = {}  # type: ignore[var-annotated]
     for _type, keys in type_to_keys.items():
         if _type == 'Users':
             users_records, users_type_records = get_reg_users(reg)
@@ -127,7 +125,7 @@ def get_reg_results(reg, type_to_keys):
                 })
                 type_records['LastLoggedOnUser'] = registry_value
         else:
-            all_keys = []
+            all_keys = []  # type: ignore[var-annotated]
             for key in keys:
                 all_keys += [k for k in reg if k.startswith(key)]
             for key in all_keys:
@@ -154,10 +152,10 @@ registry_data = demisto.args()['registryData']
 if registry_data == 'All':
     registry_types = REGISTRY_TYPE_TO_KEY.keys()
 elif registry_data == 'None':
-    registry_types = []
+    registry_types = []  # type: ignore[assignment]
 else:
     registry_types = argToList(registry_data)
-    registry_types = [x for x in registry_types if x in REGISTRY_TYPE_TO_KEY]
+    registry_types = [x for x in registry_types if x in REGISTRY_TYPE_TO_KEY]  # type: ignore[assignment]
 
 registry_types_to_keys = {k: REGISTRY_TYPE_TO_KEY[k] for k in registry_types}
 custom_reg_paths = demisto.args().get('customRegistryPaths')

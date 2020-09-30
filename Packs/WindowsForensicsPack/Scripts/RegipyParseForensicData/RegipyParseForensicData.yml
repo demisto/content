@@ -31,7 +31,7 @@ comment: "This command uses the regipy tool to extract critical forensics data f
 commonfields:
   id: RegipyParseForensicData
   version: -1
-dockerimage: demisto/python3:3.8.5.10845
+dockerimage: demisto/python3:3.8.5.11789
 enabled: true
 name: RegipyParseForensicData
 outputs:

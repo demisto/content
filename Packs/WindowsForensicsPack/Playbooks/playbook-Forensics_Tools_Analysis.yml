@@ -143,6 +143,7 @@ tasks:
       name: Is there a PCAP file to analyze?
       type: condition
       version: -1
+      description: ''
     taskid: d9314b03-bd13-42f6-8ee4-e9ec0948e236
     timertriggers: []
     type: condition
@@ -180,6 +181,7 @@ tasks:
       name: Is there a registry file to analyze?
       type: condition
       version: -1
+      description: ''
     taskid: 85e48460-6d6f-423f-8bfe-1e691ebfe3b2
     timertriggers: []
     type: condition
