@@ -532,15 +532,16 @@ class QRadarClient:
 
     def get_custom_fields(
             self, limit: Optional[int] = None, field_name: Optional[List[str]] = None,
-            likes: Optional[List[str]] = None, _filter: Optional[str] = None, fields: Optional[List[str]] = None)\
-            -> List[dict]:
+            likes: Optional[List[str]] = None, filter_: Optional[str] = None, fields: Optional[List[str]] = None
+    ) -> List[dict]:
         """Get regex event properties from the API.
 
         Args:
             limit: Max properties to fetch.
             field_name: a list of exact names to pull.
             likes: a list of case insensitive and name (contains).
-            _filter: a filter to send instead of likes/field names.
+            filter_: a filter to send instead of likes/field names.
+            fields: a list of fields to retrieve from the API.
 
         Returns:
             List of properties
@@ -551,18 +552,18 @@ class QRadarClient:
             headers['Range'] = f"items=0-{limit-1}"
         params = {}
         # Build filter if not given
-        if not _filter:
-            _filter = ''
+        if not filter_:
+            filter_ = ''
             if field_name:
                 for field in field_name:
-                    _filter += f'name= "{field}" or '
+                    filter_ += f'name= "{field}" or '
             if likes:
                 for like in likes:
-                    _filter += f'name ILIKE "%{like}%" or '
+                    filter_ += f'name ILIKE "%{like}%" or '
             # Remove trailing `or `
-            _filter = _filter.rstrip('or ')
-            if _filter:
-                params['filter'] = _filter if _filter else None
+            filter_ = filter_.rstrip('or ')
+        if filter_:
+            params['filter'] = filter_
         if fields:
             params['fields'] = ' or '.join(fields)
         return self.send_request("GET", url, headers=headers, params=params)
@@ -2121,7 +2122,7 @@ def get_mapping_fields(client: QRadarClient) -> dict:
     return fields
 
 
-def get_custom_properties(
+def get_custom_properties_command(
         client: QRadarClient, limit: Optional[str] = None, field_name: Optional[str] = None,
         like_name: Optional[str] = None, filter: Optional[str] = None, fields: Optional[str] = None) -> dict:
     """Gives the user the regex event properties
@@ -2158,7 +2159,7 @@ def get_custom_properties(
         "ContentsFormat": formats["json"],
         "ReadableContentsFormat": formats["markdown"],
         "HumanReadable": tableToMarkdown(
-            "QRadar: Custom Properties:",
+            "Custom Properties",
             response,
             removeNull=True
         ),
@@ -2236,7 +2237,7 @@ def main():
             "qradar-get-domains": get_domains_command,
             "qradar-get-domain-by-id": get_domains_by_id_command,
             "qradar-upload-indicators": upload_indicators_command,
-            "qradar-get-custom-properties": get_custom_properties
+            "qradar-get-custom-properties": get_custom_properties_command
         }
         if command in normal_commands:
             args = demisto.args()

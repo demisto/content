@@ -1317,8 +1317,6 @@ script:
       description: A comma-separated names of an exact properties to search for.
       isArray: true
       name: field_name
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
