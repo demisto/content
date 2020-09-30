@@ -93,6 +93,7 @@ script:
   script: >
     var server = params.url.replace(/[\/]+$/, '') + '/' + params.apiVersion + '/';
 
+
     var doReq = function(method, path, parameters, cookies) {
         var result = http(
             server + path + (method === 'GET' && parameters ? encodeToURLQuery(parameters) : ''),
@@ -131,6 +132,7 @@ script:
         return {body: result.Body, obj: obj, statusCode: result.StatusCode, cookies: result.Cookies};
     };
 
+
     var search = function(query, from, to, limit, offset, timezone, maxTimeToWaitForResults, byReceiptTime, sleep, waitForSearchComplete) {
         var p = {query: query};
         if (from) {
@@ -145,8 +147,6 @@ script:
         if (byReceiptTime) {
             p.byReceiptTime = byReceiptTime;
         }
-        console.log('\n\nParameters\n\n',JSON.stringify(p));
-
         // Create the job
         var res = doReq('POST', 'search/jobs', p, null);
         try {
@@ -156,8 +156,6 @@ script:
             for (var i=0; i<maxTimeToWaitForResults / sleep; i++) {
                 wait(sleep);
                 stat = doReq('GET', 'search/jobs/' + res.obj.id, null, res.cookies);
-                console.log('\n\nRequest Status number \n\n', i, JSON.stringify(stat));
-
                 if (stat.obj.state === 'DONE GATHERING RESULTS' || (!waitForSearchComplete && stat.obj.messageCount > (offset + 1) * limit)) {
                     done = true;
                     break;
@@ -176,7 +174,6 @@ script:
                     var rec = doReq('GET', 'search/jobs/' + res.obj.id + '/records', {offset: offset, limit: limit}, res.cookies);
                     results.records = rec.obj.records.map(function(m) {return m.map;});
                 }
-                console.log('\n\nRequest Results\n\n',JSON.stringify(results));
                 return results;
             }
             throw 'Timeout while waiting for job ' + res.obj.id;
@@ -189,11 +186,14 @@ script:
         }
     };
 
+
     var a2i = function(v, d) {
         return v ? parseInt(v) : d;
     };
 
+
     var defaultLimit = 100, defaultSleep = 3, defaultTimeout = 180, defaultSearchTimeout = 10;
+
 
     switch (command) {
         // This is the call made when pressing the integration test button.
@@ -204,17 +204,8 @@ script:
             if (!params.fetchQuery) {
                 throw 'No fetch query defined, not doing SumoLogic fetch';
             }
-            console.log('\n\nquery:\n\n', params.fetchQuery);
-
             var now = (new Date()).getTime();
-            now_date = new Date(now);
-            console.log('\n\nFetch Incidents starts\n\nTime is:\n\n', now, now_date);
-
             var lastRun = getLastRun();
-            last_run_str = JSON.stringify(lastRun, null, 4);
-
-            console.log('\n\nlast run from context\n\n',last_run_str);
-
             if (!lastRun || !lastRun.time) {
                 lastRun = {time: now - parseInt(params.firstFetch) * 1000};
                 setLastRun({time: now});
@@ -228,9 +219,6 @@ script:
 
             var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), false,
                 a2i(params.sleepBetweenChecks, defaultSleep), params.fetchRecords);
-            response_str = JSON.stringify(s, null, 4);
-            console.log('\n\nresponse_str\n\n',response_str);
-
             var incidents = [];
             var currentFetch = lastRun.time;
             if (!params.fetchRecords && s.messages) {
@@ -264,8 +252,6 @@ script:
                 }
             }
             setLastRun({time: currentFetch});
-            console.log('\n\nIncidents\n\n',JSON.stringify(incidents));
-
             return JSON.stringify(incidents);
         case 'search':
             query = args.query
