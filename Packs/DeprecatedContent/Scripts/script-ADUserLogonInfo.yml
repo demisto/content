@@ -2,13 +2,17 @@ commonfields:
   id: ADUserLogonInfo
   version: -1
 name: ADUserLogonInfo
-script: |-
+script: >-
   # Optional arguments and default values
+
   attrs = 'name,displayname,lastlogon,lastlogoff,logoncount,badPasswordTime,badPwdCount,lastLogonTimestamp,pwdLastSet,whenCreated,whenChanged,memberOf'
+
   if demisto.get(demisto.args(), 'attributes'):
       attrs += "," + demisto.args()['attributes']
   userDN = ''
+
   resp = ''
+
   if demisto.get(demisto.args(), 'dn'):
       userDN = demisto.args()['dn']
   elif demisto.get(demisto.args(), 'name'):
@@ -55,9 +59,7 @@ type: python
 subtype: python2
 tags:
 - active directory
-comment: Deprecated. Use Active Directory to retrieve detailed information about a user account.
-  The user can be specified by name, email or as an Active Directory Distinguished
-  Name (DN).
+comment: Deprecated. Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
 system: true
 args:
 - name: dn
@@ -67,11 +69,11 @@ args:
 - name: email
   description: Email address of the desired user
 - name: attributes
-  description: Include these AD attributes of the resulting objects in addition to
-    the default ones
+  description: Include these AD attributes of the resulting objects in addition to the default ones
 scripttarget: 0
 deprecated: true
 dependson:
   must:
   - ad-search
 timeout: 0s
+fromversion: 5.0.0

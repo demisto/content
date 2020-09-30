@@ -29,8 +29,9 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var server = params.server.replace(/[\/]+$/, '') + '/searchApi/' + params.version + '/';
+
 
     var commands = {
         'threat-crowd-email': {
@@ -103,6 +104,7 @@ script:
         },
     };
 
+
     function createContext(data, dbotScore) {
         var createContextSingle = function(obj) {
             var res = {};
@@ -144,6 +146,7 @@ script:
         return createContextSingle(data);
     }
 
+
     function mapObjFunction(mapFields) {
         var transformSingleObj= function(obj) {
             var res = {};
@@ -164,6 +167,7 @@ script:
         };
     }
 
+
     function merge(obj1, obj2) {
         if (!obj2) {
             return obj1;
@@ -177,10 +181,12 @@ script:
         return obj1;
     }
 
+
     if (args.file) {
         args.resource = args.file;
         delete(args.file);
     }
+
 
     function calculateDBotScore(res, args, commandData) {
         var dbotScore = 0;
@@ -201,6 +207,7 @@ script:
         }
         return dbotScore;
     }
+
 
     function createDbotEntry(commandData, dbotScore){
         var DbotEntry = {};
@@ -223,6 +230,7 @@ script:
             }
             return DbotEntry;
     }
+
 
     function sendRequestAndParse(commandData) {
         res = http(
@@ -255,10 +263,13 @@ script:
         return entry;
     }
 
+
     res = sendRequestAndParse(commands[command]);
+
     if (command === 'test-module') {
         return 'ok';
     }
+
     return res;
   type: javascript
   commands:
@@ -267,7 +278,7 @@ script:
     - name: email
       required: true
       default: true
-      description: Get a report of an email address. 
+      description: Get a report of an email address.
     outputs:
     - contextPath: Account.Email.Address
       description: The email address.
@@ -362,4 +373,5 @@ script:
     description: Get a report of a file.
 hidden: false
 tests:
-  - ThreatCrowd - Test
+- ThreatCrowd - Test
+fromversion: 5.0.0

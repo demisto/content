@@ -336,19 +336,23 @@ def prepare_date_string_for_custom_fields(date_string: str) -> str:
     return ''
 
 
-def indicator_field_mapping(feed_type: str, indicator: Dict[str, Any], tags: List[str]) -> Dict[str, Any]:
+def indicator_field_mapping(feed_type: str, indicator: Dict[str, Any], tags: List[str],
+                            tlp_color: Optional[str]) -> Dict[str, Any]:
     """
     Maps the indicator fields.
 
     :param feed_type: Type of feed.
     :param indicator: Indicator dictionary.
     :param tags: Tags specified in configuration.
+    :param tlp_color: Traffic Light Protocol color.
     :return: Dict of fields.
     """
     fields: Dict[str, Any] = {
         'service': 'Passive Total',
         'tags': tags
     }
+    if tlp_color:
+        fields['trafficlightprotocol'] = tlp_color
 
     if feed_type == 'domain':
         if indicator.get('Timestamp'):
@@ -499,7 +503,8 @@ def fetch_indicators_command(client: Client, feed_types: List[str], first_fetch_
                             'value': value,
                             'type': indicator_type,
                             'rawJSON': feed_dict,
-                            'fields': indicator_field_mapping(feed, indicator=feed_dict, tags=kwargs.get('tags', []))
+                            'fields': indicator_field_mapping(feed, indicator=feed_dict, tags=kwargs.get('tags', []),
+                                                              tlp_color=kwargs.get('tlp_color'))
                         })
 
                 yield indicators
@@ -567,8 +572,9 @@ def main() -> None:
     first_fetch_interval = params.get('firstFetchInterval', '1 day')
 
     try:
-        # Prepare tags
+        # Prepare tags and tlp
         tags = list(set(argToList(params.get('feedTags', ''))))
+        tlp_color = params.get('tlp_color')
 
         # validate first_fetch_time_interval parameter
         validate_first_fetch_interval(first_fetch_interval)
@@ -595,7 +601,9 @@ def main() -> None:
             indicators_generator = fetch_indicators_command(client, feed_types=feed_types_lower,
                                                             first_fetch_interval=first_fetch_interval,
                                                             batch_size=BATCH_SIZE,
-                                                            integration_context=integration_context, tags=tags)
+                                                            integration_context=integration_context,
+                                                            tags=tags,
+                                                            tlp_color=tlp_color)
             for indicators in indicators_generator:
                 demisto.createIndicators(indicators)  # type: ignore
 
