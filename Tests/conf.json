@@ -2289,7 +2289,8 @@
         },
         {
             "integrations": "AWS - EC2",
-            "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b",
+            "playbookID": "AWS - EC2 Test Playbook",
+            "fromversion": "5.0.0",
             "memory_threshold": 75
         },
         {
