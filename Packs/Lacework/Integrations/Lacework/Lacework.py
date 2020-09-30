@@ -263,7 +263,8 @@ def get_container_vulnerabilities():
         raise Exception('Invalid Container Image ID Type.')
 
     full_data = response
-    response['data'].pop('image')
+    if response['data'].get('image', ''):
+        response['data'].pop('image')
     human_readable = response
 
     ec = {"Lacework.Vulnerability.Container(val.last_evaluation_time === obj.last_evaluation_time)": response['data']}
