@@ -773,11 +773,127 @@ script:
     - name: limit
       description: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
     outputs:
-      - contextPath: CrowdStrike.IoC.HostID
-        description: The ID of the host for which the command was running.
-        type: string
+    - contextPath: CrowdStrike.IoC.Type
+      description: The type of the IoC.
+      type: string
+    - contextPath: CrowdStrike.IoC.Value
+      description: The string representation of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IoC.Policy
+      description: The policy of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IoC.Source
+      description: The source of the IoC.
+      type: string
+    - contextPath: CrowdStrike.IoC.ShareLevel
+      description: The level at which the indicator will be shared.
+      type: string
+    - contextPath: CrowdStrike.IoC.Expiration
+      description: The date time when the indicator will expire.
+      type: string
+    - contextPath: CrowdStrike.IoC.Description
+      description: The description of the IoC.
+      type: string
+    - contextPath: CrowdStrike.IoC.CreatedTime
+      description: The time of creation of the IoC.
+      type: string
+    - contextPath: CrowdStrike.IoC.CreatedBy
+      description: The identity of the user/process who created of the IoC.
+      type: string
+    - contextPath: CrowdStrike.IoC.ModifiedTime
+      description: The time the indicator was last modified.
+      type: string
+    - contextPath: CrowdStrike.IoC.ModifiedBy
+      description: The identity of the user/process who last updated the IoC.
+      type: string
     description: Returns a list of your uploaded IOCs that match the search criteria
-  dockerimage: demisto/python3:3.8.5.10845
+  - name: cs-falcon-get-ioc
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - sha256
+        - sha1
+        - md5
+        - domain
+        - ipv4
+        - ipv6
+      description: The IOC type to retrieve.
+    - name: value
+      required: true
+      description: The IOC value to retrieve.
+    outputs:
+    - contextPath: CrowdStrike.IoC.Type
+      description: The type of the IoC.
+      type: string
+    - contextPath: CrowdStrike.IoC.Value
+      description: The string representation of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IoC.Policy
+      description: The policy of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IoC.Source
+      description: The source of the IoC.
+      type: string
+    - contextPath: CrowdStrike.IoC.ShareLevel
+      description: The level at which the indicator will be shared.
+      type: string
+    - contextPath: CrowdStrike.IoC.Expiration
+      description: The date time when the indicator will expire.
+      type: string
+    - contextPath: CrowdStrike.IoC.Description
+      description: The description of the IoC.
+      type: string
+    - contextPath: CrowdStrike.IoC.CreatedTime
+      description: The time of creation of the IoC.
+      type: string
+    - contextPath: CrowdStrike.IoC.CreatedBy
+      description: The identity of the user/process who created of the IoC.
+      type: string
+    - contextPath: CrowdStrike.IoC.ModifiedTime
+      description: The time the indicator was last modified.
+      type: string
+    - contextPath: CrowdStrike.IoC.ModifiedBy
+      description: The identity of the user/process who last updated the IoC.
+      type: string
+    description: Get the full definition of one or more indicators that you are watching
+  - name: cs-falcon-upload-ioc
+    arguments:
+      - name: ioc_type
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - sha256
+          - md5
+          - domain
+          - ipv4
+          - ipv6
+        description: The type of the indicator.
+      - name: value
+        required: true
+        description: The string representation of the indicator.
+      - name: policy
+        auto: PREDEFINED
+        predefined:
+          - detect
+          - none
+        description: "The policy to enact when the value is detected on a host. A value of none is equivalent to turning the indicator off."
+        defaultValue: detect
+      - name: share_level
+        auto: PREDEFINED
+        predefined:
+          - red
+        description: The level at which the indicator will be shared. Only red share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers.
+      - name: expiration_days
+        description: 'This represents the days the indicator should be valid for. This only applies to domain, ipv4, and ipv6 types. Default is 30 if not provided. '
+      - name: source
+        description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters.
+      - name: description
+        description: A meaningful description of the indicator. Limit 200 characters.
+    description: Uploads one or more indicators for CrowdStrike to monitor
+  dockerimage: demisto/python3:3.8.5.11789
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false

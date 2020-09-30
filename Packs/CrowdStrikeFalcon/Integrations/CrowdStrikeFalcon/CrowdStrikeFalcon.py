@@ -64,7 +64,7 @@ DETECTIONS_BEHAVIORS_KEY_MAP = {
     'behavior_id': 'ID',
 }
 
-SEARCH_IOC_KEY_MAP = {
+IOC_KEY_MAP = {
     'type': 'Type',
     'value': 'Value',
     'policy': 'Policy',
@@ -125,9 +125,12 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
-                 get_token_flag=True, no_json=False):
+                 get_token_flag=True, no_json=False, json=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
+
+        :param json: JSON body
+        :type json ``dict`` or ``list``
 
         :type method: ``str``
         :param method: HTTP method for the request.
@@ -168,7 +171,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             params=params,
             data=data,
             headers=headers,
-            files=files
+            files=files,
+            json=json
         )
     except requests.exceptions.RequestException:
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
@@ -874,25 +878,23 @@ def get_detections_entities(detections_ids):
     return detections_ids
 
 
-def create_ioc():
+def upload_ioc(ioc_type=None, value=None, policy=None, expiration_days=None,
+               share_level=None, description=None, source=None):
     """
-        UNTESTED - Creates an IoC
-        :return: Response json of create IoC request
+        UNTESTED IN OAUTH 2- Searches an IoC
+        :return: IoCs that were found in the search
     """
-    args = demisto.args()
-    input_args = {}
-    # req args:
-    input_args['type'] = args['ioc_type']
-    input_args['value'] = args['ioc_value']
-    input_args['policy'] = args['policy']
-    # opt args:
-    input_args['expiration_days'] = args.get('expiration_days')
-    input_args['source'] = args.get('source')
-    input_args['description'] = args.get('description')
+    payload = assign_params(
+        type=ioc_type,
+        value=value,
+        policy=policy,
+        share_level=share_level,
+        expiration_days=expiration_days,
+        source=source,
+        description=description,
+    )
 
-    payload = {k: str(v) for k, v in input_args.items() if v}
-    headers = {'Authorization': HEADERS['Authorization']}
-    return http_request('POST', '/indicators/entities/iocs/v1', params=payload, headers=headers)
+    return http_request('POST', '/indicators/entities/iocs/v1', json=[payload])
 
 
 def search_iocs(ioc_types=None, ioc_values=None, policies=None, sources=None, expiration_from=None,
@@ -903,11 +905,11 @@ def search_iocs(ioc_types=None, ioc_values=None, policies=None, sources=None, ex
     """
     if not ids:
         payload = assign_params(
-            types=",".join(argToList(ioc_types)),
-            values=",".join(argToList(ioc_values)),
-            policies=",".join(argToList(policies)),
-            sources=",".join(argToList(sources)),
-            share_levels=",".join(argToList(share_levels)),
+            types=argToList(ioc_types),
+            values=argToList(ioc_values),
+            policies=argToList(policies),
+            sources=argToList(sources),
+            share_levels=argToList(share_levels),
             limit=limit or '50',
         )
         if expiration_from:
@@ -1174,18 +1176,32 @@ def fetch_incidents():
     return incidents
 
 
-def create_ioc_command():
+def upload_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=None,
+                       share_level=None, description=None, source=None):
     """
-        :return: EntryObject of create IoC command
+    :param ioc_type: The type of the indicator:
+    :param policy :The policy to enact when the value is detected on a host.
+    :param share_level: The level at which the indicator will be shared.
+    :param expiration_days: This represents the days the indicator should be valid for.
+    :param source: The source where this indicator originated.
+    :param description: A meaningful description of the indicator.
+    :param value: The string representation of the indicator.
     """
-    raw_res = create_ioc()
-    return create_entry_object(contents=raw_res, hr="Custom IoC was created successfully.")
+    raw_res = upload_ioc(ioc_type, value, policy, expiration_days, share_level, description, source)
+    if raw_res.get('errors'):
+        raise Exception(raw_res.get('errors'))
+    iocs = search_iocs(ids=f"{ioc_type}:{value}").get('resources')
+    if not iocs:
+        raise Exception("Failed to create ioc.")
+    ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    enrich_ioc_dict_with_ids(ec)
+    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec},
+                               hr=tableToMarkdown('Custom IoC was created successfully', ec))
 
 
 def search_iocs_command(types=None, values=None, policies=None, sources=None, from_expiration_date=None,
                         to_expiration_date=None, share_levels=None, limit=None):
     """
-
     :param types: A list of indicator types. Separate multiple types by comma. Valid types are sha256, sha1, md5, domain, ipv4, ipv6
     :param values: Comma-separated list of indicator values
     :param policies: Comma-separated list of indicator policies
@@ -1194,16 +1210,31 @@ def search_iocs_command(types=None, values=None, policies=None, sources=None, fr
     :param to_expiration_date: End of date range to search (YYYY-MM-DD format).
     :param share_levels: A list of share levels. Only red is supported.
     :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
-    :return:
     """
-    raw_res = search_iocs(types, values, policies, sources, from_expiration_date, to_expiration_date, limit, share_levels)
+    raw_res = search_iocs(types, values, policies, sources, from_expiration_date, to_expiration_date,
+                          limit, share_levels)
     if not raw_res:
         return create_entry_object(hr='Could not find any Indicators of Compromise.')
     iocs = raw_res.get('resources')
-    ec = [get_trasnformed_dict(ioc, SEARCH_IOC_KEY_MAP) for ioc in iocs]
+    ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
     enrich_ioc_dict_with_ids(ec)
     return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec},
                                hr=tableToMarkdown('Indicators of Compromise', ec))
+
+
+def get_ioc_command(type_: str, value: str):
+    """
+    :param type_: The type of the indicator
+    :param value: The IOC value to retrieve
+    """
+    raw_res = search_iocs(ids=f"{type_}:{value}")
+    if not raw_res:
+        return create_entry_object(hr='Could not find any Indicators of Compromise.')
+    iocs = raw_res.get('resources')
+    ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
+    enrich_ioc_dict_with_ids(ec)
+    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec},
+                               hr=tableToMarkdown('Indicator of Compromise', ec))
 
 
 def delete_iocs_command():
@@ -1971,6 +2002,10 @@ def main():
             demisto.results(refresh_session_command())
         elif command == 'cs-falcon-search-iocs':
             demisto.results(search_iocs_command(**args))
+        elif command == 'cs-falcon-get-ioc':
+            demisto.results(get_ioc_command(type_=args.get('type'), value=args.get('value')))
+        elif command == 'cs-falcon-upload-ioc':
+            demisto.results(upload_ioc_command(**args))
         # Log exceptions
     except Exception as e:
         return_error(str(e))
