@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CrowdStrike Falcon Intel v2",
+            "playbookID": "CrowdStrike Falcon Intel v2 - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "SecurityIntelligenceServicesFeed",
             "playbookID": "SecurityIntelligenceServicesFeed - Test",
             "fromversion": "5.5.0"
@@ -1766,6 +1771,10 @@
             "playbookID": "FireEye HX Test"
         },
         {
+            "integrations": "FireEyeFeed",
+            "playbookID": "playbook-FeedFireEye_test"
+        },
+        {
             "integrations": "Phish.AI",
             "playbookID": "PhishAi-Test"
         },
@@ -3190,7 +3199,6 @@
         "Code42": "Instance not set up yet",
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
-        "VxStream": "Issue #23795",
         "Ivanti Heat": "Issue 26259",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
@@ -3205,7 +3213,7 @@
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
         "Lastline": "issue 20323",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
+        "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
 
@@ -3263,7 +3271,6 @@
         "Active Directory Query v2": "Does not perform http communication",
         "dnstwist": "Does not perform http communication",
         "Generic SQL": "Does not perform http communication",
-        "VxStream": "Issue 15544",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
         "Luminate": "Integration has no proxy checkbox",
