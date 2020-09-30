@@ -9,7 +9,7 @@ comment: |-
   Converts
     https://example.com
     into
-    https:%2F%2Fexample.com
+    https%3A//example.com
 commonfields:
   id: URLEncode
   version: -1
@@ -28,3 +28,5 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.8.5.11789
 fromversion: 5.0.0
+tests:
+- URLDecode-Test

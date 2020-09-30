@@ -1,0 +1,180 @@
+id: URLDecode-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: URLEncode-Test
+description: 'Testing output of URLEncode '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eb4f882a-8d11-47d8-8c03-2f3fc45b30f1
+    type: start
+    task:
+      id: eb4f882a-8d11-47d8-8c03-2f3fc45b30f1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 595db122-9331-45bd-88a8-9059d1b5085e
+    type: regular
+    task:
+      id: 595db122-9331-45bd-88a8-9059d1b5085e
+      version: -1
+      name: URLDecode
+      description: |-
+        Converts
+        https://example.com
+        into
+        https:%2F%2Fexample.com
+      scriptName: URLEncode
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: https://example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: faebb872-260c-43f0-8fca-33c20316a3f8
+    type: condition
+    task:
+      id: faebb872-260c-43f0-8fca-33c20316a3f8
+      version: -1
+      name: Check args
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EncodedURL
+            iscontext: true
+          right:
+            value:
+              simple: https%3A//example.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d8ea5b1f-2486-49c3-811f-132968aac122
+    type: title
+    task:
+      id: d8ea5b1f-2486-49c3-811f-132968aac122
+      version: -1
+      name: End test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 0801a501-395f-4a6c-89b4-9559a8d64a0a
+    type: regular
+    task:
+      id: 0801a501-395f-4a6c-89b4-9559a8d64a0a
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
