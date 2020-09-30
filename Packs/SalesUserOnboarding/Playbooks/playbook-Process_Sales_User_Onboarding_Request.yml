@@ -1,0 +1,832 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: Process ServiceNow request to create a new sales user in SFDC
+id: Process Sales User Onboarding Request
+inputs: []
+name: Process Sales User Onboarding Request
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0cfe235b-cbfa-4cf1-8979-e3bcb3656787
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 0cfe235b-cbfa-4cf1-8979-e3bcb3656787
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 65
+        }
+      }
+  "3":
+    fieldMapping:
+    - incidentfield: SUO Mirrored User ResponseBody
+      output:
+        simple: ${SFDCQueryResponseBody}
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        simple: SELECT AboutMe,Active_LeadAssignment__c,Alias,Alias_Email__c,amorgan__Channel__c,Anaplan_Role__c,Area__c,CallCenterId,City,CommunityNickname,CompanyName,ContactId,Country,CPQUserMessage__c,CPQ_User_Name__c,Date_Deactivated__c,DefaultGroupNotificationFrequency,DelegatedApproverId,Department,dfsle__CanManageAccount__c,dfsle__Username__c,DigestFrequency,Direct_Manager__c,District__c,Division,DNE__c,Do_not_show_this_message_again__c,dsfs__DSProSFUsername__c,Email,EmailEncodingKey,EmailPreferencesAutoBcc,EmailPreferencesAutoBccStayInTouch,EmailPreferencesStayInTouchReminder,Email_Signature__c,EmployeeNumber,Exclude_Approval_Mgr_from_Workday_Update__c,Exclude_from_Anaplan_Update__c,Extension,Fax,FCRM__FCR_Email_Notification_Delegate__c,FCRM__FCR_User_Notification_Delegate__c,FederationIdentifier,FirstName,Five9__Five9AgentId__c,Five9__Five9Agent_Login_TimeStamp__c,ForecastEnabled,GeocodeAccuracy,GraveYard_Objects__c,Id,IsActive,ISO_Country__c,IsPortalSelfRegistered,IsUSC__c,LanguageLocaleKey,LastName,Latitude,Lead_Assignment__c,LocaleSidKey,Longitude,ManagerId,MobilePhone,My_Backup__c,My_Return_Date__c,My_Vacation_Start_Date__c,Network_ID__c,Out_of_Office__c,PANWEntity__c,PAN_Internal_User__c,Phone,PortalRole,PostalCode,ProfileId,recalculate_approval_manager__c,ReceivesAdminInfoEmails,ReceivesInfoEmails,Region__c,RoundRobin_LeadCountriesAmericas__c,RoundRobin_LeadCountriesEMEA__c,RoundRobin_LeadCountriesROW__c,RoundRobin_LeadCountries__c,Sales_Coverage__c,SBQQ__DefaultProductLookupTab__c,SBQQ__DiagnosticToolEnabled__c,SBQQ__OutputFormatChangeAllowed__c,SBQQ__ProductSortPreference__c,SBQQ__ResetProductLookup__c,SBQQ__Theme__c,Search_GraveYardObjects__c,Segment__c,SenderEmail,SenderName,Signature,sked__skeduloUserType__c,State,StayInTouchNote,StayInTouchSignature,StayInTouchSubject,Street,sub_district__c,Support_Engineer_Location__c,Terminate_Date__c,Theatre__c,TimeZoneSidKey,Title,TMBDR__c,TMCBM__c,TMCSR__c,TMCSSR__c,TMGAM__c,TMICBM__c,TMMAM__c,TMPSR__c,TMRSM__c,TMSBDR__c,TMSE__c,TMSRR__c,Username,UserPermissionsAvantgoUser,UserPermissionsCallCenterAutoLogin,UserPermissionsChatterAnswersUser,UserPermissionsInteractionUser,UserPermissionsKnowledgeUser,UserPermissionsMarketingUser,UserPermissionsOfflineUser,UserPermissionsSFContentUser,UserPermissionsSupportUser,UserPreferencesActivityRemindersPopup,UserPreferencesApexPagesDeveloperMode,UserPreferencesCacheDiagnostics,UserPreferencesContentEmailAsAndWhen,UserPreferencesContentNoEmail,UserPreferencesCreateLEXAppsWTShown,UserPreferencesDisableAllFeedsEmail,UserPreferencesDisableBookmarkEmail,UserPreferencesDisableChangeCommentEmail,UserPreferencesDisableEndorsementEmail,UserPreferencesDisableFileShareNotificationsForApi,UserPreferencesDisableFollowersEmail,UserPreferencesDisableLaterCommentEmail,UserPreferencesDisableLikeEmail,UserPreferencesDisableMentionsPostEmail,UserPreferencesDisableMessageEmail,UserPreferencesDisableProfilePostEmail,UserPreferencesDisableSharePostEmail,UserPreferencesDisCommentAfterLikeEmail,UserPreferencesDisMentionsCommentEmail,UserPreferencesDisProfPostCommentEmail,UserPreferencesEnableAutoSubForFeeds,UserPreferencesEventRemindersCheckboxDefault,UserPreferencesExcludeMailAppAttachments,UserPreferencesFavoritesShowTopFavorites,UserPreferencesFavoritesWTShown,UserPreferencesGlobalNavBarWTShown,UserPreferencesGlobalNavGridMenuWTShown,UserPreferencesHasCelebrationBadge,UserPreferencesHideBiggerPhotoCallout,UserPreferencesHideChatterOnboardingSplash,UserPreferencesHideCSNDesktopTask,UserPreferencesHideCSNGetChatterMobileTask,UserPreferencesHideEndUserOnboardingAssistantModal,UserPreferencesHideLightningMigrationModal,UserPreferencesHideS1BrowserUI,UserPreferencesHideSecondChatterOnboardingSplash,UserPreferencesHideSfxWelcomeMat,UserPreferencesLightningExperiencePreferred,UserPreferencesNativeEmailClient,UserPreferencesNewLightningReportRunPageEnabled,UserPreferencesPathAssistantCollapsed,UserPreferencesPipelineViewHideHelpPopover,UserPreferencesPreviewCustomTheme,UserPreferencesReceiveNoNotificationsAsApprover,UserPreferencesReceiveNotificationsAsDelegatedApprover,UserPreferencesRecordHomeReservedWTShown,UserPreferencesRecordHomeSectionCollapseWTShown,UserPreferencesReminderSoundOff,UserPreferencesShowCityToExternalUsers,UserPreferencesShowCityToGuestUsers,UserPreferencesShowCountryToExternalUsers,UserPreferencesShowCountryToGuestUsers,UserPreferencesShowEmailToExternalUsers,UserPreferencesShowEmailToGuestUsers,UserPreferencesShowFaxToExternalUsers,UserPreferencesShowFaxToGuestUsers,UserPreferencesShowManagerToExternalUsers,UserPreferencesShowManagerToGuestUsers,UserPreferencesShowMobilePhoneToExternalUsers,UserPreferencesShowMobilePhoneToGuestUsers,UserPreferencesShowPostalCodeToExternalUsers,UserPreferencesShowPostalCodeToGuestUsers,UserPreferencesShowProfilePicToGuestUsers,UserPreferencesShowStateToExternalUsers,UserPreferencesShowStateToGuestUsers,UserPreferencesShowStreetAddressToExternalUsers,UserPreferencesShowStreetAddressToGuestUsers,UserPreferencesShowTitleToExternalUsers,UserPreferencesShowTitleToGuestUsers,UserPreferencesShowWorkPhoneToExternalUsers,UserPreferencesShowWorkPhoneToGuestUsers,UserPreferencesSortFeedByComment,UserPreferencesSRHOverrideActivities,UserPreferencesSuppressEventSFXReminders,UserPreferencesSuppressTaskSFXReminders,UserPreferencesTaskRemindersCheckboxDefault,UserPreferencesUserDebugModePref,UserRoleId,zkmulti__EncryptedFedExEndUserKey__c,zkmulti__EncryptedFedExEndUserPassword__c,zkmulti__FedExEndUserKey__c,zkmulti__FedExEndUserPassword__c,zkmulti__FedExRegisteredPreference__c,zkmulti__Registered_Preference__c,zkmulti__UserCredentialsEncrypted__c
+          FROM User WHERE Username LIKE '%${incident.suomirroredusername}%' LIMIT
+          1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Salesforce_copy
+      description: Queries Salesforce in SOQL format.
+      id: 0c00dd38-3218-4af9-8969-c6237abb74b1
+      iscommand: true
+      name: salesforce-query for Mirrored User Data
+      script: Salesforce_copy|||salesforce-query
+      type: regular
+      version: -1
+    taskid: 0c00dd38-3218-4af9-8969-c6237abb74b1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2500
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      DatetimeToWaitUntil:
+        complex:
+          root: TimeNow
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "1"
+            operator: atIndex
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Pauses execution until the date and time that was specified in
+        the plabyook input is reached.
+      id: c378f802-1b02-4172-87cf-f8514589b70e
+      iscommand: false
+      name: Wait Until Datetime
+      playbookId: Wait Until Datetime
+      type: playbook
+      version: -1
+    taskid: c378f802-1b02-4172-87cf-f8514589b70e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1275
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${SUO.MirroredUsername}
+          operator: isNotEmpty
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'This task checks if the ServiceNow ticket provides a username
+        by checking if the string is empty. '
+      id: 21d63e04-82cd-490d-84a4-cba62b4590b1
+      iscommand: false
+      name: If Mirror User
+      type: condition
+      version: -1
+    taskid: 21d63e04-82cd-490d-84a4-cba62b4590b1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1450
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: mirror_user
+          operator: isTrue
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Not configured yet. Will check if sales user
+      id: 10781e53-2470-4534-82c3-9055f7aa7672
+      iscommand: false
+      name: If Sales User
+      type: condition
+      version: -1
+    taskid: 10781e53-2470-4534-82c3-9055f7aa7672
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1625
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Not configured yet. This task finds the hiring manager '
+      id: 77d3b512-aa2c-4661-8247-3a959419f0c0
+      iscommand: false
+      name: Find Hiring Manager
+      type: regular
+      version: -1
+    taskid: 77d3b512-aa2c-4661-8247-3a959419f0c0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1800
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Not configured yet. This task clones the district and department
+        of the user
+      id: 88c47609-da3a-4c21-8c0e-5acf668f9ed5
+      iscommand: false
+      name: Clone similar District and Department User
+      type: regular
+      version: -1
+    taskid: 88c47609-da3a-4c21-8c0e-5acf668f9ed5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1975
+        }
+      }
+  "24":
+    fieldMapping:
+    - incidentfield: SUO Time_2daysbefore
+      output:
+        simple: ${TimeNowUnix}
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextKey: {}
+      date:
+        simple: ${incident.suostartdate}
+      dateFormat: {}
+      extend-context:
+        simple: StartDate = TimeNowUnix[1]
+      hoursAgo:
+        simple: "48"
+      ignore-outputs:
+        simple: "false"
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 85b74026-acf9-441a-8467-b7325d474086
+      iscommand: false
+      name: SUO Start date
+      script: GetTime
+      type: regular
+      version: -1
+    taskid: 85b74026-acf9-441a-8467-b7325d474086
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 925
+        }
+      }
+  "25":
+    fieldMapping:
+    - incidentfield: SUO Cloned User Body
+      output:
+        simple: ${ClonedUserJsonString}
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Address:
+        simple: ${incident.suoaddress}
+      Alias:
+        simple: ${incident.suoalias}
+      CPQ_User_Name__c: {}
+      CPQUserMessage__c: {}
+      CommunityNickname:
+        simple: ${incident.suonickname}
+      Email:
+        simple: ${incident.suoemail}
+      EmployeeNumber:
+        simple: ${incident.suoemployeenumber}
+      FirstName:
+        simple: ${incident.suofirstname}
+      LastName:
+        simple: ${incident.suolastname}
+      MirroredUserJSONString:
+        simple: ${incident.suomirroreduserresponsebody}
+      MobilePhone:
+        simple: ${incident.suomobilenumber}
+      Phone:
+        simple: ${incident.suophonenumber}
+      SoxNotes: {}
+      Username:
+        simple: ${incident.suousername}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'This task takes in an existing JSON containing all Key/Value pairs
+        for an existing user in SFDC.  It then updates the username, email, first
+        name, nickname, etc. to match the values for the new user. '
+      id: 0eec2f72-01f7-4636-82f1-e311d533b027
+      iscommand: false
+      name: Clone and Update Json from Mirrored User
+      script: fa4005db-6e70-43a2-8ec4-c33750fbaf50
+      type: regular
+      version: -1
+    taskid: 0eec2f72-01f7-4636-82f1-e311d533b027
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2675
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit: {}
+      term:
+        simple: ${SUO.Email}
+      verbose: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Okta v2
+      description: Searches for Okta users.
+      id: 322d1c4d-60bc-4f5a-886d-161de7f3cbf9
+      iscommand: true
+      name: 'Okta search: Verify User'
+      script: Okta v2|||okta-search
+      type: regular
+      version: -1
+    taskid: 322d1c4d-60bc-4f5a-886d-161de7f3cbf9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 400
+        }
+      }
+  "29":
+    continueonerror: true
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      userId: {}
+      username:
+        simple: ${incident.suomirroredusername}
+      verbose: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Okta v2
+      description: Fetches information for a single user. You must enter one or more
+        parameters for the command to run.
+      id: 14506c60-99f2-4bb5-8d4f-84a01a3ab892
+      iscommand: true
+      name: okta-get-user
+      script: Okta v2|||okta-get-user
+      type: regular
+      version: -1
+    taskid: 14506c60-99f2-4bb5-8d4f-84a01a3ab892
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2150
+        }
+      }
+  "30":
+    continueonerror: true
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      userId: {}
+      username:
+        simple: Cloned Mirrored User
+      verbose: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Okta v2
+      description: Fetches information for a single user. You must enter one or more
+        parameters for the command to run.
+      id: effac407-5919-4365-8ef3-b86608165e98
+      iscommand: true
+      name: okta-get-user
+      script: Okta v2|||okta-get-user
+      type: regular
+      version: -1
+    taskid: effac407-5919-4365-8ef3-b86608165e98
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2150
+        }
+      }
+  "31":
+    fieldMapping:
+    - incidentfield: SUO New User ID
+      output:
+        simple: ${SalesForce.GetUsers.ID}
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      json:
+        simple: ${incident.suocloneduserbody}
+      path:
+        simple: User
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Salesforce_copy
+      description: Creates a new object.
+      id: c4c221b9-b63c-49dd-8066-d29fd3e9d0d2
+      iscommand: true
+      name: salesforce-create-object for Cloned User
+      script: Salesforce_copy|||salesforce-create-object
+      type: regular
+      version: -1
+    taskid: c4c221b9-b63c-49dd-8066-d29fd3e9d0d2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2850
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "41"
+      "yes":
+      - "46"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+      extend-context:
+        simple: exception_message = "Invalid user."
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: b60828a4-e547-472a-870b-65fa8e6d3b98
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: b60828a4-e547-472a-870b-65fa8e6d3b98
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 575
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "46"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+      extend-context:
+        simple: exception_message = "Mirrored User not found"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: 39d1b6b6-ab25-491a-80ff-1bcf06652df6
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: 39d1b6b6-ab25-491a-80ff-1bcf06652df6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2325
+        }
+      }
+  "39":
+    fieldMapping:
+    - incidentfield: SUO Nickname
+      output:
+        simple: ${SUO.Nickname}
+    - incidentfield: SUO Username
+      output:
+        simple: ${SUO.Username}
+    - incidentfield: SUO First Name
+      output:
+        simple: ${SUO.FirstName}
+    - incidentfield: SUO Last Name
+      output:
+        simple: ${SUO.LastName}
+    - incidentfield: SUO Alias
+      output:
+        simple: ${SUO.Alias}
+    - incidentfield: SUO Email
+      output:
+        simple: ${SUO.Email}
+    - incidentfield: SUO Phone Number
+      output:
+        simple: ${SUO.PhoneNumber}
+    - incidentfield: SUO Mobile Number
+      output:
+        simple: ${SUO.MobileNumber}
+    - incidentfield: SUO Address
+      output:
+        simple: ${SUO.Adress}
+    - incidentfield: SUO Mirrored Username
+      output:
+        simple: ${SUO.MirroredUsername}
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      TicketDescription:
+        simple: ${incident.suoservicenowticketdescription}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Parses a ServiceNow ticket description for known "Sales User Onboarding"  values,
+        then sets the values to the Context
+      id: 92785dc6-0a78-4516-8fd2-c474f3a435e7
+      iscommand: false
+      name: ParseTicketDescription
+      script: 6681c01d-4525-484f-84a6-61980a25c3d6
+      type: regular
+      version: -1
+    taskid: 92785dc6-0a78-4516-8fd2-c474f3a435e7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 225
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      first:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      second:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "1"
+            operator: atIndex
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      id: c56d4629-2bbb-40db-826a-3b673020b6de
+      iscommand: false
+      name: IsTrue
+      script: IsGreaterThan
+      type: condition
+      version: -1
+    taskid: c56d4629-2bbb-40db-826a-3b673020b6de
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1100
+        }
+      }
+  "41":
+    fieldMapping:
+    - incidentfield: SUO Timenow
+      output:
+        simple: ${TimeNowUnix}
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      extend-context:
+        simple: CurrentTimeNow = TimeNowUnix
+      hoursAgo: {}
+      ignore-outputs:
+        simple: "false"
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 17b010d2-85ae-4512-88dd-dbdedae72aa1
+      iscommand: false
+      name: TimeNow
+      script: GetTime
+      type: regular
+      version: -1
+    taskid: 17b010d2-85ae-4512-88dd-dbdedae72aa1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 750
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      comment:
+        simple: 'SN has been updated with newly created user. Salesforce link:  https://paloaltonetworks--qaq3.lightning.force.com/lightning/r/User/${incident.suonewuserid}/view'
+      id:
+        simple: ${incident.suoservicenowticketid}
+      post-as-comment:
+        simple: "false"
+      ticket_type:
+        simple: u_service_request
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ServiceNow v2
+      description: Adds a comment to the specified ticket, by ticket ID.
+      id: 2675d944-2cff-4532-855c-0e2a9eba0ab8
+      iscommand: true
+      name: servicenow-add-comment
+      script: ServiceNow v2|||servicenow-add-comment
+      type: regular
+      version: -1
+    taskid: 2675d944-2cff-4532-855c-0e2a9eba0ab8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3025
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      comment:
+        simple: Playbook exception. Please manually resolve the issue.
+      id:
+        simple: ${incident.suoservicenowticketid}
+      post-as-comment:
+        simple: "false"
+      ticket_type: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ServiceNow v2
+      description: Adds a comment to the specified ticket, by ticket ID.
+      id: 28560c0a-e1ec-4b16-8024-4b75ed521d9b
+      iscommand: true
+      name: servicenow-add-comment
+      script: ServiceNow v2|||servicenow-add-comment
+      type: regular
+      version: -1
+    taskid: 28560c0a-e1ec-4b16-8024-4b75ed521d9b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2500
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_14_#default#": 0.9,
+      "32_41_no": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3055,
+        "width": 1025,
+        "x": 50,
+        "y": 65
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
