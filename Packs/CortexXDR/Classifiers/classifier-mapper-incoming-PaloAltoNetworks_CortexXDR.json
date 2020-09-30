@@ -87,6 +87,10 @@
 					"complex": null,
 					"simple": "status"
 				},
+				"XDR Status": {
+					"complex": null,
+					"simple": "status"
+				},
 				"XDR URL": {
 					"complex": null,
 					"simple": "xdr_url"
@@ -276,6 +280,10 @@
 					"simple": "resolve_comment"
 				},
 				"XDR Status v2": {
+					"complex": null,
+					"simple": "status"
+				},
+				"XDR Status": {
 					"complex": null,
 					"simple": "status"
 				},
