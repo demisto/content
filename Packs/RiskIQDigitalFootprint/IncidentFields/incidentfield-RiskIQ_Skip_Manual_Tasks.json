@@ -1,0 +1,31 @@
+{
+ "id": "incident_riskiqskipmanualtasks",
+ "version": -1,
+ "modified": "2020-07-13T01:40:24.148132325+05:30",
+ "name": "RiskIQ Skip Manual Tasks",
+ "ownerOnly": false,
+ "description": "Check this checkbox in order to skip the manual tasks of the \"Enrich Incident With Asset Details\" playbook.",
+ "cliName": "riskiqskipmanualtasks",
+ "type": "boolean",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "RiskIQ Asset Management"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}

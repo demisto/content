@@ -22,6 +22,7 @@ from contextlib import contextmanager
 import urllib3
 import requests
 import demisto_client.demisto_api
+from demisto_client.demisto_api.rest import ApiException
 from slackclient import SlackClient
 
 from Tests.mock_server import MITMProxy, AMIConnection
@@ -854,7 +855,9 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     try:
         # first run the mock tests to avoid mockless side effects in container
         if is_ami and mockable_tests:
-            proxy.configure_proxy_in_demisto(xsoar_client, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
+            proxy.configure_proxy_in_demisto(proxy=proxy.ami.docker_ip + ':' + proxy.PROXY_PORT,
+                                             username=demisto_user, password=demisto_pass,
+                                             server=server)
             executed_in_current_round, mockable_tests_queue = initialize_queue_and_executed_tests_set(mockable_tests)
             while not mockable_tests_queue.empty():
                 t = mockable_tests_queue.get()
@@ -870,7 +873,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                                   unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                                   build_name, server_numeric_version, demisto_user, demisto_pass,
                                   demisto_api_key, prints_manager, thread_index=thread_index)
-            proxy.configure_proxy_in_demisto(xsoar_client, '')
+            proxy.configure_proxy_in_demisto(username=demisto_user, password=demisto_pass, server=server)
 
             # reset containers after clearing the proxy server configuration
             reset_containers(server, demisto_user, demisto_pass, prints_manager, thread_index)
@@ -894,8 +897,11 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
             prints_manager.execute_thread_prints(thread_index)
 
     except Exception as exc:
-        prints_manager.add_print_job(f'~~ Thread {thread_index + 1} failed ~~\n{str(exc)}\n{traceback.format_exc()}',
-                                     print_error, thread_index)
+        if exc.__class__ == ApiException:
+            error_message = exc.body
+        else:
+            error_message = f'~~ Thread {thread_index + 1} failed ~~\n{str(exc)}\n{traceback.format_exc()}'
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         prints_manager.execute_thread_prints(thread_index)
         failed_playbooks.append(f'~~ Thread {thread_index + 1} failed ~~')
         raise

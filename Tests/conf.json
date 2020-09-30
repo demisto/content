@@ -13,6 +13,12 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "RiskIQDigitalFootprint",
+            "playbookID": "RiskIQDigitalFootprint-Test",
+            "fromversion": "5.5.0",
+            "timeout": 500
+        },
+        {
             "integrations": [
                 "Mail Listener v2",
                 "Mail Sender (New)"
@@ -706,7 +712,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "Panorama Query Logs - Test",
             "fromversion": "5.5.0",
             "timeout": 1500,
@@ -1771,6 +1777,10 @@
             "playbookID": "FireEye HX Test"
         },
         {
+            "integrations": "FireEyeFeed",
+            "playbookID": "playbook-FeedFireEye_test"
+        },
+        {
             "integrations": "Phish.AI",
             "playbookID": "PhishAi-Test"
         },
@@ -2279,7 +2289,8 @@
         },
         {
             "integrations": "AWS - EC2",
-            "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b",
+            "playbookID": "AWS - EC2 Test Playbook",
+            "fromversion": "5.0.0",
             "memory_threshold": 75
         },
         {
@@ -3047,7 +3058,6 @@
         "SentinelOne V2 - test": "Issue 24933",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
-        "SNDBOX_Test": "Issue 24349",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance - Issue 27112",
@@ -3195,11 +3205,11 @@
         "Code42": "Instance not set up yet",
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
-        "VxStream": "Issue #23795",
         "Ivanti Heat": "Issue 26259",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
+        "SNDBOX": "Issue 28826",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -3243,6 +3253,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "VirusTotal - Private API": "proxy failures with recording. related issues: 26463, 28888",
         "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",
         "BPA": "Playbook using GenericPolling which is inconsistent",
         "Mail Listener v2": "Integration has no proxy checkbox",
@@ -3268,7 +3279,6 @@
         "Active Directory Query v2": "Does not perform http communication",
         "dnstwist": "Does not perform http communication",
         "Generic SQL": "Does not perform http communication",
-        "VxStream": "Issue 15544",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
         "Luminate": "Integration has no proxy checkbox",
