@@ -373,51 +373,43 @@ view: |-
   }
 inputs:
 - key: Category
-  value:
-    simple: Hradware
+  value: {}
   required: false
   description: Set the category of the ServiceNow Ticket.
   playbookInputQuery:
 - key: AssignmentGroup
-  value:
-    simple: Hardware
+  value: {}
   required: false
   description: 'The group to assign the new ticket to '
   playbookInputQuery:
 - key: ShortDescription
-  value:
-    simple: short desc
+  value: {}
   required: false
   description: Set A short description of the ticket.
   playbookInputQuery:
 - key: Impact
-  value:
-    simple: "2"
+  value: {}
   required: false
   description: Set Impact for the new ticket, leave empty for ServiceNow default impact.
   playbookInputQuery:
 - key: Urgency
-  value:
-    simple: "2"
+  value: {}
   required: false
   description: Set urgency to the new ticket, leave empty for ServiceNow default urgency.
   playbookInputQuery:
 - key: 'Severity '
-  value:
-    simple: "2"
+  value: {}
   required: false
   description: Set severity to the new ticket, leave empty for ServiceNow default
     severity.
   playbookInputQuery:
 - key: Comment
-  value:
-    simple: comment
+  value: {}
   required: false
   description: Add a comment for the created ticket.
   playbookInputQuery:
 - key: SyncTicket
-  value:
-    simple: StatePolling
+  value: {}
   required: false
   description: "Set the value of the desired sync method with ServiceNow Ticket. you\
     \ can choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for\
@@ -429,24 +421,21 @@ inputs:
     \ FieldPolling is true by default. "
   playbookInputQuery:
 - key: PollingInterval
-  value:
-    simple: "1"
+  value: {}
   required: false
   description: |-
     Set interval time for the polling to run
     (In minutes)
   playbookInputQuery:
 - key: PollingTimeout
-  value:
-    simple: "40"
+  value: {}
   required: false
   description: |-
     Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
     (In minutes)
   playbookInputQuery:
 - key: AdditionalPollingCommandName
-  value:
-    simple: Using
+  value: {}
   required: false
   description: "In this use case, Additional polling commands are relevant when using\
     \ StatePolling, and there is more than one ServiceNow instance. It will specify\
@@ -455,8 +444,7 @@ inputs:
     \ instance to use. "
   playbookInputQuery:
 - key: InstanceName
-  value:
-    simple: ServiceNow v2 - Create Ticket
+  value: {}
   required: false
   description: |
     Set the ServiceNow Instance that will be used for mirroring/running polling commands.

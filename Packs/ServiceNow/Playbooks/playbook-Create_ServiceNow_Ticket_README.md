@@ -10,8 +10,8 @@ To apply either of these options, set the SyncTicket value in the playbook input
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* ServiceNow Ticket State Polling
 * Mirror ServiceNow Ticket
+* ServiceNow Ticket State Polling
 
 ### Integrations
 * ServiceNow v2
@@ -27,18 +27,18 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Category | Set the category of the ServiceNow Ticket. | Hradware | Optional |
-| AssignmentGroup | The group to assign the new ticket to  | Hardware | Optional |
-| ShortDescription | Set A short description of the ticket. | short desc | Optional |
-| Impact | Set Impact for the new ticket, leave empty for ServiceNow default impact. | 2 | Optional |
-| Urgency | Set urgency to the new ticket, leave empty for ServiceNow default urgency. | 2 | Optional |
-| Severity  | Set severity to the new ticket, leave empty for ServiceNow default severity. | 2 | Optional |
-| Comment | Add a comment for the created ticket. | comment | Optional |
-| SyncTicket | Set the value of the desired sync method with ServiceNow Ticket. you can choose one of three options:<br/>1. StatePolling<br/>2. Mirror <br/>3. Blank for none <br/><br/>GenericPolling uses as cold sync, which polls for the state of the ticket.<br/>GenericPoliing will run until the ticket state is either resolved or closed. <br/><br/>Mirror - You can use the Mirror option to perform a full sync with ServiceNow Ticket. The ticket data is synced automatically between ServiceNow and Cortex xSOAR with the ServiceNow mirror feature.<br/>If this option is selected, FieldPolling is true by default.  | StatePolling | Optional |
-| PollingInterval | Set interval time for the polling to run<br/>\(In minutes\) | 1 | Optional |
-| PollingTimeout | Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.<br/>\(In minutes\) | 40 | Optional |
-| AdditionalPollingCommandName | In this use case, Additional polling commands are relevant when using StatePolling, and there is more than one ServiceNow instance. It will specify the polling command to use a specific instance to run on. <br/>If so, please add "Using" to the value. <br/>The playbook will then take the instance name as the instance to use.  | Using | Optional |
-| InstanceName | Set the ServiceNow Instance that will be used for mirroring/running polling commands.<br/> | ServiceNow v2 - Create Ticket | Optional |
+| Category | Set the category of the ServiceNow Ticket. |  | Optional |
+| AssignmentGroup | The group to assign the new ticket to  |  | Optional |
+| ShortDescription | Set A short description of the ticket. |  | Optional |
+| Impact | Set Impact for the new ticket, leave empty for ServiceNow default impact. |  | Optional |
+| Urgency | Set urgency to the new ticket, leave empty for ServiceNow default urgency. |  | Optional |
+| Severity  | Set severity to the new ticket, leave empty for ServiceNow default severity. |  | Optional |
+| Comment | Add a comment for the created ticket. |  | Optional |
+| SyncTicket | Set the value of the desired sync method with ServiceNow Ticket. you can choose one of three options:<br/>1. StatePolling<br/>2. Mirror <br/>3. Blank for none <br/><br/>GenericPolling uses as cold sync, which polls for the state of the ticket.<br/>GenericPoliing will run until the ticket state is either resolved or closed. <br/><br/>Mirror - You can use the Mirror option to perform a full sync with ServiceNow Ticket. The ticket data is synced automatically between ServiceNow and Cortex xSOAR with the ServiceNow mirror feature.<br/>If this option is selected, FieldPolling is true by default.  |  | Optional |
+| PollingInterval | Set interval time for the polling to run<br/>\(In minutes\) |  | Optional |
+| PollingTimeout | Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.<br/>\(In minutes\) |  | Optional |
+| AdditionalPollingCommandName | In this use case, Additional polling commands are relevant when using StatePolling, and there is more than one ServiceNow instance. It will specify the polling command to use a specific instance to run on. <br/>If so, please add "Using" to the value. <br/>The playbook will then take the instance name as the instance to use.  |  | Optional |
+| InstanceName | Set the ServiceNow Instance that will be used for mirroring/running polling commands.<br/> |  | Optional |
 | MirrorDirection | Set the mirror direction, should be one of the following: <br/>1. Out<br/>2. Both | Both | Optional |
 | MirrorCommentTags | Set tags for mirror comments and files to ServiceNow. | comments,work_notes,ForServiceNow | Optional |
 | FieldPolling | Set the value to true or false to determine if the paybook will execute the FieldPolling sub playbook.<br/>It is useful when it is needed to wait for the ServiceNow ticket to be resolved and continue the parent playbook.<br/>FieldPolling will run until the ticket state is either resolved or closed. | true | Optional |
