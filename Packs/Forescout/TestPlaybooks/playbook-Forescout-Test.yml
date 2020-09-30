@@ -69,8 +69,7 @@ tasks:
       id: 4861b6a6-cd22-40fb-8432-74694d971181
       version: -1
       name: forescout-get-hostfields
-      description: Retrieve an index of Forescout host fields that match the specified
-        criteria.
+      description: Retrieve an index of Forescout host fields that match the specified criteria.
       script: Forescout|||forescout-get-host-fields
       type: regular
       iscommand: true
@@ -246,8 +245,7 @@ tasks:
     task:
       id: 28c5cad2-3c4b-4d7c-88a8-57f802fa470f
       version: -1
-      name: Verify Expected Host is Returned by `forescout-get-hosts` command with
-        filter
+      name: Verify Expected Host is Returned by `forescout-get-hosts` command with filter
       type: condition
       iscommand: false
       brand: ""
@@ -368,10 +366,7 @@ tasks:
       id: 8241630b-a6d1-4570-82fe-fd2adb0e1ebe
       version: -1
       name: forescout-update-host-fields
-      description: Update a host's field. Note that if a List field or Composite field
-        has not been defined in Forescout to 'Aggregate new values from each update'
-        that performing an update operation on a field will overwrite previous data
-        written to that field.
+      description: Update a host's field. Note that if a List field or Composite field has not been defined in Forescout to 'Aggregate new values from each update' that performing an update operation on a field will overwrite previous data written to that field.
       script: Forescout|||forescout-update-host-fields
       type: regular
       iscommand: true
@@ -491,10 +486,7 @@ tasks:
       id: 93bbaa4e-28a6-4316-81d6-915d6dfc7cd8
       version: -1
       name: forescout-update-host-properties Delete Previously Updated Property
-      description: Update a host's field. Note that if a List field or Composite field
-        has not been defined in Forescout to 'Aggregate new values from each update'
-        that performing an update operation on a field will overwrite previous data
-        written to that field.
+      description: Update a host's field. Note that if a List field or Composite field has not been defined in Forescout to 'Aggregate new values from each update' that performing an update operation on a field will overwrite previous data written to that field.
       script: Forescout|||forescout-update-host-fields
       type: regular
       iscommand: true
@@ -629,3 +621,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

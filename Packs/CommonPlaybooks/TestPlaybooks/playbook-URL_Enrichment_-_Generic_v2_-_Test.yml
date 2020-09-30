@@ -1,6 +1,6 @@
 id: URL Enrichment - Generic v2 - Test
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: URL Enrichment - Generic v2 - Test
 description: A test for the URL Enrichment - Generic v2 playbook.
 starttaskid: "0"
