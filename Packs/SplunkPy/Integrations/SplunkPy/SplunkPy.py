@@ -889,52 +889,58 @@ def create_mapping_dict(total_parsed_results, type_field):
     """
     types_map = {}
     for result in total_parsed_results:
-        event_type_name = result.get(type_field, '')
+        raw_json = json.loads(result.get('rawJSON', "{}"))
+        event_type_name = raw_json.get(type_field, '')
         if event_type_name:
-            types_map[event_type_name] = result
+            types_map[event_type_name] = raw_json
 
     return types_map
 
 
 def get_mapping_fields_command(service):
     # Create the query to get unique objects
+    # The logic is identical to the 'fetch_incidents' command
     type_field = demisto.params().get('type_field', 'source')
+    total_parsed_results = []
+    search_offset = demisto.getLastRun().get('offset', 0)
 
-    # If fetchQuery is not populated, default to index=<indexname> as the prefix
-    fetch_query = demisto.params().get('fetchQuery', '')
-    if not fetch_query:
-        raise Exception("Fetch Query must be provided to retrieve schema samples.")
-    args = {'query': '{} | dedup {}'.format(fetch_query, type_field)}
-    query = build_search_query(args)
+    current_time_for_fetch = datetime.utcnow()
+    dem_params = demisto.params()
+    if demisto.get(dem_params, 'timezone'):
+        timezone = dem_params['timezone']
+        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
 
-    # Set the earliest time for the query scope - how far back to search
+    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+    if demisto.get(dem_params, 'useSplunkTime'):
+        now = get_current_splunk_time(service)
+        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+        current_time_for_fetch = current_time_in_splunk
+
     fetch_time_in_minutes = parse_time_to_minutes()
-    now = datetime.utcnow()
-    start_time_for_fetch = now - timedelta(minutes=fetch_time_in_minutes)
-    start_time = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    search_kwargs = {
-        "earliest_time": start_time,
-        "exec_mode": "blocking"  # A blocking search runs synchronously, and returns a job when it's finished.
-    }
+    start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+    last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    # Perform the search
-    search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
+    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "index_earliest")
+    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "index_latest")
 
-    # Parse the results
-    num_of_results_from_query = search_job["resultCount"]
-    results_limit = float("inf")
-    batch_size = 25000
-    results_offset = 0
-    total_parsed_results = []  # type: List[Dict[str,Any]]
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
+                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
 
-    while len(total_parsed_results) < int(num_of_results_from_query) and len(total_parsed_results) < results_limit:
-        current_batch_of_results = get_current_results_batch(search_job, batch_size, results_offset)
-        max_results_to_add = results_limit - len(total_parsed_results)
-        parsed_batch_results, batch_dbot_scores = parse_batch_of_results(current_batch_of_results, max_results_to_add,
-                                                                         search_kwargs.get('app', ''))
-        total_parsed_results.extend(parsed_batch_results)
+    searchquery_oneshot = dem_params['fetchQuery']
 
-        results_offset += batch_size
+    if demisto.get(dem_params, 'extractFields'):
+        extractFields = dem_params['extractFields']
+        extra_raw_arr = extractFields.split(',')
+        for field in extra_raw_arr:
+            field_trimmed = field.strip()
+            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
+
+    searchquery_oneshot = searchquery_oneshot + ' | dedup ' + type_field
+    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+    reader = results.ResultsReader(oneshotsearch_results)
+    for item in reader:
+        inc = notable_to_incident(item)
+        total_parsed_results.append(inc)
 
     types_map = create_mapping_dict(total_parsed_results, type_field)
     demisto.results(types_map)
