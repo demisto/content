@@ -427,6 +427,32 @@ def get_entity_by_id_command(client, args):
     )
 
 
+def list_entities_by_id_command(client, args):
+    entity_id = args.get('entity_id')
+    expansion_id = "98b974fd-cc64-48b8-9bd0-3a209f5b944b"
+    url_suffix = f'entities/{entity_id}/expand'
+    data = {
+        "expansionId": expansion_id
+    }
+
+    result = client.http_request('POST', url_suffix, is_get_entity_cmd=True, data=data)
+
+    readable_output = tableToMarkdown(f'Entity {entity_id} details',
+                                      result['value']['entities'],
+                                      removeNull=True,
+                                      headerTransform=pascalToSpace)
+
+    outputs = {
+        'AzureSentinel.Entity(val.id === obj.id)': result['value']['entities']
+    }
+
+    return (
+        readable_output,
+        outputs,
+        result
+    )
+
+
 def list_entity_relations_command(client, args):
     entity_id = args.get('entity_id')
     limit = min(50, int(args.get('limit')))
@@ -608,7 +634,8 @@ def main():
             'azure-sentinel-incident-add-comment': incident_add_comment_command,
             'azure-sentinel-list-incident-relations': list_incident_relations_command,
             'azure-sentinel-get-entity-by-id': get_entity_by_id_command,
-            'azure-sentinel-list-entity-relations': list_entity_relations_command
+            'azure-sentinel-list-entity-relations': list_entity_relations_command,
+            'azure-sentinel-list-entities-by-id-command': list_entities_by_id_command
         }
 
         if demisto.command() == 'test-module':
