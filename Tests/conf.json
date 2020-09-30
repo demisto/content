@@ -13,6 +13,12 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "RiskIQDigitalFootprint",
+            "playbookID": "RiskIQDigitalFootprint-Test",
+            "fromversion": "5.5.0",
+            "timeout": 500
+        },
+        {
             "integrations": [
                 "Mail Listener v2",
                 "Mail Sender (New)"
@@ -706,7 +712,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "Panorama Query Logs - Test",
             "fromversion": "5.5.0",
             "timeout": 1500,
@@ -2283,7 +2289,8 @@
         },
         {
             "integrations": "AWS - EC2",
-            "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b",
+            "playbookID": "AWS - EC2 Test Playbook",
+            "fromversion": "5.0.0",
             "memory_threshold": 75
         },
         {
@@ -3246,6 +3253,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "VirusTotal - Private API": "proxy failures with recording. related issues: 26463, 28888",
         "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",
         "BPA": "Playbook using GenericPolling which is inconsistent",
         "Mail Listener v2": "Integration has no proxy checkbox",
