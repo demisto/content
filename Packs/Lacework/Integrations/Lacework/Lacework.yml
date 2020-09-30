@@ -882,13 +882,6 @@ script:
       name: end_time
       required: false
       secret: false
-    - default: false
-      defaultValue: '100'
-      description: An integer representing the maximum number of results to return.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
     deprecated: false
     description: Fetch the container vulnerability information from Lacework.
     execution: false
@@ -1144,7 +1137,7 @@ script:
     - contextPath: Lacework.Vulnerability.Host.summary.last_evaluation_time
       description: The time of the last vulnerability evaluation.
       type: String
-  dockerimage: demisto/lacework:1.0.0.11597
+  dockerimage: demisto/lacework:1.0.0.11790
   feed: false
   isfetch: true
   longRunning: false

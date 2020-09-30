@@ -47,17 +47,20 @@ def get_event_severity_threshold():
         raise Exception('Invalid Event Severity Threshold was defined.')
 
 
-def create_entry(title, data, ec):
+def create_entry(title, data, ec, human_readable=None):
     """
     Simplify the output/contents
     """
+
+    if human_readable is None:
+        human_readable = data
 
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
         'Contents': data,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
+        'HumanReadable': tableToMarkdown(title, human_readable) if data else 'No result were found',
         'EntryContext': ec
     }
 
@@ -243,7 +246,6 @@ def get_container_vulnerabilities():
     fixable = demisto.args().get('fixable', None)
     start_time = demisto.args().get('start_time', None)
     end_time = demisto.args().get('end_time', None)
-    limit = demisto.args().get('limit', None)
 
     if id_type == 'image_digest':
         response = lacework_client.vulnerabilities.get_container_vulnerabilities(image_digest=image_digest,
@@ -260,22 +262,15 @@ def get_container_vulnerabilities():
     else:
         raise Exception('Invalid Container Image ID Type.')
 
-    # If a limit is set, then use it
-    if limit:
-        try:
-            limit = int(limit)
-            response['data'] = response['data'][0:limit]
-        except Exception:
-            return {
-                "Type": entryTypes["error"],
-                "ContentsFormat": formats["text"],
-                "Contents": "The provided limit parameter was invalid."
-            }
+    full_data = response
+    response['data'].pop('image')
+    human_readable = response
 
     ec = {"Lacework.Vulnerability.Container(val.last_evaluation_time === obj.last_evaluation_time)": response['data']}
-    return create_entry("Lacework Vulnerability Data for Container " + str(image_digest) + str(image_id),
-                        response['data'],
-                        ec)
+    return create_entry("Lacework Vulnerability Data for Container",
+                        full_data['data'],
+                        ec,
+                        human_readable=human_readable['data'])
 
 
 def get_host_vulnerabilities():

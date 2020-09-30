@@ -1,5 +1,5 @@
 Lacework is focused on giving customers visibility and control over their cloud operations at cloud scale to the monitoring of all activities across all cloud components.
-This integration was integrated and tested with version 3.32 and higher of Lacework
+This integration was integrated and tested with version 3.32 of Lacework
 ## Configure Lacework on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,12 +8,13 @@ This integration was integrated and tested with version 3.32 and higher of Lacew
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| lacework_instance | Lacework Instance Name \(e.g. &lt;XXXXXX&gt;.lacework.net\) | True |
+| lacework_instance | Lacework Instance Name \(e.g. https://&amp;lt;Instance_Name&amp;gt;.lacework.net\) | True |
 | lacework_api_key | Lacework API Key | True |
 | lacework_api_secret | Lacework API Secret | True |
 | lacework_event_severity | Lacework Event Severity Threshold | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
+| lacework_event_history | Lacework Event History to Import \(in days\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -361,7 +362,7 @@ Fetch Event Details for a specific Event in Lacework.
 | Lacework.Event.ENTITY_MAP.Process.HOSTNAME | String | The hostname of the process associated with the event. | 
 | Lacework.Event.ENTITY_MAP.Process.PROCESS_ID | Number | The process ID \(PID\) of the process associated with the event. | 
 | Lacework.Event.ENTITY_MAP.Process.PROCESS_START_TIME | Date | The start time of the process associated with the event. | 
-| Lacework.Event.ENTITY_MAP.Process.CMDLINE | String | The command\-line entry used to run the process associated with the event. | 
+| Lacework.Event.ENTITY_MAP.Process.CMDLINE | String | The command-line entry used to run the process associated with the event. | 
 | Lacework.Event.ENTITY_MAP.Process.CPU_PERCENTAGE | Number | The CPU utilization percentage of the process associated with the event. | 
 | Lacework.Event.ENTITY_MAP.FileDataHash.FILEDATA_HASH | String | The hash of the binary associated with the event. | 
 | Lacework.Event.ENTITY_MAP.FileDataHash.MACHINE_COUNT | Number | The machine count of the binary associated with the event. | 
@@ -456,13 +457,13 @@ Fetch the container vulnerability information from Lacework.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id_type | The identifier type for the container - Image ID or Image Digest | Required | 
+| id_type | The identifier type for the container. (Image ID or Image Digest) The corresponding argument, image_id or image_digest, must also be provided. | Required | 
 | image_id | A string representing the container image ID for which to fetch vulnerabilities. | Optional | 
 | image_digest | A string representing the container image digest for which to fetch vulnerabilities. | Optional | 
 | severity | A string representing the severity of vulnerabilities to fetch. | Optional | 
 | fixable | A boolean which filters for fixable vulnerabilities. | Optional | 
-| start_time | A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. | Optional | 
-| end_time | A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. | Optional | 
+| start_time | A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z") | Optional | 
+| end_time | A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z") | Optional | 
 
 
 #### Context Output
@@ -529,10 +530,11 @@ Fetch the host vulnerability information from Lacework.
 | --- | --- | --- |
 | severity | A string representing the severity of vulnerabilities to fetch. | Optional | 
 | fixable | A boolean which filters for fixable vulnerabilities. | Optional | 
-| start_time | A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. | Optional | 
-| end_time | A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. | Optional | 
+| start_time | A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z") | Optional | 
+| end_time | A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z") | Optional | 
 | cve | A string representing the CVE ID for which to filter returned results. | Optional | 
 | namespace | A string representing the package namespace for which to filter results. | Optional | 
+| limit | An integer representing the maximum number of results to return. | Optional | 
 
 
 #### Context Output
