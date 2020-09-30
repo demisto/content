@@ -1,5 +1,7 @@
 id: JOB - Integrations and Playbooks Health Check
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: JOB - Integrations and Playbooks Health Check
 description: You should run this playbook as a scheduled job.  The playbook checks
   the health of all enabled integrations and open incidents.
@@ -90,17 +92,19 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: d6aad6e0-da66-4783-8ea4-aaf8c17814a7
+    taskid: 802e016d-5606-4568-8faa-acb55df55621
     type: playbook
     task:
-      id: d6aad6e0-da66-4783-8ea4-aaf8c17814a7
+      id: 802e016d-5606-4568-8faa-acb55df55621
       version: -1
       name: JOB - Integrations and Playbooks Health Check - Lists handling
+      description: This playbook is triggered by a 'JOB - Integrations and Playbooks
+        Health' playbook and is responsible for creating or updating related XSOAR
+        lists.
       playbookName: JOB - Integrations and Playbooks Health Check - Lists handling
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -437,10 +441,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 9cfc6261-df5e-4d50-8c78-3312d389903d
+    taskid: 2834100f-3f00-489f-8cb5-6ba3cb1d1b04
     type: playbook
     task:
-      id: 9cfc6261-df5e-4d50-8c78-3312d389903d
+      id: 2834100f-3f00-489f-8cb5-6ba3cb1d1b04
       version: -1
       name: JOB - Integrations and Playbooks Health Check - Lists handling
       description: This playbook is triggered by a 'JOB - Integrations and Playbooks
@@ -501,10 +505,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 652ce27c-01e5-4f26-83eb-b20eb186ee5a
+    taskid: faabf605-bda9-4ac6-82d9-c132a123c1f2
     type: regular
     task:
-      id: 652ce27c-01e5-4f26-83eb-b20eb186ee5a
+      id: faabf605-bda9-4ac6-82d9-c132a123c1f2
       version: -1
       name: Set linked incident to incident data
       description: Adds the similar incident to incident context.
@@ -527,6 +531,7 @@ tasks:
       agentid: {}
       app: {}
       appendMultiSelect: {}
+      appendTags: {}
       approximatenumberofaffecteddatasubjects: {}
       assetid: {}
       assignmentgroup: {}
@@ -665,6 +670,7 @@ tasks:
       maliciousbehavior: {}
       maliciouscauseifthecauseisamaliciousattack: {}
       malwarefamily: {}
+      malwarename: {}
       managementnotification: {}
       measurestomitigate: {}
       medianotification: {}
@@ -753,7 +759,7 @@ tasks:
       signature: {}
       similarincident:
         complex:
-          root: similarIncident
+          root: similarIncidentList
           accessor: rawId
           transformers:
           - operator: join
@@ -868,7 +874,8 @@ tasks:
       id: eac1a104-08c2-482d-8743-ff9c2164c3f8
       version: -1
       name: Copies analyst notes from linked incident
-      description: Copies the anaylst's notes from the integrations and incidents grid.
+      description: Copies the anaylst's notes from the integrations and incidents
+        grid.
       scriptName: CopyLinkedAnalystNotes
       type: regular
       iscommand: false
@@ -891,21 +898,29 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: c89b58a3-8c92-45a0-8df3-8777d73d4b9a
+    taskid: d7237109-c6a2-4c0c-8290-368d7cb437c7
     type: playbook
     task:
-      id: c89b58a3-8c92-45a0-8df3-8777d73d4b9a
+      id: d7237109-c6a2-4c0c-8290-368d7cb437c7
       version: -1
       name: Integrations and Playbooks Health Check - Running Scripts
+      description: This playbook is triggered by a 'JOB - Integrations and Playbooks
+        Health' playbook and is responsible for running failed integrations and failed
+        incidents scripts. The playbook may run separately from the main playbook
+        to run health tests on enabled integrations and open incidents.
       playbookName: Integrations and Playbooks Health Check - Running Scripts
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "11"
-    separatecontext: true
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -920,21 +935,29 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: f3bc2ed4-ec1c-4255-8ba6-fd36a7be2a41
+    taskid: 546f4835-af8d-4334-87a0-14c2f2239f83
     type: playbook
     task:
-      id: f3bc2ed4-ec1c-4255-8ba6-fd36a7be2a41
+      id: 546f4835-af8d-4334-87a0-14c2f2239f83
       version: -1
       name: Integrations and Playbooks Health Check - Running Scripts
+      description: This playbook is triggered by a 'JOB - Integrations and Playbooks
+        Health' playbook and is responsible for running failed integrations and failed
+        incidents scripts. The playbook may run separately from the main playbook
+        to run health tests on enabled integrations and open incidents.
       playbookName: Integrations and Playbooks Health Check - Running Scripts
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "26"
-    separatecontext: true
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -992,6 +1015,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1027,5 +1051,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- No tests
 fromversion: 6.0.0

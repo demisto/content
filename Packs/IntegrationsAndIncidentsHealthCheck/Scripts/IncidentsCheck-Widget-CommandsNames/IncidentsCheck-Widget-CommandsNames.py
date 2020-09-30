@@ -1,6 +1,7 @@
 import collections
 import random
 from typing import Counter
+import json
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -23,7 +24,7 @@ if list_content != ['']:
             hex_number = str(hex(random_number))  # convert to hexadecimal
             color = '#' + hex_number[2:]  # remove 0x and prepend '#'
 
-            lis_widget_data = {
+            list_widget_data = {
                 "data": [
                     list_element[1]
                 ],
@@ -31,10 +32,9 @@ if list_content != ['']:
                 "color": color
             }
 
-            lists_data.append(lis_widget_data)
+            lists_data.append(list_widget_data)
             list_number += 1
-
-    demisto.results(json.dumps(list_data))
+    demisto.results(json.dumps(lists_data))
 
 else:
     data = {
