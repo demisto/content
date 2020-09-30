@@ -387,3 +387,172 @@ function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawRe
     $demisto.Results($entry) | Out-Null
     return $entry
 }
+<#
+.DESCRIPTION
+This function Gets a string and escape all special characters in it so that it can be in correct markdown format
+
+.PARAMETER data
+The string that needs to be escaped
+
+.OUTPUTS
+A string in which all special characters are escaped
+#>
+Function stringEscapeMD(){
+    [OutputType([string])]
+    Param (
+        [Parameter(Mandatory = $true,Position = 0,ValueFromPipeline = $true)]
+        [AllowEmptyString()]
+        [String]$data
+    )
+    begin{
+        $markdown_chars = @('\', '`','*', '_', '{', '}', '[',']', '(', ')', '#', '+','-', '|', '!')
+    }
+    process {
+        $result = $data.Replace("`r`n", "<br>").Replace("`r", "<br>").Replace("`n", "<br>")
+        foreach ($char in $markdown_chars){
+            $result = $result.Replace("$char", "\$char")
+        }
+        $result
+    }
+}
+<#
+.DESCRIPTION
+This function Converts a hashtable object into an ordered dictionary object
+
+.PARAMETER hashTable
+The hash-table that needs to be converted
+
+.OUTPUTS
+Ordered dict with the same keys and values as the hashTable's
+#>
+Function ConvertTo-OrderedDict {
+    [CmdletBinding()]
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
+Param (
+        [Parameter(Mandatory = $true,Position = 0,ValueFromPipeline = $true)]
+        [AllowEmptyCollection()]
+        [HashTable]$hashTable
+    )
+Process {
+    $OrderedDictionary = [ordered]@{ }
+    foreach ($Element in ($hashTable.GetEnumerator() | Sort-Object -Property Key))
+    {
+        $OrderedDictionary[$Element.Key] = $Element.Value
+    }
+    return $OrderedDictionary
+}
+}
+<#
+.DESCRIPTION
+This function Gets a list of PSObjects and convert it to a markdown table
+
+.PARAMETER collection
+The list of PSObjects that will should be converted to markdown format
+
+.PARAMETER name
+The name of the markdown table. when given this name will be the title of the table
+
+.OUTPUTS
+The markdown table string representation
+#>
+Function TableToMarkdown{
+    [CmdletBinding()]
+    [OutputType([string])]
+    Param (
+        [Parameter(Mandatory = $true,Position = 0,ValueFromPipeline = $true)]
+        [AllowEmptyCollection()]
+        [Object]$collection,
+
+        [Parameter(Mandatory = $false,Position = 1)]
+        [String]$name
+    )
+    Begin {
+        # Initializing $result
+        $result = ''
+        if ($name) {
+            $result += "### $name`n"
+        }
+        # Initializing $items
+        $items = @()
+        # Initializing $headers
+        $headers = @()
+    }
+
+    Process {
+        # proccessing items and headers
+        ForEach ($item in $collection)
+        {
+            if ($item -Is [HashTable])
+            {
+                # Need to convert hashtables to ordered dicts so that the keys/values will be in the same order
+                $item = $item | ConvertTo-OrderedDict
+            }
+            $items += $item
+        }
+    }
+End {
+    if ($items)
+        {
+            if ($items[0] -is [System.Collections.IDictionary]){
+                $headers = $items[0].keys
+            }
+            else
+            {
+                $headers = $item[0].PSObject.Properties| ForEach-Object {$_.Name}
+            }
+            # Writing the headers line
+            $result += '| ' + ($headers -join ' | ')
+            $result += "`n"
+
+            # Writing the separator line
+            $separator = @()
+            ForEach ($key in $headers)
+            {
+                $separator += '---'
+            }
+            $result += '| ' + ($separator -join ' | ')
+            $result += "`n"
+
+            # Writing the values
+            ForEach ($item in $items)
+            {
+                $values = @()
+                if ($items[0] -is [System.Collections.IDictionary])
+                {
+                    $raw_values = $item.values
+                }
+                else
+                {
+                    $raw_values = $item[0].PSObject.Properties| ForEach-Object { $_.Value }
+                }
+                foreach ($raw_value in $raw_values)
+                {
+                    if ($raw_value)
+                    {
+                        if ($raw_value -Is [System.Array] -Or $raw_value -Is [Collections.IDictionary] -Or $raw_value -Is [PSCustomObject])
+                        {
+                            $value = $raw_value | ConvertTo-Json -Compress -Depth 5
+                        }
+                        else
+                        {
+                            $value = $raw_value.ToString()
+                        }
+                    }
+                    else
+                    {
+                        $value = ""
+                    }
+                    $values += $value | stringEscapeMD
+                }
+                $result += '| ' + ($values -join ' | ')
+                $result += "`n"
+            }
+        }
+        else
+        {
+            $result += "**No entries.**`n"
+        }
+        return $result
+    }
+}
+Set-Alias -Name ConvertTo-Markdown -Value TableToMarkdown

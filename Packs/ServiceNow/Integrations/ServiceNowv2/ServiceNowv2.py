@@ -1,6 +1,6 @@
 import shutil
 import dateparser
-from typing import List, Tuple, Dict, Callable, Any, Optional, Union
+from typing import List, Tuple, Dict, Callable, Any, Union
 
 from CommonServerPython import *
 
@@ -89,7 +89,15 @@ DEFAULT_RECORD_FIELDS = {
 }
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
+
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
     """
     Converts an XSOAR argument to a timestamp (seconds from epoch).
     This function is used to quickly validate an argument provided to XSOAR
@@ -111,7 +119,6 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
     if arg is None:
         if required is True:
             raise ValueError(f'Missing "{arg_name}"')
-        return None
 
     if isinstance(arg, str) and arg.isdigit():
         # timestamp is a str containing digits - we just convert it to int
@@ -498,6 +505,10 @@ class Client(BaseClient):
                                        auth=(self._username, self._password),
                                        verify=self._verify, proxies=self._proxies)
 
+            if "Instance Hibernating page" in res.text:
+                raise DemistoException(
+                    "A connection was established but the instance is in hibernate mode.\n"
+                    "Please wake your instance and try again.")
             try:
                 json_res = res.json()
             except Exception as err:
@@ -1790,6 +1801,14 @@ def fetch_incidents(client: Client) -> list:
     for result in res.get('result', []):
         labels = []
 
+        result['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
+        result['mirror_tags'] = [
+            demisto.params().get('comment_tag'),
+            demisto.params().get('file_tag'),
+            demisto.params().get('work_notes_tag')
+        ]
+        result['mirror_instance'] = demisto.integrationInstance()
+
         if client.timestamp_field not in result:
             raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket")
 
@@ -1848,7 +1867,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
-    result = client.send_request(f'table/{client.ticket_type}?sysparm_limit=1', 'GET')
+    result = client.send_request(f'table/{client.ticket_type}', params={'sysparm_limit': 1}, method='GET')
     if 'result' not in result:
         raise Exception('ServiceNow error: ' + str(result))
     ticket = result.get('result')
@@ -1918,6 +1937,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     # get latest comments and files
     entries = []
     attachments_res = client.get_ticket_attachments(ticket_id)
+    file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''))
     if 'result' in attachments_res:
         attachments = attachments_res['result']
         for attachment in attachments:
@@ -1927,14 +1947,13 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 required=False
             )
 
-        file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''))
-        if file_entries:
-            for file_ in file_entries:
-                if file_.get('File') == attachment.get('file_name'):
-                    if last_update > entry_time:  # type: ignore
-                        continue
-                    else:
-                        entries.append(file_)
+            if file_entries:
+                for file_ in file_entries:
+                    if file_.get('File') == attachment.get('file_name'):
+                        if last_update > entry_time:
+                            continue
+                        else:
+                            entries.append(file_)
 
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
@@ -1972,6 +1991,14 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     # Parse user dict to email
     assigned_to = ticket.get('assigned_to', {})
     caller = ticket.get('caller_id', {})
+    assignment_group = ticket.get('assignment_group', {})
+
+    if assignment_group:
+        group_result = client.get('sys_user_group', assignment_group.get('value'))
+        group = group_result.get('result', {})
+        group_name = group.get('name')
+        ticket['assignment_group'] = group_name
+
     if assigned_to:
         user_result = client.get('sys_user', assigned_to.get('value'))
         user = user_result.get('result', {})
@@ -2048,9 +2075,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
                 key = ''
-                if 'work_notes' in tags:
+                if params.get('work_notes_tag') in tags:
                     key = 'work_notes'
-                elif 'comments' in tags:
+                elif params.get('comment_tag') in tags:
                     key = 'comments'
                 user = entry.get('user', 'dbot')
                 text = f"({user}): {str(entry.get('contents', ''))}"
@@ -2169,5 +2196,5 @@ def main():
             raise
 
 
-if __name__ in ["__builtin__", "builtins"]:
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

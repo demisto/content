@@ -2,7 +2,7 @@ commonfields:
   id: EPOFindSystem
   version: -1
 name: EPOFindSystem
-script: |2
+script: >2
 
   def createSystemContext(system):
       context = {}
@@ -60,7 +60,9 @@ script: |2
 
 
   resp = demisto.executeCommand("epo-command", {"command":"system.find", "searchText": demisto.args()["searchText"]})
+
   res_error=[]
+
   for res in resp:
       if isError(res):
           res_error.append(res)
@@ -96,3 +98,4 @@ timeout: 0s
 dependson:
   must:
   - epo-command
+fromversion: 5.0.0

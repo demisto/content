@@ -15,7 +15,7 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_QUERY_TABLE_SYS_PARAMS, RESPONSE_ADD_TAG, RESPONSE_QUERY_ITEMS, RESPONSE_ITEM_DETAILS, \
     RESPONSE_CREATE_ITEM_ORDER, RESPONSE_DOCUMENT_ROUTE, RESPONSE_FETCH, RESPONSE_FETCH_ATTACHMENTS_FILE, \
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, RESPONSE_GET_ATTACHMENT, MIRROR_COMMENTS_RESPONSE, \
-    RESPONSE_MIRROR_FILE_ENTRY
+    RESPONSE_MIRROR_FILE_ENTRY, RESPONSE_ASSIGNMENT_GROUP
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, \
@@ -485,8 +485,39 @@ def test_get_remote_data(mocker):
     mocker.patch.object(client, 'get_ticket_attachments', return_value=RESPONSE_GET_ATTACHMENT)
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=RESPONSE_MIRROR_FILE_ENTRY)
     mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
+    mocker.patch.object(client, 'get', return_value=RESPONSE_ASSIGNMENT_GROUP)
 
     res = get_remote_data_command(client, args, params)
 
     assert res[1]['File'] == 'test.txt'
     assert res[2]['Contents'] == 'This is a comment'
+
+
+def test_get_remote_data_no_attachment(mocker):
+    """
+    Given:
+        -  ServiceNow client
+        -  arguments: id and LastUpdate(set to lower then the modification time).
+        -  ServiceNow ticket
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket was updated with no attachment.
+    """
+
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 0}
+    params = {}
+    mocker.patch.object(client, 'get', return_value=RESPONSE_TICKET_MIRROR)
+    mocker.patch.object(client, 'get_ticket_attachments', return_value=[])
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
+    mocker.patch.object(client, 'get', return_value=RESPONSE_ASSIGNMENT_GROUP)
+
+    res = get_remote_data_command(client, args, params)
+    assert res[1]['Contents'] == 'This is a comment'
+    assert len(res) == 2

@@ -33,8 +33,9 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     import json, boto3, sys, os
+
 
     if not demisto.params()['proxy']:
         del os.environ['http_proxy']
@@ -46,9 +47,13 @@ script:
         return runtime.invoke_endpoint(EndpointName=endpoint_name, ContentType='application/json', Body=json.dumps(payload, ensure_ascii=False).encode('utf-8', 'ignore'))
 
     runtime = boto3.Session(aws_access_key_id=demisto.params()['AWSAccessKey'],
+
     aws_secret_access_key=demisto.params()['AWSSecretKey'],
+
     region_name=demisto.params()['AWSRegion']).client('runtime.sagemaker')
+
     endpoint_name = demisto.params()['EndpointName']
+
 
     def parse_results(result):
         res = []
@@ -102,7 +107,7 @@ script:
       type: number
     description: Classify input text (usually email content)
   dockerimage: demisto/boto3:1.9.55
-  dockerimage45: demisto/boto3
   runonce: false
 tests:
-  - Test Sagemaker
+- Test Sagemaker
+fromversion: 5.0.0

@@ -1,0 +1,193 @@
+id: cve_enrichment_-_generic_-_test
+version: -1
+name: CVE Enrichment - Generic - Test
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ed2884bf-ae21-4e3c-8bbc-e0b46d8a9bf0
+    type: start
+    task:
+      id: ed2884bf-ae21-4e3c-8bbc-e0b46d8a9bf0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: ad58c061-20aa-4c5f-8cf2-2a9cac2215ad
+    type: regular
+    task:
+      id: ad58c061-20aa-4c5f-8cf2-2a9cac2215ad
+      version: -1
+      name: Set CVE
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CVE.ID
+      value:
+        simple: CVE-2013-2566,CVE-2016-3333
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 220d2a1f-c7cb-4910-823b-0774e0adada2
+    type: playbook
+    task:
+      id: 220d2a1f-c7cb-4910-823b-0774e0adada2
+      version: -1
+      name: CVE Enrichment - Generic
+      playbookName: CVE Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 6db7f463-a6b1-498b-8e55-a0d79ad364a8
+    type: condition
+    task:
+      id: 6db7f463-a6b1-498b-8e55-a0d79ad364a8
+      version: -1
+      name: Verify
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CVE
+                filters:
+                - - operator: isEqualNumber
+                    left:
+                      value:
+                        simple: CVE.CVSS
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "9.3"
+                accessor: ID
+            iscontext: true
+          right:
+            value:
+              simple: CVE-2016-3333
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CVE
+                filters:
+                - - operator: isEqualNumber
+                    left:
+                      value:
+                        simple: CVE.CVSS
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "4.3"
+                accessor: ID
+            iscontext: true
+          right:
+            value:
+              simple: CVE-2013-2566
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: face288a-b66a-41d2-868c-7dda5c039fd5
+    type: title
+    task:
+      id: face288a-b66a-41d2-868c-7dda5c039fd5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
