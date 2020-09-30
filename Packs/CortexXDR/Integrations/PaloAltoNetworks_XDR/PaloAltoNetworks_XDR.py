@@ -1698,9 +1698,11 @@ def sort_all_list_incident_fields(incident_data):
     identification of changed fields"""
     if incident_data.get('hosts', []):
         incident_data['hosts'] = sorted(incident_data.get('hosts', []))
+        incident_data['hosts'] = [host.upper() for host in incident_data.get('hosts', [])]
 
     if incident_data.get('users', []):
         incident_data['users'] = sorted(incident_data.get('users', []))
+        incident_data['users'] = [user.upper() for user in incident_data.get('users', [])]
 
     if incident_data.get('incident_sources', []):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))

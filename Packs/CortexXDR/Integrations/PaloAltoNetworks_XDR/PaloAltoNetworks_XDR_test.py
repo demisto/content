@@ -779,8 +779,8 @@ def test_sort_all_list_incident_fields():
     assert raw_incident.get('alerts')[1].get('alertid') == "55"
     assert raw_incident.get('alerts')[2].get('alertid') == "60"
 
-    assert raw_incident.get('hosts')[0] == 'host1'
-    assert raw_incident.get('hosts')[1] == 'host2'
+    assert raw_incident.get('hosts')[0] == 'HOST1'
+    assert raw_incident.get('hosts')[1] == 'HOST2'
 
     assert raw_incident.get('file_artifacts')[0].get('filename') == 'file.exe'
     assert raw_incident.get('file_artifacts')[1].get('filename') == 'file2.exe'
