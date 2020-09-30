@@ -1,0 +1,67 @@
+args:
+- description: The ServiceNow Ticket description containing details that can be extracted
+    via regex
+  name: TicketDescription
+  required: true
+comment: Parses a ServiceNow ticket description for known "Sales User Onboarding"  values,
+  then sets the values to the Context
+commonfields:
+  id: ParseTicketDescription
+  version: -1
+dockerimage: demisto/python3:3.8.5.11789
+enabled: true
+name: ParseTicketDescription
+outputs:
+- contextPath: SUO.StartDate
+  description: The StartDate specified in the ServiceNow request of the user we are
+    creating
+  type: string
+- contextPath: SUO.MirroredUsername
+  description: The MirroredUsername (in email format) of the user from which we are
+    copying the values from
+  type: string
+- contextPath: SUO.FirstName
+  description: The first name specified in the ServiceNow request of the user we are
+    creating
+  type: string
+- contextPath: SUO.LastName
+  description: The last name specified in the ServiceNow request of the user we are
+    creating
+  type: string
+- contextPath: SUO.Alias
+  description: The alias name specified in the ServiceNow request of the user we are
+    creating
+  type: string
+- contextPath: SUO.Email
+  description: The email specified in the ServiceNow request of the user we are creating
+  type: string
+- contextPath: SUO.Username
+  description: The username (email format) specified in the ServiceNow request of
+    the user we are creating
+  type: string
+- contextPath: SUO.Nickname
+  description: The username specified in the ServiceNow request of the user we are
+    creating
+  type: string
+- contextPath: SUO.PhoneNumber
+  description: The phone number specified in the ServiceNow request of the user we
+    are creating
+  type: string
+- contextPath: SUO.MobileNumber
+  description: The mobile number specified in the ServiceNow request of the user we
+    are creating
+  type: string
+- contextPath: SUO.Adress
+  description: The address specified in the ServiceNow request of the user we are
+    creating
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
