@@ -15,7 +15,7 @@ ERROR_SESSION = -1
 ''' STANDALONE FUNCTION '''
 
 
-def search_sensor_id(endpoint: str) -> str:
+def search_sensor_id(endpoint: str) -> int:
     """ Retrieve list of connected sensors from:
             Integration: VMware Carbon Black EDR (Live Response API).
             Command: cb-list-sensors.
@@ -42,7 +42,7 @@ def search_sensor_id(endpoint: str) -> str:
     return sensor_id
 
 
-def search_active_session(sensor_id: str) -> str:
+def search_active_session(sensor_id: int) -> int:
     """ Search if exists current active session to sensor (It exists will use this session).
 
     Args:
@@ -58,7 +58,7 @@ def search_active_session(sensor_id: str) -> str:
     return session_id
 
 
-def create_active_session(sensor_id: str, timeout: str) -> str:
+def create_active_session(sensor_id: int, timeout: str) -> int:
     """ Create active session to sensor.
 
     Args:
@@ -81,7 +81,7 @@ def create_active_session(sensor_id: str, timeout: str) -> str:
             if trial == 2:
                 raise Exception("Unable to parse entry context while creating session, try to raise timeout argument.")
 
-    return str(session_id)
+    return session_id
 
 
 def close_session(session_id):

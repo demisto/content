@@ -11,7 +11,8 @@ if not demisto.get(demisto.args(), 'ip') and not demisto.get(demisto.args(), 'ho
                      'Contents': 'You must provide ip or hostname for Cb sensor.'})
     sys.exit()
 else:
-    dArgs = {'ip': demisto.args()['ip']} if demisto.get(demisto.args(), 'ip') else {'hostname': demisto.args()['hostname']}
+    dArgs = {'ip': demisto.args()['ip']} if demisto.get(demisto.args(), 'ip') else {
+        'hostname': demisto.args()['hostname']}
     resFind = demisto.executeCommand('cb-sensor-info', dArgs)
     if isError(resFind[0]):
         demisto.results(resFind)
@@ -26,7 +27,8 @@ else:
                                  'Contents': 'More than one sensor returned.\nResult:\n' + str(matches)})
                 sys.exit()
         else:
-            demisto.results({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Sensor not found.'})
+            demisto.results(
+                {'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Sensor not found.'})
             sys.exit()
 demisto.log('[*] Located sensor ID ' + sensorId)
 # Get a live session to the endpoint
@@ -41,7 +43,8 @@ else:
         resSessionCreate = demisto.executeCommand('cb-session-create', {'sensor': sensorId})
         if isError(resSessionCreate[0]):
             demisto.results(resSessionCreate + [{'Type': entryTypes['error'],
-                                                 'ContentsFormat': formats['text'], 'Contents': 'Error while trying to create session.'}])
+                                                 'ContentsFormat': formats['text'],
+                                                 'Contents': 'Error while trying to create session.'}])
             sys.exit()
         else:
             sessionId = str(resSessionCreate[0]['Contents']['id'])
@@ -58,7 +61,8 @@ else:
         resSessionInfo = demisto.executeCommand('cb-session-info', {'session': sessionId})
         if isError(resSessionInfo[0]):
             demisto.results(resSessionInfo + [{'Type': entryTypes['error'],
-                                               'ContentsFormat': formats['text'], 'Contents': 'Error while polling for session status.'}])
+                                               'ContentsFormat': formats['text'],
+                                               'Contents': 'Error while polling for session status.'}])
             sys.exit()
         else:
             session = resSessionInfo[0]['Contents']
@@ -69,7 +73,6 @@ else:
         sys.exit()
     else:
         demisto.log('[*] Session ' + sessionId + ' active.')
-
 
 # Create async command
 resCreate = demisto.executeCommand(
@@ -99,8 +102,15 @@ while secRemaining:
                 secRemaining -= 1
                 time.sleep(1)
             elif 'error' == status:
-                demisto.results({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Command "get file" returned error: [Type:' + str(demisto.get(
-                    resInfo[0], 'Contents.result_type')) + ' , Code:' + str(int(demisto.get(resInfo[0], 'Contents.result_code'))) + ' , Desc:' + str(demisto.get(resInfo[0], 'Contents.result_desc')) + ' ]'})
+                content = 'Command "get file" returned error: [Type:' + \
+                          str(demisto.get(resInfo[0], 'Contents.result_type')) + \
+                          ' , Code:' + \
+                          str(int(demisto.get(resInfo[0], 'Contents.result_code'))) + \
+                          ' , Desc:' + \
+                          str(demisto.get(resInfo[0], 'Contents.result_desc')) + \
+                          ' ]'
+                demisto.results({'Type': entryTypes['error'], 'ContentsFormat': formats['text'],
+                                 'Contents': content})
                 sys.exit(0)
             elif 'complete' == status:
                 # Get FileID from command info response
