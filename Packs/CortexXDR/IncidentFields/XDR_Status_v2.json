@@ -27,7 +27,12 @@
 	"script": "",
 	"selectValues": [
         "new",
-        "under_investigation"
+        "under_investigation",
+		"resolved_threat_handled",
+		"resolved_known_issue",
+		"resolved_duplicate",
+		"resolved_false_positive",
+		"resolved_other"
     ],
 	"sla": 0,
 	"system": false,

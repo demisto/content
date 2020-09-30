@@ -516,7 +516,7 @@
                             {
 								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "xdrstatus",
+								"fieldId": "xdrstatusv2",
 								"height": 22,
 								"id": "28951ff0-026b-11eb-86da-1777b8445375",
 								"index": 4,
