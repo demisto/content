@@ -1,7 +1,7 @@
 <!-- REMINDER: THIS IS A PUBLIC REPO DO NOT POST HERE SECRETS/SENSITIVE DATA -->
 
 ## Contributing to Cortex XSOAR Content
-Make sure to register your contribution - [contribution registration](https://forms.gle/XDfxU4E61ZwEESSMA)  
+Make sure to register your contribution by filling the [contribution registration form](https://forms.gle/XDfxU4E61ZwEESSMA)
 
 **The Pull Request review will only start after this form was filled**
 
