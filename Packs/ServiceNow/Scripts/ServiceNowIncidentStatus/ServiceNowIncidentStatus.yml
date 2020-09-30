@@ -1,0 +1,24 @@
+commonfields:
+  id: 2a2c4496-7336-4d9e-8833-4a2dbaa38d5d
+  version: 4
+vcShouldKeepItemLegacyProdMachine: false
+name: ServiceNowIncidentStatus
+script: ''
+type: python
+tags:
+- dynamic-section
+- python
+- servicenow v2
+comment: |
+  populates the value of the ServiceNow Ticket State field and display it in a layout widget.
+enabled: true
+outputs:
+- {}
+important:
+- related: ""
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.5.10845
+runas: DBotWeakRole
