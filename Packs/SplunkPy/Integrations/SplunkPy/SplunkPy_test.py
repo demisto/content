@@ -442,11 +442,18 @@ def test_fetch_incidents(mocker):
 
 SPLUNK_RESULTS = [
     {
-        "source": "This is the alert type",
-        "field_name1": "field_val1",
-        "field_name2": "field_val2"
+        "rawJSON":
+            '{"source": "This is the alert type", "field_name1": "field_val1", "field_name2": "field_val2"}',
+        "details": "Endpoint - High Or Critical Priority Host With Malware - Rule",
+        "labels": [
+            {
+                "type": "security_domain",
+                "value": "Endpoint - High Or Critical Priority Host With Malware - Rule"
+            }
+        ],
     }
 ]
+
 
 EXPECTED_OUTPUT = {
     'This is the alert type': {
