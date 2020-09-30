@@ -47,7 +47,7 @@ In order to use the integration with an API token you'll first need to change th
 To start fetching incidents, enable the parameter `Long running instance` - this will start a long running process that'll fetch incidents periodically.
 Depending on the system load, **the initial fetch might take a long time**.
 
-The integration supports mapping fields based on a schema.
+#### Field (Schema) Mapping
 The scheme is divided to 4 sections. Offense (root), Events: Builtins, Events: Custom Fields, and Assets.
 For more details, see the [Classification & Mapping documentation](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping/create-a-mapper.html).
 
