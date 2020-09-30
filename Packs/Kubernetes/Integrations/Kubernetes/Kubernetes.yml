@@ -110,6 +110,6 @@ script:
       type: string
     description: Scan the operating system packages installed in a pod's container
       for vulnerabilities.
-  dockerimage: demisto/kubernetes:latest
+  dockerimage: kubernetes:latest
   runonce: false
   subtype: python3
