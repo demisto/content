@@ -533,18 +533,22 @@ class QRadarClient:
     def get_custom_fields(
             self, limit: Optional[int] = None, field_name: Optional[List[str]] = None,
             likes: Optional[List[str]] = None, _filter: Optional[str] = None) -> List[dict]:
-        # Build filter if not given
-        if not _filter:
-            _filter = ''
-            for field in field_name:
-                _filter += f'name= "{field}" '
-            for like in likes:
-                _filter += f'name ILIKE "%{like}%"'
-        params = {'filter': _filter} if _filter else None
         url = urljoin(self._server, "api/config/event_sources/custom_properties/regex_properties")
         headers = self._auth_headers
         if limit is not None:
             headers['Range'] = f"items=0-{limit-1}"
+        # Build filter if not given
+        if not _filter:
+            _filter = ''
+            if field_name:
+                for field in field_name:
+                    _filter += f'name= "{field}" or '
+            if likes:
+                for like in likes:
+                    _filter += f'name ILIKE "%{like}%" or '
+            # Remove trailing `or `
+            _filter = _filter.rstrip('or ')
+        params = {'filter': _filter} if _filter else None
         return self.send_request("GET", url, headers=headers, params=params)
 
     def enrich_source_addresses_dict(self, src_adrs):
@@ -2109,7 +2113,7 @@ def get_custom_properties(
     likes = argToList(like)
     fields = argToList(fields)
     if fields:
-        acceptable_fields = {'identifier', 'name', 'username', 'description', 'property_type', 'use_for_rule_engine',
+        acceptable_fields = {'id', 'identifier', 'name', 'username', 'description', 'property_type', 'use_for_rule_engine',
                              'datetime_format', 'locale', 'auto_discovered'}
         wrong_fields = [field for field in fields if field not in acceptable_fields]
         if wrong_fields:
@@ -2121,8 +2125,10 @@ def get_custom_properties(
         {key: prop[key] for key in fields} for prop in response
     ] if fields else response
     # Convert epoch times
-    for i in range(len(properties)):
-        properties[i]['modification_date'] = epochToTimestamp(properties[i]['modification_date'])
+    if not fields:
+        for i in range(len(properties)):
+            properties[i]['modification_date'] = epochToTimestamp(properties[i]['modification_date'])
+            properties[i]['creation_date'] = epochToTimestamp(properties[i]['creation_date'])
 
     return {
         "Type": entryTypes["note"],
@@ -2131,7 +2137,8 @@ def get_custom_properties(
         "ReadableContentsFormat": formats["markdown"],
         "HumanReadable": tableToMarkdown(
             "QRadar custom fields:",
-            properties
+            properties,
+            removeNull=True
         ),
         "EntryContext": {'QRadar.Properties': properties},
     }

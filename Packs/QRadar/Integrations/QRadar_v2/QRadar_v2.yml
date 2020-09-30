@@ -1319,7 +1319,37 @@ script:
       be used for debugging purposes.
     execution: false
     name: get-mapping-fields
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '25'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated names of an exact properties to search for.
+      isArray: true
+      name: field_name
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated argument list that will specify the fields the
+        returned by the command output. When not given, will return all. Options are
+        identifier, name, id, locale, datetime_format, description, username, property_type,
+        auto_discovered, use_for_rule_engine.
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated names of a  properties to search for. Case insensitive.
+      isArray: false
+      name: like
+      required: false
+      secret: false
+    deprecated: false
     execution: false
     name: qradar-get-custom-properties
   dockerimage: demisto/python3:3.8.5.11789
