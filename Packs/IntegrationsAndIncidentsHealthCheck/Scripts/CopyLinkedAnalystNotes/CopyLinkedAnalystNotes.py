@@ -26,7 +26,7 @@ if linked_incident:
         if not main_row.get("analystnote"):
             last_analyst_note = integrations_data.get(main_row.get('instance'), '')
             if last_analyst_note:
-                main_row["analystnote"] = f'({str(linked_created_date)}) "' \
+                main_row["analystnote"] = f'({str(linked_created_date)}) ' \
                                           f'{integrations_data.get(main_row.get("instance"), "")}'
 
     incidents_data: Dict[str, tuple] = {}

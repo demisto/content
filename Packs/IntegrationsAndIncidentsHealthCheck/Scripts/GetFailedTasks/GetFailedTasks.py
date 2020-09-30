@@ -14,8 +14,13 @@ total_failed_incidents = []
 
 while True:
     get_incidents_result = demisto.executeCommand("getIncidents", {"query": query, "page": page_number})
+
     incidents_data = get_incidents_result[0]["Contents"]["data"]
-    total_incidents.extend(incidents_data)
+    if incidents_data:
+        total_incidents.extend(incidents_data)
+    else:
+        incidents_data = []
+
     page_number += 1
 
     if len(incidents_data) < 100:
