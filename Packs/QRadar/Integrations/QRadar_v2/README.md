@@ -1,5 +1,10 @@
 Fetch offenses as incidents and search QRadar
 This integration was integrated and tested with version 7.3.2 of QRadar
+
+The integration support mapping fields based on schema.
+The scheme is divided to 4 sections. Offense (root), Events: Builtins, Events: Custom Fields and Assets.
+For more details, see the [Classification & Mapping documentation](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping/create-a-mapper.html).
+
 ## Configure QRadar_v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -1357,8 +1362,6 @@ There is no context output for this command.
 ### get-mapping-fields
 ***
 Returns the list of fields for an incident type. This command is for debugging purposes.
-This command is used in [Classification & Mapping](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping/create-a-mapper.html) section.
-The scheme is divided to 4 sections. Offense (root), Events: Builtins, Events: Custom Fields and Assets.
 
 #### Base Command
 
