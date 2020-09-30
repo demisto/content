@@ -11,10 +11,6 @@ tags:
 comment: |
   populates the value of the ServiceNow Ticket State field and display it in a layout widget.
 enabled: true
-outputs:
-- {}
-important:
-- related: ""
 scripttarget: 0
 subtype: python3
 runonce: false
