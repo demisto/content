@@ -2124,6 +2124,19 @@ def get_mapping_fields(client: QRadarClient) -> dict:
 def get_custom_properties(
         client: QRadarClient, limit: Optional[str] = None, field_name: Optional[str] = None,
         like_name: Optional[str] = None, filter: Optional[str] = None, fields: Optional[str] = None) -> dict:
+    """Gives the user the regex event properties
+
+    Args:
+        client: QRadar Client
+        limit: Maximum of properties to fetch
+        field_name: exact name in `field`
+        like_name: contains and case insensitive name in `field`
+        filter: a custom filter query
+        fields: Fields to retrieve. if None, will retrieve them all
+
+    Returns:
+        CortexXSOAR entry.
+    """
     limit = int(limit) if limit else None
     field_names = argToList(field_name)
     likes = argToList(like_name)
@@ -2134,9 +2147,11 @@ def get_custom_properties(
     # Convert epoch times
     if not fields:
         for i in range(len(response)):
-            response[i]['modification_date'] = epochToTimestamp(response[i]['modification_date'])
-            response[i]['creation_date'] = epochToTimestamp(response[i]['creation_date'])
-
+            for key in ['creation_date', 'modification_date']:
+                try:
+                    response[i][key] = epochToTimestamp(response[i][key])
+                except KeyError:
+                    pass
     return {
         "Type": entryTypes["note"],
         "Contents": response,

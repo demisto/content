@@ -415,3 +415,41 @@ def test_get_mapping_fields(mocker):
     assert response['events: builtin fields']
     assert response['assets']
     assert response['events: custom fields']['events']['bloop'] == 'string'
+
+
+class TestGetCustomProperties:
+    error = 'Can\'t send the `filter` argument with `field_name` or `like_name`'
+    client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
+
+    def test_filter_with_field_name(self):
+        from QRadar_v2 import get_custom_properties
+        with pytest.raises(DemistoException, match=self.error):
+            get_custom_properties(self.client, filter='name="hatul"', field_name='b,c')
+
+    def test_filter_with_like_name(self):
+        from QRadar_v2 import get_custom_properties
+        with pytest.raises(DemistoException, match=self.error):
+            get_custom_properties(self.client, filter='name="hatul"', like_name='b,c')
+
+    def test_filter_with_like_name_and_name_field(self):
+        from QRadar_v2 import get_custom_properties
+        with pytest.raises(DemistoException, match=self.error):
+            get_custom_properties(self.client, filter='name="hatul"', field_name='a,g', like_name='b,c')
+
+    def test_filter_only(self, mocker):
+        from QRadar_v2 import get_custom_properties
+        mocker.patch.object(QRadarClient, 'get_custom_fields', return_value=[{'name': 'bloop'}])
+        resp = get_custom_properties(self.client, filter='name="trol"')
+        assert resp['EntryContext']['QRadar.Properties'][0]['name'] == 'bloop'
+
+    def test_name_field_only(self, mocker):
+        from QRadar_v2 import get_custom_properties
+        mocker.patch.object(QRadarClient, 'get_custom_fields', return_value=[{'name': 'bloop'}])
+        resp = get_custom_properties(self.client, field_name='trol')
+        assert resp['EntryContext']['QRadar.Properties'][0]['name'] == 'bloop'
+
+    def test_like_name_only(self, mocker):
+        from QRadar_v2 import get_custom_properties
+        mocker.patch.object(QRadarClient, 'get_custom_fields', return_value=[{'name': 'bloop'}])
+        resp = get_custom_properties(self.client, like_name='trol')
+        assert resp['EntryContext']['QRadar.Properties'][0]['name'] == 'bloop'
