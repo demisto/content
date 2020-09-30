@@ -926,7 +926,7 @@ def get_incidents_entities(incidents_ids):
     return response
 
 
-def upload_ioc(ioc_type=None, value=None, policy=None, expiration_days=None,
+def upload_ioc(ioc_type, value, policy=None, expiration_days=None,
                share_level=None, description=None, source=None):
     payload = assign_params(
         type=ioc_type,
@@ -939,6 +939,25 @@ def upload_ioc(ioc_type=None, value=None, policy=None, expiration_days=None,
     )
 
     return http_request('POST', '/indicators/entities/iocs/v1', json=[payload])
+
+
+def update_ioc(ioc_type, value, policy=None, expiration_days=None,
+               share_level=None, description=None, source=None):
+    body = assign_params(
+        type=ioc_type,
+        value=value,
+        policy=policy,
+        share_level=share_level,
+        expiration_days=expiration_days,
+        source=source,
+        description=description,
+    )
+    params = assign_params(
+        type=ioc_type,
+        value=value
+    )
+
+    return http_request('PATCH', '/indicators/entities/iocs/v1', json=body, params=params)
 
 
 def search_iocs(ioc_types=None, ioc_values=None, policies=None, sources=None, expiration_from=None,
@@ -983,15 +1002,11 @@ def enrich_ioc_dict_with_ids(ioc_dict):
     return ioc_dict
 
 
-def delete_ioc():
-    """
-        UNTESTED - Sends a delete IoC request
-        :return: Response json of delete IoC
-    """
-    ids = str(demisto.args().get('ids'))
-    payload = {
-        'ids': ids
-    }
+def delete_ioc(ioc_type, value):
+    payload = assign_params(
+        type=ioc_type,
+        value=value
+    )
     return http_request('DELETE', '/indicators/entities/iocs/v1', payload)
 
 
@@ -1292,10 +1307,31 @@ def upload_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=N
                                hr=tableToMarkdown('Custom IoC was created successfully', ec))
 
 
+def update_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=None,
+                       share_level=None, description=None, source=None):
+    """
+    :param ioc_type: The type of the indicator:
+    :param policy :The policy to enact when the value is detected on a host.
+    :param share_level: The level at which the indicator will be shared.
+    :param expiration_days: This represents the days the indicator should be valid for.
+    :param source: The source where this indicator originated.
+    :param description: A meaningful description of the indicator.
+    :param value: The string representation of the indicator.
+    """
+    raw_res = update_ioc(ioc_type, value, policy, expiration_days, share_level, description, source)
+    if raw_res.get('errors'):
+        raise Exception(raw_res.get('errors'))
+    iocs = search_iocs(ids=f"{ioc_type}:{value}").get('resources')
+    ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    enrich_ioc_dict_with_ids(ec)
+    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec},
+                               hr=tableToMarkdown('Custom IoC was created successfully', ec))
+
+
 def search_iocs_command(types=None, values=None, policies=None, sources=None, from_expiration_date=None,
                         to_expiration_date=None, share_levels=None, limit=None):
     """
-    :param types: A list of indicator types. Separate multiple types by comma. Valid types are sha256, sha1, md5, domain, ipv4, ipv6
+    :param types: A list of indicator types. Separate multiple types by comma.
     :param values: Comma-separated list of indicator values
     :param policies: Comma-separated list of indicator policies
     :param sources: Comma-separated list of IOC sources
@@ -1330,14 +1366,14 @@ def get_ioc_command(type_: str, value: str):
                                hr=tableToMarkdown('Indicator of Compromise', ec))
 
 
-def delete_iocs_command():
+def delete_iocs_command(ioc_type, value):
     """
-        UNTESTED - Deletes an IoC
-        :return: EntryObject of delete IoC command
+    :param ioc_type: The type of the indicator
+    :param value: The IOC value to delete
     """
-    raw_res = delete_ioc()
-    ids = demisto.args().get('ids')
-    return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully deleted.".format(ids))
+    ids = f"{ioc_type}:{value}"
+    raw_res = delete_ioc(ioc_type, value)
+    return create_entry_object(contents=raw_res, hr=f"Custom IoC {ids} was successfully deleted.")
 
 
 def update_iocs_command():
@@ -2211,16 +2247,20 @@ def main():
             demisto.results(list_host_files_command())
         elif command == 'cs-falcon-refresh-session':
             demisto.results(refresh_session_command())
-        elif command == 'cs-falcon-search-iocs':
-            demisto.results(search_iocs_command(**args))
-        elif command == 'cs-falcon-get-ioc':
-            demisto.results(get_ioc_command(type_=args.get('type'), value=args.get('value')))
-        elif command == 'cs-falcon-upload-ioc':
-            demisto.results(upload_ioc_command(**args))
-        elif demisto.command() == 'cs-falcon-list-detection-summaries':
+        elif command == 'cs-falcon-list-detection-summaries':
             return_results(list_detection_summaries_command())
-        elif demisto.command() == 'cs-falcon-list-incident-summaries':
+        elif command == 'cs-falcon-list-incident-summaries':
             return_results(list_incident_summaries_command())
+        elif command == 'cs-falcon-search-iocs':
+            return_results(search_iocs_command(**args))
+        elif command == 'cs-falcon-get-ioc':
+            return_results(get_ioc_command(type_=args.get('type'), value=args.get('value')))
+        elif command == 'cs-falcon-upload-ioc':
+            return_results(upload_ioc_command(**args))
+        elif command == 'cs-falcon-update-ioc':
+            return_results(update_ioc_command(**args))
+        elif command == 'cs-falcon-delete-ioc':
+            return_results(delete_iocs_command(ioc_type=args.get('type'), value=args.get('value')))
         # Log exceptions
     except Exception as e:
         return_error(str(e))

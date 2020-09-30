@@ -901,7 +901,59 @@ script:
         description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters.
       - name: description
         description: A meaningful description of the indicator. Limit 200 characters.
-    description: Uploads one or more indicators for CrowdStrike to monitor
+    description: Uploads an indicator for CrowdStrike to monitor.
+  - name: cs-falcon-update-ioc
+    arguments:
+    - name: ioc_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - sha256
+        - md5
+        - sha1
+        - domain
+        - ipv4
+        - ipv6
+      description: The type of the indicator.
+    - name: value
+      required: true
+      description: The string representation of the indicator.
+    - name: policy
+      auto: PREDEFINED
+      predefined:
+        - detect
+        - none
+      description: "The policy to enact when the value is detected on a host. A value of none is equivalent to turning the indicator off."
+      defaultValue: detect
+    - name: share_level
+      auto: PREDEFINED
+      predefined:
+        - red
+      description: The level at which the indicator will be shared. Only red share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers.
+    - name: expiration_days
+      description: 'This represents the days the indicator should be valid for. This only applies to domain, ipv4, and ipv6 types. Default is 30 if not provided. '
+    - name: source
+      description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters.
+    - name: description
+      description: A meaningful description of the indicator. Limit 200 characters.
+    description: Updates an indicator for CrowdStrike to monitor.
+  - name: cs-falcon-delete-ioc
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
+      description: The IOC type to delete.
+    - name: value
+      description: The IOC value to delete.
+      required: true
+    description: Deletes a monitored indicator.
   - arguments:
     - auto: PREDEFINED
       default: false
