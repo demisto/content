@@ -22,5 +22,5 @@ subtype: python2
 dockerimage: demisto/stix
 tests:
 - STIXParserTest
-dependson: {
-  }
+dependson: {}
+fromversion: 5.0.0

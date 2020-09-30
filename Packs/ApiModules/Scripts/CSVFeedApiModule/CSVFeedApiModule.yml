@@ -8,8 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common code that will be appended into each CSV feed integration when it's
-  deployed
+comment: Common code that will be appended into each CSV feed integration when it's deployed
 system: true
 scripttarget: 0
 dependson: {}
@@ -17,3 +16,4 @@ timeout: 0s
 dockerimage: demisto/jmespath:1.0.0.10854
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0
