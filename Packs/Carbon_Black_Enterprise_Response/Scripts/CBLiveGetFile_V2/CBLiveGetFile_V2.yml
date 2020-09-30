@@ -18,10 +18,11 @@ args:
   isArray: false
   name: timeout
   predefined:
-  - Session timeout (If a command is not issued after this time the session will be closed)
+  - Session timeout (If a command is not issued after this time the session will be
+    closed)
   required: false
   secret: false
-comment: |
+comment: |-
   This automation translates an endpoints hostname/IP to the Carbon Black sensor ID.
   It then opens a session to the endpoint to download the given file paths and closes the session.
 commonfields:
@@ -37,7 +38,8 @@ outputs:
   description: The command name.
   type: String
 - contextPath: CbLiveResponse.Commands.Status
-  description: The command status ('pending', 'in progress', 'complete', 'error', or 'canceled').
+  description: The command status ('pending', 'in progress', 'complete', 'error',
+    or 'canceled').
   type: String
 - contextPath: CbLiveResponse.Commands.CommandCompletionTime
   description: The command completion time (0 if not complete).
@@ -78,6 +80,36 @@ outputs:
 - contextPath: CbLiveResponse.File.Extension
   description: File extension.
   type: String
+- contextPath: File.Size
+  description: The size of the file in bytes.
+  type: Number
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: String
+- contextPath: File.Name
+  description: The name of the file.
+  type: String
+- contextPath: File.SSDeep
+  description: The SSDeep hash of the file (same as displayed in file entries).
+  type: String
+- contextPath: File.EntryID
+  description: File entry ID.
+  type: String
+- contextPath: File.Info
+  description: Information about the file.
+  type: String
+- contextPath: File.Type
+  description: The file type.
+  type: String
+- contextPath: File.Extension
+  description: The extension of the file.
+  type: String
 script: '-'
 subtype: python3
 system: false
@@ -87,13 +119,12 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.8.5.10845
+tests:
+- No Test
 dependson:
   must:
-    - cb-session-create-and-wait
-    - cb-session-close
-    - cb-get-file-from-endpoint
-    - cb-list-sensors
-    - cb-list-sessions
-tests:
-  - No Test
-
+  - cb-session-create-and-wait
+  - cb-session-close
+  - cb-get-file-from-endpoint
+  - cb-list-sensors
+  - cb-list-sessions

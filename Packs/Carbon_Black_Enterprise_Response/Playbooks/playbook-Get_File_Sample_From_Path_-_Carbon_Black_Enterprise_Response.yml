@@ -104,7 +104,7 @@ tasks:
       version: -1
       name: Get File
       description: Use Carbon black Response Live session to retrieve a file from an endpoint. Endpoint needs to have a CbResponse sensor deployed.
-      scriptName: CBLiveGetFile
+      scriptName: CBLiveGetFile_V2
       type: regular
       iscommand: false
       brand: ""
@@ -112,9 +112,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      hostname:
+      endpoint:
         simple: ${inputs.Hostname}
-      ip: {}
       path:
         simple: ${inputs.Path}
     separatecontext: false

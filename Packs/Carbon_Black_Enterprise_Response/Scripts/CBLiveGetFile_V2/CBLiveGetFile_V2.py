@@ -8,8 +8,8 @@ from contextlib import contextmanager
 from typing import Tuple, Union
 
 '''Globals'''
-ERROR_SENSOR = '-1'
-ERROR_SESSION = '-1'
+ERROR_SENSOR = -1
+ERROR_SESSION = -1
 
 
 ''' STANDALONE FUNCTION '''
@@ -53,7 +53,7 @@ def search_active_session(sensor_id: str) -> str:
     """
     output = demisto.executeCommand("cb-list-sessions", {'sensor': sensor_id, 'status': 'active'})
     session_id = dict_safe_get(output, [0, 'EntryContext', 'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)',
-                                        0, 'CbSessionID'], ERROR_SESSION, str)
+                                        0, 'CbSessionID'], ERROR_SESSION, int)
 
     return session_id
 
@@ -120,7 +120,7 @@ def open_session(endpoint: str, timeout: str):
             raise Exception(f"Sensor with {endpoint} is not connected!")
         # Get session to communicate with sensor.
         active_session = search_active_session(sensor_id)
-        if not active_session:
+        if active_session == ERROR_SESSION:
             active_session = create_active_session(sensor_id, timeout)
         # Validate that session established succesfully
         if active_session == ERROR_SESSION:

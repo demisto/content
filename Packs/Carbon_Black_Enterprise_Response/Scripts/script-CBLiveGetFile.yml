@@ -134,7 +134,7 @@ script: >-
       sys.exit(0)
 type: python
 subtype: python2
-comment: "Use Carbon black Response Live session to retrieve a file from an endpoint. Endpoint needs to have a CbResponse sensor deployed."
+comment: "Deprecated use CBLiveGetFile_V2 instead. Use Carbon black Response Live session to retrieve a file from an endpoint. Endpoint needs to have a CbResponse sensor deployed."
 tags:
 - carbon-black
 - endpoint
@@ -149,6 +149,7 @@ args:
 - name: ip
   description: ip of a Carbon Black sensor
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - cb-sensor-info
