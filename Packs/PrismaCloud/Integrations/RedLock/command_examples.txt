@@ -4,3 +4,6 @@
 !redlock-get-remediation-details alert-id=P-214016
 !redlock-dismiss-alerts dismissal-note="testing" alert-id=P-214016
 !redlock-reopen-alerts alert-id=P-214016
+!redlock-dismiss-alerts alert-id=P-342916 dismissal-note=testing snooze-unit=hour snooze-value=1
+!redlock-get-rql-response rql=`config where api.name = 'aws-ec2-describe-instances' and json.rule = publicIpAddress exists`
+!redlock-remediate-alerts alert-id=P-315385
