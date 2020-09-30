@@ -59,8 +59,8 @@ script:
       default: true
       description: The policy name the rule will be associated with.
     - name: ruleList
-      description: Specifies a list of rules to evaluate. See security firewall rule-list.
-        If a rule-list is specified then only the schedule and status properties effect
+      description: Specifies a list of rules to evaluate. See f5-list-rules command.
+        If a ruleList is specified then only the schedule and status properties effect
         the rule.
     - name: name
       required: true

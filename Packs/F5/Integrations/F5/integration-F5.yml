@@ -53,6 +53,7 @@ script:
         var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
     }
 
+
     var proxy = params.proxy;
 
     var insecure = params.insecure;
@@ -102,7 +103,6 @@ script:
 
         return JSON.parse(res.Body);
     }
-
 
 
     var methodDictionary = {
@@ -210,7 +210,7 @@ script:
       default: true
       description: The policy name the rule will be associated with.
     - name: ruleList
-      description: Specifies a list of rules to evaluate. See security firewall rule-list. If a rule-list is specified then only the schedule and status properties effect the rule.
+      description: Specifies a list of rules to evaluate. See f5-list-rules command. If a ruleList is specified then only the schedule and status properties effect the rule.
     - name: name
       required: true
       description: The rule name
