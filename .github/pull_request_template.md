@@ -1,5 +1,11 @@
 <!-- REMINDER: THIS IS A PUBLIC REPO DO NOT POST HERE SECRETS/SENSITIVE DATA -->
 
+## XSOAR [Partner](https://xsoar.pan.dev/docs/partners/become-a-tech-partner)?
+In case you are a technological partner:
+- [ ] The title must be in the following format: **[YOUR_PARTNER_ID] short description**.
+
+If you are not a technological partner (i.e. PANW employee, customer or individual developer), please delete this section.
+
 ## Status
 - [x] In Progress
 - [ ] Ready
@@ -15,9 +21,9 @@ A few sentences describing the overall goals of the pull request's commits.
 Paste here any images that will help the reviewer
 
 ## Minimum version of Demisto
-- [ ] 4.5.0
 - [ ] 5.0.0
 - [ ] 5.5.0
+- [ ] 6.0.0
 
 ## Does it break backward compatibility?
    - [ ] Yes
@@ -27,7 +33,4 @@ Paste here any images that will help the reviewer
 ## Must have
 - [ ] Tests
 - [ ] Documentation 
-
-## Demisto Partner?
-- [ ] The title must be in the following format: **[YOUR_PARTNER_ID] short description**
 

@@ -1,0 +1,1040 @@
+{
+  "name": "www.dummyhost.com",
+  "type": "HOST",
+  "firstSeen": 1563367203000,
+  "lastSeen": 1591633736618,
+  "uuid": "dffa643e-7d39-4687-d35d-f37a217f339c",
+  "label": "www.dummyhost.com",
+  "description": "www.dummyhost.com",
+  "asset": {
+    "host": "www.dummyhost.com",
+    "domain": "dummy.org",
+    "ipAddresses": [
+      {
+        "value": "162.6.217.33",
+        "firstSeen": 1563367203000,
+        "lastSeen": 1591539206000,
+        "count": 805,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "webComponents": [
+      {
+        "ruleid": [],
+        "firstSeen": 1563583177321,
+        "lastSeen": 1591539554297,
+        "recent": true,
+        "ports": [
+          {
+            "port": 443,
+            "firstSeen": 1586303967207,
+            "lastSeen": 1591539554297,
+            "count": 1421
+          }
+        ],
+        "webComponentName": "ASP.NET",
+        "webComponentCategory": "Framework",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1588834637755,
+        "lastSeen": 1591539554297,
+        "recent": true,
+        "ports": [
+          {
+            "port": 443,
+            "firstSeen": 1588834637755,
+            "lastSeen": 1591539554297,
+            "count": 1137
+          }
+        ],
+        "webComponentName": "Microsoft IIS httpd",
+        "webComponentCategory": "Server",
+        "webComponentVersion": "7.0",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1563583177205,
+        "lastSeen": 1591539554297,
+        "recent": true,
+        "ports": [
+          {
+            "port": 443,
+            "firstSeen": 1586290553633,
+            "lastSeen": 1591539554297,
+            "count": 1490
+          }
+        ],
+        "webComponentName": "Microsoft-IIS",
+        "webComponentCategory": "Server",
+        "webComponentVersion": "7.0",
+        "cves": [
+          {
+            "name": "CVE-2009-2521",
+            "cvssScore": 2.5999999046325684,
+            "cweID": "CWE-399"
+          }
+        ],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1563583177205,
+        "lastSeen": 1591539545817,
+        "recent": true,
+        "ports": [
+          {
+            "port": 443,
+            "firstSeen": 1586290553633,
+            "lastSeen": 1591539545817,
+            "count": 69
+          }
+        ],
+        "webComponentName": "ASP.NET",
+        "webComponentCategory": "Framework",
+        "webComponentVersion": "2.0.50727",
+        "cves": [
+          {
+            "name": "CVE-2008-5100",
+            "cvssScore": 10.0,
+            "cweID": "CWE-310"
+          }
+        ],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1563583176558,
+        "lastSeen": 1591539545817,
+        "recent": true,
+        "ports": [
+          {
+            "port": 443,
+            "firstSeen": 1586290553633,
+            "lastSeen": 1591539545817,
+            "count": 166
+          },
+          {
+            "port": 80,
+            "firstSeen": 1586290553633,
+            "lastSeen": 1591539545260,
+            "count": 88
+          }
+        ],
+        "webComponentName": "F5",
+        "webComponentCategory": "Load balancer",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1579586776817,
+        "lastSeen": 1591539545817,
+        "recent": true,
+        "ports": [
+          {
+            "port": 443,
+            "firstSeen": 1586290553633,
+            "lastSeen": 1591539545817,
+            "count": 67
+          }
+        ],
+        "webComponentName": "Microsoft Visual Studio.NET",
+        "webComponentCategory": "Development Tool",
+        "webComponentVersion": "7.0",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1563583177205,
+        "lastSeen": 1591539545817,
+        "recent": true,
+        "ports": [
+          {
+            "port": 443,
+            "firstSeen": 1586657309278,
+            "lastSeen": 1591539545817,
+            "count": 41
+          }
+        ],
+        "webComponentName": "www.dummyhost.com",
+        "webComponentCategory": "Tracking Pixel",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1563583176558,
+        "lastSeen": 1591539545260,
+        "recent": true,
+        "ports": [
+          {
+            "port": 80,
+            "firstSeen": 1586290553633,
+            "lastSeen": 1591539545260,
+            "count": 91
+          }
+        ],
+        "webComponentName": "BigIP",
+        "webComponentCategory": "Server",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1588875077422,
+        "lastSeen": 1591539545260,
+        "recent": true,
+        "ports": [
+          {
+            "port": 80,
+            "firstSeen": 1588875077422,
+            "lastSeen": 1591539545260,
+            "count": 54
+          }
+        ],
+        "webComponentName": "F5 BIG-IP load balancer httpd",
+        "webComponentCategory": "Server",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1564377273451,
+        "lastSeen": 1564377273451,
+        "ports": [],
+        "webComponentName": "Ektron",
+        "webComponentCategory": "CMS",
+        "cves": []
+      }
+    ],
+    "headers": [
+      {
+        "headerName": "Server",
+        "headerValue": "Microsoft-IIS/7.0",
+        "firstSeen": 1563583177205,
+        "lastSeen": 1591539554297,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-Powered-By",
+        "headerValue": "ASP.NET",
+        "firstSeen": 1563583177205,
+        "lastSeen": 1591539554297,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "Content-Type",
+        "headerValue": "application/x-javascript",
+        "firstSeen": 1563583177321,
+        "lastSeen": 1591539546378,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-AspNet-Version",
+        "headerValue": "2.0.50727",
+        "firstSeen": 1563583177205,
+        "lastSeen": 1591539545817,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "Location",
+        "headerValue": "https://www.dummyhost.com/",
+        "firstSeen": 1563583176558,
+        "lastSeen": 1591539545260,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "Server",
+        "headerValue": "BigIP",
+        "firstSeen": 1563583176558,
+        "lastSeen": 1591539545260,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-Cache-Lookup",
+        "headerValue": "MISS from localhost:60000",
+        "firstSeen": 1563833068335,
+        "lastSeen": 1591539545260,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "WWW-Authenticate",
+        "headerValue": "NTLM",
+        "firstSeen": 1579609657404,
+        "lastSeen": 1591530528480,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "WWW-Authenticate",
+        "headerValue": "Negotiate",
+        "firstSeen": 1579609657404,
+        "lastSeen": 1591530528480,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-Cache-Lookup",
+        "headerValue": "MISS from localhost:65432",
+        "firstSeen": 1563821147426,
+        "lastSeen": 1591326851107,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "Content-Encoding",
+        "headerValue": "gzip",
+        "firstSeen": 1587687343360,
+        "lastSeen": 1587687343360,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "Vary",
+        "headerValue": "Accept-Encoding",
+        "firstSeen": 1587687343360,
+        "lastSeen": 1587687343360,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "attributes": [
+      {
+        "attributeType": "address",
+        "attributeValue": "162.6.217.33",
+        "firstSeen": 1563583176558,
+        "lastSeen": 1591539554297,
+        "recent": true,
+        "current": true
+      },
+      {
+        "attributeType": "address",
+        "attributeValue": "unknown",
+        "firstSeen": 1586044395500,
+        "lastSeen": 1591191958789,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "cookies": [
+      {
+        "cookieName": "ASP.NET_SessionId",
+        "cookieDomain": "www.dummyhost.com",
+        "firstSeen": 1563583177205,
+        "lastSeen": 1591539545817,
+        "recent": true,
+        "current": true
+      },
+      {
+        "cookieName": "BIGipServerdsars_dsars_trn-l5-rule",
+        "cookieDomain": "www.dummyhost.com",
+        "firstSeen": 1563583177205,
+        "lastSeen": 1591539545817,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "sslCerts": [
+      {
+        "sha1": "a33fc7ab5ab26b33dd23fce194dc47a9904c6e70",
+        "serialNumber": "4f219e40599f0dfad05ad0ec72c55fc",
+        "subjectAlternativeNames": [
+          "dsars.dummy.org",
+          "test.dsars.dummy.org",
+          "train.dsars.dummy.org"
+        ],
+        "issuerAlternativeNames": [],
+        "firstSeen": 1563888637711,
+        "lastSeen": 1591473937119,
+        "keySize": 2048,
+        "version": 3,
+        "certificateAuthority": false,
+        "selfSigned": false,
+        "recent": true,
+        "signatureAlgorithm": "SHA256withRSA",
+        "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+        "notBefore": 1561939200000,
+        "notAfter": 1593604800000,
+        "publicKeyAlgorithm": "RSA",
+        "id": "a33fc7ab5ab26b33dd23fce194dc47a9904c6e70",
+        "issuer": {
+          "country": "US",
+          "organization": "DigiCert Inc",
+          "common name": "DigiCert SHA2 Secure Server CA"
+        },
+        "subject": {
+          "country": "US",
+          "unit": "IT Infrastructure Service Delivery",
+          "organization": "American Red Cross",
+          "common name": "dsars.dummy.org",
+          "state": "District of Columbia",
+          "locale": "Washington"
+        },
+        "current": true
+      }
+    ],
+    "hostCore": {
+      "host": "www.dummyhost.com",
+      "domain": "dummy.org",
+      "firstSeen": 1563583176558,
+      "lastSeen": 1584554298754,
+      "count": 2878,
+      "blacklistSequenceCount": 0,
+      "phishSequenceCount": 0,
+      "malwareSequenceCount": 0,
+      "spamSequenceCount": 0,
+      "scamSequenceCount": 0,
+      "hostReputationScore": 0,
+      "hostPhishReputationScore": 0,
+      "hostMalwareReputationScore": 0,
+      "hostSpamReputationScore": 0,
+      "hostScamReputationScore": 0,
+      "domainReputationScore": 0,
+      "domainPhishReputationScore": 0,
+      "domainMalwareReputationScore": 0,
+      "domainSpamReputationScore": 0,
+      "domainScamReputationScore": 0
+    },
+    "services": [
+      {
+        "scheme": "https",
+        "port": 443,
+        "webComponents": [],
+        "sslCerts": [],
+        "exceptions": [],
+        "firstSeen": 1563888637711,
+        "lastSeen": 1591473937119,
+        "recent": true,
+        "banners": [],
+        "scanMetadata": [
+          {
+            "port": 443,
+            "bannerMetadata": "minicrawl:https",
+            "startScan": 1591473937119,
+            "endScan": 1591473937119
+          }
+        ],
+        "current": true
+      },
+      {
+        "scheme": "http",
+        "port": 80,
+        "webComponents": [],
+        "sslCerts": [],
+        "exceptions": [],
+        "firstSeen": 1563888637711,
+        "lastSeen": 1591326851107,
+        "recent": true,
+        "banners": [],
+        "scanMetadata": [
+          {
+            "port": 80,
+            "bannerMetadata": "minicrawl:http",
+            "startScan": 1591326851107,
+            "endScan": 1591326851107
+          }
+        ],
+        "current": true
+      }
+    ],
+    "cnames": [
+      {
+        "value": "dummy.net",
+        "firstSeen": 1476123597000,
+        "lastSeen": 1591570576000,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "firstSeen": 1563367203000,
+    "lastSeen": 1591539554297,
+    "count": 17587,
+    "resourceUrls": [
+      {
+        "url": "https://www.dummyhost.com/UI/Javascript/Popup/Popup.js",
+        "resources": [
+          {
+            "md5": "9566d2d215543e726eaf7866f778df70",
+            "responseBodySize": 6132,
+            "firstSeen": 1563583177865,
+            "lastSeen": 1591539546378,
+            "count": 112,
+            "firstSeenCrawlGuid": "b4385aa4-b983-430c-8c53-44818344405d",
+            "firstSeenPageGuid": "bf00c773-92be-4e60-89dc-2ef075f0bf73",
+            "firstSeenResourceGuid": "e5f80cf1-ff9e-41d9-8399-ce79d6826555",
+            "lastSeenCrawlGuid": "649b1282-74ed-454a-9722-6851169292ab",
+            "lastSeenPageGuid": "1861e31d-fdba-4627-b85d-49e45049ae14",
+            "lastSeenResourceGuid": "f93d59d8-43e2-433a-9423-f4daa4bd8ffe",
+            "responseBodyMinhash": [],
+            "contentType": "application/x-javascript",
+            "sha256": "M4P4apwfM9IL6hTJhd0Beew4xwu+GBB0AKfpTu+hKh0=",
+            "sha384": "jhQTHeiFhe3lHCfAlDD0fztRUD1BW4uekhwBegWhJWcGX0n9zoVN4AEzMxdTsQCj",
+            "sha512": "nQ+9BqbLBZz4rBqwODv9IT2qgZn+f9GuPq9xTRycMdHYngmeUPuA8vt1Q8MkTup/NeqhrZGFl3tjH1wJzfh+tA==",
+            "url": "https://www.dummyhost.com/UI/Javascript/Popup/Popup.js",
+            "cached": false,
+            "host": "www.dummyhost.com"
+          }
+        ],
+        "firstSeen": 1563583177865,
+        "lastSeen": 1591539546378,
+        "recent": true,
+        "current": true
+      },
+      {
+        "url": "https://www.dummyhost.com/UI/Javascript/IconButton/IconButton.js",
+        "resources": [
+          {
+            "md5": "f057be5035c2bf8847e936e863eb9ab8",
+            "responseBodySize": 4938,
+            "firstSeen": 1563583177727,
+            "lastSeen": 1591539546265,
+            "count": 112,
+            "firstSeenCrawlGuid": "b4385aa4-b983-430c-8c53-44818344405d",
+            "firstSeenPageGuid": "bf00c773-92be-4e60-89dc-2ef075f0bf73",
+            "firstSeenResourceGuid": "f0acd0a8-dfc1-4e02-861b-2ddcfb281515",
+            "lastSeenCrawlGuid": "649b1282-74ed-454a-9722-6851169292ab",
+            "lastSeenPageGuid": "1861e31d-fdba-4627-b85d-49e45049ae14",
+            "lastSeenResourceGuid": "56d62d63-c2c2-4992-a621-6c267d32a70f",
+            "responseBodyMinhash": [],
+            "contentType": "application/x-javascript",
+            "sha256": "c2JwgQ8H25eGbsNlLsDHDa2cbXALXIBHhY9DWw3tArA=",
+            "sha384": "BVo5VBL3++PYQGfFdnF1wn1IIATjMVs20pLSYPkSS+9NPD+J3x6VHN14ytx734lJ",
+            "sha512": "qGrJBUGWO4ycHcLl+e/X2jyvnOymo1x6KzgRF6SPK3mEWUO9Mbcv+e1E1Ka+j22aKbPus/B7MLT+KfbZ9kDgaQ==",
+            "url": "https://www.dummyhost.com/UI/Javascript/IconButton/IconButton.js",
+            "cached": false,
+            "host": "www.dummyhost.com"
+          }
+        ],
+        "firstSeen": 1563583177727,
+        "lastSeen": 1591539546265,
+        "recent": true,
+        "current": true
+      },
+      {
+        "url": "https://www.dummyhost.com/UI/Javascript/Drag/Drag.js",
+        "resources": [
+          {
+            "md5": "7f6c5a749b442041398d603e71089473",
+            "responseBodySize": 1346,
+            "firstSeen": 1563583177590,
+            "lastSeen": 1591539546152,
+            "count": 112,
+            "firstSeenCrawlGuid": "b4385aa4-b983-430c-8c53-44818344405d",
+            "firstSeenPageGuid": "bf00c773-92be-4e60-89dc-2ef075f0bf73",
+            "firstSeenResourceGuid": "d91c7187-b4a9-4a2e-a808-3f99fc56d38a",
+            "lastSeenCrawlGuid": "649b1282-74ed-454a-9722-6851169292ab",
+            "lastSeenPageGuid": "1861e31d-fdba-4627-b85d-49e45049ae14",
+            "lastSeenResourceGuid": "a5ef8bf2-df24-4d5d-a003-7a6850287651",
+            "responseBodyMinhash": [],
+            "contentType": "application/x-javascript",
+            "sha256": "RsdQYcihx0d48ERe3zn7S1i6kKSw2SbtbnfNCCq6Bt8=",
+            "sha384": "hVGt5BrSoKxtuQN/TWPIeh86VghHllmwjWYs88Ej4qR+6qobvjG/TEP5BxcoDi27",
+            "sha512": "bRTgy3tyXtiGBWfmLB/LDaag5FXlrZJLT11rFBAcNqkXFVb79Ibx+FGjToeMl54o2eCq4ZvfOFZYO2GSLQypcA==",
+            "url": "https://www.dummyhost.com/UI/Javascript/Drag/Drag.js",
+            "cached": false,
+            "host": "www.dummyhost.com"
+          }
+        ],
+        "firstSeen": 1563583177590,
+        "lastSeen": 1591539546152,
+        "recent": true,
+        "current": true
+      },
+      {
+        "url": "https://www.dummyhost.com/Login.js",
+        "resources": [
+          {
+            "md5": "b42b0d73e3db2084a3a0638fc7c374c3",
+            "responseBodySize": 1469,
+            "firstSeen": 1563583177457,
+            "lastSeen": 1591539546040,
+            "count": 112,
+            "firstSeenCrawlGuid": "b4385aa4-b983-430c-8c53-44818344405d",
+            "firstSeenPageGuid": "bf00c773-92be-4e60-89dc-2ef075f0bf73",
+            "firstSeenResourceGuid": "bf1512f1-52aa-44d6-81e5-79793867bf45",
+            "lastSeenCrawlGuid": "649b1282-74ed-454a-9722-6851169292ab",
+            "lastSeenPageGuid": "1861e31d-fdba-4627-b85d-49e45049ae14",
+            "lastSeenResourceGuid": "1ed8ed97-cd83-4171-9a66-beab15fcade3",
+            "responseBodyMinhash": [],
+            "contentType": "application/x-javascript",
+            "sha256": "wB48oMmNYqYyfsQAyPvZ0F3G4yyPjjqVZHqgP+BCf7M=",
+            "sha384": "NV+hTiluuvWD33xSQWMjniu8vnwCKim4y4qDUhj5rbrztA/+fLsFNmSF9qGYU0IC",
+            "sha512": "4UUEFzD+rMdeL7yfLtPRLqOp8ygKkWSQ9mOUlYX7Vd2QnmLQpwl6a97b5Tr0ACaGJPwYy46Lblcy3hMojk6ePA==",
+            "url": "https://www.dummyhost.com/Login.js",
+            "cached": false,
+            "host": "www.dummyhost.com"
+          }
+        ],
+        "firstSeen": 1563583177457,
+        "lastSeen": 1591539546040,
+        "recent": true,
+        "current": true
+      },
+      {
+        "url": "https://www.dummyhost.com/UI/javascript/DSARS/DSARSCommon.js",
+        "resources": [
+          {
+            "md5": "c37c978001251bd5a2365f9de2c00adb",
+            "responseBodySize": 17323,
+            "firstSeen": 1563583177321,
+            "lastSeen": 1591539545924,
+            "count": 112,
+            "firstSeenCrawlGuid": "b4385aa4-b983-430c-8c53-44818344405d",
+            "firstSeenPageGuid": "bf00c773-92be-4e60-89dc-2ef075f0bf73",
+            "firstSeenResourceGuid": "9b5ab80e-eec1-4321-b921-c5d7a460bb14",
+            "lastSeenCrawlGuid": "649b1282-74ed-454a-9722-6851169292ab",
+            "lastSeenPageGuid": "1861e31d-fdba-4627-b85d-49e45049ae14",
+            "lastSeenResourceGuid": "ddcda999-f1aa-4217-85a0-20a2dcd8367a",
+            "responseBodyMinhash": [],
+            "contentType": "application/x-javascript",
+            "sha256": "/KkLSAZKRbrZ3zOdX32/pIRMT2Ex8NpjT50klzOynno=",
+            "sha384": "fTuNEgN96k+EE2YEKrq1xFYgo14i6ctErV7PhLZQH9vC9PrWsZW7CBGnD/xLCt50",
+            "sha512": "bTiUsIlrCsps1NGoIgF64b8MbKTGNnUeHddNIi+2c01CnYeS0ozc78WEH/5HofST9MN7PXY2z7nxK8MHpAssNQ==",
+            "url": "https://www.dummyhost.com/UI/javascript/DSARS/DSARSCommon.js",
+            "cached": false,
+            "host": "www.dummyhost.com"
+          }
+        ],
+        "firstSeen": 1563583177321,
+        "lastSeen": 1591539545924,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "ipBlocks": [
+      {
+        "ipBlock": "162.6.216.0/23",
+        "firstSeen": 1591281464399,
+        "lastSeen": 1591302683272,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "responseBodies": [],
+    "nsRecord": [
+      {
+        "value": false,
+        "firstSeen": 1563583176558,
+        "lastSeen": 1591539554297,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "mxRecord": [
+      {
+        "value": false,
+        "firstSeen": 1563583176558,
+        "lastSeen": 1591539554297,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "webserver": [
+      {
+        "value": true,
+        "firstSeen": 1563888637711,
+        "lastSeen": 1591473937119,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "location": [
+      {
+        "value": {
+          "countrycode": "US",
+          "countryname": "United States",
+          "latitude": 37.750999450683594,
+          "longitude": -97.8219985961914
+        },
+        "firstSeen": 1591326852000,
+        "lastSeen": 1591539206000
+      }
+    ],
+    "nxdomain": [],
+    "asnNumbers": [
+      {
+        "value": 7152,
+        "firstSeen": 1591281464399,
+        "lastSeen": 1591302683272,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "hostPairs": [
+      {
+        "firstSeen": 1581178012404,
+        "lastSeen": 1591423841029,
+        "recent": true,
+        "childHostname": "www.dummyhost.com",
+        "parentHostname": "www.dummyhost.com",
+        "current": true
+      },
+      {
+        "firstSeen": 1581178012404,
+        "lastSeen": 1591423841029,
+        "recent": true,
+        "parentHostname": "www.dummyhost.com",
+        "childHostname": "www.dummyhost.com",
+        "current": true
+      }
+    ],
+    "alexaRank": "Top 100k",
+    "nameServers": [
+      {
+        "value": "dummy.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy1.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy2.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy3.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "whois": {
+      "createdAt": 1591402147858,
+      "updatedAt": 1591402147858,
+      "status": "ACTIVE",
+      "whoisID": 6674824394369493291,
+      "domain": "dummydomain.com",
+      "domainMd5": "9b4f498908b61ea0887cdfdca9f47542",
+      "domainUnicode": "dummydomain.com",
+      "tld": "com",
+      "nameservers": [
+        "dummy.nameserver.com",
+        "dummy1.nameserver.com",
+        "dummy2.nameserver.com",
+        "dummy3.nameserver.com"
+      ],
+      "whoisServer": "dummy.com",
+      "registrarIanaID": 146,
+      "registrarName": "Dummy, LLC",
+      "registrarEmail": "abuse@dummydomain.com",
+      "registrarCreatedAt": 1137076406000,
+      "registrarUpdatedAt": 1483618972000,
+      "registrarExpiresAt": 1768228406000,
+      "registrant": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "state": "cyprus",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "admin": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "technical": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "billing": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "domainStatus": "delete prohibited,transfer prohibited,renew prohibited,update prohibited",
+      "auditCreatedAt": 1591402147834,
+      "auditUpdatedAt": 1591402147834,
+      "registrarParseCode": 36643,
+      "noRecord": false,
+      "domainAvailable": false,
+      "contactEmails": [
+        "dummy@dummy.com"
+      ],
+      "expired": false,
+      "contacts": [
+        {
+          "whoisContactID": 0,
+          "organization": "Dummy Organization",
+          "state": "california",
+          "country": "united states",
+          "address": "california\nunited states\n",
+          "id": 0
+        }
+      ],
+      "contactNames": [
+        "Dummy"
+      ],
+      "contactOrganizations": [
+        "Dummy Organization"
+      ],
+      "contactCountries": [
+        "united states"
+      ],
+      "compositeParseCode": 36643,
+      "id": 6674824394369493291
+    }
+  },
+  "discoveryRun": {
+    "discoveryRunID": 1915892,
+    "workspaceID": 2946,
+    "runType": "MANUAL",
+    "userID": 3287,
+    "runDate": 1588288766000,
+    "assetType": null,
+    "search": {
+      "createdAt": 1588288766000,
+      "updatedAt": 1590754837000,
+      "status": "ACTIVE",
+      "assetSearchID": 427421,
+      "name": "Discovery Light: Thu Apr 30 16:19:26 PDT 2020",
+      "workspaceID": 2946,
+      "sourceID": null,
+      "query": "riskiq.com",
+      "maxResults": 0,
+      "lastSearchDate": 1588230000000,
+      "searchEnabled": true,
+      "searchScheduled": 1591993237000,
+      "frequency": 336,
+      "discoveredCount": 0,
+      "assetSearchState": "COMPLETED",
+      "assetSearchType": "DISCO_LIGHT",
+      "notes": "Kicking things off so I have real data for testing. ",
+      "id": 427421
+    },
+    "fullName": "2020-04-30 4:19 PM PDT - Manual"
+  },
+  "id": 219505131,
+  "source": false,
+  "priority": "NONE",
+  "keystone": false,
+  "updatedAt": 1588290509093,
+  "data": {
+    "hostPairs": {
+      "content": [
+        {
+          "firstSeen": 1563888637711,
+          "lastSeen": 1591661598496,
+          "count": 4977,
+          "id": "www.dummyhost.com$www.dummyhost.com$parentPage",
+          "childHostname": "www.dummyhost.com",
+          "parentHostname": "www.dummyhost.com",
+          "cause": "parentPage",
+          "childCount": 4977,
+          "parentCount": 4977,
+          "childScore": 1.0,
+          "parentScore": 1.0,
+          "pairScore": 1.0
+        }
+      ],
+      "totalElements": 1,
+      "totalPages": 1,
+      "last": true,
+      "numberOfElements": 1,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "attributes": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "webComponents": {
+      "content": [
+        {
+          "firstSeen": 1588834637755,
+          "lastSeen": 1591661598496,
+          "count": 1142,
+          "id": "org.dummy.afescdms.ksgltd04$Microsoft IIS httpd$Server$7.0",
+          "hostname": "www.dummyhost.com",
+          "domain": "dummy.org",
+          "webComponentVersion": "7.0",
+          "webComponentName": "Microsoft IIS httpd",
+          "webComponentCategory": "Server",
+          "cves": [],
+          "ports": [
+            {
+              "firstSeen": 1588834637755,
+              "lastSeen": 1591661598496,
+              "count": 1142,
+              "portNumber": 443
+            }
+          ]
+        },
+        {
+          "firstSeen": 1563583176558,
+          "lastSeen": 1591661598496,
+          "count": 364,
+          "id": "org.dummy.afescdms.ksgltd04$BigIP$Server$",
+          "hostname": "www.dummyhost.com",
+          "domain": "dummy.org",
+          "webComponentName": "BigIP",
+          "webComponentCategory": "Server",
+          "cves": [],
+          "ports": [
+            {
+              "firstSeen": 1563583176558,
+              "lastSeen": 1591661598496,
+              "count": 364,
+              "portNumber": 80
+            }
+          ]
+        }
+      ],
+      "totalElements": 10,
+      "totalPages": 5,
+      "last": false,
+      "numberOfElements": 2,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "sslCerts": {
+      "content": [
+        {
+          "firstSeen": 1562021980870,
+          "lastSeen": 1591685992751,
+          "count": 4676,
+          "id": "a33fc7ab5ab26b33dd23fce194dc47a9904c6e70",
+          "sha1": "a33fc7ab5ab26b33dd23fce194dc47a9904c6e70",
+          "version": 3,
+          "serialNumber": "4f219e40599f0dfad05ad0ec72c55fc",
+          "signatureAlgorithm": "SHA256withRSA",
+          "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+          "issuer": {
+            "country": "US",
+            "organization": "DigiCert Inc",
+            "common name": "DigiCert SHA2 Secure Server CA"
+          },
+          "issuerAlternativeNames": [
+            "dsars.dummy.org",
+            "test.dsars.dummy.org",
+            "train.dsars.dummy.org"
+          ],
+          "notBefore": 1561939200000,
+          "notAfter": 1593604800000,
+          "subject": {
+            "country": "US",
+            "unit": "IT Infrastructure Service Delivery",
+            "organization": "American Red Cross",
+            "common name": "dsars.dummy.org",
+            "state": "District of Columbia",
+            "locale": "Washington"
+          },
+          "subjectAlternativeNames": [
+            "dsars.dummy.org",
+            "test.dsars.dummy.org",
+            "train.dsars.dummy.org"
+          ],
+          "publicKeyAlgorithm": "RSA",
+          "certificateAuthority": false,
+          "selfSigned": false
+        }
+      ],
+      "totalElements": 1,
+      "totalPages": 1,
+      "last": true,
+      "numberOfElements": 1,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "cookies": {
+      "content": [
+        {
+          "firstSeen": 1563583177205,
+          "lastSeen": 1591539545817,
+          "count": 422,
+          "id": "org.dummy.afescdms.ksgltd04$www.dummyhost.com$1e236db3ef6510dfb39647ea90b4aec7",
+          "hostname": "www.dummyhost.com",
+          "domain": "dummy.org",
+          "cookieDomain": "www.dummyhost.com",
+          "cookieName": "ASP.NET_SessionId"
+        },
+        {
+          "firstSeen": 1563583177205,
+          "lastSeen": 1591539545817,
+          "count": 707,
+          "id": "org.dummy.afescdms.ksgltd04$www.dummyhost.com$aa3dade2f131605183ccbab3b53dabf7",
+          "hostname": "www.dummyhost.com",
+          "domain": "dummy.org",
+          "cookieDomain": "www.dummyhost.com",
+          "cookieName": "BIGipServerdsars_dsars_trn-l5-rule"
+        }
+      ],
+      "totalElements": 2,
+      "totalPages": 1,
+      "last": true,
+      "numberOfElements": 2,
+      "first": true,
+      "size": 2,
+      "number": 0
+    }
+  }
+}

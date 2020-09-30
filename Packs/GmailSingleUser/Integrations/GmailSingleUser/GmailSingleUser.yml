@@ -1,6 +1,6 @@
 category: Messaging
 beta: true
-fromversion: 4.5.0
+fromversion: 5.0.0
 commonfields:
   id: Gmail Single User
   version: -1
@@ -68,8 +68,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of IDs of War Room entries that contain
-        files, which need be attached to the email.
+      description: A comma-separated list of IDs of War Room entries that contain files, which need be attached to the email.
       isArray: true
       name: attachIDs
       required: false
@@ -141,8 +140,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of additional headers in the format: headerName=headerValue.
-        For example, "headerName1=headerValue1,headerName2=headerValue2".'
+      description: 'A comma-separated list of additional headers in the format: headerName=headerValue. For example, "headerName1=headerValue1,headerName2=headerValue2".'
       isArray: true
       name: additionalHeader
       required: false
@@ -200,8 +198,7 @@ script:
     description: Starts the OAuth2 process. Get a link to use to authenticate to Gmail.
   - name: gmail-auth-test
     arguments: []
-    description: Tests that Gmail auth is properly configured. Use this command after completing
-      the OAuth2 authentication process.
+    description: Tests that Gmail auth is properly configured. Use this command after completing the OAuth2 authentication process.
   dockerimage: demisto/google-api-py3:1.0.0.4554
   isfetch: true
   longRunning: false
@@ -211,6 +208,6 @@ script:
   type: python
   subtype: python3
 tests:
-  - Gmail Single User - Test
-defaultClassifier: Gmail Single User
-defaultMapperIn: Gmail Single User-mapper
+- Gmail Single User - Test
+defaultclassifier: Gmail Single User
+defaultmapperin: Gmail Single User-mapper

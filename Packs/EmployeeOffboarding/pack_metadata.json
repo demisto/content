@@ -1,8 +1,8 @@
 {
     "name": "Employee Offboarding",
-    "description": " ",
+    "description": "There’s a multitude of tasks to offboard an employee. So let us help you streamline the process and complete that checklist with this Content Pack.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,6 +11,66 @@
         "IT Services"
     ],
     "tags": [],
-    "useCases": ["Employee Offboarding"],
-    "keywords": []
+    "useCases": [
+        "Employee Offboarding"
+    ],
+    "keywords": [],
+    "dependencies": {
+        "Okta": {
+            "mandatory": false,
+            "display_name": "okta"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "GoogleVault": {
+            "mandatory": false,
+            "display_name": "Google Vault"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "DuoAdminApi": {
+            "mandatory": false,
+            "display_name": "DUO Admin"
+        },
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        }
+    }
 }

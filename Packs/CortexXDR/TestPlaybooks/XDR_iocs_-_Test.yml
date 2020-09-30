@@ -300,7 +300,7 @@ tasks:
     task:
       id: c9a9ecd7-afef-46ff-8240-fd4d9af54fed
       version: -1
-      name: Sleep (300)
+      name: Sleep (360)
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -313,7 +313,7 @@ tasks:
       - "15"
     scriptarguments:
       seconds:
-        simple: "300"
+        simple: "360"
     separatecontext: false
     view: |-
       {
@@ -687,7 +687,7 @@ tasks:
     task:
       id: 76bcb0bb-5758-4998-868a-ef00f1817b53
       version: -1
-      name: Sleep (300)
+      name: Sleep (360)
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -700,7 +700,7 @@ tasks:
       - "26"
     scriptarguments:
       seconds:
-        simple: "300"
+        simple: "360"
     separatecontext: false
     view: |-
       {
@@ -770,7 +770,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2300
+          "y": 2180
         }
       }
     note: false
@@ -994,7 +994,7 @@ tasks:
     task:
       id: bfcd05f4-9f1e-4493-8389-b55c04795134
       version: -1
-      name: Sleep (300)
+      name: Sleep (360)
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -1007,7 +1007,7 @@ tasks:
       - "11"
     scriptarguments:
       seconds:
-        simple: "300"
+        simple: "360"
     separatecontext: false
     view: |-
       {

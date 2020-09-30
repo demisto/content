@@ -16,7 +16,7 @@ def test_get_url(mocker):
     assert output == {
         'Type': entryTypes['note'],
         'HumanReadable': 'https://www.eizelulz.com:8443',
-        'ContentsFormat': formats['json'],
+        'ContentsFormat': formats['text'],
         'Contents': 'https://www.eizelulz.com:8443',
         'EntryContext': {'ServerURL': {
             'Scheme': 'https',

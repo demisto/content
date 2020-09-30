@@ -9,6 +9,7 @@ The TAXII Feed integration ingests indicator feeds from TAXII 1.x servers.
     * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
     * __Fetch Interval__: Interval of the fetches.
     * __Reliability__: Reliability of the feed.
+    * __Traffic Light Protocol Color__: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
     * __Discovery Service__: TAXII discovery service endpoint. For example: `http://hailataxii.com/taxii-discovery-service`

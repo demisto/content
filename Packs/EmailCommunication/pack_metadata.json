@@ -1,0 +1,24 @@
+{
+    "name": "Email Communication",
+    "description": "Do you have to send multiple emails to end users? This content pack helps you streamline the process and automate updates, notifications and more.\n",
+    "support": "xsoar",
+    "currentVersion": "1.2.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-08-06T08:15:26Z",
+    "categories": [],
+    "tags": [],
+    "useCases": ["Email Communication"],
+    "keywords": [],
+    "dependencies": {
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    }
+}

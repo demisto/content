@@ -117,3 +117,6 @@ ignore=IF107
 
 [file:incidentfield-Email_Body_Format.json]
 ignore=IF107
+
+[file:Phishing]
+ignore=PA116

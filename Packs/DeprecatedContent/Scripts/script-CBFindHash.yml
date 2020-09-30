@@ -3,13 +3,19 @@ commonfields:
   version: -1
 name: CBFindHash
 deprecated: true
-script: |-
+script: >-
   import json
+
   res = []
+
   t = []
+
   found = []
+
   fileData = {}
+
   md5s = argToList(demisto.args()['md5'])
+
   for md5 in md5s:
       for e in demisto.executeCommand('cb-binary',{'query': 'md5:' + md5}):
           if isError(e):
@@ -34,7 +40,7 @@ tags:
 - carbon-black
 - endpoint
 - enhancement
-comment: Search Carbon Black for connection to specified md5 hash(es).
+comment: Deprecated. Search Carbon Black for connection to specified md5 hash(es).
 system: true
 args:
 - name: md5
@@ -47,5 +53,6 @@ dependson:
   - cb-binary
 timeout: 0s
 tests:
-  - No test
+- No test
 
+fromversion: 5.0.0

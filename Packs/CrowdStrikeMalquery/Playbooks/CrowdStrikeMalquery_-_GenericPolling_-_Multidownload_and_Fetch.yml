@@ -1,0 +1,230 @@
+id: CrowdStrikeMalquery - Multidownload and Fetch
+version: -1
+name: CrowdStrikeMalquery - Multidownload and Fetch
+description: |-
+  Schedule samples for download. Using samples-multidownload is a
+      three-step process: 1. Schedule the download with samples-multidownload, which
+      returns a request ID. 2. Provide that request ID to the cs-malquery-get-request,
+      in order to check the status of the operation. 3. When the request status is
+      “done”, use cs-malquery-sample-fetch to download the results as a password-protected
+      archive
+      Use this playbook as a sub-playbook to schedule samples for download.
+      This playbook implements polling by continuously running the `get-request` command until the operation completes.
+      Once the request status is done the sub-playbook runs cs-malquery-sample-fetch.
+
+      The remote action should have the following structure:
+      1. Initiate the operation - insert the sample SHA256 ids.
+      2. Poll to check if the operation completed.
+      3. Get the results of the operation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 10ff0344-4140-4677-8f42-cb2e4538ee95
+    type: start
+    task:
+      id: 10ff0344-4140-4677-8f42-cb2e4538ee95
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 31ae8182-92f3-45a5-865a-d691cdcdd275
+    type: regular
+    task:
+      id: 31ae8182-92f3-45a5-865a-d691cdcdd275
+      version: -1
+      name: Samples multidownload
+      description: 'Schedule samples for download. Using samples-multidownload is
+        a three-step process: 1. Schedule the download with samples-multidownload,
+        which returns a request ID. 2. Provide that request ID to the cs-malquery-get-request,
+        in order to check the status of the operation. 3. When the request status
+        is “done”, use cs-malquery-sample-fetch to download the results as a password-protected
+        archive. The password to extract results from the archive is: "infected"'
+      script: '|||cs-malquery-samples-multidownload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      samples:
+        simple: ${inputs.sha256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: daaf53c7-1a5b-4993-8ef8-7e6c14a94665
+    type: playbook
+    task:
+      id: daaf53c7-1a5b-4993-8ef8-7e6c14a94665
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${Malquery.Request_ID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: request_id
+      PollingCommandName:
+        simple: cs-malquery-get-request
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Malquery(val.Status == "inprogress" ).Request_ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c0c04f0c-df4e-444c-82e7-fae4afedfec5
+    type: regular
+    task:
+      id: c0c04f0c-df4e-444c-82e7-fae4afedfec5
+      version: -1
+      name: Fetch samples
+      description: Fetch a zip archive containing the samples.
+        Call this once the cs-malquery-samples-multidownload request has finished
+        processing. The password for the archive is 'infected'.
+      script: '|||cs-malquery-sample-fetch'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      request_id:
+        simple: ${Malquery.Request_ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 25dd7b9e-f974-4ec8-8bdd-972114c6260f
+    type: title
+    task:
+      id: 25dd7b9e-f974-4ec8-8bdd-972114c6260f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 745,
+        "width": 390,
+        "x": 710,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: sha256
+  value: {}
+  required: true
+  description: Samples sha256 ids. Comma-separated values.
+  playbookInputQuery:
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 hash.
+- contextPath: File.SHA1
+  description: SHA1 hash.
+- contextPath: File.SHA512
+  description: SHA512 hash.
+- contextPath: File.Name
+  description: Name of the file.
+- contextPath: File.EntryID
+  description: Entry ID.
+- contextPath: File.Info
+  description: File info.
+- contextPath: File.Type
+  description: Type of the file.
+- contextPath: File.MD5
+  description: MD5 hash.
+fromversion: 5.0.0
+tests:
+- No test

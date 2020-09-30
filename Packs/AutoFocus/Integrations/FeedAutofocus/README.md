@@ -19,6 +19,7 @@ To ingest the Daily Feed, use the [AutoFocus Daily Feed](https://xsoar.pan.dev/d
 | sample_query | The query that will be used to fetch the samples. | False |
 | feedReputation | The indicator reputation. | False |
 | feedReliability | The source's reliability. | True |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
 | feedExpirationPolicy | The feed's expiration policy. | False |
 | feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | The feed fetch interval. | False |
@@ -106,3 +107,4 @@ To bring the next batch of indicators run:
             type="video/mp4"/>
     Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/3e9401284a518efa66d9b66bb5c1b5e0e61dbdb5/Packs/FeedAutofocus/Integrations/FeedAutofocus/demo_video/AutoFocus_Feed_demo.mp4 
 </video>
+**Note:** The video instructs users to click the **_API** link to get the JSON query of the *Autofocus Samples Search*. An easier option to get the JSON query is available via the **Export Search** button.

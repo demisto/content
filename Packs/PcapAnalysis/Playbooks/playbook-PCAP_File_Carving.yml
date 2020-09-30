@@ -6,9 +6,9 @@ description: This playbook is used to carve (extract) files from within PCAP fil
   types are pcap, cap, pcapng. The playbook can handle one PCAP file per incident.
   Additional inputs allow the user to provide the WPA password for decrypting 802.11
   (wireless) traffic and adding an RSA certificate to decrypt SSL traffic. Additional
-  options enable you to filter the files to extract according to the file extension or the
-  file actual type (MIME) and limit the amount of files to extract. Another feature enables you
-  to specify a filter to create a new smaller PCAP file. To display
+  options enable you to filter the files to extract according to the file extension
+  or the actual file  type (MIME), and limit the amount of files to extract. Another
+  feature enables you to specify a filter to create a new smaller PCAP file. To display
   the results within the relevant incident fields, the playbook needs to run in a
   PCAP Analysis incident type. For handling of PCAP files larger than 30 MB, refer
   to the PcapMinerV2 documentation.
@@ -33,7 +33,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": -300
+          "y": -220
         }
       }
     note: false
@@ -71,7 +71,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": -150
+          "y": -70
         }
       }
     note: false
@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": 1320
+          "y": 1480
         }
       }
     note: false
@@ -113,8 +113,8 @@ tasks:
       version: -1
       name: Create new PCAP file with filter
       description: |-
-        PcapMIner V2 allows to parse PCAP files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
-        This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine large files you can either:
+        PcapMIner V2 allows you to parse PCAP files by displaying all of the relevant data within ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted, traffic and more.
+        This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine larger files you can either:
         a) Use the `pcap_filter` parameter to filter your PCAP file and thus make is smaller.
         b) Copy the automation and change the `default timeout` parameter to match your needs.
       scriptName: PcapMinerV2
@@ -146,7 +146,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 190
+          "y": 270
         }
       }
     note: false
@@ -184,7 +184,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 20
+          "y": 100
         }
       }
     note: false
@@ -230,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 990,
-          "y": 190
+          "y": 270
         }
       }
     note: false
@@ -272,7 +272,7 @@ tasks:
         simple: ${inputs.FileExtensionFilter}
       extensions_inclusive_or_exclusive: {}
       inclusive_or_exclusive:
-        simple: ${inputs.FileTypeFilter}
+        simple: ${inputs.FilterType}
       limit:
         simple: ${inputs.ExtractedFilesLimit}
       rsa_decrypt_key_entry_id:
@@ -287,7 +287,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 390
+          "y": 470
         }
       }
     note: false
@@ -359,7 +359,7 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 1140
+          "y": 1310
         }
       }
     note: false
@@ -400,7 +400,7 @@ tasks:
       {
         "position": {
           "x": 990,
-          "y": 740
+          "y": 980
         }
       }
     note: false
@@ -423,7 +423,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "105"
+      - "108"
     scriptarguments:
       file:
         complex:
@@ -440,7 +440,7 @@ tasks:
       {
         "position": {
           "x": 990,
-          "y": 570
+          "y": 650
         }
       }
     note: false
@@ -507,7 +507,7 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 920
+          "y": 1170
         }
       }
     note: false
@@ -515,15 +515,57 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "108":
+    id: "108"
+    taskid: 71e12c67-92b4-444c-83a1-1648bb1eac34
+    type: condition
+    task:
+      id: 71e12c67-92b4-444c-83a1-1648bb1eac34
+      version: -1
+      name: Auto detonate files?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "105"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoDetonateFiles
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1685,
+        "height": 1765,
         "width": 1260,
         "x": 440,
-        "y": -300
+        "y": -220
       }
     }
   }
@@ -639,6 +681,13 @@ inputs:
   description: |-
     This input is combined with the FileExtensionFilter input or the FileTypeFilter input. It specifies if the type/extensions list is inclusive or exclusive. Can be "inclusive" or "exclusive". Default is "inclusive".
     Default value is 'inclusive'
+  playbookInputQuery:
+- key: AutoDetonateFiles
+  value:
+    simple: "True"
+  required: false
+  description: This input specifies whether to detonate files extracted from the PCAP.
+    The default value is True, any other value will be considered as false.
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore

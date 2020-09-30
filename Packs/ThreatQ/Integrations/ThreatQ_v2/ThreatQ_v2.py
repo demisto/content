@@ -158,6 +158,7 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
 
         if not files:
             params = json.dumps(params)
+            api_call_headers.update({'Content-Type': 'application/json'})
 
     response = requests.request(
         method,
@@ -722,7 +723,7 @@ def advance_search_command():
 def search_by_name_command():
     args = demisto.args()
     name = args.get('name')
-    limit = args.get('limit')
+    limit = args.get('limit', '10')
 
     if limit and isinstance(limit, str) and not limit.isdigit():
         return_error('limit argument must be an integer.')
@@ -1126,7 +1127,7 @@ def upload_file_command():
     args = demisto.args()
     entry_id = args.get('entry_id')
     title = args.get('title')
-    malware_safety_lock = args.get('malware_safety_lock')
+    malware_safety_lock = args.get('malware_safety_lock', 'off')
     file_category = args.get('file_category')
 
     file_info = demisto.getFilePath(entry_id)
@@ -1185,8 +1186,8 @@ def download_file_command():
 
 def get_all_objs_command(obj_type):
     args = demisto.args()
-    page = int(args.get('page'))
-    limit = int(args.get('limit'))
+    page = int(args.get('page', 0))
+    limit = int(args.get('limit', 50))
     if limit > 200:
         limit = 200
 

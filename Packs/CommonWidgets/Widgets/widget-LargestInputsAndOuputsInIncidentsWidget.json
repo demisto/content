@@ -1,0 +1,59 @@
+{
+ "id": "LargestInputsAndOuputsInIncidentsWidget",
+ "version": -1,
+ "modified": "2020-08-18T13:31:21.939387+03:00",
+ "name": "Largest Inputs And Ouputs In Incidents",
+ "dataType": "scripts",
+ "widgetType": "table",
+ "query": "GetLargestInputsAndOuputsInIncidents",
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "by": "",
+   "byTo": "",
+   "byFrom": "calendarMonths",
+   "toValue": null,
+   "fromValue": 0,
+   "field": ""
+  },
+  "fromDateLicense": "0001-01-01T00:00:00Z"
+ },
+ "params": {
+  "tableColumns": [
+   {
+    "displayed": true,
+    "isDefault": true,
+    "key": "IncidentID"
+   },
+   {
+    "displayed": true,
+    "isDefault": true,
+    "key": "InputOrOutput"
+   },
+   {
+    "displayed": true,
+    "isDefault": true,
+    "key": "Name"
+   },
+   {
+    "displayed": true,
+    "isDefault": true,
+    "key": "Size"
+   },
+   {
+    "displayed": true,
+    "isDefault": true,
+    "key": "TaskID"
+   },
+   {
+    "displayed": true,
+    "isDefault": true,
+    "key": "TaskName"
+   }
+  ]
+ },
+ "fromVersion": "6.0.0",
+ "description": "",
+ "isPredefined": true
+}

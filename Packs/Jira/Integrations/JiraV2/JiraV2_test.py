@@ -72,13 +72,13 @@ def test_fetch_incidents_no_incidents(mocker):
 def test_module(mocker):
     """
     Given
-    - Jira fetch incidents command
+    - Jira test module
 
     When
-    - Sending HTTP request and getting no issues from the query
+    - Sending HTTP request and getting the user details
 
     Then
-    - Verify no incidents are returned
+    - Verify test module returns ok
     """
     from JiraV2 import test_module as module
     user_data = {
