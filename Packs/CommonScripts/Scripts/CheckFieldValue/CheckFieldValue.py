@@ -19,7 +19,9 @@ def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
 
     field = args.get('field')
     regex = args.get('regex')
-    regex = re.compile(regex) if regex else None
+    ignore_case = argToBool(args.get('ignore_case', 'False'))
+    regex_ignore_case_flag = re.IGNORECASE if ignore_case else 0
+    regex = re.compile(regex, regex_ignore_case_flag) if regex else None
 
     incident = demisto.incidents()[0]
 
