@@ -331,11 +331,7 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
             Returns:
                 List[Dict] -- List of insights from SafeBreach
             """
-    indicator_limit_param = demisto.params().get('indicatorLimit')
-    if indicator_limit_param == '':
-        indicator_limit_param = 1000
-
-    limit: int = int(args.get('limit') or indicator_limit_param)
+    limit: int = int(args.get('limit') or demisto.params().get('indicatorLimit', 1000))
     indicators: List[Dict] = []
     count: int = 0
     # These variable be filled directly from the integration configuration or as arguments.
