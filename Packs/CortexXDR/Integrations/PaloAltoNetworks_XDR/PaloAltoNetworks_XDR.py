@@ -41,7 +41,7 @@ XDR_INCIDENT_FIELDS = {
 XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_threat_handled': 'Resolved',
     'resolved_known_issue': 'Other',
-    'resolved_duplicate_incident': 'Duplicate',
+    'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
     'resloved_other': 'Other'
 }
@@ -49,7 +49,7 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Resolved': 'resolved_threat_handled',
     'Other': 'resloved_other',
-    'Duplicate': 'resolved_duplicate_incident',
+    'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive'
 }
 
