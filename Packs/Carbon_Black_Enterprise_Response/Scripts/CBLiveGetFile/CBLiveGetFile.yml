@@ -34,3 +34,5 @@ dependson:
   - cb-file-get
 timeout: 300ns
 fromversion: 5.0.0
+tests:
+  - No Test

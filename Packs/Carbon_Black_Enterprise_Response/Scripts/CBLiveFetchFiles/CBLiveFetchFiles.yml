@@ -22,3 +22,5 @@ dependson:
   - CBLiveGetFile_V2
 timeout: 0s
 fromversion: 5.0.0
+tests:
+  - No Test
