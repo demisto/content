@@ -2,88 +2,103 @@ import demistomock as demisto
 import xlsxwriter
 from CommonServerPython import *
 
-args = demisto.args()
-data = args["data"]
-fileName = args["fileName"]
-sheetName = args["sheetName"]
-headers = args.get("headers", None)
-boldArg = args["bold"]
-borderArg = args["border"]
 
+def write_data(sheet, data_item, data_headers, workbook, bold, border):
+    if not isinstance(data_item, list):
+        data_item = [data_item]
 
-def writeData(sheet, dataItem, dataHeaders):
-    if not isinstance(dataItem, list):
-        dataItem = [dataItem]
-
-    if not dataHeaders:
-        dataHeaders = list(dataItem[0].keys())
+    if not data_headers:
+        data_headers = list(data_item[0].keys())
 
     worksheet = workbook.add_worksheet(sheet)
     row = 0
     col = 0
 
-    for key in dataHeaders:
+    for key in data_headers:
         worksheet.write(row, col, key, bold)
         col += 1
 
-    for item in dataItem:
+    for item in data_item:
         if len(item) > 0:
             col = 0
             row += 1
-            for value in dataHeaders:
+            for value in data_headers:
                 worksheet.write(row, col, item.get(value, ""), border)
                 col += 1
 
 
-sheets = sheetName.split(",")
+def parse_data(data, sheets):
+    if isinstance(data, str):  # check that
+        if len(sheets) <= 1:  # why?
+            return_error("Multiple sheet names are required for an object with multiple data items")
+        data_list = json.loads("[" + data + "]")  # that too
+        data_dict = {}
+        counter = 0
+        for list_item in data_list:
+            data_dict[counter] = list_item
+            counter += 1
 
-if isinstance(data, str):
-    if len(sheets) <= 1:
-        return_error("Multiple sheet names are required for an object with multiple data items")
-    dataList = json.loads("[" + data + "]")
-    dataDic = {}
-    counter = 0
-    for listItem in dataList:
-        dataDic[counter] = listItem
-        counter += 1
-    data = dataDic
+        return data_dict
 
-if (len(sheets) > 1 and len(sheets) != len(data)):
-    return_error("Number of sheet names is different from the number of data items")
 
-if headers:
-    headersList = headers.split(";")
+def prepare_bold_and_border(workbook, is_bold, is_border):
+    bold_value = 1 if is_bold else 0
+    border_value = 1 if is_border else 0
 
-    if (len(sheets) != len(headersList)):
-        return_error("Number of sheet headers is different from the number of sheet names")
-else:
-    headersList = None
+    bold = workbook.add_format({"bold": bold_value, "border": border_value})
+    border = workbook.add_format({"border": border_value})
 
-workbook = xlsxwriter.Workbook(fileName)
+    return bold, border
 
-boldFormat = 1 if boldArg == "true" else 0
-borderFormat = 1 if borderArg == "true" else 0
 
-bold = workbook.add_format({"bold": boldFormat, "border": borderFormat})
-border = workbook.add_format({"border": borderFormat})
+def main():
+    args = demisto.args()
+    data = args.get("data")
+    file_name = args.get("file_name")
+    sheet_name = args.get("sheet_name")
+    headers = args.get("headers", None)
+    is_bold = argToBool(args.get("bold"))
+    is_border = argToBool(args.get("border"))
 
-if len(sheets) == 1:
-    if headersList:
-        dataHeaders = headersList[0].split(",")
+    sheets = sheet_name.split(",")
+    data = parse_data(data, sheets)
+
+    if len(sheets) > 1 and len(sheets) != len(data):
+        return_error("Number of sheet names should be equal to the number of data items")
+
+    if headers:
+        headers_list = headers.split(";")
+
+        if len(sheets) != len(headers_list):
+            return_error("Number of sheet headers should be equal to the number of sheet names")
     else:
-        dataHeaders = None
-    writeData(sheets[0], data, dataHeaders)
+        headers_list = None
 
-else:
-    multiHeaderList = []
-    if headersList:
-        for headerList in headersList:
-            multiHeaderList.append(headerList.split(","))
+    workbook = xlsxwriter.Workbook(file_name)
+
+    bold, border = prepare_bold_and_border(workbook, is_bold, is_border)
+
+    # if len(sheets) == 1:
+    #     if headers_list:
+    #         data_headers = headers_list[0].split(",")
+    #     else:
+    #         data_headers = None
+    #     write_data(sheets[0], data, data_headers, workbook, bold, border)
+    #
+    # else:
+
+    multi_header_list = []
+    if headers_list:  # Can be 1 item in case there is one sheet, or multiple items in case there are multiple sheets
+        for header_list in headers_list:
+            multi_header_list.append(header_list.split(","))
     else:
-        for s in sheets:
-            multiHeaderList.append(None)
-    for sheet, dataItem, multiHeaderItem in zip(sheets, data, multiHeaderList):
-        writeData(sheet, data[dataItem], multiHeaderItem)
+        multi_header_list = [None] * len(sheets)
+    for sheet, data_item, multi_header_list in zip(sheets, data, multi_header_list):
+        write_data(sheet, data[data_item], multi_header_list, workbook, bold, border)
 
-workbook.close()
-demisto.results(file_result_existing_file(fileName))
+    workbook.close()
+    demisto.results(file_result_existing_file(file_name))
+
+
+if __name__ in ('__builtin__', '__main__'):
+    main()
