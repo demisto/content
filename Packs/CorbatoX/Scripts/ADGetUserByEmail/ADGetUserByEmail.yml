@@ -1,0 +1,19 @@
+args:
+- name: email_address
+  required: true
+comment: Fetch a user's Active Directory information by their email address
+commonfields:
+  id: ADGetUserByEmail
+  version: -1
+enabled: true
+name: ADGetUserByEmail
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

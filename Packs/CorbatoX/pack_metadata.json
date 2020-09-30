@@ -1,0 +1,14 @@
+{
+    "name": "CorbatoX",
+    "description": "CorbatoX is a ransomware Investigate & Response playbook that assists SOC analysts autonomously by leveraging an organizations security tools to take action, giving analysts more time to investigate.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Jan, Aaron, & Brahada",
+    "url": "",
+    "email": "",
+    "created": "2020-09-30T05:41:42Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

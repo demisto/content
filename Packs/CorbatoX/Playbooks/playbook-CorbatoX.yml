@@ -1,0 +1,885 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels: []
+id: CorbatoX
+inputs: []
+name: CorbatoX
+outputs:
+- contextPath: get assets
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+      - "64"
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d98bd2ff-2dff-4912-8a59-2477524ad23b
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: d98bd2ff-2dff-4912-8a59-2477524ad23b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": -560
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 601d79eb-09c4-467c-871e-e6a45ba18bf5
+      iscommand: false
+      name: Deploy Patch
+      type: regular
+      version: -1
+    taskid: 601d79eb-09c4-467c-871e-e6a45ba18bf5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 480
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "84"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dateRange: {}
+      hostname: {}
+      ip: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tenable.io
+      description: Get a list of up to 5000 of the vulnerabilities recorded for a
+        given asset.
+      id: 21d68a40-919a-46aa-8f84-35d64b7ad6a8
+      iscommand: true
+      name: tenable-io-get-vulnerabilities-by-asset
+      script: Tenable.io|||tenable-io-get-vulnerabilities-by-asset
+      type: regular
+      version: -1
+    taskid: 21d68a40-919a-46aa-8f84-35d64b7ad6a8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": -390
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the list of Alerts from Carbon Black Enterprise Response. Supports
+        the same arguments as the cb-alerts command.
+      id: 30344d0b-2c20-4caa-8e52-9ba3f9f55d3a
+      iscommand: false
+      name: CBAlerts
+      script: CBAlerts
+      type: regular
+      version: -1
+    taskid: 30344d0b-2c20-4caa-8e52-9ba3f9f55d3a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": -390
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "72"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: List Carbon Black sensors
+      id: bcafa2fd-f827-4b40-8133-f247451fc74d
+      iscommand: false
+      name: CBSensors
+      script: CBSensors
+      type: regular
+      version: -1
+    taskid: bcafa2fd-f827-4b40-8133-f247451fc74d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": -105
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "87"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 328c781d-17f0-4074-8d00-753cab653cc9
+      iscommand: false
+      name: cve_enrichment_-_generic
+      playbookId: cve_enrichment_-_generic
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 328c781d-17f0-4074-8d00-753cab653cc9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 10
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: 2f3246cc-5898-425e-82af-12943c2de553
+      iscommand: false
+      name: closeInvestigation
+      type: title
+      version: -1
+    taskid: 2f3246cc-5898-425e-82af-12943c2de553
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -1130,
+          "y": 1460
+        }
+      }
+  "59":
+    id: "59"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "73"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      email:
+        simple: a@cotoso.com
+      include_inactive: {}
+      threshold: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Anomali ThreatStream v2
+      description: Checks the reputation of the given email address.
+      id: c3f62a81-8506-40e3-8aed-1d785c4cf8a1
+      iscommand: true
+      name: threatstream-email-reputation
+      script: Anomali ThreatStream v2|||threatstream-email-reputation
+      type: regular
+      version: -1
+    taskid: c3f62a81-8506-40e3-8aed-1d785c4cf8a1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2290,
+          "y": 65
+        }
+      }
+  "64":
+    id: "64"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "66"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      email_address: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Fetch a user's Active Directory information by their email address
+      id: 90145af4-1890-4775-8d24-7f9e7e3608bd
+      iscommand: false
+      name: ADGetEmailbyUser
+      script: e15c06da-9f49-4e8c-8e7c-9ef766f84e98
+      type: regular
+      version: -1
+    taskid: 90145af4-1890-4775-8d24-7f9e7e3608bd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1650,
+          "y": -400
+        }
+      }
+  "66":
+    id: "66"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "69"
+      - "59"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      delete: {}
+      password: {}
+      query: {}
+      system: {}
+      timeout: {}
+      username: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search mails in office-365
+      id: 0197b1df-8654-456c-8340-4dde64faed9f
+      iscommand: false
+      name: O365SearchEmails
+      script: O365SearchEmails
+      type: regular
+      version: -1
+    taskid: 0197b1df-8654-456c-8340-4dde64faed9f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1650,
+          "y": -105
+        }
+      }
+  "69":
+    id: "69"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "74"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: efdcacf9-10f2-4aff-8050-25c77ac66f54
+      iscommand: false
+      name: Office 365 Search and Delete
+      playbookId: Office 365 Search and Delete
+      type: playbook
+      version: -1
+      description: ''
+    taskid: efdcacf9-10f2-4aff-8050-25c77ac66f54
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -1850,
+          "y": 720
+        }
+      }
+  "71":
+    id: "71"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f18ec8ba-fa9b-4b22-8a9e-7b64099bd2ed
+      iscommand: false
+      name: Isolate Endpoint - Generic
+      playbookId: Isolate Endpoint - Generic
+      type: playbook
+      version: -1
+      description: ''
+    taskid: f18ec8ba-fa9b-4b22-8a9e-7b64099bd2ed
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 500
+        }
+      }
+  "72":
+    id: "72"
+    ignoreworker: false
+    nexttasks:
+      "NO":
+      - "85"
+      "yes":
+      - "71"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if Carbon black active in the system.
+      id: 27405cc3-bf4c-4879-87ad-880b99941e9a
+      iscommand: false
+      name: Is Carbon Black Enterprise Response enabled?
+      type: condition
+      version: -1
+    taskid: 27405cc3-bf4c-4879-87ad-880b99941e9a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": 160
+        }
+      }
+  "73":
+    id: "73"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "80"
+      - "79"
+      - "81"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        1. Deploy a new rule to the SIEM, this will alert new infection attempts in the future
+         2. Mark the hashes collected as malicious in the SIEM and import this into IOC databases for your enterprise.
+         2. Send the patterns to IT and ask IT to block these URLs on the proxy and web gateway
+      id: a91c4be9-cf1b-40b6-861e-5cd4a620cf96
+      iscommand: false
+      name: Deploy the IoCs collected
+      version: -1
+    taskid: a91c4be9-cf1b-40b6-861e-5cd4a620cf96
+    timertriggers: []
+    type: ""
+    view: |-
+      {
+        "position": {
+          "x": -2290,
+          "y": 300
+        }
+      }
+  "74":
+    id: "74"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Make sure that IOC deployment is in place. These are the IOC identified
+        from previous steps. '
+      id: bcc506a2-1413-43d8-8012-8c1d63f35ecc
+      iscommand: false
+      name: IOC deployment verification
+      version: -1
+    taskid: bcc506a2-1413-43d8-8012-8c1d63f35ecc
+    timertriggers: []
+    type: ""
+    view: |-
+      {
+        "position": {
+          "x": -2480,
+          "y": 1150
+        }
+      }
+  "76":
+    id: "76"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "74"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dc0a2a2c-6020-4009-8998-530ed3e3f982
+      iscommand: false
+      name: Palo Alto Networks PAN-OS -> add IOC IP's to blacklist
+      type: regular
+      version: -1
+    taskid: dc0a2a2c-6020-4009-8998-530ed3e3f982
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -3210,
+          "y": 910
+        }
+      }
+  "79":
+    id: "79"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "74"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 72c00e35-7582-4e2e-8451-3028be309a6b
+      iscommand: false
+      name: Search Splunk for recent events related to the investigated machine
+      type: regular
+      version: -1
+    taskid: 72c00e35-7582-4e2e-8451-3028be309a6b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2300,
+          "y": 530
+        }
+      }
+  "80":
+    id: "80"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "76"
+      - "83"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CriticalADGroups: {}
+      CriticalHostnames: {}
+      CriticalUsernames:
+        simple: admin,administrator
+      Hunting:
+        simple: "Yes"
+      InternalRange: {}
+      LinkSimilarIncidents:
+        simple: "Yes"
+      incident_id: {}
+      similarIncidentFields:
+        simple: xdrdescription
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5ba64228-caf4-48c1-8d8c-76d53f0d2c15
+      iscommand: false
+      name: Cortex XDR incident handling v2
+      playbookId: Cortex XDR incident handling v2
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 5ba64228-caf4-48c1-8d8c-76d53f0d2c15
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -3180,
+          "y": 530
+        }
+      }
+  "81":
+    id: "81"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "86"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 60639cbb-3c07-4960-897c-b1e30caf1b39
+      iscommand: false
+      name: playbook17
+      playbookId: playbook17
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 60639cbb-3c07-4960-897c-b1e30caf1b39
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -2750,
+          "y": 530
+        }
+      }
+  "82":
+    id: "82"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "74"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ip
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: "3"
+          root: DBotScore
+          transformers:
+          - operator: uniq
+      IPBlacklistMiner: {}
+      IPListName: {}
+      LogForwarding: {}
+      MD5:
+        complex:
+          accessor: MD5
+          root: File
+      SHA256:
+        complex:
+          accessor: SHA256
+          root: File
+      StaticAddressGroup: {}
+      URL:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: url
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: "3"
+          root: DBotScore
+          transformers:
+          - operator: uniq
+      URLBlacklistMiner: {}
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+      Username:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: username
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: "3"
+          root: DBotScore
+      categories: {}
+      device-group: {}
+      type: {}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7ffdab0b-f4a5-4863-8f50-9996ffe98856
+      iscommand: false
+      name: Block Indicators - Generic v2
+      playbookId: Block Indicators - Generic v2
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 7ffdab0b-f4a5-4863-8f50-9996ffe98856
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -2750,
+          "y": 895
+        }
+      }
+  "83":
+    id: "83"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      url: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VirusTotal
+      description: Scans a specified URL.
+      id: 7bf59922-a7da-45af-86a5-e7aa45c3c449
+      iscommand: true
+      name: VirusTotal - URL Scan
+      script: VirusTotal|||url-scan
+      type: regular
+      version: -1
+    taskid: 7bf59922-a7da-45af-86a5-e7aa45c3c449
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -3610,
+          "y": 775
+        }
+      }
+  "84":
+    id: "84"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      chapters: {}
+      format: {}
+      historyId: {}
+      password: {}
+      scanId: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Nessus
+      description: Export the given scan (Nessus, HTML, PDF, CSV, or DB format)
+      id: fc3c96d0-990d-4914-823a-107f0a06b062
+      iscommand: true
+      name: Nessus scan export devices affected by Ransomware CVE
+      script: Nessus|||nessus-scan-export
+      type: regular
+      version: -1
+    taskid: fc3c96d0-990d-4914-823a-107f0a06b062
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": -210
+        }
+      }
+  "85":
+    id: "85"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 753a717a-d75a-412e-8e03-74b6008c4f33
+      iscommand: false
+      name: Deploy Carbon Black  to endpoint
+      type: regular
+      version: -1
+    taskid: 753a717a-d75a-412e-8e03-74b6008c4f33
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 510
+        }
+      }
+  "86":
+    id: "86"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "82"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3c4d7705-41f2-497c-8a50-689f60c25f87
+      iscommand: false
+      name: search_endpoints_by_hash_-_carbon_black_response
+      playbookId: search_endpoints_by_hash_-_carbon_black_response
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 3c4d7705-41f2-497c-8a50-689f60c25f87
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -2750,
+          "y": 720
+        }
+      }
+  "87":
+    id: "87"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ""
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: ""
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 265
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2085,
+        "width": 3690,
+        "x": -3610,
+        "y": -560
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0
