@@ -607,7 +607,7 @@ script:
     execution: false
     name: get-mapping-fields
   dockerimage45: demisto/splunksdk:1.0
-  dockerimage: demisto/splunksdk:1.0.0.11270
+  dockerimage: demisto/splunksdk:1.0.0.11989
   feed: false
   isfetch: true
   longRunning: false
