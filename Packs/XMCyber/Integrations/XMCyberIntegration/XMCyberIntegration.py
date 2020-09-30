@@ -116,17 +116,16 @@ class Client(BaseClient):
         raise NotImplemented()
 
     def lookup_entities_by_ip(self, ip):
+        demisto.info(f'looking up {ip}')
         page = 1
         total_pages = 1
         entities = []
-        escaped_ip = escape_ip(ip)
         while page <= total_pages:
-            demisto.info(f'in while loop {page} {total_pages}')
             res = self._http_request(
                 method='GET',
-                url_suffix='/sensors',
+                url_suffix='/systemReport/entities',
                 params={
-                    'search': escaped_ip
+                    'search': ip
                 }
             )
             entities.extend(res['data'])
@@ -474,6 +473,36 @@ def attack_paths_from_entity_command(client: Client, args: Dict[str, Any]) -> Co
     )
 
 
+def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    ips = argToList(args.get('ip'))
+    entities = []
+    outputs = []
+
+    demisto.info(f'ips {ips}')
+    for ip in ips:
+        demisto.info(f'ip {ip}')
+        try:
+            entities.extend(client.lookup_entities_by_ip(ip['Address']))
+        except AttributeError:
+            entities.extend(client.lookup_entities_by_ip(ip))
+    if len(entities) == 0:
+        readable_output = 'No entities match the properties'
+    else:
+        readable_output = '#Found the following entities'
+        for entity in entities:
+            name = entity['name']
+            readable_output += f'\n- {name}'
+            outputs.append({
+                'EntityId': entity['entityId'],
+                'Name': name
+            })
+    return CommandResults(
+        outputs_prefix='XMCyber',
+        outputs_key_field='EntityId',
+        outputs=outputs,
+        readable_output=readable_output
+    )
+
 ''' MAIN FUNCTION '''
 
 
@@ -497,7 +526,7 @@ def main() -> None:
     # etc. to print information in the XSOAR server log. You can set the log
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
-
+    demisto.info(f'Command running: {demisto.command()}')
     try:
         headers = {
             'X-Api-Key': api_key,
@@ -534,6 +563,9 @@ def main() -> None:
 
         elif demisto.command() == 'xmcyber-attack-paths-from-entity':
             return_results(attack_paths_from_entity_command(client, demisto.args()))
+
+        elif demisto.command() == 'xmcyber-entity-get':
+            return_results(entity_get_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

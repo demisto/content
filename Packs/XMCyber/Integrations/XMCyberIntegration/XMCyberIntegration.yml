@@ -29,6 +29,20 @@ configuration:
   type: 8
 script:
   commands:
+  - name: xmcyber-entity-get
+    description: Get XM Entity by IP
+    arguments:
+      - name: ip
+        default: true
+        description: List of IPs.
+        isArray: true
+    outputs:
+      - contextPath: EntityId
+        description: 'XMCyber Entity ID'
+        type: String
+      - contextPath: Name
+        description: 'Entity Name'
+        type: String
   - name: xmcyber-attack-complexity-to-ip
     description: Set attack complexity on IP of the incident
     arguments:
@@ -44,10 +58,10 @@ script:
         isArray: true
     outputs:
       - contextPath: EntityId
-        description: 'XMCyber.Entity ID'
+        description: 'XMCyber Entity ID'
         type: String
       - contextPath: AttackComplexity
-        description: 'XMCyber.Attack Complexity'
+        description: 'XMCyber Attack Complexity'
         type: Number
       - contextPath: EntityIpAddress
         description: 'IP Address of Entity'
