@@ -3,20 +3,6 @@ Product Name: CheckPoint Firewall Product Type: Network Security Product Version
 Integration Overview Manage CheckPoint Firewall. Read information and to send commands to the Check Point Firewall server. 
 This integration was integrated and tested with version R80.30 of CheckPoint SmartConsole.
 
-Use Cases
-
-login and logout
-Manage hosts
-Manage Groups
-Manage roles
-Manage Address range
-Manage threat indicators
-Manage Application site
-Publish changes
-Install policy
-Verify policy
-
-
 How to configure the integration:
 
 In the Smart Console, enable the web api: Management & Setting → Blades → Management API, Advanced Setting → All IP address
