@@ -1,11 +1,11 @@
 import pytest
 from FeedUnit42 import Client, get_indicators_command, fetch_indicators
-from test_data.feed_data import RESPONSE_DATA
+from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA
 
 
 @pytest.mark.parametrize('command, args, response, length', [
-    (get_indicators_command, {'limit': 2}, RESPONSE_DATA, 2),
-    (get_indicators_command, {'limit': 5}, RESPONSE_DATA, 5),
+    (get_indicators_command, {'limit': 2}, INDICATORS_DATA, 2),
+    (get_indicators_command, {'limit': 5}, INDICATORS_DATA, 5),
 ])  # noqa: E124
 def test_commands(command, args, response, length, mocker):
     """Unit test
@@ -27,6 +27,16 @@ def test_commands(command, args, response, length, mocker):
     assert len(indicators) == length
 
 
+TYPE_TO_RESPONSE = {
+    'indicator': INDICATORS_DATA,
+    'report': [],
+    'attack-pattern': ATTACK_PATTERN_DATA,
+    'malware': MALWARE_DATA,
+    'campaign': [],
+    'relationship': RELATIONSHIP_DATA
+}
+
+
 def test_fetch_indicators_command(mocker):
     """Unit test
     Given
@@ -39,8 +49,12 @@ def test_fetch_indicators_command(mocker):
     - run the fetch incidents command using the Client
     Validate the amount of indicators fetched
     """
+    def mock_get_stix_objects(test, **kwargs):
+        type_ = kwargs.get('type')
+        client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
+
     client = Client(api_key='1234', verify=False)
-    mocker.patch.object(client, 'get_stix_objects', return_value=RESPONSE_DATA)
+    mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
     indicators = fetch_indicators(client)
     assert len(indicators) == 10
 
@@ -58,8 +72,12 @@ def test_feed_tags_param(mocker):
     - run the fetch incidents command using the Client
     Validate The value of the tags field.
     """
+    def mock_get_stix_objects(test, **kwargs):
+        type_ = kwargs.get('type')
+        client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
+
     client = Client(api_key='1234', verify=False)
-    mocker.patch.object(client, 'get_stix_objects', return_value=RESPONSE_DATA)
+    mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
     indicators = fetch_indicators(client, ['test_tag'])
     assert set(indicators[0].get('fields').get('tags')) == set({'malicious-activity', 'test_tag'})
 
@@ -76,8 +94,14 @@ def test_fetch_indicators_with_feedrelatedindicators(mocker):
     - run the fetch incidents command using the Client
     Validate the connections in between the indicators
     """
+
+    def mock_get_stix_objects(test, **kwargs):
+        type_ = kwargs.get('type')
+        client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
+
     client = Client(api_key='1234', verify=False)
-    mocker.patch.object(client, 'get_stix_objects', return_value=RESPONSE_DATA)
+    mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
+
     indicators = fetch_indicators(client)
     for indicator in indicators:
         indicator_fields = indicator.get('fields')
@@ -112,8 +136,14 @@ def test_fetch_indicators_with_malware_reference(mocker):
     - run the fetch incidents command using the Client
     Validate the connections in between the indicators
     """
+
+    def mock_get_stix_objects(test, **kwargs):
+        type_ = kwargs.get('type')
+        client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
+
     client = Client(api_key='1234', verify=False)
-    mocker.patch.object(client, 'get_stix_objects', return_value=RESPONSE_DATA)
+    mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
+
     indicators = fetch_indicators(client)
     for indicator in indicators:
         indicator_fields = indicator.get('fields')

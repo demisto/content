@@ -1,4 +1,4 @@
-RESPONSE_DATA = [
+INDICATORS_DATA = [
     {"created": "2019-07-30T09:29:07.724Z", "id": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
      "labels": ["malicious-activity"], "modified": "2020-05-12T13:02:30.000000Z",
      "name": "c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839",
@@ -39,7 +39,10 @@ RESPONSE_DATA = [
      "labels": ["malicious-activity"], "modified": "2020-05-12T13:02:30.000000Z",
      "name": "cmstp.exe /s /ns C:\\Users\\ADMINI~W\\AppData\\Local\\Temp\\XKNqbpzl.txt",
      "pattern": "[process:command_line = 'cmstp.exe",
-     "type": "indicator", "valid_from": "2019-05-06T14:12:22.757Z"},
+     "type": "indicator", "valid_from": "2019-05-06T14:12:22.757Z"}
+]
+
+ATTACK_PATTERN_DATA = [
     {"created": "2018-08-03T19:54:02.821Z", "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
      "description": "Windows Management",
      "external_references": [
@@ -78,7 +81,10 @@ RESPONSE_DATA = [
         "Monitor network traffic"],
      "x_mitre_permissions_required": ["Administrator", "User"], "x_mitre_platforms": ["Windows"],
      "x_mitre_remote_support": "true", "x_mitre_system_requirements": ["WMI service"],
-     "x_mitre_version": "1.0"},
+     "x_mitre_version": "1.0"}
+]
+
+MALWARE_DATA = [
     {"created": "2019-10-11T16:13:15.086Z",
      "description": " Xbash is an all-in-one Linux malware formed botnet and ransomware developed by Iron cybercrime"
                     " group. Xbash was aiming to discover unprotected services, deleting the victim's MySQL, PostgreSQL"
@@ -97,20 +103,23 @@ RESPONSE_DATA = [
                     " It may achieve persistence on the targeted system by modifying the Registry.",
      "id": "malware--f8deccc7-5da9-4755-8c5a-7e4bea2547b0", "labels": ["remote-access-trojan"],
      "modified": "2020-05-12T13:02:30.000000Z", "name": "NanoCoreRAT", "type": "malware"},
+    {"created": "2019-10-10T17:55:12.389Z", "id": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a",
+     "labels": ["backdoor"], "modified": "2020-05-12T13:02:30.000000Z", "name": "Muirim", "type": "malware"},
+    {"created": "2019-10-10T17:55:12.389Z", "id": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335b",
+     "labels": ["backdoor"], "modified": "2020-05-12T13:02:30.000000Z", "name": "Muirim2", "type": "malware"},
+]
+
+RELATIONSHIP_DATA = [
     {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a6",
      "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
      "source_ref": "indicator--010bb9ad-5686-485d-97e5-93c2187e56ce",
      "target_ref": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055", "type": "relationship"},
     {"created": "2019-05-21T18:21:23.550Z", "id": "intrusion-set--eeef6603-d891-476a-a600-0096b6fe072f",
      "modified": "2020-05-12T13:02:30.000000Z", "name": "Emissary Panda", "type": "intrusion-set"},
-    {"created": "2019-10-10T17:55:12.389Z", "id": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a",
-     "labels": ["backdoor"], "modified": "2020-05-12T13:02:30.000000Z", "name": "Muirim", "type": "malware"},
     {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a8",
      "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
      "source_ref": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
      "target_ref": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a", "type": "relationship"},
-    {"created": "2019-10-10T17:55:12.389Z", "id": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335b",
-     "labels": ["backdoor"], "modified": "2020-05-12T13:02:30.000000Z", "name": "Muirim2", "type": "malware"},
     {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a8",
      "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
      "source_ref": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
