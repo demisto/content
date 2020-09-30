@@ -315,7 +315,7 @@ script:
       name: act_as_method
       predefined:
       - GET
-      - ' POST'
+      - POST
       required: false
       secret: false
     deprecated: false
@@ -1232,8 +1232,6 @@ script:
       description: What method to use in the URL
       isArray: false
       name: method
-      predefined:
-      - ''
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1243,7 +1241,7 @@ script:
       name: clickjacking_protection
       predefined:
       - 'true'
-      - ' false'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1317,7 +1315,7 @@ script:
       name: perform_staging
       predefined:
       - 'true'
-      - ' false'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -1343,7 +1341,7 @@ script:
       name: url_isreferrer
       predefined:
       - 'true'
-      - ' false'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -2645,8 +2643,6 @@ script:
       description: Maximum length for a single value
       isArray: false
       name: maximum_value_len
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
