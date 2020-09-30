@@ -1,7 +1,10 @@
 <!-- REMINDER: THIS IS A PUBLIC REPO DO NOT POST HERE SECRETS/SENSITIVE DATA -->
 
-## XSOAR [Partner](https://xsoar.pan.dev/docs/partners/become-a-tech-partner)?
-- [ ] The title must be in the following format: **[YOUR_PARTNER_ID] short description**.
+## Contributing to XSOARs content?
+Make sure to register you contribution - [contribution registration](https://forms.gle/XDfxU4E61ZwEESSMA)  
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSd0V270r75tTy9YbT50irQBUpKK8Wfn1aCUihYNn2rc_LkPpA/viewform?embedded=true" width="640" height="1617" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+
+**Without this form we won't be able to start your Pull Request review**
 
 ## Status
 - [x] In Progress
