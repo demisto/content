@@ -1364,21 +1364,6 @@ There is no context output for this command.
 ***
 Returns the list of fields for an incident type. This command is for debugging purposes.
 
-#### Base Command
-
-`get-mapping-fields`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-### get-mapping-fields
-***
-Returns the list of fields for an incident type. This command is for debugging purposes.
-
 
 #### Base Command
 
