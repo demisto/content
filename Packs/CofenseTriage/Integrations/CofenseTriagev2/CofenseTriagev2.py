@@ -56,6 +56,11 @@ class TriageRequestEmptyResponse(Exception):
         return f"Could not find a {self.record_type} with id {self.record_id}"
 
 
+class TriageNoReportersFoundError(Exception):
+    """Triage returned empty results, but the integration expected at least one"""
+    pass
+
+
 class TriageInstance:
     def __init__(
         self, *, host, token, user, disable_tls_verification=False, demisto_params
@@ -437,8 +442,9 @@ def search_reports_command(triage_instance) -> None:
     max_matches = int(demisto.getArg('max_matches'))  # type: int
     verbose = demisto.getArg('verbose') == "true"
 
-    reporters_clause = build_reporters_clause(triage_instance)
-    if reporters_clause is None:
+    try:
+        reporters_clause = build_reporters_clause(triage_instance)
+    except TriageNoReportersFoundError:
         return_outputs("Reporter not found.", {}, {})
         return
 
@@ -525,8 +531,9 @@ def search_inbox_reports_command(triage_instance) -> None:
         0
     ].replace(tzinfo=timezone.utc)
 
-    reporters_clause = build_reporters_clause(triage_instance)
-    if reporters_clause is None:
+    try:
+        reporters_clause = build_reporters_clause(triage_instance)
+    except TriageNoReportersFoundError:
         return_outputs("Reporter not found.", {}, {})
         return
 
@@ -572,7 +579,7 @@ def build_reporters_clause(triage_instance):
     ).reporters()
 
     if len(reporters) == 0 or not any([reporter.exists() for reporter in reporters]):
-        return None
+        raise TriageNoReportersFoundError()
 
     return {"reporter_ids": [reporter.id for reporter in reporters]}
 

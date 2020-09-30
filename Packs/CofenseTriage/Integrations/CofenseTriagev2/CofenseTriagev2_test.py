@@ -7,6 +7,7 @@ from CofenseTriagev2 import TriageInboxReports
 from CofenseTriagev2 import TriageReport
 from CofenseTriagev2 import TriageReporter
 from CofenseTriagev2 import TriageRequestFailedError
+from CofenseTriagev2 import TriageNoReportersFoundError
 from freezegun import freeze_time
 
 
@@ -210,7 +211,8 @@ class TestCofenseTriage:
             text="[]",
         )
 
-        assert CofenseTriagev2.build_reporters_clause(triage_instance) is None
+        with pytest.raises(TriageNoReportersFoundError):
+            CofenseTriagev2.build_reporters_clause(triage_instance)
 
     def test_build_reporters_clause_nothing_specified(self, requests_mock, triage_instance):
         set_demisto_arg("reporter", "")
