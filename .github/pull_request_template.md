@@ -3,7 +3,7 @@
 ## Contributing to Cortex XSOAR Content
 Make sure to register your contribution by filling the [contribution registration form](https://forms.gle/XDfxU4E61ZwEESSMA)
 
-**The Pull Request review will only start after this form was filled**
+**The Pull Request will be reviewed only after the contribution registration form is filled.**
 
 ## Status
 - [x] In Progress
