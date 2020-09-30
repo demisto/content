@@ -2,7 +2,7 @@ commonfields:
   id: GrrSetFlows
   version: -1
 name: GrrSetFlows
-script: |2
+script: >2
 
   demisto.results(demisto.executeCommand("grr_set_flows", demisto.args()))
 type: python
@@ -24,3 +24,4 @@ timeout: 0s
 dependson:
   must:
   - grr_set_flows
+fromversion: 5.0.0

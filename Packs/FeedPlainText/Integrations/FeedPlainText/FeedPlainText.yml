@@ -71,6 +71,16 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -172,7 +182,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: plaintext-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.6980
+  dockerimage: demisto/jmespath:1.0.0.10854
   feed: true
   isfetch: false
   longRunning: false

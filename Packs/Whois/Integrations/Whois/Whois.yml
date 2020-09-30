@@ -328,4 +328,4 @@ script:
 defaultEnabled: false
 tests:
 - whois_test
-fromversion: 4.1.0
+fromversion: 5.0.0

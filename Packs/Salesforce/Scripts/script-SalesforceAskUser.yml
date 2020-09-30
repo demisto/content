@@ -2,11 +2,14 @@ commonfields:
   id: SalesforceAskUser
   version: -1
 name: SalesforceAskUser
-script: |-
+script: >-
   import time
 
+
   retries = int(demisto.args().get('retries'))
+
   persistent = True if demisto.args().get('persistent') == 'true' else False
+
   for i in xrange(retries):
       res = demisto.executeCommand('addEntitlement', {'persistent': persistent})
       if isError((res[0])):
@@ -18,11 +21,14 @@ script: |-
       break
 
   comment_suffix = ' - #{0} {1}'.format(demisto.incidents()[0]['id'], entitlement)
+
   task = demisto.args().get('task')
+
   if task:
       comment_suffix += ' #{}'.format(task)
 
   text = demisto.args().get('text', '')
+
   if not text:
       option1 = demisto.args().get('option1')
       option2 = demisto.args().get('option2')
@@ -34,9 +40,12 @@ script: |-
           text += (' or ').join(additional_options_list)
   text += '\n\nDemistoID: ' + comment_suffix;
 
+
   oid = demisto.args().get('oid')
 
+
   comment = demisto.executeCommand('salesforce-push-comment', {'oid': oid, 'text': text})
+
   demisto.results(comment)
 type: python
 subtype: python2
@@ -54,12 +63,10 @@ args:
 - name: replyEntriesTag
   description: Tag to add on comment reply entries
 - name: retries
-  description: Indicates how many times to try and create an entitlement in case of
-    failure
+  description: Indicates how many times to try and create an entitlement in case of failure
   defaultValue: "10"
 - name: task
-  description: Which task should we close with the reply. If none then no playbook
-    tasks will be closed.
+  description: Which task should we close with the reply. If none then no playbook tasks will be closed.
 - name: option1
   description: First option for a user reply.
   defaultValue: "yes"
@@ -69,11 +76,9 @@ args:
 - name: oid
   description: Object ID of Subject
 - name: additionalOptions
-  description: A comma delimited list of additional options (in case more than 2 options
-    are needed)
+  description: A comma delimited list of additional options (in case more than 2 options are needed)
 - name: text
-  description: Chatter comment text. If not given, a default post message will be
-    generated based on option arguments.
+  description: Chatter comment text. If not given, a default post message will be generated based on option arguments.
 - name: link
   description: Add a link to the message
 scripttarget: 0
@@ -81,3 +86,4 @@ runonce: false
 dependson:
   must:
   - salesforce-push-comment
+fromversion: 5.0.0
