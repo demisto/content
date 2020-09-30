@@ -230,17 +230,17 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
         related_sub_reports = [object_id for object_id in report.get('rawJSON', {}).get('unit42_object_refs', [])
                                if object_id.startswith('report')]
 
-        report_malware_list = []
+        report_malware_set = set()
 
         for sub_report in sub_reports:
             if sub_report.get('id') in related_sub_reports:
                 for object_id in sub_report.get('object_refs', []):
                     if object_id.startswith('malware'):
-                        report_malware_list.append(object_id)
+                        report_malware_set.add(object_id)
 
         report['fields']['feedrelatedindicators'] = []
 
-        for malware_id in report_malware_list:
+        for malware_id in report_malware_set:
             malware_object = id_to_object.get(malware_id)
 
             report['fields']['feedrelatedindicators'].extend([{
