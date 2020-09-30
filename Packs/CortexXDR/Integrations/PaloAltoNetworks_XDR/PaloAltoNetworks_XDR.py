@@ -57,7 +57,7 @@ MIRROR_DIRECTION = {
     'None': None,
     'Incoming': 'In',
     'Outgoing': 'Out',
-    'Incoming And Outgoing': 'Both'
+    'Both': 'Both'
 }
 
 
