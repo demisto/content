@@ -19,6 +19,6 @@
  "disabled": false,
  "reputationCalc": 0,
  "fromVersion": "6.0.0",
- "layout": "Integrations and Incidents Health Check",
+ "layout": "3caa356e-d99d-438b-844d-180f68b59b14",
  "playbookId": "JOB - Integrations and Playbooks Health Check"
 }
