@@ -1,0 +1,265 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: user-id-db-functions
+inputs: []
+name: user-id-db-functions
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: af72ea15-4875-4568-8e07-fb6221a5d18c
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: af72ea15-4875-4568-8e07-fb6221a5d18c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+  "1":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Function
+        options: []
+        optionsarg:
+        - {}
+        - simple: db-add-ip
+        - simple: db-add-mac
+        - simple: db-delete-ip
+        - simple: de-delete-mac
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: MAC Address (Use for MAC Functions)
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: IP address (Use for IP Functions)
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: Username
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: MAC Mapping
+      totalanswers: 0
+    id: "1"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: be0576bc-28d7-450d-89a4-7581e3a8f5f8
+      iscommand: false
+      name: MAC / IP DB Manipulations Questions
+      type: collection
+      version: -1
+    taskid: be0576bc-28d7-450d-89a4-7581e3a8f5f8
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      command:
+        simple: ${MAC Mapping.Answers.0}
+      hostname: {}
+      ip:
+        simple: ${MAC Mapping.Answers.2}
+      mac:
+        simple: ${MAC Mapping.Answers.1}
+      timeout: {}
+      user:
+        simple: ${MAC Mapping.Answers.3}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e4389efc-23d7-40b3-8fc1-9dee23605ef5
+      iscommand: false
+      name: Perform Function
+      script: a2ed60f7-de0c-4001-8c01-09cdf7cb21da
+      type: regular
+      version: -1
+    taskid: e4389efc-23d7-40b3-8fc1-9dee23605ef5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Added MAC Address Mapping
+      closeReason: {}
+      emailclassification: {}
+      id:
+        complex:
+          accessor: id
+          root: incident
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: bfb9d849-2e10-49b2-83d7-e91a099e305b
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: bfb9d849-2e10-49b2-83d7-e91a099e305b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e5b2f32c-ad3b-4e83-8058-cef984d40672
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: e5b2f32c-ad3b-4e83-8058-cef984d40672
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 745,
+        "width": 380,
+        "x": 450,
+        "y": 40
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0

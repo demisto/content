@@ -1,0 +1,200 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "d5fd51a5-828a-41a8-8dab-ac9bb3e19e52",
+ "mapping": {
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "MAC Address": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "content",
+      "transformers": [
+       {
+        "args": {
+         "error_if_no_match": {
+          "isContext": false,
+          "value": null
+         },
+         "ignore_case": {
+          "isContext": false,
+          "value": null
+         },
+         "multi_line": {
+          "isContext": false,
+          "value": null
+         },
+         "period_matches_newline": {
+          "isContext": false,
+          "value": null
+         },
+         "regex": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "DHCP lease started ip \\S+ --\u003e mac (\\S+) - hostname \\S+,"
+          }
+         }
+        },
+        "operator": "RegexExtractAll"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Source Hostname": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "content",
+      "transformers": [
+       {
+        "args": {
+         "error_if_no_match": {
+          "isContext": false,
+          "value": null
+         },
+         "ignore_case": {
+          "isContext": false,
+          "value": null
+         },
+         "multi_line": {
+          "isContext": false,
+          "value": null
+         },
+         "period_matches_newline": {
+          "isContext": false,
+          "value": null
+         },
+         "regex": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "DHCP lease started ip \\S+ --\u003e mac \\S+ - hostname (\\S+),"
+          }
+         }
+        },
+        "operator": "RegexExtractAll"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Source IP": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "content",
+      "transformers": [
+       {
+        "args": {
+         "error_if_no_match": {
+          "isContext": false,
+          "value": null
+         },
+         "ignore_case": {
+          "isContext": false,
+          "value": null
+         },
+         "multi_line": {
+          "isContext": false,
+          "value": null
+         },
+         "period_matches_newline": {
+          "isContext": false,
+          "value": null
+         },
+         "regex": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "DHCP lease started ip (\\S+) --\u003e mac \\S+ - hostname \\S+,"
+          }
+         }
+        },
+        "operator": "RegexExtractAll"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "name": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "content",
+      "transformers": [
+       {
+        "args": {
+         "error_if_no_match": {
+          "isContext": false,
+          "value": null
+         },
+         "ignore_case": {
+          "isContext": false,
+          "value": null
+         },
+         "multi_line": {
+          "isContext": false,
+          "value": null
+         },
+         "period_matches_newline": {
+          "isContext": false,
+          "value": null
+         },
+         "regex": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "(DHCP lease started ip \\S+ --\u003e mac \\S+ - hostname \\S+),"
+          }
+         }
+        },
+        "operator": "RegexExtractAll"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "severity": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "severity",
+      "transformers": [
+       {
+        "args": {
+         "by": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "4"
+          }
+         }
+        },
+        "operator": "subtraction"
+       }
+      ]
+     },
+     "simple": ""
+    }
+   }
+  }
+ },
+ "name": "User-ID DHCP Mapper",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#5C6BC0",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "DHCP Event",
+ "layout": "c47ee3a6-0f88-4c3c-8bd0-579f2215ac77",
+ "locked": false,
+ "name": "DHCP Event",
+ "playbookId": "a27938b8-c679-4402-84d1-e858ae18dc1c",
+ "readonly": false,
+ "reputationCalc": 1,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

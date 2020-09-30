@@ -1,0 +1,36 @@
+args:
+- auto: PREDEFINED
+  name: command
+  predefined:
+  - db-add-ip
+  - db-add-mac
+  - db-delete-ip
+  - db-delete-mac
+  - db-list-ip
+  - db-list-mac
+  - dhcp-mapping
+  - find-best-match
+  - fw-get-mappings
+  - push-manual-mapping
+  - push-static-ip-mappings
+- name: hostname
+- name: ip
+- name: mac
+- name: timeout
+- name: user
+commonfields:
+  id: panw-user-id
+  version: -1
+dockerimage: demisto/python3:3.8.5.10845
+enabled: true
+name: panw-user-id
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

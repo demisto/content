@@ -1,0 +1,155 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: user-id-push-ip-static-mappings
+inputs: []
+name: user-id-push-ip-static-mappings
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3627b4cf-a02e-4f2d-8421-70e408c7128b
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 3627b4cf-a02e-4f2d-8421-70e408c7128b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      command:
+        simple: push-static-ip-mappings
+      hostname: {}
+      ip: {}
+      mac: {}
+      timeout:
+        simple: "1440"
+      user: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fdfb2c10-c787-4812-8013-a846d18a692a
+      iscommand: false
+      name: Push IP Mappings
+      script: a2ed60f7-de0c-4001-8c01-09cdf7cb21da
+      type: regular
+      version: -1
+    taskid: fdfb2c10-c787-4812-8013-a846d18a692a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        complex:
+          accessor: id
+          root: incident
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 6b64e9f1-a332-41e2-8bb2-b67bb0fb7882
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 6b64e9f1-a332-41e2-8bb2-b67bb0fb7882
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a01e92f4-70d1-41ae-8d70-2701e162d068
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: a01e92f4-70d1-41ae-8d70-2701e162d068
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 565,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0

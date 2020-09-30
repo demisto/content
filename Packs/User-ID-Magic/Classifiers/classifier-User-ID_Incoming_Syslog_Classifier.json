@@ -1,0 +1,74 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "6247809a-f1cc-43ec-8a38-7c3cbe5ec67f",
+ "keyTypeMap": {
+  "DHCP lease started": "DHCP Event"
+ },
+ "name": "User-ID Incoming Syslog Classifier",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": {
+   "accessor": "",
+   "filters": [
+    [
+     {
+      "ignoreCase": false,
+      "left": {
+       "isContext": true,
+       "value": {
+        "complex": null,
+        "simple": "content"
+       }
+      },
+      "operator": "containsGeneral",
+      "right": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": "DHCP lease started"
+       }
+      }
+     }
+    ]
+   ],
+   "root": "content",
+   "transformers": [
+    {
+     "args": {
+      "error_if_no_match": {
+       "isContext": false,
+       "value": null
+      },
+      "ignore_case": {
+       "isContext": false,
+       "value": null
+      },
+      "multi_line": {
+       "isContext": false,
+       "value": null
+      },
+      "period_matches_newline": {
+       "isContext": false,
+       "value": null
+      },
+      "regex": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": "DHCP lease started"
+       }
+      }
+     },
+     "operator": "RegexExtractAll"
+    }
+   ]
+  },
+  "simple": ""
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

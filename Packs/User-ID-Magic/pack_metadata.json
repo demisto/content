@@ -1,0 +1,14 @@
+{
+    "name": "User-ID-Magic",
+    "description": "From XSOAR, one can retrieve or push user-id mappings to Palo Alto Networks firewalls. There are a few use cases for this. 1 - While investigating an incident, it could be really important to pull the user mapping from the firewall to identify the user associated with the incident. Having this automated allows the data to be pulled as soon as possible after the event is identified. 2 - In some cases, the normal sources of user to IP mappings may not provide a complete set of data. Normally most mappings come from Active Directory. How do you get mappings for machines that are not attached to AD like BYOD devices, guest networks, IOT or linux systems? This integration with XSOAR provides a way. 3 - The administrator can build a lists of MAC to user mappings and IP to user mappings. These can be used to push pre-determined user names for IPs or MAC addresses.\n4 - A syslog listener integration can be configured to receive DHCP events and automatically create User-ID mappings based on the DHCP MAC address.\n\n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Todd Walker",
+    "url": "",
+    "email": "",
+    "created": "2020-09-30T21:44:37Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

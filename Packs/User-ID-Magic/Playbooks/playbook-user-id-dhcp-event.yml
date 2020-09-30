@@ -1,0 +1,159 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: user-id-dhcp-event
+inputs: []
+name: user-id-dhcp-event
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d580522a-702e-469a-870a-4bb5a49ce949
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: d580522a-702e-469a-870a-4bb5a49ce949
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      command:
+        simple: dhcp-mapping
+      hostname:
+        simple: ${incident.sourcehostname}
+      ip:
+        simple: ${incident.sourceip}
+      mac:
+        simple: ${incident.macaddress}
+      timeout:
+        simple: "120"
+      user: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 71e735d4-dfd5-4bcd-8d90-c063786a1d13
+      iscommand: false
+      name: Send User Mapping to Firewall
+      script: a2ed60f7-de0c-4001-8c01-09cdf7cb21da
+      type: regular
+      version: -1
+    taskid: 71e735d4-dfd5-4bcd-8d90-c063786a1d13
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: User-ID Mapping Sent to Firewall
+      closeReason: {}
+      emailclassification: {}
+      id:
+        complex:
+          accessor: id
+          root: incident
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: bd48ad78-ea3f-429c-899f-cda7d0f6164a
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: bd48ad78-ea3f-429c-899f-cda7d0f6164a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 461119f3-0d91-451a-8388-821d532c6489
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 461119f3-0d91-451a-8388-821d532c6489
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 565,
+        "width": 380,
+        "x": 450,
+        "y": 60
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0
