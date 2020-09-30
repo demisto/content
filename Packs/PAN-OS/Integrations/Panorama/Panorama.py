@@ -3187,11 +3187,11 @@ def panorama_get_pcap_command():
     search_time = args.get('searchTime')
 
     if pcap_type == 'dlp-pcap' and not password:
-        raise Exception('Can not provide dlp-pcap without password.')
+        raise Exception('Can not download dlp-pcap without the password argument.')
     else:
         params['dlp-password'] = password
     if pcap_type == 'threat-pcap' and (not pcap_id or not search_time):
-        raise Exception('Can not download threat-pcap without the pcapId and the searchTime arguments.')
+        raise Exception('Can not download threat-pcap without the pcapID and the searchTime arguments.')
 
     pcap_name = args.get('from')
     local_name = args.get('localName')
