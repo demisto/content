@@ -103,13 +103,13 @@ list all policies
 
 #### Human Readable Output
 
->### f5 data for listing policies:
->|name|id|type|enforcementMode|selfLink|creatorName|active|
->|---|---|---|---|---|---|---|
->| policy_to_delete | d2wbyiegGUJDigyNPELJuQ | parent |  | https://localhost/mgmt/tm/asm/policies/d2wbyiegGUJDigyNPELJuQ?ver=15.1.0 | admin |  |
->| technologies | WS7SYdAM7F3yexKVGPrm8w | security | transparent | https://localhost/mgmt/tm/asm/policies/WS7SYdAM7F3yexKVGPrm8w?ver=15.1.0 | admin | false |
->| server-tech | 7FWxqE2a-3bbpJimP4amtA | security | blocking | https://localhost/mgmt/tm/asm/policies/7FWxqE2a-3bbpJimP4amtA?ver=15.1.0 | admin | false |
->| Test_Policy | kpD2qFaUlGAbw8RhN5IFQA | security | blocking | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA?ver=15.1.0 | admin | true |
+### f5 data for listing policies:
+|name|id|type|enforcementMode|selfLink|creatorName|active|
+|---|---|---|---|---|---|---|
+| policy_to_delete | d2wbyiegGUJDigyNPELJuQ | parent |  | https://localhost/mgmt/tm/asm/policies/d2wbyiegGUJDigyNPELJuQ?ver=15.1.0 | admin |  |
+| technologies | WS7SYdAM7F3yexKVGPrm8w | security | transparent | https://localhost/mgmt/tm/asm/policies/WS7SYdAM7F3yexKVGPrm8w?ver=15.1.0 | admin | false |
+| server-tech | 7FWxqE2a-3bbpJimP4amtA | security | blocking | https://localhost/mgmt/tm/asm/policies/7FWxqE2a-3bbpJimP4amtA?ver=15.1.0 | admin | false |
+| Test_Policy | kpD2qFaUlGAbw8RhN5IFQA | security | blocking | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA?ver=15.1.0 | admin | true |
 
 
 ### f5-asm-policy-create
@@ -166,10 +166,10 @@ Create a new ASM policy
 
 #### Human Readable Output
 
->### f5 data for creating policy:
->|name|id|fullPath|type|versionDatetime|
->|---|---|---|---|---|
->| Test_Policy_1 | qB5caokejf-8DZiNe_1VKw | /Common/Test_Policy_1 | parent | 2020-09-30T13:37:48Z |
+### f5 data for creating policy:
+|name|id|fullPath|type|versionDatetime|
+|---|---|---|---|---|
+| Test_Policy_1 | qB5caokejf-8DZiNe_1VKw | /Common/Test_Policy_1 | parent | 2020-09-30T13:37:48Z |
 
 
 ### f5-asm-policy-apply
@@ -218,10 +218,10 @@ Applying a policy in application security manager
 
 #### Human Readable Output
 
->### f5 data for applying policy:
->|policyReference|status|id|startTime|kind|
->|---|---|---|---|---|
->| https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA?ver=15.1.0 | NEW | 6ZzzyHSRHg5-RgE3srasRg | 2020-09-30T13:37:50Z | tm:asm:tasks:apply-policy:apply-policy-taskstate |
+### f5 data for applying policy:
+|policyReference|status|id|startTime|kind|
+|---|---|---|---|---|
+| https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA?ver=15.1.0 | NEW | 6ZzzyHSRHg5-RgE3srasRg | 2020-09-30T13:37:50Z | tm:asm:tasks:apply-policy:apply-policy-taskstate |
 
 
 ### f5-asm-policy-export-file
@@ -276,10 +276,10 @@ export policy file
 
 #### Human Readable Output
 
->### f5 data for exporting policy:
->|policyReference|status|id|startTime|kind|format|filename|
->|---|---|---|---|---|---|---|
->| https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA?ver=15.1.0 | NEW | Nb8HQo1PqCXP_tFUoz7hRQ | 2020-09-30T13:37:51Z | tm:asm:tasks:export-policy:export-policy-taskstate | xml | exported_file.xml |
+### f5 data for exporting policy:
+|policyReference|status|id|startTime|kind|format|filename|
+|---|---|---|---|---|---|---|
+| https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA?ver=15.1.0 | NEW | Nb8HQo1PqCXP_tFUoz7hRQ | 2020-09-30T13:37:51Z | tm:asm:tasks:export-policy:export-policy-taskstate | xml | exported_file.xml |
 
 
 ### f5-asm-policy-methods-list
@@ -764,20 +764,20 @@ Lists the HTTP methods that are enforced in the security policy.
 
 #### Human Readable Output
 
->### f5 data for listing policy methods:
->|name|id|actAsMethod|selfLink|lastUpdateMicros|
->|---|---|---|---|---|
->| new_method_04 | mxy58ouQBKYZ7AsujHtdNQ | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/mxy58ouQBKYZ7AsujHtdNQ?ver=15.1.0 | 2020-09-30T12:24:00Z |
->| new_method_03 | gbcCSqQgfttFwDszpHR8vg | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/gbcCSqQgfttFwDszpHR8vg?ver=15.1.0 | 2020-09-30T12:20:51Z |
->| new_method_02 | p773WZAfmkgA-fTq6aqYzQ | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/p773WZAfmkgA-fTq6aqYzQ?ver=15.1.0 | 2020-09-30T12:20:28Z |
->| new_name_0101 | g1NIB_pTaAlM6YcpKrTFLg | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/g1NIB_pTaAlM6YcpKrTFLg?ver=15.1.0 | 2020-09-30T12:19:08Z |
->| new_method_01 | qBX6xVxyjS3v4faysUuE6A | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/qBX6xVxyjS3v4faysUuE6A?ver=15.1.0 | 2020-09-30T12:02:58Z |
->| test_get_2 | QB1BzVdfL5WfSHrpP_2MOQ | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/QB1BzVdfL5WfSHrpP_2MOQ?ver=15.1.0 | 2020-08-11T12:32:56Z |
->| test_get | fY-VmdD8p450Aqd86HMKtQ | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/fY-VmdD8p450Aqd86HMKtQ?ver=15.1.0 | 2020-08-11T12:30:44Z |
->| getty | 9l8WogEiTHYEa8UzGruaBg | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/9l8WogEiTHYEa8UzGruaBg?ver=15.1.0 | 2020-08-05T21:07:26Z |
->| HEAD | 4V4hb8HGOfeHsSMezfob-A | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/4V4hb8HGOfeHsSMezfob-A?ver=15.1.0 | 2020-08-05T20:58:48Z |
->| POST | oCQ57CKdi-DnSwwWAjkjEA | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/oCQ57CKdi-DnSwwWAjkjEA?ver=15.1.0 | 2020-08-05T20:58:48Z |
->| GET | dSgDWpPuac7bHb3bLwv8yA | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/dSgDWpPuac7bHb3bLwv8yA?ver=15.1.0 | 2020-08-05T20:58:48Z |
+### f5 data for listing policy methods:
+|name|id|actAsMethod|selfLink|lastUpdateMicros|
+|---|---|---|---|---|
+| new_method_04 | mxy58ouQBKYZ7AsujHtdNQ | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/mxy58ouQBKYZ7AsujHtdNQ?ver=15.1.0 | 2020-09-30T12:24:00Z |
+| new_method_03 | gbcCSqQgfttFwDszpHR8vg | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/gbcCSqQgfttFwDszpHR8vg?ver=15.1.0 | 2020-09-30T12:20:51Z |
+| new_method_02 | p773WZAfmkgA-fTq6aqYzQ | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/p773WZAfmkgA-fTq6aqYzQ?ver=15.1.0 | 2020-09-30T12:20:28Z |
+| new_name_0101 | g1NIB_pTaAlM6YcpKrTFLg | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/g1NIB_pTaAlM6YcpKrTFLg?ver=15.1.0 | 2020-09-30T12:19:08Z |
+| new_method_01 | qBX6xVxyjS3v4faysUuE6A | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/qBX6xVxyjS3v4faysUuE6A?ver=15.1.0 | 2020-09-30T12:02:58Z |
+| test_get_2 | QB1BzVdfL5WfSHrpP_2MOQ | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/QB1BzVdfL5WfSHrpP_2MOQ?ver=15.1.0 | 2020-08-11T12:32:56Z |
+| test_get | fY-VmdD8p450Aqd86HMKtQ | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/fY-VmdD8p450Aqd86HMKtQ?ver=15.1.0 | 2020-08-11T12:30:44Z |
+| getty | 9l8WogEiTHYEa8UzGruaBg | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/9l8WogEiTHYEa8UzGruaBg?ver=15.1.0 | 2020-08-05T21:07:26Z |
+| HEAD | 4V4hb8HGOfeHsSMezfob-A | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/4V4hb8HGOfeHsSMezfob-A?ver=15.1.0 | 2020-08-05T20:58:48Z |
+| POST | oCQ57CKdi-DnSwwWAjkjEA | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/oCQ57CKdi-DnSwwWAjkjEA?ver=15.1.0 | 2020-08-05T20:58:48Z |
+| GET | dSgDWpPuac7bHb3bLwv8yA | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/dSgDWpPuac7bHb3bLwv8yA?ver=15.1.0 | 2020-08-05T20:58:48Z |
 
 
 ### f5-asm-policy-file-types-list
@@ -1104,16 +1104,16 @@ Lists the file types that are allowed or disallowed in the security policy.
 
 #### Human Readable Output
 
->### f5 data for listing policy file types:
->|name|id|type|selfLink|checkRequestLength|performStaging|allowed|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|
->| pdf | Q3F1ukGRIQ7gBOHZN0lNCQ | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/Q3F1ukGRIQ7gBOHZN0lNCQ?ver=15.1.0 | true | false | true | 2020-09-14T12:31:25Z |
->| csv | Yoy1Z1_1JPPnGbeqLoj-Pw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/Yoy1Z1_1JPPnGbeqLoj-Pw?ver=15.1.0 | true | false | true | 2020-09-03T14:25:22Z |
->| yml | F2o7I8XjkrtcBH1IGTi9ew | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/F2o7I8XjkrtcBH1IGTi9ew?ver=15.1.0 | true | false | true | 2020-09-03T14:22:09Z |
->| xml | D2NdDg84dP_4tYHBMubHpw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/D2NdDg84dP_4tYHBMubHpw?ver=15.1.0 | true | false | true | 2020-08-18T17:04:01Z |
->| py | 3-1bwXe4erMXxYTgZWatxg | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/3-1bwXe4erMXxYTgZWatxg?ver=15.1.0 | true | false | true | 2020-08-05T21:05:35Z |
->| exe | mOgzedRVODecKsTkfDvoHQ | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/mOgzedRVODecKsTkfDvoHQ?ver=15.1.0 | true | false | true | 2020-08-05T21:05:11Z |
->| * | M4na42GvebBMnI5wV_YMxg | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/M4na42GvebBMnI5wV_YMxg?ver=15.1.0 | true | false | true | 2020-08-23T10:24:11Z |
+### f5 data for listing policy file types:
+|name|id|type|selfLink|checkRequestLength|performStaging|allowed|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|
+| pdf | Q3F1ukGRIQ7gBOHZN0lNCQ | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/Q3F1ukGRIQ7gBOHZN0lNCQ?ver=15.1.0 | true | false | true | 2020-09-14T12:31:25Z |
+| csv | Yoy1Z1_1JPPnGbeqLoj-Pw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/Yoy1Z1_1JPPnGbeqLoj-Pw?ver=15.1.0 | true | false | true | 2020-09-03T14:25:22Z |
+| yml | F2o7I8XjkrtcBH1IGTi9ew | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/F2o7I8XjkrtcBH1IGTi9ew?ver=15.1.0 | true | false | true | 2020-09-03T14:22:09Z |
+| xml | D2NdDg84dP_4tYHBMubHpw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/D2NdDg84dP_4tYHBMubHpw?ver=15.1.0 | true | false | true | 2020-08-18T17:04:01Z |
+| py | 3-1bwXe4erMXxYTgZWatxg | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/3-1bwXe4erMXxYTgZWatxg?ver=15.1.0 | true | false | true | 2020-08-05T21:05:35Z |
+| exe | mOgzedRVODecKsTkfDvoHQ | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/mOgzedRVODecKsTkfDvoHQ?ver=15.1.0 | true | false | true | 2020-08-05T21:05:11Z |
+| * | M4na42GvebBMnI5wV_YMxg | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/M4na42GvebBMnI5wV_YMxg?ver=15.1.0 | true | false | true | 2020-08-23T10:24:11Z |
 
 
 ### f5-asm-policy-methods-add
@@ -1284,10 +1284,10 @@ update a policy method
 
 #### Human Readable Output
 
->### f5 data for updating policy methods:
->|name|id|actAsMethod|selfLink|lastUpdateMicros|
->|---|---|---|---|---|
->| Posty | cwMuAdnzCUXmGBTc552zvQ | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/cwMuAdnzCUXmGBTc552zvQ?ver=15.1.0 | 2020-09-30T13:38:10Z |
+### f5 data for updating policy methods:
+|name|id|actAsMethod|selfLink|lastUpdateMicros|
+|---|---|---|---|---|
+| Posty | cwMuAdnzCUXmGBTc552zvQ | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/cwMuAdnzCUXmGBTc552zvQ?ver=15.1.0 | 2020-09-30T13:38:10Z |
 
 
 ### f5-asm-policy-methods-delete
@@ -1373,10 +1373,10 @@ Delete a method from a certain policy
 
 #### Human Readable Output
 
->### f5 data for deleting policy methods:
->|name|id|actAsMethod|selfLink|lastUpdateMicros|
->|---|---|---|---|---|
->| Posty | cwMuAdnzCUXmGBTc552zvQ | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/cwMuAdnzCUXmGBTc552zvQ?ver=15.1.0 | 2020-09-30T13:38:10Z |
+### f5 data for deleting policy methods:
+|name|id|actAsMethod|selfLink|lastUpdateMicros|
+|---|---|---|---|---|
+| Posty | cwMuAdnzCUXmGBTc552zvQ | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/cwMuAdnzCUXmGBTc552zvQ?ver=15.1.0 | 2020-09-30T13:38:10Z |
 
 
 ### f5-asm-policy-file-types-add
@@ -1475,10 +1475,10 @@ add new file type
 
 #### Human Readable Output
 
->### f5 data for adding policy file types:
->|name|id|type|selfLink|checkRequestLength|responseCheck|checkUrlLength|postDataLength|performStaging|allowed|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|
->| txt | x4JPPU1fey8i0DR1jB6UVA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0 | true | true | false | 100 | false | true | 2020-09-30T13:38:18Z |
+### f5 data for adding policy file types:
+|name|id|type|selfLink|checkRequestLength|responseCheck|checkUrlLength|postDataLength|performStaging|allowed|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|
+| txt | x4JPPU1fey8i0DR1jB6UVA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0 | true | true | false | 100 | false | true | 2020-09-30T13:38:18Z |
 
 
 ### f5-asm-policy-file-types-update
@@ -1577,10 +1577,10 @@ update policy file type
 
 #### Human Readable Output
 
->### f5 data for updating policy methods:
->|name|id|type|selfLink|checkRequestLength|responseCheck|checkUrlLength|postDataLength|performStaging|allowed|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|
->| txt | x4JPPU1fey8i0DR1jB6UVA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0 | true | true | false | 100 | false | true | 2020-09-30T13:38:18Z |
+### f5 data for updating policy methods:
+|name|id|type|selfLink|checkRequestLength|responseCheck|checkUrlLength|postDataLength|performStaging|allowed|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|
+| txt | x4JPPU1fey8i0DR1jB6UVA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0 | true | true | false | 100 | false | true | 2020-09-30T13:38:18Z |
 
 
 ### f5-asm-policy-file-types-delete
@@ -1664,10 +1664,10 @@ Delete policy file type
 
 #### Human Readable Output
 
->### f5 data for deleting policy file type:
->|name|id|type|selfLink|checkRequestLength|responseCheck|checkUrlLength|postDataLength|performStaging|allowed|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|
->| txt | x4JPPU1fey8i0DR1jB6UVA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0 | true | true | false | 100 | false | true | 2020-09-30T13:38:18Z |
+### f5 data for deleting policy file type:
+|name|id|type|selfLink|checkRequestLength|responseCheck|checkUrlLength|postDataLength|performStaging|allowed|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|
+| txt | x4JPPU1fey8i0DR1jB6UVA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0 | true | true | false | 100 | false | true | 2020-09-30T13:38:18Z |
 
 
 ### f5-asm-policy-delete
@@ -1713,10 +1713,10 @@ Delete policy
 
 #### Human Readable Output
 
->### f5 data for deleting policy:
->|name|id|selfLink|
->|---|---|---|
->| policy_to_delete | d2wbyiegGUJDigyNPELJuQ | https://localhost/mgmt/tm/asm/policies/d2wbyiegGUJDigyNPELJuQ?ver=15.1.0 |
+### f5 data for deleting policy:
+|name|id|selfLink|
+|---|---|---|
+| policy_to_delete | d2wbyiegGUJDigyNPELJuQ | https://localhost/mgmt/tm/asm/policies/d2wbyiegGUJDigyNPELJuQ?ver=15.1.0 |
 
 
 ### f5-asm-policy-hostnames-list
@@ -1921,13 +1921,13 @@ List policy hostnames
 
 #### Human Readable Output
 
->### f5 data for listing policy hostname:
->|name|id|selfLink|includeSubdomains|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|
->| example.com | Wrq9YDsieAMC3Y2DSY5Rcg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/Wrq9YDsieAMC3Y2DSY5Rcg?ver=15.1.0 | true | GUI | 2020-09-01T12:22:17Z |
->| qmasters.co.il | tM6UhfuSaPYYRnUS6-k2vg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/tM6UhfuSaPYYRnUS6-k2vg?ver=15.1.0 | false | GUI | 2020-09-01T12:36:37Z |
->| cnn | _3pBVxU6gHchLIdX_Tm4vQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/_3pBVxU6gHchLIdX_Tm4vQ?ver=15.1.0 | false | GUI | 2020-08-05T21:09:06Z |
->| google.com | HVkg9LRLJ6gCvXfE8FNvWg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/HVkg9LRLJ6gCvXfE8FNvWg?ver=15.1.0 | false | GUI | 2020-08-05T21:08:39Z |
+### f5 data for listing policy hostname:
+|name|id|selfLink|includeSubdomains|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|
+| example.com | Wrq9YDsieAMC3Y2DSY5Rcg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/Wrq9YDsieAMC3Y2DSY5Rcg?ver=15.1.0 | true | GUI | 2020-09-01T12:22:17Z |
+| qmasters.co.il | tM6UhfuSaPYYRnUS6-k2vg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/tM6UhfuSaPYYRnUS6-k2vg?ver=15.1.0 | false | GUI | 2020-09-01T12:36:37Z |
+| cnn | _3pBVxU6gHchLIdX_Tm4vQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/_3pBVxU6gHchLIdX_Tm4vQ?ver=15.1.0 | false | GUI | 2020-08-05T21:09:06Z |
+| google.com | HVkg9LRLJ6gCvXfE8FNvWg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/HVkg9LRLJ6gCvXfE8FNvWg?ver=15.1.0 | false | GUI | 2020-08-05T21:08:39Z |
 
 
 ### f5-asm-policy-hostnames-add
@@ -2015,10 +2015,10 @@ Add a new hostname to a policy
 
 #### Human Readable Output
 
->### f5 data for adding policy hostname:
->|name|id|selfLink|includeSubdomains|includeSubdomains|createdBy|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|
->| qmasters.co | dsblcoDkMkFb_A_H6BS6eA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0 | false | false | GUI | GUI | 2020-09-30T13:38:29Z |
+### f5 data for adding policy hostname:
+|name|id|selfLink|includeSubdomains|includeSubdomains|createdBy|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|
+| qmasters.co | dsblcoDkMkFb_A_H6BS6eA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0 | false | false | GUI | GUI | 2020-09-30T13:38:29Z |
 
 
 ### f5-asm-policy-hostnames-update
@@ -2106,10 +2106,10 @@ Update an existing policy hostname
 
 #### Human Readable Output
 
->### f5 data for updating hostname:
->|name|id|selfLink|includeSubdomains|includeSubdomains|createdBy|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|
->| qmasters.co | dsblcoDkMkFb_A_H6BS6eA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0 | true | true | GUI | GUI | 2020-09-30T13:38:30Z |
+### f5 data for updating hostname:
+|name|id|selfLink|includeSubdomains|includeSubdomains|createdBy|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|
+| qmasters.co | dsblcoDkMkFb_A_H6BS6eA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0 | true | true | GUI | GUI | 2020-09-30T13:38:30Z |
 
 
 ### f5-asm-policy-hostnames-delete
@@ -2196,10 +2196,10 @@ Delete a hostname from a policy
 
 #### Human Readable Output
 
->### f5 data for deleting hostname:
->|name|id|selfLink|includeSubdomains|includeSubdomains|createdBy|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|
->| qmasters.co | dsblcoDkMkFb_A_H6BS6eA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0 | true | true | GUI | GUI | 2020-09-30T13:38:30Z |
+### f5 data for deleting hostname:
+|name|id|selfLink|includeSubdomains|includeSubdomains|createdBy|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|
+| qmasters.co | dsblcoDkMkFb_A_H6BS6eA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0 | true | true | GUI | GUI | 2020-09-30T13:38:30Z |
 
 
 ### f5-asm-policy-cookies-list
@@ -2446,14 +2446,14 @@ List all cookies of a given policy
 
 #### Human Readable Output
 
->### f5 data for listing policy cookies:
->|name|id|type|selfLink|enforcementType|attackSignaturesCheck|isBase64|performStaging|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|
->| not_mal | 6qrK8k_J8uIbW-r9fgQiCw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/6qrK8k_J8uIbW-r9fgQiCw?ver=15.1.0 | allow | true | false | false | GUI | 2020-09-22T11:37:17Z |
->| chocolate | w3iYXWKemaToYhPbDNXnDQ | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/w3iYXWKemaToYhPbDNXnDQ?ver=15.1.0 | allow | true | false | false | GUI | 2020-08-20T15:24:10Z |
->| yummy | E1g7FVU2CYuY30F-Rp_MUw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/E1g7FVU2CYuY30F-Rp_MUw?ver=15.1.0 | allow | true | false | false | GUI | 2020-08-05T21:04:51Z |
->| yum | HeC08NE594GztN6H7bTecA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/HeC08NE594GztN6H7bTecA?ver=15.1.0 | allow | true | false | false | GUI | 2020-08-05T21:04:43Z |
->| * | M4na42GvebBMnI5wV_YMxg | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/M4na42GvebBMnI5wV_YMxg?ver=15.1.0 | allow | true | false | false | GUI | 2020-08-23T10:24:10Z |
+### f5 data for listing policy cookies:
+|name|id|type|selfLink|enforcementType|attackSignaturesCheck|isBase64|performStaging|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|
+| not_mal | 6qrK8k_J8uIbW-r9fgQiCw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/6qrK8k_J8uIbW-r9fgQiCw?ver=15.1.0 | allow | true | false | false | GUI | 2020-09-22T11:37:17Z |
+| chocolate | w3iYXWKemaToYhPbDNXnDQ | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/w3iYXWKemaToYhPbDNXnDQ?ver=15.1.0 | allow | true | false | false | GUI | 2020-08-20T15:24:10Z |
+| yummy | E1g7FVU2CYuY30F-Rp_MUw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/E1g7FVU2CYuY30F-Rp_MUw?ver=15.1.0 | allow | true | false | false | GUI | 2020-08-05T21:04:51Z |
+| yum | HeC08NE594GztN6H7bTecA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/HeC08NE594GztN6H7bTecA?ver=15.1.0 | allow | true | false | false | GUI | 2020-08-05T21:04:43Z |
+| * | M4na42GvebBMnI5wV_YMxg | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/M4na42GvebBMnI5wV_YMxg?ver=15.1.0 | allow | true | false | false | GUI | 2020-08-23T10:24:10Z |
 
 
 ### f5-asm-policy-blocking-settings-list
@@ -2608,17 +2608,17 @@ Retreive a BS list from a selected policy.
 
 #### Human Readable Output
 
->### Evasions for selected policy
->|id|description|enabled|learn|kind|reference|selfLink|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|
->| 9--k-GSum4jUNSf0sU91Dw | Bad unescape | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | 2020-08-16T10:18:55Z |
->| Ahu8fuILcRNNU-ICBr1v6w | Apache whitespace | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/Ahu8fuILcRNNU-ICBr1v6w?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/Ahu8fuILcRNNU-ICBr1v6w?ver=15.1.0 | 2020-08-05T20:58:49Z |
->| EKfN2XD-E1z097tVwOO1nw | Bare byte decoding | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/EKfN2XD-E1z097tVwOO1nw?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/EKfN2XD-E1z097tVwOO1nw?ver=15.1.0 | 2020-08-05T20:58:49Z |
->| dtxhHW66r8ZswIeccbXbXA | IIS Unicode codepoints | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/dtxhHW66r8ZswIeccbXbXA?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/dtxhHW66r8ZswIeccbXbXA?ver=15.1.0 | 2020-08-05T20:58:49Z |
->| 6l0vHEYIIy4H06o9mY5RNQ | IIS backslashes | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/6l0vHEYIIy4H06o9mY5RNQ?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/6l0vHEYIIy4H06o9mY5RNQ?ver=15.1.0 | 2020-08-05T20:58:49Z |
->| Y2TT8PSVtqudz407XG4LAQ | %u decoding | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/Y2TT8PSVtqudz407XG4LAQ?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/Y2TT8PSVtqudz407XG4LAQ?ver=15.1.0 | 2020-08-05T20:58:49Z |
->| x02XsB6uJX5Eqp1brel7rw | Multiple decoding | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/x02XsB6uJX5Eqp1brel7rw?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/x02XsB6uJX5Eqp1brel7rw?ver=15.1.0 | 2020-08-05T20:58:49Z |
->| qH_2eaLz5x2RgaZ7dUISLA | Directory traversals | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/qH_2eaLz5x2RgaZ7dUISLA?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/qH_2eaLz5x2RgaZ7dUISLA?ver=15.1.0 | 2020-08-05T20:58:49Z |
+### Evasions for selected policy
+|id|description|enabled|learn|kind|reference|selfLink|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|
+| 9--k-GSum4jUNSf0sU91Dw | Bad unescape | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | 2020-08-16T10:18:55Z |
+| Ahu8fuILcRNNU-ICBr1v6w | Apache whitespace | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/Ahu8fuILcRNNU-ICBr1v6w?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/Ahu8fuILcRNNU-ICBr1v6w?ver=15.1.0 | 2020-08-05T20:58:49Z |
+| EKfN2XD-E1z097tVwOO1nw | Bare byte decoding | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/EKfN2XD-E1z097tVwOO1nw?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/EKfN2XD-E1z097tVwOO1nw?ver=15.1.0 | 2020-08-05T20:58:49Z |
+| dtxhHW66r8ZswIeccbXbXA | IIS Unicode codepoints | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/dtxhHW66r8ZswIeccbXbXA?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/dtxhHW66r8ZswIeccbXbXA?ver=15.1.0 | 2020-08-05T20:58:49Z |
+| 6l0vHEYIIy4H06o9mY5RNQ | IIS backslashes | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/6l0vHEYIIy4H06o9mY5RNQ?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/6l0vHEYIIy4H06o9mY5RNQ?ver=15.1.0 | 2020-08-05T20:58:49Z |
+| Y2TT8PSVtqudz407XG4LAQ | %u decoding | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/Y2TT8PSVtqudz407XG4LAQ?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/Y2TT8PSVtqudz407XG4LAQ?ver=15.1.0 | 2020-08-05T20:58:49Z |
+| x02XsB6uJX5Eqp1brel7rw | Multiple decoding | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/x02XsB6uJX5Eqp1brel7rw?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/x02XsB6uJX5Eqp1brel7rw?ver=15.1.0 | 2020-08-05T20:58:49Z |
+| qH_2eaLz5x2RgaZ7dUISLA | Directory traversals | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/qH_2eaLz5x2RgaZ7dUISLA?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/qH_2eaLz5x2RgaZ7dUISLA?ver=15.1.0 | 2020-08-05T20:58:49Z |
 
 
 ### f5-asm-policy-blocking-settings-update
@@ -2684,10 +2684,10 @@ Update a BS element
 
 #### Human Readable Output
 
->### Modified evasions
->|id|description|enabled|learn|kind|reference|selfLink|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|
->| 9--k-GSum4jUNSf0sU91Dw | Bad unescape | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | 2020-08-16T10:18:55Z |
+### Modified evasions
+|id|description|enabled|learn|kind|reference|selfLink|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|
+| 9--k-GSum4jUNSf0sU91Dw | Bad unescape | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | 2020-08-16T10:18:55Z |
 
 
 ### f5-asm-policy-urls-list
@@ -2978,15 +2978,15 @@ List all policy URLs
 
 #### Human Readable Output
 
->### f5 data for listing policy url:
->|name|id|type|protocol|method|selfLink|mandatoryBody|clickjackingProtection|attackSignaturesCheck|performStaging|isAllowed|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| /http_example_2 | h89DiM-YtWptqKb9c0egbA | explicit | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/h89DiM-YtWptqKb9c0egbA?ver=15.1.0 | false | false | true | false | true | GUI | 2020-08-18T15:04:39Z |
->| /http_example | q_O5IGzUqSmFYZhlkA1CpQ | explicit | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/q_O5IGzUqSmFYZhlkA1CpQ?ver=15.1.0 | false | false | true | false | true | GUI | 2020-08-18T14:55:47Z |
->| /http_examplel | 2lQ1Z3wue9pdEjZxE-L_ZQ | explicit | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/2lQ1Z3wue9pdEjZxE-L_ZQ?ver=15.1.0 | false | false | true | false | true | GUI | 2020-08-11T17:06:05Z |
->| /http | 6ER7SOq208zow5rraOzwyQ | explicit | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/6ER7SOq208zow5rraOzwyQ?ver=15.1.0 | true |  |  |  | false | GUI | 2020-08-11T14:00:44Z |
->| * | faiefv884qtHRU3Qva2AbQ | wildcard | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/faiefv884qtHRU3Qva2AbQ?ver=15.1.0 | false | false | true | false | true | GUI | 2020-08-20T15:24:11Z |
->| * | N_a3D1S7OKDehYEPb-mgCg | wildcard | https | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/N_a3D1S7OKDehYEPb-mgCg?ver=15.1.0 | false | false | true | false | true | GUI | 2020-08-20T15:24:11Z |
+### f5 data for listing policy url:
+|name|id|type|protocol|method|selfLink|mandatoryBody|clickjackingProtection|attackSignaturesCheck|performStaging|isAllowed|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| /http_example_2 | h89DiM-YtWptqKb9c0egbA | explicit | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/h89DiM-YtWptqKb9c0egbA?ver=15.1.0 | false | false | true | false | true | GUI | 2020-08-18T15:04:39Z |
+| /http_example | q_O5IGzUqSmFYZhlkA1CpQ | explicit | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/q_O5IGzUqSmFYZhlkA1CpQ?ver=15.1.0 | false | false | true | false | true | GUI | 2020-08-18T14:55:47Z |
+| /http_examplel | 2lQ1Z3wue9pdEjZxE-L_ZQ | explicit | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/2lQ1Z3wue9pdEjZxE-L_ZQ?ver=15.1.0 | false | false | true | false | true | GUI | 2020-08-11T17:06:05Z |
+| /http | 6ER7SOq208zow5rraOzwyQ | explicit | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/6ER7SOq208zow5rraOzwyQ?ver=15.1.0 | true |  |  |  | false | GUI | 2020-08-11T14:00:44Z |
+| * | faiefv884qtHRU3Qva2AbQ | wildcard | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/faiefv884qtHRU3Qva2AbQ?ver=15.1.0 | false | false | true | false | true | GUI | 2020-08-20T15:24:11Z |
+| * | N_a3D1S7OKDehYEPb-mgCg | wildcard | https | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/N_a3D1S7OKDehYEPb-mgCg?ver=15.1.0 | false | false | true | false | true | GUI | 2020-08-20T15:24:11Z |
 
 
 ### f5-asm-policy-cookies-add
@@ -3079,10 +3079,10 @@ Add new cookie to a specific policy
 
 #### Human Readable Output
 
->### f5 data for adding policy cookie: new_cookie
->|name|id|type|selfLink|enforcementType|isBase64|attackSignaturesCheck|isBase64|createdBy|performStaging|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| new_cookie | 7t_U2dbYEAQp89Wp0m_QoA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0 | allow | false | true | false | GUI | false | GUI | 2020-09-30T13:38:24Z |
+### f5 data for adding policy cookie: new_cookie
+|name|id|type|selfLink|enforcementType|isBase64|attackSignaturesCheck|isBase64|createdBy|performStaging|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| new_cookie | 7t_U2dbYEAQp89Wp0m_QoA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0 | allow | false | true | false | GUI | false | GUI | 2020-09-30T13:38:24Z |
 
 
 ### f5-asm-policy-urls-add
@@ -3182,10 +3182,10 @@ Add a new URL to a policy
 
 #### Human Readable Output
 
->### f5 data for adding policy url:
->|name|id|type|protocol|method|selfLink|clickjackingProtection|attackSignaturesCheck|createdBy|performStaging|isAllowed|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| /validation | Q6tL31BrUl-vlY0yKsNSqA | explicit | https | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/Q6tL31BrUl-vlY0yKsNSqA?ver=15.1.0 | false | true | GUI | false | true | GUI | 2020-09-30T13:38:39Z |
+### f5 data for adding policy url:
+|name|id|type|protocol|method|selfLink|clickjackingProtection|attackSignaturesCheck|createdBy|performStaging|isAllowed|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| /validation | Q6tL31BrUl-vlY0yKsNSqA | explicit | https | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/Q6tL31BrUl-vlY0yKsNSqA?ver=15.1.0 | false | true | GUI | false | true | GUI | 2020-09-30T13:38:39Z |
 
 
 ### f5-asm-policy-urls-update
@@ -3282,10 +3282,10 @@ Update an existing policy URL
 
 #### Human Readable Output
 
->### f5 data for updating url:
->|name|id|type|protocol|method|selfLink|clickjackingProtection|attackSignaturesCheck|createdBy|performStaging|isAllowed|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| /validation | Q6tL31BrUl-vlY0yKsNSqA | explicit | https | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/Q6tL31BrUl-vlY0yKsNSqA?ver=15.1.0 | false | true | GUI | false | true | GUI | 2020-09-30T13:38:39Z |
+### f5 data for updating url:
+|name|id|type|protocol|method|selfLink|clickjackingProtection|attackSignaturesCheck|createdBy|performStaging|isAllowed|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| /validation | Q6tL31BrUl-vlY0yKsNSqA | explicit | https | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/Q6tL31BrUl-vlY0yKsNSqA?ver=15.1.0 | false | true | GUI | false | true | GUI | 2020-09-30T13:38:39Z |
 
 
 ### f5-asm-policy-urls-delete
@@ -3378,10 +3378,10 @@ Delete a URL from a policy
 
 #### Human Readable Output
 
->### f5 data for deleting url:
->|name|id|type|protocol|method|selfLink|clickjackingProtection|attackSignaturesCheck|createdBy|performStaging|isAllowed|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| /validation | Q6tL31BrUl-vlY0yKsNSqA | explicit | https | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/Q6tL31BrUl-vlY0yKsNSqA?ver=15.1.0 | false | true | GUI | false | true | GUI | 2020-09-30T13:38:39Z |
+### f5 data for deleting url:
+|name|id|type|protocol|method|selfLink|clickjackingProtection|attackSignaturesCheck|createdBy|performStaging|isAllowed|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| /validation | Q6tL31BrUl-vlY0yKsNSqA | explicit | https | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/Q6tL31BrUl-vlY0yKsNSqA?ver=15.1.0 | false | true | GUI | false | true | GUI | 2020-09-30T13:38:39Z |
 
 
 ### f5-asm-policy-cookies-update
@@ -3474,10 +3474,10 @@ Update a cookie object
 
 #### Human Readable Output
 
->### f5 data for updating cookie: new_cookie
->|name|id|type|selfLink|enforcementType|isBase64|attackSignaturesCheck|isBase64|createdBy|performStaging|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| new_cookie | 7t_U2dbYEAQp89Wp0m_QoA | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0 | allow | false | true | false | GUI | false | GUI | 2020-09-30T13:38:25Z |
+### f5 data for updating cookie: new_cookie
+|name|id|type|selfLink|enforcementType|isBase64|attackSignaturesCheck|isBase64|createdBy|performStaging|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| new_cookie | 7t_U2dbYEAQp89Wp0m_QoA | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0 | allow | false | true | false | GUI | false | GUI | 2020-09-30T13:38:25Z |
 
 
 ### f5-asm-policy-cookies-delete
@@ -3566,10 +3566,10 @@ Delete cookie
 
 #### Human Readable Output
 
->### f5 data for deleting cookie:
->|name|id|type|selfLink|enforcementType|isBase64|attackSignaturesCheck|isBase64|createdBy|performStaging|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| new_cookie | 7t_U2dbYEAQp89Wp0m_QoA | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0 | allow | false | true | false | GUI | false | GUI | 2020-09-30T13:38:25Z |
+### f5 data for deleting cookie:
+|name|id|type|selfLink|enforcementType|isBase64|attackSignaturesCheck|isBase64|createdBy|performStaging|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| new_cookie | 7t_U2dbYEAQp89Wp0m_QoA | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0 | allow | false | true | false | GUI | false | GUI | 2020-09-30T13:38:25Z |
 
 
 ### f5-asm-policy-whitelist-ips-list
@@ -3859,15 +3859,15 @@ List all whitelisted IPs for a policy
 
 #### Human Readable Output
 
->### f5 list of all whitelist IPs:
->|id|selfLink|ipAddress|ipMask|blockRequests|ignoreAnomalies|neverLogRequests|neverLearnRequests|trustedByPolicyBuilder|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|
->| 4CuqTmGkqfI01diFbc2PJQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/4CuqTmGkqfI01diFbc2PJQ?ver=15.1.0 | 100.100.100.100 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-05T21:13:09Z |
->| lbpOAL2E2f2C7qp7kiV3OA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/lbpOAL2E2f2C7qp7kiV3OA?ver=15.1.0 | 20.20.20.20 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-05T21:13:38Z |
->| Uey6PzyJhbb6Qm-w0RD__Q | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/Uey6PzyJhbb6Qm-w0RD__Q?ver=15.1.0 | 30.30.30.30 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-05T21:13:48Z |
->| 9lSC2hzsLvpsEgSTEpi4yw | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/9lSC2hzsLvpsEgSTEpi4yw?ver=15.1.0 | 11.22.33.44 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-09T15:15:56Z |
->| F2ZRy81hCYIAnYolA0fqzg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/F2ZRy81hCYIAnYolA0fqzg?ver=15.1.0 | 1.2.3.44 | 255.255.255.255 | policy-default | false | true | false | false | 2020-08-11T14:32:19Z |
->| 6fatQ08fMtHzcywc4gQDJA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/6fatQ08fMtHzcywc4gQDJA?ver=15.1.0 | 1.2.3.144 | 255.255.255.255 | policy-default | false | false | true | true | 2020-08-11T14:31:24Z |
+### f5 list of all whitelist IPs:
+|id|selfLink|ipAddress|ipMask|blockRequests|ignoreAnomalies|neverLogRequests|neverLearnRequests|trustedByPolicyBuilder|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|
+| 4CuqTmGkqfI01diFbc2PJQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/4CuqTmGkqfI01diFbc2PJQ?ver=15.1.0 | 100.100.100.100 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-05T21:13:09Z |
+| lbpOAL2E2f2C7qp7kiV3OA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/lbpOAL2E2f2C7qp7kiV3OA?ver=15.1.0 | 20.20.20.20 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-05T21:13:38Z |
+| Uey6PzyJhbb6Qm-w0RD__Q | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/Uey6PzyJhbb6Qm-w0RD__Q?ver=15.1.0 | 30.30.30.30 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-05T21:13:48Z |
+| 9lSC2hzsLvpsEgSTEpi4yw | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/9lSC2hzsLvpsEgSTEpi4yw?ver=15.1.0 | 11.22.33.44 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-09T15:15:56Z |
+| F2ZRy81hCYIAnYolA0fqzg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/F2ZRy81hCYIAnYolA0fqzg?ver=15.1.0 | 1.2.3.44 | 255.255.255.255 | policy-default | false | true | false | false | 2020-08-11T14:32:19Z |
+| 6fatQ08fMtHzcywc4gQDJA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/6fatQ08fMtHzcywc4gQDJA?ver=15.1.0 | 1.2.3.144 | 255.255.255.255 | policy-default | false | false | true | true | 2020-08-11T14:31:24Z |
 
 
 ### f5-asm-policy-whitelist-ips-add
@@ -3967,10 +3967,10 @@ Add a new whitelisted IP to a policy.
 
 #### Human Readable Output
 
->### f5 data for listing whitelist IP:
->|id|selfLink|ipAddress|ipMask|blockRequests|ignoreAnomalies|neverLogRequests|neverLearnRequests|trustedByPolicyBuilder|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|
->| pwbUREF-1u-BDw9MrdisOA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0 | 1.2.3.4 | 255.255.255.255 | policy-default | false | false | false | false | 2020-09-30T13:38:44Z |
+### f5 data for listing whitelist IP:
+|id|selfLink|ipAddress|ipMask|blockRequests|ignoreAnomalies|neverLogRequests|neverLearnRequests|trustedByPolicyBuilder|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|
+| pwbUREF-1u-BDw9MrdisOA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0 | 1.2.3.4 | 255.255.255.255 | policy-default | false | false | false | false | 2020-09-30T13:38:44Z |
 
 
 ### f5-asm-policy-whitelist-ips-update
@@ -4069,10 +4069,10 @@ Update an existing whitelisted IP.
 
 #### Human Readable Output
 
->### f5 data for listing whitelist IP:
->|id|selfLink|ipAddress|ipMask|blockRequests|ignoreAnomalies|neverLogRequests|neverLearnRequests|trustedByPolicyBuilder|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|
->| pwbUREF-1u-BDw9MrdisOA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0 | 1.2.3.4 | 255.255.255.255 | policy-default | false | false | false | false | 2020-09-30T13:38:44Z |
+### f5 data for listing whitelist IP:
+|id|selfLink|ipAddress|ipMask|blockRequests|ignoreAnomalies|neverLogRequests|neverLearnRequests|trustedByPolicyBuilder|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|
+| pwbUREF-1u-BDw9MrdisOA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0 | 1.2.3.4 | 255.255.255.255 | policy-default | false | false | false | false | 2020-09-30T13:38:44Z |
 
 
 ### f5-asm-policy-whitelist-ips-delete
@@ -4164,10 +4164,10 @@ Delete an existing whitelisted IP from a policy.
 
 #### Human Readable Output
 
->### f5 data for listing whitelist IP:
->|id|selfLink|ipAddress|ipMask|blockRequests|ignoreAnomalies|neverLogRequests|neverLearnRequests|trustedByPolicyBuilder|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|
->| pwbUREF-1u-BDw9MrdisOA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0 | 1.2.3.4 | 255.255.255.255 | policy-default | false | false | false | false | 2020-09-30T13:38:44Z |
+### f5 data for listing whitelist IP:
+|id|selfLink|ipAddress|ipMask|blockRequests|ignoreAnomalies|neverLogRequests|neverLearnRequests|trustedByPolicyBuilder|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|
+| pwbUREF-1u-BDw9MrdisOA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0 | 1.2.3.4 | 255.255.255.255 | policy-default | false | false | false | false | 2020-09-30T13:38:44Z |
 
 
 ### f5-asm-policy-signatures-list
@@ -4371,12 +4371,12 @@ List all policy parameters
 
 #### Human Readable Output
 
->### f5 list of all parameters:
->|name|id|type|selfLink|attackSignaturesCheck|isBase64|dataType|valueType|mandatory|isCookie|isHeader|performStaging|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| test_policy_parameter | Wm_Vq93ZrYML8FfDJqGSIw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/parameters/Wm_Vq93ZrYML8FfDJqGSIw?ver=15.1.0 | true | false | alpha-numeric | user-input | false | false | false | false | GUI | 2020-09-30T13:36:00Z |
->| new_parameter | lyM6dyIqaEw9oARv5V8cKg | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/parameters/lyM6dyIqaEw9oARv5V8cKg?ver=15.1.0 | true | false | alpha-numeric | user-input |  | false | false | false | GUI | 2020-09-22T14:37:17Z |
->| * | N_a3D1S7OKDehYEPb-mgCg | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/parameters/N_a3D1S7OKDehYEPb-mgCg?ver=15.1.0 | true | false | alpha-numeric | user-input |  | false | false | false | GUI | 2020-08-23T10:24:11Z |
+### f5 list of all parameters:
+|name|id|type|selfLink|attackSignaturesCheck|isBase64|dataType|valueType|mandatory|isCookie|isHeader|performStaging|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| test_policy_parameter | Wm_Vq93ZrYML8FfDJqGSIw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/parameters/Wm_Vq93ZrYML8FfDJqGSIw?ver=15.1.0 | true | false | alpha-numeric | user-input | false | false | false | false | GUI | 2020-09-30T13:36:00Z |
+| new_parameter | lyM6dyIqaEw9oARv5V8cKg | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/parameters/lyM6dyIqaEw9oARv5V8cKg?ver=15.1.0 | true | false | alpha-numeric | user-input |  | false | false | false | GUI | 2020-09-22T14:37:17Z |
+| * | N_a3D1S7OKDehYEPb-mgCg | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/parameters/N_a3D1S7OKDehYEPb-mgCg?ver=15.1.0 | true | false | alpha-numeric | user-input |  | false | false | false | GUI | 2020-08-23T10:24:11Z |
 
 
 ### f5-asm-policy-parameters-add
@@ -4576,10 +4576,10 @@ Update an existing policy parameter
 
 #### Human Readable Output
 
->### f5 data for updating parameter:
->|name|id|type|selfLink|isBase64|dataType|attackSignaturesCheck|isBase64|valueType|mandatory|isCookie|isHeader|createdBy|performStaging|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| test_policy_parameter | Wm_Vq93ZrYML8FfDJqGSIw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/parameters/Wm_Vq93ZrYML8FfDJqGSIw?ver=15.1.0 | false | alpha-numeric | true | false | user-input | false | false | false | GUI | false | GUI | 2020-09-30T13:36:00Z |
+### f5 data for updating parameter:
+|name|id|type|selfLink|isBase64|dataType|attackSignaturesCheck|isBase64|valueType|mandatory|isCookie|isHeader|createdBy|performStaging|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| test_policy_parameter | Wm_Vq93ZrYML8FfDJqGSIw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/parameters/Wm_Vq93ZrYML8FfDJqGSIw?ver=15.1.0 | false | alpha-numeric | true | false | user-input | false | false | false | GUI | false | GUI | 2020-09-30T13:36:00Z |
 
 
 ### f5-asm-policy-parameters-delete
@@ -4673,10 +4673,10 @@ Delete an existing policy parameter
 
 #### Human Readable Output
 
->### f5 data for deleting parameter:
->|name|id|type|selfLink|isBase64|dataType|attackSignaturesCheck|isBase64|valueType|mandatory|isCookie|isHeader|createdBy|performStaging|createdBy|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| test_policy_parameter | Wm_Vq93ZrYML8FfDJqGSIw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/parameters/Wm_Vq93ZrYML8FfDJqGSIw?ver=15.1.0 | false | alpha-numeric | true | false | user-input | false | false | false | GUI | false | GUI | 2020-09-30T13:36:00Z |
+### f5 data for deleting parameter:
+|name|id|type|selfLink|isBase64|dataType|attackSignaturesCheck|isBase64|valueType|mandatory|isCookie|isHeader|createdBy|performStaging|createdBy|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| test_policy_parameter | Wm_Vq93ZrYML8FfDJqGSIw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/parameters/Wm_Vq93ZrYML8FfDJqGSIw?ver=15.1.0 | false | alpha-numeric | true | false | user-input | false | false | false | GUI | false | GUI | 2020-09-30T13:36:00Z |
 
 
 ### f5-asm-policy-gwt-profiles-list
@@ -4760,10 +4760,10 @@ List all GWT profiles in a policy
 
 #### Human Readable Output
 
->### f5 list of all GWT Profiles:
->|name|id|selfLink|description|attackSignaturesCheck|metacharElementCheck|lastUpdateMicros|
->|---|---|---|---|---|---|---|
->| Default | pKOP2_h7ezXmyZ-mE3cPnw | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/gwt-profiles/pKOP2_h7ezXmyZ-mE3cPnw?ver=15.1.0 | Default GWT Profile | true | true | 2020-08-05T20:58:49Z |
+### f5 list of all GWT Profiles:
+|name|id|selfLink|description|attackSignaturesCheck|metacharElementCheck|lastUpdateMicros|
+|---|---|---|---|---|---|---|
+| Default | pKOP2_h7ezXmyZ-mE3cPnw | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/gwt-profiles/pKOP2_h7ezXmyZ-mE3cPnw?ver=15.1.0 | Default GWT Profile | true | true | 2020-08-05T20:58:49Z |
 
 
 ### f5-asm-policy-gwt-profiles-add
@@ -4857,10 +4857,10 @@ Add a new GWT profile to a policy
 
 #### Human Readable Output
 
->### f5 data for adding GWT profile:
->|name|id|selfLink|attackSignaturesCheck|metacharElementCheck|lastUpdateMicros|
->|---|---|---|---|---|---|
->| test_gwt_profile | R8SpevWA8hLFJ7dH2u6NqQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/gwt-profiles/R8SpevWA8hLFJ7dH2u6NqQ?ver=15.1.0 | true | false | 2020-09-30T13:38:56Z |
+### f5 data for adding GWT profile:
+|name|id|selfLink|attackSignaturesCheck|metacharElementCheck|lastUpdateMicros|
+|---|---|---|---|---|---|
+| test_gwt_profile | R8SpevWA8hLFJ7dH2u6NqQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/gwt-profiles/R8SpevWA8hLFJ7dH2u6NqQ?ver=15.1.0 | true | false | 2020-09-30T13:38:56Z |
 
 
 ### f5-asm-policy-gwt-profiles-update
@@ -4954,10 +4954,10 @@ Update an existing GWT profile
 
 #### Human Readable Output
 
->### f5 data for updating GWT profile:
->|name|id|selfLink|attackSignaturesCheck|metacharElementCheck|lastUpdateMicros|
->|---|---|---|---|---|---|
->| test_gwt_profile | R8SpevWA8hLFJ7dH2u6NqQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/gwt-profiles/R8SpevWA8hLFJ7dH2u6NqQ?ver=15.1.0 | true | false | 2020-09-30T13:38:56Z |
+### f5 data for updating GWT profile:
+|name|id|selfLink|attackSignaturesCheck|metacharElementCheck|lastUpdateMicros|
+|---|---|---|---|---|---|
+| test_gwt_profile | R8SpevWA8hLFJ7dH2u6NqQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/gwt-profiles/R8SpevWA8hLFJ7dH2u6NqQ?ver=15.1.0 | true | false | 2020-09-30T13:38:56Z |
 
 
 ### f5-asm-policy-gwt-profiles-delete
@@ -5045,10 +5045,10 @@ Delete an existing GWT profile.
 
 #### Human Readable Output
 
->### f5 data for deleting GWT profile:
->|name|id|selfLink|attackSignaturesCheck|metacharElementCheck|lastUpdateMicros|
->|---|---|---|---|---|---|
->| test_gwt_profile | R8SpevWA8hLFJ7dH2u6NqQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/gwt-profiles/R8SpevWA8hLFJ7dH2u6NqQ?ver=15.1.0 | true | false | 2020-09-30T13:38:56Z |
+### f5 data for deleting GWT profile:
+|name|id|selfLink|attackSignaturesCheck|metacharElementCheck|lastUpdateMicros|
+|---|---|---|---|---|---|
+| test_gwt_profile | R8SpevWA8hLFJ7dH2u6NqQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/gwt-profiles/R8SpevWA8hLFJ7dH2u6NqQ?ver=15.1.0 | true | false | 2020-09-30T13:38:56Z |
 
 
 ### f5-asm-policy-json-profiles-list
@@ -5135,10 +5135,10 @@ List all JSON profiles in a policy
 
 #### Human Readable Output
 
->### f5 list of all JSON Profiles:
->|name|id|selfLink|description|hasValidationFiles|lastUpdateMicros|
->|---|---|---|---|---|---|
->| Default | X8FbXF48VWJ5Tecp5ATd4A | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/json-profiles/X8FbXF48VWJ5Tecp5ATd4A?ver=15.1.0 | Default JSON Profile | false | 2020-08-05T20:58:49Z |
+### f5 list of all JSON Profiles:
+|name|id|selfLink|description|hasValidationFiles|lastUpdateMicros|
+|---|---|---|---|---|---|
+| Default | X8FbXF48VWJ5Tecp5ATd4A | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/json-profiles/X8FbXF48VWJ5Tecp5ATd4A?ver=15.1.0 | Default JSON Profile | false | 2020-08-05T20:58:49Z |
 
 
 ### f5-asm-policy-json-profiles-add
@@ -5238,10 +5238,10 @@ Add a new JSON profile to a policy
 
 #### Human Readable Output
 
->### f5 data for adding JSON profile:
->|name|id|selfLink|hasValidationFiles|lastUpdateMicros|
->|---|---|---|---|---|
->| test_json_profile | Mv3RpN8obPoe5IW-wdcdzA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/json-profiles/Mv3RpN8obPoe5IW-wdcdzA?ver=15.1.0 | false | 2020-09-30T13:39:02Z |
+### f5 data for adding JSON profile:
+|name|id|selfLink|hasValidationFiles|lastUpdateMicros|
+|---|---|---|---|---|
+| test_json_profile | Mv3RpN8obPoe5IW-wdcdzA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/json-profiles/Mv3RpN8obPoe5IW-wdcdzA?ver=15.1.0 | false | 2020-09-30T13:39:02Z |
 
 
 ### f5-asm-policy-json-profiles-update
@@ -5341,10 +5341,10 @@ Update an existing JSON profile
 
 #### Human Readable Output
 
->### f5 data for updating JSON profile:
->|name|id|selfLink|description|hasValidationFiles|lastUpdateMicros|
->|---|---|---|---|---|---|
->| test_json_profile | Mv3RpN8obPoe5IW-wdcdzA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/json-profiles/Mv3RpN8obPoe5IW-wdcdzA?ver=15.1.0 | any | false | 2020-09-30T13:39:02Z |
+### f5 data for updating JSON profile:
+|name|id|selfLink|description|hasValidationFiles|lastUpdateMicros|
+|---|---|---|---|---|---|
+| test_json_profile | Mv3RpN8obPoe5IW-wdcdzA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/json-profiles/Mv3RpN8obPoe5IW-wdcdzA?ver=15.1.0 | any | false | 2020-09-30T13:39:02Z |
 
 
 ### f5-asm-policy-json-profiles-delete
@@ -5435,10 +5435,10 @@ Delete an existing JSON profile from a policy
 
 #### Human Readable Output
 
->### f5 data for deleting JSON profile:
->|name|id|selfLink|description|hasValidationFiles|lastUpdateMicros|
->|---|---|---|---|---|---|
->| test_json_profile | Mv3RpN8obPoe5IW-wdcdzA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/json-profiles/Mv3RpN8obPoe5IW-wdcdzA?ver=15.1.0 | any | false | 2020-09-30T13:39:02Z |
+### f5 data for deleting JSON profile:
+|name|id|selfLink|description|hasValidationFiles|lastUpdateMicros|
+|---|---|---|---|---|---|
+| test_json_profile | Mv3RpN8obPoe5IW-wdcdzA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/json-profiles/Mv3RpN8obPoe5IW-wdcdzA?ver=15.1.0 | any | false | 2020-09-30T13:39:02Z |
 
 
 ### f5-asm-policy-xml-profiles-list
@@ -5570,11 +5570,11 @@ List all XML profiles in a policy.
 
 #### Human Readable Output
 
->### f5 list of all XML Profiles:
->|name|id|selfLink|description|attackSignaturesCheck|metacharElementCheck|followSchemaLinks|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|
->| new_xml_profile | 8pDEkwo33PlYf2EbTpt-3g | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/xml-profiles/8pDEkwo33PlYf2EbTpt-3g?ver=15.1.0 |  | true | false | true | 2020-09-08T17:36:48Z |
->| Default | jwQd_XYZPfNGYnc3l7P4Pg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/xml-profiles/jwQd_XYZPfNGYnc3l7P4Pg?ver=15.1.0 | Default XML Profile | true | false | false | 2020-08-05T20:58:51Z |
+### f5 list of all XML Profiles:
+|name|id|selfLink|description|attackSignaturesCheck|metacharElementCheck|followSchemaLinks|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|
+| new_xml_profile | 8pDEkwo33PlYf2EbTpt-3g | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/xml-profiles/8pDEkwo33PlYf2EbTpt-3g?ver=15.1.0 |  | true | false | true | 2020-09-08T17:36:48Z |
+| Default | jwQd_XYZPfNGYnc3l7P4Pg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/xml-profiles/jwQd_XYZPfNGYnc3l7P4Pg?ver=15.1.0 | Default XML Profile | true | false | false | 2020-08-05T20:58:51Z |
 
 
 ### f5-asm-policy-xml-profiles-add
@@ -5680,10 +5680,10 @@ Add a new XML profile to a policy
 
 #### Human Readable Output
 
->### f5 data for adding XML profile:
->|name|id|selfLink|attackSignaturesCheck|metacharElementCheck|followSchemaLinks|lastUpdateMicros|
->|---|---|---|---|---|---|---|
->| test_xml_profile | zfebD7S9AIziPBRYkAkDww | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/xml-profiles/zfebD7S9AIziPBRYkAkDww?ver=15.1.0 | true | false | true | 2020-09-30T13:39:06Z |
+### f5 data for adding XML profile:
+|name|id|selfLink|attackSignaturesCheck|metacharElementCheck|followSchemaLinks|lastUpdateMicros|
+|---|---|---|---|---|---|---|
+| test_xml_profile | zfebD7S9AIziPBRYkAkDww | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/xml-profiles/zfebD7S9AIziPBRYkAkDww?ver=15.1.0 | true | false | true | 2020-09-30T13:39:06Z |
 
 
 ### f5-asm-policy-xml-profiles-update
@@ -5789,10 +5789,10 @@ Update an XML profile in a policy
 
 #### Human Readable Output
 
->### f5 data for updating XML profile:
->|name|id|selfLink|attackSignaturesCheck|metacharElementCheck|followSchemaLinks|lastUpdateMicros|
->|---|---|---|---|---|---|---|
->| test_xml_profile | zfebD7S9AIziPBRYkAkDww | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/xml-profiles/zfebD7S9AIziPBRYkAkDww?ver=15.1.0 | true | false | true | 2020-09-30T13:39:06Z |
+### f5 data for updating XML profile:
+|name|id|selfLink|attackSignaturesCheck|metacharElementCheck|followSchemaLinks|lastUpdateMicros|
+|---|---|---|---|---|---|---|
+| test_xml_profile | zfebD7S9AIziPBRYkAkDww | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/xml-profiles/zfebD7S9AIziPBRYkAkDww?ver=15.1.0 | true | false | true | 2020-09-30T13:39:06Z |
 
 
 ### f5-asm-policy-xml-profiles-delete
@@ -5886,10 +5886,10 @@ Delete an existing XML profile from a policy
 
 #### Human Readable Output
 
->### f5 data for deleting XML profile:
->|name|id|selfLink|attackSignaturesCheck|metacharElementCheck|followSchemaLinks|lastUpdateMicros|
->|---|---|---|---|---|---|---|
->| test_xml_profile | zfebD7S9AIziPBRYkAkDww | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/xml-profiles/zfebD7S9AIziPBRYkAkDww?ver=15.1.0 | true | false | true | 2020-09-30T13:39:06Z |
+### f5 data for deleting XML profile:
+|name|id|selfLink|attackSignaturesCheck|metacharElementCheck|followSchemaLinks|lastUpdateMicros|
+|---|---|---|---|---|---|---|
+| test_xml_profile | zfebD7S9AIziPBRYkAkDww | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/xml-profiles/zfebD7S9AIziPBRYkAkDww?ver=15.1.0 | true | false | true | 2020-09-30T13:39:06Z |
 
 
 ### f5-asm-policy-server-technologies-list
@@ -6132,14 +6132,14 @@ List all server technologies in a policy
 
 #### Human Readable Output
 
->### f5 list of all server technologies:
->|serverTechnologyName|serverTechnologyName|serverTechnologyName|serverTechnologyName|serverTechnologyName|id|serverTechnologyName|selfLink|lastUpdateMicros|
->|---|---|---|---|---|---|---|---|---|
->| Microsoft Windows | Microsoft Windows | Microsoft Windows | Microsoft Windows | Microsoft Windows | 9v-Sp7QveE-BE2EimSjVew | Microsoft Windows | https://localhost/mgmt/tm/asm/policies/7FWxqE2a-3bbpJimP4amtA/server-technologies/9v-Sp7QveE-BE2EimSjVew?ver=15.1.0 | 2020-08-16T11:01:18Z |
->| ASP.NET | ASP.NET | ASP.NET | ASP.NET | ASP.NET | 5cSssMYANPqrl6gRBMfvMQ | ASP.NET | https://localhost/mgmt/tm/asm/policies/7FWxqE2a-3bbpJimP4amtA/server-technologies/5cSssMYANPqrl6gRBMfvMQ?ver=15.1.0 | 2020-08-16T11:01:18Z |
->| Front Page Server Extensions (FPSE) | Front Page Server Extensions (FPSE) | Front Page Server Extensions (FPSE) | Front Page Server Extensions (FPSE) | Front Page Server Extensions (FPSE) | 89yK8lM69m7Z8zoJ1Y-c_g | Front Page Server Extensions (FPSE) | https://localhost/mgmt/tm/asm/policies/7FWxqE2a-3bbpJimP4amtA/server-technologies/89yK8lM69m7Z8zoJ1Y-c_g?ver=15.1.0 | 2020-08-16T11:01:18Z |
->| IIS | IIS | IIS | IIS | IIS | V3PzMrvIWi_9ZM0m0y-92w | IIS | https://localhost/mgmt/tm/asm/policies/7FWxqE2a-3bbpJimP4amtA/server-technologies/V3PzMrvIWi_9ZM0m0y-92w?ver=15.1.0 | 2020-08-16T11:01:18Z |
->| ASP | ASP | ASP | ASP | ASP | 741BtgAqkVgEMykKfRxIIg | ASP | https://localhost/mgmt/tm/asm/policies/7FWxqE2a-3bbpJimP4amtA/server-technologies/741BtgAqkVgEMykKfRxIIg?ver=15.1.0 | 2020-08-16T11:01:18Z |
+### f5 list of all server technologies:
+|serverTechnologyName|serverTechnologyName|serverTechnologyName|serverTechnologyName|serverTechnologyName|id|serverTechnologyName|selfLink|lastUpdateMicros|
+|---|---|---|---|---|---|---|---|---|
+| Microsoft Windows | Microsoft Windows | Microsoft Windows | Microsoft Windows | Microsoft Windows | 9v-Sp7QveE-BE2EimSjVew | Microsoft Windows | https://localhost/mgmt/tm/asm/policies/7FWxqE2a-3bbpJimP4amtA/server-technologies/9v-Sp7QveE-BE2EimSjVew?ver=15.1.0 | 2020-08-16T11:01:18Z |
+| ASP.NET | ASP.NET | ASP.NET | ASP.NET | ASP.NET | 5cSssMYANPqrl6gRBMfvMQ | ASP.NET | https://localhost/mgmt/tm/asm/policies/7FWxqE2a-3bbpJimP4amtA/server-technologies/5cSssMYANPqrl6gRBMfvMQ?ver=15.1.0 | 2020-08-16T11:01:18Z |
+| Front Page Server Extensions (FPSE) | Front Page Server Extensions (FPSE) | Front Page Server Extensions (FPSE) | Front Page Server Extensions (FPSE) | Front Page Server Extensions (FPSE) | 89yK8lM69m7Z8zoJ1Y-c_g | Front Page Server Extensions (FPSE) | https://localhost/mgmt/tm/asm/policies/7FWxqE2a-3bbpJimP4amtA/server-technologies/89yK8lM69m7Z8zoJ1Y-c_g?ver=15.1.0 | 2020-08-16T11:01:18Z |
+| IIS | IIS | IIS | IIS | IIS | V3PzMrvIWi_9ZM0m0y-92w | IIS | https://localhost/mgmt/tm/asm/policies/7FWxqE2a-3bbpJimP4amtA/server-technologies/V3PzMrvIWi_9ZM0m0y-92w?ver=15.1.0 | 2020-08-16T11:01:18Z |
+| ASP | ASP | ASP | ASP | ASP | 741BtgAqkVgEMykKfRxIIg | ASP | https://localhost/mgmt/tm/asm/policies/7FWxqE2a-3bbpJimP4amtA/server-technologies/741BtgAqkVgEMykKfRxIIg?ver=15.1.0 | 2020-08-16T11:01:18Z |
 
 
 ### f5-asm-policy-server-technologies-add
@@ -6224,10 +6224,10 @@ Add a server technology to a policy
 
 #### Human Readable Output
 
->### f5 data for adding server technology:
->|id|serverTechnologyName|selfLink|lastUpdateMicros|
->|---|---|---|---|
->| 741BtgAqkVgEMykKfRxIIg | ASP | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/server-technologies/741BtgAqkVgEMykKfRxIIg?ver=15.1.0 | 2020-09-30T13:39:10Z |
+### f5 data for adding server technology:
+|id|serverTechnologyName|selfLink|lastUpdateMicros|
+|---|---|---|---|
+| 741BtgAqkVgEMykKfRxIIg | ASP | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/server-technologies/741BtgAqkVgEMykKfRxIIg?ver=15.1.0 | 2020-09-30T13:39:10Z |
 
 
 ### f5-asm-policy-server-technologies-delete
@@ -6312,10 +6312,10 @@ Delete a server technology from a policy.
 
 #### Human Readable Output
 
->### f5 data for listing server technology:
->|id|serverTechnologyName|selfLink|lastUpdateMicros|
->|---|---|---|---|
->| 741BtgAqkVgEMykKfRxIIg | ASP | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/server-technologies/741BtgAqkVgEMykKfRxIIg?ver=15.1.0 | 2020-09-30T13:39:10Z |
+### f5 data for listing server technology:
+|id|serverTechnologyName|selfLink|lastUpdateMicros|
+|---|---|---|---|
+| 741BtgAqkVgEMykKfRxIIg | ASP | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/server-technologies/741BtgAqkVgEMykKfRxIIg?ver=15.1.0 | 2020-09-30T13:39:10Z |
 
 
 ### f5-asm-get-policy-md5
@@ -6356,8 +6356,8 @@ Get the MD5 hash of a policy that can be accessed in the API.
 
 #### Human Readable Output
 
->### Results
->|md5|
->|---|
->| kpD2qFaUlGAbw8RhN5IFQA |
+### Results
+|md5|
+|---|
+| kpD2qFaUlGAbw8RhN5IFQA |
 
