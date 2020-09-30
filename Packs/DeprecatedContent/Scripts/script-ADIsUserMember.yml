@@ -2,11 +2,14 @@ commonfields:
   id: ADIsUserMember
   version: -1
 name: ADIsUserMember
-script: |-
+script: >-
   FOUND_GROUPS_LABAL = 'FoundGroups'
+
   res = []
 
+
   resp = demisto.executeCommand('ADGetUserGroups', demisto.args())
+
   try:
       if not isError(resp[0]):
           group_names = argToList(demisto.args()['groupname'])
@@ -46,9 +49,7 @@ subtype: python2
 tags:
 - active directory
 - Condition
-comment: Deprecated. Use Active Directory to check if the specified user is a member of the specified
-  group. Returns simply yes/no. The user can be specified by name, email or as an
-  Active Directory Distinguished Name (DN).
+comment: Deprecated. Use Active Directory to check if the specified user is a member of the specified group. Returns simply yes/no. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
 system: true
 args:
 - name: dn
@@ -69,3 +70,4 @@ dependson:
   must:
   - ad-search
 timeout: 0s
+fromversion: 5.0.0

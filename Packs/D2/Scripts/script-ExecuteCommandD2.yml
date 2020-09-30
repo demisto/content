@@ -2,8 +2,9 @@ commonfields:
   id: D2ExecuteCommand
   version: -1
 name: D2ExecuteCommand
-script: |-
+script: >-
   d_args = args.arguments ? JSON.parse(args.arguments) : {};
+
   return executeCommand(args.commandName, d_args);
 type: javascript
 tags:
@@ -19,3 +20,4 @@ args:
   required: true
   description: The d2 command to run
 scripttarget: 0
+fromversion: 5.0.0

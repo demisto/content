@@ -1,4 +1,4 @@
-fromversion: 4.1.0
+fromversion: 5.0.0
 commonfields:
   id: StopTimeToAssignOnOwnerChange
   version: -1

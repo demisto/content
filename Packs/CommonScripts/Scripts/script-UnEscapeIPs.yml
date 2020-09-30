@@ -2,10 +2,11 @@ commonfields:
   id: UnEscapeIPs
   version: -1
 name: UnEscapeIPs
-script: |-
+script: >-
   function format_ip(ip) {
       return ip.replace(/\[\.\]/g,'.');
   }
+
 
   function format_ip_list(ip_list) {
       var len = ip_list.length;
@@ -16,10 +17,15 @@ script: |-
       return formatted_ips;
   }
 
+
   var ips;
+
   // It is assumed that args.input is a string
+
   var unformatted_ips = argToList(args.input);
+
   ips = format_ip_list(unformatted_ips);
+
   return ips;
 type: javascript
 tags:
@@ -36,4 +42,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - UnEscapeIPs-Test 
+- UnEscapeIPs-Test
+fromversion: 5.0.0

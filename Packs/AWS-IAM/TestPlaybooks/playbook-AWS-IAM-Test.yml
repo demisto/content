@@ -71,8 +71,7 @@ tasks:
       id: d6aac018-d2ba-4cb4-85c5-6a472aa1e721
       version: -1
       name: aws-iam-get-user
-      description: Retrieves information about the specified IAM user, including the
-        user's creation date, path, unique ID, and ARN.
+      description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
       script: AWS - IAM|||aws-iam-get-user
       type: regular
       iscommand: true
@@ -175,8 +174,7 @@ tasks:
       id: 08a5d4b9-41f4-4e44-8b9f-783bca607e1d
       version: -1
       name: aws-iam-delete-user
-      description: Deletes the specified IAM user. The user must not belong to any
-        groups or have any access keys, signing certificates, or attached policies.
+      description: Deletes the specified IAM user. The user must not belong to any groups or have any access keys, signing certificates, or attached policies.
       script: AWS - IAM|||aws-iam-delete-user
       type: regular
       iscommand: true
@@ -342,8 +340,7 @@ tasks:
       id: 2c3694eb-23e2-43a9-8182-23fff85fecf7
       version: -1
       name: aws-iam-create-access-key
-      description: Creates a new AWS secret access key and corresponding AWS access
-        key ID for the specified user. The default status for new keys is Active .
+      description: Creates a new AWS secret access key and corresponding AWS access key ID for the specified user. The default status for new keys is Active .
       script: AWS - IAM|||aws-iam-create-access-key
       type: regular
       iscommand: true
@@ -376,9 +373,7 @@ tasks:
       id: be24f901-ccba-437e-8496-c17b8708c119
       version: -1
       name: aws-iam-update-access-key
-      description: Changes the status of the specified access key from Active to Inactive,
-        or vice versa. This operation can be used to disable a user's key as part
-        of a key rotation workflow.
+      description: Changes the status of the specified access key from Active to Inactive, or vice versa. This operation can be used to disable a user's key as part of a key rotation workflow.
       script: AWS - IAM|||aws-iam-update-access-key
       type: regular
       iscommand: true
@@ -415,8 +410,7 @@ tasks:
       id: 8c8256ed-54f2-4ec7-8c55-dd8bea8f3cbc
       version: -1
       name: aws-iam-list-access-keys-for-user
-      description: Returns information about the access key IDs associated with the
-        specified IAM user.
+      description: Returns information about the access key IDs associated with the specified IAM user.
       script: AWS - IAM|||aws-iam-list-access-keys-for-user
       type: regular
       iscommand: true
@@ -449,8 +443,7 @@ tasks:
       id: d53bf6fa-8bc2-4426-81f4-6042b8c55862
       version: -1
       name: aws-iam-list-policies
-      description: Lists all the managed policies that are available in your AWS account,
-        including your own customer-defined managed policies and all AWS managed policies.
+      description: Lists all the managed policies that are available in your AWS account, including your own customer-defined managed policies and all AWS managed policies.
       script: AWS - IAM|||aws-iam-list-policies
       type: regular
       iscommand: true
@@ -589,8 +582,7 @@ tasks:
       id: 5dead601-4abf-468f-874a-1d3064ac0445
       version: -1
       name: aws-iam-delete-group
-      description: Deletes the specified IAM group. The group must not contain any
-        users or have any attached policies.
+      description: Deletes the specified IAM group. The group must not contain any users or have any attached policies.
       script: AWS - IAM|||aws-iam-delete-group
       type: regular
       iscommand: true
@@ -728,8 +720,7 @@ tasks:
       id: c5ed5150-346c-4432-86c5-ffbae9766096
       version: -1
       name: aws-iam-delete-instance-profile
-      description: Deletes the specified instance profile. The instance profile must
-        not have an associated role.
+      description: Deletes the specified instance profile. The instance profile must not have an associated role.
       script: AWS - IAM|||aws-iam-delete-instance-profile
       type: regular
       iscommand: true
@@ -794,10 +785,7 @@ tasks:
       id: c2ab6df3-26d8-4582-8c47-9f6646ac979e
       version: -1
       name: aws-iam-add-role-to-instance-profile
-      description: Adds the specified IAM role to the specified instance profile.
-        An instance profile can contain only one role, and this limit cannot be increased.
-        You can remove the existing role and then add a different role to an instance
-        profile.
+      description: Adds the specified IAM role to the specified instance profile. An instance profile can contain only one role, and this limit cannot be increased. You can remove the existing role and then add a different role to an instance profile.
       script: AWS - IAM|||aws-iam-add-role-to-instance-profile
       type: regular
       iscommand: true
@@ -833,8 +821,7 @@ tasks:
       id: 3ef7e750-7ad9-4ad7-88ef-d0149086f74d
       version: -1
       name: aws-iam-remove-role-from-instance-profile
-      description: Removes the specified IAM role from the specified EC2 instance
-        profile.
+      description: Removes the specified IAM role from the specified EC2 instance profile.
       script: AWS - IAM|||aws-iam-remove-role-from-instance-profile
       type: regular
       iscommand: true
@@ -869,8 +856,7 @@ tasks:
       id: 7ab56f94-4422-46ea-82a8-3e86c20881fa
       version: -1
       name: aws-iam-list-instance-profiles-for-role
-      description: Lists the instance profiles that have the specified associated
-        IAM role.
+      description: Lists the instance profiles that have the specified associated IAM role.
       script: AWS - IAM|||aws-iam-list-instance-profiles-for-role
       type: regular
       iscommand: true
@@ -972,8 +958,7 @@ tasks:
       id: 103d125e-ee64-4866-8324-263d4e23fe45
       version: -1
       name: aws-iam-delete-role
-      description: 'Deletes the specified role. The role must not have any policies
-        attached. '
+      description: 'Deletes the specified role. The role must not have any policies attached. '
       script: AWS - IAM|||aws-iam-delete-role
       type: regular
       iscommand: true
@@ -2396,3 +2381,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
