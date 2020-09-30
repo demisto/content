@@ -1,0 +1,14 @@
+{
+    "name": "Global Protect - InfoBlox Dynamic DNS",
+    "description": "Provides Several Playbooks that create, delete, and update Infoblox DNS host records for Global Protect users.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Scott Brumley",
+    "url": "",
+    "email": "",
+    "created": "2020-09-30T21:16:26Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

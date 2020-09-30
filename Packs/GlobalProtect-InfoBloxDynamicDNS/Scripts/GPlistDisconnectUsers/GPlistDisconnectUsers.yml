@@ -1,0 +1,32 @@
+args:
+- description: Path in the context
+  name: path
+- default: true
+  description: Hostname
+  name: host
+  required: true
+- description: IPv4 Address
+  name: ipadd
+  required: true
+- description: Domain Name
+  name: domain
+  required: true
+comment: Search Global Protect users in context.  Compare previous connected users
+  to current connected users and build delete list in context to remove DNS entries
+commonfields:
+  id: GPlistDisconnectUsers
+  version: -1
+enabled: true
+name: GPlistDisconnectUsers
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags:
+- Utility
+timeout: 180ns
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

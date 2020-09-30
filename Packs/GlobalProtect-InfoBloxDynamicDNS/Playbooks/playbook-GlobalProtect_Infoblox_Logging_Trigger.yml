@@ -1,0 +1,861 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: GlobalProtect Infoblox Logging Trigger
+inputs: []
+name: GlobalProtect Infoblox Logging Trigger
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 60673ab9-abaa-4148-897f-c37e473f43c1
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 60673ab9-abaa-4148-897f-c37e473f43c1
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        simple: ${incident.details}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: 68cc55ed-e5b8-4ee8-827f-42bd7f2967e0
+      iscommand: true
+      name: Extract Indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: 68cc55ed-e5b8-4ee8-827f-42bd7f2967e0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: host.details
+      stringify: {}
+      value:
+        complex:
+          accessor: details
+          root: incident
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: splitAndTrim
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: a1d8e50a-389e-4a98-86fe-4773f5bf9d95
+      iscommand: false
+      name: Set Host Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: a1d8e50a-389e-4a98-86fe-4773f5bf9d95
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 515
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: host.name
+      stringify: {}
+      value:
+        complex:
+          accessor: details.[17]}
+          root: ${host
+          transformers:
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: 'Device name: '
+            operator: replace
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: b3c7d43f-3a38-4b29-8d76-55a7f43c4d19
+      iscommand: false
+      name: Set Host Name
+      script: Set
+      type: regular
+      version: -1
+    taskid: b3c7d43f-3a38-4b29-8d76-55a7f43c4d19
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 690
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: host.ipadd
+      stringify: {}
+      value:
+        complex:
+          accessor: details.[15]}
+          root: ${host
+          transformers:
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: 'Private IP: '
+            operator: replace
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: cb6f4fb7-421e-49a6-8a3f-74aeb0747451
+      iscommand: false
+      name: Set IP Address
+      script: Set
+      type: regular
+      version: -1
+    taskid: cb6f4fb7-421e-49a6-8a3f-74aeb0747451
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 865
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${host.details.[8]}
+          operator: isEqualString
+          right:
+            value:
+              simple: globalprotectgateway-config-succ
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 025f9557-bc70-47b0-89cf-58f39855e85c
+      iscommand: false
+      name: Is Logon?
+      type: condition
+      version: -1
+    taskid: 025f9557-bc70-47b0-89cf-58f39855e85c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1040
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${host.details.[8]}
+          operator: isEqualString
+          right:
+            value:
+              simple: globalprotectgateway-config-release
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 86b4c290-5fa3-4a3c-8b91-3916b01848cf
+      iscommand: false
+      name: Is Logout?
+      type: condition
+      version: -1
+    taskid: 86b4c290-5fa3-4a3c-8b91-3916b01848cf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1535
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: host.state
+      stringify: {}
+      value:
+        simple: login
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: 26f8339a-8484-4288-8fb0-eb5c659631f2
+      iscommand: false
+      name: Set State To Login
+      script: Set
+      type: regular
+      version: -1
+    taskid: 26f8339a-8484-4288-8fb0-eb5c659631f2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1360
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: host.state
+      stringify: {}
+      value:
+        simple: logout
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: 960dc6e8-52f7-4645-887a-da02b1f2d301
+      iscommand: false
+      name: Set State To Logout
+      script: Set
+      type: regular
+      version: -1
+    taskid: 960dc6e8-52f7-4645-887a-da02b1f2d301
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 1885
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2e93a07a-416d-4d85-827d-4f047138b844
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 2e93a07a-416d-4d85-827d-4f047138b844
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2585
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      deletes:
+        simple: "yes"
+      domain: {}
+      host:
+        simple: ${host.name}
+      ipadd:
+        simple: ${host.ipadd}
+      status: {}
+      view: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Return RefID on Records and  place in context GlobalProtect.Hosts
+        (Adds, Updates, or Deletes)
+      id: 03378917-03ea-453e-80b5-9c676a65c6b1
+      iscommand: true
+      name: Get Infoblox Host RecordID For Deletes
+      script: '|||infoblox-get-refid'
+      type: regular
+      version: -1
+    taskid: 03378917-03ea-453e-80b5-9c676a65c6b1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 2060
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      deletes: {}
+      domain: {}
+      host:
+        simple: ${host.name}
+      ipadd:
+        simple: ${host.ipadd}
+      status: {}
+      view: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Return RefID on Records and  place in context GlobalProtect.Hosts
+        (Adds, Updates, or Deletes)
+      id: ad2adadf-cc89-45a5-805b-29ba0330355a
+      iscommand: true
+      name: Get Infoblox Host RecordID For Updates / Adds
+      script: '|||infoblox-get-refid'
+      type: regular
+      version: -1
+    taskid: ad2adadf-cc89-45a5-805b-29ba0330355a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1535
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: GlobalProtect.Hosts.Adds
+          operator: isExists
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: defb30d3-72aa-49f5-8352-c50248215996
+      iscommand: false
+      name: Add Host Record?
+      type: condition
+      version: -1
+    taskid: defb30d3-72aa-49f5-8352-c50248215996
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1710
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: GlobalProtect.Hosts.Updates
+          operator: isExists
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e1c09823-9fe0-48b3-8c7b-15b59b11c2cc
+      iscommand: false
+      name: Update Host Record?
+      type: condition
+      version: -1
+    taskid: e1c09823-9fe0-48b3-8c7b-15b59b11c2cc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      host:
+        simple: ${GlobalProtect.Hosts.Adds.name}
+      ipadd:
+        simple: ${GlobalProtect.Hosts.Adds.ipadd}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add a Host record to an empty IP
+      id: 0c133fa2-7fdf-44f0-883d-6ae3f0c2284f
+      iscommand: true
+      name: Create Host Record
+      script: '|||infoblox-add-host-record'
+      type: regular
+      version: -1
+    taskid: 0c133fa2-7fdf-44f0-883d-6ae3f0c2284f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2235
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      host:
+        simple: ${GlobalProtect.Hosts.Updates.name}
+      ipadd:
+        simple: ${GlobalProtect.Hosts.Updates.ipadd}
+      refid:
+        simple: ${GlobalProtect.Hosts.Updates.refid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates a host records IP address
+      id: b057f2d5-cdb2-4487-841c-a4f225c9d77a
+      iscommand: true
+      name: Update Host Record
+      script: '|||infoblox-update-host-record'
+      type: regular
+      version: -1
+    taskid: b057f2d5-cdb2-4487-841c-a4f225c9d77a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2235
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: cc03e0c4-3143-4616-8411-d25b25a1c204
+      iscommand: true
+      name: Close Case
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: cc03e0c4-3143-4616-8411-d25b25a1c204
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2410
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      refid:
+        simple: ${GlobalProtect.Hosts.Deletes.refid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ae1521c6-948b-4d81-806d-e6ba47c2e7fa
+      iscommand: true
+      name: Delete Record
+      script: '|||infoblox-delete-host-record'
+      type: regular
+      version: -1
+    taskid: ae1521c6-948b-4d81-806d-e6ba47c2e7fa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 2235
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b31ec375-044d-43c5-8df8-8293b248930e
+      iscommand: false
+      name: Get Remote Host Information
+      type: title
+      version: -1
+      description: ''
+    taskid: b31ec375-044d-43c5-8df8-8293b248930e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 370
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8e4ec007-9bd1-4738-8c52-208b3bcb26f9
+      iscommand: false
+      name: On Logon
+      type: title
+      version: -1
+      description: ''
+    taskid: 8e4ec007-9bd1-4738-8c52-208b3bcb26f9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a1e06108-74d4-4a73-82cf-c031ebc9091e
+      iscommand: false
+      name: On Logout
+      type: title
+      version: -1
+      description: ''
+    taskid: a1e06108-74d4-4a73-82cf-c031ebc9091e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1375
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6c747c22-f93d-402e-8baf-6af3f0dccb96
+      iscommand: false
+      name: Delete DNS Record
+      type: title
+      version: -1
+      description: ''
+    taskid: 6c747c22-f93d-402e-8baf-6af3f0dccb96
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 1725
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7414c813-8c14-4050-8c46-7e35d6b98be1
+      iscommand: false
+      name: Update DNS Record
+      type: title
+      version: -1
+      description: ''
+    taskid: 7414c813-8c14-4050-8c46-7e35d6b98be1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1900
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8a5be293-36ec-461e-8692-e0c5a33e8beb
+      iscommand: false
+      name: Create DNS Record
+      type: title
+      version: -1
+      description: ''
+    taskid: 8a5be293-36ec-461e-8692-e0c5a33e8beb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2075
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2600,
+        "width": 1372.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0
