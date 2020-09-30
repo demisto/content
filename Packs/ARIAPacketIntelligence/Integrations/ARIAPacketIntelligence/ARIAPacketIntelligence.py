@@ -4,7 +4,6 @@ import json
 import requests
 import time
 import re
-from typing import List
 
 
 class ParameterError(Exception):
@@ -32,7 +31,7 @@ class RCS:
     #
     # constructor
     #
-    def __init__(self, rcs = None):
+    def __init__(self, rcs=None):
         self.rcs = rcs
         if self.rcs is None:
             self.rcs = "PIdevice@all"
@@ -753,14 +752,15 @@ class RCS:
         if rcs is None:
             return False
 
-        rcs_save = rcs
+        # rcs_save = rcs
 
         SDL, RET, RDL, rcs, rmsg = self._parse(rcs)
         if RDL is None:
-            #print("ARIA: remediation configuraton string (RCS) is invalid -- this will prevent remediation to ARIA PI devices from working (rcs={0}:: rmsg={1})".format(rcs_save, rmsg))
+            # print("ARIA: remediation configuraton string (RCS) is invalid -- this will prevent remediation
+            # to ARIA PI devices from working (rcs={0}:: rmsg={1})".format(rcs_save, rmsg))
             return False
 
-        #print("ARIA: remediation configuraton string (RCS) is valid (rcs={0})".format(rcs_save))
+        # print("ARIA: remediation configuraton string (RCS) is valid (rcs={0})".format(rcs_save))
 
         return True
 
@@ -1036,14 +1036,14 @@ class ARIA(object):
             rule_name: The name of the rule to create.
             logic_block: Parameter used to form named rule data. Examples: '5-tuple', 'src-port', etc.
             rule: Parameter used to form named rule data.
-            action: Must be 'add' or 'remove'
+            named_rule_action: Must be 'add' or 'remove'
             instance_id: The instance number of the ARIA PI instance.
-            rcs: Remediation Configuration String.
+            sd_list: List of security domain object.
+            sia_list: List of security domain sia object.
 
         Returns: Dictionary data of named rule.
 
         """
-
         instance_id_type = 'instance-number'
 
         if instance_id is None:
@@ -1054,7 +1054,6 @@ class ARIA(object):
             rule = ''
 
         named_rule = f'\"name\": \"{rule_name}\", \"logic_block\": \"{logic_block}\", \"rule\": \"{rule}\"'
-
 
         named_rule_distribution = {
             'kind': 'NamedRuleDistribution',
@@ -1146,11 +1145,10 @@ class ARIA(object):
             },
             'Status': {
                 'command_state': 'Failure',
-                'timestamp': None
+                'timestamp': 'None'
             },
-            'Endpoints': None  # list of endpoints
+            'Endpoints': []  # list of endpoints
         }
-
 
         if response and response.ok:
             response_json = response.json()
@@ -1195,7 +1193,7 @@ class ARIA(object):
 
         command_state_str = 'Failure'
 
-        endpoints = None
+        endpoints = []
         context = {
             'Rule': {
                 'Name': rule_name,
@@ -1204,7 +1202,7 @@ class ARIA(object):
             },
             'Status': {
                 'command_state': command_state_str,
-                'timestamp': None
+                'timestamp': 'None'
             },
             'Endpoints': endpoints  # list of endpoints
         }
@@ -1242,8 +1240,8 @@ class ARIA(object):
             elif len(success_endpoints_index) > 0 and len(failed_endpoints_index) == 0:
                 command_state_str = "Success"
                 context['Status']['command_state'] = command_state_str
-            # rules are not created successfully on part or all endpoints, should try to forward rules on different instance
-            # for the failed endpoints
+            # rules are not created successfully on part or all endpoints, should try to forward rules on
+            # different instance for the failed endpoints
             else:
                 # forward rule to each endpoints by AgentFQN
                 command_state_str = "Success"
@@ -1257,6 +1255,7 @@ class ARIA(object):
                     }
                     temp_forward_data['selector']['sia_list'] = [sia_object]
                     ep_state = False
+
                     for i in range(1, instance_number):
                         data['selector']['instance_id'] = str(i)
                         try:
@@ -1635,6 +1634,7 @@ class ARIA(object):
         sd_list, sia_list = self._parse_rcs(rcs)
         data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='src-port', rule=rule,
                                                 named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        print(data)
         return self._do_request(data, rule_name, rule, rcs)
 
     def unblock_src_port(self, rule_name: str, rcs: str = None) -> dict:
@@ -2037,6 +2037,11 @@ class ARIA(object):
 
         """
         return self._remove_rule(rule_name=rule_name, logic_block='src-subnet', instance_id=None, rcs=rcs)
+
+if __name__ == '__main__':
+    rcs = "PIdevice@region1.group1.name1"
+    a = ARIA('sdso-jfm')
+    a.block_src_port(port_range='123', rule_name='newrule', rcs=rcs)
 
 
 ''' HELPER FUNCTIONS '''
