@@ -514,17 +514,6 @@
                                 "startCol": 2
                             },
                             {
-								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "xdrstatusv2",
-								"height": 22,
-								"id": "28951ff0-026b-11eb-86da-1777b8445375",
-								"index": 4,
-								"listId": "1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
-								"sectionItemType": "field",
-								"startCol": 2
-							},
-                            {
                                 "endCol": 4,
                                 "fieldId": "xdrurl",
                                 "height": 24,
