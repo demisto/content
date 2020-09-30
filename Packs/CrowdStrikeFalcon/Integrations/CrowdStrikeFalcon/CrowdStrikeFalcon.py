@@ -252,6 +252,26 @@ def detection_to_incident(detection):
     return incident
 
 
+def incident_to_incident_context(incident):
+    """
+            Creates an incident context of a incident.
+
+            :type incident: ``dict``
+            :param incident: Single detection object
+
+            :return: Incident context representation of a incident
+            :rtype ``dict``
+        """
+    incident_id = str(incident.get('incident_id'))
+    incident_hosts = incident.get('hosts')[0]
+    incident_context = {
+        'name': f'Incident ID: {incident_id}',
+        'occurred': incident_hosts.get('modified_timestamp'),
+        'rawJSON': json.dumps(incident)
+    }
+    return incident_context
+
+
 def severity_string_to_int(severity):
     """
         Converts a severity string to DBot score representation
@@ -874,6 +894,34 @@ def get_detections_entities(detections_ids):
     return detections_ids
 
 
+def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0):
+    get_incidents_endpoint = '/incidents/queries/incidents/v1'
+    params = {
+        'sort': 'modified_timestamp.asc',
+        'offset': offset,
+        'limit': INCIDENTS_PER_FETCH
+    }
+    if filter_arg:
+        params['filter'] = filter_arg
+
+    elif last_created_timestamp:
+        params['filter'] = "modified_timestamp:>'{0}'".format(last_created_timestamp)
+
+    response = http_request('GET', get_incidents_endpoint, params)
+
+    return response
+
+
+def get_incidents_entities(incidents_ids):
+    ids_json = {'ids': incidents_ids}
+    response = http_request(
+        'POST',
+        '/incidents/entities/incidents/GET/v1',
+        data=json.dumps(ids_json)
+    )
+    return response
+
+
 def create_ioc():
     """
         UNTESTED - Creates an IoC
@@ -1031,13 +1079,14 @@ def get_username_uuid(username: str):
     return resources[0]
 
 
-def resolve_detection(ids, status, assigned_to_uuid, show_in_ui):
+def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
     """
         Sends a resolve detection request
         :param ids: Single or multiple ids in an array string format
         :param status: New status of the detection
         :param assigned_to_uuid: uuid to assign the detection to
         :param show_in_ui: Boolean flag in string format (true/false)
+        :param comment: Optional comment to add to the detection
         :return: Resolve detection response json
     """
     payload = {
@@ -1049,6 +1098,8 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui):
         payload['assigned_to_uuid'] = assigned_to_uuid
     if show_in_ui:
         payload['show_in_ui'] = show_in_ui
+    if comment:
+        payload['comment'] = comment
     # We do this so show_in_ui value won't contain ""
     data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"',
                                                                                                '"show_in_ui": true')
@@ -1118,61 +1169,110 @@ def timestamp_length_equalization(timestamp1, timestamp2):
 ''' COMMANDS FUNCTIONS '''
 
 
+def get_fetch_times_and_offset(incident_type):
+    last_run = demisto.getLastRun()
+    last_fetch_time = last_run.get(f'first_behavior_{incident_type}_time')
+    offset = last_run.get(f'{incident_type}_offset', 0)
+    if not last_fetch_time:
+        last_fetch_time, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+    prev_fetch = last_fetch_time
+    last_fetch_timestamp = int(parse(last_fetch_time).timestamp() * 1000)
+    return last_fetch_time, offset, prev_fetch, last_fetch_timestamp
+
+
 def fetch_incidents():
     """
         Fetches incident using the detections API
         :return: Fetched detections in incident format
     """
-    last_run = demisto.getLastRun()
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('first_behavior_time')
-    offset = last_run.get('offset', 0)
-
-    # Handle first time fetch, fetch incidents retroactively
-    if last_fetch is None:
-        last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
-    prev_fetch = last_fetch
-
-    last_fetch_timestamp = int(parse(last_fetch).timestamp() * 1000)
-
-    fetch_query = demisto.params().get('fetch_query')
-
-    if fetch_query:
-        fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch, query=fetch_query)
-        detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, offset=offset), 'resources')
-
-    else:
-        detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=last_fetch, offset=offset),
-                                     'resources')
     incidents = []  # type:List
 
-    if detections_ids:
-        raw_res = get_detections_entities(detections_ids)
+    fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
 
-        if "resources" in raw_res:
-            for detection in demisto.get(raw_res, "resources"):
-                incident = detection_to_incident(detection)
-                incident_date = incident['occurred']
+    if 'Detections' in fetch_incidents_or_detections:
+        incident_type = 'detection'
+        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(incident_type)
 
-                incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
-
-                # make sure that the two timestamps are in the same length
-                if len(str(incident_date_timestamp)) != len(str(last_fetch_timestamp)):
-                    incident_date_timestamp, last_fetch_timestamp = timestamp_length_equalization(
-                        incident_date_timestamp, last_fetch_timestamp)
-
-                # Update last run and add incident if the incident is newer than last fetch
-                if incident_date_timestamp > last_fetch_timestamp:
-                    last_fetch = incident_date
-                    last_fetch_timestamp = incident_date_timestamp
-
-                incidents.append(incident)
-
-        if len(incidents) == INCIDENTS_PER_FETCH:
-            demisto.setLastRun({'first_behavior_time': prev_fetch, 'offset': offset + INCIDENTS_PER_FETCH})
+        fetch_query = demisto.params().get('fetch_query')
+        if fetch_query:
+            fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
+            detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, offset=offset), 'resources')
         else:
-            demisto.setLastRun({'first_behavior_time': last_fetch})
-    return incidents
+            detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=last_fetch_time, offset=offset),
+                                         'resources')
+
+        if detections_ids:
+            raw_res = get_detections_entities(detections_ids)
+
+            if "resources" in raw_res:
+                raw_res['type'] = "detections"
+                for detection in demisto.get(raw_res, "resources"):
+                    incident = detection_to_incident(detection)
+                    incident_date = incident['occurred']
+
+                    incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
+
+                    # make sure that the two timestamps are in the same length
+                    if len(str(incident_date_timestamp)) != len(str(last_fetch_timestamp)):
+                        incident_date_timestamp, last_fetch_timestamp = timestamp_length_equalization(
+                            incident_date_timestamp, last_fetch_timestamp)
+
+                    # Update last run and add incident if the incident is newer than last fetch
+                    if incident_date_timestamp > last_fetch_timestamp:
+                        last_fetch_time = incident_date
+                        last_fetch_timestamp = incident_date_timestamp
+
+                    incidents.append(incident)
+
+            if len(incidents) == INCIDENTS_PER_FETCH:
+                demisto.setLastRun({'first_behavior_detection_time': prev_fetch,
+                                    'detection_offset': offset + INCIDENTS_PER_FETCH})
+            else:
+                demisto.setLastRun({'first_behavior_detection_time': last_fetch_time})
+
+    if 'Incidents' in fetch_incidents_or_detections:
+        incident_type = 'incident'
+
+        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(incident_type)
+
+        fetch_query = demisto.params().get('fetch_query')
+
+        if fetch_query:
+            fetch_query = "modified_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
+            incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query, offset=offset), 'resources')
+
+        else:
+            incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=last_fetch_time, offset=offset),
+                                        'resources')
+
+        if incidents_ids:
+            raw_res = get_incidents_entities(incidents_ids)
+            if "resources" in raw_res:
+                raw_res['type'] = "incidents"
+                for incident in demisto.get(raw_res, "resources"):
+                    incident_to_context = incident_to_incident_context(incident)
+                    incident_date = incident_to_context['occurred']
+
+                    incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
+
+                    # make sure that the two timestamps are in the same length
+                    if len(str(incident_date_timestamp)) != len(str(last_fetch_timestamp)):
+                        incident_date_timestamp, last_fetch_timestamp = timestamp_length_equalization(
+                            incident_date_timestamp, last_fetch_timestamp)
+
+                    # Update last run and add incident if the incident is newer than last fetch
+                    if incident_date_timestamp > last_fetch_timestamp:
+                        last_fetch_time = incident_date
+                        last_fetch_timestamp = incident_date_timestamp
+
+                    incidents.append(incident_to_context)
+
+            if len(incidents) == INCIDENTS_PER_FETCH:
+                demisto.setLastRun({'first_behavior_incident_time': prev_fetch,
+                                    'incident_offset': offset + INCIDENTS_PER_FETCH})
+            else:
+                demisto.setLastRun({'first_behavior_incident_time': last_fetch_time})
+        return incidents
 
 
 def create_ioc_command():
@@ -1291,21 +1391,17 @@ def resolve_detection_command():
     """
     args = demisto.args()
     ids = argToList(args.get('ids'))
-    usernames = argToList(args.get('username'))
-    if usernames and ids:
-        raise ValueError('Only one of the arguments ids or username should be provided, not both.')
-    if not usernames and not ids:
-        raise ValueError('One of the arguments ids or username must be provided, none given.')
-    if usernames:
-        ids = []
-        for username in usernames:
-            username_uuid = get_username_uuid(username)
-            ids.append(username_uuid)
+    username = args.get('username')
+    assigned_to_uuid = args.get('assigned_to_uuid')
+    comment = args.get('comment')
+    if username and assigned_to_uuid:
+        raise ValueError('Only one of the arguments assigned_to_uuid or username should be provided, not both.')
+    if username:
+        assigned_to_uuid = get_username_uuid(username)
 
     status = args.get('status')
-    assigned_to_uuid = args.get('assigned_to_uuid')
     show_in_ui = args.get('show_in_ui')
-    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui)
+    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment)
     args.pop('ids')
     hr = "Detection {0} updated\n".format(str(ids)[1:-1])
     hr += 'With the following values:\n'
@@ -1906,6 +2002,122 @@ def refresh_session_command():
     return create_entry_object(contents=response, hr=f'CrowdStrike Session Refreshed: {session_id}')
 
 
+def build_url_filter_for_device_id(args):
+    indicator_type = args.get('type')
+    indicator_value = args.get('value')
+    url_filter = f'/indicators/queries/devices/v1?type={indicator_type}&value={indicator_value}'
+    return url_filter
+
+
+def build_error_message(raw_res):
+    if raw_res.get('errors'):
+        error_data = raw_res.get('errors')[0]
+    else:
+        error_data = {"code": 'None', "message": 'something got wrong, please try again'}
+    error_code = error_data.get('code')
+    error_message = error_data.get('message')
+    return f'Error: error code: {error_code}, error_message: {error_message}.'
+
+
+def validate_response(raw_res):
+    return 'resources' in raw_res.keys()
+
+
+def get_indicator_device_id():
+    args = demisto.args()
+    url_filter = build_url_filter_for_device_id(args)
+    raw_res = http_request('GET', url_filter)
+    context_output = ''
+    if validate_response(raw_res):
+        context_output = raw_res.get('resources')
+    else:
+        error_message = build_error_message(raw_res)
+        return_error(error_message)
+    return CommandResults(
+        readable_output=context_output,
+        outputs_prefix='CrowdStrike.DeviceID',
+        outputs_key_field='DeviceID',
+        outputs=context_output
+    )
+
+
+def detections_to_human_readable(detections):
+    detections_readable_outputs = []
+    for detection in detections:
+        readable_output = assign_params(status=detection.get('status'),
+                                        max_severity=detection.get('max_severity_displayname'),
+                                        detection_id=detection.get('detection_id'),
+                                        created_time=detection.get('created_timestamp'))
+        detections_readable_outputs.append(readable_output)
+    headers = ['detection_id', 'created_time', 'status', 'max_severity']
+    human_readable = tableToMarkdown('CrowdStrike Detections', detections_readable_outputs, headers, removeNull=True)
+    return human_readable
+
+
+def list_detection_summaries_command():
+    fetch_query = demisto.args().get('fetch_query')
+
+    if fetch_query:
+        fetch_query = "{query}".format(query=fetch_query)
+        detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
+    else:
+        detections_ids = demisto.get(get_fetch_detections(), 'resources')
+    detections_response_data = get_detections_entities(detections_ids)
+    detections = [resource for resource in detections_response_data.get('resources')]
+    detections_human_readable = detections_to_human_readable(detections)
+
+    return CommandResults(
+        readable_output=detections_human_readable,
+        outputs_prefix='CrowdStrike.Detections',
+        outputs_key_field='detection_id',
+        outputs=detections
+    )
+
+
+def incidents_to_human_readable(incidents):
+    incidents_readable_outputs = []
+    for incident in incidents:
+        readable_output = assign_params(description=incident.get('description'), state=incident.get('state'),
+                                        name=incident.get('name'), tags=incident.get('tags'),
+                                        incident_id=incident.get('incident_id'), created_time=incident.get('created'))
+        incidents_readable_outputs.append(readable_output)
+    headers = ['incident_id', 'created_time', 'name', 'description', 'state', 'tags']
+    human_readable = tableToMarkdown('CrowdStrike Incidents', incidents_readable_outputs, headers, removeNull=True)
+    return human_readable
+
+
+def list_incident_summaries_command():
+    fetch_query = demisto.args().get('fetch_query')
+
+    if fetch_query:
+        fetch_query = "{query}".format(query=fetch_query)
+        incidents_ids = get_incidents_ids(filter_arg=fetch_query)
+    else:
+        incidents_ids = get_incidents_ids()
+    incidents_response_data = get_incidents_entities(incidents_ids)
+    incidents = [resource for resource in incidents_response_data.get('resources')]
+    incidents_human_readable = detections_to_human_readable(incidents)
+    return CommandResults(
+        readable_output=incidents_human_readable,
+        outputs_prefix='CrowdStrike.Incidents',
+        outputs_key_field='incident_id',
+        outputs=incidents
+    )
+
+
+def test_module():
+    try:
+        get_token(new_token=True)
+    except ValueError:
+        return 'Connection Error: The URL or The API key you entered is probably incorrect, please try again.'
+    if demisto.params().get('isFetch'):
+        try:
+            fetch_incidents()
+        except ValueError:
+            return 'Error: Something is wrong with the filters you entered for the fetch incident, please try again.'
+    return 'ok'
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -1918,8 +2130,13 @@ def main():
 
     try:
         if demisto.command() == 'test-module':
+            result = test_module()
+            return_results(result)
+
             get_token(new_token=True)
             demisto.results('ok')
+        elif demisto.command() == 'cs-device-ran-on':
+            return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':
             demisto.results(search_device_command())
         elif demisto.command() == 'cs-falcon-get-behavior':
@@ -1964,6 +2181,10 @@ def main():
             demisto.results(list_host_files_command())
         elif demisto.command() == 'cs-falcon-refresh-session':
             demisto.results(refresh_session_command())
+        elif demisto.command() == 'cs-falcon-list-detection-summaries':
+            return_results(list_detection_summaries_command())
+        elif demisto.command() == 'cs-falcon-list-incident-summaries':
+            return_results(list_incident_summaries_command())
         # Log exceptions
     except Exception as e:
         return_error(str(e))

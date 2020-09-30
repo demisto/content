@@ -35,18 +35,17 @@ def get_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa: E999
         (List[str]): List of branch names that have the "contrib/" prefix and are base branches of open PRs
     '''
     branch_names = []
+    open_prs_head_refs = {open_pr.head.ref for open_pr in repo.get_pulls(state='OPEN')}
     for branch in repo.get_branches():
         if branch.name.startswith('contrib/'):
             prs_with_branch_as_base = repo.get_pulls(state='OPEN', base=branch.name)
-            if prs_with_branch_as_base.totalCount >= 1:
-                prs_with_branch_as_head = repo.get_pulls(state='OPEN', head=branch.name)
-                if prs_with_branch_as_head.totalCount == 0:
-                    branch_names.append(branch.name)
+            if prs_with_branch_as_base.totalCount >= 1 and branch.name not in open_prs_head_refs:
+                branch_names.append(branch.name)
     return branch_names
 
 
 def main():
-    debug_mode = len(sys.argv) >= 2 and 'debug' in sys.argv[1].casefold
+    debug_mode = len(sys.argv) >= 2 and 'debug' in sys.argv[1].casefold()
     if debug_mode:
         enable_console_debug_logging()
     gh = Github(os.getenv('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
