@@ -3173,28 +3173,31 @@ def panorama_get_pcap_command():
     Get pcap file
     """
     if DEVICE_GROUP:
-        raise Exception('Getting a PCAP file is only supported on Firewall (not Panorama).')
-    pcap_type = demisto.args()['pcapType']
+        raise Exception('Downloading a PCAP file is only supported on a Firewall (not on Panorama).')
+    args = demisto.args()
+    pcap_type = args['pcapType']
     params = {
         'type': 'export',
         'key': API_KEY,
         'category': pcap_type
     }
 
-    password = demisto.args().get('password')
-    pcap_id = demisto.args().get('pcapID')
-    search_time = demisto.args().get('searchTime')
+    password = args.get('password')
+    pcap_id = args.get('pcapID')
+    search_time = args.get('searchTime')
+
     if pcap_type == 'dlp-pcap' and not password:
         raise Exception('Can not provide dlp-pcap without password.')
     else:
         params['dlp-password'] = password
     if pcap_type == 'threat-pcap' and (not pcap_id or not search_time):
-        raise Exception('Can not provide threat-pcap without pcap-id and the searchTime arguments.')
+        raise Exception('Can not download threat-pcap without the pcapId and the searchTime arguments.')
 
-    pcap_name = demisto.args().get('from')
-    local_name = demisto.args().get('localName')
-    serial_no = demisto.args().get('serialNo')
-    search_time = demisto.args().get('searchTime')
+    pcap_name = args.get('from')
+    local_name = args.get('localName')
+    serial_no = args.get('serialNo')
+    session_id = args.get('sessionID')
+    device_name = args.get('deviceName')
 
     file_name = None
     if pcap_id:
@@ -3207,16 +3210,21 @@ def panorama_get_pcap_command():
         file_name = local_name
     if serial_no:
         params['serialno'] = serial_no
+    if session_id:
+        params['sessionid'] = session_id
+    if device_name:
+        params['device_name'] = device_name
     if search_time:
         search_time = validate_search_time(search_time)
         params['search-time'] = search_time
+
     # set file name to the current time if from/to were not specified
     if not file_name:
         file_name = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
 
     result = http_request(URL, 'GET', params=params, is_pcap=True)
 
-    # due pcap file size limitation in the product, for more details, please see the documentation.
+    # due to pcap file size limitation in the product. For more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':
         raise Exception(
             'PCAP download failed. Most likely cause is the file size limitation.\n'

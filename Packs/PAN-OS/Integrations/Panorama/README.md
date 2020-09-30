@@ -3180,6 +3180,16 @@
 <td style="width: 532px;">The password for Panorama. This is only required for the "dlp-pcap" PCAP type.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 137px;">deviceName</td>
+<td style="width: 532px;">The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 137px;">sessionID</td>
+<td style="width: 532px;">The Session ID of the PCAP. For further information, see the Panorama XML API Documentation.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
