@@ -211,6 +211,9 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
             print("Failed to upload license.")
 
         local_packs = glob.glob("/home/runner/work/content-private/content-private/content/artifacts/packs/*.zip")
+        p_message = str(packs_to_install)
+        prints_manager.add_print_job(p_message, print_color, thread_index, LOG_COLORS.GREEN,
+                                     include_timestamp=True)
         for local_pack in local_packs:
             if any(pack_to_install['id'] in local_pack for pack_to_install in packs_to_install):
                 upload_zipped_packs(client=client, host=host, prints_manager=prints_manager,
@@ -363,7 +366,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
     """
     host = client.api_client.configuration.host
 
-    msg = 'Starting to search and install packs in server: {}\n'.format(host)
+    msg = f'Starting to search and install packs in server: {host}\nPack IDs are: {str(pack_ids)}'
     prints_manager.add_print_job(msg, print_color, thread_index, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(thread_index)
 
