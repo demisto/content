@@ -47,7 +47,7 @@ LANGUAGES_TO_MODEL_NAMES = {'English': 'en_core_web_sm',
                             }
 
 _unicode_chr_splitter = _Re('(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)').split
-
+nlp = None
 
 def clean_html(text):
     if not CLEAN_HTML:
@@ -116,7 +116,9 @@ def tokenize_text_other(unicode_text):
 
 
 def tokenize_text_spacy(unicode_text, language):
-    nlp = spacy.load(LANGUAGES_TO_MODEL_NAMES[language], disable=['tagger', 'parser', 'ner', 'textcat'])
+    global nlp
+    if nlp is None:
+        nlp = spacy.load(LANGUAGES_TO_MODEL_NAMES[language], disable=['tagger', 'parser', 'ner', 'textcat'])
     doc = nlp(unicode(unicode_text))
     original_text_indices_to_words = map_indices_to_words(unicode_text)
     tokens_list = []
