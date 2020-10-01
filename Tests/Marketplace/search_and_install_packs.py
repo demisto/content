@@ -214,8 +214,13 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         p_message = str(packs_to_install)
         prints_manager.add_print_job(p_message, print_color, thread_index, LOG_COLORS.GREEN,
                                      include_timestamp=True)
+        with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+            pack_ids = packs_stream.readlines()
+            print("Printing that dumb list of packs to install: "+str([pack_id.rstrip('\n') for pack_id in pack_ids]))
         for local_pack in local_packs:
+            print(f"Current local pack is: {local_pack}")
             if any(pack_to_install['id'] in local_pack for pack_to_install in packs_to_install):
+                print(f"Found a match!")
                 upload_zipped_packs(client=client, host=host, prints_manager=prints_manager,
                                     thread_index=thread_index, pack_path=local_pack)
     else:
