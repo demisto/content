@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Endpoint Configuration Manager",
+            "playbookID": "Microsoft ECM - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "CrowdStrike Falcon Intel v2",
             "playbookID": "CrowdStrike Falcon Intel v2 - Test",
             "fromversion": "5.0.0"
@@ -3252,6 +3257,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Microsoft Endpoint Configuration Manager": "Uses Microsoft winRM",
         "VirusTotal - Private API": "proxy failures with recording. related issues: 26463, 28888",
         "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",
         "BPA": "Playbook using GenericPolling which is inconsistent",
