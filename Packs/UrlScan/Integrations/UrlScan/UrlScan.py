@@ -61,7 +61,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
                 return_error('API rate limit reached [%d] - %s.\nUse the retries and wait arguments when submitting '
                              'multiple URls' % (r.status_code, r.reason))
             else:
-                time.sleep(wait)
+                time.sleep(wait)  # pylint: disable=sleep-exists
                 return http_request(method, url_suffix, json, wait, retries - 1)
 
         response_json = r.json()
@@ -158,7 +158,7 @@ def poll(target, step, args=(), kwargs=None, timeout=None, max_tries=None, check
         tries += 1
         if max_time is not None and time.time() >= max_time:
             demisto.results('The operation timed out. Please try again with a longer timeout period.')
-        time.sleep(step)
+        time.sleep(step)  # pylint: disable=sleep-exists
         step = step_function(step)
 
 
