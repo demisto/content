@@ -1747,12 +1747,6 @@
             "playbookID": "test Arcsight - Get events related to the Case"
         },
         {
-            "integrations": "XFE",
-            "playbookID": "XFE Test",
-            "timeout": 140,
-            "nightly": true
-        },
-        {
             "integrations": "XFE_v2",
             "playbookID": "Test_XFE_v2",
             "timeout": 500,
@@ -3055,6 +3049,11 @@
             "integrations": "Talos Feed",
             "playbookID": "FeedTalosTestPlaybook",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "Field polling test",
+            "timeout": 600,
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -3229,7 +3228,7 @@
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
-        "XFE_v2": "Issue 22715",
+        "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
