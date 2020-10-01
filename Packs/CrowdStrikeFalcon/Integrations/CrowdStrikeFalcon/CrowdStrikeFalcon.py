@@ -341,6 +341,16 @@ def get_passed_mins(start_time, end_time_str):
     return time_delta.seconds / 60
 
 
+def handle_response_errors(raw_res: dict, err_msg: str = None):
+    if not err_msg:
+        err_msg = "The server was unable to return a result, please run the command again."
+    if not raw_res:
+        raise Exception(err_msg)
+    if raw_res.get('errors'):
+        raise Exception(raw_res.get('errors'))
+    return
+
+
 ''' COMMAND SPECIFIC FUNCTIONS '''
 
 
@@ -928,6 +938,9 @@ def get_incidents_entities(incidents_ids):
 
 def upload_ioc(ioc_type, value, policy=None, expiration_days=None,
                share_level=None, description=None, source=None):
+    """
+    Create a new IOC (or replace an existing one)
+    """
     payload = assign_params(
         type=ioc_type,
         value=value,
@@ -943,6 +956,9 @@ def upload_ioc(ioc_type, value, policy=None, expiration_days=None,
 
 def update_ioc(ioc_type, value, policy=None, expiration_days=None,
                share_level=None, description=None, source=None):
+    """
+    Update an existing IOC
+    """
     body = assign_params(
         type=ioc_type,
         value=value,
@@ -960,19 +976,21 @@ def update_ioc(ioc_type, value, policy=None, expiration_days=None,
     return http_request('PATCH', '/indicators/entities/iocs/v1', json=body, params=params)
 
 
-def search_iocs(ioc_types=None, ioc_values=None, policies=None, sources=None, expiration_from=None,
-                expiration_to=None, limit=None, share_levels=None, ids=None):
+def search_iocs(types=None, values=None, policies=None, sources=None, expiration_from=None,
+                expiration_to=None, limit=None, share_levels=None, ids=None, sort=None, offset=None):
     """
         UNTESTED IN OAUTH 2- Searches an IoC
         :return: IoCs that were found in the search
     """
     if not ids:
         payload = assign_params(
-            types=argToList(ioc_types),
-            values=argToList(ioc_values),
+            types=argToList(types),
+            values=argToList(values),
             policies=argToList(policies),
             sources=argToList(sources),
             share_levels=argToList(share_levels),
+            sort=sort,
+            offset=offset,
             limit=limit or '50',
         )
         if expiration_from:
@@ -1003,6 +1021,9 @@ def enrich_ioc_dict_with_ids(ioc_dict):
 
 
 def delete_ioc(ioc_type, value):
+    """
+    Delete an IOC
+    """
     payload = assign_params(
         type=ioc_type,
         value=value
@@ -1010,22 +1031,32 @@ def delete_ioc(ioc_type, value):
     return http_request('DELETE', '/indicators/entities/iocs/v1', payload)
 
 
-def update_iocs():
+def get_ioc_device_count(ioc_type, value):
     """
-        UNTESTED - Updates the values one or more IoC
-        :return: Response json of update IoC request
+    Gets the devices that ran encountered the IOC
     """
-    args = demisto.args()
-    input_args = {
-        'ids': args.get('ids'),
-        'policy': args.get('policy', ''),
-        'expiration_days': args.get('expiration_days', ''),
-        'source': args.get('source'),
-        'description': args.get('description')
-    }
-    payload = {k: str(v) for k, v in input_args.items() if v}
-    headers = {'Authorization': HEADERS['Authorization']}
-    return http_request('PATCH', '/indicators/entities/iocs/v1', params=payload, headers=headers)
+    payload = assign_params(
+        type=ioc_type,
+        value=value
+    )
+    return http_request('GET', '/indicators/aggregates/devices-count/v1', payload)
+
+
+def get_process_details(ids):
+    """
+    Get given processes details
+    """
+    payload = assign_params(ids=ids)
+    return http_request('GET', '/processes/entities/processes/v1', payload)
+
+
+def get_proccesses_ran_on(ioc_type, value, device_id):
+    payload = assign_params(
+        type=ioc_type,
+        value=value,
+        device_id=device_id
+    )
+    return http_request('GET', '/indicators/queries/processes/v1', payload)
 
 
 def search_device():
@@ -1296,8 +1327,7 @@ def upload_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=N
     :param value: The string representation of the indicator.
     """
     raw_res = upload_ioc(ioc_type, value, policy, expiration_days, share_level, description, source)
-    if raw_res.get('errors'):
-        raise Exception(raw_res.get('errors'))
+    handle_response_errors(raw_res)
     iocs = search_iocs(ids=f"{ioc_type}:{value}").get('resources')
     if not iocs:
         raise Exception("Failed to create ioc.")
@@ -1319,8 +1349,7 @@ def update_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=N
     :param value: The string representation of the indicator.
     """
     raw_res = update_ioc(ioc_type, value, policy, expiration_days, share_level, description, source)
-    if raw_res.get('errors'):
-        raise Exception(raw_res.get('errors'))
+    handle_response_errors(raw_res)
     iocs = search_iocs(ids=f"{ioc_type}:{value}").get('resources')
     ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
     enrich_ioc_dict_with_ids(ec)
@@ -1329,7 +1358,7 @@ def update_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=N
 
 
 def search_iocs_command(types=None, values=None, policies=None, sources=None, from_expiration_date=None,
-                        to_expiration_date=None, share_levels=None, limit=None):
+                        to_expiration_date=None, share_levels=None, limit=None, sort=None, offset=None):
     """
     :param types: A list of indicator types. Separate multiple types by comma.
     :param values: Comma-separated list of indicator values
@@ -1339,11 +1368,15 @@ def search_iocs_command(types=None, values=None, policies=None, sources=None, fr
     :param to_expiration_date: End of date range to search (YYYY-MM-DD format).
     :param share_levels: A list of share levels. Only red is supported.
     :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    :param sort: The order of the results. Format
+    :param offset: The offset to begin the list from
     """
-    raw_res = search_iocs(types, values, policies, sources, from_expiration_date, to_expiration_date,
-                          limit, share_levels)
+    raw_res = search_iocs(types=types, values=values, policies=policies, sources=sources, sort=sort, offset=offset,
+                          expiration_from=from_expiration_date, expiration_to=to_expiration_date,
+                          share_levels=share_levels, limit=limit)
     if not raw_res:
         return create_entry_object(hr='Could not find any Indicators of Compromise.')
+    handle_response_errors(raw_res)
     iocs = raw_res.get('resources')
     ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
     enrich_ioc_dict_with_ids(ec)
@@ -1351,14 +1384,13 @@ def search_iocs_command(types=None, values=None, policies=None, sources=None, fr
                                hr=tableToMarkdown('Indicators of Compromise', ec))
 
 
-def get_ioc_command(type_: str, value: str):
+def get_ioc_command(ioc_type: str, value: str):
     """
-    :param type_: The type of the indicator
+    :param ioc_type: The type of the indicator
     :param value: The IOC value to retrieve
     """
-    raw_res = search_iocs(ids=f"{type_}:{value}")
-    if not raw_res:
-        return create_entry_object(hr='Could not find any Indicators of Compromise.')
+    raw_res = search_iocs(ids=f"{ioc_type}:{value}")
+    handle_response_errors(raw_res, 'Could not find any Indicators of Compromise.')
     iocs = raw_res.get('resources')
     ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
     enrich_ioc_dict_with_ids(ec)
@@ -1366,24 +1398,48 @@ def get_ioc_command(type_: str, value: str):
                                hr=tableToMarkdown('Indicator of Compromise', ec))
 
 
-def delete_iocs_command(ioc_type, value):
+def delete_ioc_command(ioc_type, value):
     """
     :param ioc_type: The type of the indicator
     :param value: The IOC value to delete
     """
-    ids = f"{ioc_type}:{value}"
     raw_res = delete_ioc(ioc_type, value)
+    handle_response_errors(raw_res, "The server has not confirmed deletion, please manually confirm deletion.")
+    ids = f"{ioc_type}:{value}"
     return create_entry_object(contents=raw_res, hr=f"Custom IoC {ids} was successfully deleted.")
 
 
-def update_iocs_command():
+def get_ioc_device_count_command(ioc_type: str, value: str):
     """
-        UNTESTED - Updates an IoC
-        :return: EntryObject of update IoC command
+    :param ioc_type: The type of the indicator
+    :param value: The IOC value
     """
-    raw_res = update_iocs()
-    ids = demisto.args().get('ids')
-    return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully updated.".format(ids))
+    raw_res = get_ioc_device_count(ioc_type, value)
+    handle_response_errors(raw_res)
+    ioc_id = f"{ioc_type}:{value}"
+    return create_entry_object(contents=raw_res, hr=f'Indicator of Compromise {ioc_id} device count')
+
+
+def get_process_details_command(ids: str):
+    """
+    :param ids: proccess ids
+    """
+    ids = argToList(ids)
+    raw_res = get_process_details(ids)
+    handle_response_errors(raw_res)
+    return create_entry_object(contents=raw_res, hr=f"Details for processes {ids}.")
+
+
+def get_proccesses_ran_on_command(ioc_type, value, device_id):
+    """
+    :param device_id: Device id the IOC ran on
+    :param ioc_type: The type of the indicator
+    :param value: The IOC value
+    """
+    raw_res = get_proccesses_ran_on(ioc_type, value, device_id)
+    handle_response_errors(raw_res)
+    ids = f"{ioc_type}:{value}"
+    return create_entry_object(contents=raw_res, hr=f"Process with custom IoC {ids} on device {device_id}.")
 
 
 def search_device_command():
@@ -2254,13 +2310,25 @@ def main():
         elif command == 'cs-falcon-search-iocs':
             return_results(search_iocs_command(**args))
         elif command == 'cs-falcon-get-ioc':
-            return_results(get_ioc_command(type_=args.get('type'), value=args.get('value')))
+            return_results(get_ioc_command(ioc_type=args.get('type'), value=args.get('value')))
         elif command == 'cs-falcon-upload-ioc':
             return_results(upload_ioc_command(**args))
         elif command == 'cs-falcon-update-ioc':
             return_results(update_ioc_command(**args))
         elif command == 'cs-falcon-delete-ioc':
-            return_results(delete_iocs_command(ioc_type=args.get('type'), value=args.get('value')))
+            return_results(delete_ioc_command(ioc_type=args.get('type'), value=args.get('value')))
+        elif command == 'cs-falcon-device-count-ioc':
+            return_results(get_ioc_device_count_command(ioc_type=args.get('type'), value=args.get('value')))
+        elif command == 'cs-falcon-process-details':
+            return_results(get_process_details_command(**args))
+        elif command == 'cs-falcon-processes-ran-on':
+            return_results(
+                get_proccesses_ran_on_command(
+                    ioc_type=args.get('type'),
+                    value=args.get('value'),
+                    device_id=args.get('device_id')
+                )
+            )
         # Log exceptions
     except Exception as e:
         return_error(str(e))

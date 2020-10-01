@@ -133,16 +133,16 @@ script:
       description: The scenario name in the behavior.
       type: String
     - contextPath: CrowdStrike.Behavior.MD5
-      description: The MD5 hash of the IoC in the behavior.
+      description: The MD5 hash of the IOC in the behavior.
       type: String
     - contextPath: CrowdStrike.Behavior.SHA256
-      description: The SHA256 hash of the IoC in the behavior.
+      description: The SHA256 hash of the IOC in the behavior.
       type: String
     - contextPath: CrowdStrike.Behavior.IOCType
       description: Type of the indicator of compromise.
       type: String
     - contextPath: CrowdStrike.Behavior.IOCValue
-      description: The value of the IoC.
+      description: The value of the IOC.
       type: String
     - contextPath: CrowdStrike.Behavior.CommandLine
       description: The command line executed in the behavior.
@@ -182,16 +182,16 @@ script:
       description: The scenario name in the behavior.
       type: String
     - contextPath: CrowdStrike.Detection.Behavior.MD5
-      description: The MD5 hash of the IoC in the behavior.
+      description: The MD5 hash of the IOC in the behavior.
       type: String
     - contextPath: CrowdStrike.Detection.Behavior.SHA256
-      description: The SHA256 hash of the IoC in the behavior.
+      description: The SHA256 hash of the IOC in the behavior.
       type: String
     - contextPath: CrowdStrike.Detection.Behavior.IOCType
-      description: The type of the IoC.
+      description: The type of the IOC.
       type: String
     - contextPath: CrowdStrike.Detection.Behavior.IOCValue
-      description: The value of the IoC.
+      description: The value of the IOC.
       type: String
     - contextPath: CrowdStrike.Detection.Behavior.CommandLine
       description: The command line executed in the behavior.
@@ -782,39 +782,55 @@ script:
       description: End of date range to search (YYYY-MM-DD format).
     - name: limit
       description: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+        - type.asc
+        - type.desc
+        - value.asc
+        - value.desc
+        - policy.asc
+        - policy.desc
+        - share_level.asc
+        - share_level.desc
+        - expiration_timestamp.asc
+        - expiration_timestamp.desc
+      description: The order of the results. Format is field.asc or field.desc.
+    - name: offset
+      description: The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0.
     outputs:
-    - contextPath: CrowdStrike.IoC.Type
-      description: The type of the IoC.
+    - contextPath: CrowdStrike.IOC.Type
+      description: The type of the IOC.
       type: string
-    - contextPath: CrowdStrike.IoC.Value
+    - contextPath: CrowdStrike.IOC.Value
       description: The string representation of the indicator.
       type: string
-    - contextPath: CrowdStrike.IoC.Policy
+    - contextPath: CrowdStrike.IOC.Policy
       description: The policy of the indicator.
       type: string
-    - contextPath: CrowdStrike.IoC.Source
-      description: The source of the IoC.
+    - contextPath: CrowdStrike.IOC.Source
+      description: The source of the IOC.
       type: string
-    - contextPath: CrowdStrike.IoC.ShareLevel
+    - contextPath: CrowdStrike.IOC.ShareLevel
       description: The level at which the indicator will be shared.
       type: string
-    - contextPath: CrowdStrike.IoC.Expiration
+    - contextPath: CrowdStrike.IOC.Expiration
       description: The date time when the indicator will expire.
       type: string
-    - contextPath: CrowdStrike.IoC.Description
-      description: The description of the IoC.
+    - contextPath: CrowdStrike.IOC.Description
+      description: The description of the IOC.
       type: string
-    - contextPath: CrowdStrike.IoC.CreatedTime
-      description: The time of creation of the IoC.
+    - contextPath: CrowdStrike.IOC.CreatedTime
+      description: The time of creation of the IOC.
       type: string
-    - contextPath: CrowdStrike.IoC.CreatedBy
-      description: The identity of the user/process who created of the IoC.
+    - contextPath: CrowdStrike.IOC.CreatedBy
+      description: The identity of the user/process who created of the IOC.
       type: string
-    - contextPath: CrowdStrike.IoC.ModifiedTime
+    - contextPath: CrowdStrike.IOC.ModifiedTime
       description: The time the indicator was last modified.
       type: string
-    - contextPath: CrowdStrike.IoC.ModifiedBy
-      description: The identity of the user/process who last updated the IoC.
+    - contextPath: CrowdStrike.IOC.ModifiedBy
+      description: The identity of the user/process who last updated the IOC.
       type: string
     description: Returns a list of your uploaded IOCs that match the search criteria
   - name: cs-falcon-get-ioc
@@ -834,73 +850,73 @@ script:
       required: true
       description: The IOC value to retrieve.
     outputs:
-    - contextPath: CrowdStrike.IoC.Type
-      description: The type of the IoC.
+    - contextPath: CrowdStrike.IOC.Type
+      description: The type of the IOC.
       type: string
-    - contextPath: CrowdStrike.IoC.Value
+    - contextPath: CrowdStrike.IOC.Value
       description: The string representation of the indicator.
       type: string
-    - contextPath: CrowdStrike.IoC.Policy
+    - contextPath: CrowdStrike.IOC.Policy
       description: The policy of the indicator.
       type: string
-    - contextPath: CrowdStrike.IoC.Source
-      description: The source of the IoC.
+    - contextPath: CrowdStrike.IOC.Source
+      description: The source of the IOC.
       type: string
-    - contextPath: CrowdStrike.IoC.ShareLevel
+    - contextPath: CrowdStrike.IOC.ShareLevel
       description: The level at which the indicator will be shared.
       type: string
-    - contextPath: CrowdStrike.IoC.Expiration
+    - contextPath: CrowdStrike.IOC.Expiration
       description: The date time when the indicator will expire.
       type: string
-    - contextPath: CrowdStrike.IoC.Description
-      description: The description of the IoC.
+    - contextPath: CrowdStrike.IOC.Description
+      description: The description of the IOC.
       type: string
-    - contextPath: CrowdStrike.IoC.CreatedTime
-      description: The time of creation of the IoC.
+    - contextPath: CrowdStrike.IOC.CreatedTime
+      description: The time of creation of the IOC.
       type: string
-    - contextPath: CrowdStrike.IoC.CreatedBy
-      description: The identity of the user/process who created of the IoC.
+    - contextPath: CrowdStrike.IOC.CreatedBy
+      description: The identity of the user/process who created of the IOC.
       type: string
-    - contextPath: CrowdStrike.IoC.ModifiedTime
+    - contextPath: CrowdStrike.IOC.ModifiedTime
       description: The time the indicator was last modified.
       type: string
-    - contextPath: CrowdStrike.IoC.ModifiedBy
-      description: The identity of the user/process who last updated the IoC.
+    - contextPath: CrowdStrike.IOC.ModifiedBy
+      description: The identity of the user/process who last updated the IOC.
       type: string
     description: Get the full definition of one or more indicators that you are watching
   - name: cs-falcon-upload-ioc
     arguments:
-      - name: ioc_type
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - sha256
-          - md5
-          - domain
-          - ipv4
-          - ipv6
-        description: The type of the indicator.
-      - name: value
-        required: true
-        description: The string representation of the indicator.
-      - name: policy
-        auto: PREDEFINED
-        predefined:
-          - detect
-          - none
-        description: "The policy to enact when the value is detected on a host. A value of none is equivalent to turning the indicator off."
-        defaultValue: detect
-      - name: share_level
-        auto: PREDEFINED
-        predefined:
-          - red
-        description: The level at which the indicator will be shared. Only red share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers.
-      - name: expiration_days
-        description: 'This represents the days the indicator should be valid for. This only applies to domain, ipv4, and ipv6 types. Default is 30 if not provided. '
-      - name: source
-        description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters.
-      - name: description
-        description: A meaningful description of the indicator. Limit 200 characters.
+    - name: ioc_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - sha256
+        - md5
+        - domain
+        - ipv4
+        - ipv6
+      description: The type of the indicator.
+    - name: value
+      required: true
+      description: The string representation of the indicator.
+    - name: policy
+      auto: PREDEFINED
+      predefined:
+        - detect
+        - none
+      description: "The policy to enact when the value is detected on a host. A value of none is equivalent to turning the indicator off."
+      defaultValue: detect
+    - name: share_level
+      auto: PREDEFINED
+      predefined:
+        - red
+      description: The level at which the indicator will be shared. Only red share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers.
+    - name: expiration_days
+      description: 'This represents the days the indicator should be valid for. This only applies to domain, ipv4, and ipv6 types. Default is 30 if not provided. '
+    - name: source
+      description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters.
+    - name: description
+      description: A meaningful description of the indicator. Limit 200 characters.
     description: Uploads an indicator for CrowdStrike to monitor.
   - name: cs-falcon-update-ioc
     arguments:
@@ -954,6 +970,51 @@ script:
       description: The IOC value to delete.
       required: true
     description: Deletes a monitored indicator.
+  - name: cs-falcon-device-count-ioc
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - sha256
+        - sha1
+        - md5
+        - domain
+        - ipv4
+        - ipv6
+      description: The IOC type.
+    - name: value
+      required: true
+      description: The IOC value.
+    description: Number of hosts that observed the given IOC.
+  - name: cs-falcon-processes-ran-on
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - sha256
+        - sha1
+        - md5
+        - domain
+        - ipv4
+        - ipv6
+      description: The IOC type.
+    - name: value
+      required: true
+      description: The IOC value.
+    - name: device_id
+      required: true
+      description: "The device ID to check against."
+    description: Get proccesses associated with a given IOC
+  - name: cs-falcon-process-details
+    arguments:
+    - name: ids
+      required: true
+      default: true
+      description: The ID of the process. Allows multiple values separated by comma.
+      isArray: true
+    description: Retrieves the details of a process, according to process ID, that is running or that previously ran.
   - arguments:
     - auto: PREDEFINED
       default: false
