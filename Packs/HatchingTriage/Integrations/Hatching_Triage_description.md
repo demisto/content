@@ -1,9 +1,3 @@
-# Hatching Triage
-### Description
-- Scalable sandbox solution
-- Can analyze up to 500,000 samples per day
-- Submit files for analysis and retrieve results
-
 ### Setup
 - Requires a server URL, and an API key
 - URL of the Hatching service will be either:
