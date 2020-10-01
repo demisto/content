@@ -1137,18 +1137,9 @@ class ARIA(object):
         except requests.exceptions.RequestException:
             raise
 
-        context = {
-            'Rule': {
-                'Name': rule_name,
-                'Definition': f'Remove {rule_name}',
-                'RCS': rcs
-            },
-            'Status': {
-                'command_state': 'Failure',
-                'timestamp': 'None'
-            },
-            'Endpoints': []
-        }
+        command_state_str = 'Failure'
+        response_timestamp = None
+        ep_res = None
 
         if response and response.ok:
             response_json = response.json()
@@ -1165,9 +1156,20 @@ class ARIA(object):
                     if not status:
                         command_state_str = 'Failure'
             response_timestamp = response_json.get('timestamp')
-            context['Status']['timestamp'] = response_timestamp
-            context['Status']['command_state'] = command_state_str
-            context['Endpoints'] = endpoints
+            ep_res = endpoints
+
+        context = {
+            'Rule': {
+                'Name': rule_name,
+                'Definition': f'Remove {rule_name}',
+                'RCS': rcs
+            },
+            'Status': {
+                'command_state': command_state_str,
+                'timestamp': response_timestamp
+            },
+            'Endpoints': ep_res
+        }
 
         return context
 
@@ -1192,20 +1194,8 @@ class ARIA(object):
         instance_number = 10  # 10 total instances in ARIA PI Reaper
 
         command_state_str = 'Failure'
-
-        endpoints = []
-        context = {
-            'Rule': {
-                'Name': rule_name,
-                'Definition': rule,
-                'RCS': rcs
-            },
-            'Status': {
-                'command_state': command_state_str,
-                'timestamp': 'None'
-            },
-            'Endpoints': endpoints
-        }
+        response_timestamp = None
+        endpoints = None
 
         try:
             response = requests.put(url=url, data=json.dumps(data), headers=headers, timeout=self.time_out,
@@ -1219,7 +1209,6 @@ class ARIA(object):
             response_json = response.json()
             endpoints = response_json.get('endpoints')
             response_timestamp = response_json.get('timestamp')
-            context['Status']['timestamp'] = response_timestamp
             if endpoints and len(endpoints) > 0:
                 for ep_index, ep in enumerate(endpoints):
                     trid = ep.get('trid')
@@ -1235,11 +1224,9 @@ class ARIA(object):
             # no endpoints matches
             if len(failed_endpoints_index) == 0 and len(success_endpoints_index) == 0:
                 command_state_str = "Endpoint matching RCS not found!"
-                context['Status']['command_state'] = command_state_str
             # rules are created successfully on all endpoints
             elif len(success_endpoints_index) > 0 and len(failed_endpoints_index) == 0:
                 command_state_str = "Success"
-                context['Status']['command_state'] = command_state_str
             # rules are not created successfully on part or all endpoints, should try to forward rules on
             # different instance for the failed endpoints
             else:
@@ -1275,8 +1262,19 @@ class ARIA(object):
                         command_state_str = 'Failure'
                     ep['completion'] = ep_state
                     ep['instance_number'] = i if ep_state else None
-        context['Status']['command_state'] = command_state_str
-        context['Endpoints'] = endpoints
+
+        context = {
+            'Rule': {
+                'Name': rule_name,
+                'Definition': rule,
+                'RCS': rcs
+            },
+            'Status': {
+                'command_state': command_state_str,
+                'timestamp': response_timestamp
+            },
+            'Endpoints': endpoints
+        }
 
         return context
 
