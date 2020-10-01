@@ -1,8 +1,8 @@
-id: URLDecode-Test
+id: URLEncode-Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: URLEncode-Test
-description: 'Testing output of URLEncode '
+description: 'Testing output of URLEncode'
 starttaskid: "0"
 tasks:
   "0":
@@ -31,50 +31,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 595db122-9331-45bd-88a8-9059d1b5085e
-    type: regular
-    task:
-      id: 595db122-9331-45bd-88a8-9059d1b5085e
-      version: -1
-      name: URLDecode
-      description: |-
-        Converts
-        https://example.com
-        into
-        https:%2F%2Fexample.com
-      scriptName: URLEncode
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      value:
-        simple: https://example.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: faebb872-260c-43f0-8fca-33c20316a3f8
+    taskid: ccc44e81-af9f-4292-8e28-40ea260d49c6
     type: condition
     task:
-      id: faebb872-260c-43f0-8fca-33c20316a3f8
+      id: ccc44e81-af9f-4292-8e28-40ea260d49c6
       version: -1
-      name: Check args
+      name: Validate output
       type: condition
       iscommand: false
       brand: ""
@@ -88,7 +52,10 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: EncodedURL
+              complex:
+                root: UrlToEncode
+                transformers:
+                - operator: URLEncode
             iscontext: true
           right:
             value:
@@ -97,7 +64,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 370
         }
       }
     note: false
@@ -121,7 +88,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 545
         }
       }
     note: false
@@ -131,26 +98,26 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 0801a501-395f-4a6c-89b4-9559a8d64a0a
+    taskid: 288676a9-2cdf-4294-8611-e87c527f50bd
     type: regular
     task:
-      id: 0801a501-395f-4a6c-89b4-9559a8d64a0a
+      id: 288676a9-2cdf-4294-8611-e87c527f50bd
       version: -1
-      name: DeleteContext
-      scriptName: DeleteContext
+      name: Set Context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+      append: {}
+      key:
+        simple: UrlToEncode
+      value:
+        simple: https://example.com
     separatecontext: false
     view: |-
       {
@@ -169,7 +136,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 560,
         "width": 380,
         "x": 50,
         "y": 50
