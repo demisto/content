@@ -1870,6 +1870,10 @@
 <td style="width: 472px;">The ID of the environment to submit the URL to.</td>
 <td style="width: 98px;">Required</td>
 </tr>
+<td style="width: 170px;">dontThrowErrorOnFileDetonation</td>
+<td style="width: 472px;">Determine if the command will throw an error on an unsupported file error. Default is false.</td>
+<td style="width: 98px;"></td>
+</tr>
 </tbody>
 </table>
 </div>
