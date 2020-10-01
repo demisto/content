@@ -131,34 +131,19 @@ def lock_dummy_index(public_storage_bucket, dummy_index_lock_path):
 
 
 def acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
-    print_error(f"Verifying if dummy index is locked before "
-                f"acquiring: {is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path)}")
     total_seconds_waited = 0
     while is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path):
-        print_error("dummy index is curently locked")
         if total_seconds_waited >= MAX_SECONDS_TO_WAIT_FOR_LOCK:
-            print_error("Error: was not able to acquire dummy index lock.")
             exit(1)
         total_seconds_waited += 10
         time.sleep(10)
 
     lock_dummy_index(public_storage_bucket, dummy_index_lock_path)
-    print_error("Waiting for 5 minutes so I can see the file in the bucket")
-    time.sleep(300)
-
-    print_error(f"Verifying if dummy index is locked after "
-                f"acquiring: {is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path)}")
 
 
 def release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
-    print_error(f"Verifying if dummy index is locked before "
-                f"deleting: {is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path)}")
-
     dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
     dummy_index_lock_blob.delete()
-
-    print_error(f"Verifying if dummy index is locked after "
-                f"deleting: {is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path)}")
 
 
 def main():
@@ -176,9 +161,6 @@ def main():
     dummy_index_dir_path = upload_config.dummy_index_dir_path
     dummy_index_path = os.path.join(dummy_index_dir_path, 'index.zip')
     dummy_index_lock_path = os.path.join(dummy_index_dir_path, 'lock.txt')
-
-    data_msg = f'dummy_index_dir_path:{dummy_index_dir_path}'
-    print_error(data_msg)
 
     storage_client = init_storage_client(service_account)
     public_storage_bucket = storage_client.bucket(public_bucket_name)
@@ -204,7 +186,6 @@ def main():
                                                                                                extract_destination_path,
                                                                                                public_index_folder_path,
                                                                                                changed_pack, True)
-        print_error(f'private packs are: {private_packs}')
         upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
                               private_packs)
     finally:
