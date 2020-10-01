@@ -1,13 +1,14 @@
 from CommonServerPython import *
 
+import math
 import pickle
 import uuid
-import math
 
 from dateutil import parser
 
 PREFIXES_TO_REMOVE = ['incident.']
 PAGE_SIZE = int(demisto.args().get('pageSize', 500))
+PYTHON_MAGIC = "$$##"
 
 
 def parse_datetime(datetime_str):
@@ -62,7 +63,7 @@ def build_incidents_query(extra_query, incident_types, time_field, from_date, to
         non_empty_fields_part = " and ".join(map(lambda x: "%s:*" % x, non_empty_fields))
         query_parts.append(non_empty_fields_part)
     if len(query_parts) == 0:
-        return_error("Incidents query is empty - please fill one of the arguments")
+        raise Exception("Incidents query is empty - please fill one of the arguments")
     query = " and ".join(map(lambda x: "(%s)" % x, query_parts))
 
     return query
@@ -79,6 +80,10 @@ def handle_incident(inc, fields_to_populate, include_context):
     return inc
 
 
+def is_incident_contains_python_magic(inc):
+    return PYTHON_MAGIC in json.dumps(inc)
+
+
 def get_incidents_by_page(args, page, fields_to_populate, include_context):
     args['page'] = page
     res = demisto.executeCommand("getIncidents", args)
@@ -86,9 +91,18 @@ def get_incidents_by_page(args, page, fields_to_populate, include_context):
         return []
     if is_error(res):
         error_message = get_error(res)
-        return_error("Failed to get incidents by query args: %s error: %s" % (args, error_message))
+        raise Exception("Failed to get incidents by query args: %s error: %s" % (args, error_message))
     incidents = res[0]['Contents'].get('data') or []
-    return list(map(lambda inc: handle_incident(inc, fields_to_populate, include_context), incidents))
+
+    parsed_incidents = []
+    for inc in incidents:
+        new_incident = handle_incident(inc, fields_to_populate, include_context)
+        if is_incident_contains_python_magic(new_incident):
+            demisto.log("Warning: skip incident [id:%s] that contains python magic" % str(inc['id']))
+            continue
+        parsed_incidents.append(new_incident)
+
+    return parsed_incidents
 
 
 def get_incidents(query, time_field, size, from_date, fields_to_populate, include_context):
@@ -161,7 +175,8 @@ def main():
     elif output_format == 'json':
         data_encoded = json.dumps(incidents)
     else:
-        return_error("Invalid output format: %s" % output_format)
+        raise Exception("Invalid output format: %s" % output_format)
+
     entry = fileResult(file_name, data_encoded)
     entry['Contents'] = incidents
     entry['HumanReadable'] = "Fetched %d incidents successfully by the query: %s" % (len(incidents), query)
@@ -175,5 +190,8 @@ def main():
 
 
 if __name__ in ['__builtin__', '__main__']:
-    entry = main()
-    demisto.results(entry)
+    try:
+        entry = main()
+        demisto.results(entry)
+    except Exception as e:
+        return_error(str(e))

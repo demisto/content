@@ -28,7 +28,7 @@ def get_args():
     args['toDate'] = '3 days ago'
     args['limit'] = '10'
     args['includeContext'] = 'false'
-    args['outputFormat'] = 'pickle'
+    args['outputFormat'] = 'json'
     return args
 
 
