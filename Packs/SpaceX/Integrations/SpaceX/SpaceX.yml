@@ -32,14 +32,6 @@ configuration:
   name: mirror
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: "6.0.0"
-    itemVersion: ""
-    packID: affbee60-6879-4f47-8002-5b8820cc33bc
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: Open Source REST API for rocket, core, capsule, pad, and launch data,
   created and maintained by the developers of the r/SpaceX organization.
 display: Space-X
@@ -2911,3 +2903,6 @@ script:
   subtype: python3
   type: python
   fromversion: 6.0.0
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

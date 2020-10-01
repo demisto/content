@@ -1,148 +1,22 @@
 {
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "6.0.0",
-	"id": "e71f8646-481f-4932-8e07-a17bd99a79d3",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 6,
-	"mapping": {
-		"Space X Mission": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Space X Launch Date (UTC)": {
-					"complex": null,
-					"simple": "launch_date_utc"
-				},
-				"Space X Rockets": {
-					"complex": null,
-					"simple": "rocket"
-				},
-				"Space X Ships": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "ships",
-						"transformers": [
-							{
-								"args": {
-									"prefix": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "{\"ship_name\": \""
-										}
-									},
-									"suffix": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "\"}"
-										}
-									}
-								},
-								"operator": "concat"
-							},
-							{
-								"args": {
-									"separator": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": ","
-										}
-									}
-								},
-								"operator": "join"
-							},
-							{
-								"args": {
-									"prefix": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "["
-										}
-									},
-									"suffix": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "]"
-										}
-									}
-								},
-								"operator": "concat"
-							},
-							{
-								"args": {},
-								"operator": "ParseJSON"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Space X Sites": {
-					"complex": null,
-					"simple": "launch_site"
-				},
-				"SpaceX Payloads": {
-					"complex": {
-						"accessor": "second_stage.payloads",
-						"filters": [],
-						"root": "rocket",
-						"transformers": []
-					},
-					"simple": ""
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"dbotMirrorDirection": {
-					"complex": null,
-					"simple": "dbotMirrorDirection"
-				},
-				"dbotMirrorId": {
-					"complex": null,
-					"simple": "flight_number"
-				},
-				"dbotMirrorInstance": {
-					"complex": null,
-					"simple": "dbotMirrorInstance"
-				},
-				"details": {
-					"complex": null,
-					"simple": "details"
-				},
-				"name": {
-					"complex": null,
-					"simple": "mission_name"
-				}
-			}
-		}
-	},
-	"name": "SpaceX_Incoming",
-	"nameRaw": "SpaceX_Incoming",
-	"packID": "affbee60-6879-4f47-8002-5b8820cc33bc",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "defaultIncidentType": "",
+    "description": "",
+    "feed": false,
+    "id": "e71f8646-481f-4932-8e07-a17bd99a79d3",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "keyTypeMap": {},
+    "name": "SpaceX_Incoming",
+    "propagationLabels": [
+        "all"
+    ],
+    "sortValues": null,
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "mapping-incoming",
+    "unclassifiedCases": null,
+    "version": -1,
+    "fromVersion": "5.0.0"
 }

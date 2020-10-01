@@ -12,18 +12,9 @@ comment: Retrieves details for a rocket
 commonfields:
   id: getSpaceXDetails
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: affbee60-6879-4f47-8002-5b8820cc33bc
-    propagationLabels:
-    - all
-    toServerVersion: ""
 dockerimage: demisto/python3:3.8.3.9324
 enabled: true
 name: getSpaceXDetails
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -31,3 +22,6 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
