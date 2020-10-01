@@ -135,6 +135,7 @@ def acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
                 f"acquiring: {is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path)}")
     total_seconds_waited = 0
     while is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path):
+        print_error("dummy index is curently locked")
         if total_seconds_waited >= MAX_SECONDS_TO_WAIT_FOR_LOCK:
             print_error("Error: was not able to acquire dummy index lock.")
             exit(1)
@@ -203,7 +204,7 @@ def main():
                                                                                                extract_destination_path,
                                                                                                public_index_folder_path,
                                                                                                changed_pack, True)
-
+        print_error(f'private packs are: {private_packs}')
         upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
                               private_packs)
     finally:
