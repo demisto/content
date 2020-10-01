@@ -2,16 +2,23 @@ commonfields:
   id: BuildEWSQuery
   version: -1
 name: BuildEWSQuery
-script: |-
+script: >-
   import re
+
   import sys
+
   reload(sys)
+
   sys.setdefaultencoding("utf-8")
 
+
   # Regex for removing forward/replay prefixes
+
   p = re.compile('([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$', re.IGNORECASE)
 
+
   args = {}
+
 
   if demisto.args().get("from"):
       args["From"] = demisto.args().get("from")
@@ -23,6 +30,7 @@ script: |-
       args["Body"] = demisto.args().get("body")
 
   stripSubject = True if demisto.args().get("stripSubject").lower() == "true" else False
+
   if stripSubject and args.get("Subject"):
       # Recursively remove the regex matches only from the beginning of the string
       match_string = args["Subject"]
@@ -38,7 +46,9 @@ script: |-
 
   query = " AND ".join('{0}:"{1}"'.format(key,value) for (key,value) in args.items())
 
+
   search_last_week = True if demisto.args().get("searchThisWeek").lower() == "true" else False
+
   if search_last_week:
       query = query + ' AND Received:"this week"'
 
@@ -86,4 +96,5 @@ outputs:
 scripttarget: 0
 runonce: false
 tests:
-  - buildewsquery_test
+- buildewsquery_test
+fromversion: 5.0.0

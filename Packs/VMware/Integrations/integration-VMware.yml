@@ -28,21 +28,34 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     from pyVim.connect import SmartConnect, Disconnect
+
     from pyVim.task import WaitForTask
+
     from pyVmomi import vim
+
     from pyVmomi import vmodl
+
     import ssl
+
     import os
+
     import sys
+
     from datetime import datetime
 
+
     FULL_URL=demisto.params()['url'].split(':')
+
     URL=FULL_URL[0]
+
     USERNAME=demisto.params()['credentials']['identifier']
+
     PASSWORD=demisto.params()['credentials']['password']
+
     PORT=str(FULL_URL[1])
+
 
     def login():
         s = ssl.SSLContext(ssl.PROTOCOL_TLS)
@@ -320,10 +333,15 @@ script:
         }
 
     from cStringIO import StringIO
+
     sout = sys.stdout
+
     sys.stdout = StringIO()
+
     res = []
+
     si = None
+
     try:
         si = login()
 
@@ -357,7 +375,9 @@ script:
         res.append({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Logout failed. " + str(ex)})
 
     sys.stdout = sout
+
     demisto.results(res)
+
     sys.exit(0)
   type: python
   subtype: python2
@@ -472,8 +492,7 @@ script:
     - name: vm-uuid
       required: true
       description: VM UUID of virtual machine to reboot.
-    description: Issues a command to the guest operating system asking it to perform
-      a reboot.
+    description: Issues a command to the guest operating system asking it to perform a reboot.
   - name: vmware-create-snapshot
     arguments:
     - name: vm-uuid
@@ -530,3 +549,4 @@ script:
       defaultValue: VmGuestRebootEvent,VmGuestShutdownEvent,VmPoweredOnEvent,VmPoweredOffEvent,VmSuspendedEvent
     description: Gets events of VM
   dockerimage: demisto/vmware:1.0-alpine
+fromversion: 5.0.0

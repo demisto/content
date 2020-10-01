@@ -22,4 +22,5 @@ runonce: false
 dockerimage: demisto/python3:3.7.4.1900
 runas: DBotWeakRole
 tests:
-  - No test - tested with unittest
+- No test - tested with unittest
+fromversion: 5.0.0
