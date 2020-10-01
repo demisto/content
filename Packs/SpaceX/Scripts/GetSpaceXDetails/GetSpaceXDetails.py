@@ -24,7 +24,7 @@ type_info = {
     }
 
 }
-selected_type: dict=type_info.get(details_type)
+selected_type: dict = type_info.get(details_type)
 title = selected_type['title']
 data = custom_fields.get(selected_type['key'])
 md = tableToMarkdown(f'{title}', data)

@@ -135,7 +135,7 @@ SCHEMA = {
         "youtube_id": "KU6KogxG5BE",
         "flickr_images": []
     },
-    "details": "This mission will launch the ninth batch of operational Starlink satellites, which are expected to be version 1.0, from LC-39A, Kennedy Space Center. It is the tenth Starlink launch overall. The satellites will be delivered to low Earth orbit and will spend a few weeks maneuvering to their operational altitude of 550 km. This mission is includes a rideshare of two BlackSky satellites on top of the Starlink stack. The booster for this mission is expected to land an ASDS.",
+    "details": "This mission will launch the ninth batch of operational Starlink satellites...",
     "upcoming": True,
     "static_fire_date_utc": "2020-06-24T18:18:00.000Z",
     "static_fire_date_unix": 1593022680,
@@ -215,13 +215,13 @@ class Client(BaseClient):
     def get_roadster_data(self):
         return self._http_request(
             method='GET',
-            url_suffix=f'/roadster',
+            url_suffix='/roadster',
         )
 
     def get_all_missions(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/missions',
+            url_suffix='/missions',
             params=params
         )
 
@@ -234,7 +234,7 @@ class Client(BaseClient):
     def get_launch_pads(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/launchpads',
+            url_suffix='/launchpads',
             params=params
         )
 
@@ -247,7 +247,7 @@ class Client(BaseClient):
     def get_ships(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/ships',
+            url_suffix='/ships',
             params=params
         )
 
@@ -260,7 +260,7 @@ class Client(BaseClient):
     def get_capsules(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/capsules',
+            url_suffix='/capsules',
             params=params
         )
 
@@ -273,21 +273,21 @@ class Client(BaseClient):
     def get_upcoming_capsules(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/capsules/upcoming',
+            url_suffix='/capsules/upcoming',
             params=params
         )
 
     def get_past_capsules(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/capsules/past',
+            url_suffix='/capsules/past',
             params=params
         )
 
     def get_cores(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/cores',
+            url_suffix='/cores',
             params=params
         )
 
@@ -300,21 +300,21 @@ class Client(BaseClient):
     def get_upcoming_cores(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/cores/upcoming',
+            url_suffix='/cores/upcoming',
             params=params
         )
 
     def get_past_cores(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/cores/past',
+            url_suffix='/cores/past',
             params=params
         )
 
     def get_dragons(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/dragons',
+            url_suffix='/dragons',
             params=params
         )
 
@@ -340,7 +340,7 @@ class Client(BaseClient):
     def get_payloads(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/payloads',
+            url_suffix='/payloads',
             params=params
         )
 
@@ -353,7 +353,7 @@ class Client(BaseClient):
     def get_rockets(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/rockets',
+            url_suffix='/rockets',
             params=params
         )
 
@@ -495,7 +495,7 @@ def get_all_landing_pads_command(client, args):
         for x in res]
     md = tableToMarkdown('SpaceX Landing pads:', parsed_res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.LandingPads',
+        outputs_prefix='SpaceX.LandingPads',
         outputs_key_field='id',
         outputs=res,
         readable_output=md
@@ -508,7 +508,7 @@ def get_landing_pad_command(client, args):
     res = client.get_landing_pad(pad_id)
     md = tableToMarkdown(f'SpaceX Landing pad ID {pad_id}:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.LandingPads',
+        outputs_prefix='SpaceX.LandingPads',
         outputs_key_field='id',
         outputs=res,
         readable_output=md
@@ -520,7 +520,7 @@ def get_roadster_data_command(client, args):
     res = client.get_roadster_data()
     md = tableToMarkdown(f'SpaceX Roadster Data:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Roadster',
+        outputs_prefix='SpaceX.Roadster',
         outputs_key_field='launch_date_utc',
         outputs=res,
         readable_output=md
@@ -532,7 +532,7 @@ def get_all_missions_command(client, args):
     res = client.get_all_missions(args)
     md = tableToMarkdown(f'SpaceX Missions:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Missions',
+        outputs_prefix='SpaceX.Missions',
         outputs_key_field='mission_id',
         outputs=res,
         readable_output=md
@@ -545,7 +545,7 @@ def get_mission_command(client, args):
     res = client.get_mission(mission_id)
     md = tableToMarkdown(f'SpaceX Mission ID {mission_id}:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Missions',
+        outputs_prefix='SpaceX.Missions',
         outputs_key_field='mission_id',
         outputs=res,
         readable_output=md
@@ -557,7 +557,7 @@ def get_launch_pads_command(client, args):
     res = client.get_launch_pads(args)
     md = tableToMarkdown(f'SpaceX Launch Pads:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.LaunchPads',
+        outputs_prefix='SpaceX.LaunchPads',
         outputs_key_field='id',
         outputs=res,
         readable_output=md
@@ -570,7 +570,7 @@ def get_launch_pad_command(client, args):
     res = client.get_launch_pad(site_id)
     md = tableToMarkdown(f'SpaceX Launch Pad site ID {site_id}:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.LaunchPads',
+        outputs_prefix='SpaceX.LaunchPads',
         outputs_key_field='id',
         outputs=res,
         readable_output=md
@@ -582,7 +582,7 @@ def get_ships_command(client, args):
     res = client.get_ships(args)
     md = tableToMarkdown(f'SpaceX Ships:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Ships',
+        outputs_prefix='SpaceX.Ships',
         outputs_key_field='ship_id',
         outputs=res,
         readable_output=md
@@ -595,7 +595,7 @@ def get_ship_command(client, args):
     res = client.get_ship(ship_id)
     md = tableToMarkdown(f'SpaceX Ship ID {ship_id}:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Ships',
+        outputs_prefix='SpaceX.Ships',
         outputs_key_field='ship_id',
         outputs=res,
         readable_output=md
@@ -610,7 +610,7 @@ def get_capsules_command(client, args):
     res = res[0:int(args['limit'])] if "limit" in args else res
     md = tableToMarkdown(f'SpaceX Capsules:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Capsules',
+        outputs_prefix='SpaceX.Capsules',
         outputs_key_field='capsule_serial',
         outputs=res,
         readable_output=md
@@ -623,7 +623,7 @@ def get_capsule_command(client, args):
     res = client.get_capsule(capsule_serial)
     md = tableToMarkdown(f'SpaceX Capsule Serial {capsule_serial}:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Capsules',
+        outputs_prefix='SpaceX.Capsules',
         outputs_key_field='capsule_serial',
         outputs=res,
         readable_output=md
@@ -635,7 +635,7 @@ def get_upcoming_capsules_command(client, args):
     res = client.get_upcoming_capsules(args)
     md = tableToMarkdown(f'SpaceX Upcoming Capsules:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Capsules',
+        outputs_prefix='SpaceX.Capsules',
         outputs_key_field='capsule_serial',
         outputs=res,
         readable_output=md
@@ -647,7 +647,7 @@ def get_past_capsules_command(client, args):
     res = client.get_past_capsules(args)
     md = tableToMarkdown(f'SpaceX Past Capsules:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Capsules',
+        outputs_prefix='SpaceX.Capsules',
         outputs_key_field='capsule_serial',
         outputs=res,
         readable_output=md
@@ -659,7 +659,7 @@ def get_cores_command(client, args):
     res = client.get_cores(args)
     md = tableToMarkdown(f'SpaceX Cores:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Cores',
+        outputs_prefix='SpaceX.Cores',
         outputs_key_field='core_serial',
         outputs=res,
         readable_output=md
@@ -672,7 +672,7 @@ def get_core_command(client, args):
     res = client.get_core(core_serial)
     md = tableToMarkdown(f'SpaceX Core Serial {core_serial}:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Cores',
+        outputs_prefix='SpaceX.Cores',
         outputs_key_field='core_serial',
         outputs=res,
         readable_output=md
@@ -684,7 +684,7 @@ def get_upcoming_cores_command(client, args):
     res = client.get_upcoming_cores(args)
     md = tableToMarkdown(f'SpaceX Upcoming Cores:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Cores',
+        outputs_prefix='SpaceX.Cores',
         outputs_key_field='core_serial',
         outputs=res,
         readable_output=md
@@ -696,7 +696,7 @@ def get_past_cores_command(client, args):
     res = client.get_past_cores(args)
     md = tableToMarkdown(f'SpaceX Past Cores:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Cores',
+        outputs_prefix='SpaceX.Cores',
         outputs_key_field='core_serial',
         outputs=res,
         readable_output=md
@@ -708,7 +708,7 @@ def get_dragons_command(client, args):
     res = client.get_dragons(args)
     md = tableToMarkdown(f'SpaceX Dragons:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Dragons',
+        outputs_prefix='SpaceX.Dragons',
         outputs_key_field='id',
         outputs=res,
         readable_output=md
@@ -721,7 +721,7 @@ def get_dragon_command(client, args):
     res = client.get_dragon(dragon_id)
     md = tableToMarkdown(f'SpaceX Dragon ID {dragon_id}:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Dragons',
+        outputs_prefix='SpaceX.Dragons',
         outputs_key_field='id',
         outputs=res,
         readable_output=md
@@ -733,7 +733,7 @@ def get_historical_events_command(client, args):
     res = client.get_historical_events(args)
     md = tableToMarkdown(f'SpaceX Historical Events:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.History',
+        outputs_prefix='SpaceX.History',
         outputs_key_field='id',
         outputs=res,
         readable_output=md
@@ -746,7 +746,7 @@ def get_historical_event_command(client, args):
     res = client.get_historical_event(event_id)
     md = tableToMarkdown(f'SpaceX Historical Event ID {event_id}:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.History',
+        outputs_prefix='SpaceX.History',
         outputs_key_field='id',
         outputs=res,
         readable_output=md
@@ -758,7 +758,7 @@ def get_payloads_command(client, args):
     res = client.get_payloads(args)
     md = tableToMarkdown(f'SpaceX Payloads:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Payloads',
+        outputs_prefix='SpaceX.Payloads',
         outputs_key_field='payload_id',
         outputs=res,
         readable_output=md
@@ -771,7 +771,7 @@ def get_payload_command(client, args):
     res = client.get_payload(payload_id)
     md = tableToMarkdown(f'SpaceX Payload ID {payload_id}:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Payloads',
+        outputs_prefix='SpaceX.Payloads',
         outputs_key_field='payload_id',
         outputs=res,
         readable_output=md
@@ -783,7 +783,7 @@ def get_rockets_command(client, args):
     res = client.get_rockets(args)
     md = tableToMarkdown(f'SpaceX Rockets:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Rockets',
+        outputs_prefix='SpaceX.Rockets',
         outputs_key_field='id',
         outputs=res,
         readable_output=md
@@ -796,7 +796,7 @@ def get_rocket_command(client, args):
     res = client.get_rocket(rocket_id)
     md = tableToMarkdown(f'SpaceX Rocket ID {rocket_id}:', res)
     command_results = CommandResults(
-        outputs_prefix=f'SpaceX.Rockets',
+        outputs_prefix='SpaceX.Rockets',
         outputs_key_field='id',
         outputs=res,
         readable_output=md
@@ -852,8 +852,6 @@ def test_module(client, args):
 
 
 def get_remote_data_command(client, args, params):
-    instance_name = demisto.integrationInstance()
-    mirror_direction = "In" if demisto.params().get('mirror') else ""
     mission_id = args.get('id')
     entries = list()
     mission = client.get_launch_details_command(mission_id)
