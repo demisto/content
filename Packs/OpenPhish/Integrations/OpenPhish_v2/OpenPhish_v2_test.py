@@ -24,19 +24,22 @@ RELOADED_DATA = [
                'http://lloyds.settlemypayee.uk',
                'https://whatsapp-chat02.zzux.com',
                'http://dd0ddddddcuser.ey.r.appspot.com'],
-      "timestamp": datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)}, True),
+      "timestamp": 1601532000000},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)
+      True),
     (Client(MOCK_URL, True, False, 2),
      {"list": ['http://www.niccakorea.com/board/index.html',
                'http://lloyds.settlemypayee.uk',
                'https://whatsapp-chat02.zzux.com',
                'http://dd0ddddddcuser.ey.r.appspot.com'],
-      "timestamp": datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)}, False),
+      "timestamp": 1601532000000},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)
+     False),
     (Client(MOCK_URL, True, False, 0.5),
      {"list": ['http://www.niccakorea.com/board/index.html',
                'http://lloyds.settlemypayee.uk',
                'https://whatsapp-chat02.zzux.com',
                'http://dd0ddddddcuser.ey.r.appspot.com'],
-      "timestamp": datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)}, True)
+       "timestamp": 1601532000000},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)
+     True),
 ]
 
 
@@ -102,7 +105,7 @@ def test_reload_command(mocker):
 STANDARD_NOT_LOADED_MSG = 'OpenPhish Database Status\nDatabase not loaded.\n'
 STANDARD_4_LOADED_MSG = "OpenPhish Database Status\n" \
                         "Total **4** URLs loaded.\n" \
-                        "Last load time **Thu Oct 01 2020 06:00:00**\n"
+                        "Last load time **Thu Oct 01 2020 06:00:00 (UTC)**\n"
 CONTEXT_MOCK_WITH_STATUS = [
     ({}, STANDARD_NOT_LOADED_MSG),  # case no data in memory
     ({"list": [], "timestamp": "1601532000000"},

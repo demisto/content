@@ -75,7 +75,7 @@ def _save_urls_to_instance(client: Client):
         return_error('Check server URL - ' + e.message)
 
 
-def _is_reload_needed(client: Client, data: Dict[str, str]) -> bool:
+def _is_reload_needed(client: Client, data: Dict) -> bool:
     """
     Checks if there is a need to reload the data from api to instance's memory
     Args:
@@ -89,7 +89,7 @@ def _is_reload_needed(client: Client, data: Dict[str, str]) -> bool:
         return True
 
     now = datetime.now()
-    if int(data.get('timestamp')) < date_to_timestamp(now - timedelta(hours=client.fetch_interval_hours)):
+    if data.get('timestamp') <= date_to_timestamp(now - timedelta(hours=client.fetch_interval_hours)):
         return True
     return False
 
@@ -166,7 +166,7 @@ def status_command(client: Client, **kwargs) -> CommandResults:
     if data and data.get('list', None):
         md += "Total **" + str(len(data.get('list'))) + "** URLs loaded.\n"
         md += "Last load time **" + timestamp_to_datestring(data.get('timestamp'),
-                                                            "%a %b %d %Y %H:%M:%S",
+                                                            "%a %b %d %Y %H:%M:%S (UTC)",
                                                             is_utc=True) + "**\n"
     else:
         md += "Database not loaded.\n"
