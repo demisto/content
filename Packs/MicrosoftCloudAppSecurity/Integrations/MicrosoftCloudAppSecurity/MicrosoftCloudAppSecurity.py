@@ -147,7 +147,8 @@ class Client(BaseClient):
             url_suffix='/alerts/',
             json_data={
                 'filters': filters,
-                'limit': limit
+                'limit': limit,
+                'sortDirection': 'asc'
             }
         )
 
