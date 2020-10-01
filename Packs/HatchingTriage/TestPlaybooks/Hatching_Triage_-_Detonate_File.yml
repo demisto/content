@@ -1,5 +1,6 @@
 id: Hatching Triage - Detonate File
 version: 2
+fromversion: 5.5.0
 vcShouldKeepItemLegacyProdMachine: false
 name: Hatching Triage - Detonate File
 starttaskid: "0"
