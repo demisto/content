@@ -1,0 +1,17 @@
+{
+    "name": "Graylog",
+    "description": "Integration with Graylog",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Harri Ruuttila",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "created": "2020-10-01T10:51:41Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}
