@@ -1,0 +1,14 @@
+{
+    "name": "Prisma Cloud Flow - AWS Public S3 investigation",
+    "description": "This playbook can parse an alert from Prisma Cloud when a public S3 bucket is detected. It can alert the AWS owner, owner's manager, and fully qualify the S3 URL.  You can also manually remediate from XSOAR, but Prisma Cloud does the actual remediation. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Erik Witkop and Nicholas Erickson",
+    "url": "",
+    "email": "",
+    "created": "2020-10-01T00:49:51Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
