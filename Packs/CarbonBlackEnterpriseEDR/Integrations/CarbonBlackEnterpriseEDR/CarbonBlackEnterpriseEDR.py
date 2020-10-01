@@ -10,7 +10,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-FILE_MD5 = '789c8fc6532ba57ef5985bb5e'
+FILE_MD5 = '7657fcb7d772448a6d8504e4b20168b1'
 
 
 class Client(BaseClient):
