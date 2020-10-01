@@ -105,14 +105,26 @@ class Client(BaseClient):
             "site_id": str(site_id) if site_id else None
         }
         result = self._http_request('POST', 'events/' + url, json_data=payload)
+
         if getAll:
             return result
-        elif type == 'packet':
-            return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
-            # used to be result['packet_alerts']
         else:
-            return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
-            # used to be result['alerts']
+            if type == 'packet':
+                result_data = result['packet_alerts']
+            else:
+                result_data = result['alerts']
+            readable_dict = []
+            for alert in result_data:
+                readable_dict.append({
+                    'id': alert.get('id'),
+                    'timestamp': alert.get('timestamp'),
+                    'severity' : alert.get('severity'),
+                    'signature': alert.get('signature')
+                }
+                )
+            readable_output = tableToMarkdown("Results for alerts", readable_dict)
+            return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id',
+                                  readable_output=readable_output)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
