@@ -3,8 +3,8 @@ commonfields:
   id: Cognni
   version: -1
 configuration:
-- defaultvalue: https://stage-webapi.cognni.ai
-  display: Server URL (e.g. https://stage-webapi.cognni.ai)
+- defaultvalue: ''
+  display: Server URL
   name: url
   required: true
   type: 0
@@ -49,7 +49,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Cognni Integration
+description: Cognni's AI hunts for information sharing risks you didn't even know
+  existed. Understand the meaning. Then take action.
 display: Cognni
 name: Cognni
 script:
@@ -74,19 +75,19 @@ script:
     execution: false
     name: cognni-get-event
     outputs:
-    - contextPath: Cognni.Event.id
+    - contextPath: Cognni.event.id
       description: id
       type: String
-    - contextPath: Cognni.Event.date
+    - contextPath: Cognni.event.date
       description: date
       type: Date
-    - contextPath: Cognni.Event.description
+    - contextPath: Cognni.event.description
       description: description
       type: String
-    - contextPath: Cognni.Event.severity
+    - contextPath: Cognni.event.severity
       description: severity
       type: Number
-    - contextPath: Cognni.Event.sourceApplication
+    - contextPath: Cognni.event.sourceApplication
       description: The source of the event
       type: String
   - arguments:
@@ -156,7 +157,7 @@ script:
     description: Fetch incidents
     execution: false
     name: cognni-fetch-incidents
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.5.11789
   feed: false
   isfetch: true
   longRunning: false

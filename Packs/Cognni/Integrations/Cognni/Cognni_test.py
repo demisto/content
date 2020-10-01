@@ -13,11 +13,11 @@ def test_ping(requests_mock):
     from Cognni import Client, ping_command
 
     mock_response = util_load_json('test_data/ping_response.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -38,11 +38,11 @@ def test_fetch_incidents(requests_mock):
     from Cognni import Client, fetch_incidents
 
     mock_response = util_load_json('test_data/fetch_incidents.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -68,11 +68,11 @@ def test_fetch_incidents_command(requests_mock):
     from Cognni import Client, fetch_incidents_command
 
     mock_response = util_load_json('test_data/fetch_incidents.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -90,16 +90,16 @@ def test_fetch_incidents_command(requests_mock):
 
 
 def test_get_event(requests_mock):
-    """Tests the ping command
+    """Tests the get event command
     """
     from Cognni import Client, get_event_command
 
     mock_response = util_load_json('test_data/get_event.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -112,22 +112,47 @@ def test_get_event(requests_mock):
     }
     response = get_event_command(client, args)
 
-    # assert response.outputs[0] == mock_response
     assert response.outputs_prefix == 'Cognni.event'
     assert response.raw_response['id'] == event_id
 
 
+def test_get_event_with_unknown_id(requests_mock):
+    """Tests the get event command with non-existing event id
+    """
+    from Cognni import Client, get_event_command
+
+    mock_response = util_load_json('test_data/get_event_with_unknown_id.json')
+    requests_mock.post('https://localhost/intelligence/data/graphql',
+                       json=mock_response)
+
+    client = Client(
+        base_url='https://localhost',
+        verify=False,
+        headers={
+            'Authorization': 'Bearer some_api_key'
+        }
+    )
+
+    event_id = 'df247df1-dd27-4bba-ac04-bc7d5dbf414d'
+    args = {
+        "event_id": event_id
+    }
+    response = get_event_command(client, args)
+
+    assert response.raw_response is None
+
+
 def test_get_insight(requests_mock):
-    """Tests the ping command
+    """Tests the get insight command
     """
     from Cognni import Client, get_insight_command
 
     mock_response = util_load_json('test_data/get_insight.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -140,22 +165,47 @@ def test_get_insight(requests_mock):
     }
     response = get_insight_command(client, args)
 
-    # assert response.outputs[0] == mock_response
     assert response.outputs_prefix == 'Cognni.insight'
     assert response.raw_response['id'] == insight_id
 
 
+def test_get_insight_with_unknown_id(requests_mock):
+    """Tests the get insight command with non-existing insight id
+      """
+    from Cognni import Client, get_insight_command
+
+    mock_response = util_load_json('test_data/get_insight_with_unknown_id.json')
+    requests_mock.post('https://localhost/intelligence/data/graphql',
+                       json=mock_response)
+
+    client = Client(
+        base_url='https://localhost',
+        verify=False,
+        headers={
+            'Authorization': 'Bearer some_api_key'
+        }
+    )
+
+    insight_id = '1234'
+    args = {
+        "insight_id": insight_id
+    }
+    response = get_insight_command(client, args)
+
+    assert response.raw_response['id'] is None
+
+
 def test_fetch_insights(requests_mock):
-    """Tests the ping command
+    """Tests the fetch insights command
     """
     from Cognni import Client, fetch_insights_command
 
     mock_response = util_load_json('test_data/fetch_insights.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -169,6 +219,62 @@ def test_fetch_insights(requests_mock):
 
     assert response.outputs_prefix == 'Cognni.insights'
     assert len(response.raw_response) == 1
+
+
+def test_fetch_insight_with_small_severity(requests_mock):
+    """Tests the fetch insights command with low severity
+        """
+    from Cognni import Client, fetch_insights_command
+
+    mock_response = util_load_json('test_data/fetch_insights_with_low_severity.json')
+    requests_mock.post('https://localhost/intelligence/data/graphql',
+                       json=mock_response)
+
+    client = Client(
+        base_url='https://localhost',
+        verify=False,
+        headers={
+            'Authorization': 'Bearer some_api_key'
+        }
+    )
+
+    min_severity = -1
+    args = {
+        "min_severity": min_severity
+    }
+    response = fetch_insights_command(client, args)
+
+    assert response.outputs_prefix == 'Cognni.insights'
+    if len(response.raw_response) > 0:
+        for answer in response.raw_response:
+            assert answer['severity'] >= min_severity
+
+
+def test_fetch_insight_with_large_severity(requests_mock):
+    """Tests the fetch insights command with high severity
+            """
+    from Cognni import Client, fetch_insights_command
+
+    mock_response = util_load_json('test_data/fetch_insights_with_high_severity.json')
+    requests_mock.post('https://localhost/intelligence/data/graphql',
+                       json=mock_response)
+
+    client = Client(
+        base_url='https://localhost',
+        verify=False,
+        headers={
+            'Authorization': 'Bearer some_api_key'
+        }
+    )
+
+    min_severity = 10
+    args = {
+        "min_severity": min_severity
+    }
+    response = fetch_insights_command(client, args)
+
+    assert response.outputs_prefix == 'Cognni.insights'
+    assert len(response.raw_response) == 0
 
 
 def test_convert_file_event_to_incident():
