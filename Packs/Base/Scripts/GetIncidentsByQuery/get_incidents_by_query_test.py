@@ -56,10 +56,10 @@ def test_get_incidents(mocker):
         return [{'Type': entryTypes['note'], 'Contents': {'data': []}}]
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=validate_args)
-    get_incidents(query, "created", size, "3 days ago")
-    get_incidents(query, "created", size, "3 months ago")
-    get_incidents(query, "created", size, "3 weeks ago")
-    get_incidents(query, "created", size, "2020-02-16T17:45:53.179489")
+    get_incidents(query, "created", size, "3 days ago", None, False)
+    get_incidents(query, "created", size, "3 months ago", None, False)
+    get_incidents(query, "created", size, "3 weeks ago", None, False)
+    get_incidents(query, "created", size, "2020-02-16T17:45:53.179489", None, False)
 
     def validate_args_without_from(command, args):
         assert args.get('from') is None
@@ -67,7 +67,7 @@ def test_get_incidents(mocker):
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=validate_args_without_from)
 
-    get_incidents(query, "modified", size, "3 weeks ago")
+    get_incidents(query, "modified", size, "3 weeks ago", None, False)
 
 
 def test_parse_relative_time():
@@ -112,10 +112,10 @@ def test_main(mocker):
     args['populateFields'] = 'testField,status'
     args['NonEmptyFields'] = 'severity'
     entry = main()
-    assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity'])
+    assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity', 'id', 'context'])
     args.pop('fromDate')
     entry = main()
-    assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity'])
+    assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity', 'id', 'context'])
 
 
 def test_preprocess_incidents_fields_list():
