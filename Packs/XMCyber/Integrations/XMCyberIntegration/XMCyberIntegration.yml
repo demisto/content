@@ -36,6 +36,11 @@ script:
         default: true
         description: List of IPs.
         isArray: true
+        required: false
+      - name: name
+        description: List of Names
+        isArray: true
+        required: false
     outputs:
       - contextPath: EntityId
         description: 'XMCyber Entity ID'

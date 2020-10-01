@@ -115,17 +115,18 @@ class Client(BaseClient):
         # api does not exist
         raise NotImplemented()
 
-    def lookup_entities_by_ip(self, ip):
-        demisto.info(f'looking up {ip}')
+    def search_entities(self, search_string):
+        demisto.info(f'looking up {search_string}')
         page = 1
         total_pages = 1
         entities = []
+        search_string = f'/{search_string}/i'
         while page <= total_pages:
             res = self._http_request(
                 method='GET',
                 url_suffix='/systemReport/entities',
                 params={
-                    'search': ip
+                    'search': search_string
                 }
             )
             entities.extend(res['data'])
@@ -475,6 +476,7 @@ def attack_paths_from_entity_command(client: Client, args: Dict[str, Any]) -> Co
 
 def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ips = argToList(args.get('ip'))
+    names = argToList(args.get('name'))
     entities = []
     outputs = []
 
@@ -482,13 +484,15 @@ def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     for ip in ips:
         demisto.info(f'ip {ip}')
         try:
-            entities.extend(client.lookup_entities_by_ip(ip['Address']))
+            entities.extend(client.search_entities(ip['Address']))
         except AttributeError:
-            entities.extend(client.lookup_entities_by_ip(ip))
+            entities.extend(client.search_entities(ip))
+    for name in names:
+        entities.extend(client.search_entities(name))
     if len(entities) == 0:
-        readable_output = 'No entities match the properties'
+        readable_output = f'No entities match the properties IPs "{ips}", Names "{names}"'
     else:
-        readable_output = '#Found the following entities'
+        readable_output = '**Found the following entities**'
         for entity in entities:
             name = entity['name']
             readable_output += f'\n- {name}'
