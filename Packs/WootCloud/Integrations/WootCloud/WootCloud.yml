@@ -32,7 +32,7 @@ configuration:
       - anomaly
   - display: Severity Type
     name: severity_type
-    required: True
+    required: false
     type: 15
     options:
       - notice

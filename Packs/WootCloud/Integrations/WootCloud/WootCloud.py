@@ -109,6 +109,9 @@ class Client(BaseClient):
         if getAll:
             return result
         else:
+            total_alerts = result['total']
+            if not total_alerts:
+                return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
             if type == 'packet':
                 result_data = result['packet_alerts']
             else:

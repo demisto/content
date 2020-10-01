@@ -3,14 +3,15 @@
     "description": "WootCloud HyperContext Powered Security",
     "support": "partner",
     "currentVersion": "1.0.0",
-    "author": "Luis Torres",
-    "url": "https://github.com/ArmatureSystems",
-    "email": "luis@armaturesystems.com",
+    "author": "Luis Torres, Mohan Ayalasomayajula",
+    "url": "https://wootcloud.com",
+    "email": "support@wootcloud.com",
     "created": "2020-06-25T20:34:32Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "githubUser": ["mayalaso@wootcloud.com", "luis@armaturesystems.com"]
 }
