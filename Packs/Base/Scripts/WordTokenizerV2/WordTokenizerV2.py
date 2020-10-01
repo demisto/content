@@ -4,6 +4,9 @@ from HTMLParser import HTMLParser
 from re import compile as _Re
 
 from CommonServerPython import *
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 MAX_TEXT_LENGTH = 10 ** 5
 
