@@ -39,7 +39,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, fetch_interval_hours: int = 1):
+    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, fetch_interval_hours: float = 1):
         super().__init__(url, verify=use_ssl, proxy=use_proxy)
         self.fetch_interval_hours = fetch_interval_hours
 
@@ -192,7 +192,7 @@ def main():
 
     hours_to_refresh = demisto.params().get('fetchIntervalHours', '1')
     try:
-        hours_to_refresh = int(hours_to_refresh)
+        hours_to_refresh = float(hours_to_refresh)
     except ValueError:
         return_error(f'Invalid parameter was given as database refresh interval.')
 

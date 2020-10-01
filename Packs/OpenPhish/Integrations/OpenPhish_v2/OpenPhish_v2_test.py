@@ -6,38 +6,38 @@ import requests_mock
 
 MOCK_URL = "http://openphish.com"
 MOCK_DELIVERED_MESSAGE = {}
-from OpenPhish_v2 import Client, _is_reload_needed, remove_backslash, reload_command
+from OpenPhish_v2 import Client, _is_reload_needed, remove_backslash, reload_command, status_command
 from freezegun import freeze_time
 
 import demistomock as demisto
 
 RELOADED_DATA = [
-    (Client(MOCK_URL, True, False, "2"), {}, True),  # case no data in memory
-    (Client(MOCK_URL, True, False, "2"), {"list": []}, True),  # case no timestamp and list is emtpy
-    (Client(MOCK_URL, True, False, "2"),
+    (Client(MOCK_URL, True, False, 2), {}, True),  # case no data in memory
+    (Client(MOCK_URL, True, False, 2), {"list": []}, True),  # case no timestamp and list is emtpy
+    (Client(MOCK_URL, True, False, 2),
      {"list": ['http://www.niccakorea.com/board/index.html',
                'http://lloyds.settlemypayee.uk',
                'https://whatsapp-chat02.zzux.com',
                'http://dd0ddddddcuser.ey.r.appspot.com'], "timestamp": None}, True),  # case no timestamp
-    (Client(MOCK_URL, True, False, "1"),
+    (Client(MOCK_URL, True, False, 1),
      {"list": ['http://www.niccakorea.com/board/index.html',
                'http://lloyds.settlemypayee.uk',
                'https://whatsapp-chat02.zzux.com',
                'http://dd0ddddddcuser.ey.r.appspot.com'],
       "timestamp": datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)}, True),
-    (Client(MOCK_URL, True, False, "2"),
-     {"list":  ['http://www.niccakorea.com/board/index.html',
-                'http://lloyds.settlemypayee.uk',
-                'https://whatsapp-chat02.zzux.com',
-                'http://dd0ddddddcuser.ey.r.appspot.com'],
-      "timestamp": datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)}, False),
-    (Client(MOCK_URL, True, False, "0.5"),
+    (Client(MOCK_URL, True, False, 2),
      {"list": ['http://www.niccakorea.com/board/index.html',
-                'http://lloyds.settlemypayee.uk',
-                'https://whatsapp-chat02.zzux.com',
-                'http://dd0ddddddcuser.ey.r.appspot.com'],
+               'http://lloyds.settlemypayee.uk',
+               'https://whatsapp-chat02.zzux.com',
+               'http://dd0ddddddcuser.ey.r.appspot.com'],
+      "timestamp": datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)}, False),
+    (Client(MOCK_URL, True, False, 0.5),
+     {"list": ['http://www.niccakorea.com/board/index.html',
+               'http://lloyds.settlemypayee.uk',
+               'https://whatsapp-chat02.zzux.com',
+               'http://dd0ddddddcuser.ey.r.appspot.com'],
       "timestamp": datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)}, True)
-    ]
+]
 
 
 @pytest.mark.parametrize('client,data,output', RELOADED_DATA)
@@ -99,3 +99,68 @@ def test_reload_command(mocker):
     assert status.readable_output == "updated successfully"
 
 
+STANDARD_NOT_LOADED_MSG = 'OpenPhish Database Status\nDatabase not loaded.\n'
+STANDARD_4_LOADED_MSG = "OpenPhish Database Status\n" \
+                        "Total **4** URLs loaded.\n" \
+                        "Last load time **Thu Oct 01 2020 06:00:00**\n"
+CONTEXT_MOCK_WITH_STATUS = [
+    ({}, STANDARD_NOT_LOADED_MSG),  # case no data in memory
+    ({"list": [], "timestamp": "1601532000000"},
+     STANDARD_NOT_LOADED_MSG),  # case no timestamp and list is emtpy
+    (
+        {"list": ['http://www.niccakorea.com/board/index.html',
+                  'http://lloyds.settlemypayee.uk',
+                  'https://whatsapp-chat02.zzux.com',
+                  'http://dd0ddddddcuser.ey.r.appspot.com'],
+         "timestamp": "1601532000000"},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)}
+        STANDARD_4_LOADED_MSG)
+]
+
+
+@pytest.mark.parametrize('data,expected_result', CONTEXT_MOCK_WITH_STATUS)
+@freeze_time("1993-06-17 11:00:00 GMT")
+def test_status_command(mocker, data, expected_result):
+    """
+    Given:
+        - Integration context
+    When:
+        - After status command
+    Then:
+        - Returns number of loaded urls if data was loaded.
+        - Otherwise, returns Database not loaded.
+    """
+    client = Client(MOCK_URL, True, False, 1)
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=data)
+    status = status_command(client)
+    assert status.readable_output == expected_result
+
+CONTEXT_MOCK_WITH_STATUS = [
+    ({}, STANDARD_NOT_LOADED_MSG),  # case no data in memory
+    ({"list": [], "timestamp": "1601532000000"},
+     STANDARD_NOT_LOADED_MSG),  # case no timestamp and list is emtpy
+    (
+        {"list": ['http://www.niccakorea.com/board/index.html',
+                  'http://lloyds.settlemypayee.uk',
+                  'https://whatsapp-chat02.zzux.com',
+                  'http://dd0ddddddcuser.ey.r.appspot.com'],
+         "timestamp": "1601532000000"},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)}
+        STANDARD_4_LOADED_MSG)
+]
+
+
+@pytest.mark.parametrize('data,expected_result', CONTEXT_MOCK_WITH_STATUS)
+@freeze_time("1993-06-17 11:00:00 GMT")
+def test_status_command(mocker, data, expected_result):
+    """
+    Given:
+        - Integration context
+    When:
+        - After status command
+    Then:
+        - Returns number of loaded urls if data was loaded.
+        - Otherwise, returns Database not loaded.
+    """
+    client = Client(MOCK_URL, True, False, 1)
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=data)
+    status = status_command(client)
+    assert status.readable_output == expected_result
