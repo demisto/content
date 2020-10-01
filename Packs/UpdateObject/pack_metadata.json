@@ -1,6 +1,6 @@
 {
     "name": "UpdateObject",
-    "description": "Updates the values within an array of objects for a given key.\n\nExample Command:\n!UpdateObject original_object=${myobject} key_to_update=\"Key1\" values=\"newval1,newval2,newval3\"\n\nResults:\n\nOriginal Object (myobject):\n[\n    {\n        'Key1': 'oldval1',\n        'Key2': 'key2val1'\n    }, {\n        'Key1': 'oldval2',\n        'Key2': 'key2val2'\n    }, {\n        'Key1': 'oldval3',\n        'Key2': 'key2val3'\n    }\n]\n\nUpdated Object (mynewobject):\n[\n    {\n        'Key1': 'newval1',\n        'Key2': 'key2val1'\n    }, {\n        'Key1': 'newval2',\n        'Key2': 'key2val2'\n    }, {\n        'Key1': 'newval3',\n        'Key2': 'key2val3'\n    }\n]",
+    "description": "Updates the values within an array of objects for a given key.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Lance",

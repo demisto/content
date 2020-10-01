@@ -10,6 +10,9 @@ context_key = demisto.args().get('context_key', 'UpdatedObject')
 if not isinstance(values, list):
     values = values.split(',')
 
+if isinstance(original_object, dict):
+    original_object = [original_object]
+
 if index != -1:
     original_object[index][key_to_update] = values[0]
 else:
