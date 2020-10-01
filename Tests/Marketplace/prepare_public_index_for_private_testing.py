@@ -43,7 +43,7 @@ def upload_modified_index(public_index_folder_path, extract_destination_path, pu
     """Upload updated index zip to cloud storage.
 
     Args:
-        public_index_folder_path (str): private index folder full path.
+        public_index_folder_path (str): public index folder full path.
         extract_destination_path (str): extract folder full path.
         public_ci_dummy_index_blob (Blob): google cloud storage object that represents the dummy index.zip blob.
         build_number (str): circleCI build number, used as an index revision.
