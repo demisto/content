@@ -1937,7 +1937,6 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     # get latest comments and files
     entries = []
     attachments_res = client.get_ticket_attachments(ticket_id)
-    file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''))
     if 'result' in attachments_res:
         attachments = attachments_res['result']
         for attachment in attachments:
@@ -1946,7 +1945,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 arg_name='sys_created_on',
                 required=False
             )
-
+            file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''))
             if file_entries:
                 for file_ in file_entries:
                     if file_.get('File') == attachment.get('file_name'):

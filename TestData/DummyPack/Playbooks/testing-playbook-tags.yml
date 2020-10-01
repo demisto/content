@@ -1,0 +1,85 @@
+id: 488b2024-8bb9-47f9-8ad2-1b6cdebec4ea
+version: 1
+vcShouldKeepItemLegacyProdMachine: false
+name: tag bug
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0e7b7e53-62b8-41d1-8c3e-06a03ce348bb
+    type: start
+    task:
+      id: 0e7b7e53-62b8-41d1-8c3e-06a03ce348bb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 87d334e1-5c42-424e-8289-4645c2e24679
+    type: regular
+    task:
+      id: 87d334e1-5c42-424e-8289-4645c2e24679
+      version: -1
+      name: Set
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      append: {}
+      key:
+        simple: "1"
+      stringify: {}
+      value:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 280
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: BLA
+      tags:
+        simple: TAG
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 325,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
