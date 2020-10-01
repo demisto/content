@@ -1308,19 +1308,19 @@ script:
   - arguments:
     - default: false
       defaultValue: '25'
-      description: The maximum amount of regex event properties to fetch.
+      description: The maximum number of regex event properties to fetch. Default is 25.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: A comma-separated names of an exact properties to search for.
+      description: A comma-separated list of names of an exact properties to search for.
       isArray: true
       name: field_name
       required: false
       secret: false
     - default: false
-      description: A comma-separated argument list that will specify the fields the
+      description: A comma-separated list of fields that specifies the fields that are
         returned by the command output. When not given, will return all. Options are
         identifier, name, id, locale, datetime_format, description, username, property_type,
         auto_discovered, use_for_rule_engine.
@@ -1329,7 +1329,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated names of a  properties to search for. Case insensitive.
+      description: A comma-separated list names of a properties to search for. Values are case insensitive.
       isArray: false
       name: like_name
       required: false
@@ -1351,7 +1351,7 @@ script:
         custom properties discovery engine.
       type: Number
     - contextPath: QRadar.Properties.creation_date
-      description: The date which the event regex property were created.
+      description: The date when the event regex property wase created.
       type: Date
     - contextPath: QRadar.Properties.datetime_format
       description: The date/time pattern that the event regex property matches.
@@ -1366,16 +1366,16 @@ script:
       description: The ID of the event regex property.
       type: String
     - contextPath: QRadar.Properties.locale
-      description: The Language tag of what locale the Property matches.
+      description: The language tag of the locale that the property matches.
       type: String
     - contextPath: QRadar.Properties.modification_date
-      description: The date which the event regex property were lad modified.
+      description: The date when the event regex property was last modified.
       type: Date
     - contextPath: QRadar.Properties.name
       description: The name of the event regex property.
       type: String
     - contextPath: QRadar.Properties.property_type
-      description: The property type (STRING, NUMERIC, IP, PORT, TIME) of event regex
+      description: The property type (STRING, NUMERIC, IP, PORT, TIME) of the event regex
         property.
       type: String
     - contextPath: QRadar.Properties.use_for_rule_engine
