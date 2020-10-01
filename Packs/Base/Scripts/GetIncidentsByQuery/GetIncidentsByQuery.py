@@ -1,5 +1,6 @@
 import pickle
 import uuid
+import math
 
 from dateutil import parser
 
@@ -104,7 +105,7 @@ def get_incidents(query, time_field, size, from_date, fields_to_populate, includ
         if from_datetime:
             args['from'] = from_datetime.isoformat()
     incident_list = []
-    for page in range(0, int(size / PAGE_SIZE) + 1):
+    for page in range(0, int(math.ceil(size / PAGE_SIZE))):
         incidents = get_incidents_by_page(args, page, fields_to_populate, include_context)
         if not incidents:
             break
