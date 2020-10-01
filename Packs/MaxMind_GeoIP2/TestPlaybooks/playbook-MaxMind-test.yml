@@ -67,8 +67,7 @@ tasks:
       id: 8784789e-0686-4d2d-8a42-c0970a8aad6c
       version: -1
       name: ip
-      description: Check IP reputation (when information is available, returns a JSON
-        with details). Uses all configured Threat Intelligence feeds
+      description: Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat Intelligence feeds
       script: MaxMind GeoIP2|||ip
       type: regular
       iscommand: true
@@ -172,3 +171,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

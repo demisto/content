@@ -1,6 +1,6 @@
 id: Entity Enrichment - Phishing v2
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Entity Enrichment - Phishing v2
 description: Enrich entities using one or more integrations
 starttaskid: "0"
@@ -302,11 +302,7 @@ inputs:
 - key: InternalRange
   value: {}
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The list
-    should be provided in CIDR notation, separated by commas. An example of a list
-    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
-    If a list is not provided, will use default list provided in the IsIPInRanges
-    script (the known IPv4 private address ranges).'
+  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
 - key: MD5
   value:
     complex:
@@ -383,14 +379,11 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Determines whether the IP Enrichment - Generic playbook should convert
-    IP addresses to hostnames using a DNS query. You can set this to either True or
-    False.
+  description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. You can set this to either True or False.
 - key: InternalDomains
   value: {}
   required: false
-  description: A CSV list of internal domains. The list will be used
-    to determine whether an email address is internal or external.
+  description: A CSV list of internal domains. The list will be used to determine whether an email address is internal or external.
 outputs:
 - contextPath: IP
   description: The IP object.
@@ -472,8 +465,7 @@ outputs:
   description: The email account NetworkType (Internal/External).
   type: string
 - contextPath: Account.Email.Distance
-  description: 'The object that contains the distance between the email domain and
-    the compared domain. '
+  description: 'The object that contains the distance between the email domain and the compared domain. '
   type: unknown
 - contextPath: Account.Email.Distance.Domain
   description: The compared domain.
@@ -493,8 +485,7 @@ outputs:
 - contextPath: ActiveDirectory.Users.memberOf
   description: Groups the user is a member of.
 - contextPath: CylanceProtectDevice
-  description: The device information about the hostname that was enriched using Cylance
-    Protect v2.
+  description: The device information about the hostname that was enriched using Cylance Protect v2.
   type: unknown
 tests:
-  - no test - each entity has or will have its own test
+- no test - each entity has or will have its own test

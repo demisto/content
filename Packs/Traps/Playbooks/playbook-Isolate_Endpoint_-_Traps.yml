@@ -1,9 +1,8 @@
 id: Traps Isolate Endpoint
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Traps Isolate Endpoint
-description: This playbook accepts an endpoint ID from Traps integration and performs
-  isolation on this endpoint.
+description: This playbook accepts an endpoint ID from Traps integration and performs isolation on this endpoint.
 starttaskid: "0"
 tasks:
   "0":
@@ -306,12 +305,11 @@ inputs:
 - key: EndpointId
   value: {}
   required: false
-  description: Endpoint ID of the endpoint to isolate, provided by the Palo Alto Networks
-    Traps integration.
+  description: Endpoint ID of the endpoint to isolate, provided by the Palo Alto Networks Traps integration.
 outputs:
 - contextPath: Traps.Isolate.EndpointID
   description: The ID of the endpoint.
 - contextPath: Traps.IsolateResult.Status
   description: The status of the isolation operation.
 tests:
-  - No Test
+- No Test

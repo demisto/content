@@ -1,7 +1,7 @@
 id: Test - CrowdStrike Falcon
 version: -1
 name: Test - CrowdStrike Falcon
-fromversion: 4.1.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
