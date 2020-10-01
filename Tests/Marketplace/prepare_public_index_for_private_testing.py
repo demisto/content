@@ -1,8 +1,4 @@
 import time
-
-from Tests.Marketplace.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
-    extract_packs_artifacts
-from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
 import os
 import sys
 import shutil
@@ -10,6 +6,9 @@ import json
 import argparse
 from datetime import datetime
 from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS
+from Tests.Marketplace.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
+    extract_packs_artifacts
+from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
 
 MAX_SECONDS_TO_WAIT_FOR_LOCK = 600
 
@@ -44,13 +43,11 @@ def upload_modified_index(public_index_folder_path, extract_destination_path, pu
     """Upload updated index zip to cloud storage.
 
     Args:
-        index_folder_path (str): index folder full path.
+        public_index_folder_path (str): private index folder full path.
         extract_destination_path (str): extract folder full path.
         public_ci_dummy_index_blob (Blob): google cloud storage object that represents the dummy index.zip blob.
         build_number (str): circleCI build number, used as an index revision.
         private_packs (list): List of private packs and their price.
-        current_commit_hash (str): last commit hash of head.
-        index_generation (str): downloaded index generation.
 
     """
     with open(os.path.join(public_index_folder_path, "index.json"), "w+") as index_file:
@@ -166,7 +163,6 @@ def main():
     public_storage_bucket = storage_client.bucket(public_bucket_name)
     private_storage_bucket = storage_client.bucket(private_bucket_name)
 
-    dummy_index_dir_blob = public_storage_bucket.blob(dummy_index_dir_path)
     dummy_index_blob = public_storage_bucket.blob(dummy_index_path)
 
     acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
