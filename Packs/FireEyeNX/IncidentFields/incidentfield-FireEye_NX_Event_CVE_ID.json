@@ -1,12 +1,12 @@
 {
- "id": "incident_fireeyenxid",
+ "id": "incident_fireeyenxeventcveid",
  "version": -1,
- "modified": "2020-08-26T20:33:28.856374505+05:30",
- "name": "FireEye NX ID",
+ "modified": "2020-08-26T20:27:11.157372701+05:30",
+ "name": "FireEye NX Event CVE ID",
  "ownerOnly": false,
- "placeholder": "ID of the alert.",
- "description": "ID of the alert.",
- "cliName": "fireeyenxid",
+ "placeholder": "CVE ID of the event.",
+ "description": "CVE ID of the event.",
+ "cliName": "fireeyenxeventcveid",
  "type": "shortText",
  "closeForm": false,
  "editForm": false,
@@ -20,7 +20,7 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
-  "FireEye NX Incident"
+  "FireEye NX IPS Event"
  ],
  "associatedToAll": false,
  "unmapped": false,

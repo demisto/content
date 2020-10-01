@@ -1,9 +1,9 @@
 {
  "kind": "mobile",
  "layout": {
-  "id": "FireEye NX Incident",
+  "id": "FireEye NX IPS Event",
   "kind": "mobile",
-  "modified": "2020-08-27T10:43:15.180545424+05:30",
+  "modified": "2020-09-28T13:25:20.600208139+05:30",
   "name": "",
   "sections": [
    {
@@ -152,7 +152,7 @@
     "description": "",
     "fields": [
      {
-      "fieldId": "incident_fireeyenxalerttype",
+      "fieldId": "incident_fireeyenxeventattackerip",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -160,7 +160,7 @@
       "version": 0
      },
      {
-      "fieldId": "incident_fireeyenxscversion",
+      "fieldId": "incident_fireeyenxeventcveid",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -168,7 +168,7 @@
       "version": 0
      },
      {
-      "fieldId": "incident_fireeyenxtimeutc",
+      "fieldId": "incident_fireeyenxeventdestinationmacaddress",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -176,7 +176,7 @@
       "version": 0
      },
      {
-      "fieldId": "incident_fireeyenxtargetmacaddress",
+      "fieldId": "incident_fireeyenxeventdestinationport",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -184,7 +184,7 @@
       "version": 0
      },
      {
-      "fieldId": "incident_fireeyenxid",
+      "fieldId": "incident_fireeyenxeventid",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -192,7 +192,31 @@
       "version": 0
      },
      {
-      "fieldId": "incident_fireeyenxuuid",
+      "fieldId": "incident_fireeyenxeventrule",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventsourcemacaddress",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventvictimip",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventvictimport",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -203,7 +227,7 @@
     "id": "",
     "isVisible": true,
     "modified": "0001-01-01T00:00:00Z",
-    "name": "Alert Details",
+    "name": "Event Details",
     "query": null,
     "queryType": "",
     "readOnly": false,
@@ -214,6 +238,46 @@
    {
     "description": "",
     "fields": [
+     {
+      "fieldId": "incident_assignmentgroup",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_caller",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_chronicleassetsupportcontact",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_chronicleautoblockentities",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_chronicleskipentityisolation",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
      {
       "fieldId": "incident_dbotprediction",
       "id": "",
@@ -264,6 +328,14 @@
      },
      {
       "fieldId": "incident_devicehash",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_escalation",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -375,39 +447,23 @@
       "version": 0
      },
      {
-      "fieldId": "incident_riskiqassetawssecuritygroupname",
-      "id": "",
-      "isVisible": true,
-      "modified": "0001-01-01T00:00:00Z",
-      "sortValues": null,
-      "version": 0
-     },
-     {
-      "fieldId": "incident_riskiqassetgcpfirewallname",
-      "id": "",
-      "isVisible": true,
-      "modified": "0001-01-01T00:00:00Z",
-      "sortValues": null,
-      "version": 0
-     },
-     {
-      "fieldId": "incident_riskiqassetoktazoneid",
-      "id": "",
-      "isVisible": true,
-      "modified": "0001-01-01T00:00:00Z",
-      "sortValues": null,
-      "version": 0
-     },
-     {
-      "fieldId": "incident_riskiqsupportcontact",
-      "id": "",
-      "isVisible": true,
-      "modified": "0001-01-01T00:00:00Z",
-      "sortValues": null,
-      "version": 0
-     },
-     {
       "fieldId": "incident_sansstage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_servicenowrecordid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_servicenowtablename",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -439,7 +495,47 @@
       "version": 0
      },
      {
+      "fieldId": "incident_state",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_subcategory",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
       "fieldId": "incident_tenantname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_ticketcloseddate",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_ticketnumber",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_ticketopeneddate",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -499,10 +595,10 @@
    }
   ],
   "system": false,
-  "typeId": "FireEye NX Incident",
+  "typeId": "FireEye NX IPS Event",
   "version": -1
  },
- "typeId": "FireEye NX Incident",
+ "typeId": "FireEye NX IPS Event",
  "version": -1,
  "toVersion": "5.9.9",
  "fromVersion": "5.0.0",

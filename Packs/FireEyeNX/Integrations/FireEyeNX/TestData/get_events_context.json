@@ -1,29 +1,26 @@
-{
-  "Events": [
-    {
-      "eventId":1,
-      "occurred":"2020-08-10T06:31:00Z",
-      "srcIp":"1.1.1.1",
-      "srcPort":1,
-      "dstIp":"1.1.1.1",
-      "dstPort":1,
-      "vlan":0,
-      "signatureMatchCnt":1,
-      "signatureIden":1,
-      "signatureRev":1,
-      "severity":1,
-      "vmVerified":true,
-      "srcMac":"dummy",
-      "dstMac":"dummy",
-      "ruleName":"dummy",
-      "sensorId":"dummy",
-      "cveId":"CVE-123",
-      "actionTaken":1,
-      "attackMode":"dummy",
-      "interfaceId":1,
-      "protocol":1,
-      "incidentId":1
-    }
-  ],
-  "EmptyResponse": []
-}
+[
+  {
+    "ActionTaken": 1,
+    "AttackMode": "dummy",
+    "CveId": "CVE-123",
+    "DstIp": "1.1.1.1",
+    "DstMac": "dummy",
+    "DstPort": 1,
+    "EventId": 1,
+    "IncidentId": 1,
+    "InterfaceId": 1,
+    "Occurred": "2020-08-10T06:31:00Z",
+    "Protocol": 1,
+    "RuleName": "dummy",
+    "SensorId": "dummy",
+    "Severity": 1,
+    "SignatureIden": 1,
+    "SignatureMatchCnt": 1,
+    "SignatureRev": 1,
+    "SrcIp": "1.1.1.1",
+    "SrcMac": "dummy",
+    "SrcPort": 1,
+    "Vlan": 0,
+    "VmVerified": true
+  }
+]

@@ -1,9 +1,9 @@
 {
  "kind": "quickView",
  "layout": {
-  "id": "FireEye NX Incident",
+  "id": "FireEye NX Alert",
   "kind": "quickView",
-  "modified": "2020-08-27T10:39:35.078396052+05:30",
+  "modified": "2020-09-28T11:12:06.639021784+05:30",
   "name": "",
   "sections": [
    {
@@ -160,7 +160,7 @@
       "version": 0
      },
      {
-      "fieldId": "incident_fireeyenxscversion",
+      "fieldId": "incident_fireeyenxalertaction",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -168,7 +168,7 @@
       "version": 0
      },
      {
-      "fieldId": "incident_fireeyenxtimeutc",
+      "fieldId": "incident_fireeyenxalertid",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -176,7 +176,7 @@
       "version": 0
      },
      {
-      "fieldId": "incident_fireeyenxtargetmacaddress",
+      "fieldId": "incident_fireeyenxalertmalwarename",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -184,7 +184,7 @@
       "version": 0
      },
      {
-      "fieldId": "incident_fireeyenxid",
+      "fieldId": "incident_fireeyenxalertscversion",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -192,7 +192,63 @@
       "version": 0
      },
      {
-      "fieldId": "incident_fireeyenxuuid",
+      "fieldId": "incident_fireeyenxalerttargetip",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalerttargetmacaddress",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalerttargetport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalerturl",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalertuuid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalertvictimip",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalertvictimmacaddress",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalertvictimport",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
@@ -375,38 +431,6 @@
       "version": 0
      },
      {
-      "fieldId": "incident_riskiqassetawssecuritygroupname",
-      "id": "",
-      "isVisible": true,
-      "modified": "0001-01-01T00:00:00Z",
-      "sortValues": null,
-      "version": 0
-     },
-     {
-      "fieldId": "incident_riskiqassetgcpfirewallname",
-      "id": "",
-      "isVisible": true,
-      "modified": "0001-01-01T00:00:00Z",
-      "sortValues": null,
-      "version": 0
-     },
-     {
-      "fieldId": "incident_riskiqassetoktazoneid",
-      "id": "",
-      "isVisible": true,
-      "modified": "0001-01-01T00:00:00Z",
-      "sortValues": null,
-      "version": 0
-     },
-     {
-      "fieldId": "incident_riskiqsupportcontact",
-      "id": "",
-      "isVisible": true,
-      "modified": "0001-01-01T00:00:00Z",
-      "sortValues": null,
-      "version": 0
-     },
-     {
       "fieldId": "incident_sansstage",
       "id": "",
       "isVisible": true,
@@ -499,10 +523,10 @@
    }
   ],
   "system": false,
-  "typeId": "FireEye NX Incident",
+  "typeId": "FireEye NX Alert",
   "version": -1
  },
- "typeId": "FireEye NX Incident",
+ "typeId": "FireEye NX Alert",
  "version": -1,
  "toVersion": "5.9.9",
  "fromVersion": "5.0.0",

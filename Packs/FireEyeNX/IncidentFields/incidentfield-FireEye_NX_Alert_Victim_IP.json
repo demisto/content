@@ -1,12 +1,12 @@
 {
- "id": "incident_fireeyenxscversion",
+ "id": "incident_fireeyenxalertvictimip",
  "version": -1,
  "modified": "2020-08-26T20:27:11.157372701+05:30",
- "name": "FireEye NX SC Version",
+ "name": "FireEye NX Alert Victim IP",
  "ownerOnly": false,
- "placeholder": "SC Version of the alert.",
- "description": "SC Version of the alert.",
- "cliName": "fireeyenxscversion",
+ "placeholder": "Source IP of the alert.",
+ "description": "Source IP of the alert.",
+ "cliName": "fireeyenxalertvictimip",
  "type": "shortText",
  "closeForm": false,
  "editForm": false,
@@ -20,7 +20,7 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
-  "FireEye NX Incident"
+  "FireEye NX Alert"
  ],
  "associatedToAll": false,
  "unmapped": false,

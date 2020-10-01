@@ -1,13 +1,13 @@
 {
- "id": "incident_fireeyenxtargetmacaddress",
+ "id": "incident_fireeyenxalertid",
  "version": -1,
- "modified": "2020-08-26T20:34:01.058339718+05:30",
- "name": "FireEye NX Target MAC Address",
+ "modified": "2020-08-26T20:33:28.856374505+05:30",
+ "name": "FireEye NX Alert ID",
  "ownerOnly": false,
- "placeholder": "Destination MAC address of alert.",
- "description": "Destination MAC address of alert.",
- "cliName": "fireeyenxtargetmacaddress",
- "type": "shortText",
+ "placeholder": "ID of the alert.",
+ "description": "ID of the alert.",
+ "cliName": "fireeyenxalertid",
+ "type": "number",
  "closeForm": false,
  "editForm": false,
  "required": false,
@@ -20,7 +20,7 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
-  "FireEye NX Incident"
+  "FireEye NX Alert"
  ],
  "associatedToAll": false,
  "unmapped": false,

@@ -9,18 +9,10 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: The username to connect to FireEye NX.
-  display: Username
-  hidden: false
-  name: username
+- display: Username
+  name: credentials
   required: true
-  type: 0
-- additionalinfo: The password to connect to FireEye NX.
-  display: Password
-  hidden: false
-  name: password
-  required: true
-  type: 4
+  type: 9
 - additionalinfo: All the FireEye NX API calls would timeout if the response is not
     returned within the configured time interval. It is set 120 by default if blank.
   defaultvalue: '120'
@@ -38,28 +30,39 @@ configuration:
   required: false
   type: 13
 - additionalinfo: The time range to consider for initial data fetch.(<number> <unit>,
-    e.g. 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours).
-  defaultvalue: 48 hours
+    e.g. 1 hour, 2 hours, 6 hours, 12 hours, 48 hours). By default, it is set to 12
+    hours, if blank. The API supports up to 48 hours. More than 48 hours will produce an error.
+  defaultvalue: 12 hours
   display: First fetch time interval
   hidden: false
   name: first_fetch
-  options:
-  - 1 hour
-  - 2 hours
-  - 6 hours
-  - 12 hours
-  - 24 hours
-  - 48 hours
-  required: false
-  type: 15
-- additionalinfo: The maximum number of alerts to fetch each time. A maximum of 200
-    alerts is fetched. By default, it is set to 10, if blank.
-  defaultvalue: '10'
-  display: Fetch Limit
-  hidden: false
-  name: fetch_limit
   required: false
   type: 0
+- additionalinfo: The maximum number of alerts to fetch each time. A maximum of 200
+    alerts is fetched. By default, it is set to 50, if blank.
+  defaultvalue: '50'
+  display: Fetch Limit
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: Fetches Alerts or Events.
+  defaultvalue: Alerts
+  display: Fetch Type
+  hidden: false
+  name: fetch_type
+  options:
+  - Alerts
+  - Events
+  required: false
+  type: 15
+- additionalinfo: Fetches MVX-correlated events only. Works only for Events in Fetch
+    Type.
+  display: Fetches MVX-correlated events only.
+  hidden: false
+  name: fetch_mvx_correlated_events
+  required: false
+  type: 8
 - additionalinfo: The type of malware object to fetch.
   display: Malware Type
   hidden: false
@@ -72,6 +75,18 @@ configuration:
   - infection_match
   required: false
   type: 15
+- additionalinfo: Replaces the domain of the alert URL key to the Instance URL for
+    fetch incident and command.
+  display: Use instance URL for all the fetched alerts URL.
+  hidden: false
+  name: replace_alert_url
+  required: false
+  type: 8
+- display: Fetch artifacts for each alert.
+  hidden: false
+  name: fetch_artifacts
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
@@ -93,7 +108,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Universally unique ID of the alert.
+      description: 'Universally unique ID of the alert. Note: To get UUID execute
+        fireeye-nx-get-alerts command.'
       isArray: false
       name: uuid
       required: true
@@ -103,16 +119,16 @@ script:
     execution: false
     name: fireeye-nx-get-artifacts-metadata-by-alert
     outputs:
-    - contextPath: FireEyeNX.Alert.uuid
+    - contextPath: FireEyeNX.Alert.Uuid
       description: Universally unique ID of the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.ArtifactsMetadata.artifactType
+    - contextPath: FireEyeNX.Alert.ArtifactsMetadata.ArtifactType
       description: The artifact type.
       type: String
-    - contextPath: FireEyeNX.Alert.ArtifactsMetadata.artifactName
+    - contextPath: FireEyeNX.Alert.ArtifactsMetadata.ArtifactName
       description: The artifact name.
       type: String
-    - contextPath: FireEyeNX.Alert.ArtifactsMetadata.artifactSize
+    - contextPath: FireEyeNX.Alert.ArtifactsMetadata.ArtifactSize
       description: The artifact size.
       type: String
   - arguments:
@@ -149,7 +165,7 @@ script:
     - default: false
       description: "Searches between two specified time frames. When specifying a\
         \ start_time value, you must specify both a start_time and an end_ time value.\n\
-        Formats: \nyyyy-MM-dd\nyyyy-MM-ddTHH:mm:ss.SSS[+/-]XX:XX\nyyyy-MM-ddTHH:mm:ss[+/-]XX:XX"
+        Formats: \nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss.SSS[+/-]XX:XX"
       isArray: false
       name: start_time
       required: false
@@ -157,7 +173,7 @@ script:
     - default: false
       description: "Searches between two specified time frames. When specifying an\
         \ end_ time value, you must specify both a start_time and an end_time value.\n\
-        Formats: \nyyyy-MM-dd\nyyyy-MM-ddTHH:mm:ss.SSS[+/-]XX:XX\nyyyy-MM-ddTHH:mm:ss[+/-]XX:XX"
+        Formats: \nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss.SSS[+/-]XX:XX"
       isArray: false
       name: end_time
       required: false
@@ -213,10 +229,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: Use the combination of infection_id and infection_type options
+      description: 'Use the combination of infection_id and infection_type options
         to specify a unique alert to describe in the Alert Details Report. If one
         option is used alone and does not specify a unique alert, an error message
-        is produced.
+        is produced. Note: The infection_id is Alert ID. To get Alert ID execute fireeye-nx-get-alerts
+        command.'
       isArray: false
       name: infection_id
       required: false
@@ -264,7 +281,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specifies the ID number of the alert to retrieve it.
+      description: Specify the ID number of the alert to retrieve it.
+        To get Alert ID execute fireeye-nx-get-alerts command without specifying alert_id.
       isArray: false
       name: alert_id
       required: false
@@ -383,715 +401,716 @@ script:
     execution: false
     name: fireeye-nx-get-alerts
     outputs:
-    - contextPath: FireEyeNX.Alert.malware.md5Sum
+    - contextPath: FireEyeNX.Alert.Explanation.MalwareDetected.Malware.Md5Sum
       description: MD5SUM of malware associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.malware.sha256
+    - contextPath: FireEyeNX.Alert.Explanation.MalwareDetected.Malware.Sha256
       description: SHA256 of malware associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.malware.application
+    - contextPath: FireEyeNX.Alert.Explanation.MalwareDetected.Malware.Application
       description: Application of the malware associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.malware.httpHeader
+    - contextPath: FireEyeNX.Alert.Explanation.MalwareDetected.Malware.HttpHeader
       description: Http Header of the malware associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.malware.original
+    - contextPath: FireEyeNX.Alert.Explanation.MalwareDetected.Malware.Original
       description: The filename of the malware associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.malware.name
+    - contextPath: FireEyeNX.Alert.Explanation.MalwareDetected.Malware.Name
       description: Name of the malware associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.malware.sid
+    - contextPath: FireEyeNX.Alert.Explanation.MalwareDetected.Malware.Sid
       description: SID of the malware associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.malware.type
+    - contextPath: FireEyeNX.Alert.Explanation.MalwareDetected.Malware.Type
       description: The file type of the malware associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.malware.stype
+    - contextPath: FireEyeNX.Alert.Explanation.MalwareDetected.Malware.Stype
       description: STYPE of the malware associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.malware.url
+    - contextPath: FireEyeNX.Alert.Explanation.MalwareDetected.Malware.Url
       description: URL of the malware associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.malware.content
+    - contextPath: FireEyeNX.Alert.Explanation.MalwareDetected.Malware.Content
       description: Content of the malware associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.cncService.address
+    - contextPath: FireEyeNX.Alert.Explanation.CncServices.CncService.Address
       description: CNC Service IP address associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.cncService.channel
+    - contextPath: FireEyeNX.Alert.Explanation.CncServices.CncService.Channel
       description: CNC Service channel associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.cncService.port
+    - contextPath: FireEyeNX.Alert.Explanation.CncServices.CncService.Port
       description: CNC Service port address associated with the alert.
       type: Number
-    - contextPath: FireEyeNX.Alert.cncService.protocol
+    - contextPath: FireEyeNX.Alert.Explanation.CncServices.CncService.Protocol
       description: CNC Service protocol associated with the alert.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.totalmemory
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Totalmemory
       description: Total memory of heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.lastbytesreceived
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Lastbytesreceived
       description: The last byte received in heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.ProcessinfoImagepath
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Processinfo.Imagepath
       description: Image path of the process in heap spraying.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.ProcessinfoMd5sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Processinfo.Md5sum
       description: MD5SUM of the process in heap spraying.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.ProcessinfoPid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Processinfo.Pid
       description: PID of the process in heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.incrementCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.IncrementCount
       description: Increment count in heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.name
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Name
       description: Name of heap spraying.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.bytesreceived
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Bytesreceived
       description: Bytes received in heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.lasttotalmemory
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Lasttotalmemory
       description: The last total memory in heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.type
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Type
       description: Type of heap spraying.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.timestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Timestamp
       description: The timestamp of heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.RCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.RCount
       description: RCount of heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.TotalSize
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.TotalSize
       description: The total size of heap spraying.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.RUnit
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.RUnit
       description: RUnit of heap spraying.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.mode
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Mode
       description: Mode of heap spraying.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.pattern
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Pattern
       description: The pattern of heap spraying.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.BytesListEntry.Percentage
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.BytesList.Entry.Percentage
       description: Entry percentage of bytes list in heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.BytesListEntry.Byte
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.BytesList.Entry.Byte
       description: Entry byte of bytes list in heap spraying.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.BytesListEntry.Count
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.BytesList.Entry.Count
       description: Entry count of bytes list in heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.BytesListEntry.FirstOffset
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.BytesList.Entry.FirstOffset
       description: Entry offset of bytes list in heap spraying.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.BytesListEntry.IsNOP
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.BytesList.Entry.IsNOP
       description: If entry NOP comes in the bytes list in heap spraying then yes
         otherwise no.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.BytesListDistinct
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.BytesList.Distinct
       description: The distinct number of the byte list in heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.BytesListCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.BytesList.Count
       description: The number of the byte list in heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.javascript
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Javascript
       description: If heap spraying has javascript then yes otherwise no.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.DNA
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.DNA
       description: DNA of heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.TotalRCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.TotalRCount
       description: Total row count of heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.ProcessedRCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.ProcessedRCount
       description: Processed row count of heap spraying.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.heapspraying.Processed
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.Processed
       description: Processed memory of heap spraying.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.FidAds
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Fid.Ads
       description: Fid ads of the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.FidContent
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Fid.Content
       description: Fid content of process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.ParentUserAccountUserSid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.ParentUserAccount.UserSid
       description: Parent user account SID of the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.ParentUserAccountSessionId
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.ParentUserAccount.SessionId
       description: Parent user account session ID of the process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.ParentUserAccountUserAccountName
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.ParentUserAccount.UserAccountName
       description: Parent user account name of the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.ParentUserAccountAuthenticationId
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.ParentUserAccount.AuthenticationId
       description: Parent user account authentication ID of process
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.ParentUserAccountSuperPrivilegesPresent
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.ParentUserAccount.SuperPrivilegesPresent
       description: If super privileges present in this process then 1 otherwise 0.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.parentname
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Parentname
       description: Path of parent process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.sha256sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Sha256sum
       description: SHA256SUM of the parent process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.pid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Pid
       description: PID of the process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.filesize
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Filesize
       description: File size of the process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.ppid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Ppid
       description: PPID of the process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.mode
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Mode
       description: Mode of the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.cmdline
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Cmdline
       description: Path of the command associated with the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.sha1sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Sha1sum
       description: SHA1SUM of the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.md5sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Md5sum
       description: MD5SUM of the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.src_thread
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.SrcThread
       description: Source thread name of the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.value
+    - contextPath: FireEyeNX.Alert.Explanation.osChanges.Process.Value
       description: Value of path in the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.UserAccountUserSid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.UserAccount.UserSid
       description: SID of a user account for the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.UserAccountSessionId
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.UserAccount.SessionId
       description: The session ID of a user account for the process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.UserAccountUserAccountName
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.UserAccount.UserAccountName
       description: Name of a user account for the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.UserAccountAuthenticationId
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.UserAccount.AuthenticationId
       description: Authentication ID of a user account for the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.UserAccountSuperPrivilegesPresent
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.UserAccount.SuperPrivilegesPresent
       description: If super privileges present in this user account then 1 otherwise
         0.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.timestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Timestamp
       description: The timestamp of the process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.memory_data
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.MemoryData
       description: The memory data of the process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.process.TelemetryDataLocalThreadCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.TelemetryData.LocalThreadCount
       description: Thread count of telemetry data in process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.TelemetryDataFileOpenCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.TelemetryData.FileOpenCount
       description: File open count of telemetry data in process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.TelemetryDataFileModifyCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.TelemetryData.FileModifyCount
       description: File modify count of telemetry data in process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.TelemetryDataFileFileCreateCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.TelemetryData.FileCreateCount
       description: File created count of telemetry data in process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.TelemetryDataChildProcessCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.TelemetryData.ChildProcessCount
       description: File process count of telemetry data in process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.TelemetryDataFileFailedCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.TelemetryData.FileFailedCount
       description: File failed count of telemetry data in process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.TelemetryDataHttpReqCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.TelemetryData.HttpReqCount
       description: Http request count of telemetry data in process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.TelemetryDataRemoteThreadCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.TelemetryData.RemoteThreadCount
       description: Thread count of telemetry data in process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.process.TelemetryDataMutexCreateCount
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.TelemetryData.MutexCreateCount
       description: Mutex created a count of telemetry data in the process.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.regkey.mode
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Regkey.Mode
       description: Mode of registry key.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.regkey.ProcessinfoImagepath
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Regkey.Processinfo.Imagepath
       description: Image path of the process in registry key.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.regkey.ProcessinfoMd5sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Regkey.Processinfo.Md5sum
       description: MD5SUM of the process in registry key.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.regkey.ProcessinfoPid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Regkey.Processinfo.Pid
       description: PID of the process in registry key.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.regkey.ntstatus
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Regkey.Ntstatus
       description: NTSTATUS of registry key.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.regkey.suppressed
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Regkey.Suppressed
       description: If the registry key has suppressed then true otherwise false.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.regkey.value
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Regkey.Value
       description: Value of registry key.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.regkey.timestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Regkey.Timestamp
       description: The timestamp of the registry key.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.regkey.src_thread
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Regkey.SrcThread
       description: Source thread name of registry key.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.regkey.randomized
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Regkey.Randomized
       description: If the registry key has randomized then true otherwise false
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.regkey.buffered
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Regkey.Buffered
       description: If the registry key has buffered then true otherwise false.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.regkey.no_extend
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Regkey.NoExtend
       description: If the registry key has no_extend then true otherwise false.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.OsName
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Os.Name
       description: The name of the OS.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.OsArch
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Os.Arch
       description: The architecture of the OS.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.OsVersion
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Os.Version
       description: A version of the OS.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.OsSp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Os.Sp
       description: Service pack version of the OS.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.OsMonitorDate
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.OsMonitor.Date
       description: A monitored date of the OS.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.OsMonitorBuild
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.OsMonitor.Build
       description: A monitored build of the OS.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.OsMonitorTime
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.OsMonitor.Time
       description: A monitored time of the OS.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.OsMonitorVersion
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.OsMonitor.Version
       description: A monitored version of the OS.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.AnalysisMode
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Analysis.Mode
       description: A mode of analysis.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.AnalysisProduct
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Analysis.Product
       description: A product name of analysis.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.AnalysisFtype
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Analysis.Ftype
       description: A file type of analysis.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.AnalysisVersion
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Analysis.Version
       description: A version of analysis.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.network.mode
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Mode
       description: A mode of network.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.network.protocol_type
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.ProtocolType
       description: A protocol type of network.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.network.ipaddress
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Ipaddress
       description: An IP address of the network.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.network.destination_port
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.DestinationPort
       description: A destination port address of the network.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.network.ProcessinfoImagepath
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Processinfo.Imagepath
       description: Image path of the process in the network.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.network.ProcessinfoTainted
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Processinfo.Tainted
       description: If the process state is tainted then true otherwise false for the
         network.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.network.ProcessinfoMd5sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Processinfo.Md5sum
       description: MD5SUM of the process in the network.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.network.ProcessinfoPid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Processinfo.Pid
       description: PID of the process in the network.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.network.http_request
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.HttpRequest
       description: HTTP request of the network.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.network.timestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Timestamp
       description: The timestamp of the network.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.network.hostname
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Hostname
       description: A hostname of the network.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.network.qtype
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Qtype
       description: A QTYPE of the network.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.network.answer_number
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.AnswerNumber
       description: An answer number of the network.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.network.dns_response_code
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.DnsResponseCode
       description: A DNS response code of the network.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.ActionFopenMode
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.ActionFopen.Mode
       description: Mode of opening the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.ActionFopenExt
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.ActionFopen.Ext
       description: Extension of opening the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.ActionFopenBuffered
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.ActionFopen.Buffered
       description: If the opened file has buffered then true otherwise false.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.ActionFopenNoExtend
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.ActionFopen.NoExtend
       description: If the opened file has no_extend then true otherwise false.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.ActionFopenName
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.ActionFopen.Name
       description: The name of opening the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.ActionFopenTimestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.ActionFopen.Timestamp
       description: The timestamp of opening the file.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.dllname
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Dllname
       description: DLL file name of exploit code.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.apiname
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Apiname
       description: API name of exploit code.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.address
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Address
       description: An address of exploit code.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.ProcessinfoImagepath
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Processinfo.Imagepath
       description: Image path of the process in the exploit code.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.ProcessinfoMd5sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Processinfo.Md5sum
       description: MD5SUM of the process in the exploit code.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.ProcessinfoPid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Processinfo.Pid
       description: PID of the process in the exploit code.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.src_thread
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.SrcThread
       description: Source thread name of the exploit code.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.protection
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Protection
       description: Protection number of the exploit code.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.CallstackEntry.SymbolName
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Callstack.CallstackEntry.SymbolName
       description: The symbol name of call stack entry in the exploit code.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.CallstackEntry.FrameNumber
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Callstack.CallstackEntry.FrameNumber
       description: Frame number of call stack entries in the exploit code.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.CallstackEntry.ModuleName
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Callstack.CallstackEntry.ModuleName
       description: Module name of call stack entry in the exploit code.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.CallstackEntry.InstructionAddress
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Callstack.CallstackEntry.InstructionAddress
       description: Instruction address of call stack entry in the exploit code.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.CallstackEntry.SymbolDisplacement
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Callstack.CallstackEntry.SymbolDisplacement
       description: Symbol displacement of call stack entry in the exploit code.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.param.id
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Params.Param.Id
       description: ID parameter of the exploit code.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.param.content
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Params.Param.Content
       description: Path parameter of exploit code.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.exploitcode.timestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Timestamp
       description: The timestamp of the exploit codes.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.folder.mode
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Folder.Mode
       description: Mode of folder.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.folder.ProcessinfoImagepath
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Folder.Processinfo.Imagepath
       description: Image path of the process in the folder.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.folder.ProcessinfoMd5sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Folder.Processinfo.Md5sum
       description: MD5SUM of the process in the folder.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.folder.ProcessinfoPid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Folder.Processinfo.Pid
       description: PID of the process in the folder.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.folder.src_thread
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Folder.SrcThread
       description: Source thread name of the folder.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.folder.value
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Folder.Value
       description: Path of folder.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.folder.timestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Folder.Timestamp
       description: The timestamp of the folder.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.file.mode
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Mode
       description: The mode of the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.FidAds
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Fid.Ads
       description: ADS (Alternate Data Stream) of FID for file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.FidContent
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Fid.Content
       description: Content of FID in file
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.file.ProcessinfoImagepath
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Processinfo.Imagepath
       description: Image path of the process for file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.ProcessinfoMd5sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Processinfo.Md5sum
       description: MD5SUM of the process for the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.ProcessinfoPid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Processinfo.Pid
       description: PID of the process for the file.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.file.ProcessinfoTainted
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Processinfo.Tainted
       description: If the process state is tainted then true otherwise false for the
         file.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.file.src_thread
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.SrcThread
       description: Source thread name of the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.ntstatus
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Ntstatus
       description: NTSTATUS of the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.filesize
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Filesize
       description: Size of the file.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.file.value
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Value
       description: The value of the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.CreateOptions
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.CreateOptions
       description: The created option of the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.timestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Timestamp
       description: The timestamp of the file.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.file.type
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Type
       description: Type of the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.sha256sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Sha256sum
       description: SHA256SUM of the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.sha1sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Sha1sum
       description: SHA1SUM of the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.PEInspectionType
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.PE.InspectionType
       description: Inspection type of portable executable file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.PETimeDateStamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.PE.TimeDateStamp
       description: The time date stamp of the portable executable file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.PECharacteristicsName
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.PE.Characteristics.Names.Name
       description: List of characteristic names in the portable executable file.
       type: Unknown
-    - contextPath: FireEyeNX.Alert.osChanges.file.PECharacteristicsValue
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.PE.Characteristics.Value
       description: Characteristic value in the portable executable file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.PEDllCharacteristicsNames
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.PE.DllCharacteristics.Names
       description: Characteristic name in the DLL portable executable file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.PEDllCharacteristicsValue
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.PE.DllCharacteristics.Value
       description: Characteristic value in the DLL portable executable file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.PEDll
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.PE.Dll
       description: If a portable file is a DLL file then yes otherwise no file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.PEMagic
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.PE.Magic
       description: Magic hex value of portable executable file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.PESubsystem
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.PE.Subsystem
       description: Sub system of portable executable file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.PEMachine
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.PE.Machine
       description: Hex address of machine in file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.file.md5sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Md5sum
       description: MD5SUM of the file.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.ApplicationAppName
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Application.AppName
       description: App name of the application.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.QuerySystemTimeProcessinfoImagepath
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.QuerySystemTime.Processinfo.Imagepath
       description: Image path of the queried system process.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.QuerySystemTimeProcessinfoMd5sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.QuerySystemTime.Processinfo.Md5sum
       description: System time process info of Md5sum that is queried.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.QuerySystemTimeProcessinfoPid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.QuerySystemTime.Processinfo.Pid
       description: System time process info of Pid (process id) that is queried
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.QuerySystemTimeNtstatus
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.QuerySystemTime.Ntstatus
       description: NTSTATUS of system time that is queried.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.QuerySystemTimeTimestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.QuerySystemTime.Timestamp
       description: The timestamp of the system that is queried.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.QuerySystemTimeSystemTimeValue
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.QuerySystemTime.SystemTime.Value
       description: The time value of the system that is queried.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.QuerySystemTimeSystemTimeTime
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.QuerySystemTime.SystemTime.Time
       description: The time of the system that is queried.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.EndOfReport
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.EndOfReport
       description: The end of report.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.MaliciousAlert.Classtype
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.MaliciousAlert.Classtype
       description: Class type of malicious alert.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.MaliciousAlert.DisplayMsg
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.MaliciousAlert.DisplayMsg
       description: Display message of malicious alert.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDetected.Hwnd
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDetected.Hwnd
       description: Hex address of dialog detected.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDetected.ProcessinfoImagepath
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDetected.Processinfo.Imagepath
       description: Imagepath of the process for the dialog detected.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDetected.ProcessinfoPid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDetected.Processinfo.Pid
       description: PID of the process for the dialog detected.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDetected.Buffered
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDetected.Buffered
       description: Flag indicated whether is buffered or not in dialog detected.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDetected.NoExtend
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDetected.NoExtend
       description: Flag indicating whether NoExtend is true or not in dialog detected.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDetected.Timestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDetected.Timestamp
       description: The timestamp of dialog detected.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDetected.DlgId
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDetected.DlgId
       description: Dialog ID of dialog detected.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDismissed.Note
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDismissed.Note
       description: Note of dialog dismissed.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDismissed.Hwnd
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDismissed.Hwnd
       description: Hex address of dialog dismissed.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDismissed.ProcessinfoImagepath
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDismissed.Processinfo.Imagepath
       description: Imagepath of the process for the dialog dismissed.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDismissed.ProcessinfoPid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDismissed.Processinfo.Pid
       description: PID of the process for the dialog dismissed.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDismissed.Buffered
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDismissed.Buffered
       description: Flag indicating whether Buffered is true or not in the dialog dismissed.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDismissed.NoExtend
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDismissed.NoExtend
       description: Flag indicating whether NoExtend is true or not in dialog dismissed.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDismissed.Timestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDismissed.Timestamp
       description: The timestamp of dialog dismissed.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.DialogDismissed.DlgId
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.DialogDismissed.DlgId
       description: Dialog ID of dialog dismissed.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.WmiqueryProcessinfoImagepath
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Wmiquery.Processinfo.Imagepath
       description: Imagepath of the process for wmi query.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.WmiqueryProcessinfoMd5sum
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Wmiquery.Processinfo.Md5sum
       description: Md5sum of the process for wmi query.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.WmiqueryProcessinfoPid
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Wmiquery.Processinfo.Pid
       description: Pid of the process for wmi query.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.WmiqueryWmicontentQuery
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Wmiquery.Wmicontents.Wmiconent.Query
       description: Query of wmi content for wmi query.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.WmiqueryWmicontentLang
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Wmiquery.Wmicontents.Wmicontent.Lang
       description: Language of wmi content for wmi query.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.WmiqueryTimestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Wmiquery.Timestamp
       description: The timestamp of wmi query.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.WmiqueryBuffered
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Wmiquery.Buffered
       description: This flag indicates whether it is buffered or not in the wmi query.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.WmiqueryNoExtend
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Wmiquery.NoExtend
       description: Flag indicating whether NoExtend is true or not in wmi query.
       type: Boolean
-    - contextPath: FireEyeNX.Alert.osChanges.uac.mode
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Uac.Mode
       description: Mode of User Account Control.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.uac.value
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Uac.Value
       description: Value of User Account Control.
       type: String
-    - contextPath: FireEyeNX.Alert.osChanges.uac.timestamp
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Uac.Timestamp
       description: The timestamp of User Account Control.
       type: Number
-    - contextPath: FireEyeNX.Alert.osChanges.uac.status
+    - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Uac.Status
       description: Status of User Account Control.
       type: String
-    - contextPath: FireEyeNX.Alert.StaticAnalysisStatic.value
+    - contextPath: FireEyeNX.Alert.Explanation.StaticAnalysis.Static.Value
       description: Value of static analysis.
       type: String
-    - contextPath: FireEyeNX.Alert.StolenDataInfoField
+    - contextPath: FireEyeNX.Alert.Explanation.StolenData.Info.Field
       description: Info field of stolen data.
       type: Unknown
-    - contextPath: FireEyeNX.Alert.StolenDataInfoType
+    - contextPath: FireEyeNX.Alert.Explanation.StolenData.Info.Type
       description: Info type of stolen data.
       type: String
-    - contextPath: FireEyeNX.Alert.StolenDataEventId
+    - contextPath: FireEyeNX.Alert.Explanation.StolenData.EventId
       description: Event ID of stolen data.
       type: Number
-    - contextPath: FireEyeNX.Alert.SrcIp
+    - contextPath: FireEyeNX.Alert.Src.Ip
       description: Source IP address of alert.
       type: String
-    - contextPath: FireEyeNX.Alert.SrcMac
+    - contextPath: FireEyeNX.Alert.Src.Mac
       description: Source MAC address of alert.
       type: String
-    - contextPath: FireEyeNX.Alert.SrcPort
+    - contextPath: FireEyeNX.Alert.Src.Port
       description: Source PORT address of alert.
       type: Number
-    - contextPath: FireEyeNX.Alert.alertUrl
+    - contextPath: FireEyeNX.Alert.Src.Host
+      description: Source host of alert.
+      type: String
+    - contextPath: FireEyeNX.Alert.AlertUrl
       description: Alert URL.
       type: String
-    - contextPath: FireEyeNX.Alert.action
+    - contextPath: FireEyeNX.Alert.Action
       description: Action of Alert.
       type: String
-    - contextPath: FireEyeNX.Alert.occurred
+    - contextPath: FireEyeNX.Alert.Occurred
       description: Time when alert occurred.
       type: String
-    - contextPath: FireEyeNX.Alert.attackTime
+    - contextPath: FireEyeNX.Alert.AttackTime
       description: Time when an attack occurred.
       type: String
-    - contextPath: FireEyeNX.Alert.DstMac
+    - contextPath: FireEyeNX.Alert.Dst.Mac
       description: Destination MAC address of alert.
       type: String
-    - contextPath: FireEyeNX.Alert.DstPort
+    - contextPath: FireEyeNX.Alert.Dst.Port
       description: Destination PORT address of alert.
       type: Number
-    - contextPath: FireEyeNX.Alert.DstIp
+    - contextPath: FireEyeNX.Alert.Dst.Ip
       description: Destination IP address of alert.
       type: String
-    - contextPath: FireEyeNX.Alert.applianceId
+    - contextPath: FireEyeNX.Alert.ApplianceId
       description: Appliance ID of alert.
       type: String
-    - contextPath: FireEyeNX.Alert.id
+    - contextPath: FireEyeNX.Alert.Id
       description: ID of alert.
       type: Number
-    - contextPath: FireEyeNX.Alert.name
+    - contextPath: FireEyeNX.Alert.Name
       description: Type of alert.
       type: String
-    - contextPath: FireEyeNX.Alert.severity
+    - contextPath: FireEyeNX.Alert.Severity
       description: Severity of alert.
       type: String
-    - contextPath: FireEyeNX.Alert.uuid
+    - contextPath: FireEyeNX.Alert.Uuid
       description: UUID of alert.
       type: String
-    - contextPath: FireEyeNX.Alert.ack
+    - contextPath: FireEyeNX.Alert.Ack
       description: Flag indicates whether ack comes or not.
       type: String
-    - contextPath: FireEyeNX.Alert.product
+    - contextPath: FireEyeNX.Alert.Product
       description: Product name of alert.
       type: String
-    - contextPath: FireEyeNX.Alert.vlan
+    - contextPath: FireEyeNX.Alert.Vlan
       description: VLAN of alert.
       type: Number
-    - contextPath: FireEyeNX.Alert.malicious
+    - contextPath: FireEyeNX.Alert.Malicious
       description: This flag indicates whether the alert is malicious or not.
       type: String
-    - contextPath: FireEyeNX.Alert.scVersion
+    - contextPath: FireEyeNX.Alert.ScVersion
       description: SC version of alert.
-      type: String
-    - contextPath: FireEyeNX.Alert.SrcHost
-      description: Source host of alert.
       type: String
   - arguments:
     - default: false
-      description: Universally unique ID of the alert.
+      description: 'Universally unique ID of the alert. Note: To get UUID execute
+        fireeye-nx-get-alerts command.'
       isArray: false
       name: uuid
       required: true
@@ -1150,10 +1169,18 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specifies the end time of the search. This filter is used with
-        the duration filter. If the end_time is specified but not the duration, the
-        system defaults to duration=12_hours, ending at the specified end_time. Format:
-        YYYY-MM-DDTHH:mm:ss.sss-OH:om'
+      description: "Specifies the start time of the search. This filter is used with the duration filter.
+                    If the start_time is specified but not the duration, the system defaults to duration=12_hours,
+                    starting at the specified start_time.\nFormats:\nyyyy-MM-dd\nyyyy-MM-ddTHH:mm:ss.SSS[+/-]XX:XX"
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: "Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time.
+                    \nFormats:\n
+                    yyyy-MM-dd\n
+                    yyyy-MM-ddTHH:mm:ss.SSS[+/-]XX:XX"
       isArray: false
       name: end_time
       required: false
@@ -1174,73 +1201,73 @@ script:
     execution: false
     name: fireeye-nx-get-events
     outputs:
-    - contextPath: FireEyeNX.Event.eventId
+    - contextPath: FireEyeNX.Event.EventId
       description: The ID of the event.
       type: Number
-    - contextPath: FireEyeNX.Event.occurred
+    - contextPath: FireEyeNX.Event.Occurred
       description: The date and time when the event occurred.
       type: String
-    - contextPath: FireEyeNX.Event.srcIp
+    - contextPath: FireEyeNX.Event.SrcIp
       description: The IP Address of the victim.
       type: String
-    - contextPath: FireEyeNX.Event.srcPort
+    - contextPath: FireEyeNX.Event.SrcPort
       description: The Port number of the victim.
       type: Number
-    - contextPath: FireEyeNX.Event.dstIp
+    - contextPath: FireEyeNX.Event.DstIp
       description: The IP Address of the attacker.
       type: String
-    - contextPath: FireEyeNX.Event.dstPort
+    - contextPath: FireEyeNX.Event.DstPort
       description: The Port number of the attacker.
       type: Number
-    - contextPath: FireEyeNX.Event.severity
+    - contextPath: FireEyeNX.Event.Severity
       description: The severity level of the event.
       type: Number
-    - contextPath: FireEyeNX.Event.signatureRev
+    - contextPath: FireEyeNX.Event.SignatureRev
       description: The signature revision number of the event.
       type: Number
-    - contextPath: FireEyeNX.Event.signatureIden
+    - contextPath: FireEyeNX.Event.SignatureIden
       description: The signature Identity number of the event.
       type: Number
-    - contextPath: FireEyeNX.Event.signatureMatchCnt
+    - contextPath: FireEyeNX.Event.SignatureMatchCnt
       description: The signature match count number of the event.
       type: Number
-    - contextPath: FireEyeNX.Event.vlan
+    - contextPath: FireEyeNX.Event.Vlan
       description: The virtual LAN number of the event.
       type: Number
-    - contextPath: FireEyeNX.Event.vmVerified
-      description: Is the event VM verified or not?
+    - contextPath: FireEyeNX.Event.VmVerified
+      description: Is the event VM verified or not.
       type: Boolean
-    - contextPath: FireEyeNX.Event.srcMac
+    - contextPath: FireEyeNX.Event.SrcMac
       description: The Mac address of the source machine.
       type: String
-    - contextPath: FireEyeNX.Event.dstMac
+    - contextPath: FireEyeNX.Event.DstMac
       description: The Mac address of the destination machine.
       type: String
-    - contextPath: FireEyeNX.Event.ruleName
+    - contextPath: FireEyeNX.Event.RuleName
       description: The rule name for the event.
       type: String
-    - contextPath: FireEyeNX.Event.sensorId
+    - contextPath: FireEyeNX.Event.SensorId
       description: The sensor Id of the FireEye machine.
       type: String
-    - contextPath: FireEyeNX.Event.cveId
+    - contextPath: FireEyeNX.Event.CveId
       description: The CVE Id found in the event.
       type: String
-    - contextPath: FireEyeNX.Event.actionTaken
+    - contextPath: FireEyeNX.Event.ActionTaken
       description: The IPS blocking action taken on the event.
       type: Number
-    - contextPath: FireEyeNX.Event.attackMode
+    - contextPath: FireEyeNX.Event.AttackMode
       description: The attack mode mentioned in the event.
       type: String
-    - contextPath: FireEyeNX.Event.interfaceId
+    - contextPath: FireEyeNX.Event.InterfaceId
       description: The interface ID of the event.
       type: Number
-    - contextPath: FireEyeNX.Event.protocol
+    - contextPath: FireEyeNX.Event.Protocol
       description: The protocol used in the event.
       type: Number
-    - contextPath: FireEyeNX.Event.incidentId
+    - contextPath: FireEyeNX.Event.IncidentId
       description: The incident ID of the event on FireEye.
       type: Number
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.5.11789
   feed: false
   isfetch: true
   longRunning: false
@@ -1252,3 +1279,5 @@ script:
 tests:
 - FireEyeNX-Test
 fromversion: 5.0.0
+defaultclassifier: FireEye NX
+defaultmapperin: FireEye NX-mapper

@@ -2,12 +2,12 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 
+import dateparser
 from requests import Response
 from typing import Dict, Any, Union, Tuple, List
 from datetime import timezone
 from requests.exceptions import MissingSchema, InvalidSchema, InvalidURL, SSLError
 import urllib3
-from re import split
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -20,14 +20,19 @@ REQUEST_TIMEOUT_MAX_VALUE = 9223372036
 API_VERSION = 'v2.0.0'
 
 DEFAULT_SESSION_TIMEOUT = 15 * 60  # In Seconds
-DEFAULT_FETCH_LIMIT = '10'
+DEFAULT_FETCH_LIMIT = '50'
 CONTENT_TYPE_JSON = 'application/json'
 CONTENT_TYPE_ZIP = 'application/zip'
 DATE_FORMAT_OF_YEAR_MONTH_DAY = '%Y-%m-%d'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT_WITH_MICROSECOND = '%Y-%m-%dT%H:%M:%S.%fZ'
+API_SUPPORT_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000-00:00'
 ALERT_DETAILS_REPORT = 'Alert Details Report'
 VICTIM_IP = 'Victim IP'
 TIME_UTC = 'Time (UTC)'
+DEFAULT_FIRST_FETCH = '12 hours'
+ALERT_INCIDENT_TYPE = 'FireEye NX Alert'
+IPS_EVENT_INCIDENT_TYPE = 'FireEye NX IPS Event'
 
 MESSAGES: Dict[str, str] = {
     'BAD_REQUEST_ERROR': 'An error occurred while fetching the data.',
@@ -54,11 +59,12 @@ MESSAGES: Dict[str, str] = {
     'INVALID_BOOLEAN_VALUE_ERROR': 'The given value for {0} argument is invalid. Valid values: true, false.',
     'REQUEST_TIMEOUT_VALIDATION': 'HTTP(S) Request timeout parameter must be a positive integer.',
     'REQUEST_TIMEOUT_EXCEED_ERROR': 'Value is too large for HTTP(S) Request Timeout.',
-    'REQUEST_TIMEOUT': 'Request timed out. Check the configured HTTP(S) Request Timeout (in seconds) value.'
+    'REQUEST_TIMEOUT': 'Request timed out. Check the configured HTTP(S) Request Timeout (in seconds) value.',
+    'FIRST_FETCH_ARG_VALIDATION': 'The First fetch time interval should be up to 48 hour as per API limitation.'
 }
 
 URL_SUFFIX: Dict[str, str] = {
-    'TEST_MODULE': '/auth/login',
+    'GET_TOKEN': '/auth/login',
     'GET_ARTIFACTS_METADATA': '/artifacts/{}/meta',
     'GET_ARTIFACTS': '/artifacts/{}',
     'GET_REPORTS': '/reports/report',
@@ -93,6 +99,20 @@ REPORT_TYPE_ALLOWED_FORMAT = {
     ALERT_DETAILS_REPORT: ['pdf']
 }
 
+PLATFORM_SEVERITY_TO_SEVERITY_MAP = {
+    '10': 4,
+    '9': 4,
+    '8': 3,
+    '7': 3,
+    '6': 2,
+    '5': 2,
+    '4': 2,
+    '3': 1,
+    '2': 1,
+    '1': 1,
+    '0': 0
+}
+
 
 class Client(BaseClient):
     """
@@ -104,11 +124,6 @@ class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, proxy: bool, auth: Tuple[str, str], request_timeout: int):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
         self.request_timeout = request_timeout
-        # Set proxy
-        self.proxies = handle_proxy()
-        # Throws a ValueError if Proxy is empty in configuration.
-        if proxy and not self.proxies.get('https', True):
-            raise ValueError(MESSAGES['BLANK_PROXY_ERROR'] + str(self.proxies))
 
     def http_request(self, method: str, url_suffix: str, json_data=None, params=None,
                      headers=None):
@@ -136,11 +151,10 @@ class Client(BaseClient):
         """
         resp = Response()
         try:
-            resp = self._http_request(method=method, url_suffix=url_suffix, json_data=json_data, params=params,
-                                      headers=headers, resp_type='response',
-                                      timeout=self.request_timeout,
-                                      ok_codes=(200, 201, 400, 401, 403, 404, 406, 407, 500, 503),
-                                      proxies=self.proxies)
+            resp = super()._http_request(method=method, url_suffix=url_suffix, json_data=json_data, params=params,
+                                         headers=headers, resp_type='response',
+                                         timeout=self.request_timeout,
+                                         ok_codes=(200, 201), error_handler=self.handle_error_response)
         except MissingSchema:
             raise ValueError(MESSAGES['MISSING_SCHEMA_ERROR'])
         except InvalidSchema:
@@ -160,8 +174,6 @@ class Client(BaseClient):
                     return resp.json()
             elif self.is_supported_context_type(content_type):
                 return resp
-        else:
-            self.handle_error_response(resp)
 
     @staticmethod
     def is_supported_context_type(content_type: str):
@@ -228,7 +240,7 @@ class Client(BaseClient):
             demisto.debug(f'Response Code: {resp.status_code}, Reason: {status_code_messages[resp.status_code]}')
             raise DemistoException(status_code_messages[resp.status_code])
         else:
-            resp.raise_for_status()
+            raise DemistoException(resp.raise_for_status())
 
     def get_api_token(self):
         """
@@ -252,7 +264,7 @@ class Client(BaseClient):
         }
 
         demisto.debug('Calling authentication API for retrieve api-token')
-        resp = self.http_request(method='POST', url_suffix=URL_SUFFIX['TEST_MODULE'], headers=headers)
+        resp = self.http_request(method='POST', url_suffix=URL_SUFFIX['GET_TOKEN'], headers=headers)
         integration_context = self.set_integration_context(resp)
 
         return integration_context.get('api_token')
@@ -269,9 +281,8 @@ class Client(BaseClient):
         integration_context = demisto.getIntegrationContext()
         api_token = resp.headers.get('X-FeApi-Token')
         if api_token:
-            shorten_by = 5  # Shorten token validity period by 5 seconds for safety
             integration_context['api_token'] = api_token
-            integration_context['valid_until'] = time.time() + DEFAULT_SESSION_TIMEOUT - shorten_by
+            integration_context['valid_until'] = time.time() + DEFAULT_SESSION_TIMEOUT
         else:
             raise ValueError('No api token found. Please try again')
         demisto.setIntegrationContext(integration_context)
@@ -281,7 +292,186 @@ class Client(BaseClient):
 ''' HELPER FUNCTION'''
 
 
-def get_request_timeout() -> int:
+def set_attachment_file(client, incident: dict, uuid: str, headers: dict):
+    """
+    Set attachment in incident entry.
+
+    :param client: Client object.
+    :param incident: Incident entry.
+    :param uuid: uuid of alert.
+    :param headers: Header of API which will pass to get artifact API.
+    """
+
+    # Call get artifacts data api
+    headers['Accept'] = CONTENT_TYPE_ZIP
+    artifacts_resp = client.http_request('GET', url_suffix=URL_SUFFIX[
+        'GET_ARTIFACTS'].format(uuid), headers=headers)
+
+    # Create file from Content
+    if int(artifacts_resp.headers.get('Content-Length', '0')) > 0:
+        file_name = f'{uuid}.zip'
+
+        attachment_file = fileResult(filename=file_name, data=artifacts_resp.content)
+
+        incident['attachment'] = [{
+            'path': attachment_file['FileID'],
+            'name': file_name
+        }]
+
+
+def get_incidents_for_alert(**kwargs) -> list:
+    """
+    Return List of incidents for alert.
+
+    :param kwargs: Contains all required arguments.
+    :return: Incident List for alert.
+    """
+    incidents: List[Dict[str, Any]] = []
+
+    headers = {
+        'X-FeApi-Token': kwargs['client'].get_api_token(),
+        'Accept': CONTENT_TYPE_JSON
+    }
+
+    params = {
+        'start_time': time.strftime(API_SUPPORT_DATE_FORMAT, time.localtime(kwargs['start_time'])),
+        'duration': '48_hours'
+    }
+
+    if kwargs['malware_type']:
+        params['malware_type'] = kwargs['malware_type']
+
+    # http call
+    resp = kwargs['client'].http_request(method="GET", url_suffix=URL_SUFFIX['GET_ALERTS'], params=params,
+                                         headers=headers)
+
+    total_records = resp.get('alertsCount', 0)
+    if total_records > 0:
+
+        if kwargs['replace_alert_url']:
+            replace_alert_url_key_domain_to_instance_url(resp.get('alert', []), kwargs['instance_url'])
+
+        count = 0
+        for alert in resp.get('alert', []):
+            # set incident
+            context_alert = remove_empty_entities(alert)
+            context_alert['incidentType'] = ALERT_INCIDENT_TYPE
+            if count >= kwargs['fetch_limit']:
+                break
+
+            incident = {
+                'name': context_alert.get('name', ''),
+                'occurred': dateparser.parse(context_alert.get('occurred', '')).strftime(
+                    DATE_FORMAT_WITH_MICROSECOND),
+                'rawJSON': json.dumps(context_alert)
+            }
+
+            if not kwargs['is_test'] and alert.get('uuid', '') and kwargs['fetch_artifacts']:
+                set_attachment_file(client=kwargs['client'], incident=incident, uuid=alert.get('uuid', ''),
+                                    headers=headers)
+
+            remove_nulls_from_dictionary(incident)
+            incidents.append(incident)
+            count += 1
+    return incidents
+
+
+def get_incidents_for_event(client: Client, start_time: int, fetch_limit: int, mvx_correlated: bool):
+    """
+    Return List of incidents for event.
+
+    :param client: Client object.
+    :param start_time: It contains the timestamp in milliseconds on when to start fetching incidents.
+    :param fetch_limit: limit for number of fetch incidents per fetch.
+    :param mvx_correlated: The boolean flag that tell us to fetch events which only mvx correlated.
+    :return: Incident List for event.
+    """
+    incidents: List[Dict[str, Any]] = []
+
+    # Preparing header and parameters
+    headers = {
+        'X-FeApi-Token': client.get_api_token(),
+        'Accept': CONTENT_TYPE_JSON
+    }
+
+    params = {
+        'start_time': time.strftime(API_SUPPORT_DATE_FORMAT, time.localtime(start_time)),
+        'duration': '48_hours',
+        'event_type': 'Ips Event'
+    }
+
+    if mvx_correlated:
+        params['mvx_correlated_only'] = 'true'
+
+    # http call
+    resp = client.http_request(method="GET", url_suffix=URL_SUFFIX['GET_EVENTS'], params=params, headers=headers)
+
+    total_records = len(resp.get('events', []))
+    if total_records > 0:
+        count = 0
+        for event in resp.get('events', []):
+            # set incident
+            context_event = remove_empty_entities(event)
+            context_event['incidentType'] = IPS_EVENT_INCIDENT_TYPE
+            if count >= fetch_limit:
+                break
+
+            incident = {
+                'name': context_event.get('ruleName', ''),
+                'occurred': context_event.get('occurred', ''),
+                'severity': PLATFORM_SEVERITY_TO_SEVERITY_MAP.get(str(context_event.get('severity', 0)), 0),
+                'rawJSON': json.dumps(context_event)
+            }
+            remove_nulls_from_dictionary(incident)
+            incidents.append(incident)
+            count += 1
+    return incidents
+
+
+def validate_date_range(fetch_time: str):
+    """
+    Validate date range and it should be up to 2 days as per API limitation.
+    Will raise ValueError() if date is not in range.
+
+    :param fetch_time: A time in format of (<number> <unit>). eg. 1 hour.
+    """
+    two_days_before_time = datetime.utcnow() - timedelta(hours=48)
+
+    start_time, _ = parse_date_range(fetch_time, utc=True)
+
+    if start_time < two_days_before_time:
+        raise ValueError(MESSAGES['FIRST_FETCH_ARG_VALIDATION'])
+
+
+def pascal_case(st) -> str:
+    """
+    Covert string to pascal case.
+
+    :param st: string
+    :return: pascal case string.
+    """
+    if st.find('-') != -1 or st.find('_') != -1:
+        st = ''.join(a.capitalize() for a in re.split('-|_', st))
+    return st[:1].upper() + st[1:len(st)]
+
+
+def remove_dash_and_underscore_from_key(d):  # type: ignore
+    """
+    Recursively traverse dict and change keys into pascal case.
+
+    :param d: Input dictionary.
+    :return: Dictionary with pascal case key.
+    """
+
+    if not isinstance(d, (dict, list)):
+        return d
+    elif isinstance(d, list):
+        return [value for value in (remove_dash_and_underscore_from_key(value) for value in d)]
+    else:
+        return {pascal_case(key): remove_dash_and_underscore_from_key(value) for key, value in d.items()}
+
+
+def get_request_timeout(request_timeout: str) -> int:
     """
     Validate and return the request timeout parameter.
     The parameter must be a positive integer.
@@ -292,37 +482,36 @@ def get_request_timeout() -> int:
     :return: boolean
     """
     try:
-        request_timeout = demisto.params().get('request_timeout', DEFAULT_REQUEST_TIMEOUT)
-        request_timeout = DEFAULT_REQUEST_TIMEOUT if not request_timeout else request_timeout
-        request_timeout = int(request_timeout)
+        request_timeout_str = str(DEFAULT_REQUEST_TIMEOUT) if not request_timeout else request_timeout
+        request_timeout_int = int(request_timeout_str)
     except ValueError:
         raise ValueError(MESSAGES['REQUEST_TIMEOUT_VALIDATION'])
 
-    if request_timeout <= 0:
+    if request_timeout_int <= 0:
         raise ValueError(MESSAGES['REQUEST_TIMEOUT_VALIDATION'])
-    elif request_timeout > REQUEST_TIMEOUT_MAX_VALUE:
+    elif request_timeout_int > REQUEST_TIMEOUT_MAX_VALUE:
         raise ValueError(MESSAGES['REQUEST_TIMEOUT_EXCEED_ERROR'])
 
-    return request_timeout
+    return request_timeout_int
 
 
-def get_fetch_limit():
+def get_fetch_limit(fetch_limit):
     """
     Retrieve fetch limit from demisto arguments and validate it.
     Will raise ValueError if inappropriate input given.
 
+    :param fetch_limit: The maximum number of incident want to fetch.
     :return: fetch limit
     """
-    fetch_limit = demisto.params().get('fetch_limit', DEFAULT_FETCH_LIMIT)
     fetch_limit = DEFAULT_FETCH_LIMIT if not fetch_limit else fetch_limit
-
     try:
-        if not 1 <= int(fetch_limit) <= 200:
-            raise ValueError(MESSAGES['FETCH_LIMIT_VALIDATION'])
+        fetch_limit_int = int(fetch_limit)
+        if not 1 <= fetch_limit_int <= 200:
+            raise ValueError
     except ValueError:
         raise ValueError(MESSAGES['FETCH_LIMIT_VALIDATION'])
 
-    return fetch_limit
+    return fetch_limit_int
 
 
 def generate_report_file_name(args: Dict[str, Any]) -> str:
@@ -378,19 +567,6 @@ def validate_ips_report_type_arguments(args: Dict[str, Any], params: Dict[str, A
     return params
 
 
-def validate_date(date: str, date_format: str) -> str:
-    """
-    Validate and add date suffix into date.
-    Will raise ValueError if error occur.
-
-    :param date: The date value.
-    :param date_format: The format of date.
-    :return: return formated date.
-    """
-    datetime.strptime(date, date_format).strftime(date_format)
-    return f"{date}T00:00:00.000+00:00"
-
-
 def validate_time_parameters(args: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
     """
     Validates the time arguments from input arguments of reports command.
@@ -406,16 +582,18 @@ def validate_time_parameters(args: Dict[str, Any], params: Dict[str, Any]) -> Di
 
     if 'start_time' in arg_keys:
         start_time = args.get('start_time', '')
-        try:
-            params['start_time'] = validate_date(start_time, DATE_FORMAT_OF_YEAR_MONTH_DAY)
-        except ValueError:
+        date_time = dateparser.parse(start_time)
+        if date_time:
+            params['start_time'] = str(date_time.strftime(API_SUPPORT_DATE_FORMAT))
+        else:
             params['start_time'] = start_time
 
     if 'end_time' in arg_keys:
         end_time = args.get('end_time', '')
-        try:
-            params['end_time'] = validate_date(end_time, DATE_FORMAT_OF_YEAR_MONTH_DAY)
-        except ValueError:
+        date_time = dateparser.parse(end_time)
+        if date_time:
+            params['end_time'] = str(date_time.strftime(API_SUPPORT_DATE_FORMAT))
+        else:
             params['end_time'] = end_time
 
     return params
@@ -455,7 +633,7 @@ def get_reports_params(args: Dict[str, Any]) -> Dict[str, Any]:
     return params
 
 
-def add_time_suffix_into_arguments(args):
+def add_time_suffix_into_arguments(args: Dict[str, Any]):
     """
     Add time suffix into arguments.
 
@@ -465,15 +643,18 @@ def add_time_suffix_into_arguments(args):
     arg_keys = args.keys()
     if 'start_time' in arg_keys:
         start_time = args.get('start_time', '')
-        try:
-            args['start_time'] = validate_date(start_time, DATE_FORMAT_OF_YEAR_MONTH_DAY)
-        except ValueError:
+        date_time = dateparser.parse(start_time)
+        if date_time:
+            args['start_time'] = str(date_time.strftime(API_SUPPORT_DATE_FORMAT))
+        else:
             args['start_time'] = start_time
+
     if 'end_time' in arg_keys:
         end_time = args.get('end_time', '')
-        try:
-            args['end_time'] = validate_date(end_time, DATE_FORMAT_OF_YEAR_MONTH_DAY)
-        except ValueError:
+        date_time = dateparser.parse(end_time)
+        if date_time:
+            args['end_time'] = str(date_time.strftime(API_SUPPORT_DATE_FORMAT))
+        else:
             args['end_time'] = end_time
 
 
@@ -492,8 +673,23 @@ def get_events_params(args: Dict[str, Any]) -> Dict[str, Any]:
 
     if 'duration' in arg_keys:
         params['duration'] = args.get('duration', '')
+
+    if 'start_time' in arg_keys:
+        start_time = args.get('start_time', '')
+        date_time = dateparser.parse(start_time)
+        if date_time:
+            params['start_time'] = str(date_time.strftime(API_SUPPORT_DATE_FORMAT))
+        else:
+            params['start_time'] = start_time
+
     if 'end_time' in arg_keys:
-        params['end_time'] = args.get('end_time', '')
+        end_time = args.get('end_time', '')
+        date_time = dateparser.parse(end_time)
+        if date_time:
+            params['end_time'] = str(date_time.strftime(API_SUPPORT_DATE_FORMAT))
+        else:
+            params['end_time'] = end_time
+
     if 'mvx_correlated_only' in arg_keys:
         mvx_correlated_only = args.get('mvx_correlated_only', '').lower()
         try:
@@ -505,7 +701,7 @@ def get_events_params(args: Dict[str, Any]) -> Dict[str, Any]:
     return params
 
 
-def prepare_hr_for_artifact_metadata(artifacts_info) -> str:
+def prepare_hr_for_artifact_metadata(artifacts_info: List[Dict[str, Any]]) -> str:
     """
     Prepare Human readable for get artifact metadata.
 
@@ -526,71 +722,11 @@ def prepare_hr_for_artifact_metadata(artifacts_info) -> str:
                            headers=['Artifact Type', 'Artifact Name', 'Artifact Size (Bytes)'], removeNull=True)
 
 
-def nested_to_flat(src: Dict[str, Any], key: str) -> Dict[str, Any]:
-    """
-    Convert nested dictionary to flat by contact the keys. Also converts keys in pascal string format.
-
-    :param src: sub-dictionary that needs to convert from nested to flat. (e.g. "foo": {"bar": "some-value"})
-    :param key: main key of sub-dictionary (e.g "foo")
-    :return: flat dictionary with pascal formatted keys (e.g. {"FooBar": "some-value"})
-    """
-    flat_dict: Dict[str, str] = {}
-    for sub_key, sub_value in src.items():
-        pascal_key = '{}{}'.format(key[0].upper() + key[1:], sub_key[0].upper() + sub_key[1:])
-        flat_dict[pascal_key] = sub_value
-
-    return flat_dict
-
-
-def prepare_context_dict(response_dict: Dict[str, Any],
-                         keys_with_hierarchy: tuple = (),
-                         exclude_keys: tuple = ()) -> Dict[str, Any]:
-    """
-    Prepare the context dictionary as per the standards.
-
-    :param response_dict: dictionary getting from API response that contains sub-dictionaries
-    :param keys_with_hierarchy: list of keys that contains sub-dictionary as its value.
-    :param exclude_keys: keys need to exclude.
-    :return: single level dictionary
-    """
-    simple_dict: Dict[str, str] = {}
-    for key, value in response_dict.items():
-        if key in keys_with_hierarchy:
-            if type(response_dict.get(key, {})) is not str:
-                simple_dict.update(nested_to_flat(response_dict.get(key, {}), key))
-        elif key not in exclude_keys:
-            simple_dict[key] = value
-    return simple_dict
-
-
-def pascal_case(st) -> str:
-    """
-    Covert string to pascal case.
-
-    :param st: string
-    :return: pascal case string.
-    """
-    return ''.join(a.capitalize() for a in split('([^a-zA-Z])', st) if a.isalnum())
-
-
-def convert_dict_key_into_pascal_case(dictionary: Dict[str, Any]) -> Dict:
-    """
-    Convert dictionary into pascal case dictionary.
-
-    :param dictionary: dictionary contain keys and values.
-    :return: pascal case string.
-    """
-    pascal_dict: Dict[str, Any] = {}
-    for key in dictionary:
-        new_key = pascal_case(key)
-        pascal_dict.update({new_key: dictionary[key]})
-
-    return pascal_dict
-
-
 def remove_empty_entities(d):
     """
     Recursively remove empty lists, empty dicts, or None elements from a dictionary.
+    Note. This is extended feature of CommonServerPython.py remove_empty_elements() method as it was not removing
+    empty character x == ''.
 
     :param d: Input dictionary.
     :return: Dictionary with all empty lists, and empty dictionaries removed.
@@ -606,259 +742,6 @@ def remove_empty_entities(d):
     else:
         return {key: value for key, value in ((key, remove_empty_entities(value))
                                               for key, value in d.items()) if not empty(value)}
-
-
-def prepare_heapspraying_context(heapspraying_list: list) -> Dict:
-    """
-    Prepare context for heapspraying key in os changes response.
-
-    :param heapspraying_list: List of heapspraying.
-    :return: Dictionary of context output for heapspraying.
-    """
-    heapspraying_context_list = []
-    for heapspraying in heapspraying_list:
-        heapspraying_context_dict = prepare_context_dict(heapspraying, keys_with_hierarchy=('processinfo', ''),
-                                                         exclude_keys=('BytesList', ''))
-        heapspraying_context_dict.update(
-            nested_to_flat(
-                prepare_context_dict(response_dict=heapspraying.get('BytesList', {}), exclude_keys=('Entry', '')),
-                key='BytesList'))
-        heapspraying_context_dict.update({'BytesListEntry': heapspraying.get('BytesList', {}).get('Entry', {})})
-
-        heapspraying_context_list.append(heapspraying_context_dict)
-    return {'heapspraying': heapspraying_context_list}
-
-
-def prepare_process_context(process_list: list) -> Dict:
-    """
-    Prepare context for process key in os changes response.
-
-    :param process_list: List of process.
-    :return: Dictionary of context output for process.
-    """
-    process_context_list = []
-    for process in process_list:
-        process_context_dict = prepare_context_dict(process,
-                                                    keys_with_hierarchy=('fid', 'ParentUserAccount', 'UserAccount'),
-                                                    exclude_keys=('telemetry_data', ''))
-        process_context_dict.update(
-            nested_to_flat(convert_dict_key_into_pascal_case(process.get('telemetry_data', {})), key='TelemetryData'))
-        process_context_list.append(process_context_dict)
-    return {'process': process_context_list}
-
-
-def prepare_regkey_context(regkey_list: list) -> Dict:
-    """
-    Prepare context for regkey key in os changes response.
-
-    :param regkey_list: List of regkey.
-    :return: Dictionary of context output for regkey.
-    """
-    regkey_context_list = []
-    for regkey in regkey_list:
-        regkey_context_list.append(prepare_context_dict(regkey, keys_with_hierarchy=('processinfo', '')))
-    return {'regkey': regkey_context_list}
-
-
-def prepare_network_context(network: Union[Dict[str, Any], List[Dict[str, Any]]]) -> Dict[str, Any]:
-    """
-    Prepare context for network key in os changes response.
-
-    :param network: List or dictionary of network.
-    :return: Dictionary of context output for network.
-    """
-    network_context_dict: Dict[str, Any] = {}
-    if type(network) is dict:
-        network_context_dict = {
-            'network': prepare_context_dict(network, keys_with_hierarchy=('processinfo', ''))}  # type: ignore
-    elif type(network) is list:
-        network_context_list = []
-        for network_dict in network:
-            network_context_list.append(
-                prepare_context_dict(network_dict, keys_with_hierarchy=('processinfo', '')))  # type: ignore
-        network_context_dict = {'network': network_context_list}
-    return network_context_dict
-
-
-def prepare_exploitcode_context(exploitcode_list: list) -> Dict:
-    """
-    Prepare context for exploitcode key in os changes response.
-
-    :param exploitcode_list: List of exploitcode.
-    :return: Dictionary of context output for exploitcode.
-    """
-    exploitcode_context_list = []
-    for exploitcode in exploitcode_list:
-        exploitcode_context_dict = prepare_context_dict(exploitcode, keys_with_hierarchy=('processinfo', ''),
-                                                        exclude_keys=('callstack', 'params'))
-        callstack_entry_context_list = []
-        for callstack_entry in exploitcode.get('callstack', {}).get('callstack-entry', []):
-            callstack_entry_context_list.append(
-                convert_dict_key_into_pascal_case(callstack_entry))
-        exploitcode_context_dict.update({'CallstackEntry': callstack_entry_context_list})
-        exploitcode_context_dict.update({'param': exploitcode.get('params', {}).get('param', {})})
-        exploitcode_context_list.append(exploitcode_context_dict)
-    return {'exploitcode': exploitcode_context_list}
-
-
-def prepare_folder_context(folder_list: list) -> Dict:
-    """
-    Prepare context for folder key in os changes response.
-
-    :param folder_list: List of folder.
-    :return: Dictionary of context output for folder.
-    """
-    folder_context_list = []
-    for folder in folder_list:
-        folder_context_list.append(prepare_context_dict(folder, keys_with_hierarchy=('processinfo', '')))
-    return {'folder': folder_context_list}
-
-
-def prepare_file_context(file_list: list) -> Dict:
-    """
-    Prepare context for file key in os changes response.
-
-    :param file_list: List of file.
-    :return: Dictionary of context output for file.
-    """
-    file_context_list = []
-    for file in file_list:
-        file_context_dict = prepare_context_dict(file, keys_with_hierarchy=('fid', 'processinfo'),
-                                                 exclude_keys=('PE', ''))
-
-        file_context_dict.update(nested_to_flat(prepare_context_dict(file.get('PE', {}),
-                                                                     exclude_keys=('Characteristics',
-                                                                                   'DllCharacteristics')), key='PE'))
-        file_context_dict.update(
-            nested_to_flat(file.get('PE', {}).get('DllCharacteristics', {}),
-                           key='PEDllCharacteristics'))
-        file_context_dict.update(
-            nested_to_flat(file.get('PE', {}).get('Characteristics', {}).get('names', {}), key='PECharacteristics'))
-        file_context_dict.update(
-            {'PECharacteristicsValue': file.get('PE', {}).get('Characteristics', {}).get('value', {})})
-        file_context_list.append(file_context_dict)
-    return {'file': file_context_list}
-
-
-def prepare_malicious_alert_context(malicious_alert_list: list) -> Dict:
-    """
-    Prepare context for malicious alert key in os changes response.
-
-    :param malicious_alert_list: List of malicious alert.
-    :return: Dictionary of context output for malicious alert.
-    """
-    malicious_alert_context_list = []
-    for malicious_alert in malicious_alert_list:
-        malicious_alert_context_list.append(convert_dict_key_into_pascal_case(malicious_alert))
-    return {'MaliciousAlert': malicious_alert_context_list}
-
-
-def prepare_dialog_detected_context(dialog_detected_list: list) -> Dict:
-    """
-    Prepare context for dialog detected key in os changes response.
-
-    :param dialog_detected_list: List of dialog detected.
-    :return: Dictionary of context output for dialog detected.
-    """
-    dialog_detected_context_list = []
-    for dialog_detected in dialog_detected_list:
-        dialog_detected_context_list.append(
-            prepare_context_dict(convert_dict_key_into_pascal_case(dialog_detected),
-                                 keys_with_hierarchy=('Processinfo', '')))
-    return {'DialogDetected': dialog_detected_context_list}
-
-
-def prepare_dialog_dismissed_context(dialog_dismissed_list: list) -> Dict:
-    """
-    Prepare context for dialog dismissed key in os changes response.
-
-    :param dialog_dismissed_list: List of dialog dismissed.
-    :return: Dictionary of context output for dialog dismissed.
-    """
-    dialog_dismissed_context_list = []
-    for dialog_dismissed in dialog_dismissed_list:
-        dialog_dismissed_context_list.append(
-            prepare_context_dict(convert_dict_key_into_pascal_case(dialog_dismissed),
-                                 keys_with_hierarchy=('Processinfo', '')))
-    return {'DialogDismissed': dialog_dismissed_context_list}
-
-
-def prepare_os_changes_context_output(os_changes: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Prepare context for os changes key in alert response.
-
-    :param os_changes: Dictionary of os changes.
-    :return: Dictionary of context output for os changes.
-    """
-    os_changes_context = {}
-    os_changes_context.update(nested_to_flat(os_changes.get('os', {}), key='os'))
-    os_changes_context.update(nested_to_flat(os_changes.get('os_monitor', {}), key='OsMonitor'))
-    os_changes_context.update(nested_to_flat(os_changes.get('analysis', {}), key='Analysis'))
-    os_changes_context.update(
-        convert_dict_key_into_pascal_case(nested_to_flat(os_changes.get('action_fopen', {}), key='action_fopen_')))
-    os_changes_context.update(
-        convert_dict_key_into_pascal_case(nested_to_flat(os_changes.get('application', {}), key='application_')))
-    os_changes_context.update(nested_to_flat(prepare_context_dict(response_dict=os_changes.get('QuerySystemTime', {}),
-                                                                  keys_with_hierarchy=('processinfo', 'SystemTime')),
-                                             key='QuerySystemTime'))
-    os_changes_context.update({'EndOfReport': os_changes.get('end-of-report', '')})
-    os_changes_context.update(nested_to_flat(
-        prepare_context_dict(convert_dict_key_into_pascal_case(os_changes.get('wmiquery', {})),
-                             exclude_keys=('Wmicontents', ''),
-                             keys_with_hierarchy=('Processinfo', '')), key='Wmiquery'))
-    os_changes_context.update(
-        nested_to_flat(os_changes.get('wmiquery', {}).get('wmicontents', {}).get('wmicontent', {}),
-                       key='WmiqueryWmicontent'))
-
-    os_changes_context.update(prepare_heapspraying_context(os_changes.get('heapspraying', [])))
-
-    os_changes_context.update(prepare_process_context(os_changes.get('process', [])))
-
-    os_changes_context.update(prepare_regkey_context(os_changes.get('regkey', [])))
-
-    os_changes_context.update(prepare_network_context(os_changes.get('network', [])))
-
-    os_changes_context.update(prepare_exploitcode_context(os_changes.get('exploitcode', [])))
-
-    os_changes_context.update(prepare_folder_context(os_changes.get('folder', [])))
-
-    os_changes_context.update(prepare_file_context(os_changes.get('file', [])))
-
-    os_changes_context.update(prepare_malicious_alert_context(os_changes.get('malicious-alert', [])))
-
-    os_changes_context.update(prepare_dialog_detected_context(os_changes.get('dialog-detected', [])))
-
-    os_changes_context.update(prepare_dialog_dismissed_context(os_changes.get('dialog-dismissed', [])))
-
-    os_changes_context.update({'uac': os_changes.get('uac', [])})
-    return os_changes_context
-
-
-def get_alert_context_output(alert: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Prepare context for alert response.
-
-    :param alert: Dictionary of response.
-    :return: Dictionary of context output for alert.
-    """
-    alert_context = prepare_context_dict(response_dict=alert, keys_with_hierarchy=(
-        'src', 'dst', 'staticAnalysis', 'stolenData'), exclude_keys=('explanation', 'cncServices', 'osChanges'))
-    alert_context.update(nested_to_flat(prepare_context_dict(
-        response_dict=alert.get('explanation', {}).get('stolenData', {}),
-        keys_with_hierarchy=('info', '')), 'StolenData')
-    )
-    alert_context.update(nested_to_flat(alert.get('explanation', {}).get('staticAnalysis', {}),
-                                        key='StaticAnalysis'))
-
-    alert_context.update(alert.get('explanation', {}).get('malwareDetected', {}))
-
-    alert_context.update(alert.get('explanation', {}).get('cncServices', {}))
-
-    os_changes_context = []
-    for os_changes in alert.get('explanation', {}).get('osChanges', []):
-        os_changes_context.append(prepare_os_changes_context_output(os_changes))
-    alert_context.update({'osChanges': os_changes_context})
-    return alert_context
 
 
 def prepare_hr_for_alert_response(resp: Dict) -> str:
@@ -922,20 +805,78 @@ def prepare_hr_for_events(events_info) -> str:
                             'Severity', 'Rule', 'Protocol'], removeNull=True)
 
 
+def replace_alert_url_key_domain_to_instance_url(alerts_resp: list, instance_url: str):
+    """
+    Change domain of 'alertUrl' to the instance URL.
+
+    :param alerts_resp: List contain dictionary of alerts.
+    :param instance_url: URL to connect to the FireEye NX.
+    """
+
+    def replace_url(alert_url: str, prefix_url: str) -> str:
+        """
+        Replace alert url domain to prefix url.
+
+        :param alert_url: Actual url that getting from response.
+        :param prefix_url: URL to connect to the FireEye NX.
+        :return:
+        """
+        if alert_url.startswith('http://'):  # NOSONAR
+            alert_url = alert_url.replace('http://', '')  # NOSONAR
+
+        elif alert_url.startswith('https://'):
+            alert_url = alert_url.replace('https://', '')
+
+        if alert_url.startswith('www.'):
+            alert_url = alert_url.replace('www.', '')
+
+        elif alert_url.startswith('WWW.'):
+            alert_url = alert_url.replace('WWW.', '')
+
+        if not prefix_url.endswith('/'):
+            prefix_url = f"{prefix_url + '/'}"
+
+        alert_url_split = alert_url.split('/', 1)
+
+        suffix_url = ''.join(alert_url_split[count] for count in range(len(alert_url_split)) if count != 0)
+
+        return f"{prefix_url + suffix_url}"
+
+    for alert_index in range(len(alerts_resp)):
+        if alerts_resp[alert_index].get('alertUrl'):
+            alerts_resp[alert_index]['alertUrl'] = replace_url(alerts_resp[alert_index]['alertUrl'], instance_url)
+
+
 ''' REQUESTS FUNCTIONS '''
 
 
-def test_function(client: Client) -> str:
+def test_function(**kwargs) -> str:
     """
-    Performs test connectivity by valid http response
+    Performs test connectivity by valid http response.
 
-    :param client: client object which is used to get response from api
+    :param kwargs: Contains all required parameters.
     :return: raise ValueError if any error occurred during connection
     """
-    headers = {
-        'Accept': CONTENT_TYPE_JSON
-    }
-    client.http_request(method='POST', url_suffix=URL_SUFFIX['TEST_MODULE'], headers=headers)
+    if kwargs['is_fetch']:
+        fetch_limit = get_fetch_limit(kwargs['fetch_limit'])
+
+        # getting numeric value from string representation
+        start_time, _ = parse_date_range(kwargs['first_fetch_time'], date_format=DATE_FORMAT, utc=True)
+
+        # validate start_time should be less then 48 hour as per API limitation
+        validate_date_range(kwargs['first_fetch_time'])
+
+        first_fetch = date_to_timestamp(start_time, date_format=DATE_FORMAT) / 1000
+        fetch_incidents(client=kwargs['client'], last_run=demisto.getLastRun(), first_fetch=first_fetch,
+                        fetch_limit=fetch_limit, malware_type=kwargs['malware_type'],
+                        is_test=True, fetch_type=kwargs['fetch_type'], mvx_correlated=kwargs['mvx_correlated'],
+                        replace_alert_url=kwargs['replace_alert_url'], instance_url=kwargs['instance_url'],
+                        fetch_artifacts=kwargs['fetch_artifacts'])
+    else:
+        headers = {
+            'Accept': CONTENT_TYPE_JSON
+        }
+        kwargs['client'].http_request(method='POST', url_suffix=URL_SUFFIX['GET_TOKEN'], headers=headers)
 
     return 'ok'
 
@@ -950,8 +891,7 @@ def get_artifacts_metadata_by_alert_command(client: Client, args: Dict[str, Any]
     :return: CommandResults
     """
     uuid = args.get('uuid', '')
-    if not uuid.islower():
-        uuid = uuid.lower()
+    uuid = uuid.lower()
 
     # Preparing header
     headers = {
@@ -972,13 +912,17 @@ def get_artifacts_metadata_by_alert_command(client: Client, args: Dict[str, Any]
     # Prepare human readable
     hr = prepare_hr_for_artifact_metadata(artifacts_info)
 
-    custom_ec = {
+    custom_ec_for_artifact_metadata = {
         'ArtifactsMetadata': artifacts_metadata_custom_ec,
-        'uuid': uuid
+        'Uuid': uuid
     }
+
+    # Remove dash, underscore from key and make it pascal case.
+    custom_ec = remove_dash_and_underscore_from_key(custom_ec_for_artifact_metadata)
+
     return CommandResults(
         outputs_prefix='FireEyeNX.Alert',
-        outputs_key_field='uuid',
+        outputs_key_field='Uuid',
         outputs=custom_ec,
         readable_output=hr,
         raw_response=resp
@@ -995,9 +939,7 @@ def get_artifacts_by_alert_command(client: Client, args: Dict[str, Any]) -> Unio
     :return: Dictionary of file info or empty result message
     """
     uuid = args.get('uuid', '')
-
-    if not uuid.islower():
-        uuid = uuid.lower()
+    uuid = uuid.lower()
 
     # Preparing header
     headers = {
@@ -1011,7 +953,7 @@ def get_artifacts_by_alert_command(client: Client, args: Dict[str, Any]) -> Unio
 
     # Create file from Content
     if int(artifacts_resp.headers.get('Content-Length', '0')) > 0:
-        file_name = uuid + '.zip'
+        file_name = f'{uuid}.zip'
         file_entry = fileResult(filename=file_name, data=artifacts_resp.content)
         return file_entry
     else:
@@ -1052,12 +994,15 @@ def get_reports_command(client: Client, args: Dict[str, Any]) -> Union[str, Dict
 
 
 @logger
-def get_alerts_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def get_alerts_command(client: Client, args: Dict[str, Any], replace_alert_url: bool, instance_url: str) -> \
+        Union[str, CommandResults]:
     """
     Retrieve list of alerts based on various argument(s).
 
     :param client: Client object
     :param args: The command arguments provided by user.
+    :param replace_alert_url: Replace the domain of the alert URL key to the Instance URL.
+    :param instance_url: URL to connect to the FireEye NX.
     :return: Standard command result or no records found message
     """
     add_time_suffix_into_arguments(args)
@@ -1075,18 +1020,24 @@ def get_alerts_command(client: Client, args: Dict[str, Any]) -> Union[str, Comma
     if total_records <= 0:
         return MESSAGES['NO_RECORDS_FOUND'].format('alert(s)')
 
-    # Creating entry context
-    alerts_context_list = []
-    for alert in resp.get('alert', []):
-        alerts_context_list.append(get_alert_context_output(alert))
-    custom_ec = remove_empty_entities(alerts_context_list)
+    alerts_resp = resp.get('alert', [])
+
+    # Replace the domain of the alertUrl key to Instance URL if it is true.
+    if replace_alert_url:
+        replace_alert_url_key_domain_to_instance_url(alerts_resp, instance_url)
 
     # Creating human-readable
     hr = prepare_hr_for_alert_response(resp)
 
+    # Creating entry context
+    custom_ec_for_alerts = remove_empty_entities(alerts_resp)
+
+    # Remove dash, underscore from key and make it pascal case.
+    custom_ec = remove_dash_and_underscore_from_key(custom_ec_for_alerts)
+
     return CommandResults(
         outputs_prefix='FireEyeNX.Alert',
-        outputs_key_field='uuid',
+        outputs_key_field='Uuid',
         outputs=custom_ec,
         readable_output=hr,
         raw_response=resp
@@ -1095,63 +1046,31 @@ def get_alerts_command(client: Client, args: Dict[str, Any]) -> Union[str, Comma
 
 @logger
 def fetch_incidents(
-        client: Client,
-        malware_type: str,
-        last_run: Dict[str, Any],
-        first_fetch: int,
-        fetch_limit: int,
-) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+        **kwargs
+) -> Tuple[Union[Dict[str, Any], None], Union[List[Dict[str, Any]], None]]:
     """
     This function retrieves new incidents every interval.
 
-    :param client: Client object
-    :param malware_type: type of malware specified in integration configuration
-    :param last_run: A dictionary with a key containing the latest incident modified time which we got from last run.
-    :param first_fetch: It contains the timestamp in milliseconds on when to start fetching
-                        incidents, if last_run is not provided.
-    :param fetch_limit: limit for number of fetch incidents per fetch.
+    :param kwargs : Dictionary contain all required arguments.
     :return: Tuple containing two elements. incidents list and timestamp.
     """
     # Retrieving last run time if not none, otherwise first_fetch will be considered.
-    start_time = last_run.get('start_time', None)
-    start_time = int(start_time) if start_time else first_fetch
+    start_time = kwargs['last_run'].get('start_time')
+    start_time = int(start_time) if start_time else kwargs['first_fetch']
 
-    next_run = {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()}
+    next_run = {'start_time': datetime.now(timezone.utc).timestamp()}
 
-    incidents: List[Dict[str, Any]] = []
-
-    # Preparing header and parameters
-    headers = {
-        'X-FeApi-Token': client.get_api_token(),
-        'Accept': CONTENT_TYPE_JSON
-    }
-    params = {
-        'start_time': time.strftime('%Y-%m-%dT%H:%M:%S.000-00:00', time.localtime(start_time))
-    }
-    if malware_type:
-        params['malware_type'] = malware_type
-
-    # http call
-    resp = client.http_request(method="GET", url_suffix=URL_SUFFIX['GET_ALERTS'], params=params, headers=headers)
-
-    total_records = resp.get('alertsCount', 0)
-    if total_records > 0:
-        count = 0
-        for alert in resp.get('alert', []):
-            # set incident
-            context_alert = remove_empty_entities(get_alert_context_output(alert))
-            if count >= fetch_limit:
-                break
-
-            incident = {
-                'name': context_alert.get('name', ''),
-                'rawJSON': json.dumps(context_alert),
-                'details': json.dumps(context_alert)
-            }
-            remove_nulls_from_dictionary(incident)
-            incidents.append(incident)
-            count += 1
-
+    if kwargs['fetch_type'] == 'Events':
+        incidents = get_incidents_for_event(kwargs['client'], start_time,
+                                            kwargs['fetch_limit'], kwargs['mvx_correlated'])
+    else:
+        incidents = get_incidents_for_alert(client=kwargs['client'], malware_type=kwargs['malware_type'],
+                                            start_time=start_time, fetch_limit=kwargs['fetch_limit'],
+                                            replace_alert_url=kwargs['replace_alert_url'],
+                                            instance_url=kwargs['instance_url'], is_test=kwargs['is_test'],
+                                            fetch_artifacts=kwargs['fetch_artifacts'])
+    if kwargs['is_test']:
+        return None, None
     return next_run, incidents
 
 
@@ -1183,14 +1102,15 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> Union[str, Comma
         return MESSAGES['NO_RECORDS_FOUND'].format('event(s)')
 
     # Creating entry context
-    custom_ec = createContext(total_records, removeNull=True)
+    custom_ec_for_event = createContext(total_records, removeNull=True)
+    custom_ec = remove_dash_and_underscore_from_key(custom_ec_for_event)
 
     # Creating human-readable
     hr = prepare_hr_for_events(total_records)
 
     return CommandResults(
         outputs_prefix='FireEyeNX.Event',
-        outputs_key_field='eventId',
+        outputs_key_field='EventId',
         outputs=custom_ec,
         readable_output=hr,
         raw_response=resp
@@ -1205,9 +1125,11 @@ def main() -> None:
     commands = {
         'fireeye-nx-get-artifacts-metadata-by-alert': get_artifacts_metadata_by_alert_command,
         'fireeye-nx-get-reports': get_reports_command,
-        'fireeye-nx-get-alerts': get_alerts_command,
         'fireeye-nx-get-artifacts-by-alert': get_artifacts_by_alert_command,
         'fireeye-nx-get-events': get_events_command
+    }
+    commands_with_params = {
+        'fireeye-nx-get-alerts': get_alerts_command
     }
 
     command = demisto.command()
@@ -1215,22 +1137,14 @@ def main() -> None:
 
     try:
         url = demisto.params().get('url')
-        username = demisto.params().get('username')
-        password = demisto.params().get('password')
+        username = demisto.params().get('credentials', {}).get('identifier')
+        password = demisto.params().get('credentials', {}).get('password')
         verify_certificate = not demisto.params().get('insecure', False)
         proxy = demisto.params().get('proxy', False)
-        fetch_limit = get_fetch_limit()
-        demisto.debug(f"Fetch Limit {fetch_limit}")
-        request_timeout = get_request_timeout()
-        malware_type = demisto.params().get('malware_type', '')
+        request_timeout = demisto.params().get('request_timeout')
+        request_timeout = get_request_timeout(request_timeout)
 
         base_url = f"{url}/wsapis/{API_VERSION}"
-
-        # Get first fetch time from integration params.
-        first_fetch_time = demisto.params().get('firstFetchTimestamp', '48 hours')
-
-        # getting numeric value from string representation
-        start_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
 
         # prepare client class object
         client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, auth=(username, password),
@@ -1244,16 +1158,70 @@ def main() -> None:
 
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
-            result = test_function(client)
+            is_fetch = demisto.params().get('isFetch')
+            first_fetch_time = demisto.params().get('first_fetch')
+
+            # Set first fetch time as default if user leave empty
+            first_fetch_time = DEFAULT_FIRST_FETCH if not first_fetch_time else first_fetch_time
+
+            malware_type = demisto.params().get('malware_type')
+
+            fetch_limit = demisto.params().get('max_fetch')
+
+            fetch_type = demisto.params().get('fetch_type', 'Alerts')
+
+            mvx_correlated = demisto.params().get('fetch_mvx_correlated_events', False)
+
+            replace_alert_url = demisto.params().get('replace_alert_url', False)
+
+            fetch_artifacts = demisto.params().get('fetch_artifacts', False)
+
+            result = test_function(client=client, first_fetch_time=first_fetch_time, fetch_limit=fetch_limit,
+                                   malware_type=malware_type, is_fetch=is_fetch, fetch_type=fetch_type,
+                                   mvx_correlated=mvx_correlated, replace_alert_url=replace_alert_url, instance_url=url,
+                                   fetch_artifacts=fetch_artifacts)
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
+            malware_type = demisto.params().get('malware_type', '')
+
+            first_fetch_time = demisto.params().get('first_fetch')
+
+            # Set first fetch time as default if user leave empty
+            first_fetch_time = DEFAULT_FIRST_FETCH if not first_fetch_time else first_fetch_time
+
+            fetch_limit = demisto.params().get('max_fetch')
+
+            fetch_limit = get_fetch_limit(fetch_limit)
+            demisto.debug(f"Fetch Limit {fetch_limit}")
+
+            fetch_type = demisto.params().get('fetch_type', 'Alerts')
+
+            mvx_correlated = demisto.params().get('fetch_mvx_correlated_events', False)
+
+            # Getting numeric value from string representation
+            start_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
+
+            # Validate start_time should be less then 48 hour as per API limitation
+            validate_date_range(first_fetch_time)
+
+            # Flag indicate to replace the 'alertUrl' domain to Integration URL or not.
+            replace_alert_url = demisto.params().get('replace_alert_url', False)
+
+            fetch_artifacts = demisto.params().get('fetch_artifacts', False)
+
             next_run, incidents = fetch_incidents(
                 client=client,
                 malware_type=malware_type,
                 last_run=demisto.getLastRun(),
-                fetch_limit=int(fetch_limit),
-                first_fetch=date_to_timestamp(start_time, date_format=DATE_FORMAT) / 1000
+                fetch_limit=fetch_limit,
+                first_fetch=date_to_timestamp(start_time, date_format=DATE_FORMAT) / 1000,
+                fetch_type=fetch_type,
+                mvx_correlated=mvx_correlated,
+                replace_alert_url=replace_alert_url,
+                instance_url=url,
+                fetch_artifacts=fetch_artifacts,
+                is_test=False
             )
             # saves next_run for the time fetch-incidents is invoked.
             demisto.setLastRun(next_run)
@@ -1261,15 +1229,18 @@ def main() -> None:
 
         elif command in commands:
             return_results(commands[command](client, args))
+
+        elif command in commands_with_params:
+            # Flag indicate to replace alertUrl domain to Integration URL or not.
+            replace_alert_url = demisto.params().get('replace_alert_url', False)
+
+            return_results(commands_with_params[command](client, args, replace_alert_url, url))
+
     # Log exceptions
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Error: {str(e)}')
 
 
-def init():
-    if __name__ in ('__main__', '__builtin__', 'builtins'):
-        main()
-
-
-init()
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

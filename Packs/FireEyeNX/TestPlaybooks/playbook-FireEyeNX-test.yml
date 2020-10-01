@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 82aabdaf-e8be-41ff-8324-2633334655c4
+    taskid: 4151605d-16f8-4698-8d13-9d0326ae427a
     type: start
     task:
-      id: 82aabdaf-e8be-41ff-8324-2633334655c4
+      id: 4151605d-16f8-4698-8d13-9d0326ae427a
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: ab5344b2-78d6-4c9b-8714-49dc668757e5
+    taskid: 3bbce7a3-9a0a-4f39-846d-17628f1b795a
     type: regular
     task:
-      id: ab5344b2-78d6-4c9b-8714-49dc668757e5
+      id: 3bbce7a3-9a0a-4f39-846d-17628f1b795a
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -68,10 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: fcb95e68-90de-4f06-8957-32a067c8c195
+    taskid: 0ec98d93-797d-410b-8310-a9f03f7364c2
     type: regular
     task:
-      id: fcb95e68-90de-4f06-8957-32a067c8c195
+      id: 0ec98d93-797d-410b-8310-a9f03f7364c2
       version: -1
       name: fireeye-nx-get-artifacts-metadata-by-alert
       script: '|||fireeye-nx-get-artifacts-metadata-by-alert'
@@ -100,10 +100,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: c5ebb80f-e922-42d0-8513-fcf0b9757b92
+    taskid: e181bfff-ed7d-4484-8fd3-6d757bed6d93
     type: condition
     task:
-      id: c5ebb80f-e922-42d0-8513-fcf0b9757b92
+      id: e181bfff-ed7d-4484-8fd3-6d757bed6d93
       version: -1
       name: Verify Outputs
       type: condition
@@ -120,22 +120,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.uuid
+              simple: FireEyeNX.Alert.Uuid
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.ArtifactsMetadata.artifactType
+              simple: FireEyeNX.Alert.ArtifactsMetadata.ArtifactType
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.ArtifactsMetadata.artifactName
+              simple: FireEyeNX.Alert.ArtifactsMetadata.ArtifactName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.ArtifactsMetadata.artifactSize
+              simple: FireEyeNX.Alert.ArtifactsMetadata.ArtifactSize
             iscontext: true
     view: |-
       {
@@ -151,10 +151,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: daf4b69c-1368-4d8c-8694-46ed4c099c5c
+    taskid: b708c735-9205-4466-8612-783e8284a3c1
     type: regular
     task:
-      id: daf4b69c-1368-4d8c-8694-46ed4c099c5c
+      id: b708c735-9205-4466-8612-783e8284a3c1
       version: -1
       name: fireeye-nx-get-reports
       script: '|||fireeye-nx-get-reports'
@@ -195,10 +195,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 682ed317-53cf-4612-8bfc-afceb69d3807
+    taskid: c4c27dcd-bc42-46bf-823b-e4fefd3972cb
     type: condition
     task:
-      id: 682ed317-53cf-4612-8bfc-afceb69d3807
+      id: c4c27dcd-bc42-46bf-823b-e4fefd3972cb
       version: -1
       name: Verify Outputs
       type: condition
@@ -251,10 +251,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: a43766d1-9b5b-4abb-8540-36d0891dc4cc
+    taskid: 8f0c74d5-8277-45c8-8332-f3ff65351db0
     type: title
     task:
-      id: a43766d1-9b5b-4abb-8540-36d0891dc4cc
+      id: 8f0c74d5-8277-45c8-8332-f3ff65351db0
       version: -1
       name: Test Done
       type: title
@@ -276,10 +276,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 6d3bd7bd-dc09-4c67-8c93-20f237e669ed
+    taskid: 8539baea-4ec2-4f15-8988-3f53210fe0e8
     type: regular
     task:
-      id: 6d3bd7bd-dc09-4c67-8c93-20f237e669ed
+      id: 8539baea-4ec2-4f15-8988-3f53210fe0e8
       version: -1
       name: fireeye-nx-get-artifacts-by-alert
       description: Downloads malware artifacts data for the specified UUID as a zip
@@ -293,7 +293,7 @@ tasks:
       - "11"
     scriptarguments:
       uuid:
-        simple: ${FireEyeNX.Alert.uuid}
+        simple: ${FireEyeNX.Alert.Uuid}
     separatecontext: false
     view: |-
       {
@@ -309,10 +309,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 927f8e92-7b72-4fba-8c54-12bdc27f4193
+    taskid: e5a8de43-8dfc-4718-8e71-381e41649113
     type: condition
     task:
-      id: 927f8e92-7b72-4fba-8c54-12bdc27f4193
+      id: e5a8de43-8dfc-4718-8e71-381e41649113
       version: -1
       name: Verify Outputs
       type: condition
@@ -395,10 +395,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 24df51bf-d796-43cb-82f5-fdb16bedcbe9
+    taskid: 9f575d16-b0c4-421f-8d33-7e0199028b64
     type: regular
     task:
-      id: 24df51bf-d796-43cb-82f5-fdb16bedcbe9
+      id: 9f575d16-b0c4-421f-8d33-7e0199028b64
       version: -1
       name: fireeye-nx-get-events
       description: Search and Retrieve FireEye events based on several filters.
@@ -431,10 +431,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: c64a74eb-7cba-46b9-8814-4167dae5386d
+    taskid: 82f6390d-945c-42b4-8720-1b7ecc9130ac
     type: condition
     task:
-      id: c64a74eb-7cba-46b9-8814-4167dae5386d
+      id: 82f6390d-945c-42b4-8720-1b7ecc9130ac
       version: -1
       name: Verify Outputs
       type: condition
@@ -451,92 +451,92 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.eventId
+              simple: FireEyeNX.Event.EventId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.occurred
+              simple: FireEyeNX.Event.Occurred
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.srcIp
+              simple: FireEyeNX.Event.SrcIp
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.dstIp
+              simple: FireEyeNX.Event.DstIp
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.dstPort
+              simple: FireEyeNX.Event.DstPort
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.severity
+              simple: FireEyeNX.Event.Severity
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.signatureRev
+              simple: FireEyeNX.Event.SignatureRev
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.signatureIden
+              simple: FireEyeNX.Event.SignatureIden
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.signatureMatchCnt
+              simple: FireEyeNX.Event.SignatureMatchCnt
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.vlan
+              simple: FireEyeNX.Event.Vlan
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.srcMac
+              simple: FireEyeNX.Event.SrcMac
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.dstMac
+              simple: FireEyeNX.Event.DstMac
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.ruleName
+              simple: FireEyeNX.Event.RuleName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.sensorId
+              simple: FireEyeNX.Event.SensorId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.actionTaken
+              simple: FireEyeNX.Event.ActionTaken
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.attackMode
+              simple: FireEyeNX.Event.AttackMode
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.interfaceId
+              simple: FireEyeNX.Event.InterfaceId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Event.protocol
+              simple: FireEyeNX.Event.Protocol
             iscontext: true
     view: |-
       {
@@ -552,10 +552,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 90b4c0b4-740e-42bd-882f-c23eebb63938
+    taskid: 76a57108-64d4-43a1-8007-9c5cafab28ea
     type: regular
     task:
-      id: 90b4c0b4-740e-42bd-882f-c23eebb63938
+      id: 76a57108-64d4-43a1-8007-9c5cafab28ea
       version: -1
       name: fireeye-nx-get-alerts
       description: Search and Retrieve FireEye alerts based on several filters.
@@ -598,10 +598,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 1ccaf0ae-0073-4ca0-8d69-4a8f6b854c16
+    taskid: f6a2f935-de55-4d79-8c6c-b4ee35185c87
     type: condition
     task:
-      id: 1ccaf0ae-0073-4ca0-8d69-4a8f6b854c16
+      id: f6a2f935-de55-4d79-8c6c-b4ee35185c87
       version: -1
       name: Verify Outputs
       type: condition
@@ -618,88 +618,88 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.SrcIp
+              simple: FireEyeNX.Alert.Src.Ip
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.SrcPort
+              simple: FireEyeNX.Alert.Src.Port
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.alertUrl
+              simple: FireEyeNX.Alert.AlertUrl
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.action
+              simple: FireEyeNX.Alert.Action
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.occurred
+              simple: FireEyeNX.Alert.Occurred
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.attackTime
+              simple: FireEyeNX.Alert.AttackTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.applianceId
+              simple: FireEyeNX.Alert.ApplianceId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.id
+              simple: FireEyeNX.Alert.Id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.name
+              simple: FireEyeNX.Alert.Name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.severity
+              simple: FireEyeNX.Alert.Severity
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.uuid
+              simple: FireEyeNX.Alert.Uuid
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.ack
+              simple: FireEyeNX.Alert.Ack
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.product
+              simple: FireEyeNX.Alert.Product
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.vlan
+              simple: FireEyeNX.Alert.Vlan
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.malicious
+              simple: FireEyeNX.Alert.Malicious
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeNX.Alert.scVersion
+              simple: FireEyeNX.Alert.ScVersion
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 535
         }
       }
     note: false

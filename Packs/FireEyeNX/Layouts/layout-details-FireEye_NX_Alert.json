@@ -1,11 +1,11 @@
 {
- "TypeName": "FireEye NX Incident",
+ "TypeName": "FireEye NX Alert",
  "kind": "details",
  "layout": {
   "TypeName": "",
-  "id": "FireEye NX Incident",
+  "id": "FireEye NX Alert",
   "kind": "details",
-  "modified": "2020-08-26T20:35:44.316372292+05:30",
+  "modified": "2020-09-27T22:13:11.556621164+05:30",
   "name": "",
   "system": false,
   "tabs": [
@@ -83,7 +83,7 @@
         "fieldId": "playbookid",
         "height": 22,
         "id": "incident-playbookId-field",
-        "index": 7,
+        "index": 6,
         "sectionItemType": "field",
         "startCol": 0
        }
@@ -93,29 +93,6 @@
       "static": false,
       "w": 1,
       "x": 0,
-      "y": 0
-     },
-     {
-      "h": 2,
-      "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-      "moved": false,
-      "name": "Notes",
-      "static": false,
-      "type": "notes",
-      "w": 1,
-      "x": 2,
-      "y": 2
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-      "moved": false,
-      "name": "Work Plan",
-      "static": false,
-      "type": "workplan",
-      "w": 1,
-      "x": 1,
       "y": 0
      },
      {
@@ -129,44 +106,7 @@
       "type": "linkedIncidents",
       "w": 1,
       "x": 1,
-      "y": 6
-     },
-     {
-      "displayType": "ROW",
-      "h": 1,
-      "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-      "moved": false,
-      "name": "Child Incidents",
-      "static": false,
-      "type": "childInv",
-      "w": 1,
-      "x": 2,
-      "y": 6
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-      "moved": false,
-      "name": "Evidence",
-      "static": false,
-      "type": "evidence",
-      "w": 1,
-      "x": 2,
-      "y": 4
-     },
-     {
-      "displayType": "ROW",
-      "h": 1,
-      "hideName": false,
-      "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-      "moved": false,
-      "name": "Team Members",
-      "static": false,
-      "type": "team",
-      "w": 1,
-      "x": 2,
-      "y": 7
+      "y": 8
      },
      {
       "displayType": "ROW",
@@ -180,7 +120,7 @@
       "type": "indicators",
       "w": 2,
       "x": 0,
-      "y": 4
+      "y": 6
      },
      {
       "displayType": "CARD",
@@ -190,7 +130,7 @@
        {
         "endCol": 1,
         "fieldId": "occurred",
-        "height": 22,
+        "height": 53,
         "id": "incident-occurred-field",
         "index": 0,
         "sectionItemType": "field",
@@ -199,7 +139,7 @@
        {
         "endCol": 1,
         "fieldId": "dbotmodified",
-        "height": 22,
+        "height": 53,
         "id": "incident-modified-field",
         "index": 1,
         "sectionItemType": "field",
@@ -208,7 +148,7 @@
        {
         "endCol": 2,
         "fieldId": "dbotduedate",
-        "height": 22,
+        "height": 53,
         "id": "incident-dueDate-field",
         "index": 2,
         "sectionItemType": "field",
@@ -217,7 +157,7 @@
        {
         "endCol": 2,
         "fieldId": "dbotcreated",
-        "height": 22,
+        "height": 53,
         "id": "incident-created-field",
         "index": 0,
         "sectionItemType": "field",
@@ -226,7 +166,7 @@
        {
         "endCol": 2,
         "fieldId": "dbotclosed",
-        "height": 22,
+        "height": 53,
         "id": "incident-closed-field",
         "index": 1,
         "sectionItemType": "field",
@@ -237,8 +177,8 @@
       "name": "Timeline Information",
       "static": false,
       "w": 1,
-      "x": 0,
-      "y": 2
+      "x": 1,
+      "y": 4
      },
      {
       "displayType": "ROW",
@@ -279,90 +219,179 @@
       "static": false,
       "w": 1,
       "x": 0,
-      "y": 6
+      "y": 8
      },
      {
       "displayType": "CARD",
-      "h": 2,
-      "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-      "isVisible": true,
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "details",
-        "height": 22,
-        "id": "incident-details-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "moved": false,
-      "name": "Investigation Data",
-      "static": false,
-      "w": 1,
-      "x": 1,
-      "y": 2
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
+      "h": 4,
       "hideName": false,
       "i": "caseinfoid-491ac0f0-e7ad-11ea-b9fb-69214b89606a",
       "items": [
        {
         "endCol": 2,
-        "fieldId": "fireeyenxalerttype",
-        "height": 22,
-        "id": "6781a6d0-e7ad-11ea-b9fb-69214b89606a",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "fireeyenxscversion",
-        "height": 22,
+        "height": 53,
         "id": "6a9a3170-e7ad-11ea-b9fb-69214b89606a",
-        "index": 1,
+        "index": 0,
         "sectionItemType": "field",
         "startCol": 0
        },
        {
         "endCol": 2,
         "fieldId": "fireeyenxtimeutc",
-        "height": 22,
+        "height": 53,
         "id": "6c784040-e7ad-11ea-b9fb-69214b89606a",
-        "index": 2,
+        "index": 0,
         "sectionItemType": "field",
         "startCol": 0
        },
        {
         "endCol": 2,
         "fieldId": "fireeyenxtargetmacaddress",
-        "height": 22,
+        "height": 53,
         "id": "6fa60090-e7ad-11ea-b9fb-69214b89606a",
-        "index": 3,
+        "index": 0,
         "sectionItemType": "field",
         "startCol": 0
        },
        {
         "endCol": 2,
         "fieldId": "fireeyenxid",
-        "height": 22,
+        "height": 53,
         "id": "714e0b40-e7ad-11ea-b9fb-69214b89606a",
-        "index": 4,
+        "index": 0,
         "sectionItemType": "field",
         "startCol": 0
        },
        {
         "endCol": 2,
         "fieldId": "fireeyenxuuid",
-        "height": 22,
+        "height": 53,
         "id": "730901b0-e7ad-11ea-b9fb-69214b89606a",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalerttype",
+        "height": 53,
+        "id": "e45c6e40-00dc-11eb-8966-f589ddaf289f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalerturl",
+        "height": 53,
+        "id": "5df7a5b0-00df-11eb-8966-f589ddaf289f",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalertmalwarename",
+        "height": 53,
+        "id": "687cf9e0-00df-11eb-8966-f589ddaf289f",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalerttargetip",
+        "height": 53,
+        "id": "9c0f7da0-00df-11eb-8966-f589ddaf289f",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalerttargetmacaddress",
+        "height": 53,
+        "id": "a3d19320-00df-11eb-8966-f589ddaf289f",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalertvictimip",
+        "height": 53,
+        "id": "acadcb30-00df-11eb-8966-f589ddaf289f",
         "index": 5,
         "sectionItemType": "field",
         "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalertvictimmacaddress",
+        "height": 53,
+        "id": "b0a3bd80-00df-11eb-8966-f589ddaf289f",
+        "index": 6,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 4,
+        "fieldId": "fireeyenxalertscversion",
+        "height": 53,
+        "id": "f4e5e960-00de-11eb-8966-f589ddaf289f",
+        "index": 0,
+        "listId": "caseinfoid-491ac0f0-e7ad-11ea-b9fb-69214b89606a",
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 4,
+        "fieldId": "fireeyenxalertaction",
+        "height": 53,
+        "id": "65aac710-00df-11eb-8966-f589ddaf289f",
+        "index": 1,
+        "listId": "caseinfoid-491ac0f0-e7ad-11ea-b9fb-69214b89606a",
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "endCol": 4,
+        "fieldId": "fireeyenxalertid",
+        "height": 53,
+        "id": "9286b1e0-00df-11eb-8966-f589ddaf289f",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "endCol": 4,
+        "fieldId": "fireeyenxalerttargetport",
+        "height": 53,
+        "id": "a1e29460-00df-11eb-8966-f589ddaf289f",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "endCol": 4,
+        "fieldId": "fireeyenxalertuuid",
+        "height": 53,
+        "id": "a7e14f00-00df-11eb-8966-f589ddaf289f",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "endCol": 4,
+        "fieldId": "fireeyenxalertvictimport",
+        "height": 22,
+        "id": "b2e80830-00df-11eb-8966-f589ddaf289f",
+        "index": 5,
+        "sectionItemType": "field",
+        "startCol": 2
        }
       ],
       "maxW": 3,
@@ -371,9 +400,122 @@
       "moved": false,
       "name": "Alert Details",
       "static": false,
+      "w": 2,
+      "x": 1,
+      "y": 0
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "hideItemTitleOnlyOne": true,
+      "i": "caseinfoid-12642780-00e0-11eb-8966-f589ddaf289f",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "incident_attachment",
+        "height": 53,
+        "id": "125c5f50-00e0-11eb-8966-f589ddaf289f",
+        "index": 0,
+        "isVisible": true,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Attachments",
+      "static": false,
+      "type": "",
+      "w": 1,
+      "x": 0,
+      "y": 2
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-2a2145b0-00e0-11eb-8966-f589ddaf289f",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Work Plan",
+      "static": false,
+      "type": "workplan",
+      "w": 1,
+      "x": 0,
+      "y": 4
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-37957c70-00e0-11eb-8966-f589ddaf289f",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Notes",
+      "static": false,
+      "type": "notes",
       "w": 1,
       "x": 2,
-      "y": 0
+      "y": 4
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-453445a0-00e0-11eb-8966-f589ddaf289f",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Evidence",
+      "static": false,
+      "type": "evidence",
+      "w": 1,
+      "x": 2,
+      "y": 6
+     },
+     {
+      "h": 1,
+      "i": "caseinfoid-61784b80-00e0-11eb-8966-f589ddaf289f",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Child Incidents",
+      "static": false,
+      "type": "childInv",
+      "w": 1,
+      "x": 2,
+      "y": 8
+     },
+     {
+      "h": 1,
+      "i": "caseinfoid-70c8e360-00e0-11eb-8966-f589ddaf289f",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Team Members",
+      "static": false,
+      "type": "team",
+      "w": 1,
+      "x": 2,
+      "y": 9
      }
     ],
     "type": "custom"
@@ -404,10 +546,10 @@
     "type": "canvas"
    }
   ],
-  "typeId": "FireEye NX Incident",
+  "typeId": "FireEye NX Alert",
   "version": -1
  },
- "typeId": "FireEye NX Incident",
+ "typeId": "FireEye NX Alert",
  "version": -1,
  "toVersion": "5.9.9",
  "fromVersion": "5.0.0",
