@@ -15,7 +15,7 @@ def jmespath_search(expression: str, value: [dict, list]) -> dict:
 def main():
     args = demisto.args()
     value = args.get("value")
-    if type(value) == str:
+    if isinstance(value, str):
         try:
             value = json.loads(value)
         except Exception as err:
