@@ -277,9 +277,12 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
         lock (Lock): A lock object.
     """
     pack_data = []
+    print(f"Packs to install at the 'search_pack_and_its_depedbalah is: {packs_to_install}")
+    print(f"Currently trying to find the pack id: {pack_id}")
 
     if pack_id not in packs_to_install:
         pack_display_name = get_pack_display_name(pack_id)
+        print(f"Pack display name is: {pack_display_name}")
         if pack_display_name:
             pack_data = search_pack(client, prints_manager, pack_display_name, thread_index, lock)
 
