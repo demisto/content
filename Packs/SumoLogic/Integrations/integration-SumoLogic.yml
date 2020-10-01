@@ -217,7 +217,7 @@ script:
                 }
             }
 
-            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), false,
+            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), true,
                 a2i(params.sleepBetweenChecks, defaultSleep), params.fetchRecords);
             var incidents = [];
             var currentFetch = lastRun.time;
