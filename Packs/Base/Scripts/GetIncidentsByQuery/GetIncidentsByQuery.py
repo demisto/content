@@ -1,10 +1,10 @@
+from CommonServerPython import *
+
 import pickle
 import uuid
 import math
 
 from dateutil import parser
-
-from CommonServerPython import *
 
 PREFIXES_TO_REMOVE = ['incident.']
 PAGE_SIZE = int(demisto.args().get('pageSize', 500))
