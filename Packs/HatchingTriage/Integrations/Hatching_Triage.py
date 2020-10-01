@@ -285,7 +285,7 @@ def create_apikey(client: Client, **args) -> CommandResults:
     - Note: It seems you can't create an API key for yourself through the API
     '''
     userID = args.get('userID')
-    name = args.get('name', 'Created from XSOAR')
+    name = args.get('name')
 
     data = json.dumps({
         'name': name
