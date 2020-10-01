@@ -387,52 +387,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "10":
-    id: "10"
-    taskid: 244c9501-3186-4aef-8efe-7d1ee90b2bfd
-    type: playbook
-    task:
-      id: 244c9501-3186-4aef-8efe-7d1ee90b2bfd
-      version: -1
-      name: Field Polling
-      description: This playbook will poll a field for whether a value exists and
-        whether it contains a specific value.
-      playbookName: Field Polling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      field:
-        simple: servicenowstate
-      frequency:
-        complex:
-          root: inputs.FieldPollingInterval
-      timeout:
-        complex:
-          root: inputs.FieldPollingTimeout
-      value:
-        simple: ^6|^7
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 980
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "11":
     id: "11"
     taskid: ff07c610-a09e-494f-8f4b-7d1be8dde6e3
@@ -449,7 +403,7 @@ tasks:
       '#default#':
       - "8"
       "yes":
-      - "10"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -477,10 +431,54 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "12":
+    id: "12"
+    taskid: ec51b390-bada-4e6d-8096-e471879d7575
+    type: playbook
+    task:
+      id: ec51b390-bada-4e6d-8096-e471879d7575
+      version: -1
+      name: Field Polling - Generic
+      playbookName: Field Polling - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      field:
+        simple: servicenowstate
+      frequency:
+        complex:
+          root: inputs.FieldPollingInterval
+      timeout:
+        complex:
+          root: inputs.FieldPollingTimeout
+      value:
+        simple: ^6|^7
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
-      "11_10_yes": 0.58,
       "11_8_#default#": 0.19
     },
     "paper": {
