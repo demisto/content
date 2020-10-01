@@ -93,10 +93,10 @@ comment: Gets a list of incident objects and the associated incident outputs tha
   match the specified query and filters. The results are returned in a structured
   data file.
 commonfields:
-  id: GetIncidentsByQueryV2
+  id: GetIncidentsByQuery
   version: -1
 enabled: false
-name: GetIncidentsByQueryV2
+name: GetIncidentsByQuery
 outputs:
   - contextPath: GetIncidentsByQuery.Filename
     description: The output file name.
