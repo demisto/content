@@ -1145,9 +1145,9 @@ class ARIA(object):
             },
             'Status': {
                 'command_state': 'Failure',
-                'timestamp': 'None'
+                'timestamp': None  # type: ignore
             },
-            'Endpoints': []  # list of endpoints
+            'Endpoints': None   # type: ignore
         }
 
         if response and response.ok:
@@ -1193,7 +1193,7 @@ class ARIA(object):
 
         command_state_str = 'Failure'
 
-        endpoints = []
+        endpoints = None
         context = {
             'Rule': {
                 'Name': rule_name,
@@ -1202,9 +1202,9 @@ class ARIA(object):
             },
             'Status': {
                 'command_state': command_state_str,
-                'timestamp': 'None'
+                'timestamp': None  # type: ignore
             },
-            'Endpoints': endpoints  # list of endpoints
+            'Endpoints': endpoints  # type: ignore
         }
 
         try:
@@ -2037,11 +2037,6 @@ class ARIA(object):
 
         """
         return self._remove_rule(rule_name=rule_name, logic_block='src-subnet', instance_id=None, rcs=rcs)
-
-if __name__ == '__main__':
-    rcs = "PIdevice@region1.group1.name1"
-    a = ARIA('sdso-jfm')
-    a.block_src_port(port_range='123', rule_name='newrule', rcs=rcs)
 
 
 ''' HELPER FUNCTIONS '''
