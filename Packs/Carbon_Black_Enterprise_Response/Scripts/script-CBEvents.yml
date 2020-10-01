@@ -2,10 +2,13 @@ commonfields:
   id: CBEvents
   version: -1
 name: CBEvents
-script: |-
+script: >-
   //Searches for all processes with a given query - and lists events associated with processes.
+
   //Args - process search query
+
   var output = [];
+
   function formatEvents(header, pname, pid, segid, arr) {
       var entry = [];
       if (typeof (arr) !== 'undefined') {
@@ -23,7 +26,9 @@ script: |-
           output.push({ContentsFormat: formats.table, Type: entryTypes.note, Contents: entry});
       }
   }
+
   var res = executeCommand("cb-process", {session: args.sessionid, query: args.query});
+
   if (res.length > 0) {
       var list = res[0].Contents.results;
       if (typeof (list) !== 'undefined') {
@@ -45,6 +50,7 @@ script: |-
           output.push(res);
       }
   }
+
   return output;
 type: javascript
 tags:
@@ -64,3 +70,4 @@ dependson:
   - cb-process
   - process-events
 timeout: 0s
+fromversion: 5.0.0

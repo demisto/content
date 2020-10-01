@@ -2,12 +2,16 @@ commonfields:
   id: TrendMicroGetHostID
   version: -1
 name: TrendMicroGetHostID
-script: |-
+script: >-
   ID_LABEL = 'Label/HostID'
 
+
   hostnames = argToList(demisto.get(demisto.args(),'hostname'))
+
   ID = []
+
   res = []
+
   if hostnames:
       resp = demisto.executeCommand("TrendmicroHostRetrieveAll", {})
       if isError(resp[0]):
@@ -41,3 +45,4 @@ dependson:
   must:
   - trendmicro-host-retrieve-all
 timeout: 0s
+fromversion: 5.0.0

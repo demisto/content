@@ -1,11 +1,10 @@
 id: PAN-OS EDL Setup
 version: -1
 name: PAN-OS EDL Setup
-fromversion: 4.0.0
-description: "DEPRECATED. Use PAN-OS EDL Setup v3 playbook instead. Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web
-  server, it will sync it to demisto. Then it will create an EDL object and a matching
-  rule."
+fromversion: 5.0.0
+description: Deprecated. Use PAN-OS EDL Setup v3 playbook instead. Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -40,8 +39,7 @@ tasks:
       id: 904419e9-26ca-4791-8741-8ed17916a846
       version: -1
       name: Is PAN-OS integration enabled?
-      description: Checks if there is an active instance of the PAN-OS integration
-        enabled.
+      description: Checks if there is an active instance of the PAN-OS integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -96,8 +94,7 @@ tasks:
       id: 12ab144d-d89e-4f6c-80e7-81ea70b1aa22
       version: -1
       name: Is PAN-OS EDL Management integration enabled?
-      description: Checks if there is an active instance of the PAN-OS EDL Management
-        integration enabled.
+      description: Checks if there is an active instance of the PAN-OS EDL Management integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -214,8 +211,7 @@ tasks:
       id: 266ca860-4e19-4b80-891c-135f004eee4c
       version: -1
       name: Add changes from external file to the internal list
-      description: Fetches the content of the external file and merges it with the
-        content of the internal list.
+      description: Fetches the content of the external file and merges it with the content of the internal list.
       script: '|||pan-os-edl-update-from-external-file'
       type: regular
       iscommand: true
@@ -250,8 +246,7 @@ tasks:
       id: 7a865cba-6eef-4ca1-8a21-00b8ef3f8320
       version: -1
       name: Create internal list and external file
-      description: Creates an internal list in Demisto and creates an external file
-        on the web server.
+      description: Creates an internal list in Demisto and creates an external file on the web server.
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
@@ -336,8 +331,7 @@ tasks:
       id: b03a2267-9026-47d9-8a11-c14b7c282713
       version: -1
       name: Create EDL Object
-      description: Creates an external dynamic list in PAN-OS and connects it to the
-        external file.
+      description: Creates an external dynamic list in PAN-OS and connects it to the external file.
       script: '|||panorama-create-edl'
       type: regular
       iscommand: true
@@ -429,8 +423,7 @@ tasks:
       id: f0191f59-4221-4f88-8811-a8cc196f4971
       version: -1
       name: Is auto-commit defined?
-      description: Checks if the values provided in the arguments are equal. If either
-        of the arguments are missing, "no" is returned.
+      description: Checks if the values provided in the arguments are equal. If either of the arguments are missing, "no" is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -466,8 +459,7 @@ tasks:
       id: fecf981d-2339-4dd6-880a-0af64002c524
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This option is available
-        when auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This option is available when auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -493,8 +485,7 @@ tasks:
       id: c6cb98f4-5335-4271-860c-677955525d7f
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This option is available
-        when auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This option is available when auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -520,8 +511,7 @@ tasks:
       id: a0cb1649-4257-4a9c-8f81-8fe1296f2920
       version: -1
       name: PAN-OS - Create Or Edit Rule
-      description: Creates or edits a Panorama rule and moves it into the desired
-        position.
+      description: Creates or edits a Panorama rule and moves it into the desired position.
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false
@@ -587,8 +577,7 @@ tasks:
       id: b8a806b3-8153-4bcc-8a57-3446261f0ed9
       version: -1
       name: PAN-OS - Create Or Edit Rule
-      description: Creates or edits a Panorama rule and moves it into the desired
-        position.
+      description: Creates or edits a Panorama rule and moves it into the desired position.
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false
@@ -676,8 +665,7 @@ inputs:
 - key: ioc-type
   value: {}
   required: true
-  description: The type of the IOCs that the list will store. Can be "ip", "url",
-    or "domain".
+  description: The type of the IOCs that the list will store. Can be "ip", "url", or "domain".
 - key: action-type
   value: {}
   required: true
@@ -695,8 +683,7 @@ inputs:
 - key: web-server-ip
   value: {}
   required: true
-  description: The IP address of the web server on which the files are stored. The
-    web server IP address is configured in the integration instance.
+  description: The IP address of the web server on which the files are stored. The web server IP address is configured in the integration instance.
 - key: pre-post-rulebase
   value: {}
   required: true
@@ -715,8 +702,7 @@ inputs:
 - key: relative-rule-name
   value: {}
   required: false
-  description: If the rule-position that is chosen is before or after, specify the
-    rule name to which it is related.
+  description: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
 - key: inbound-or-outbound-rule
   value: {}
   required: false
@@ -724,12 +710,11 @@ inputs:
 - key: rule-name
   value: {}
   required: false
-  description: The name of the rule to update, or the name of the rule that will be
-    created.
+  description: The name of the rule to update, or the name of the rule that will be created.
 - key: device-group
   value: {}
   required: false
   description: The device group to work on. Exists only in panorama!
 outputs: []
 tests:
-  - No test
+- No test
