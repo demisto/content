@@ -1,8 +1,7 @@
 id: Cortex XDR - Isolate Endpoint
 version: -1
 name: Cortex XDR - Isolate Endpoint
-description: This playbook accepts an XDR endpoint ID and isolates it using
-  the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
+description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
 starttaskid: '0'
 tasks:
   '0':
@@ -76,8 +75,7 @@ tasks:
     task:
       id: 134733fc-c9c4-40ea-86a0-4a48dcb7dbb8
       version: -1
-      name: Is 'Palo Alto Networks Cortex XDR - Investigation and Response' integration
-        enabled?
+      name: Is 'Palo Alto Networks Cortex XDR - Investigation and Response' integration enabled?
       type: condition
       iscommand: false
       brand: ''
@@ -264,10 +262,7 @@ tasks:
       id: 5e329bc5-0a7f-4d63-87cc-d4c2e4e85d63
       version: -1
       name: Cortex XDR - check isolation status
-      description: Gets a list of endpoints, according to the passed filters. Filtering
-        by multiple fields is concatenated using the AND condition (OR is not supported).
-        Maximum result set size is 100. Offset is the zero-based number of endpoint
-        from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. Filtering by multiple fields is concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
       type: regular
       iscommand: true
@@ -314,10 +309,7 @@ tasks:
       id: 4d77ffe4-1af5-4a03-8ed8-4fd8935065d1
       version: -1
       name: Cortex XDR - get endpoint ID
-      description: Gets a list of endpoints, according to the passed filters. Filtering
-        by multiple fields is concatenated using the AND condition (OR is not supported).
-        Maximum result set size is 100. Offset is the zero-based number of endpoint
-        from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. Filtering by multiple fields is concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
       type: regular
       iscommand: true
@@ -383,8 +375,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The endpoint ID (string) to isolate. You can retrieve the ID using
-    the xdr-get-endpoints command.
+  description: The endpoint ID (string) to isolate. You can retrieve the ID using the xdr-get-endpoints command.
 - key: hostname
   value:
     complex:
@@ -404,6 +395,6 @@ inputs:
   required: false
   description: A comma-separated list of IP addresses.
 outputs: []
-fromversion: 4.5.0
+fromversion: 5.0.0
 tests:
-  - No Test
+- No Test

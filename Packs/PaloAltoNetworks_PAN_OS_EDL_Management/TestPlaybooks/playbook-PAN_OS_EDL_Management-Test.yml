@@ -36,8 +36,7 @@ tasks:
       id: eef984dd-8d7f-475e-8ab7-08415fafb975
       version: -1
       name: pan-os-edl-update
-      description: Updates the instance context with the list name and items given
-        and then Override external file path with internal list
+      description: Updates the instance context with the list name and items given and then Override external file path with internal list
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
@@ -293,8 +292,7 @@ tasks:
       id: a71f416b-a9f4-46b0-89ae-12c5d0aa9739
       version: -1
       name: pan-os-edl-dump-internal-list to file
-      description: Dumps (copies) instance context to either the incident context
-        or a file.
+      description: Dumps (copies) instance context to either the incident context or a file.
       script: '|||pan-os-edl-dump-internal-list'
       type: regular
       iscommand: true
@@ -394,8 +392,7 @@ tasks:
       id: 4cd93a21-d1d2-440b-8c87-93475d1f24e8
       version: -1
       name: pan-os-edl-update-internal-list
-      description: Updates the instance context with the specified list name and list
-        items.
+      description: Updates the instance context with the specified list name and list items.
       script: palo_alto_networks_pan_os_edl_management|||pan-os-edl-update-internal-list
       type: regular
       iscommand: true
@@ -472,3 +469,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

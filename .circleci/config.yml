@@ -46,9 +46,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.9.1"
+      CONTENT_VERSION: "20.9.2"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "46fde7a4345e0c25aa496854447104b22684a3cc" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "64cac0b349187b861c4c717951a634de52caba03" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -158,7 +158,9 @@ references:
     run:
       name: Create Content Artifacts
       when: always
-      command: demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
+      command: |
+        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
+        python3 Utils/merge_content_new_zip.py -f "v4.5.0"
 
   restore_cache: &restore_cache
     restore_cache:
@@ -917,6 +919,7 @@ jobs:
           command: |
             CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
             LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
+            LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
             if [[ -z "${CIRCLE_USERNAME}" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`" ]]; then
                 echo -e "User '${CIRCLE_USERNAME}' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
                 exit 1

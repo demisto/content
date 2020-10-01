@@ -29,7 +29,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |+
+  script: >+
     var entitiesDict = {
         event: [
                 {to: 'ID', from: 'id'},
@@ -100,6 +100,7 @@ script:
                 ]
     };
 
+
     var commands = {
             'misp-download-sample': {
                 url: '/attributes/downloadSample/',
@@ -136,6 +137,7 @@ script:
             'url': '',
             'ip':''
     };
+
 
     function mapObjFunction(mapFields) {
                 var transformSingleObj= function(obj) {
@@ -218,6 +220,7 @@ script:
             };
     }
 
+
     function getProvidedArgsForCommand(command, passedArgs) {
         var currentArgs = {};
         var allArgs = commands[command].args;
@@ -228,6 +231,7 @@ script:
             }
         return currentArgs;
     }
+
 
     function getHashFormat(hash) {
         switch(hash.length){
@@ -241,6 +245,7 @@ script:
                 throw "invalid hash length, please enter file hash of format md5, sha1 or sha256";
         }
     }
+
 
     function getMISPThreatLevelStr(threat_level_id) {
         switch(threat_level_id){
@@ -256,6 +261,7 @@ script:
                 return 'Invalid MISP Threat Level with threat_level_id: ' + threat_level_id;
         }
     }
+
 
 
     function doJSONPost(requestUrl, body) {
@@ -282,12 +288,14 @@ script:
         throw 'Response content type is not \"application/json; charset=UTF-8\" as expected.\n response: +' + JSON.stringify(res);
     }
 
+
     function doGeneralPost(command, passedArgs){
         var currentArgs = getProvidedArgsForCommand(command, passedArgs);
         var requestUrl = params.url + commands[command].url;
         var body = {'request': currentArgs };
         return doJSONPost(requestUrl, body);
     }
+
 
     function doFile(hash) {
             var hashFormat = getHashFormat(hash);
@@ -424,9 +432,11 @@ script:
     }
 
 
+
     var addMinutes = function(date, minutes) {
                 return new Date(date.getTime() + minutes*60000);
     };
+
 
 
     var getNowTime = function() {
@@ -437,6 +447,7 @@ script:
         var dateOld = time.getFullYear()+'-'+month.substr(-2)+'-'+day.substr(-2);
         return dateOld;
     };
+
 
 
     function createEvent(command) {
@@ -482,6 +493,7 @@ script:
     }
 
 
+
     function addAtribute(command) {
         var requestUrl = params.url + '/attributes/add/' + args.id;
 
@@ -509,7 +521,9 @@ script:
 
 
 
+
     // The command input arg holds the command sent from the user.
+
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
@@ -546,32 +560,19 @@ script:
       required: true
       description: File Content in Base64
     - name: event_id
-      description: The Event's ID is optional. It can be either supplied via the URL
-        or the POSTed object, but the URL has priority if both are provided. Not supplying
-        an event ID will cause MISP to create a single new event for all of the POSTed
-        malware samples. You can define the default settings for the event, otherwise
-        a set of default settings will be used.
+      description: The Event's ID is optional. It can be either supplied via the URL or the POSTed object, but the URL has priority if both are provided. Not supplying an event ID will cause MISP to create a single new event for all of the POSTed malware samples. You can define the default settings for the event, otherwise a set of default settings will be used.
     - name: distribution
-      description: The distribution setting used for the attributes and for the newly
-        created event, if relevant. [0-3]
+      description: The distribution setting used for the attributes and for the newly created event, if relevant. [0-3]
     - name: to_ids
-      description: You can flag all attributes created during the transaction to be
-        marked as "to_ids" or not.
+      description: You can flag all attributes created during the transaction to be marked as "to_ids" or not.
     - name: category
-      description: 'The category that will be assigned to the uploaded samples. Valid
-        options are: Payload delivery, Artifacts dropped, Payload Installation, External
-        Analysis.'
+      description: 'The category that will be assigned to the uploaded samples. Valid options are: Payload delivery, Artifacts dropped, Payload Installation, External Analysis.'
     - name: info
-      description: Used to populate the event info field if no event ID supplied.
-        Alternatively, if not set, MISP will simply generate a message showing that
-        it's a malware sample collection generated on the given day.
+      description: Used to populate the event info field if no event ID supplied. Alternatively, if not set, MISP will simply generate a message showing that it's a malware sample collection generated on the given day.
     - name: analysis
-      description: 'The analysis level of the newly created event, if applicable.
-        [0-2] threat_level_id: The threat level ID of the newly created event, if
-        applicatble. [0-3]'
+      description: 'The analysis level of the newly created event, if applicable. [0-2] threat_level_id: The threat level ID of the newly created event, if applicatble. [0-3]'
     - name: comment
-      description: This will populate the comment field of any attribute created using
-        this API.
+      description: This will populate the comment field of any attribute created using this API.
     description: Upload file sample to MISP
     execution: true
   - name: misp-search
@@ -584,30 +585,19 @@ script:
     - name: category
       description: The attribute category, any valid MISP attribute category is accepted.
     - name: org
-      description: Search by the creator organisation by supplying the organisation
-        identifier.
+      description: Search by the creator organisation by supplying the organisation identifier.
     - name: tags
-      description: To include a tag in the results just write its names into this
-        parameter. To exclude a tag prepend it with a '!'. You can also chain several
-        tag commands together with the '&&' operator. Please be aware the colons (:)
-        cannot be used in the tag search. Use semicolons instead (the search will
-        automatically search for colons instead).
+      description: To include a tag in the results just write its names into this parameter. To exclude a tag prepend it with a '!'. You can also chain several tag commands together with the '&&' operator. Please be aware the colons (:) cannot be used in the tag search. Use semicolons instead (the search will automatically search for colons instead).
     - name: from
-      description: 'Events with the date set to a date after the one specified in
-        the from field (format: 2015-02-15). This filter will use the date of the
-        event.'
+      description: 'Events with the date set to a date after the one specified in the from field (format: 2015-02-15). This filter will use the date of the event.'
     - name: to
-      description: 'Events with the date set to a date before the one specified in
-        the to field (format: 2015-02-15). This filter will use the date of the event.'
+      description: 'Events with the date set to a date before the one specified in the to field (format: 2015-02-15). This filter will use the date of the event.'
     - name: last
-      description: Events published within the last x amount of time, where x can
-        be defined in days, hours, minutes (for example 5d or 12h or 30m). This filter
-        will use the published timestamp of the event.
+      description: Events published within the last x amount of time, where x can be defined in days, hours, minutes (for example 5d or 12h or 30m). This filter will use the published timestamp of the event.
     - name: eventid
       description: The events that should be included / excluded from the search.
     - name: uuid
-      description: The returned events must include an attribute with the given UUID,
-        or alternatively the event's UUID must match the value(s) passed.
+      description: The returned events must include an attribute with the given UUID, or alternatively the event's UUID must match the value(s) passed.
     outputs:
     - contextPath: MISP.Event.ID
       description: Event ID
@@ -663,9 +653,7 @@ script:
     arguments:
     - name: file
       required: true
-      description: Hash of the file to query. Supports MD5, SHA1 and SHA256. Notice         that
-        you can pass comma-separated multiple values to efficiently retrieve multiple
-        responses.
+      description: Hash of the file to query. Supports MD5, SHA1 and SHA256. Notice         that you can pass comma-separated multiple values to efficiently retrieve multiple responses.
     outputs:
     - contextPath: File.MD5
       description: Bad hash found
@@ -735,8 +723,7 @@ script:
     arguments:
     - name: hash
       required: true
-      description: 'A hash in MD5 format. If allSamples is set, this can be any one
-        of the following: md5, sha1, sha256.'
+      description: 'A hash in MD5 format. If allSamples is set, this can be any one of the following: md5, sha1, sha256.'
     - name: eventID
       description: If set, it will only fetch data from the given event ID.
     - name: allSamples
@@ -744,8 +731,7 @@ script:
       predefined:
       - "1"
       - "0"
-      description: If set, it will return all samples from events that have a match
-        for the hash provided above.
+      description: If set, it will return all samples from events that have a match for the hash provided above.
     description: Download malware sample by hash
   - name: internal-misp-create-event
     deprecated: true
@@ -817,5 +803,5 @@ script:
       description: Value of the attribute
     description: Add attribute to existing MISP event
 tests:
-  - No tests
-fromversion: 4.1.0
+- No tests
+fromversion: 5.0.0

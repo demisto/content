@@ -21,7 +21,8 @@ from QRadar_v2 import (
     enrich_offense_with_events,
     try_create_search_with_retry,
     try_poll_offense_events_with_retry,
-    enrich_offense_result
+    enrich_offense_result,
+    enrich_single_offense_res_with_source_and_destination_address
 )
 
 with open("TestData/commands_outputs.json", "r") as f:
@@ -344,3 +345,73 @@ def test_enrich_offense_result(mocker):
     assert 'domain_name' in response[0]
     assert 'domain_name' in response[0]['assets'][0]
     assert 'name' in response[0]['rules'][0]
+
+
+def test_enrich_single_offense_res_with_source_and_destination_address__no_enrich():
+    """
+    Run offense ips enrichment with skip_enrichment=True
+
+    Given:
+        - Offense response was fetched from QRadar with source_ip and destination_ip
+    When:
+        - Enriching fetched offense with skip_enrichment=True
+    Then:
+        - IPs are not enriched
+        - Asset map is returned as a result
+    """
+    offense = deepcopy(RAW_RESPONSES["qradar-update-offense"])
+    src_adrs = {254: '8.8.8.8'}
+    dst_adrs = {4: '1.2.3.4'}
+    expected = {'8.8.8.8', '1.2.3.4'}
+    actual = enrich_single_offense_res_with_source_and_destination_address(
+        offense, src_adrs, dst_adrs, skip_enrichment=True)
+    assert offense == RAW_RESPONSES["qradar-update-offense"]
+    assert expected == actual
+
+
+def test_enrich_single_offense_res_with_source_and_destination_address__with_enrich():
+    """
+    Run offense ips enrichment with skip_enrichment=False
+
+    Given:
+        - Offense response was fetched from QRadar with source_ip and destination_ip
+    When:
+        - Enriching fetched offense with skip_enrichment=False
+    Then:
+        - IPs are enriched
+        - Asset map is returned as a result
+    """
+    offense = deepcopy(RAW_RESPONSES["qradar-update-offense"])
+    src_adrs = {254: '8.8.8.8', 5: '1.2.3.5'}
+    dst_adrs = {4: '1.2.3.4'}
+    expected_assets = {'8.8.8.8', '1.2.3.4'}
+    actual = enrich_single_offense_res_with_source_and_destination_address(
+        offense, src_adrs, dst_adrs, skip_enrichment=False)
+    assert offense != RAW_RESPONSES["qradar-update-offense"]
+    assert offense['source_address_ids'] == [src_adrs[254]]
+    assert offense['local_destination_address_ids'] == [dst_adrs[4]]
+    assert expected_assets == actual
+
+
+def test_get_mapping_fields(mocker):
+    """Check keys available in the mapping
+
+    Given:
+    - One custom field
+
+    When:
+    - Calling get-mapping-fields from the UI
+
+    Then:
+    - Validate main keys are in
+    - Validate custom field came back as intended
+    """
+    from QRadar_v2 import get_mapping_fields
+    custom_fields = [{'name': 'bloop', 'property_type': 'string'}]
+    mocker.patch.object(QRadarClient, 'get_custom_fields', return_value=custom_fields)
+    client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
+    response = get_mapping_fields(client)
+    assert response['Offense']
+    assert response['Events: Builtin Fields']
+    assert response['Assets']
+    assert response['Events: Custom Fields']['events']['bloop'] == 'string'

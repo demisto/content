@@ -1,9 +1,8 @@
 id: Block File - Cylance Protect v2
 version: -1
 name: Block File - Cylance Protect v2
-fromversion: 4.5.0
-description: This playbook accepts a SHA256 hash and adds the hash to the Global Quarantine
-  list using the Cylance Protect v2 integration.
+fromversion: 5.0.0
+description: This playbook accepts a SHA256 hash and adds the hash to the Global Quarantine list using the Cylance Protect v2 integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -97,8 +96,7 @@ tasks:
       id: 9b14005e-903d-4724-80ec-84e7c42a9e7b
       version: -1
       name: Is there a SHA256 to block?
-      description: Checks if there is a value for the SHA256 input field. This task does
-        not verify that the value is actually a SHA256 hash, just that the value for the field exists.
+      description: Checks if there is a value for the SHA256 input field. This task does not verify that the value is actually a SHA256 hash, just that the value for the field exists.
       type: condition
       iscommand: false
       brand: ""
@@ -158,8 +156,7 @@ tasks:
       id: e5138608-1de0-48ac-879d-faf7c0e29d4f
       version: -1
       name: Add hash to Global Quarantine list
-      description: Add a convicted threat to either the Global Quarantine or the Global
-        Safe list for a particular Tenant
+      description: Add a convicted threat to either the Global Quarantine or the Global Safe list for a particular Tenant
       script: Cylance Protect v2|||cylance-protect-add-hash-to-list
       type: regular
       iscommand: true
@@ -225,4 +222,4 @@ outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
   description: Last block sensor ID
 tests:
-  - No Test
+- No Test

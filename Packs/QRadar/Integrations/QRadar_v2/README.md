@@ -1,5 +1,7 @@
 Fetch offenses as incidents and search QRadar
 This integration was integrated and tested with version 7.3.2 of QRadar
+
+
 ## Configure QRadar_v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,7 +10,7 @@ This integration was integrated and tested with version 7.3.2 of QRadar
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| server | Server URL \(e.g. https://8.8.8.8) | True |
+| server | Server URL \(e.g. `https://8.8.8.8`) | True |
 | credentials | Username / API Key \(see '?'\) | False |
 | query | Query to fetch offenses | False |
 | offenses_per_fetch | Number of offenses to pull per API call \(max 50\) | False |
@@ -28,14 +30,14 @@ This integration was integrated and tested with version 7.3.2 of QRadar
 ## Troubleshooting Performance Issues
 In some cases, you might encounter performance issues when running QRadar AQL queries from Demisto. This issue is caused by QRadar API limitations. We recommend that you test the QRadar API performance by running several cURL scripts.
 #### 1. Creating a search
-Run the following command to use the QRadar API to create a new search.<br> Save the QUERY ID that is attached to the response for the next step.</br>
+Run the following command to use the QRadar API to create a new search.Save the QUERY ID that is attached to the response for the next step.
 ```
-curl -H "SEC: &lt;API KEY&gt;" -X POST &lt;QRADAR INSTANCE&gt;/api/ariel/searches?query_expression=&lt;QUERY IN URL SAFE ENCODING&gt;
+curl -H "SEC: <API KEY>" -X POST <QRADAR INSTANCE>/api/ariel/searches?query_expression=<QUERY IN URL SAFE ENCODING>
 ```
 #### 2. Check if the search status is Complete or Executing
 Use the following command to use the QRadar API to check the query status (EXECUTE, COMPLETED, or ERROR).
 ```
-curl -H "SEC: &lt;API KEY&gt;" -X GET &lt;QRADAR INSTANCE&gt;/api/ariel/searches?&lt;QUERY ID&gt;
+curl -H "SEC: <API KEY>" -X GET <QRADAR INSTANCE>/api/ariel/searches?<QUERY ID>
 ```
 
 ## Using API Token authentication
@@ -44,6 +46,10 @@ In order to use the integration with an API token you'll first need to change th
 ## Fetch incidents
 To start fetching incidents, enable the parameter `Long running instance` - this will start a long running process that'll fetch incidents periodically.
 Depending on the system load, **the initial fetch might take a long time**.
+
+#### Field (Schema) Mapping
+The scheme is divided to 4 sections. Offense (root), Events: Builtins, Events: Custom Fields, and Assets.
+For more details, see the [Classification & Mapping documentation](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping/create-a-mapper.html).
 
 #### Query to fetch offenses
 You can apply additional (optional) filters for the fetch-incident query using the `Query to fetch offenses` integration parameter. For more information on how to use the filter syntax, see the [QRadar filter documentation](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.3/com.ibm.qradar.doc/c_rest_api_filtering.html) and [QRadar offense documentation](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.2/com.ibm.qradar.doc/11.0--siem-offenses-GET.html).
@@ -1353,3 +1359,18 @@ There is no context output for this command.
 #### Human Readable Output
 
 >fetch-incidents was reset successfully.
+
+### get-mapping-fields
+***
+Returns the list of fields for an incident type. This command is for debugging purposes.
+
+#### Base Command
+
+`get-mapping-fields`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
