@@ -540,5 +540,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- Create ServiceNow Ticket and Mirror Test
 fromversion: 6.0.0

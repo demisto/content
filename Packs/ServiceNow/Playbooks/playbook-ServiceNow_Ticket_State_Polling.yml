@@ -62,7 +62,7 @@ tasks:
         simple: ServiceNow.Ticket(val.State != '6' && val.State != '7').Number
       ids:
         complex:
-          root: inputs.IncidentNumber
+          root: inputs.TicketNumber
       interval:
         simple: ${inputs.Interval}
       playbookId:
@@ -144,7 +144,7 @@ tasks:
           root: inputs.InstanceName
       ids:
         complex:
-          root: inputs.IncidentNumber
+          root: inputs.TicketNumber
       pollingCommand:
         simple: servicenow-get-ticket
       pollingCommandArgName:
@@ -262,5 +262,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- Create ServiceNow Ticket and State Polling Test
 fromversion: 6.0.0
