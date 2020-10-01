@@ -609,7 +609,8 @@ def main():
             'azure-sentinel-list-incident-comments': list_incident_comments_command,
             'azure-sentinel-incident-add-comment': incident_add_comment_command,
             'azure-sentinel-list-incident-relations': list_incident_relations_command,
-            'azure-sentinel-get-entity-by-id': get_entity_by_id_command
+            'azure-sentinel-get-entity-by-id': get_entity_by_id_command,
+            'azure-sentinel-list-entity-relations': list_entity_relations_command
         }
 
         if demisto.command() == 'test-module':
