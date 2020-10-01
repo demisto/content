@@ -296,7 +296,8 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
         dependencies = get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock)
 
         current_packs_to_install = [pack_data]
-        current_packs_to_install.extend(dependencies)
+        if dependencies:
+            current_packs_to_install.extend(dependencies)
 
         lock.acquire()
         for pack in current_packs_to_install:
