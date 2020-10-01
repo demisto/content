@@ -994,7 +994,6 @@ def get_changed_integrations(build, prints_manager):
 
 
 def get_pack_ids_to_install():
-    print("starting to find packs to install\n")
     if Build.run_environment == Running.CIRCLECI_RUN:
         with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
             pack_ids = packs_stream.readlines()
@@ -1034,7 +1033,6 @@ def install_nightly_pack(build, prints_manager):
 
 
 def install_packs(build, prints_manager, pack_ids=None):
-    print(f"Pack IDS as shown in install_packs is: {pack_ids}")
     pack_ids = get_pack_ids_to_install() if pack_ids is None else pack_ids
     installed_content_packs_successfully = True
     for server in build.servers:

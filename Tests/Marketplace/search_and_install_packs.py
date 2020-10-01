@@ -100,7 +100,9 @@ def get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock)
                 prints_manager.execute_thread_prints(thread_index)
             return dependencies_data
         if status_code == 400:
-            print("Unable to find item in dependancies.")
+            err_msg = f"Unable to find dependencies for {pack_id}."
+            prints_manager.add_print_job(err_msg, print_color, thread_index, LOG_COLORS.RED)
+            prints_manager.execute_thread_prints(thread_index)
             return []
         else:
             result_object = ast.literal_eval(response_data)
@@ -220,11 +222,8 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
             pack_ids = packs_stream.readlines()
             pack_ids_correct = [pack_id.rstrip('\n') for pack_id in pack_ids]
-            print("Printing that dumb list of packs to install: "+str([pack_id.rstrip('\n') for pack_id in pack_ids]))
         for local_pack in local_packs:
-            print(f"Current local pack is: {local_pack}")
             if any(pack_id in local_pack for pack_id in pack_ids_correct):
-                print(f"Found a match!")
                 upload_zipped_packs(client=client, host=host, prints_manager=prints_manager,
                                     thread_index=thread_index, pack_path=local_pack)
     else:
@@ -281,12 +280,8 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
         lock (Lock): A lock object.
     """
     pack_data = []
-    print(f"Packs to install at the 'search_pack_and_its_depedbalah is: {packs_to_install}")
-    print(f"Currently trying to find the pack id: {pack_id}")
-
     if pack_id not in packs_to_install:
         pack_display_name = get_pack_display_name(pack_id)
-        print(f"Pack display name is: {pack_display_name}")
         if pack_display_name:
             pack_data = search_pack(client, prints_manager, pack_display_name, thread_index, lock)
         if pack_data is None:
@@ -384,7 +379,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
     """
     host = client.api_client.configuration.host
 
-    msg = f'Starting to search and install packs in server: {host}\nPack IDs are: {str(pack_ids)}'
+    msg = f'Starting to search and install packs in server: {host}}'
     prints_manager.add_print_job(msg, print_color, thread_index, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(thread_index)
 
