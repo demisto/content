@@ -94,7 +94,9 @@ class Client(BaseClient):
                 method='GET',
                 url_suffix='/systemReport/techniques',
                 params={
-                    'timeId': time_id
+                    'timeId': time_id,
+                    'page': page,
+                    'pageSize': 200
                 }
             )
             techniques.extend(res['data'])
@@ -116,7 +118,6 @@ class Client(BaseClient):
         raise NotImplemented()
 
     def search_entities(self, search_string):
-        demisto.info(f'looking up {search_string}')
         page = 1
         total_pages = 1
         entities = []
@@ -126,7 +127,9 @@ class Client(BaseClient):
                 method='GET',
                 url_suffix='/systemReport/entities',
                 params={
-                    'search': search_string
+                    'search': search_string,
+                    'page': page,
+                    'pageSize': 200
                 }
             )
             entities.extend(res['data'])
@@ -134,6 +137,27 @@ class Client(BaseClient):
             page += 1
         return entities
 
+    def assets_at_risk(self, entity_id):
+        demisto.info(f'assets_at_risk {entity_id}')
+        page = 1
+        total_pages = 1
+        entities = []
+        while page <= total_pages:
+            res = self._http_request(
+                method='GET',
+                url_suffix='/systemReport/assetsAtRiskByEntity',
+                params={
+                    'page': page,
+                    'pageSize': 200,
+                    'sort': 'attackComplexity',
+                    'entityId': entity_id,
+                    'timeId': 'timeAgo_days_7'
+                }
+            )
+            entities.extend(res['data'])
+            total_pages = res['paging']['totalPages']
+            page += 1
+        return entities
 
 ''' HELPER FUNCTIONS '''
 
@@ -495,10 +519,20 @@ def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output = '**Found the following entities**'
         for entity in entities:
             name = entity['name']
+            try:
+                is_asset = entity['asset']
+            except AttributeError:
+                is_asset = False
+            affected_assets = entity['affectedUniqueAssets']['count']
             readable_output += f'\n- {name}'
             outputs.append({
                 'EntityId': entity['entityId'],
-                'Name': name
+                'Name': name,
+                'IsAsset': is_asset,
+                'AffectedAssets': {
+                    'Value': affected_assets['value'],
+                    'Level': affected_assets['level']
+                }
             })
     return CommandResults(
         outputs_prefix='XMCyber',
@@ -506,6 +540,7 @@ def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs=outputs,
         readable_output=readable_output
     )
+
 
 ''' MAIN FUNCTION '''
 

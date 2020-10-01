@@ -30,7 +30,7 @@ configuration:
 script:
   commands:
   - name: xmcyber-entity-get
-    description: Get XM Entity by IP
+    description: Get XM Entity by IP or Name
     arguments:
       - name: ip
         default: true
@@ -47,6 +47,15 @@ script:
         type: String
       - contextPath: Name
         description: 'Entity Name'
+        type: String
+      - contextPath: IsAsset
+        description: Is Entity a Critical Asset
+        type: Boolean
+      - contextPath: AffectedAssets.Value
+        description: Number of affected critical assets
+        type: Number
+      - contextPath: AffectedAssets.Level
+        description: None, Low, Medium, or High
         type: String
   - name: xmcyber-attack-complexity-to-ip
     description: Set attack complexity on IP of the incident
