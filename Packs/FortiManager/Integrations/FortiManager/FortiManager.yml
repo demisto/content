@@ -57,239 +57,239 @@ script:
     execution: false
     name: fortimanager-devices-list
     outputs:
-    - contextPath: FortiManager.Address.adm_pass
+    - contextPath: FortiManager.Device.adm_pass
       description: 'ADOM password.'
       type: String
-    - contextPath: FortiManager.Address.adm_usr
+    - contextPath: FortiManager.Device.adm_usr
       description: 'ADOM user.'
       type: String
-    - contextPath: FortiManager.Address.app_ver
+    - contextPath: FortiManager.Device.app_ver
       description: 'Device app version.'
       type: String
-    - contextPath: FortiManager.Address.av_ver
+    - contextPath: FortiManager.Device.av_ver
       description: 'Device AV version.'
       type: String
-    - contextPath: FortiManager.Address.beta
+    - contextPath: FortiManager.Device.beta
       description: 'Beta.'
       type: Number
-    - contextPath: FortiManager.Address.branch_pt
+    - contextPath: FortiManager.Device.branch_pt
       description: 'Branch pt.'
       type: Number
-    - contextPath: FortiManager.Address.build
+    - contextPath: FortiManager.Device.build
       description: 'Build.'
       type: Number
-    - contextPath: FortiManager.Address.checksum
+    - contextPath: FortiManager.Device.checksum
       description: 'Checksum.'
       type: String
-    - contextPath: FortiManager.Address.conf_status
+    - contextPath: FortiManager.Device.conf_status
       description: 'Conf status'
       type: String
-    - contextPath: FortiManager.Address.conn_mode
+    - contextPath: FortiManager.Device.conn_mode
       description: 'Conn mode'
       type: String
-    - contextPath: FortiManager.Address.conn_status
+    - contextPath: FortiManager.Device.conn_status
       description: 'Conn status.'
       type: String
-    - contextPath: FortiManager.Address.db_status
+    - contextPath: FortiManager.Device.db_status
       description: 'DB status.'
       type: String
-    - contextPath: FortiManager.Address.desc
+    - contextPath: FortiManager.Device.desc
       description: 'Desc.'
       type: String
-    - contextPath: FortiManager.Address.dev_status
+    - contextPath: FortiManager.Device.dev_status
       description: 'Device status.'
       type: String
-    - contextPath: FortiManager.Address.fap_cnt
+    - contextPath: FortiManager.Device.fap_cnt
       description: 'Fap count.'
       type: Number
-    - contextPath: FortiManager.Address.faz.full_act
+    - contextPath: FortiManager.Device.faz.full_act
       description: 'Full act.'
       type: Number
-    - contextPath: FortiManager.Address.faz.perm
+    - contextPath: FortiManager.Device.faz.perm
       description: 'Perm.'
       type: Number
-    - contextPath: FortiManager.Address.faz.quota
+    - contextPath: FortiManager.Device.faz.quota
       description: 'Quota'
       type: Number
-    - contextPath: FortiManager.Address.faz.used
+    - contextPath: FortiManager.Device.faz.used
       description: 'Used.'
       type: Number
-    - contextPath: FortiManager.Address.fex_cnt
+    - contextPath: FortiManager.Device.fex_cnt
       description: 'Fex count.'
       type: Number
-    - contextPath: FortiManager.Address.flags
+    - contextPath: FortiManager.Device.flags
       description: 'Flags.'
       type: String
-    - contextPath: FortiManager.Address.foslic_cpu
+    - contextPath: FortiManager.Device.foslic_cpu
       description: 'Foslic cpu.'
       type: Number
-    - contextPath: FortiManager.Address.foslic_dr_site
+    - contextPath: FortiManager.Device.foslic_dr_site
       description: 'Foslic dr site.'
       type: String
-    - contextPath: FortiManager.Address.foslic_inst_time
+    - contextPath: FortiManager.Device.foslic_inst_time
       description: 'Foslic inst time.'
       type: Number
-    - contextPath: FortiManager.Address.foslic_last_sync
+    - contextPath: FortiManager.Device.foslic_last_sync
       description: 'Foslic Last sync.'
       type: Number
-    - contextPath: FortiManager.Address.foslic_ram
+    - contextPath: FortiManager.Device.foslic_ram
       description: 'Foslic RAM.'
       type: Number
-    - contextPath: FortiManager.Address.foslic_type
+    - contextPath: FortiManager.Device.foslic_type
       description: 'Foslic Type.'
       type: String
-    - contextPath: FortiManager.Address.foslic_utm
+    - contextPath: FortiManager.Device.foslic_utm
       description: 'Foslic UTM.'
       type: String
-    - contextPath: FortiManager.Address.fsw_cnt
+    - contextPath: FortiManager.Device.fsw_cnt
       description: 'FSW count.'
       type: Number
-    - contextPath: FortiManager.Address.ha_group_id
+    - contextPath: FortiManager.Device.ha_group_id
       description: 'Ha group id.'
       type: Number
-    - contextPath: FortiManager.Address.ha_group_name
+    - contextPath: FortiManager.Device.ha_group_name
       description: 'Ha group name.'
       type: String
-    - contextPath: FortiManager.Address.ha_mode
+    - contextPath: FortiManager.Device.ha_mode
       description: 'Ha mode.'
       type: String
-    - contextPath: FortiManager.Address.hdisk_size
+    - contextPath: FortiManager.Device.hdisk_size
       description: 'Hard disk size.'
       type: Number
-    - contextPath: FortiManager.Address.hostname
+    - contextPath: FortiManager.Device.hostname
       description: 'Hostname.'
       type: String
-    - contextPath: FortiManager.Address.hw_rev_major
+    - contextPath: FortiManager.Device.hw_rev_major
       description: 'HW rev major.'
       type: Number
-    - contextPath: FortiManager.Address.hw_rev_minor
+    - contextPath: FortiManager.Device.hw_rev_minor
       description: 'HW rev minor.'
       type: Number
-    - contextPath: FortiManager.Address.ip
+    - contextPath: FortiManager.Device.ip
       description: 'Device IP.'
       type: String
-    - contextPath: FortiManager.Address.ips_ext
+    - contextPath: FortiManager.Device.ips_ext
       description: 'External IP.'
       type: Number
-    - contextPath: FortiManager.Address.ips_ver
+    - contextPath: FortiManager.Device.ips_ver
       description: 'IP version.'
       type: String
-    - contextPath: FortiManager.Address.last_checked
+    - contextPath: FortiManager.Device.last_checked
       description: 'Last checked.'
       type: Number
-    - contextPath: FortiManager.Address.last_resync
+    - contextPath: FortiManager.Device.last_resync
       description: 'Last resync.'
       type: Number
-    - contextPath: FortiManager.Address.latitude
+    - contextPath: FortiManager.Device.latitude
       description: 'Latitude.'
       type: String
-    - contextPath: FortiManager.Address.lic_flags
+    - contextPath: FortiManager.Device.lic_flags
       description: 'Lic flags.'
       type: Number
-    - contextPath: FortiManager.Address.lic_region
+    - contextPath: FortiManager.Device.lic_region
       description: 'Lic region.'
       type: String
-    - contextPath: FortiManager.Address.location_from
+    - contextPath: FortiManager.Device.location_from
       description: 'Location from.'
       type: String
-    - contextPath: FortiManager.Address.logdisk_size
+    - contextPath: FortiManager.Device.logdisk_size
       description: 'Log disk size.'
       type: Number
-    - contextPath: FortiManager.Address.longitude
+    - contextPath: FortiManager.Device.longitude
       description: 'Longitude.'
       type: String
-    - contextPath: FortiManager.Address.maxvdom
+    - contextPath: FortiManager.Device.maxvdom
       description: 'Max VDOM.'
       type: Number
-    - contextPath: FortiManager.Address.meta_fields
+    - contextPath: FortiManager.Device.meta_fields
       description: 'Meta fields.'
       type: String
-    - contextPath: FortiManager.Address.mgmt_id
+    - contextPath: FortiManager.Device.mgmt_id
       description: 'Management ID.'
       type: Number
-    - contextPath: FortiManager.Address.mgmt_if
+    - contextPath: FortiManager.Device.mgmt_if
       description: 'Management IF.'
       type: String
-    - contextPath: FortiManager.Address.mgmt_mode
+    - contextPath: FortiManager.Device.mgmt_mode
       description: 'Management mode.'
       type: String
-    - contextPath: FortiManager.Address.mgt_vdom
+    - contextPath: FortiManager.Device.mgt_vdom
       description: 'Management VDOM.'
       type: String
-    - contextPath: FortiManager.Address.module_sn
+    - contextPath: FortiManager.Device.module_sn
       description: 'Module sn.'
       type: String
-    - contextPath: FortiManager.Address.mr
+    - contextPath: FortiManager.Device.mr
       description: 'Mr.'
       type: Number
-    - contextPath: FortiManager.Address.name
+    - contextPath: FortiManager.Device.name
       description: 'Device name.'
       type: String
-    - contextPath: FortiManager.Address.os_type
-      description: ''
+    - contextPath: FortiManager.Device.os_type
+      description: 'Device OS type.'
       type: String
-    - contextPath: FortiManager.Address.os_ver
-      description: ''
+    - contextPath: FortiManager.Device.os_ver
+      description: 'Device OS version.'
       type: String
-    - contextPath: FortiManager.Address.patch
-      description: ''
+    - contextPath: FortiManager.Device.patch
+      description: 'Patch.'
       type: Number
-    - contextPath: FortiManager.Address.platform_str
-      description: ''
+    - contextPath: FortiManager.Device.platform_str
+      description: 'Platform string.'
       type: String
-    - contextPath: FortiManager.Address.prefer_img_ver
-      description: ''
+    - contextPath: FortiManager.Device.prefer_img_ver
+      description: 'Prefer image version.'
       type: String
-    - contextPath: FortiManager.Address.prio
-      description: ''
+    - contextPath: FortiManager.Device.prio
+      description: 'Prio.'
       type: Number
-    - contextPath: FortiManager.Address.psk
-      description: ''
+    - contextPath: FortiManager.Device.psk
+      description: 'PSK.'
       type: String
-    - contextPath: FortiManager.Address.role
-      description: ''
+    - contextPath: FortiManager.Device.role
+      description: 'Device role.'
       type: String
-    - contextPath: FortiManager.Address.sn
-      description: ''
+    - contextPath: FortiManager.Device.sn
+      description: 'SN.'
       type: String
-    - contextPath: FortiManager.Address.vdom.comments
-      description: ''
+    - contextPath: FortiManager.Device.vdom.comments
+      description: 'VDOM comments.'
       type: String
-    - contextPath: FortiManager.Address.vdom.name
-      description: ''
+    - contextPath: FortiManager.Device.vdom.name
+      description: 'VDOM name.'
       type: String
-    - contextPath: FortiManager.Address.vdom.opmode
-      description: ''
+    - contextPath: FortiManager.Device.vdom.opmode
+      description: 'VDOM opmode.'
       type: String
-    - contextPath: FortiManager.Address.vdom.rtm_prof_id
-      description: ''
+    - contextPath: FortiManager.Device.vdom.rtm_prof_id
+      description: 'VDOM rtm prof id.'
       type: Number
-    - contextPath: FortiManager.Address.vdom.status
-      description: ''
+    - contextPath: FortiManager.Device.vdom.status
+      description: 'VDOM status.'
       type: String
-    - contextPath: FortiManager.Address.vdom.vpn_id
-      description: ''
+    - contextPath: FortiManager.Device.vdom.vpn_id
+      description: 'VDOM VPN id.'
       type: Number
-    - contextPath: FortiManager.Address.version
-      description: ''
+    - contextPath: FortiManager.Device.version
+      description: 'Device version.'
       type: Number
-    - contextPath: FortiManager.Address.vm_cpu
-      description: ''
+    - contextPath: FortiManager.Device.vm_cpu
+      description: 'VM CPU.'
       type: Number
-    - contextPath: FortiManager.Address.vm_cpu_limit
-      description: ''
+    - contextPath: FortiManager.Device.vm_cpu_limit
+      description: 'VM CPU limit.'
       type: Number
-    - contextPath: FortiManager.Address.vm_lic_expire
-      description: ''
+    - contextPath: FortiManager.Device.vm_lic_expire
+      description: 'VM licence expiration.'
       type: Number
-    - contextPath: FortiManager.Address.vm_mem
-      description: ''
+    - contextPath: FortiManager.Device.vm_mem
+      description: 'VM memory.'
       type: Number
-    - contextPath: FortiManager.Address.vm_mem_limit
-      description: ''
+    - contextPath: FortiManager.Device.vm_mem_limit
+      description: 'VM memory limit.'
       type: Number
-    - contextPath: FortiManager.Address.vm_status
-      description: ''
+    - contextPath: FortiManager.Device.vm_status
+      description: 'VM status'
       type: Number
   - arguments:
     - default: false
