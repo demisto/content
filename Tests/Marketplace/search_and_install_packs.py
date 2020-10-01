@@ -216,8 +216,8 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
             print("Failed to upload license.")
 
         local_packs = glob.glob("/home/runner/work/content-private/content-private/content/artifacts/packs/*.zip")
-        p_message = str(packs_to_install)
-        prints_manager.add_print_job(p_message, print_color, thread_index, LOG_COLORS.GREEN,
+        packs_install_msg = f'Installing the following packs: {packs_to_install}'
+        prints_manager.add_print_job(packs_install_msg, print_color, thread_index, LOG_COLORS.GREEN,
                                      include_timestamp=True)
         with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
             pack_ids = packs_stream.readlines()
