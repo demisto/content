@@ -51,7 +51,7 @@ def test_get_largest_inputs_and_outputs():
     Then:
         the result a list with only the larges input and output
     """
-    from GetLargestInputsAndOutputsInIncidents import get_largest_inputs_and_outputs
+    from GetLargestInputsAndOuputsInIncidents import get_largest_inputs_and_outputs
     res = []
     get_largest_inputs_and_outputs(inputs_and_outputs, res, 1)
     assert len(res) == 2

@@ -13,10 +13,10 @@ args:
   secret: false
 comment: Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations.
 commonfields:
-  id: GetLargestInputsAndOutputsInIncidents
+  id: GetLargestInputsAndOuputsInIncidents
   version: -1
 enabled: false
-name: GetLargestInputsAndOutputsInIncidents
+name: GetLargestInputsAndOuputsInIncidents
 script: '-'
 subtype: python3
 system: false
