@@ -81,7 +81,7 @@ class AMIConnection:
 
     REMOTE_MACHINE_USER = 'ec2-user'
     REMOTE_HOME = '/home/{}/'.format(REMOTE_MACHINE_USER)
-    LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
+    LOCAL_SCRIPTS_DIR = '/home/runner/work/content-private/content/Tests/scripts/'
     CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
     UPLOAD_MOCKS_SCRIPT = 'upload_mocks.sh'
     MOCK_KEY_FILE = 'id_rsa_f5256ae5ac4b84fb60541482f1e96cf9'
