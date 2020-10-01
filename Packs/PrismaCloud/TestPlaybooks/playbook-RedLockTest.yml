@@ -1,14 +1,14 @@
 id: RedLockTest
-version: -1
+version: 31
 name: RedLockTest
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5d8ffb2e-b39d-461d-8f33-0a53f7d4c8d4
+    taskid: 56707026-34e9-498c-8147-07ef704146dd
     type: start
     task:
-      id: 5d8ffb2e-b39d-461d-8f33-0a53f7d4c8d4
+      id: 56707026-34e9-498c-8147-07ef704146dd
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: fbfde3f9-74c2-46b4-8a91-fd30de35ac1e
+    taskid: ca76bb21-765d-4bcc-8ceb-13d27105ddad
     type: regular
     task:
-      id: fbfde3f9-74c2-46b4-8a91-fd30de35ac1e
+      id: ca76bb21-765d-4bcc-8ceb-13d27105ddad
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -64,10 +64,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 48bb2da7-70c3-4e95-8494-27efb29699e0
+    taskid: 929f7631-b1df-49d4-8e6c-77a4ff29b219
     type: regular
     task:
-      id: 48bb2da7-70c3-4e95-8494-27efb29699e0
+      id: 929f7631-b1df-49d4-8e6c-77a4ff29b219
       version: -1
       name: Retrieve All Alerts from Last 6 hours
       description: Search alerts on the RedLock platform
@@ -116,10 +116,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: a890b4cf-1126-41e6-8c85-c250c1848349
+    taskid: 7e1c8970-0569-4ae8-8318-6ac5283ff77d
     type: regular
     task:
-      id: a890b4cf-1126-41e6-8c85-c250c1848349
+      id: 7e1c8970-0569-4ae8-8318-6ac5283ff77d
       version: -1
       name: Get Most Recent Alert Details
       script: '|||redlock-get-alert-details'
@@ -148,10 +148,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: e75c9e62-38e2-4d71-8b05-0096699e6edf
+    taskid: 9e6ae0d1-ea0e-48ae-8a66-b1f30e6f4897
     type: condition
     task:
-      id: e75c9e62-38e2-4d71-8b05-0096699e6edf
+      id: 9e6ae0d1-ea0e-48ae-8a66-b1f30e6f4897
       version: -1
       name: Change Alert Status
       type: condition
@@ -199,10 +199,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: fccd641e-b424-4519-809f-31f05a7d3913
+    taskid: 2e0b32c8-0cac-4913-8d3b-62bae625fa54
     type: condition
     task:
-      id: fccd641e-b424-4519-809f-31f05a7d3913
+      id: 2e0b32c8-0cac-4913-8d3b-62bae625fa54
       version: -1
       name: Check for response
       type: condition
@@ -236,10 +236,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: c7b8e3fa-8f9c-435e-8d81-3900072604bb
+    taskid: 938f6ec3-423d-4798-8147-4cd14d0c40b1
     type: title
     task:
-      id: c7b8e3fa-8f9c-435e-8d81-3900072604bb
+      id: 938f6ec3-423d-4798-8147-4cd14d0c40b1
       version: -1
       name: Test Completed
       type: title
@@ -249,8 +249,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2820
+          "x": 270,
+          "y": 3060
         }
       }
     note: false
@@ -260,10 +260,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 48c2bd10-b9e7-4dbe-8263-68180d86559f
+    taskid: f22dcdab-bcfd-4ff4-8742-23d3d366a81e
     type: regular
     task:
-      id: 48c2bd10-b9e7-4dbe-8263-68180d86559f
+      id: f22dcdab-bcfd-4ff4-8742-23d3d366a81e
       version: -1
       name: Open the Alert
       description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
@@ -310,10 +310,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 3d398a52-a40c-4bf6-87de-0af29dfe7e73
+    taskid: f4837fed-5e4f-4dc1-870e-9860a10e82fe
     type: regular
     task:
-      id: 3d398a52-a40c-4bf6-87de-0af29dfe7e73
+      id: f4837fed-5e4f-4dc1-870e-9860a10e82fe
       version: -1
       name: Store Recent Alert ID
       description: Sets a value into the context with the given context key
@@ -346,10 +346,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 412b1117-95cb-4384-8ebe-63bbef697511
+    taskid: 0e82af00-cc54-4d3a-8ffb-3dc790b0ed49
     type: regular
     task:
-      id: 412b1117-95cb-4384-8ebe-63bbef697511
+      id: 0e82af00-cc54-4d3a-8ffb-3dc790b0ed49
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -383,10 +383,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: bbda63e8-3913-46ae-8327-364bfd699e79
+    taskid: 0c5a0fb1-87c7-4c66-8d22-884e860ee4c3
     type: regular
     task:
-      id: bbda63e8-3913-46ae-8327-364bfd699e79
+      id: 0c5a0fb1-87c7-4c66-8d22-884e860ee4c3
       version: -1
       name: Dismiss Alert
       description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
@@ -436,10 +436,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: d2fe7668-df2d-4b08-888b-6e6886a81c90
+    taskid: d391b237-c270-449b-85e3-3be7353aa87e
     type: condition
     task:
-      id: d2fe7668-df2d-4b08-888b-6e6886a81c90
+      id: d391b237-c270-449b-85e3-3be7353aa87e
       version: -1
       name: Verify Alert Status Change
       type: condition
@@ -499,10 +499,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 8f4ef273-dab0-4fe5-84de-5a1a7d5beb61
+    taskid: 86d26c82-ce08-4eae-81df-833520c70c42
     type: regular
     task:
-      id: 8f4ef273-dab0-4fe5-84de-5a1a7d5beb61
+      id: 86d26c82-ce08-4eae-81df-833520c70c42
       version: -1
       name: Return alert To Open State
       description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
@@ -550,10 +550,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 43c4c79c-d5f4-4502-86ce-ded9cdd3e550
+    taskid: 81c21446-5454-469f-8f49-f0da9ecd1fd5
     type: regular
     task:
-      id: 43c4c79c-d5f4-4502-86ce-ded9cdd3e550
+      id: 81c21446-5454-469f-8f49-f0da9ecd1fd5
       version: -1
       name: Store Recent Alert Status
       description: Sets a value into the context with the given context key
@@ -598,10 +598,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 1d482a77-d906-4e5c-86de-ff23076f3fbb
+    taskid: 5170d6fc-505b-4a6a-80ae-20cd7d1286da
     type: regular
     task:
-      id: 1d482a77-d906-4e5c-86de-ff23076f3fbb
+      id: 5170d6fc-505b-4a6a-80ae-20cd7d1286da
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -635,10 +635,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 900b5aef-bc7b-4904-8b3a-2876f4ad7f0b
+    taskid: 567e30be-a6e3-45de-87d9-48e955232eee
     type: regular
     task:
-      id: 900b5aef-bc7b-4904-8b3a-2876f4ad7f0b
+      id: 567e30be-a6e3-45de-87d9-48e955232eee
       version: -1
       name: Get Alert Details
       description: Get remediation details for a given alert
@@ -667,10 +667,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: aaf33fc3-ac3e-459e-8fac-098b93bf8503
+    taskid: 7de69f34-6cf0-4bdd-8f82-452a9fb42f95
     type: condition
     task:
-      id: aaf33fc3-ac3e-459e-8fac-098b93bf8503
+      id: 7de69f34-6cf0-4bdd-8f82-452a9fb42f95
       version: -1
       name: Return to original state
       type: condition
@@ -707,10 +707,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 9f3d69c7-426a-48de-843f-17d10e35bea6
+    taskid: 4a1d5559-c678-4f52-83c4-703c1be43d5a
     type: regular
     task:
-      id: 9f3d69c7-426a-48de-843f-17d10e35bea6
+      id: 4a1d5559-c678-4f52-83c4-703c1be43d5a
       version: -1
       name: Return alert To Dismissed State
       description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
@@ -761,10 +761,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: b89a65b8-9cac-42c2-8d9c-82c14c7b98db
+    taskid: 6ed0828b-898a-466d-8682-b0c81f2d5656
     type: regular
     task:
-      id: b89a65b8-9cac-42c2-8d9c-82c14c7b98db
+      id: 6ed0828b-898a-466d-8682-b0c81f2d5656
       version: -1
       name: Get Remediation Details
       description: Get remediation details for a given alert
@@ -774,7 +774,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "38"
     scriptarguments:
       alert-id:
         simple: ${RedLockID}
@@ -793,10 +793,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: b71629af-3593-473a-8ae2-e397e57a99ce
+    taskid: 75d523e9-d621-4059-8e65-680539bace6e
     type: regular
     task:
-      id: b71629af-3593-473a-8ae2-e397e57a99ce
+      id: 75d523e9-d621-4059-8e65-680539bace6e
       version: -1
       name: List Alert Filters
       description: List the acceptable filters and values for alerts
@@ -820,6 +820,38 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "38":
+    id: "38"
+    taskid: e07d6883-59d9-4681-889f-1ecd0182f0b3
+    type: regular
+    task:
+      id: e07d6883-59d9-4681-889f-1ecd0182f0b3
+      version: -1
+      name: Run RQL
+      description: Run RQL query on Prisma Cloud
+      script: '|||redlock-get-rql-response'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      rql:
+        simple: config where api.name = 'aws-iam-list-access-keys'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -833,7 +865,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3045,
+        "height": 3285,
         "width": 1060,
         "x": -70,
         "y": -160
