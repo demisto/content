@@ -660,6 +660,7 @@ def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_
 
 
 def is_url_response_complete(res):
+    # warning
     return bool(res.get('total'))
 
 
