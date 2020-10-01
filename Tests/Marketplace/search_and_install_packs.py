@@ -379,7 +379,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
     """
     host = client.api_client.configuration.host
 
-    msg = f'Starting to search and install packs in server: {host}}'
+    msg = f'Starting to search and install packs in server: {host}'
     prints_manager.add_print_job(msg, print_color, thread_index, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(thread_index)
 
