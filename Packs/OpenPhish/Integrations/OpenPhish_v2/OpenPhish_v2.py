@@ -67,13 +67,12 @@ def _save_urls_to_instance(client: Client):
         data = data.splitlines()
         data = list(map(remove_backslash, data))
 
-        context = {"list": data, "timestamp": date_to_timestamp(datetime.now(), DATE_FORMAT)}
+        context = {"list": data,
+                   "timestamp": date_to_timestamp(datetime.now(), DATE_FORMAT)}
         set_integration_context(context)
 
     except NotFoundError as e:
         return_error('Check server URL - ' + e.message)
-    except Exception as e:
-        raise e
 
 
 def _is_reload_needed(client: Client, data: Dict[str, str]) -> bool:
@@ -157,7 +156,7 @@ def url_command(client: Client, **kwargs) -> CommandResults:
 
 def reload_command(client: Client, **kwargs) -> CommandResults:
     _save_urls_to_instance(client)
-    return CommandResults(readable_output='updated')
+    return CommandResults(readable_output='updated successfully')
 
 
 def status_command(client: Client, **kwargs) -> CommandResults:
