@@ -2,18 +2,29 @@ commonfields:
   id: CreateBinaryFile
   version: -1
 name: CreateBinaryFile
-script: |+
+script: >+
   import os
+
   arr = bytearray()
+
   arr.append(1)
+
   arr.append(2)
+
   arr.append(3)
+
   arr.append(4)
+
   arr.append(5)
+
   arr.append('t')
+
   arr.append('e')
+
   arr.append('s')
+
   arr.append('t')
+
   demisto.results(fileResult( 'test-file.bin',arr))
 
 type: python
@@ -23,3 +34,4 @@ enabled: true
 scripttarget: 0
 comment: ''
 runonce: false
+fromversion: 5.0.0

@@ -1,7 +1,7 @@
 id: PhishLabs - Populate Indicators
 version: -1
 name: PhishLabs - Populate Indicators
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: This playbook can be used in a job to populate indicators from PhishLabs, according to a defined period of time.
 starttaskid: "0"
 tasks:
@@ -215,12 +215,11 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Removes the query string part from indicators, when the rules can be
-    applied.
+  description: Removes the query string part from indicators, when the rules can be applied.
 - key: Indicator type
   value: {}
   required: false
   description: Filter the indicators by indicator type.
 outputs: []
 tests:
-  - PhishLabsTestPopulateIndicators
+- PhishLabsTestPopulateIndicators

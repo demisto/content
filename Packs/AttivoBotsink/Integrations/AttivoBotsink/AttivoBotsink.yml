@@ -34,8 +34,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: Number of days to go back for the initial fetch. Use "0" to only retrieve
-    new incidents.
+- display: Number of days to go back for the initial fetch. Use "0" to only retrieve new incidents.
   name: first_fetch
   defaultvalue: "0"
   type: 0
@@ -55,8 +54,7 @@ script:
       description: Is the user part of the Deception environment
       type: boolean
     - contextPath: Attivo.User.Groups
-      description: If the user is part of the Deception environment, the member is
-        a member of these groups
+      description: If the user is part of the Deception environment, the member is a member of these groups
     description: Checks whether a user is deceptive
   - name: attivo-check-host
     arguments:
@@ -134,15 +132,12 @@ script:
       - Low
       - VeryLow
       - SystemActivity
-      description: The minimum Attivo severity for the events, default is "Medium";
-        "VeryHigh", "High", "Medium", "Low", "VeryLow", "SystemActivity"
+      description: The minimum Attivo severity for the events, default is "Medium"; "VeryHigh", "High", "Medium", "Low", "VeryLow", "SystemActivity"
       defaultValue: Medium
     - name: alerts_start_date
-      description: Date and time to start looking for events, e.g.,  2018-12-10 or
-        2018-12-10T13:59:05Z
+      description: Date and time to start looking for events, e.g.,  2018-12-10 or 2018-12-10T13:59:05Z
     - name: alerts_end_date
-      description: Date and time to stop looking for events, e.g.,  2018-12-10 or
-        2018-12-10T13:59:05Z
+      description: Date and time to stop looking for events, e.g.,  2018-12-10 or 2018-12-10T13:59:05Z
     outputs:
     - contextPath: Attivo.Events.Count
       description: Total number of events retrieved
@@ -190,3 +185,4 @@ script:
   runonce: false
 tests:
 - AttivoBotsinkTest
+fromversion: 5.0.0
