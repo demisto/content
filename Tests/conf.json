@@ -3038,6 +3038,11 @@
             "integrations": "Talos Feed",
             "playbookID": "FeedTalosTestPlaybook",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "Field polling test",
+            "timeout": 600,
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
