@@ -1,0 +1,33 @@
+
+dataDir: .
+serverPort: 5010
+logFile: ../../logs/cxtServer.log
+activitiesDir: ../../activities
+
+#
+# A/B Test frequencies
+#
+algorithm.bert: 1
+algorithm.lstm: 0
+
+snippet.idf: 1
+snippet.static: 0
+snippet.none: 0
+
+#
+# BERT parameters
+#
+bert.model: model.pt
+bert.labelMap: label_map.pkl
+
+#
+# LSTM parameters
+#
+lstm.neighbors: 10
+lstm.assets: assets_v0.9.pkl
+
+#
+# Dynamic snippet
+#
+idfSnippet.maxSnippet: 500
+
