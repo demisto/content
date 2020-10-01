@@ -1,7 +1,8 @@
 id: 488b2024-8bb9-47f9-8ad2-1b6cdebec4ea
-version: 1
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: tag bug
+description: 'this is a test'
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -12,6 +13,7 @@ tasks:
       id: 0e7b7e53-62b8-41d1-8c3e-06a03ce348bb
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
