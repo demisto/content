@@ -79,7 +79,6 @@ def handle_incident(inc, fields_to_populate, include_context):
 
 
 def get_incidents_by_page(args, page, fields_to_populate, include_context):
-    demisto.log(page)
     args['page'] = page
     res = demisto.executeCommand("getIncidents", args)
     if res[0]['Contents'].get('data') is None:
