@@ -285,6 +285,11 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
         print(f"Pack display name is: {pack_display_name}")
         if pack_display_name:
             pack_data = search_pack(client, prints_manager, pack_display_name, thread_index, lock)
+        if pack_data is None:
+            pack_data = {
+                'id': pack_id,
+                'version': '1.0.0'
+            }
 
     if pack_data:
         dependencies = get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock)
