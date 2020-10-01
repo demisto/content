@@ -83,7 +83,7 @@ def test_poll_field_from_root_with_regex_success(mocker):
     mocker.patch.object(demisto, 'incidents', return_value=[incident_contains_field_in_root])
     args = {
         'field': 'field_name',
-        'regex': '^Test'
+        'regex': '^Test',
     }
 
     result = poll_field(args)
@@ -105,7 +105,7 @@ def test_poll_field_from_root_with_regex_failure(mocker):
     mocker.patch.object(demisto, 'incidents', return_value=[incident_contains_field_in_root])
     args = {
         'field': 'field_name',
-        'regex': '^Testing'
+        'regex': '^Testing',
     }
 
     result = poll_field(args)
@@ -126,7 +126,7 @@ def test_poll_field_from_root_without_regex_success(mocker):
     """
     mocker.patch.object(demisto, 'incidents', return_value=[incident_contains_field_in_root])
     args = {
-        'field': 'field_name'
+        'field': 'field_name',
     }
 
     result = poll_field(args)
@@ -171,7 +171,7 @@ def test_poll_field_from_custom_fields_with_regex_success(mocker):
     mocker.patch.object(demisto, 'incidents', return_value=[incident_contains_field_in_custom_fields])
     args = {
         'field': 'field_name',
-        'regex': 'Test'
+        'regex': 'Test',
     }
 
     result = poll_field(args)
@@ -193,7 +193,7 @@ def test_poll_field_from_custom_fields_with_regex_failure(mocker):
     mocker.patch.object(demisto, 'incidents', return_value=[incident_contains_field_in_custom_fields])
     args = {
         'field': 'field_name',
-        'regex': 'NOT'
+        'regex': 'NOT',
     }
 
     result = poll_field(args)
@@ -214,7 +214,7 @@ def test_poll_field_from_custom_fields_without_regex_success(mocker):
     """
     mocker.patch.object(demisto, 'incidents', return_value=[incident_contains_field_in_custom_fields])
     args = {
-        'field': 'field_name'
+        'field': 'field_name',
     }
 
     result = poll_field(args)
@@ -235,7 +235,7 @@ def test_poll_missing_field_in_custom_fields(mocker):
     """
     mocker.patch.object(demisto, 'incidents', return_value=[incident_with_empty_field_in_custom_fields])
     args = {
-        'field': 'field_name'
+        'field': 'field_name',
     }
 
     result = poll_field(args)
