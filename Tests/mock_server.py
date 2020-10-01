@@ -154,7 +154,7 @@ class AMIConnection:
         self.run_script(self.UPLOAD_MOCKS_SCRIPT, build_name, build_number)
 
     def clone_mock_data(self):
-        remote_key_filepath = self.copy_file(os.path.join('/home/runner/work/content-private/content-private/.ssh/', self.MOCK_KEY_FILE))
+        remote_key_filepath = self.copy_file(os.path.join('/home/runner/.ssh/', self.MOCK_KEY_FILE))
         self.run_script(self.CLONE_MOCKS_SCRIPT, remote_key_filepath)
 
 
