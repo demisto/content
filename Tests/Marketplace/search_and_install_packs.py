@@ -99,6 +99,9 @@ def get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock)
                 prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN)
                 prints_manager.execute_thread_prints(thread_index)
             return dependencies_data
+        if status_code == 400:
+            print("Unable to find item in dependancies.")
+            return []
         else:
             result_object = ast.literal_eval(response_data)
             msg = result_object.get('message', '')
