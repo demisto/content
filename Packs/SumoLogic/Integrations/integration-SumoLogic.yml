@@ -231,8 +231,8 @@ script:
                             incident.labels.push({type: props[j], value: s.messages[i][props[j]]});
                         }
                     }
-                    if (s.messages[i]._messagetime > currentFetch){
-                        currentFetch = s.messages[i]._messagetime
+                    if (parseInt(s.messages[i]._messagetime) > currentFetch){
+                        currentFetch = parseInt(s.messages[i]._messagetime)
                     }
                     incidents.push(incident);
                 }
