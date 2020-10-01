@@ -11,7 +11,7 @@ You can add the new layout as a tab to existing layouts at the edit layout scree
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Field Polling
+* Field Polling - Generic
 
 ### Integrations
 This playbook does not use any integrations.
