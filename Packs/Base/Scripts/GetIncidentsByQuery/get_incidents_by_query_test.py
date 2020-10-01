@@ -29,6 +29,7 @@ def get_args():
     args['limit'] = '10'
     args['includeContext'] = 'false'
     args['outputFormat'] = 'json'
+    args['pageSize'] = '10'
     return args
 
 
@@ -94,10 +95,11 @@ def test_parse_relative_time():
 
 
 def test_main(mocker):
-    args = get_args()
+    args = dict(get_args())
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Type': entryTypes['note'],
                                                                   'Contents': {'data': [incident1, incident2]}}])
+
     entry = main()
     assert "Fetched 2 incidents successfully" in entry['HumanReadable']
     assert 'GetIncidentsByQuery' in entry['EntryContext']
