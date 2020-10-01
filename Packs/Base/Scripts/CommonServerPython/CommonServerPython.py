@@ -4055,7 +4055,7 @@ def merge_lists(original_list, updated_list, key):
     return merged_list
 
 
-def set_integration_context(context, sync=True, version=-1):
+def set_integration_context(context, version, sync=True):
     """
     Sets the integration context.
 
@@ -4065,7 +4065,7 @@ def set_integration_context(context, sync=True, version=-1):
     :type sync: ``bool``
     :param sync: Whether to save the context directly to the DB.
 
-    :type version: ``int``
+    :type version: ``Any``
     :param version: The version of the context to set.
 
     :rtype: ``dict``
@@ -4073,8 +4073,7 @@ def set_integration_context(context, sync=True, version=-1):
     """
     demisto.debug('Setting integration context {}:'.format(str(context)))
     if is_versioned_context_available():
-        context['version'] = str(version + 1)
-        demisto.debug('Updating integration context to version {}. Sync: {}'.format(version + 1, sync))
+        demisto.debug('Updating integration context with version {}. Sync: {}'.format(version, sync))
         return demisto.setIntegrationContextVersioned(context, version, sync)
     else:
         return demisto.setIntegrationContext(context)
@@ -4153,9 +4152,9 @@ def set_to_integration_context_with_retries(context, object_keys=None, sync=True
         # If we get a ValueError (DB Version), then the version was not updated and we need to try again.
         attempt += 1
         try:
-            set_integration_context(integration_context, sync, version)
-            demisto.debug('Successfully updated integration context. New version is {}.'
-                          ''.format(version + 1 if version != -1 else version))
+            set_integration_context(integration_context, version, sync)
+            demisto.debug('Successfully updated integration context with version {}.'
+                          ''.format(version))
             break
         except ValueError as ve:
             demisto.debug('Failed updating integration context with version {}: {} Attempts left - {}'
