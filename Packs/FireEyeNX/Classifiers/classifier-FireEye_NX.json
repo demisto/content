@@ -3,13 +3,14 @@
  "type": "classification",
  "id": "FireEye NX",
  "description": "Classifies FireEye NX Incidents.",
- "defaultIncidentType": "FireEye NX Incident",
+ "defaultIncidentType": "FireEye NX",
  "keyTypeMap": {
-  "DOMAIN_MATCH": "FireEye NX Incident"
+  "FireEye NX Alert": "FireEye NX Alert",
+  "FireEye NX IPS Event": "FireEye NX IPS Event"
  },
  "transformer": {
   "complex": null,
-  "simple": "name"
+  "simple": "incidentType"
  },
  "version": -1,
  "fromVersion": "6.0.0"
