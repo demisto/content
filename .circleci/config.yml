@@ -205,7 +205,7 @@ references:
       name: Secrets
       when: always
       command: |
-        demisto-sdk secrets --post-commit --ignore-entropy
+        demisto-sdk secrets --post-commit
 
   validate_files_and_yaml: &validate_files_and_yaml
     run:
