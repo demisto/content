@@ -917,6 +917,40 @@ script:
       description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters.
     - name: description
       description: A meaningful description of the indicator. Limit 200 characters.
+    outputs:
+    - contextPath: CrowdStrike.IOC.Type
+      description: The type of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Value
+      description: The string representation of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.Policy
+      description: The policy of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.Source
+      description: The source of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.ShareLevel
+      description: The level at which the indicator will be shared.
+      type: string
+    - contextPath: CrowdStrike.IOC.Expiration
+      description: The date time when the indicator will expire.
+      type: string
+    - contextPath: CrowdStrike.IOC.Description
+      description: The description of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.CreatedTime
+      description: The time of creation of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.CreatedBy
+      description: The identity of the user/process who created of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.ModifiedTime
+      description: The time the indicator was last modified.
+      type: string
+    - contextPath: CrowdStrike.IOC.ModifiedBy
+      description: The identity of the user/process who last updated the IOC.
+      type: string
     description: Uploads an indicator for CrowdStrike to monitor.
   - name: cs-falcon-update-ioc
     arguments:
@@ -952,6 +986,40 @@ script:
       description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters.
     - name: description
       description: A meaningful description of the indicator. Limit 200 characters.
+    outputs:
+    - contextPath: CrowdStrike.IOC.Type
+      description: The type of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Value
+      description: The string representation of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.Policy
+      description: The policy of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.Source
+      description: The source of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.ShareLevel
+      description: The level at which the indicator will be shared.
+      type: string
+    - contextPath: CrowdStrike.IOC.Expiration
+      description: The date time when the indicator will expire.
+      type: string
+    - contextPath: CrowdStrike.IOC.Description
+      description: The description of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.CreatedTime
+      description: The time of creation of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.CreatedBy
+      description: The identity of the user/process who created of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.ModifiedTime
+      description: The time the indicator was last modified.
+      type: string
+    - contextPath: CrowdStrike.IOC.ModifiedBy
+      description: The identity of the user/process who last updated the IOC.
+      type: string
     description: Updates an indicator for CrowdStrike to monitor.
   - name: cs-falcon-delete-ioc
     arguments:
@@ -1006,7 +1074,7 @@ script:
     - name: device_id
       required: true
       description: "The device ID to check against."
-    description: Get proccesses associated with a given IOC
+    description: Get proccesses associated with a given IOC.
   - name: cs-falcon-process-details
     arguments:
     - name: ids

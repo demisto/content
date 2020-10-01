@@ -979,8 +979,16 @@ def update_ioc(ioc_type, value, policy=None, expiration_days=None,
 def search_iocs(types=None, values=None, policies=None, sources=None, expiration_from=None,
                 expiration_to=None, limit=None, share_levels=None, ids=None, sort=None, offset=None):
     """
-        UNTESTED IN OAUTH 2- Searches an IoC
-        :return: IoCs that were found in the search
+    :param types: A list of indicator types. Separate multiple types by comma.
+    :param values: Comma-separated list of indicator values
+    :param policies: Comma-separated list of indicator policies
+    :param sources: Comma-separated list of IOC sources
+    :param expiration_from: Start of date range to search (YYYY-MM-DD format).
+    :param expiration_to: End of date range to search (YYYY-MM-DD format).
+    :param share_levels: A list of share levels. Only red is supported.
+    :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    :param sort: The order of the results. Format
+    :param offset: The offset to begin the list from
     """
     if not ids:
         payload = assign_params(
@@ -1011,8 +1019,8 @@ def search_iocs(types=None, values=None, policies=None, sources=None, expiration
 
 def enrich_ioc_dict_with_ids(ioc_dict):
     """
-        Enriches the provided ioc_dict with IoC ID
-        :param ioc_dict: IoC dict transformed using the SEARCH_IOC_KEY_MAP
+        Enriches the provided ioc_dict with IOC ID
+        :param ioc_dict: IOC dict transformed using the SEARCH_IOC_KEY_MAP
         :return: ioc_dict with its ID key:value updated
     """
     for ioc in ioc_dict:
@@ -1333,8 +1341,8 @@ def upload_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=N
         raise Exception("Failed to create ioc.")
     ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
     enrich_ioc_dict_with_ids(ec)
-    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec},
-                               hr=tableToMarkdown('Custom IoC was created successfully', ec))
+    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+                               hr=tableToMarkdown('Custom IOC was created successfully', ec))
 
 
 def update_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=None,
@@ -1353,8 +1361,8 @@ def update_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=N
     iocs = search_iocs(ids=f"{ioc_type}:{value}").get('resources')
     ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
     enrich_ioc_dict_with_ids(ec)
-    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec},
-                               hr=tableToMarkdown('Custom IoC was created successfully', ec))
+    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+                               hr=tableToMarkdown('Custom IOC was created successfully', ec))
 
 
 def search_iocs_command(types=None, values=None, policies=None, sources=None, from_expiration_date=None,
@@ -1380,7 +1388,7 @@ def search_iocs_command(types=None, values=None, policies=None, sources=None, fr
     iocs = raw_res.get('resources')
     ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
     enrich_ioc_dict_with_ids(ec)
-    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec},
+    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
                                hr=tableToMarkdown('Indicators of Compromise', ec))
 
 
@@ -1394,7 +1402,7 @@ def get_ioc_command(ioc_type: str, value: str):
     iocs = raw_res.get('resources')
     ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
     enrich_ioc_dict_with_ids(ec)
-    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec},
+    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
                                hr=tableToMarkdown('Indicator of Compromise', ec))
 
 
@@ -1406,7 +1414,7 @@ def delete_ioc_command(ioc_type, value):
     raw_res = delete_ioc(ioc_type, value)
     handle_response_errors(raw_res, "The server has not confirmed deletion, please manually confirm deletion.")
     ids = f"{ioc_type}:{value}"
-    return create_entry_object(contents=raw_res, hr=f"Custom IoC {ids} was successfully deleted.")
+    return create_entry_object(contents=raw_res, hr=f"Custom IOC {ids} was successfully deleted.")
 
 
 def get_ioc_device_count_command(ioc_type: str, value: str):
@@ -1439,7 +1447,7 @@ def get_proccesses_ran_on_command(ioc_type, value, device_id):
     raw_res = get_proccesses_ran_on(ioc_type, value, device_id)
     handle_response_errors(raw_res)
     ids = f"{ioc_type}:{value}"
-    return create_entry_object(contents=raw_res, hr=f"Process with custom IoC {ids} on device {device_id}.")
+    return create_entry_object(contents=raw_res, hr=f"Process with custom IOC {ids} on device {device_id}.")
 
 
 def search_device_command():
