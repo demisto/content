@@ -4,7 +4,14 @@ commonfields:
 name: illuminate
 display: illuminate
 category: Data Enrichment & Threat Intelligence
-description: This integration utilizes AnalystPlatform's illuminate system to enrich Demisto indicators with data provided by the illuminate REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
+description: This integration utilizes AnalystPlatform's illuminate system to enrich
+  Demisto indicators with data provided by the illuminate REST API, such as actor
+  and malware information, activity and reported dates, evidence and hit counts, and
+  more.
+deprecated: true
+tests:
+  - No Tests
+  - Deprecated
 configuration:
 - display: illuminate API Credentials (username/password)
   name: credentials
