@@ -1,0 +1,14 @@
+{
+    "name": "Sales User Onboarding",
+    "description": "Playbook for automated ServiceNow ticket processing of creating new Sales user in SalesForce.\n\nCurrent Sales Onboarding procedure is mundane, time consuming, and prone to human errors. Coordinating across team members and business units, especially when working remotely, leads to rework and fragmented documentation.\n\nOur automated solution streamlines onboarding procedure, executes the process with greater speed, accuracy, and visibility. It enables a logically organized process standard, collaborative case management, and other valuable metric insight.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "keong0066",
+    "url": "",
+    "email": "",
+    "created": "2020-10-01T00:02:25Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
