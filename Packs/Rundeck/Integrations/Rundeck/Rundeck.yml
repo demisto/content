@@ -8,66 +8,10 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- defaultvalue: '10'
-  display: Maximum number of incidents per fetch
-  name: max_fetch
-  required: false
-  type: 0
 - display: API Key
   name: apikey
   required: true
   type: 4
-- defaultvalue: '65'
-  display: Score threshold for IP reputation command
-  additionalinfo: Set this to determine the HelloWorld score that will determine if
-    an IP is malicious (0-100)
-  name: threshold_ip
-  required: false
-  type: 0
-- defaultvalue: '65'
-  display: Score threshold for domain reputation command
-  additionalinfo: Set this to determine the HelloWorld score that will determine if
-    a domain is malicious (0-100)
-  name: threshold_domain
-  required: false
-  type: 0
-- defaultvalue: ACTIVE
-  display: Fetch alerts with status (ACTIVE, CLOSED)
-  name: alert_status
-  options:
-  - ACTIVE
-  - CLOSED
-  required: false
-  type: 15
-- display: Fetch alerts with type
-  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change
-    over time. Some examples are 'Bug' and 'Vulnerability'
-  name: alert_type
-  required: false
-  type: 0
-- defaultvalue: Low
-  display: Minimum severity of alerts to fetch
-  name: min_severity
-  options:
-  - Low
-  - Medium
-  - High
-  - Critical
-  required: true
-  type: 15
-- defaultvalue: 3 days
-  display: First fetch time
-  name: first_fetch
-  required: false
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -76,7 +20,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the Hello World integration for getting started.
+description: Rundeck is runbook automation for incident management, business continuity,
+  and self-service operations.
 display: Rundeck
 name: Rundeck
 script:
@@ -219,17 +164,26 @@ script:
     - contextPath: HelloWorld.Alert.alert_status
       description: Alert status. Can be 'ACTIVE' or 'CLOSED'.
       type: String
-  - name: ip
-    arguments:
-    - name: ip
-      default: true
+  - arguments:
+    - default: true
       description: List of IPs.
       isArray: true
-    - name: threshold
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '65'
       description: If the IP has reputation above the threshold then the IP defined
         as malicious. If threshold not set, then threshold from instance configuration
         is used.
-      defaultValue: 65
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Return IP information and reputation
+    execution: false
+    name: ip
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -346,18 +300,26 @@ script:
     - contextPath: IP.ASN
       description: The autonomous system name for the IP address.
       type: String
-    description: Return IP information and reputation
-  - name: domain
-    arguments:
-    - name: domain
-      default: true
+  - arguments:
+    - default: true
       description: List of Domains.
       isArray: true
-    - name: threshold
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '65'
       description: If the domain has reputation above the threshold then the domain
         defined as malicious. If threshold not set, then threshold from instance configuration
         is used.
-      defaultValue: 65
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns Domain information and reputation.
+    execution: false
+    name: domain
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -482,7 +444,6 @@ script:
     - contextPath: HelloWorld.Domain.zipcode
       description: Domain admin zipcode.
       type: Unknown
-    description: Returns Domain information and reputation.
   - arguments:
     - default: false
       description: Asset to start the scan against.
@@ -588,15 +549,16 @@ script:
       description: The ID of the CVE.
       type: string
   dockerimage: demisto/python3:3.8.5.11789
-  isfetch: true
+  feed: false
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-defaultclassifier: HelloWorld
-defaultmapperin: HelloWorld-mapper
-fromversion: 5.0.0
 tests:
 - No tests
+defaultmapperin: HelloWorld-mapper
+defaultclassifier: HelloWorld
+fromversion: 5.0.0
