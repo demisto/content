@@ -1145,9 +1145,9 @@ class ARIA(object):
             },
             'Status': {
                 'command_state': 'Failure',
-                'timestamp': None  # type: ignore
+                'timestamp': 'None'
             },
-            'Endpoints': None   # type: ignore
+            'Endpoints': []
         }
 
         if response and response.ok:
@@ -1193,7 +1193,7 @@ class ARIA(object):
 
         command_state_str = 'Failure'
 
-        endpoints = None
+        endpoints = []
         context = {
             'Rule': {
                 'Name': rule_name,
@@ -1202,9 +1202,9 @@ class ARIA(object):
             },
             'Status': {
                 'command_state': command_state_str,
-                'timestamp': None  # type: ignore
+                'timestamp': 'None'
             },
-            'Endpoints': endpoints  # type: ignore
+            'Endpoints': endpoints
         }
 
         try:
@@ -1634,7 +1634,6 @@ class ARIA(object):
         sd_list, sia_list = self._parse_rcs(rcs)
         data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='src-port', rule=rule,
                                                 named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
-        print(data)
         return self._do_request(data, rule_name, rule, rcs)
 
     def unblock_src_port(self, rule_name: str, rcs: str = None) -> dict:
