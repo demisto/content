@@ -78,7 +78,7 @@ IOC_KEY_MAP = {
     'modified_by': 'ModifiedBy'
 }
 
-IOC_DEVICE_COUNT = {
+IOC_DEVICE_COUNT_MAP = {
     'id': 'ID',
     'type': 'Type',
     'value': 'Value',
@@ -349,12 +349,15 @@ def get_passed_mins(start_time, end_time_str):
 
 
 def handle_response_errors(raw_res: dict, err_msg: str = None):
+    """
+    Raise exception if raw_res is empty or contains errors
+    """
     if not err_msg:
         err_msg = "The server was unable to return a result, please run the command again."
     if not raw_res:
-        raise Exception(err_msg)
+        raise DemistoException(err_msg)
     if raw_res.get('errors'):
-        raise Exception(raw_res.get('errors'))
+        raise DemistoException(raw_res.get('errors'))
     return
 
 
@@ -1066,6 +1069,9 @@ def get_process_details(ids):
 
 
 def get_proccesses_ran_on(ioc_type, value, device_id):
+    """
+    Get processes ids that ran on the given device_id that encountered the ioc
+    """
     payload = assign_params(
         type=ioc_type,
         value=value,
@@ -1345,7 +1351,7 @@ def upload_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=N
     handle_response_errors(raw_res)
     iocs = search_iocs(ids=f"{ioc_type}:{value}").get('resources')
     if not iocs:
-        raise Exception("Failed to create ioc.")
+        raise DemistoException("Failed to create IOC. Please try again.")
     ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
     enrich_ioc_dict_with_ids(ec)
     return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
@@ -1435,7 +1441,7 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
     ioc_id = f"{ioc_type}:{value}"
     if not device_count_res:
         return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
-    context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT) for device_count in device_count_res]
+    context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
     hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
     return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
 
@@ -2179,8 +2185,11 @@ def validate_response(raw_res):
 
 def get_indicator_device_id():
     args = demisto.args()
-    url_filter = build_url_filter_for_device_id(args)
-    raw_res = http_request('GET', url_filter)
+    params = assign_params(
+        indicator_type=args.get('type'),
+        indicator_value=args.get('value')
+    )
+    raw_res = http_request('GET', '/indicators/queries/devices/v1', params=params)
     context_output = ''
     if validate_response(raw_res):
         context_output = raw_res.get('resources')
