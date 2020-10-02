@@ -6,7 +6,9 @@ FILE_INDICATOR = {'CustomFields': {
         {'description': 'https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc',
          'type': 'MITRE ATT&CK', 'value': None},
         {'description': 'https://securelist.com/lazarus-under-the-hood/77908/', 'type': 'MITRE ATT&CK', 'value': None},
-        {'description': 'https://attack.mitre.org/techniques/T1496', 'type': 'MITRE ATT&CK', 'value': 'T1496'}]}}
+        {'description': 'https://attack.mitre.org/techniques/T1496', 'type': 'MITRE ATT&CK', 'value': 'T1496'},
+        {'description': 'Some Description', 'type': 'MITRE ATT&CK', 'value': None},
+    ]}}
 
 SEARCH_INDICATORS_RESPONSE = {'total': 1, 'iocs': [
     {'id': '4467', 'version': 4, 'modified': '2020-08-09T16:38:12.862662+03:00', 'sortValues':
@@ -71,4 +73,5 @@ def test_feed_related_indicator(mocker):
                                      '(https://securelist.com/lazarus-under-the-hood/77908/)<br><br> |\n| ' \
                                      'MITRE ATT&CK | [T1496](https://test-address:8443/#/indicator/4467) | ' \
                                      '[https://attack.mitre.org/techniques/T1496]' \
-                                     '(https://attack.mitre.org/techniques/T1496)<br><br> |\n'
+                                     '(https://attack.mitre.org/techniques/T1496)<br><br> |\n| MITRE ATT&CK |  | ' \
+                                     'Some Description<br><br> |\n'
