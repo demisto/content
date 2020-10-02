@@ -112,6 +112,8 @@ def parse_indicators_relationships(indicators: List, matched_relationships: Dict
         for relation in matched_relationships.get(indicator_id, []):
             relation_object = id_to_object.get(relation)
             if not relation_object:
+                # in case a relationship object mentioned a connection to another object
+                # that were not fetched from the feed.
                 continue
 
             if relation.startswith('attack-pattern'):
@@ -359,10 +361,8 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
                      product([client], ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship'])
                      )
 
-    main_report_objects, sub_report_objects = sort_report_objects_by_type(client.objects_data['report'])
-
-    demisto.info('Fetched Unit42 Indicators and Reports. '
-                 f"{len(client.objects_data['indicator'] + client.objects_data['report'])} Objects were received.")
+    for type_, objects in client.objects_data:
+        demisto.info(f'Fetched {len(objects)} Unit42 {type_} objects.')
 
     id_to_object = {
         obj.get('id'): obj for obj in
@@ -375,10 +375,13 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
     indicators = parse_indicators_relationships(indicators, matched_relationships, id_to_object)
 
+    main_report_objects, sub_report_objects = sort_report_objects_by_type(client.objects_data['report'])
     reports = parse_reports(main_report_objects, feed_tags, tlp_color)
     reports = parse_reports_relationships(reports, sub_report_objects, matched_relationships, id_to_object)
 
-    demisto.debug(f'{str(len(indicators) + len(reports))} Demisto Indicators were created.')
+    demisto.debug(f'{len(indicators)} XSOAR Indicators were created.')
+    demisto.debug(f'{len(reports)} XSOAR STIX Report Indicators were created.')
+
     return indicators + reports
 
 

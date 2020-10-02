@@ -123,5 +123,51 @@ RELATIONSHIP_DATA = [
     {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a8",
      "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
      "source_ref": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
-     "target_ref": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335b", "type": "relationship"}
+     "target_ref": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335b", "type": "relationship"},
+    {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a8",
+     "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
+     "source_ref": "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9",
+     "target_ref": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be", "type": "relationship"}
+]
+
+REPORTS_DATA = [
+    {
+        "type": "report",
+        "id": "report--a",
+        "created": "1993-06-17T11:00:00.000Z",
+        "modified": "1993-06-17T11:00:00.000Z",
+        "name": "Main Report",
+        "description": "A description of the report",
+        "published": "1994-08-12T11:00:00.000Z",
+        "object_refs": [
+            "intrusion-set--a",
+            "report--ab"
+        ],
+        "labels": [
+            "intrusion-set"
+        ]
+    },
+    {
+        "type": "report",
+        "id": "report--ab",
+        "created": "1993-06-17T11:00:00.000Z",
+        "modified": "1993-06-17T11:00:00.000Z",
+        "name": "Sub Report",
+        "description": "A description of the report",
+        "published": "1994-08-12T11:00:00.000Z",
+        "object_refs": [
+            "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+            "campaign--95c0884b-71e7-40fd-9307-626634425a93",
+            "course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59",
+            "identity--c6f27733-7387-4685-946e-3159d72ba15f",
+            "indicator--13a5365a-894f-47a3-9ce4-6cf85718419f",
+            "indicator--f2eb1d6c-df89-49e2-97f8-5c58706e9519",
+            "intrusion-set--98e7093d-a86a-44b5-b7b3-d89ca457ec78",
+            "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9",
+            "relationship--ff0a724d-2a3d-4ac1-9c7f-6340bded0d6f"
+        ],
+        "labels": [
+            "campaign"
+        ]
+    }
 ]

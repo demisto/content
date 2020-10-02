@@ -1,6 +1,6 @@
 import pytest
-from FeedUnit42 import Client, get_indicators_command, fetch_indicators
-from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA
+from FeedUnit42 import Client, get_indicators_command, fetch_indicators, sort_report_objects_by_type
+from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA
 
 
 @pytest.mark.parametrize('command, args, response, length', [
@@ -29,7 +29,7 @@ def test_commands(command, args, response, length, mocker):
 
 TYPE_TO_RESPONSE = {
     'indicator': INDICATORS_DATA,
-    'report': [],
+    'report':REPORTS_DATA,
     'attack-pattern': ATTACK_PATTERN_DATA,
     'malware': MALWARE_DATA,
     'campaign': [],
@@ -79,7 +79,7 @@ def test_feed_tags_param(mocker):
     client = Client(api_key='1234', verify=False)
     mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
     indicators = fetch_indicators(client, ['test_tag'])
-    assert set(indicators[0].get('fields').get('tags')) == set({'malicious-activity', 'test_tag'})
+    assert set(indicators[0].get('fields').get('tags')) == {'malicious-activity', 'test_tag'}
 
 
 def test_fetch_indicators_with_feedrelatedindicators(mocker):
@@ -148,5 +148,21 @@ def test_fetch_indicators_with_malware_reference(mocker):
     for indicator in indicators:
         indicator_fields = indicator.get('fields')
         if indicator_fields.get('indicatoridentification') == 'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be':
-            assert set(indicator_fields.get('malwarefamily')) == set({'Muirim', 'Muirim2'})
+            assert set(indicator_fields.get('malwarefamily')) == {'Muirim', 'Muirim2'}
             break
+
+
+def test_sort_reports(mocker):
+    """
+
+    Given
+        - List of raw report objects.
+
+    When
+        - Parsing STIX Report indicators.
+
+    Then
+        - Sort he object into two types: main and sub.
+
+    """
+    assert sort_report_objects_by_type(REPORTS_DATA) == (REPORTS_DATA[0], REPORTS_DATA[1])
