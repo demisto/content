@@ -105,12 +105,13 @@ class Client(BaseClient):
             "site_id": str(site_id) if site_id else None
         }
         result = self._http_request('POST', 'events/' + url, json_data=payload)
-        res_json = json.loads(result)
+        # res_json = json.loads(result)
 
         if getAll:
             return result
         else:
-            total_alerts = res_json.get('total')
+            # total_alerts = res_json.get('total')
+            total_alerts = result.get('total')
             if not total_alerts:
                 return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
             if type == 'packet':

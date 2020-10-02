@@ -10,7 +10,7 @@ MOCK_HEADERS = {
     'Host': 'api.wootuno.wootcloud.com'
 }
 
-MOCK_PKT_ALERT = """
+MOCK_PKT_ALERT =
 {
     "id": "eyJpIjoiU05XT09UQVBQUFJPRDAxXzEzMzIxNThfMDAwIiwidCI6IjIwMTktMDYtMjZUMjA6MjQ6MjZaIn0=",
     "timestamp": "2019-06-26T20:24:26Z",
@@ -95,14 +95,12 @@ MOCK_PKT_ALERT = """
                 "url": "/"
             }
 }
-"""
 
-ANOMALY_ALERT = """
-{
+
+ANOMALY_ALERT = {
   "total": 26649,
   "alerts": [
-      "id": "eyJpIjoibWxub2RlX3AwMDhfY2F0LGY4OjJkOjdjOjJmOjQzOjdjLHVua25vd24tcHJ
-      vdG9jb2wsMTU1Njc4NDAwMF8wMDAiLCJ0IjoiMjAxOS0wNS0wMlQwODowMDowMFoifQ==",
+      "id": "eyJpIjoibWxub2RlX3AwMDhfY2F0LGY4OjJkOjdjOjJmOjQzOjdjLHVua25vd24tcHJvdG9jb2wsMTU1Njc4NDAwMF8wMDAiLCJ0IjoiMjAxOS0wNS0wMlQwODowMDowMFoifQ==",
       "timestamp": "2019-05-02T08:00:00Z",
       "anomaly_type": "bytes_received",
       "signature": "60 (minutes) 'bytes_received'",
@@ -140,7 +138,7 @@ ANOMALY_ALERT = """
         "ip": "",
         "network": ""
 }
-"""
+
 
 FETCH_ALERTS = {
     "total": 199,
