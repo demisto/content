@@ -2589,3 +2589,112 @@ def test_get_ioc_device_count_command_exists(requests_mock):
     result = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
     assert 'Indicator of Compromise **md5:testmd5** device count: **1**' == result['HumanReadable']
     assert 'md5:testmd5' == result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)'][0]['ID']
+
+
+def test_get_process_details_command_not_exists(requests_mock, mocker):
+    """
+    Test cs-falcon-process-details with an unsuccessful query (doesn't exist)
+
+    Given
+     - There is no device with a process `pid:fake:process`
+    When
+     - The user is running cs-falcon-process-details with pid:fake:process
+    Then
+     - Raise an error
+    """
+    from CrowdStrikeFalcon import get_process_details_command
+    expected_error = [{'code': 404, 'message': 'pid:fake:process'}]
+    response = {'resources': [], 'errors': expected_error}
+    requests_mock.get(
+        f'{SERVER_URL}/processes/entities/processes/v1',
+        json=response,
+        status_code=200,
+    )
+    mocker.patch(RETURN_ERROR_TARGET)
+    with pytest.raises(DemistoException) as excinfo:
+        get_process_details_command(ids='pid:fake:process')
+    assert expected_error == excinfo.value.args[0]
+
+
+def test_get_process_details_command_exists(requests_mock):
+    """
+    Test cs-falcon-process-details with a successful query
+
+    Given
+     - There is a device with a process `pid:fake:process`
+    When
+     - The user is running cs-falcon-process-details with pid:fake:process
+    Then
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+     """
+    from CrowdStrikeFalcon import get_process_details_command
+    resources = {
+        'device_id': 'process',
+        'command_line': 'command_line',
+        'start_timestamp': '2020-10-01T09:05:51Z',
+        'start_timestamp_raw': '132460167512852140',
+        'stop_timestamp': '2020-10-02T06:43:45Z',
+        'stop_timestamp_raw': '132460946259334768'
+    }
+    response = {'resources': [resources]}
+    requests_mock.get(
+        f'{SERVER_URL}/processes/entities/processes/v1',
+        json=response,
+        status_code=200,
+    )
+    result = get_process_details_command(ids='pid:fake:process')
+    assert '| command_line | process | 2020-10-01T09:05:51Z | 132460167512852140 |' in result['HumanReadable']
+    assert resources == result['EntryContext']['CrowdStrike.Process(val.process_id === obj.process_id)'][0]
+
+
+def test_get_proccesses_ran_on_command_exists(requests_mock):
+    """
+    Test cs-falcon-processes-ran-on with a successful query
+
+    Given
+     - There is a device with a process `pid:fake:process`
+    When
+     - The user is running cs-falcon-processes-ran-on with pid:fake:process
+    Then
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+     """
+    from CrowdStrikeFalcon import get_proccesses_ran_on_command
+    response = {'resources': ['pid:fake:process']}
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/queries/processes/v1',
+        json=response,
+        status_code=200,
+    )
+    result = get_proccesses_ran_on_command(ioc_type='test', value='mock', device_id='123')
+    assert '### Processes with custom IOC test:mock on device 123.' in result['HumanReadable']
+    assert '| pid:fake:process |' in result['HumanReadable']
+
+    expected_proc_result = {'DeviceID': '123', 'ID': ['pid:fake:process']}
+    actual_proc_result = result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)']['Process']
+    assert expected_proc_result == actual_proc_result
+
+
+def test_get_proccesses_ran_on_command_not_exists(requests_mock):
+    """
+    Test cs-falcon-processes-ran-on with an unsuccessful query
+
+    Given
+     - There is no device with a process `pid:fake:process`
+    When
+     - The user is running cs-falcon-processes-ran-on with pid:fake:process
+    Then
+     - Raise an error
+     """
+    from CrowdStrikeFalcon import get_proccesses_ran_on_command
+    expected_error = [{'code': 404, 'message': 'pid:fake:process - Resource Not Found'}]
+    response = {'resources': [], 'errors': expected_error}
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/queries/processes/v1',
+        json=response,
+        status_code=200,
+    )
+    with pytest.raises(DemistoException) as excinfo:
+        get_proccesses_ran_on_command(ioc_type='test', value='mock', device_id='123')
+    assert expected_error == excinfo.value.args[0]
