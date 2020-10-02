@@ -10,8 +10,7 @@ MOCK_HEADERS = {
     'Host': 'api.wootuno.wootcloud.com'
 }
 
-MOCK_PKT_ALERT =
-{
+MOCK_PKT_ALERT = {
     "id": "eyJpIjoiU05XT09UQVBQUFJPRDAxXzEzMzIxNThfMDAwIiwidCI6IjIwMTktMDYtMjZUMjA6MjQ6MjZaIn0=",
     "timestamp": "2019-06-26T20:24:26Z",
     "severity": "warning",
