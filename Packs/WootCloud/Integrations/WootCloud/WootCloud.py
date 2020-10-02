@@ -123,7 +123,7 @@ class Client(BaseClient):
                 readable_dict.append({
                     'id': alert.get('id'),
                     'timestamp': alert.get('timestamp'),
-                    'severity' : alert.get('severity'),
+                    'severity': alert.get('severity'),
                     'signature': alert.get('signature')
                 }
                 )
