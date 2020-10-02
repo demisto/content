@@ -104,10 +104,7 @@ ANOMALY_ALERT = {
         "timestamp": "2019-05-02T08:00:00Z",
         "anomaly_type": "bytes_received",
         "signature": "60 (minutes) 'bytes_received'",
-        "description": "Anomaly: 60 (minutes) 'bytes_received'(protocol=unknown-
-            protocol) was significantly more than average during this time window
-            (07:00-08:00 UTC) on a weekday according to group of similar devices
-            ({'device.category': 'mobile_phone'})",
+        "description": "Anomaly: 60 minutes unknown-protocol was significantly more than average during this time window",
         "severity": "warning",
         "count": 1,
         "average": 0,
