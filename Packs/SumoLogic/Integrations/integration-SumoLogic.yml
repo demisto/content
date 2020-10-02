@@ -232,7 +232,7 @@ script:
                         }
                     }
                     if (parseInt(s.messages[i]._receipttime) > currentFetch){
-                        currentFetch = parseInt(s.messages[i]._receipttime)
+                        currentFetch = parseInt(s.messages[i]._receipttime) + 1
                     }
                     incidents.push(incident);
                 }
