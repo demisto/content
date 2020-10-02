@@ -805,6 +805,9 @@ script:
     - contextPath: CrowdStrike.IOC.Value
       description: The string representation of the indicator.
       type: string
+    - contextPath: CrowdStrike.IOC.ID
+      description: The full ID of the indicator (type:value).
+      type: string
     - contextPath: CrowdStrike.IOC.Policy
       description: The policy of the indicator.
       type: string
@@ -855,6 +858,9 @@ script:
       type: string
     - contextPath: CrowdStrike.IOC.Value
       description: The string representation of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.ID
+      description: The full ID of the indicator (type:value).
       type: string
     - contextPath: CrowdStrike.IOC.Policy
       description: The policy of the indicator.
@@ -923,6 +929,9 @@ script:
       type: string
     - contextPath: CrowdStrike.IOC.Value
       description: The string representation of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.ID
+      description: The full ID of the indicator (type:value).
       type: string
     - contextPath: CrowdStrike.IOC.Policy
       description: The policy of the indicator.
@@ -993,6 +1002,9 @@ script:
     - contextPath: CrowdStrike.IOC.Value
       description: The string representation of the indicator.
       type: string
+    - contextPath: CrowdStrike.IOC.ID
+      description: The full ID of the indicator (type:value).
+      type: string
     - contextPath: CrowdStrike.IOC.Policy
       description: The policy of the indicator.
       type: string
@@ -1054,6 +1066,19 @@ script:
     - name: value
       required: true
       description: The IOC value.
+    outputs:
+    - contextPath: CrowdStrike.IOC.Type
+      description: The type of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Value
+      description: The string representation of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.ID
+      description: The full ID of the indicator (type:value).
+      type: string
+    - contextPath: CrowdStrike.IOC.DeviceCount
+      description: The number of devices the IOC ran on.
+      type: number
     description: Number of hosts that observed the given IOC.
   - name: cs-falcon-processes-ran-on
     arguments:
@@ -1074,14 +1099,58 @@ script:
     - name: device_id
       required: true
       description: "The device ID to check against."
-    description: Get proccesses associated with a given IOC.
+    outputs:
+    - contextPath: CrowdStrike.IOC.Type
+      description: The type of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Value
+      description: The string representation of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.ID
+      description: The full ID of the indicator (type:value).
+      type: string
+    - contextPath: CrowdStrike.IOC.Process.ID
+      description: The processes IDs associated with the given IOC.
+      type: number
+    - contextPath: CrowdStrike.IOC.Process.DeviceID
+      description: The device the the process ran on.
+      type: number
+    description: Get processes associated with a given IOC.
   - name: cs-falcon-process-details
     arguments:
     - name: ids
       required: true
       default: true
-      description: The ID of the process. Allows multiple values separated by comma.
+      description: A comma separated list of process IDs.
       isArray: true
+    outputs:
+    - contextPath: CrowdStrike.Process.process_id
+      description: The process ID.
+      type: String
+    - contextPath: CrowdStrike.Process.process_id_local
+      description: Local ID of the the process.
+      type: String
+    - contextPath: CrowdStrike.Process.device_id
+      description: The device the the process ran on.
+      type: String
+    - contextPath: CrowdStrike.Process.file_name
+      description: The path of the file who ran the process.
+      type: String
+    - contextPath: CrowdStrike.Process.command_line
+      description: The path of the file who ran the process.
+      type: String
+    - contextPath: CrowdStrike.Process.start_timestamp_raw
+      description: The start timestamp of the process.
+      type: String
+    - contextPath: CrowdStrike.Process.start_timestamp
+      description: The start times date string of the process.
+      type: String
+    - contextPath: CrowdStrike.Process.stop_timestamp_raw
+      description: The stop timestamp of the process.
+      type: Date
+    - contextPath: CrowdStrike.Process.stop_timestamp
+      description: The stop times date string of the process.
+      type: Date
     description: Retrieves the details of a process, according to process ID, that is running or that previously ran.
   - arguments:
     - auto: PREDEFINED

@@ -78,6 +78,13 @@ IOC_KEY_MAP = {
     'modified_by': 'ModifiedBy'
 }
 
+IOC_DEVICE_COUNT = {
+    'id': 'ID',
+    'type': 'Type',
+    'value': 'Value',
+    'device_count': 'DeviceCount'
+}
+
 SEARCH_DEVICE_KEY_MAP = {
     'device_id': 'ID',
     'external_ip': 'ExternalIP',
@@ -1424,8 +1431,13 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
     """
     raw_res = get_ioc_device_count(ioc_type, value)
     handle_response_errors(raw_res)
+    device_count_res = raw_res.get('resources')
     ioc_id = f"{ioc_type}:{value}"
-    return create_entry_object(contents=raw_res, hr=f'Indicator of Compromise {ioc_id} device count')
+    if not device_count_res:
+        return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
+    context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT) for device_count in device_count_res]
+    hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
+    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
 
 
 def get_process_details_command(ids: str):
@@ -1435,7 +1447,13 @@ def get_process_details_command(ids: str):
     ids = argToList(ids)
     raw_res = get_process_details(ids)
     handle_response_errors(raw_res)
-    return create_entry_object(contents=raw_res, hr=f"Details for processes {ids}.")
+    proc = raw_res.get('resources')
+    if not proc:
+        return create_entry_object(raw_res, hr="Could not find any searched processes.")
+    proc_hr_ids = str(ids)[1:-1].replace('\'', '')
+    title = f"Details for process{'es' if len(ids) > 1 else ''}: {proc_hr_ids}."
+    return create_entry_object(contents=raw_res, hr=tableToMarkdown(title, proc),
+                               ec={'CrowdStrike.Process(val.process_id === obj.process_id)': proc})
 
 
 def get_proccesses_ran_on_command(ioc_type, value, device_id):
@@ -1446,8 +1464,13 @@ def get_proccesses_ran_on_command(ioc_type, value, device_id):
     """
     raw_res = get_proccesses_ran_on(ioc_type, value, device_id)
     handle_response_errors(raw_res)
-    ids = f"{ioc_type}:{value}"
-    return create_entry_object(contents=raw_res, hr=f"Process with custom IOC {ids} on device {device_id}.")
+    proc_ids = raw_res.get('resources')
+    ioc_id = f"{ioc_type}:{value}"
+    if not proc_ids:
+        return create_entry_object(raw_res, hr=f"Could not find any processes associated with the IOC **{ioc_id}**.")
+    context = {'ID': ioc_id, 'Type': ioc_type, 'Value': value, 'Process': {'DeviceID': device_id, 'ID': proc_ids}}
+    hr = tableToMarkdown(f"Processes with custom IOC {ioc_id} on device {device_id}.", proc_ids, headers="Process ID")
+    return create_entry_object(contents=raw_res, hr=hr, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context})
 
 
 def search_device_command():
