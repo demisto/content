@@ -1193,3 +1193,471 @@ There is no context output for this command.
 CrowdStrike Session Refreshed: fdd6408f-6688-441b-8659-41bcad25441c
 
 
+### 23. cs-falcon-search-iocs
+***
+Returns a list of your uploaded IOCs that match the search criteria
+
+
+#### Base Command
+
+`cs-falcon-search-iocs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| types | A list of indicator types. Separate multiple types by comma. Valid types are sha256, sha1, md5, domain, ipv4, ipv6. | Optional | 
+| values | Comma-separated list of indicator values. | Optional | 
+| policies | Comma-separated list of indicator policies. | Optional | 
+| share_levels | A list of share levels. Only red is supported. | Optional | 
+| sources | Comma-separated list of IOC sources. | Optional | 
+| from_expiration_date | Start of date range to search (YYYY-MM-DD format). | Optional | 
+| to_expiration_date | End of date range to search (YYYY-MM-DD format). | Optional | 
+| limit | The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100. | Optional | 
+| sort | The order of the results. Format is field.asc or field.desc. | Optional | 
+| offset | The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOC.Type | string | The type of the IOC. | 
+| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
+| CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
+| CrowdStrike.IOC.Source | string | The source of the IOC. | 
+| CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
+| CrowdStrike.IOC.Expiration | string | The date time when the indicator will expire. | 
+| CrowdStrike.IOC.Description | string | The description of the IOC. | 
+| CrowdStrike.IOC.CreatedTime | string | The time of creation of the IOC. | 
+| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created of the IOC. | 
+| CrowdStrike.IOC.ModifiedTime | string | The time the indicator was last modified. | 
+| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
+
+
+#### Command Example
+```!cs-falcon-search-iocs types="domain"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOC": [
+            {
+                "CreatedTime": "2020-09-30T10:59:37Z",
+                "Expiration": "2020-10-30T00:00:00Z",
+                "ID": "domain:value",
+                "ModifiedTime": "2020-09-30T10:59:37Z",
+                "Policy": "none",
+                "ShareLevel": "red",
+                "Type": "domain",
+                "Value": "value"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indicators of Compromise
+>|CreatedTime|Expiration|ID|ModifiedTime|Policy|ShareLevel|Type|Value|
+>|---|---|---|---|---|---|---|---|
+>| 2020-09-30T10:59:37Z | 2020-10-30T00:00:00Z | domain:value | 2020-09-30T10:59:37Z | none | red | domain | value |
+
+### 24. cs-falcon-get-ioc
+***
+Get the full definition of one or more indicators that you are watching
+
+
+#### Base Command
+
+`cs-falcon-get-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The IOC type to retrieve. | Required | 
+| value | The IOC value to retrieve. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOC.Type | string | The type of the IOC. | 
+| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
+| CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
+| CrowdStrike.IOC.Source | string | The source of the IOC. | 
+| CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
+| CrowdStrike.IOC.Expiration | string | The date time when the indicator will expire. | 
+| CrowdStrike.IOC.Description | string | The description of the IOC. | 
+| CrowdStrike.IOC.CreatedTime | string | The time of creation of the IOC. | 
+| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created of the IOC. | 
+| CrowdStrike.IOC.ModifiedTime | string | The time the indicator was last modified. | 
+| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
+
+
+#### Command Example
+```!cs-falcon-get-ioc type="domain" value="test.domain.com"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "CreatedTime": "2020-10-02T13:55:26Z",
+            "Description": "Test ioc",
+            "Expiration": "2020-11-01T00:00:00Z",
+            "ID": "domain:test.domain.com",
+            "ModifiedTime": "2020-10-02T13:55:26Z",
+            "Policy": "none",
+            "ShareLevel": "red",
+            "Source": "Demisto playbook",
+            "Type": "domain",
+            "Value": "test.domain.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indicator of Compromise
+>|CreatedTime|Description|Expiration|ID|ModifiedTime|Policy|ShareLevel|Source|Type|Value|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:26Z | none | red | Demisto playbook | domain | test.domain.com |
+
+
+### 25. cs-falcon-upload-ioc
+***
+Uploads an indicator for CrowdStrike to monitor.
+
+
+#### Base Command
+
+`cs-falcon-upload-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ioc_type | The type of the indicator. | Required | 
+| value | The string representation of the indicator. | Required | 
+| policy | The policy to enact when the value is detected on a host. A value of none is equivalent to turning the indicator off. | Optional | 
+| share_level | The level at which the indicator will be shared. Only red share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers. | Optional | 
+| expiration_days | This represents the days the indicator should be valid for. This only applies to domain, ipv4, and ipv6 types. Default is 30 if not provided.  | Optional | 
+| source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters. | Optional | 
+| description | A meaningful description of the indicator. Limit 200 characters. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOC.Type | string | The type of the IOC. | 
+| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
+| CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
+| CrowdStrike.IOC.Source | string | The source of the IOC. | 
+| CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
+| CrowdStrike.IOC.Expiration | string | The date time when the indicator will expire. | 
+| CrowdStrike.IOC.Description | string | The description of the IOC. | 
+| CrowdStrike.IOC.CreatedTime | string | The time of creation of the IOC. | 
+| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created of the IOC. | 
+| CrowdStrike.IOC.ModifiedTime | string | The time the indicator was last modified. | 
+| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
+
+
+#### Command Example
+```!cs-falcon-upload-ioc ioc_type="domain" value="test.domain.com" policy="none" share_level="red" source="Demisto playbook" description="Test ioc"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "CreatedTime": "2020-10-02T13:55:26Z",
+            "Description": "Test ioc",
+            "Expiration": "2020-11-01T00:00:00Z",
+            "ID": "domain:test.domain.com",
+            "ModifiedTime": "2020-10-02T13:55:26Z",
+            "Policy": "none",
+            "ShareLevel": "red",
+            "Source": "Demisto playbook",
+            "Type": "domain",
+            "Value": "test.domain.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom IOC was created successfully
+>|CreatedTime|Description|Expiration|ID|ModifiedTime|Policy|ShareLevel|Source|Type|Value|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:26Z | none | red | Demisto playbook | domain | test.domain.com |
+
+
+### 26. cs-falcon-update-ioc
+***
+Updates an indicator for CrowdStrike to monitor.
+
+
+#### Base Command
+
+`cs-falcon-update-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ioc_type | The type of the indicator. | Required | 
+| value | The string representation of the indicator. | Required | 
+| policy | The policy to enact when the value is detected on a host. A value of none is equivalent to turning the indicator off. | Optional | 
+| share_level | The level at which the indicator will be shared. Only red share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers. | Optional | 
+| expiration_days | This represents the days the indicator should be valid for. This only applies to domain, ipv4, and ipv6 types. Default is 30 if not provided.  | Optional | 
+| source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters. | Optional | 
+| description | A meaningful description of the indicator. Limit 200 characters. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOC.Type | string | The type of the IOC. | 
+| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
+| CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
+| CrowdStrike.IOC.Source | string | The source of the IOC. | 
+| CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
+| CrowdStrike.IOC.Expiration | string | The date time when the indicator will expire. | 
+| CrowdStrike.IOC.Description | string | The description of the IOC. | 
+| CrowdStrike.IOC.CreatedTime | string | The time of creation of the IOC. | 
+| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created of the IOC. | 
+| CrowdStrike.IOC.ModifiedTime | string | The time the indicator was last modified. | 
+| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
+
+
+#### Command Example
+```!cs-falcon-update-ioc ioc_type="domain" value="test.domain.com" policy="detect" description="Benign domain IOC"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "CreatedTime": "2020-10-02T13:55:26Z",
+            "Description": "Benign domain IOC",
+            "Expiration": "2020-11-01T00:00:00Z",
+            "ID": "domain:test.domain.com",
+            "ModifiedTime": "2020-10-02T13:55:33Z",
+            "Policy": "detect",
+            "ShareLevel": "red",
+            "Source": "Demisto playbook",
+            "Type": "domain",
+            "Value": "test.domain.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom IOC was created successfully
+>|CreatedTime|Description|Expiration|ID|ModifiedTime|Policy|ShareLevel|Source|Type|Value|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 2020-10-02T13:55:26Z | Benign domain IOC | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:33Z | detect | red | Demisto playbook | domain | test.domain.com |
+
+
+### 27. cs-falcon-delete-ioc
+***
+Deletes a monitored indicator.
+
+
+#### Base Command
+
+`cs-falcon-delete-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The IOC type to delete. | Required | 
+| value | The IOC value to delete. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cs-falcon-delete-ioc type="domain" value="test.domain.com"```
+
+
+#### Human Readable Output
+
+>Custom IOC domain:test.domain.com was successfully deleted.
+
+### 28. cs-falcon-device-count-ioc
+***
+Number of hosts that observed the given IOC.
+
+
+#### Base Command
+
+`cs-falcon-device-count-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The IOC type. | Required | 
+| value | The IOC value. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOC.Type | string | The type of the IOC. | 
+| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
+| CrowdStrike.IOC.DeviceCount | number | The number of devices the IOC ran on. | 
+
+
+#### Command Example
+```!cs-falcon-device-count-ioc type="domain" value="value"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "DeviceCount": 1,
+            "ID": "domain:value",
+            "Type": "domain",
+            "Value": "value"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Indicator of Compromise **domain:value** device count: **1**
+
+### 29. cs-falcon-processes-ran-on
+***
+Get processes associated with a given IOC.
+
+
+#### Base Command
+
+`cs-falcon-processes-ran-on`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The IOC type. | Required | 
+| value | The IOC value. | Required | 
+| device_id | The device ID to check against. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOC.Type | string | The type of the IOC. | 
+| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
+| CrowdStrike.IOC.Process.ID | number | The processes IDs associated with the given IOC. | 
+| CrowdStrike.IOC.Process.DeviceID | number | The device the the process ran on. | 
+
+
+#### Command Example
+```!cs-falcon-processes-ran-on device_id=15dbb9d8f06b45fe9f61eb46e829d986 type=domain value=value```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "ID": "domain:value",
+            "Process": {
+                "DeviceID": "pid",
+                "ID": [
+                    "pid:pid:650164094720"
+                ]
+            },
+            "Type": "domain",
+            "Value": "value"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Processes with custom IOC domain:value on device device_id.
+>|Process ID|
+>|---|
+>| pid:pid:650164094720 |
+
+
+### 30. cs-falcon-process-details
+***
+Retrieves the details of a process, according to process ID, that is running or that previously ran.
+
+
+#### Base Command
+
+`cs-falcon-process-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma separated list of process IDs. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Process.process_id | String | The process ID. | 
+| CrowdStrike.Process.process_id_local | String | Local ID of the the process. | 
+| CrowdStrike.Process.device_id | String | The device the the process ran on. | 
+| CrowdStrike.Process.file_name | String | The path of the file who ran the process. | 
+| CrowdStrike.Process.command_line | String | The path of the file who ran the process. | 
+| CrowdStrike.Process.start_timestamp_raw | String | The start timestamp of the process. | 
+| CrowdStrike.Process.start_timestamp | String | The start times date string of the process. | 
+| CrowdStrike.Process.stop_timestamp_raw | Date | The stop timestamp of the process. | 
+| CrowdStrike.Process.stop_timestamp | Date | The stop times date string of the process. | 
+
+
+#### Command Example
+```!cs-falcon-process-details ids="pid:pid:pid"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "Process": {
+            "command_line": "\"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\"",
+            "device_id": "deviceId",
+            "file_name": "\\Device\\HarddiskVolume1\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+            "process_id": "deviceId:pid",
+            "process_id_local": "pid",
+            "start_timestamp": "2020-10-01T09:05:51Z",
+            "start_timestamp_raw": "132460167512852140",
+            "stop_timestamp": "2020-10-02T06:43:45Z",
+            "stop_timestamp_raw": "132460946259334768"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Details for process: pid:pid:pid.
+>|command_line|device_id|file_name|process_id|process_id_local|start_timestamp|start_timestamp_raw|stop_timestamp|stop_timestamp_raw|
+>|---|---|---|---|---|---|---|---|---|
+>| "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" | deviceId | \Device\HarddiskVolume1\Program Files (x86)\Google\Chrome\Application\chrome.exe | device_id:pid | pid | 2020-10-01T09:05:51Z | 132460167512852140 | 2020-10-02T06:43:45Z | 132460946259334768 |
