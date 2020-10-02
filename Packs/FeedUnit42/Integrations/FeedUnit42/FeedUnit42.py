@@ -37,13 +37,12 @@ class Client(BaseClient):
         self._proxies = handle_proxy()
         self.objects_data = {}
 
-    def get_stix_objects(self, test: bool = False, **kwargs) -> list:
+    def get_stix_objects(self, test: bool = False, **kwargs):
         """Retrieves all entries from the feed.
 
         Args:
             test: Whether it was called during clicking the test button or not - designed to save time.
-        Returns:
-            A list of stix objects, containing the indicators.
+
         """
         data = []
 
@@ -256,11 +255,12 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
 
             malware_object = id_to_object.get(malware_id)
 
-            report['fields']['feedrelatedindicators'].extend([{
-                'type': 'Malware',
-                'value': malware_object.get('name'),
-                'description': malware_object.get('description', 'No description provided.')
-            }])
+            if malware_object:
+                report['fields']['feedrelatedindicators'].extend([{
+                    'type': 'Malware',
+                    'value': malware_object.get('name'),
+                    'description': malware_object.get('description', 'No description provided.')
+                }])
 
         for relation in related_ids:
             relation_object = id_to_object.get(relation)
