@@ -390,8 +390,8 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
 
     id_to_object = {
         obj.get('id'): obj for obj in
-        client.objects_data['report'] + client.objects_data['indicator'] + client.objects_data['malware'] +
-        client.objects_data['campaign'] + client.objects_data['attack-pattern']
+        client.objects_data['report'] + client.objects_data['indicator'] + client.objects_data['malware']
+        + client.objects_data['campaign'] + client.objects_data['attack-pattern']
     }
 
     matched_relationships = match_relationships(client.objects_data['relationship'])

@@ -33,7 +33,6 @@ def create_related_indicator_object(value: str, type_: str, description: str):
     return indicator_object
 
 
-
 def feed_related_indicator(args) -> CommandResults:
     indicator = args['indicator']
     feed_related_indicators = indicator.get('CustomFields', {}).get('feedrelatedindicators', [])
