@@ -109,7 +109,7 @@ class Client(BaseClient):
         if getAll:
             return result
         else:
-            total_alerts = result['total']
+            total_alerts = result.get('total')
             if not total_alerts:
                 return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
             if type == 'packet':
