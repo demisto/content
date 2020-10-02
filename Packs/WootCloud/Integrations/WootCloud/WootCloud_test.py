@@ -80,19 +80,7 @@ MOCK_PKT_ALERT = {
             }
         }
     },
-"payload" : ""
-# "payload": "GET / HTTP/1.1\r\nHost: whatismyip.akamai.com\r\nAccept: */*\r\nAccept-Language: en-us\r\nConnection: keep-alive\r\nAccept-Encoding: gzip, deflate\r\nUser-Agent: Security/1314 CFNetwork/976 Darwin/18.2.0\r\n\r\n",
-#             "http": {
-#                 "hostname": "whatismyip.akamai.com",
-#                 "http_method": "GET",
-#                 "http_user_agent": "Security/1314 CFNetwork/976 Darwin/18.2.0",
-#                 "length": 12,
-#                 "protocol": "HTTP/1.1",
-#                 "redirect": "",
-#                 "http_refer": "",
-#                 "status": 200,
-#                 "url": "/"
-#             }
+    "payload": ""
 }
 
 
