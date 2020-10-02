@@ -1051,7 +1051,7 @@ def delete_ioc(ioc_type, value):
 
 def get_ioc_device_count(ioc_type, value):
     """
-    Gets the devices that ran encountered the IOC
+    Gets the devices that encountered the IOC
     """
     payload = assign_params(
         type=ioc_type,
@@ -2160,13 +2160,6 @@ def refresh_session_command():
         session_id = resource.get('session_id')
 
     return create_entry_object(contents=response, hr=f'CrowdStrike Session Refreshed: {session_id}')
-
-
-def build_url_filter_for_device_id(args):
-    indicator_type = args.get('type')
-    indicator_value = args.get('value')
-    url_filter = f'/indicators/queries/devices/v1?type={indicator_type}&value={indicator_value}'
-    return url_filter
 
 
 def build_error_message(raw_res):
