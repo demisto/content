@@ -223,7 +223,7 @@ script:
             var currentFetch = lastRun.time;
             if (!params.fetchRecords && s.messages) {
                 for (var i=0; i<s.messages.length; i++) {
-                    var incident = {name: 'Incident from SumoLogic' + s.messages[i]._messageid,
+                    var incident = {name: 'Incident from SumoLogic' + s.messages[i]._receipttime,
                         details: s.messages[i]._raw, labels: [], rawJSON: JSON.stringify(s.messages[i])};
                     var props = Object.getOwnPropertyNames(s.messages[i]);
                     for (var j=0; j<props.length; j++) {
@@ -231,8 +231,8 @@ script:
                             incident.labels.push({type: props[j], value: s.messages[i][props[j]]});
                         }
                     }
-                    if (parseInt(s.messages[i]._messagetime) > currentFetch){
-                        currentFetch = parseInt(s.messages[i]._messagetime)
+                    if (parseInt(s.messages[i]._receipttime) > currentFetch){
+                        currentFetch = parseInt(s.messages[i]._receipttime)
                     }
                     incidents.push(incident);
                 }
