@@ -85,5 +85,6 @@
 	"size": 0,
 	"version": -1,
 	"widgetType": "number",
-	"description": "Displays a count of the Active Incidents where the current user is not the owner, but is an investigation Team Member"
+	"description": "Displays a count of the Active Incidents where the current user is not the owner, but is an investigation Team Member",
+	"fromVersion": "5.0.0"
 }

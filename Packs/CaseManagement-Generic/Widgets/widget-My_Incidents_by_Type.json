@@ -88,5 +88,6 @@
 	"size": 0,
 	"version": -1,
 	"widgetType": "pie",
-	"description": "Displays the Incidents assigned to the current user, by Type."
+	"description": "Displays the Incidents assigned to the current user, by Type.",
+	"fromVersion": "5.0.0"
 }
