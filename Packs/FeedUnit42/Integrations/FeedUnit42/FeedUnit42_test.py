@@ -1,5 +1,4 @@
 import pytest
-import FeedUnit42 as u42
 from FeedUnit42 import Client, get_indicators_command, fetch_indicators, sort_report_objects_by_type, parse_reports, \
     match_relationships
 from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA, \
@@ -57,17 +56,8 @@ def test_fetch_indicators_command(mocker):
         type_ = kwargs.get('type')
         client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
 
-    def mock_fetch_raw_objects_from_api(_):
-        client.get_stix_objects(False, type='report')
-        client.get_stix_objects(False, type='indicator')
-        client.get_stix_objects(False, type='malware')
-        client.get_stix_objects(False, type='campaign')
-        client.get_stix_objects(False, type='attack-pattern')
-        client.get_stix_objects(False, type='relationship')
-
     client = Client(api_key='1234', verify=False)
     mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
-    mocker.patch.object(u42, 'fetch_raw_objects_from_api', side_effect=mock_fetch_raw_objects_from_api)
 
     indicators = fetch_indicators(client)
     assert len(indicators) == 11
@@ -91,17 +81,8 @@ def test_feed_tags_param(mocker):
         type_ = kwargs.get('type')
         client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
 
-    def mock_fetch_raw_objects_from_api(_):
-        client.get_stix_objects(False, type='report')
-        client.get_stix_objects(False, type='indicator')
-        client.get_stix_objects(False, type='malware')
-        client.get_stix_objects(False, type='campaign')
-        client.get_stix_objects(False, type='attack-pattern')
-        client.get_stix_objects(False, type='relationship')
-
     client = Client(api_key='1234', verify=False)
     mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
-    mocker.patch.object(u42, 'fetch_raw_objects_from_api', side_effect=mock_fetch_raw_objects_from_api)
 
     indicators = fetch_indicators(client, ['test_tag'])
     assert set(indicators[0].get('fields').get('tags')) == {'malicious-activity', 'test_tag'}
@@ -124,17 +105,8 @@ def test_fetch_indicators_with_feedrelatedindicators(mocker):
         type_ = kwargs.get('type')
         client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
 
-    def mock_fetch_raw_objects_from_api(_):
-        client.get_stix_objects(False, type='report')
-        client.get_stix_objects(False, type='indicator')
-        client.get_stix_objects(False, type='malware')
-        client.get_stix_objects(False, type='campaign')
-        client.get_stix_objects(False, type='attack-pattern')
-        client.get_stix_objects(False, type='relationship')
-
     client = Client(api_key='1234', verify=False)
     mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
-    mocker.patch.object(u42, 'fetch_raw_objects_from_api', side_effect=mock_fetch_raw_objects_from_api)
 
     indicators = fetch_indicators(client)
     for indicator in indicators:
@@ -175,17 +147,8 @@ def test_fetch_indicators_with_malware_reference(mocker):
         type_ = kwargs.get('type')
         client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
 
-    def mock_fetch_raw_objects_from_api(_):
-        client.get_stix_objects(False, type='report')
-        client.get_stix_objects(False, type='indicator')
-        client.get_stix_objects(False, type='malware')
-        client.get_stix_objects(False, type='campaign')
-        client.get_stix_objects(False, type='attack-pattern')
-        client.get_stix_objects(False, type='relationship')
-
     client = Client(api_key='1234', verify=False)
     mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
-    mocker.patch.object(u42, 'fetch_raw_objects_from_api', side_effect=mock_fetch_raw_objects_from_api)
 
     indicators = fetch_indicators(client)
     for indicator in indicators:
@@ -252,17 +215,8 @@ def test_parse_reports_relationships(mocker):
         type_ = kwargs.get('type')
         client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
 
-    def mock_fetch_raw_objects_from_api(_):
-        client.get_stix_objects(False, type='report')
-        client.get_stix_objects(False, type='indicator')
-        client.get_stix_objects(False, type='malware')
-        client.get_stix_objects(False, type='campaign')
-        client.get_stix_objects(False, type='attack-pattern')
-        client.get_stix_objects(False, type='relationship')
-
     client = Client(api_key='1234', verify=False)
     mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
-    mocker.patch.object(u42, 'fetch_raw_objects_from_api', side_effect=mock_fetch_raw_objects_from_api)
 
     indicators = fetch_indicators(client)
     for indicator in indicators:

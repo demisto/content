@@ -2,7 +2,8 @@ from typing import List, Dict, Optional
 
 from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
-from multiprocessing import Pool, cpu_count
+from multiprocessing import cpu_count
+from multiprocessing.pool import ThreadPool as Pool
 from itertools import product
 
 from CommonServerPython import *
@@ -360,19 +361,6 @@ def multiprocessing_wrapper_get_stix_objects(client: Client, type_: str):
     client.get_stix_objects(test=False, type=type_)
 
 
-def fetch_raw_objects_from_api(client: Client):
-    """Initiates fetching of objects from API.
-
-    Args:
-        client: Client object with request
-
-    """
-    with Pool(cpu_count()) as pool:
-        pool.starmap(multiprocessing_wrapper_get_stix_objects,
-                     product([client], ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship'])
-                     )
-
-
 def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[str] = None) -> List[Dict]:
     """Retrieves indicators and reports from the feed
 
@@ -383,7 +371,10 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     Returns:
         Indicators.
     """
-    fetch_raw_objects_from_api(client)
+    with Pool(cpu_count()) as pool:
+        pool.starmap(multiprocessing_wrapper_get_stix_objects,
+                     product([client], ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship'])
+                     )
 
     for type_, objects in client.objects_data.items():
         demisto.info(f'Fetched {len(objects)} Unit42 {type_} objects.')
