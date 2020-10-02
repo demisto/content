@@ -33,7 +33,7 @@ MOCK_PKT_ALERT = {
         "inferred": {
             "device_id": "5b4c3c91072c98142d308c31",
             "asset": "managed",
-            "managed": true,
+            "managed": "true",
             "category": "mobile_phone",
             "control": "user",
             "host_name": "Shahabs-iPhone",
@@ -65,7 +65,7 @@ MOCK_PKT_ALERT = {
         "inferred": {
             "device_id": "",
             "asset": "unmanaged",
-            "managed": false,
+            "managed": "false",
             "category": "",
             "control": "",
             "host_name": "",
@@ -119,7 +119,7 @@ ANOMALY_ALERT = {
         "device_details": {
             "device_id": "5cc31d4b954fbc0e96c84eff",
             "asset": "unmanaged",
-            "managed": false,
+            "managed": "false",
             "category": "mobile_phone",
             "control": "user",
             "host_name": "iPhone",
