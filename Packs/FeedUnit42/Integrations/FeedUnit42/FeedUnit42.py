@@ -162,11 +162,16 @@ def sort_report_objects_by_type(objects):
     sub_report_objects = []
 
     for obj in objects:
+        is_main = False
+
         for object_id in obj.get('object_refs'):
             if object_id.startswith('report'):
-                main_report_objects.append(obj)
-                continue
+                is_main = True
+                break
 
+        if is_main:
+            main_report_objects.append(obj)
+        else:
             sub_report_objects.append(obj)
 
     return main_report_objects, sub_report_objects
@@ -229,6 +234,8 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
         A list of processed reports.
     """
     for report in reports:
+        related_ids = []  # Since main reports dont hold their own relationships theres a need to collect them.
+
         related_sub_reports = [object_id for object_id in report.get('rawJSON', {}).get('unit42_object_refs', [])
                                if object_id.startswith('report')]
 
@@ -236,6 +243,8 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
 
         for sub_report in sub_reports:
             if sub_report.get('id') in related_sub_reports:
+                related_ids += matched_relationships.get(sub_report.get('id'), [])
+
                 for object_id in sub_report.get('object_refs', []):
                     if object_id.startswith('malware'):
                         report_malware_set.add(object_id)
@@ -243,6 +252,8 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
         report['fields']['feedrelatedindicators'] = []
 
         for malware_id in report_malware_set:
+            related_ids += matched_relationships.get(malware_id, [])
+
             malware_object = id_to_object.get(malware_id)
 
             report['fields']['feedrelatedindicators'].extend([{
@@ -251,7 +262,7 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                 'description': malware_object.get('description', 'No description provided.')
             }])
 
-        for relation in matched_relationships.get(report.get('id'), []):
+        for relation in related_ids:
             relation_object = id_to_object.get(relation)
             if not relation_object:
                 continue
@@ -310,6 +321,9 @@ def match_relationships(relationships: List):
         source = relationship.get('source_ref')
         target = relationship.get('target_ref')
 
+        if not source or not target:
+            continue
+
         if source in matches:
             matches[source].add(target)
         else:
@@ -346,6 +360,19 @@ def multiprocessing_wrapper_get_stix_objects(client: Client, type_: str):
     client.get_stix_objects(test=False, type=type_)
 
 
+def fetch_raw_objects_from_api(client: Client):
+    """Initiates fetching of objects from API.
+
+    Args:
+        client: Client object with request
+
+    """
+    with Pool(cpu_count()) as pool:
+        pool.starmap(multiprocessing_wrapper_get_stix_objects,
+                     product([client], ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship'])
+                     )
+
+
 def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[str] = None) -> List[Dict]:
     """Retrieves indicators and reports from the feed
 
@@ -356,12 +383,9 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     Returns:
         Indicators.
     """
-    with Pool(cpu_count()) as pool:
-        pool.starmap(multiprocessing_wrapper_get_stix_objects,
-                     product([client], ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship'])
-                     )
+    fetch_raw_objects_from_api(client)
 
-    for type_, objects in client.objects_data:
+    for type_, objects in client.objects_data.items():
         demisto.info(f'Fetched {len(objects)} Unit42 {type_} objects.')
 
     id_to_object = {
