@@ -985,6 +985,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
+      - setup_remote_docker
       - *restore_cache
       - *prepare_environment
       - *secrets
