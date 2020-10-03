@@ -40,7 +40,7 @@ def main():
                                 'Status': ("Done" if output.find("local backup succeeded.") > -1 else "Pending"),
                                 'Path': (output[backFileLoc + len(
                                     "Backup file location: "): backFileLocEnd - 1] if backFileLoc > -1
-                                         else None)})  # noqa: E128
+                                    else None)})  # noqa: E128
                         else:
                             devicesBackupError.append(device)
                             output = "Output:\n" + str(demisto.get(entry, 'Contents.output')) + "Error:\n" + \

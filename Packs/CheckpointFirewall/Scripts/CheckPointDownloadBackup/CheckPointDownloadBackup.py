@@ -23,8 +23,8 @@ def main():
 
         if not isinstance(creation_content[0], dict):
             res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                        "Contents": "Error before starting backup: " + creation_content + "\nHint: make"
-                                                                                          " sure the device selected exists and is correctly configured"})
+                        "Contents": "Error before starting backup: {}\nHint: make sure the device selected "
+                                    "exists and is correctly configured".format(creation_content)})
             return_results(res)
             return
 
