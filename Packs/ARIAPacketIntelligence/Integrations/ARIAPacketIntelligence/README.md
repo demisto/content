@@ -1,4 +1,4 @@
-The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform integrates with Demisto to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.
+The ARIA Cybesecurity Solutions Software-Defined Security (SDS) platform integrates with Demisto to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.
 This integration was integrated and tested with version 1.0.9 of ARIA Packet Intelligence
 ## Configure ARIA Packet Intelligence on Cortex XSOAR
 
@@ -54,30 +54,30 @@ Creates a rule that drops all packets that match the specified 5-tuple values.
 ```!aria-block-conversation src_ip="192.168.10.23" src_port="389" target_ip="192.168.0.1" target_port="390" protocol="tcp" rule_name="convBlock" rcs="PIdevice@all"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "BlockConversation": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "53ca2810-485d-a0e7-2f0e-c72c7cdd0f91"
+                    "trid": "230e10c2-0dea-c12f-8929-092130038061"
                 },
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "eb59a176-7f6f-3950-e6ba-541a4a1f636f"
+                    "trid": "04972eb4-45b2-a877-12f2-4fcc7638f6c1"
                 }
             ],
             "Rule": {
@@ -87,7 +87,7 @@ Creates a rule that drops all packets that match the specified 5-tuple values.
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354371
+                "timestamp": 1601688609
             }
         }
     }
@@ -99,7 +99,7 @@ Creates a rule that drops all packets that match the specified 5-tuple values.
 >### aria-block-conversation
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: convBlock<br/>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : DROP, END<br/>RCS: PIdevice@all | command_state: Success<br/>timestamp: 1600354371 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '53ca2810-485d-a0e7-2f0e-c72c7cdd0f91', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'eb59a176-7f6f-3950-e6ba-541a4a1f636f', 'instance_number': '0', 'completion': True} |
+>| Name: convBlock<br/>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : DROP, END<br/>RCS: PIdevice@all | command_state: Success<br/>timestamp: 1601688609 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '230e10c2-0dea-c12f-8929-092130038061', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '04972eb4-45b2-a877-12f2-4fcc7638f6c1', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-unblock-conversation
@@ -131,28 +131,28 @@ Deletes a named rule from the 5-tuple logic block. This allows the previously bl
 ```!aria-unblock-conversation rule_name="convBlock" rcs="PIdevice@all"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "UnblockConversation": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
-                    "IPAddress": "192.168.0.100",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "completion": true,
-                    "trid": "fc590df2-d4cd-4311-4631-4d5af25071c7"
-                },
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "45cd785f-5d2f-6029-f8f3-7eb425ccd17c"
+                    "trid": "09a47807-a7c1-2870-2f32-6cdcf0c908a4"
+                },
+                {
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
+                    "IPAddress": "192.168.0.100",
+                    "Model": "sia-lx2160",
+                    "OS": "GNU/Linux",
+                    "Processor": "sia-lx2160",
+                    "completion": true,
+                    "trid": "de1db8f5-4c79-c425-1f6d-ff6bec3b7214"
                 }
             ],
             "Rule": {
@@ -162,7 +162,7 @@ Deletes a named rule from the 5-tuple logic block. This allows the previously bl
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354376
+                "timestamp": 1601688613
             }
         }
     }
@@ -174,7 +174,7 @@ Deletes a named rule from the 5-tuple logic block. This allows the previously bl
 >### aria-unblock-conversation
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: convBlock<br/>Definition: Remove convBlock<br/>RCS: PIdevice@all | command_state: Success<br/>timestamp: 1600354376 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'fc590df2-d4cd-4311-4631-4d5af25071c7', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '45cd785f-5d2f-6029-f8f3-7eb425ccd17c', 'completion': True} |
+>| Name: convBlock<br/>Definition: Remove convBlock<br/>RCS: PIdevice@all | command_state: Success<br/>timestamp: 1601688613 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '09a47807-a7c1-2870-2f32-6cdcf0c908a4', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'de1db8f5-4c79-c425-1f6d-ff6bec3b7214', 'completion': True} |
 
 
 ### aria-record-conversation
@@ -218,30 +218,30 @@ Creates a rule that redirects a conversation that matches 5-tuple values to the 
 ```!aria-record-conversation src_ip="192.168.10.23" src_port="389" target_ip="192.168.0.1" target_port="390" protocol="tcp" rule_name="convRecord" vlan_id="1234" transport_type="email" tti_index="2" aio_index="4" trigger_type="one-shot" trigger_value="1" rcs="PIdevice@all"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "RecordConversation": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
-                    "IPAddress": "192.168.0.100",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "completion": true,
-                    "instance_number": "0",
-                    "trid": "ae0c4f77-d40e-11d9-55a9-4cb19d356949"
-                },
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "d4fcd0ac-54bc-aae8-56fe-e621b6999779"
+                    "trid": "0fbc758b-ab0d-95f4-9955-56c96089fa98"
+                },
+                {
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
+                    "IPAddress": "192.168.0.100",
+                    "Model": "sia-lx2160",
+                    "OS": "GNU/Linux",
+                    "Processor": "sia-lx2160",
+                    "completion": true,
+                    "instance_number": "0",
+                    "trid": "ab63e403-4f3a-1f3c-6005-c01d249eb185"
                 }
             ],
             "Rule": {
@@ -251,7 +251,7 @@ Creates a rule that redirects a conversation that matches 5-tuple values to the 
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354383
+                "timestamp": 1601688621
             }
         }
     }
@@ -263,7 +263,7 @@ Creates a rule that redirects a conversation that matches 5-tuple values to the 
 >### aria-record-conversation
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: convRecord<br/>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END<br/>RCS: PIdevice@all | command_state: Success<br/>timestamp: 1600354383 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'ae0c4f77-d40e-11d9-55a9-4cb19d356949', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'd4fcd0ac-54bc-aae8-56fe-e621b6999779', 'instance_number': '0', 'completion': True} |
+>| Name: convRecord<br/>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END<br/>RCS: PIdevice@all | command_state: Success<br/>timestamp: 1601688621 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '0fbc758b-ab0d-95f4-9955-56c96089fa98', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'ab63e403-4f3a-1f3c-6005-c01d249eb185', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-stop-recording-conversation
@@ -295,28 +295,28 @@ Removes the named rule from the 5-tuple block. This stops redirecting traffic to
 ```!aria-stop-recording-conversation rule_name="convRecord" rcs="PIdevice@all"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "StopRecordingConversation": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
-                    "IPAddress": "192.168.0.100",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "completion": true,
-                    "trid": "d9efbf48-bf7b-fe86-01c3-82624952a0eb"
-                },
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "5de3ac0d-7556-a910-94d4-14cedae6acef"
+                    "trid": "2d4d8363-176b-2dc7-b9a2-2815d78c186b"
+                },
+                {
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
+                    "IPAddress": "192.168.0.100",
+                    "Model": "sia-lx2160",
+                    "OS": "GNU/Linux",
+                    "Processor": "sia-lx2160",
+                    "completion": true,
+                    "trid": "423e0e00-6eff-b471-385e-040ea4c89455"
                 }
             ],
             "Rule": {
@@ -326,7 +326,7 @@ Removes the named rule from the 5-tuple block. This stops redirecting traffic to
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354391
+                "timestamp": 1601688630
             }
         }
     }
@@ -338,7 +338,7 @@ Removes the named rule from the 5-tuple block. This stops redirecting traffic to
 >### aria-stop-recording-conversation
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: convRecord<br/>Definition: Remove convRecord<br/>RCS: PIdevice@all | command_state: Success<br/>timestamp: 1600354391 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'd9efbf48-bf7b-fe86-01c3-82624952a0eb', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '5de3ac0d-7556-a910-94d4-14cedae6acef', 'completion': True} |
+>| Name: convRecord<br/>Definition: Remove convRecord<br/>RCS: PIdevice@all | command_state: Success<br/>timestamp: 1601688630 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '2d4d8363-176b-2dc7-b9a2-2815d78c186b', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '423e0e00-6eff-b471-385e-040ea4c89455', 'completion': True} |
 
 
 ### aria-alert-conversation
@@ -380,30 +380,30 @@ Adds a rule that generates an alert when a conversation that matches the specifi
 ```!aria-alert-conversation src_ip="192.168.10.23" src_port="389" target_ip="192.168.0.1" target_port="390" protocol="tcp" rule_name="convAlert" transport_type="email" tti_index="2" aio_index="4" trigger_type="re-trigger-count" trigger_value="1000"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "AlertConversation": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "786f12d4-87ad-79ae-c860-3753a2740bd1"
+                    "trid": "92573cdb-9e81-b408-1417-6668cddae433"
                 },
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "10f3a323-8b9d-ab8d-4ae5-e173ec6ce317"
+                    "trid": "48808901-91b2-5284-d1a3-39cb5fcb1add"
                 }
             ],
             "Rule": {
@@ -413,7 +413,7 @@ Adds a rule that generates an alert when a conversation that matches the specifi
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354398
+                "timestamp": 1601688638
             }
         }
     }
@@ -425,7 +425,7 @@ Adds a rule that generates an alert when a conversation that matches the specifi
 >### aria-alert-conversation
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: convAlert<br/>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : ALERT email 2 4 re-trigger-count 1000, END<br/>RCS: null | command_state: Success<br/>timestamp: 1600354398 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '786f12d4-87ad-79ae-c860-3753a2740bd1', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '10f3a323-8b9d-ab8d-4ae5-e173ec6ce317', 'instance_number': '0', 'completion': True} |
+>| Name: convAlert<br/>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : ALERT email 2 4 re-trigger-count 1000, END<br/>RCS: null | command_state: Success<br/>timestamp: 1601688638 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '92573cdb-9e81-b408-1417-6668cddae433', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '48808901-91b2-5284-d1a3-39cb5fcb1add', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-mute-alert-conversation
@@ -457,28 +457,28 @@ Removes a named rule from the 5-tuple logic block, disabling the alerts.
 ```!aria-mute-alert-conversation rule_name="convAlert"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "MuteAlertConversation": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
-                    "IPAddress": "192.168.0.101",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "completion": true,
-                    "trid": "12d5dd82-abfe-c3c8-6432-a3070d7fa6be"
-                },
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "b1c70231-b63d-9702-d528-bc155d615bc6"
+                    "trid": "6fd436e6-1b5c-9e6d-7e93-a76c4da30be5"
+                },
+                {
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
+                    "IPAddress": "192.168.0.101",
+                    "Model": "sia-lx2160",
+                    "OS": "GNU/Linux",
+                    "Processor": "sia-lx2160",
+                    "completion": true,
+                    "trid": "5d379b52-7100-3238-7d63-e2e77613ead3"
                 }
             ],
             "Rule": {
@@ -488,7 +488,7 @@ Removes a named rule from the 5-tuple logic block, disabling the alerts.
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354408
+                "timestamp": 1601688644
             }
         }
     }
@@ -500,7 +500,7 @@ Removes a named rule from the 5-tuple logic block, disabling the alerts.
 >### aria-mute-alert-conversation
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: convAlert<br/>Definition: Remove convAlert<br/>RCS: null | command_state: Success<br/>timestamp: 1600354408 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '12d5dd82-abfe-c3c8-6432-a3070d7fa6be', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'b1c70231-b63d-9702-d528-bc155d615bc6', 'completion': True} |
+>| Name: convAlert<br/>Definition: Remove convAlert<br/>RCS: null | command_state: Success<br/>timestamp: 1601688644 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '6fd436e6-1b5c-9e6d-7e93-a76c4da30be5', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '5d379b52-7100-3238-7d63-e2e77613ead3', 'completion': True} |
 
 
 ### aria-block-dest-port
@@ -533,30 +533,30 @@ Creates a rule that blocks packets destined for one or more specified ports.
 ```!aria-block-dest-port port_range="389, 400-404" rule_name="destPortBlock"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "BlockDestPort": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "8aa255b7-1556-1b0f-8eb0-3c3ac77a3423"
+                    "trid": "acfb02ca-5c8c-82d6-dedf-4ba0dfc23244"
                 },
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "3cb7b9a7-936c-8131-93e6-fac4ad8e3dd8"
+                    "trid": "7d46ce85-88ab-0802-2d84-8019fcbd4635"
                 }
             ],
             "Rule": {
@@ -566,7 +566,7 @@ Creates a rule that blocks packets destined for one or more specified ports.
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354415
+                "timestamp": 1601688652
             }
         }
     }
@@ -578,7 +578,7 @@ Creates a rule that blocks packets destined for one or more specified ports.
 >### aria-block-dest-port
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: destPortBlock<br/>Definition: 389, 400 - 404: DROP, END<br/>RCS: null | command_state: Success<br/>timestamp: 1600354415 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '8aa255b7-1556-1b0f-8eb0-3c3ac77a3423', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '3cb7b9a7-936c-8131-93e6-fac4ad8e3dd8', 'instance_number': '0', 'completion': True} |
+>| Name: destPortBlock<br/>Definition: 389, 400 - 404: DROP, END<br/>RCS: null | command_state: Success<br/>timestamp: 1601688652 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'acfb02ca-5c8c-82d6-dedf-4ba0dfc23244', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '7d46ce85-88ab-0802-2d84-8019fcbd4635', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-unblock-dest-port
@@ -610,28 +610,28 @@ Removes a named rule from the destination port logic block. This allows the prev
 ```!aria-unblock-dest-port rule_name="destPortBlock"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "UnblockDestPort": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
-                    "IPAddress": "192.168.0.101",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "completion": true,
-                    "trid": "aaaed5e9-d336-6054-6522-d86fa81cdac8"
-                },
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "4f93e860-2c3f-12d4-a82d-595cd70f1259"
+                    "trid": "75355cd0-d6c9-27ae-cd9d-440a124d45bf"
+                },
+                {
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
+                    "IPAddress": "192.168.0.101",
+                    "Model": "sia-lx2160",
+                    "OS": "GNU/Linux",
+                    "Processor": "sia-lx2160",
+                    "completion": true,
+                    "trid": "57d55eb9-e48b-3925-aaa0-cc1134182aab"
                 }
             ],
             "Rule": {
@@ -641,7 +641,7 @@ Removes a named rule from the destination port logic block. This allows the prev
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354423
+                "timestamp": 1601688659
             }
         }
     }
@@ -653,7 +653,7 @@ Removes a named rule from the destination port logic block. This allows the prev
 >### aria-unblock-dest-port
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: destPortBlock<br/>Definition: Remove destPortBlock<br/>RCS: null | command_state: Success<br/>timestamp: 1600354423 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'aaaed5e9-d336-6054-6522-d86fa81cdac8', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '4f93e860-2c3f-12d4-a82d-595cd70f1259', 'completion': True} |
+>| Name: destPortBlock<br/>Definition: Remove destPortBlock<br/>RCS: null | command_state: Success<br/>timestamp: 1601688659 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '75355cd0-d6c9-27ae-cd9d-440a124d45bf', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '57d55eb9-e48b-3925-aaa0-cc1134182aab', 'completion': True} |
 
 
 ### aria-record-dest-port
@@ -693,20 +693,20 @@ Adds a rule that redirects traffic that is destined for one or more ports to the
 ```!aria-record-dest-port port_range="390, 420, 421" rule_name="destPortRecord" vlan_id="1234"  transport_type="email" tti_index="2" aio_index="4" trigger_type="one-shot" trigger_value="1"rcs="PIdevice@sia12"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "RecordDestPort": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "0b9faffd-2db1-c28c-9f6a-a18c6b51fd59"
+                    "trid": "c09ea941-6c65-ccde-7048-6150ba936d2b"
                 }
             ],
             "Rule": {
@@ -716,7 +716,7 @@ Adds a rule that redirects traffic that is destined for one or more ports to the
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354430
+                "timestamp": 1601688666
             }
         }
     }
@@ -728,7 +728,7 @@ Adds a rule that redirects traffic that is destined for one or more ports to the
 >### aria-record-dest-port
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: destPortRecord<br/>Definition: 390, 420, 421: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END<br/>RCS: PIdevice@sia12 | command_state: Success<br/>timestamp: 1600354430 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '0b9faffd-2db1-c28c-9f6a-a18c6b51fd59', 'instance_number': '0', 'completion': True} |
+>| Name: destPortRecord<br/>Definition: 390, 420, 421: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END<br/>RCS: PIdevice@sia12 | command_state: Success<br/>timestamp: 1601688666 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'c09ea941-6c65-ccde-7048-6150ba936d2b', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-stop-recording-dest-port
@@ -760,19 +760,19 @@ Removes a named rule from the destination port logic block. This stops redirecti
 ```!aria-stop-recording-dest-port rule_name="destPortRecord" rcs="PIdevice@sia12"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "StopRecordingDestPort": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "f44b76d8-38cb-d130-d235-5225136a016e"
+                    "trid": "0fcc428c-5aa9-de08-c41c-4ed82d63ae5d"
                 }
             ],
             "Rule": {
@@ -782,7 +782,7 @@ Removes a named rule from the destination port logic block. This stops redirecti
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354438
+                "timestamp": 1601688671
             }
         }
     }
@@ -794,7 +794,7 @@ Removes a named rule from the destination port logic block. This stops redirecti
 >### aria-stop-recording-dest-port
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: destPortRecord<br/>Definition: Remove destPortRecord<br/>RCS: PIdevice@sia12 | command_state: Success<br/>timestamp: 1600354438 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'f44b76d8-38cb-d130-d235-5225136a016e', 'completion': True} |
+>| Name: destPortRecord<br/>Definition: Remove destPortRecord<br/>RCS: PIdevice@sia12 | command_state: Success<br/>timestamp: 1601688671 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '0fcc428c-5aa9-de08-c41c-4ed82d63ae5d', 'completion': True} |
 
 
 ### aria-alert-dest-port
@@ -832,20 +832,20 @@ Creates a rule that generates an alert when traffic destined for one or more por
 ```!aria-alert-dest-port port_range="389-400" rule_name="destPortAlert" transport_type="syslog" tti_index="2" aio_index="4" trigger_type="re-trigger-timed-sec" trigger_value="200" rcs="PIdevice@sia12"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "AlertDestPort": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "bb70583f-e33b-1cba-20ef-3009bf70b82d"
+                    "trid": "62dcb6da-b233-b0af-46df-e940087fe267"
                 }
             ],
             "Rule": {
@@ -855,7 +855,7 @@ Creates a rule that generates an alert when traffic destined for one or more por
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354446
+                "timestamp": 1601688680
             }
         }
     }
@@ -867,7 +867,7 @@ Creates a rule that generates an alert when traffic destined for one or more por
 >### aria-alert-dest-port
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: destPortAlert<br/>Definition: 389 - 400: ALERT syslog 2 4 re-trigger-timed-sec 200, END<br/>RCS: PIdevice@sia12 | command_state: Success<br/>timestamp: 1600354446 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'bb70583f-e33b-1cba-20ef-3009bf70b82d', 'instance_number': '0', 'completion': True} |
+>| Name: destPortAlert<br/>Definition: 389 - 400: ALERT syslog 2 4 re-trigger-timed-sec 200, END<br/>RCS: PIdevice@sia12 | command_state: Success<br/>timestamp: 1601688680 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '62dcb6da-b233-b0af-46df-e940087fe267', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-mute-alert-dest-port
@@ -899,19 +899,19 @@ Removes a named rule from the destination port logic block, disabling the alerts
 ```!aria-mute-alert-dest-port rule_name="destPortAlert" rcs="PIdevice@sia12"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "MuteAlertDestPort": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "e0cdc674-5d4c-fce9-70d5-1c2b8a0741d4"
+                    "trid": "b79b2d3c-af73-e7d5-eaaf-d8e080c03cfd"
                 }
             ],
             "Rule": {
@@ -921,7 +921,7 @@ Removes a named rule from the destination port logic block, disabling the alerts
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354453
+                "timestamp": 1601688687
             }
         }
     }
@@ -933,7 +933,7 @@ Removes a named rule from the destination port logic block, disabling the alerts
 >### aria-mute-alert-dest-port
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: destPortAlert<br/>Definition: Remove destPortAlert<br/>RCS: PIdevice@sia12 | command_state: Success<br/>timestamp: 1600354453 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'e0cdc674-5d4c-fce9-70d5-1c2b8a0741d4', 'completion': True} |
+>| Name: destPortAlert<br/>Definition: Remove destPortAlert<br/>RCS: PIdevice@sia12 | command_state: Success<br/>timestamp: 1601688687 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'b79b2d3c-af73-e7d5-eaaf-d8e080c03cfd', 'completion': True} |
 
 
 ### aria-block-src-port
@@ -966,20 +966,20 @@ Adds a rule that blocks packets originating from one or more specific ports.
 ```!aria-block-src-port port_range="389, 400-404" rule_name="srcPortBlock" rcs="PIdevice@all.all.sia32"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "BlockSrcPort": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "9c667338-4608-d75a-38ec-6d4498bfec91"
+                    "trid": "b4b8e8e2-39f8-7af7-beca-f256f7d4eb93"
                 }
             ],
             "Rule": {
@@ -989,7 +989,7 @@ Adds a rule that blocks packets originating from one or more specific ports.
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354460
+                "timestamp": 1601688693
             }
         }
     }
@@ -1001,7 +1001,7 @@ Adds a rule that blocks packets originating from one or more specific ports.
 >### aria-block-src-port
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: srcPortBlock<br/>Definition: 389, 400 - 404: DROP, END<br/>RCS: PIdevice@all.all.sia32 | command_state: Success<br/>timestamp: 1600354460 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '9c667338-4608-d75a-38ec-6d4498bfec91', 'instance_number': '0', 'completion': True} |
+>| Name: srcPortBlock<br/>Definition: 389, 400 - 404: DROP, END<br/>RCS: PIdevice@all.all.sia32 | command_state: Success<br/>timestamp: 1601688693 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'b4b8e8e2-39f8-7af7-beca-f256f7d4eb93', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-unblock-src-port
@@ -1033,19 +1033,19 @@ Removes a named rule from the source port logic block. This allows the previousl
 ```!aria-unblock-src-port rule_name="srcPortBlock" rcs="PIdevice@all.all.sia32"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "UnblockSrcPort": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "ed3d1d25-aa4c-0960-49e7-8cccfa30adef"
+                    "trid": "7e389793-bc05-0b45-8a95-f0d7e9fa1da8"
                 }
             ],
             "Rule": {
@@ -1055,7 +1055,7 @@ Removes a named rule from the source port logic block. This allows the previousl
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354464
+                "timestamp": 1601688699
             }
         }
     }
@@ -1067,7 +1067,7 @@ Removes a named rule from the source port logic block. This allows the previousl
 >### aria-unblock-src-port
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: srcPortBlock<br/>Definition: Remove srcPortBlock<br/>RCS: PIdevice@all.all.sia32 | command_state: Success<br/>timestamp: 1600354464 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'ed3d1d25-aa4c-0960-49e7-8cccfa30adef', 'completion': True} |
+>| Name: srcPortBlock<br/>Definition: Remove srcPortBlock<br/>RCS: PIdevice@all.all.sia32 | command_state: Success<br/>timestamp: 1601688699 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '7e389793-bc05-0b45-8a95-f0d7e9fa1da8', 'completion': True} |
 
 
 ### aria-record-src-port
@@ -1107,20 +1107,20 @@ Adds a rule that redirects traffic originating from one or more ports to the Pac
 ```!aria-record-src-port port_range="390, 420" rule_name="srcPortRecord" sia_interface="B" vlan_id="1234" transport_type="email" tti_index="2" aio_index="4" trigger_type="one-shot" trigger_value="1" rcs="PIdevice@all.all.sia32"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "RecordSrcPort": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "acefbd23-a92c-7381-8c36-065ea491378f"
+                    "trid": "2684d0ed-c355-fdb9-85ae-3d6464108ff2"
                 }
             ],
             "Rule": {
@@ -1130,7 +1130,7 @@ Adds a rule that redirects traffic originating from one or more ports to the Pac
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354472
+                "timestamp": 1601688706
             }
         }
     }
@@ -1142,7 +1142,7 @@ Adds a rule that redirects traffic originating from one or more ports to the Pac
 >### aria-record-src-port
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: srcPortRecord<br/>Definition: 390, 420: REDIRECT-VLAN B 1234, ALERT email 2 4 one-shot 1, END<br/>RCS: PIdevice@all.all.sia32 | command_state: Success<br/>timestamp: 1600354472 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'acefbd23-a92c-7381-8c36-065ea491378f', 'instance_number': '0', 'completion': True} |
+>| Name: srcPortRecord<br/>Definition: 390, 420: REDIRECT-VLAN B 1234, ALERT email 2 4 one-shot 1, END<br/>RCS: PIdevice@all.all.sia32 | command_state: Success<br/>timestamp: 1601688706 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '2684d0ed-c355-fdb9-85ae-3d6464108ff2', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-stop-recording-src-port
@@ -1174,19 +1174,19 @@ Removes a named rule from the source port logic block. This stops redirecting tr
 ```!aria-stop-recording-src-port rule_name="srcPortRecord" rcs="PIdevice@all.all.sia32"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "StopRecordingSrcPort": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "86911012-70b6-f822-967d-7de9b5846c90"
+                    "trid": "68464a28-1502-7421-9ac0-e4f9672a2a33"
                 }
             ],
             "Rule": {
@@ -1196,7 +1196,7 @@ Removes a named rule from the source port logic block. This stops redirecting tr
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354479
+                "timestamp": 1601688712
             }
         }
     }
@@ -1208,7 +1208,7 @@ Removes a named rule from the source port logic block. This stops redirecting tr
 >### aria-stop-recording-src-port
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: srcPortRecord<br/>Definition: Remove srcPortRecord<br/>RCS: PIdevice@all.all.sia32 | command_state: Success<br/>timestamp: 1600354479 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '86911012-70b6-f822-967d-7de9b5846c90', 'completion': True} |
+>| Name: srcPortRecord<br/>Definition: Remove srcPortRecord<br/>RCS: PIdevice@all.all.sia32 | command_state: Success<br/>timestamp: 1601688712 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '68464a28-1502-7421-9ac0-e4f9672a2a33', 'completion': True} |
 
 
 ### aria-alert-src-port
@@ -1246,30 +1246,30 @@ Creates a rule that generates an alert when traffic originating from one or more
 ```!aria-alert-src-port port_range="389-400" rule_name="srcPortAlert" transport_type="syslog" tti_index="2" aio_index="4" trigger_type="re-trigger-timed-sec" trigger_value="200" rcs="PIdevice@sia12,sia32"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "AlertSrcPort": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "53231d39-1a0d-82fb-0523-c37b30e86aaa"
+                    "trid": "dcd87781-f63f-cf2e-24ca-e6623467fbe4"
                 },
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "2c4a43c0-b95d-e9cc-5c0b-5310f58494f5"
+                    "trid": "6f085ea9-385d-78f9-2a43-50b80fd5e656"
                 }
             ],
             "Rule": {
@@ -1279,7 +1279,7 @@ Creates a rule that generates an alert when traffic originating from one or more
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354486
+                "timestamp": 1601688721
             }
         }
     }
@@ -1291,7 +1291,7 @@ Creates a rule that generates an alert when traffic originating from one or more
 >### aria-alert-src-port
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: srcPortAlert<br/>Definition: 389 - 400: ALERT syslog 2 4 re-trigger-timed-sec 200, END<br/>RCS: PIdevice@sia12,sia32 | command_state: Success<br/>timestamp: 1600354486 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '53231d39-1a0d-82fb-0523-c37b30e86aaa', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '2c4a43c0-b95d-e9cc-5c0b-5310f58494f5', 'instance_number': '0', 'completion': True} |
+>| Name: srcPortAlert<br/>Definition: 389 - 400: ALERT syslog 2 4 re-trigger-timed-sec 200, END<br/>RCS: PIdevice@sia12,sia32 | command_state: Success<br/>timestamp: 1601688721 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'dcd87781-f63f-cf2e-24ca-e6623467fbe4', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '6f085ea9-385d-78f9-2a43-50b80fd5e656', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-mute-alert-src-port
@@ -1323,28 +1323,28 @@ Removes a named rule from the source port logic block, disabling the alerts.
 ```!aria-mute-alert-src-port rule_name="srcPortAlert" rcs="PIdevice@sia12,sia32"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "MuteAlertSrcPort": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "15c7a338-dabf-708e-2899-88081907f21a"
+                    "trid": "57fab3e3-7d94-174a-ae7a-942b45ebba63"
                 },
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "d959a37c-b130-86ca-cb8a-9b897aa2f832"
+                    "trid": "9ce59360-c23a-a3f2-2c23-79c200bb4b4f"
                 }
             ],
             "Rule": {
@@ -1354,7 +1354,7 @@ Removes a named rule from the source port logic block, disabling the alerts.
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354494
+                "timestamp": 1601688729
             }
         }
     }
@@ -1366,7 +1366,7 @@ Removes a named rule from the source port logic block, disabling the alerts.
 >### aria-mute-alert-src-port
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: srcPortAlert<br/>Definition: Remove srcPortAlert<br/>RCS: PIdevice@sia12,sia32 | command_state: Success<br/>timestamp: 1600354494 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '15c7a338-dabf-708e-2899-88081907f21a', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'd959a37c-b130-86ca-cb8a-9b897aa2f832', 'completion': True} |
+>| Name: srcPortAlert<br/>Definition: Remove srcPortAlert<br/>RCS: PIdevice@sia12,sia32 | command_state: Success<br/>timestamp: 1601688729 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '57fab3e3-7d94-174a-ae7a-942b45ebba63', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '9ce59360-c23a-a3f2-2c23-79c200bb4b4f', 'completion': True} |
 
 
 ### aria-block-dest-subnet
@@ -1399,30 +1399,30 @@ Adds a rule that blocks packets destined for a specific IP address or range of I
 ```!aria-block-dest-subnet target_ip="192.168.1.2/24" rule_name="destSubnetBlock" rcs="PIdevice@sia12,sia32"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "BlockDestSubnet": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "10bdd6ab-c242-6b48-1597-c8ce142ee30a"
+                    "trid": "0f7b6c11-bf19-bb23-eca4-8ea9ec47b35e"
                 },
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "e371c5eb-3cf2-f08b-fc79-1d2995f54f42"
+                    "trid": "ffa29b82-9953-0dc3-102f-b16690f111bd"
                 }
             ],
             "Rule": {
@@ -1432,7 +1432,7 @@ Adds a rule that blocks packets destined for a specific IP address or range of I
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354501
+                "timestamp": 1601688736
             }
         }
     }
@@ -1444,7 +1444,7 @@ Adds a rule that blocks packets destined for a specific IP address or range of I
 >### aria-block-dest-subnet
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: destSubnetBlock<br/>Definition: 192.168.1.2/24: DROP, END<br/>RCS: PIdevice@sia12,sia32 | command_state: Success<br/>timestamp: 1600354501 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '10bdd6ab-c242-6b48-1597-c8ce142ee30a', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'e371c5eb-3cf2-f08b-fc79-1d2995f54f42', 'instance_number': '0', 'completion': True} |
+>| Name: destSubnetBlock<br/>Definition: 192.168.1.2/24: DROP, END<br/>RCS: PIdevice@sia12,sia32 | command_state: Success<br/>timestamp: 1601688736 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '0f7b6c11-bf19-bb23-eca4-8ea9ec47b35e', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'ffa29b82-9953-0dc3-102f-b16690f111bd', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-unblock-dest-subnet
@@ -1476,28 +1476,28 @@ Removes a named rule from the destination subnet logic block. This allows the pr
 ```!aria-unblock-dest-subnet rule_name="destSubnetBlock" rcs="PIdevice@sia12,sia32"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "UnblockDestSubnet": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "513ea8c2-3e5c-1e84-c954-e02204dcb6ff"
+                    "trid": "67a27b63-4141-6eba-841f-7f7af8f236bb"
                 },
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "16f30df8-2a7f-e0fd-09b5-f68d710e2f4f"
+                    "trid": "993dbafd-f335-0a71-8501-8e5135686b6a"
                 }
             ],
             "Rule": {
@@ -1507,7 +1507,7 @@ Removes a named rule from the destination subnet logic block. This allows the pr
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354508
+                "timestamp": 1601688743
             }
         }
     }
@@ -1519,7 +1519,7 @@ Removes a named rule from the destination subnet logic block. This allows the pr
 >### aria-unblock-dest-subnet
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: destSubnetBlock<br/>Definition: Remove destSubnetBlock<br/>RCS: PIdevice@sia12,sia32 | command_state: Success<br/>timestamp: 1600354508 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '513ea8c2-3e5c-1e84-c954-e02204dcb6ff', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '16f30df8-2a7f-e0fd-09b5-f68d710e2f4f', 'completion': True} |
+>| Name: destSubnetBlock<br/>Definition: Remove destSubnetBlock<br/>RCS: PIdevice@sia12,sia32 | command_state: Success<br/>timestamp: 1601688743 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '67a27b63-4141-6eba-841f-7f7af8f236bb', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '993dbafd-f335-0a71-8501-8e5135686b6a', 'completion': True} |
 
 
 ### aria-record-dest-subnet
@@ -1559,20 +1559,20 @@ Creates a rule that redirects traffic destined for a specific IP address or rang
 ```!aria-record-dest-subnet target_ip="192.168.10.23/32" rule_name="destSubnetRecord" vlan_id="1234"  transport_type="email" tti_index="2" aio_index="4" trigger_type="one-shot" trigger_value="1" rcs="PIdevice@US.HR.all"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "RecordDestSubnet": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "f8aa3376-cd1d-9253-fad3-ea341beea954"
+                    "trid": "747751b0-449a-17c2-24b5-be629b5f0869"
                 }
             ],
             "Rule": {
@@ -1582,7 +1582,7 @@ Creates a rule that redirects traffic destined for a specific IP address or rang
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354517
+                "timestamp": 1601688752
             }
         }
     }
@@ -1594,7 +1594,7 @@ Creates a rule that redirects traffic destined for a specific IP address or rang
 >### aria-record-dest-subnet
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: destSubnetRecord<br/>Definition: 192.168.10.23/32: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END<br/>RCS: PIdevice@US.HR.all | command_state: Success<br/>timestamp: 1600354517 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'f8aa3376-cd1d-9253-fad3-ea341beea954', 'instance_number': '0', 'completion': True} |
+>| Name: destSubnetRecord<br/>Definition: 192.168.10.23/32: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END<br/>RCS: PIdevice@US.HR.all | command_state: Success<br/>timestamp: 1601688752 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '747751b0-449a-17c2-24b5-be629b5f0869', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-stop-recording-dest-subnet
@@ -1626,19 +1626,19 @@ Removes a named rule from the destination subnet logic block. This stops redirec
 ```!aria-stop-recording-dest-subnet rule_name="destSubnetRecord" rcs="PIdevice@US.HR.all"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "StopRecordingDestSubnet": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "9da35b23-8f4f-8b67-daaf-68567141cd80"
+                    "trid": "2deabe1b-c7a9-64c4-d43d-5ceba0c81b94"
                 }
             ],
             "Rule": {
@@ -1648,7 +1648,7 @@ Removes a named rule from the destination subnet logic block. This stops redirec
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354524
+                "timestamp": 1601688759
             }
         }
     }
@@ -1660,7 +1660,7 @@ Removes a named rule from the destination subnet logic block. This stops redirec
 >### aria-stop-recording-dest-subnet
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: destSubnetRecord<br/>Definition: Remove destSubnetRecord<br/>RCS: PIdevice@US.HR.all | command_state: Success<br/>timestamp: 1600354524 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '9da35b23-8f4f-8b67-daaf-68567141cd80', 'completion': True} |
+>| Name: destSubnetRecord<br/>Definition: Remove destSubnetRecord<br/>RCS: PIdevice@US.HR.all | command_state: Success<br/>timestamp: 1601688759 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '2deabe1b-c7a9-64c4-d43d-5ceba0c81b94', 'completion': True} |
 
 
 ### aria-alert-dest-subnet
@@ -1698,20 +1698,20 @@ Creates a rule that generates an alert when traffic destined for a specific IP a
 ```!aria-alert-dest-subnet target_ip="192.168.1.2/24" rule_name="destSubnetAlert" transport_type="syslog" tti_index="2" aio_index="4" trigger_type="re-trigger-timed-sec" trigger_value="200" rcs="PIdevice@US.HR.all"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "AlertDestSubnet": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "a43d55b2-a20d-d090-f0e5-03be8227860b"
+                    "trid": "56323db6-be93-a52a-04a7-23c28526d382"
                 }
             ],
             "Rule": {
@@ -1721,7 +1721,7 @@ Creates a rule that generates an alert when traffic destined for a specific IP a
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354532
+                "timestamp": 1601688766
             }
         }
     }
@@ -1733,7 +1733,7 @@ Creates a rule that generates an alert when traffic destined for a specific IP a
 >### aria-alert-dest-subnet
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: destSubnetAlert<br/>Definition: 192.168.1.2/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END<br/>RCS: PIdevice@US.HR.all | command_state: Success<br/>timestamp: 1600354532 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'a43d55b2-a20d-d090-f0e5-03be8227860b', 'instance_number': '0', 'completion': True} |
+>| Name: destSubnetAlert<br/>Definition: 192.168.1.2/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END<br/>RCS: PIdevice@US.HR.all | command_state: Success<br/>timestamp: 1601688766 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '56323db6-be93-a52a-04a7-23c28526d382', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-mute-alert-dest-subnet
@@ -1765,19 +1765,19 @@ Removes a named rule from the destination subnet logic block, disabling the aler
 ```!aria-mute-alert-dest-subnet rule_name="destSubnetAlert" rcs="PIdevice@US.HR.all"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "MuteAlertDestSubnet": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "58e741dc-1ad4-a1ac-33a6-05d630f3d3af"
+                    "trid": "2ded90f8-772c-cc3c-66ab-5c72bd197dec"
                 }
             ],
             "Rule": {
@@ -1787,7 +1787,7 @@ Removes a named rule from the destination subnet logic block, disabling the aler
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354539
+                "timestamp": 1601688775
             }
         }
     }
@@ -1799,7 +1799,7 @@ Removes a named rule from the destination subnet logic block, disabling the aler
 >### aria-mute-alert-dest-subnet
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: destSubnetAlert<br/>Definition: Remove destSubnetAlert<br/>RCS: PIdevice@US.HR.all | command_state: Success<br/>timestamp: 1600354539 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '58e741dc-1ad4-a1ac-33a6-05d630f3d3af', 'completion': True} |
+>| Name: destSubnetAlert<br/>Definition: Remove destSubnetAlert<br/>RCS: PIdevice@US.HR.all | command_state: Success<br/>timestamp: 1601688775 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '2ded90f8-772c-cc3c-66ab-5c72bd197dec', 'completion': True} |
 
 
 ### aria-block-src-subnet
@@ -1832,20 +1832,20 @@ Adds a rule that blocks packets originating from a specific IP address or range 
 ```!aria-block-src-subnet src_ip="192.168.1.2/24" rule_name="srcSubnetBlock" rcs="securityDomain@aria$PIdevice@all.all.!(sia12)"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "BlockSrcSubnet": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "a31c0086-8dea-ffd4-ab2f-920d6e5ade66"
+                    "trid": "b341314d-6a94-9432-10f2-e82d426765b0"
                 }
             ],
             "Rule": {
@@ -1855,7 +1855,7 @@ Adds a rule that blocks packets originating from a specific IP address or range 
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354547
+                "timestamp": 1601688782
             }
         }
     }
@@ -1867,7 +1867,7 @@ Adds a rule that blocks packets originating from a specific IP address or range 
 >### aria-block-src-subnet
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: srcSubnetBlock<br/>Definition: 192.168.1.2/24: DROP, END<br/>RCS: securityDomain@aria$PIdevice@all.all.!(sia12) | command_state: Success<br/>timestamp: 1600354547 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'a31c0086-8dea-ffd4-ab2f-920d6e5ade66', 'instance_number': '0', 'completion': True} |
+>| Name: srcSubnetBlock<br/>Definition: 192.168.1.2/24: DROP, END<br/>RCS: securityDomain@aria$PIdevice@all.all.!(sia12) | command_state: Success<br/>timestamp: 1601688782 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'b341314d-6a94-9432-10f2-e82d426765b0', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-unblock-src-subnet
@@ -1899,19 +1899,19 @@ Removes a named rule from the source subnet logic block. This allows the previou
 ```!aria-unblock-src-subnet rule_name="srcSubnetBlock" rcs="securityDomain@aria$PIdevice@all.all.!(sia12)"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "UnblockSrcSubnet": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "b0838dff-048b-7be8-2fe8-f727feda0867"
+                    "trid": "8d2edba7-d4db-73a4-fcb3-c885db966ec1"
                 }
             ],
             "Rule": {
@@ -1921,7 +1921,7 @@ Removes a named rule from the source subnet logic block. This allows the previou
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354554
+                "timestamp": 1601688789
             }
         }
     }
@@ -1933,7 +1933,7 @@ Removes a named rule from the source subnet logic block. This allows the previou
 >### aria-unblock-src-subnet
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: srcSubnetBlock<br/>Definition: Remove srcSubnetBlock<br/>RCS: securityDomain@aria$PIdevice@all.all.!(sia12) | command_state: Success<br/>timestamp: 1600354554 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'b0838dff-048b-7be8-2fe8-f727feda0867', 'completion': True} |
+>| Name: srcSubnetBlock<br/>Definition: Remove srcSubnetBlock<br/>RCS: securityDomain@aria$PIdevice@all.all.!(sia12) | command_state: Success<br/>timestamp: 1601688789 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '8d2edba7-d4db-73a4-fcb3-c885db966ec1', 'completion': True} |
 
 
 ### aria-record-src-subnet
@@ -1973,20 +1973,20 @@ Creates a rule that redirects traffic originating from one or more specific IP a
 ```!aria-record-src-subnet src_ip="192.168.1.2/24" rule_name="srcSubnetRecord" vlan_id="1234" transport_type="email" tti_index="2" aio_index="4" trigger_type="one-shot" trigger_value="1" rcs="securityDomain@aria$PIdevice@all.all.!(sia12)"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "RecordSrcSubnet": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "9344ee5c-d794-d3f6-3457-16a2bbd3d28c"
+                    "trid": "52092233-a96c-39be-66ff-7ab52bb38dc1"
                 }
             ],
             "Rule": {
@@ -1996,7 +1996,7 @@ Creates a rule that redirects traffic originating from one or more specific IP a
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354562
+                "timestamp": 1601688798
             }
         }
     }
@@ -2008,7 +2008,7 @@ Creates a rule that redirects traffic originating from one or more specific IP a
 >### aria-record-src-subnet
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: srcSubnetRecord<br/>Definition: 192.168.1.2/24: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END<br/>RCS: securityDomain@aria$PIdevice@all.all.!(sia12) | command_state: Success<br/>timestamp: 1600354562 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '9344ee5c-d794-d3f6-3457-16a2bbd3d28c', 'instance_number': '0', 'completion': True} |
+>| Name: srcSubnetRecord<br/>Definition: 192.168.1.2/24: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END<br/>RCS: securityDomain@aria$PIdevice@all.all.!(sia12) | command_state: Success<br/>timestamp: 1601688798 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '52092233-a96c-39be-66ff-7ab52bb38dc1', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-stop-recording-src-subnet
@@ -2040,19 +2040,19 @@ Removes a named rule from the source subnet logic block. This stops redirecting 
 ```!aria-stop-recording-src-subnet rule_name="srcSubnetRecord" rcs="securityDomain@aria$PIdevice@all.all.!(sia12)"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "StopRecordingSrcSubnet": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "3717bd79-984d-0542-8500-d9679eefddc8"
+                    "trid": "6ce98c59-d145-c0e8-dfd4-0a3b348e9d1b"
                 }
             ],
             "Rule": {
@@ -2062,7 +2062,7 @@ Removes a named rule from the source subnet logic block. This stops redirecting 
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354569
+                "timestamp": 1601688806
             }
         }
     }
@@ -2074,7 +2074,7 @@ Removes a named rule from the source subnet logic block. This stops redirecting 
 >### aria-stop-recording-src-subnet
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: srcSubnetRecord<br/>Definition: Remove srcSubnetRecord<br/>RCS: securityDomain@aria$PIdevice@all.all.!(sia12) | command_state: Success<br/>timestamp: 1600354569 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '3717bd79-984d-0542-8500-d9679eefddc8', 'completion': True} |
+>| Name: srcSubnetRecord<br/>Definition: Remove srcSubnetRecord<br/>RCS: securityDomain@aria$PIdevice@all.all.!(sia12) | command_state: Success<br/>timestamp: 1601688806 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '6ce98c59-d145-c0e8-dfd4-0a3b348e9d1b', 'completion': True} |
 
 
 ### aria-alert-src-subnet
@@ -2112,30 +2112,30 @@ Adds a rule that generates an alert when traffic originating from a specific IP 
 ```!aria-alert-src-subnet src_ip="192.168.1.2/24" rule_name="srcSubnetAlert" transport_type="syslog" tti_index="2" aio_index="4" trigger_type="re-trigger-timed-sec" trigger_value="200"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "AlertSrcSubnet": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
                     "IPAddress": "192.168.0.100",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "03fd0a01-4429-5017-ccd0-1b2d73e3d083"
+                    "trid": "ad0fe8eb-5c43-e121-2618-8c09e942068d"
                 },
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
                     "instance_number": "0",
-                    "trid": "3aeade68-1a0f-8089-db4c-f7483b7dd5fd"
+                    "trid": "6b6916d1-ff47-ab71-fac6-473626bd9b0b"
                 }
             ],
             "Rule": {
@@ -2145,7 +2145,7 @@ Adds a rule that generates an alert when traffic originating from a specific IP 
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354576
+                "timestamp": 1601688814
             }
         }
     }
@@ -2157,7 +2157,7 @@ Adds a rule that generates an alert when traffic originating from a specific IP 
 >### aria-alert-src-subnet
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: srcSubnetAlert<br/>Definition: 192.168.1.2/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END<br/>RCS: null | command_state: Success<br/>timestamp: 1600354576 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '03fd0a01-4429-5017-ccd0-1b2d73e3d083', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '3aeade68-1a0f-8089-db4c-f7483b7dd5fd', 'instance_number': '0', 'completion': True} |
+>| Name: srcSubnetAlert<br/>Definition: 192.168.1.2/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END<br/>RCS: null | command_state: Success<br/>timestamp: 1601688814 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'ad0fe8eb-5c43-e121-2618-8c09e942068d', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '6b6916d1-ff47-ab71-fac6-473626bd9b0b', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-mute-alert-src-subnet
@@ -2189,28 +2189,28 @@ Removes a named rule from the source subnet logic block, disabling the alerts.
 ```!aria-mute-alert-src-subnet rule_name="srcSubnetAlert"```
 
 #### Context Example
-```
+```json
 {
     "Aria": {
         "MuteAlertSrcSubnet": {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>",
-                    "IPAddress": "192.168.0.100",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "completion": true,
-                    "trid": "0d3ad806-b4e8-3a70-100d-98fb900ee762"
-                },
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>",
                     "IPAddress": "192.168.0.101",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "completion": true,
-                    "trid": "b5231220-21b9-6c39-ca04-a62977c191c3"
+                    "trid": "a56e3ae8-f361-e648-e286-4e4f8e04d13b"
+                },
+                {
+                    "FQN": "<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>",
+                    "IPAddress": "192.168.0.100",
+                    "Model": "sia-lx2160",
+                    "OS": "GNU/Linux",
+                    "Processor": "sia-lx2160",
+                    "completion": true,
+                    "trid": "9ed18816-79d1-316e-68d8-7021a3b4f2e7"
                 }
             ],
             "Rule": {
@@ -2220,7 +2220,7 @@ Removes a named rule from the source subnet logic block, disabling the alerts.
             },
             "Status": {
                 "command_state": "Success",
-                "timestamp": 1600354584
+                "timestamp": 1601688822
             }
         }
     }
@@ -2232,7 +2232,7 @@ Removes a named rule from the source subnet logic block, disabling the alerts.
 >### aria-mute-alert-src-subnet
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: srcSubnetAlert<br/>Definition: Remove srcSubnetAlert<br/>RCS: null | command_state: Success<br/>timestamp: 1600354584 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_c0457a81-153c-4d4d-9d0a-8cedd226c6a3>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '0d3ad806-b4e8-3a70-100d-98fb900ee762', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_ac94a671-bff6-48b8-be48-79855ba81fd0>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'b5231220-21b9-6c39-ca04-a62977c191c3', 'completion': True} |
+>| Name: srcSubnetAlert<br/>Definition: Remove srcSubnetAlert<br/>RCS: null | command_state: Success<br/>timestamp: 1601688822 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'a56e3ae8-f361-e648-e286-4e4f8e04d13b', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '9ed18816-79d1-316e-68d8-7021a3b4f2e7', 'completion': True} |
 
 ## Appendix
 The remediation configuration string is a set of parameters that defines how and where the remediation rule
