@@ -5,12 +5,9 @@ from typing import Counter
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-incident = demisto.incidents()
-list_data = demisto.executeCommand("getList", {"listName": "XSOAR Health - Failed Playbooks Name"})
-list_content = list_data[0].get('Contents').split(",")
 
-lists_data = []
-if list_content != ['']:
+def parse_data(list_content):
+    lists_data = []
     list_collections: Counter = collections.Counter(list_content)
     top_lists = list_collections.most_common(10)
     lists_number = len(top_lists)
@@ -33,18 +30,26 @@ if list_content != ['']:
             lists_data.append(list_widget_data)
             list_number += 1
 
-    demisto.results(json.dumps(lists_data))
+    return lists_data
 
-else:
-    data = {
-        {
-            "data": [
-                0
-            ],
-            "name": "N\\A",
-            "color": "#00CD33"
-        },
 
-    }
+def main():
+    list_data = demisto.executeCommand("getList", {"listName": "XSOAR Health - Failed Playbooks Name"})
+    list_content = list_data[0].get('Contents', '').split(",")
+
+    if list_content != ['']:
+        data = parse_data(list_content)
+    else:
+        data = {
+                "data": [
+                    0
+                ],
+                "name": "N\\A",
+                "color": "#00CD33"
+        }
 
     demisto.results(json.dumps(data))
+
+
+if __name__ in ["__main__", "builtin", "builtins"]:
+    main()

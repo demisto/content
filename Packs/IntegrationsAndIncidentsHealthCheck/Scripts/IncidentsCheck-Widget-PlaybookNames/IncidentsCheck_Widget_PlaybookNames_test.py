@@ -1,12 +1,12 @@
 import pytest
 import demistomock as demisto
-from IncidentsCheck_Widget_CreationDate import main, random
+from IncidentsCheck_Widget_PlaybookNames import main, random
 
 
 @pytest.mark.parametrize('list_, expected', [
-    ([{
-        'Contents': '2020-09-29 16:48:30.261438285Z,2020-09-29 14:02:45.82647067Z,2020-09-29 14:02:45.82647067Z,2020-09-30 15:44:06.930751906Z'}],
-     ('[{"data": [3], "name": "2020-09-29", "color": "#3e8"}, {"data": [1], "name": "2020-09-30", "color": "#3e8"}]')),
+    ([{'Contents': 'AutoFocusPolling,Account Enrichment - Generic v2.1'}],
+     ('[{"data": [1], "name": "AutoFocusPolling", "color": "#3e8"}, {"data": [1], '
+      '"name": "Account Enrichment - Generic v2.1", "color": "#3e8"}]')),
     ([{'Contents': ''}], '{"data": [0], "name": "N\\\\A", "color": "#00CD33"}'),
     ([{}], '{"data": [0], "name": "N\\\\A", "color": "#00CD33"}'),
 ])
