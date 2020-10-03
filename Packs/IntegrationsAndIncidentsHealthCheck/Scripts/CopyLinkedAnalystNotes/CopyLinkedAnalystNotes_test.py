@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CopyLinkedAnalystNotes import create_grids
-from test_data.test_data import CURRENT_INCIDENT, LINKED_INCIDENTS, MAIN_INTEGRATION_GRID, MAIN_INCIDENT_GRID
+from test_data.constants import CURRENT_INCIDENT, LINKED_INCIDENTS, MAIN_INTEGRATION_GRID, MAIN_INCIDENT_GRID
 
 
 def test_create_grids(mocker):
@@ -15,4 +15,3 @@ def test_create_grids(mocker):
 
     assert integration_grid == MAIN_INTEGRATION_GRID
     assert incident_grid == MAIN_INCIDENT_GRID
-

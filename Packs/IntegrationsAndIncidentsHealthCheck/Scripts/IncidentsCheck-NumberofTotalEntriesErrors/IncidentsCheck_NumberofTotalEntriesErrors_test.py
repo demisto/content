@@ -1,7 +1,7 @@
 import pytest
 import demistomock as demisto
 
-from IncidentsCheck_NumberofIncidentsWithErrors import main, RED_HTML_STYLE, GREEN_HTML_STYLE
+from IncidentsCheck_NumberofTotalEntriesErrors import main, RED_HTML_STYLE, GREEN_HTML_STYLE
 
 
 @pytest.mark.parametrize('incident_ids, expected', [

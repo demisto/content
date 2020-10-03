@@ -1,7 +1,7 @@
 import pytest
 import demistomock as demisto
 from IntegrationsCheck_Widget_IntegrationsErrorsInfo import main
-from test_data.test_data import FAILED_TABLE, FAILED_TABLE_EXPECTED
+from test_data.constants import FAILED_TABLE, FAILED_TABLE_EXPECTED
 
 
 @pytest.mark.parametrize('list_, expected', [

@@ -1,7 +1,7 @@
 import pytest
 import demistomock as demisto
 from InstancesCheck_FailedCategories import main, random
-from test_data.test_data import INCIDENTS_RESULTS, INCIDENTS_RESULTS_EXPECTED, INCIDENTS_RESULTS_NO_FAILED, \
+from test_data.constants import INCIDENTS_RESULTS, INCIDENTS_RESULTS_EXPECTED, INCIDENTS_RESULTS_NO_FAILED, \
     INCIDENTS_RESULTS_NO_FAILED_EXPECTED
 
 

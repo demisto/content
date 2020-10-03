@@ -5,6 +5,7 @@ from typing import Counter
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 def parse_data(list_content):
     lists_data = []
 

@@ -5,7 +5,8 @@ from IntegrationsCheck_Widget_NumberFailingInstances import main
 
 @pytest.mark.parametrize('list_, expected', [
     ([{
-          'Contents': 'Active Directory Query v2_instance_1,BigFix_instance_1,Tanium Threat Response_instance_1,Threat Grid_instance_1,VirusTotal_instance_1,remoteaccess_instance_1'}],
+        'Contents': 'Active Directory Query v2_instance_1,BigFix_instance_1,Tanium Threat Response_instance_1,'
+                    'Threat Grid_instance_1,VirusTotal_instance_1,remoteaccess_instance_1'}],
      6),
     ([{'Contents': ''}], 0),
     ([{}], 0)

@@ -5,7 +5,8 @@ from IntegrationsCheck_Widget_IntegrationsCategory import main, random
 
 @pytest.mark.parametrize('list_, expected', [
     ([{
-          'Contents': 'Data Enrichment & Threat Intelligence,Vulnerability Management,Endpoint,Forensics & Malware Analysis,Data Enrichment & Threat Intelligence,Endpoint'}],
+        'Contents': 'Data Enrichment & Threat Intelligence,Vulnerability Management,Endpoint,Forensics & Malware '
+                    'Analysis,Data Enrichment & Threat Intelligence,Endpoint'}],
      ('[{"data": [2], "name": "Data Enrichment & Threat Intelligence", "color": '
       '"#3e8"}, {"data": [2], "name": "Endpoint", "color": "#3e8"}, {"data": [1], '
       '"name": "Vulnerability Management", "color": "#3e8"}, {"data": [1], "name": '

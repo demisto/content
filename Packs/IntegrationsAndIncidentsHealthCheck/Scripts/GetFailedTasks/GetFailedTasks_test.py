@@ -1,6 +1,6 @@
 import demistomock as demisto
 from GetFailedTasks import main
-from test_data.test_data import INCIDENTS_RESULT, TASKS_RESULT
+from test_data.constants import INCIDENTS_RESULT, TASKS_RESULT
 
 
 def mock_execute_command(command_name, args):
