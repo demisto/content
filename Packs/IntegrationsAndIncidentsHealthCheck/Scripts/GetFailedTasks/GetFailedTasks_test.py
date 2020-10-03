@@ -1,5 +1,3 @@
-import pytest
-
 import demistomock as demisto
 from GetFailedTasks import main
 from test_data.test_data import INCIDENTS_RESULT, TASKS_RESULT

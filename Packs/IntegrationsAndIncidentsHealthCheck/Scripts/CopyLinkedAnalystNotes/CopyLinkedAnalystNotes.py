@@ -3,12 +3,8 @@ from typing import Dict
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-incident = demisto.incidents()[0]
-incident_id = incident.get('id')
-custom_fields = incident.get('CustomFields')
-linked_incident = custom_fields.get('similarincident')
 
-if linked_incident:
+def create_grids(custom_fields, linked_incident):
     latest_related_incident_id = max(linked_incident)
     linked_list_data = demisto.executeCommand("getIncidents", {'id': latest_related_incident_id})
     linked_content = linked_list_data[0].get("Contents", {}).get("data")[0]
@@ -49,5 +45,20 @@ if linked_incident:
                 main_row["analystnote"] = f'({str(linked_created_date)}) ' \
                                           f'{incidents_data[main_row.get("incidentid")][1]}'
 
-    demisto.executeCommand("setIncident", {'customFields': {'integrationstestgrid': main_integration_grid}})
-    demisto.executeCommand("setIncident", {'customFields': {'playbooktaskserrors': main_incident_grid}})
+    return main_integration_grid, main_incident_grid
+
+
+def main():
+    incident = demisto.incidents()[0]
+    custom_fields = incident.get('CustomFields')
+    linked_incident = custom_fields.get('similarincident')
+
+    if linked_incident:
+        main_integration_grid, main_incident_grid = create_grids(custom_fields, linked_incident)
+
+        demisto.executeCommand("setIncident", {'customFields': {'integrationstestgrid': main_integration_grid}})
+        demisto.executeCommand("setIncident", {'customFields': {'playbooktaskserrors': main_incident_grid}})
+
+
+if __name__ in ["__main__", "builtin", "builtins"]:
+    main()
