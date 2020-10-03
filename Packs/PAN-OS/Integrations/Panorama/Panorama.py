@@ -3609,7 +3609,7 @@ def panorama_refresh_edl(edl_name: str, edl_type: str, location: str, vsys: str)
     else:
         if not edl_type or not location or not vsys:
             raise Exception('To refresh an EDL from the Firewall on Panorama'
-                            ' please use the: edl_type, location an vsys arguments.')
+                            ' please use the: edl_type, location and vsys arguments.')
 
     params['cmd'] = f'<request><system><external-list><refresh><type><{edl_type}><name>{edl_name}' \
                     f'</name></{edl_type}></type></refresh></external-list></system></request>',
