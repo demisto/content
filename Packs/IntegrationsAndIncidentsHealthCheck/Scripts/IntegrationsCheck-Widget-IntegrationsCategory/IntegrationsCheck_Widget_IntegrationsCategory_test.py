@@ -1,13 +1,15 @@
 import pytest
 import demistomock as demisto
-from IncidentsCheck_Widget_CreationDate import main, random
+from IntegrationsCheck_Widget_IntegrationsCategory import main, random
 
 
 @pytest.mark.parametrize('list_, expected', [
     ([{
-        'Contents': '2020-09-29 16:48:30.261438285Z,2020-09-29 14:02:45.82647067Z,2020-09-29 14:02:45.82647067Z,'
-                    '2020-09-30 15:44:06.930751906Z'}],
-     ('[{"data": [3], "name": "2020-09-29", "color": "#3e8"}, {"data": [1], "name": "2020-09-30", "color": "#3e8"}]')),
+          'Contents': 'Data Enrichment & Threat Intelligence,Vulnerability Management,Endpoint,Forensics & Malware Analysis,Data Enrichment & Threat Intelligence,Endpoint'}],
+     ('[{"data": [2], "name": "Data Enrichment & Threat Intelligence", "color": '
+      '"#3e8"}, {"data": [2], "name": "Endpoint", "color": "#3e8"}, {"data": [1], '
+      '"name": "Vulnerability Management", "color": "#3e8"}, {"data": [1], "name": '
+      '"Forensics & Malware Analysis", "color": "#3e8"}]')),
     ([{'Contents': ''}], '{"data": [0], "name": "N\\\\A", "color": "#00CD33"}'),
     ([{}], '{"data": [0], "name": "N\\\\A", "color": "#00CD33"}'),
 ])
