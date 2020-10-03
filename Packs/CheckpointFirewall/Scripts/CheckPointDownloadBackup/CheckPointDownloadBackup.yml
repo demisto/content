@@ -16,5 +16,6 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
+fromversion: 5.0.0
 tests:
   - No tests

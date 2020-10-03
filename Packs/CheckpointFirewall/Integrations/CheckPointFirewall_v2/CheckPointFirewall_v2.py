@@ -1746,7 +1746,7 @@ def main():
                                                             verify_certificate, 600).outputs
             if response:
                 sid = response.get('session-id')  # type: ignore
-                demisto.results(test_module(base_url, sid, verify_certificate))
+                return_results(test_module(base_url, sid, verify_certificate))
                 checkpoint_logout_command(base_url, sid, verify_certificate)
                 return
 
@@ -1758,7 +1758,7 @@ def main():
 
         elif command == 'checkpoint-logout':
             sid = demisto.args().get('session_id', {})
-            demisto.results(checkpoint_logout_command(base_url, sid, verify_certificate))
+            return_results(checkpoint_logout_command(base_url, sid, verify_certificate))
             return
 
         sid = ''
@@ -1901,22 +1901,24 @@ def main():
             client.checkpoint_logout()
 
     except DemistoException as e:
+
         if "[401] - Unauthorized" in e.args[0]:
             demisto.setIntegrationContext({})
             return_error(f'Failed to execute {demisto.command()} command.\n'
                          f'The current session is unreachable. All changes done after last publish'
                          f' are saved.\nPlease contact IT for more information.'
-                         f'\n\nError: {str(e)}')
+                         f'\n\nError: {str(e)}')  # pylint: disable=too-many-return-error
 
         elif 'Missing header: [X-chkp-sid]' in e.args[0] or \
                 'Authentication to server failed' in e.args[0]:
             demisto.setIntegrationContext({})
             return_error(f'Failed to execute {demisto.command()} command.\n'
                          f'Wrong credentials! Please check the username and password you entered '
-                         f'and try again.\n{str(e)}')
+                         f'and try again.\n{str(e)}')  # pylint: disable=too-many-return-error
 
         else:
-            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+            return_error(f'Failed to execute {demisto.command()} command. '
+                         f'Error: {str(e)}')  # pylint: disable=too-many-return-error
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
