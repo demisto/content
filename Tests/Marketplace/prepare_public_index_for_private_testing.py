@@ -149,7 +149,7 @@ def acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
 
         if total_seconds_waited % 60 == 0:
             # Printing a message every minute to keep the machine from dying due to no output
-            print(f"Waiting to acquire lock.")
+            print("Waiting to acquire lock.")
 
         total_seconds_waited += 10
         time.sleep(10)
