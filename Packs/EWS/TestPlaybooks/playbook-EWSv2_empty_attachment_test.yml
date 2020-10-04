@@ -28,9 +28,9 @@ tasks:
       }
     note: false
     evidencedata:
-      description: null
-      occurred: null
-      tags: null
+      description:
+      occurred:
+      tags:
       customfields: {}
   "1":
     id: "1"
@@ -60,9 +60,9 @@ tasks:
       }
     note: false
     evidencedata:
-      description: null
-      occurred: null
-      tags: null
+      description:
+      occurred:
+      tags:
       customfields: {}
 view: |-
   {
@@ -78,3 +78,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

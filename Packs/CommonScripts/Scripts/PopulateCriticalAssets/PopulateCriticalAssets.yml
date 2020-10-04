@@ -11,11 +11,11 @@ enabled: true
 args:
 - name: critical_assets
   required: true
-  description: A list of all critical assets. Received as output from "Calculate Severity
-    - Critical Assets v2" playbook.
+  description: A list of all critical assets. Received as output from "Calculate Severity - Critical Assets v2" playbook.
   isArray: true
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - Calculate Severity - Generic v2 - Test
+- Calculate Severity - Generic v2 - Test
+fromversion: 5.0.0

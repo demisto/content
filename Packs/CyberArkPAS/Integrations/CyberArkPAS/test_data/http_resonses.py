@@ -149,6 +149,16 @@ ADD_ACCOUNT_RAW_RESPONSE = {"address": "/", "categoryModificationTime": 15948350
                                                  "lastModifiedTime": 1594824056}, "secretType": "password",
                             "userName": "TestUser"}
 
+GET_ACCOUNT_RAW_RESPONSE = {'categoryModificationTime': 1597581174, 'id': '11_1',
+                            'name': 'Operating System-UnixSSH',
+                            'address': 'address', 'userName': 'firecall2', 'platformId': 'UnixSSH',
+                            'safeName': 'Linux Accounts',
+                            'secretType': 'password',
+                            'platformAccountProperties': {'UseSudoOnReconcile': 'No', 'Tags': 'SSH'},
+                            'secretManagement': {'automaticManagementEnabled': True, 'status': 'success',
+                                                 'lastModifiedTime': 1595417469,
+                                                 'lastReconciledTime': 1576120341}, 'createdTime': 1595431869}
+
 UPDATE_ACCOUNT_RAW_RESPONSE = {"address": "/", "categoryModificationTime": 1594835018, "createdTime": 1594838456,
                                "id": "77_4", "name": "NewName", "platformId": "WinServerLocal",
                                "safeName": "TestSafe", "secretManagement": {"automaticManagementEnabled": True,

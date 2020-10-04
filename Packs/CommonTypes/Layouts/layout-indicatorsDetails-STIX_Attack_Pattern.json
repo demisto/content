@@ -404,9 +404,11 @@
 				],
 				"type": "custom"
 			}
-		]
+		],
+		"typeId": "Attack Pattern",
+		"version": -1
 	},
-	"typeId": "STIX Attack Pattern",
+	"typeId": "Attack Pattern",
 	"fromVersion": "5.5.0",
 	"toVersion": "5.9.9",
 	"version": -1

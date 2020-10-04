@@ -27,6 +27,7 @@ PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
 REPLACE_FLAG = params.get('replaceKeys', False)
 FETCH_TIME = demisto.params().get('fetch_time')
+PROXIES = handle_proxy()
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
 
@@ -76,27 +77,30 @@ def get_current_splunk_time(splunk_service):
 
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
-    if 'message' in raw:
-        raw = raw.replace('"', '').strip('{').strip('}')
-        key_val_arr = raw.split(",")
-        for key_val in key_val_arr:
-            single_key_val = key_val.split(":")
-            if len(single_key_val) > 1:
-                val = single_key_val[1]
-                key = single_key_val[0].strip()
+    try:
+        result = json.loads(raw)
+    except ValueError:
+        if 'message' in raw:
+            raw = raw.replace('"', '').strip('{').strip('}')
+            key_val_arr = raw.split(",")
+            for key_val in key_val_arr:
+                single_key_val = key_val.split(":", 1)
+                if len(single_key_val) > 1:
+                    val = single_key_val[1]
+                    key = single_key_val[0].strip()
 
-                if key in result.keys():
-                    result[key] = result[key] + "," + val
-                else:
-                    result[key] = val
+                    if key in result.keys():
+                        result[key] = result[key] + "," + val
+                    else:
+                        result[key] = val
 
-    else:
-        raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
-        for key_val in raw_response:
-            key_value = key_val.replace('"', '').strip()
-            if '=' in key_value:
-                key_and_val = key_value.split('=', 1)
-                result[key_and_val[0]] = key_and_val[1]
+        else:
+            raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
+            for key_val in raw_response:
+                key_value = key_val.replace('"', '').strip()
+                if '=' in key_value:
+                    key_and_val = key_value.split('=', 1)
+                    result[key_and_val[0]] = key_and_val[1]
 
     if REPLACE_FLAG:
         result = replace_keys(result)
@@ -476,8 +480,8 @@ def fetch_incidents(service):
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "index_earliest")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "index_latest")
+    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
+    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
 
     kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
@@ -555,10 +559,17 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
+    parsed_fields = None
+    if fields:
+        try:
+            parsed_fields = json.loads(fields)
+        except Exception:
+            parsed_fields = {'fields': fields}
+
     args = assign_params(
         event=event,
         host=host,
-        fields={'fields': fields} if fields else None,
+        fields=parsed_fields,
         index=index,
         sourcetype=source_type,
         source=source,
@@ -666,15 +677,25 @@ def splunk_parse_raw_command():
 
 
 def test_module(service):
-    if demisto.params().get('isFetch'):
+    params = demisto.params()
+    if params.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count': 1, 'earliest_time': time}
-        searchquery_oneshot = demisto.params()['fetchQuery']
+        searchquery_oneshot = params['fetchQuery']
         try:
             service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
         except HTTPError as error:
             return_error(str(error))
+    if params.get('hec_url'):
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        try:
+            requests.get(params.get('hec_url') + '/services/collector/health', headers=headers,
+                         verify=VERIFY_CERTIFICATE)
+        except Exception as e:
+            return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
 
 def replace_keys(data):
@@ -714,7 +735,7 @@ def kv_store_collection_config(service):
 
 def kv_store_collection_add_entries(service):
     args = demisto.args()
-    kv_store_data = args['kv_store_data']
+    kv_store_data = args.get('kv_store_data', '').encode('utf-8')
     kv_store_collection_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
     service.kvstore[kv_store_collection_name].data.insert(kv_store_data)
@@ -860,13 +881,14 @@ def get_store_data(service):
         store = service.kvstore[store]
         query = build_kv_store_query(store, args)
         if 'limit' not in query:
-            # query = {'query': json.dumps({key: val for key, val in json.loads(query).items()})}
-            # query = {'query': json.dumps(json.loads(query))}
             query = {'query': query}
         yield store.data.query(**query)
 
 
 def main():
+    if demisto.command() == 'splunk-parse-raw':
+        splunk_parse_raw_command()
+        sys.exit(0)
     service = None
     proxy = demisto.params().get('proxy')
     use_requests_handler = demisto.params().get('use_requests_handler')
@@ -916,8 +938,6 @@ def main():
         splunk_submit_event_command(service)
     if demisto.command() == 'splunk-notable-event-edit':
         splunk_edit_notable_event_command(proxy)
-    if demisto.command() == 'splunk-parse-raw':
-        splunk_parse_raw_command()
     if demisto.command() == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     if demisto.command() == 'splunk-job-status':

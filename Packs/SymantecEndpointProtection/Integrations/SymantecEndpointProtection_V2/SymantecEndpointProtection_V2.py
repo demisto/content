@@ -46,7 +46,6 @@ GROUPS_INFO_DEFAULT_COLUMNS = [
 EPOCH_MINUTE = 60 * 1000
 EPOCH_HOUR = 60 * EPOCH_MINUTE
 
-
 '''HELPER FUNCTIONS'''
 
 
@@ -92,12 +91,12 @@ def build_query_params(params):
     return '?' + query_params if query_params else ''
 
 
-def do_auth(server, crads, insecure):
+def do_auth(server, crads, insecure, domain):
     url = fix_url(str(server)) + 'sepm/api/v1/identity/authenticate'
     body = {
         'username': crads.get('identifier') if crads.get('identifier') else '',
         'password': crads.get('password') if crads.get('password') else '',
-        'domain': crads.get('domain') if crads.get('domain') else ''
+        'domain': domain if domain else ''
     }
     res = requests.post(url, headers={"Content-Type": "application/json"}, data=json.dumps(body), verify=not insecure)
     return parse_response(res)
@@ -620,10 +619,7 @@ def groups_info_command(token):
         'Contents': json_res,
         'HumanReadable': md,
         'IgnoreAutoExtract': True,
-        'EntryContext':
-            {
-                'SEPM.Groups': sepm_groups
-        }
+        'EntryContext': {'SEPM.Groups': sepm_groups}
     })
 
 
@@ -643,8 +639,8 @@ def command_status(token):
         'HumanReadable': md,
         'IgnoreAutoExtract': True,
         'EntryContext': {
-            'SEPM.LastCommand': createContext({'CommandDetails': cmd_status_detail, 'CommandID': command_id},
-                                              removeNull=True)
+            'SEPM.LastCommand(val.CommandID && val.CommandID == obj.CommandID)': createContext(
+                {'CommandDetails': cmd_status_detail, 'CommandID': command_id}, removeNull=True)
         }
     })
 
@@ -652,7 +648,7 @@ def command_status(token):
 def list_policies_command(token):
     md_list, policies_list, fixed_policy_list = get_list_of_policies(token)
     md = tableToMarkdown('List of existing policies', md_list, [
-                         'Policy Name', 'Type', 'ID', 'Enabled', 'Assigned', 'Description'])
+        'Policy Name', 'Type', 'ID', 'Enabled', 'Assigned', 'Description'])
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -672,7 +668,7 @@ def assign_policie_command(token):
     policy_id = demisto.getArg('policyID')
     do_put(token, 'sepm/api/v1/groups/{0}/locations/{1}/policies/{2}'.format(group_id,
                                                                              locatoion_id, policy_type),
-                  {'id': policy_id})
+           {'id': policy_id})
     md = '### Policy: {0}, of type: {1}, was assigned to location: {2}, in group: {3}'.format(
         policy_id, policy_type, locatoion_id, group_id)
     demisto.results({
@@ -804,7 +800,7 @@ try:
     Before EVERY command the following tow lines are performed (do_auth and get_token_from_response)
     '''
     resp = do_auth(server=demisto.getParam('server'), crads=demisto.getParam(
-        'authentication'), insecure=demisto.getParam('insecure'))
+        'authentication'), insecure=demisto.getParam('insecure'), domain=demisto.getParam('domain'))
     token = get_token_from_response(resp)
     if current_command == 'test-module':
         # This is the call made when pressing the integration test button.

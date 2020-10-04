@@ -2,14 +2,19 @@ commonfields:
   id: ADGetUserGroups
   version: -1
 name: ADGetUserGroups
-script: |-
+script: >-
   # Optional arguments and default values
+
   attrs = 'name'
+
   if demisto.get(demisto.args(), 'attributes'):
       attrs += "," + demisto.args()['attributes']
   resp = ''
+
   nested_search = ':1.2.840.113556.1.4.1941:' if demisto.get(demisto.args(), 'nestedSearch') else ''
+
   memberDN = ''
+
   if demisto.get(demisto.args(), 'dn'):
       memberDN = demisto.args()['dn']
   elif demisto.get(demisto.args(), 'name'):
@@ -40,9 +45,7 @@ type: python
 subtype: python2
 tags:
 - active directory
-comment: Use Active Directory to retrieve the groups in which the specified user is
-  a member. The user can be specified by name, email or as an Active Directory Distinguished
-  Name (DN).
+comment: Deprecated. Use Active Directory to retrieve the groups in which the specified user is a member. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
 system: true
 args:
 - name: dn
@@ -53,8 +56,7 @@ args:
 - name: email
   description: Email address of the desired user
 - name: attributes
-  description: Include these AD attributes of the resulting objects in addition to
-    the default ones
+  description: Include these AD attributes of the resulting objects in addition to the default ones
 - name: nestedSearch
   description: Enter any value to allow nested groups search as well
 scripttarget: 0
@@ -63,3 +65,4 @@ dependson:
   must:
   - ad-search
 timeout: 0s
+fromversion: 5.0.0

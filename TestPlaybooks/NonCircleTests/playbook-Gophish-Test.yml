@@ -1,0 +1,2293 @@
+id: Gophish-Test
+fromversion: 5.0.0
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Gophish-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7b3934df-4fd0-4368-8485-23350f9d47d7
+    type: start
+    task:
+      id: 7b3934df-4fd0-4368-8485-23350f9d47d7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 25844a62-b0c7-4052-8ce9-c89788c67850
+    type: regular
+    task:
+      id: 25844a62-b0c7-4052-8ce9-c89788c67850
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f37153bb-7033-436f-8829-40f9ea968961
+    type: regular
+    task:
+      id: f37153bb-7033-436f-8829-40f9ea968961
+      version: -1
+      name: gophish-get-users
+      script: '|||gophish-get-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a4d6a37d-2b49-4d03-850c-30c2a1b4d742
+    type: condition
+    task:
+      id: a4d6a37d-2b49-4d03-850c-30c2a1b4d742
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.Users
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7fd615c1-cdc3-4f41-868c-2c893c45ef57
+    type: regular
+    task:
+      id: 7fd615c1-cdc3-4f41-868c-2c893c45ef57
+      version: -1
+      name: gophish-get-user
+      script: '|||gophish-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      id:
+        complex:
+          root: ${Gophish.Users
+          accessor: id}
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 4dbbdaf2-cdcc-4b72-8e1f-6cd7763e7b9f
+    type: condition
+    task:
+      id: 4dbbdaf2-cdcc-4b72-8e1f-6cd7763e7b9f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.User
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 7522bedf-3923-42ba-8d75-d6c88ac2530b
+    type: regular
+    task:
+      id: 7522bedf-3923-42ba-8d75-d6c88ac2530b
+      version: -1
+      name: gophish-create-user
+      script: '|||gophish-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      password:
+        simple: Password
+      role:
+        simple: admin
+      username:
+        simple: TestUser
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 417b58b7-773f-47e4-80b4-08fb6eda2b23
+    type: condition
+    task:
+      id: 417b58b7-773f-47e4-80b4-08fb6eda2b23
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.NewUser
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 4a8149b5-cd14-4def-838e-01fb45f57489
+    type: regular
+    task:
+      id: 4a8149b5-cd14-4def-838e-01fb45f57489
+      version: -1
+      name: gophish-modify-user
+      script: '|||gophish-modify-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      id:
+        simple: ${Gophish.NewUser.id}
+      password:
+        simple: Thisisthenewpassword
+      role:
+        simple: admin
+      username:
+        simple: ${Gophish.NewUser.username}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 1575bb30-0572-4fba-85da-ef10dfabe222
+    type: condition
+    task:
+      id: 1575bb30-0572-4fba-85da-ef10dfabe222
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.ModifiedUser
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 070d4e62-7fed-4327-875b-45309ea1ecf0
+    type: regular
+    task:
+      id: 070d4e62-7fed-4327-875b-45309ea1ecf0
+      version: -1
+      name: gophish-delete-user
+      script: '|||gophish-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      id:
+        complex:
+          root: ${Gophish.NewUser
+          accessor: id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: a11ce7df-c7c3-425c-89d3-96ad36618bb6
+    type: condition
+    task:
+      id: a11ce7df-c7c3-425c-89d3-96ad36618bb6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.DeletedUser
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 9d8eea2a-c9f3-419b-8893-5aa3341d38b6
+    type: regular
+    task:
+      id: 9d8eea2a-c9f3-419b-8893-5aa3341d38b6
+      version: -1
+      name: gophish-get-all-sending-profiles
+      script: '|||gophish-get-all-sending-profiles'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 6579632e-3695-47f2-86da-a735dce322c2
+    type: condition
+    task:
+      id: 6579632e-3695-47f2-86da-a735dce322c2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.AllSendingProfiles
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 81f69c62-989c-4716-818c-1636a6d7d180
+    type: regular
+    task:
+      id: 81f69c62-989c-4716-818c-1636a6d7d180
+      version: -1
+      name: gophish-get-sending-profile
+      script: '|||gophish-get-sending-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      id:
+        simple: ${Gophish.AllSendingProfiles.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 148aba33-21be-404e-8b0f-2cadf7716650
+    type: condition
+    task:
+      id: 148aba33-21be-404e-8b0f-2cadf7716650
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.SendingProfile
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 6ae29112-6501-4c1c-8ee5-477cfb601e27
+    type: regular
+    task:
+      id: 6ae29112-6501-4c1c-8ee5-477cfb601e27
+      version: -1
+      name: gophish-create-sending-profile
+      script: '|||gophish-create-sending-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      from_address:
+        simple: john <emailaddress>
+      headers: {}
+      host:
+        simple: testing.acme.local:25
+      ignore_cert_errors:
+        simple: "True"
+      name:
+        simple: TestingProfile
+      password:
+        simple: Password
+      username:
+        simple: Admin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: cf3c3271-f90f-4b3b-8a07-c0843cf433a9
+    type: condition
+    task:
+      id: cf3c3271-f90f-4b3b-8a07-c0843cf433a9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.CreatedSendingProfile
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 844e5adf-7e6c-461b-8576-c95e716ff3e7
+    type: regular
+    task:
+      id: 844e5adf-7e6c-461b-8576-c95e716ff3e7
+      version: -1
+      name: gophish-delete-sending-profile
+      script: '|||gophish-delete-sending-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      id:
+        complex:
+          root: Gophish.CreatedSendingProfile
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 56aa93b5-13d3-456c-809f-922f1458a915
+    type: condition
+    task:
+      id: 56aa93b5-13d3-456c-809f-922f1458a915
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.DeletedSendingProfile
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: ad9f1d65-852a-4b88-8983-eac702aa1027
+    type: regular
+    task:
+      id: ad9f1d65-852a-4b88-8983-eac702aa1027
+      version: -1
+      name: gophish-get-all-landing-pages
+      script: '|||gophish-get-all-landing-pages'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: e4028f84-ad27-4af0-838b-adae6e98fe78
+    type: condition
+    task:
+      id: e4028f84-ad27-4af0-838b-adae6e98fe78
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.AllLandingPages
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 984d312e-b4eb-4a91-816c-4c8679c55098
+    type: regular
+    task:
+      id: 984d312e-b4eb-4a91-816c-4c8679c55098
+      version: -1
+      name: gophish-get-landing-page
+      script: '|||gophish-get-landing-page'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      id:
+        complex:
+          root: Gophish.AllLandingPages
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: cf14fc4a-a22c-4b04-8139-41ef9bd969f5
+    type: condition
+    task:
+      id: cf14fc4a-a22c-4b04-8139-41ef9bd969f5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.LandingPage
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: e70c2966-7b5a-4ca1-8b09-fceb76880cc2
+    type: regular
+    task:
+      id: e70c2966-7b5a-4ca1-8b09-fceb76880cc2
+      version: -1
+      name: gophish-delete-landing-page
+      script: '|||gophish-delete-landing-page'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      id:
+        simple: ${Gophish.CreatedLandingPage.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 4ddeafa2-e001-4bc5-84a1-f81ba578ae50
+    type: condition
+    task:
+      id: 4ddeafa2-e001-4bc5-84a1-f81ba578ae50
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.DeletedLandingPage
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: e4cbe418-99e0-4205-8a0c-927496df7369
+    type: regular
+    task:
+      id: e4cbe418-99e0-4205-8a0c-927496df7369
+      version: -1
+      name: gophish-import-site-as-landing-page
+      script: '|||gophish-import-site-as-landing-page'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      include_resources:
+        simple: "True"
+      url:
+        simple: https://www.office.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 94b82d66-dba3-4736-8cd5-9e9678936ca9
+    type: condition
+    task:
+      id: 94b82d66-dba3-4736-8cd5-9e9678936ca9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.ImportedSite
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 0412125f-4f2e-4fd5-85c2-c8d7e6482610
+    type: regular
+    task:
+      id: 0412125f-4f2e-4fd5-85c2-c8d7e6482610
+      version: -1
+      name: gophish-get-all-templates
+      script: '|||gophish-get-all-templates'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 0d80f9dc-16bb-4e41-8fe4-4b1df9478a24
+    type: condition
+    task:
+      id: 0d80f9dc-16bb-4e41-8fe4-4b1df9478a24
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.AllTemplates
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 5f8cc1d0-5079-4096-8d86-e758a4eb53f2
+    type: regular
+    task:
+      id: 5f8cc1d0-5079-4096-8d86-e758a4eb53f2
+      version: -1
+      name: gophish-get-template
+      script: '|||gophish-get-template'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      id:
+        complex:
+          root: Gophish.AllTemplates
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: da6a7118-6a5d-44a5-823a-e67eb6c5eb82
+    type: condition
+    task:
+      id: da6a7118-6a5d-44a5-823a-e67eb6c5eb82
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.Template
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 3f4ae06e-c81a-4e9b-83db-79152ee39b25
+    type: regular
+    task:
+      id: 3f4ae06e-c81a-4e9b-83db-79152ee39b25
+      version: -1
+      name: gophish-delete-template
+      script: '|||gophish-delete-template'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      id:
+        simple: ${Gophish.CreatedTemplate.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 0a88438d-0c4f-4043-8600-2d72a4eb6f84
+    type: condition
+    task:
+      id: 0a88438d-0c4f-4043-8600-2d72a4eb6f84
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.DeletedTemplate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: c555c503-52ab-4a20-84b0-60056ad6762b
+    type: regular
+    task:
+      id: c555c503-52ab-4a20-84b0-60056ad6762b
+      version: -1
+      name: gophish-import-template
+      script: '|||gophish-import-template'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      content:
+        simple: content
+      convert_links:
+        simple: "False"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 20b15c8a-c7d4-4611-84a6-4b4aedf1ec17
+    type: condition
+    task:
+      id: 20b15c8a-c7d4-4611-84a6-4b4aedf1ec17
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.ImportedTemplate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: b0e7c5d5-406c-4906-8531-2f8dd17b3c18
+    type: regular
+    task:
+      id: b0e7c5d5-406c-4906-8531-2f8dd17b3c18
+      version: -1
+      name: gophish-create-template
+      script: '|||gophish-create-template'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      attachmentContent: {}
+      attachmentName: {}
+      attachmentType: {}
+      html: {}
+      name:
+        simple: TestingTemplates
+      subject:
+        simple: Wee
+      text:
+        simple: Test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 07490a6d-d089-493c-8b8c-27d86c061fcb
+    type: regular
+    task:
+      id: 07490a6d-d089-493c-8b8c-27d86c061fcb
+      version: -1
+      name: gophish-get-all-campaigns
+      script: '|||gophish-get-all-campaigns'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 1619b7dc-26de-462d-8d54-b88aa53a6197
+    type: condition
+    task:
+      id: 1619b7dc-26de-462d-8d54-b88aa53a6197
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.AllCampaigns
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 7b09e97b-dd8a-4fae-8296-e9d2795b41c6
+    type: regular
+    task:
+      id: 7b09e97b-dd8a-4fae-8296-e9d2795b41c6
+      version: -1
+      name: gophish-get-campaign-details
+      script: '|||gophish-get-campaign-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      id:
+        complex:
+          root: Gophish.AllCampaigns
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: c67f5aed-f7c3-4d41-8f6c-3e2a184dfb40
+    type: regular
+    task:
+      id: c67f5aed-f7c3-4d41-8f6c-3e2a184dfb40
+      version: -1
+      name: gophish-get-campaign-results
+      script: '|||gophish-get-campaign-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      id:
+        simple: ${Gophish.AllCampaigns.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 52edd657-db32-4128-885c-465b9ef14e5e
+    type: condition
+    task:
+      id: 52edd657-db32-4128-885c-465b9ef14e5e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.CampaignResults
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 86029656-681d-4ec5-86a0-0480c44b5efd
+    type: regular
+    task:
+      id: 86029656-681d-4ec5-86a0-0480c44b5efd
+      version: -1
+      name: gophish-get-campaign-summary
+      script: '|||gophish-get-campaign-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      id:
+        simple: ${Gophish.AllCampaigns.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 9865bf64-4073-4e3e-8701-8a5bd939816c
+    type: condition
+    task:
+      id: 9865bf64-4073-4e3e-8701-8a5bd939816c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.CampaignSummary
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: c8c315fa-876f-4e47-8f22-2c56947fb40e
+    type: regular
+    task:
+      id: c8c315fa-876f-4e47-8f22-2c56947fb40e
+      version: -1
+      name: gophish-delete-campaign
+      script: '|||gophish-delete-campaign'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      id:
+        simple: ${Gophish.CreatedCampaign.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: d98bfdc1-18d9-4e22-8dc6-a8427c334208
+    type: condition
+    task:
+      id: d98bfdc1-18d9-4e22-8dc6-a8427c334208
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.DeletedCampaign
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 92bb1fe2-fdd3-4c88-84d7-3b010411a11e
+    type: regular
+    task:
+      id: 92bb1fe2-fdd3-4c88-84d7-3b010411a11e
+      version: -1
+      name: gophish-complete-campaign
+      script: '|||gophish-complete-campaign'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      id:
+        simple: ${Gophish.CreatedCampaign.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: c7c8c856-9e01-4ed7-88ae-afe7752285ae
+    type: condition
+    task:
+      id: c7c8c856-9e01-4ed7-88ae-afe7752285ae
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.CompletedCampaign
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 591b5ef6-9bc6-4650-8cd5-7c77f5d84b36
+    type: regular
+    task:
+      id: 591b5ef6-9bc6-4650-8cd5-7c77f5d84b36
+      version: -1
+      name: gophish-create-landing-page
+      script: '|||gophish-create-landing-page'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      capture_credentials:
+        simple: "True"
+      capture_passwords:
+        simple: "True"
+      html:
+        complex:
+          root: Gophish.ImportedSite
+          accessor: html
+      name:
+        simple: TestPlaybook
+      redirect_url:
+        simple: https://www.paloaltonetworks.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: e1c723d2-e960-41d6-8a82-abb2cc4a6e80
+    type: condition
+    task:
+      id: e1c723d2-e960-41d6-8a82-abb2cc4a6e80
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.CreatedLandingPage
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 35de83d5-a3c4-4ac6-8aa9-2bca371fb4d0
+    type: regular
+    task:
+      id: 35de83d5-a3c4-4ac6-8aa9-2bca371fb4d0
+      version: -1
+      name: gophish-create-campaign
+      script: '|||gophish-create-campaign'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      groups:
+        complex:
+          root: ${Gophish.AllGroups
+          accessor: name}
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      launch_date:
+        simple: Tomorrow
+      name:
+        simple: TestingPlaybookCampaign
+      page:
+        simple: ${Gophish.AllLandingPages.name}
+      send_by_date: {}
+      smtp:
+        simple: ${Gophish.AllSendingProfiles.name}
+      template:
+        simple: ${Gophish.AllTemplates.name}
+      url:
+        simple: https://192.168.1.1:80
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 6bc920f1-6506-4110-8f5c-def38de895d6
+    type: condition
+    task:
+      id: 6bc920f1-6506-4110-8f5c-def38de895d6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.CreatedCampaign
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 92e0ab11-700b-43ac-8f78-585d9d430604
+    type: regular
+    task:
+      id: 92e0ab11-700b-43ac-8f78-585d9d430604
+      version: -1
+      name: gophish-get-all-groups
+      script: '|||gophish-get-all-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 841d51bc-987b-4ba6-8ebf-1c785cfc3aff
+    type: condition
+    task:
+      id: 841d51bc-987b-4ba6-8ebf-1c785cfc3aff
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.AllGroups
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 0a73d164-b175-4985-8267-e0de8c4b0c0d
+    type: regular
+    task:
+      id: 0a73d164-b175-4985-8267-e0de8c4b0c0d
+      version: -1
+      name: gophish-get-group
+      script: '|||gophish-get-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      id:
+        complex:
+          root: ${Gophish.AllGroups
+          accessor: id}
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: da5e626c-a68d-4e69-891a-e77ff38b211e
+    type: condition
+    task:
+      id: da5e626c-a68d-4e69-891a-e77ff38b211e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.Group
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 85e4d701-4192-44c8-88c3-886eccc74a74
+    type: regular
+    task:
+      id: 85e4d701-4192-44c8-88c3-886eccc74a74
+      version: -1
+      name: gophish-get-all-groups-summary
+      script: '|||gophish-get-all-groups-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: f19fc060-030c-4c77-840b-efafb7f16bda
+    type: condition
+    task:
+      id: f19fc060-030c-4c77-840b-efafb7f16bda
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.AllGroupsSummary
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 22f8068f-89a7-4d30-8a5f-65542065b55a
+    type: regular
+    task:
+      id: 22f8068f-89a7-4d30-8a5f-65542065b55a
+      version: -1
+      name: gophish-get-group-summary
+      script: '|||gophish-get-group-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      id:
+        complex:
+          root: ${Gophish.AllGroups
+          accessor: id}
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: cd33017b-2264-4193-8d56-9ac8f0ed6884
+    type: condition
+    task:
+      id: cd33017b-2264-4193-8d56-9ac8f0ed6884
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.GroupSummary
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 54b94582-adcc-4e4c-8088-f49d7fa30f49
+    type: regular
+    task:
+      id: 54b94582-adcc-4e4c-8088-f49d7fa30f49
+      version: -1
+      name: gophish-create-group
+      script: '|||gophish-create-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      name:
+        simple: TestingPBGroup
+      targets:
+        simple: emailaddress,john,johnson,CEO
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: a0bfb368-eb3f-45d3-8be7-02701fc64cef
+    type: condition
+    task:
+      id: a0bfb368-eb3f-45d3-8be7-02701fc64cef
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.CreatedGroup
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: f53985f3-6fd4-4e14-8737-a2c5ae88ad34
+    type: regular
+    task:
+      id: f53985f3-6fd4-4e14-8737-a2c5ae88ad34
+      version: -1
+      name: gophish-delete-group
+      script: '|||gophish-delete-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      id:
+        simple: ${Gophish.CreatedGroup.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: 21aef450-9b15-4470-8b80-274a27754a76
+    type: condition
+    task:
+      id: 21aef450-9b15-4470-8b80-274a27754a76
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.DeletedGroup
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: 5b928ddb-dced-4b57-86cc-7d88f641bacf
+    type: title
+    task:
+      id: 5b928ddb-dced-4b57-86cc-7d88f641bacf
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: 2c7bef83-031d-4206-86b2-2e592f1b683c
+    type: condition
+    task:
+      id: 2c7bef83-031d-4206-86b2-2e592f1b683c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.CreatedTemplate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: ce41b289-25a6-477d-88d3-a8224428f100
+    type: condition
+    task:
+      id: ce41b289-25a6-477d-88d3-a8224428f100
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gophish.CampaignDetails
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 11585,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

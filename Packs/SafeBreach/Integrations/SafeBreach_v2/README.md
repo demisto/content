@@ -31,6 +31,7 @@ Add a new one by typing: **config apikeys add --name <key_name>**
 | feedReputation | Indicator Reputation | False |
 | behavioralReputation | Behavioral Indicator Reputation | False |
 | feedReliability | Source Reliability | True |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
 | feedExpirationPolicy |  | False |
 | feedFetchInterval | Feed Fetch Interval | False |
 | feedBypassExclusionList | Bypass exclusion list | False |

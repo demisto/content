@@ -2,13 +2,18 @@ commonfields:
   id: ADGetCommonGroups
   version: -1
 name: ADGetCommonGroups
-script: |-
+script: >-
   COMMON_GROUPS_LABAL = 'CommonGroups'
+
   res = []
+
   resp_list = []
 
+
   name_list = argToList(demisto.args()['name']) if demisto.get(demisto.args(), 'name') else ""
+
   dArgs = demisto.args()
+
   for name in name_list:
       dArgs.update({'name':name})
       resp = demisto.executeCommand('ADGetUserGroups', dArgs)
@@ -18,6 +23,7 @@ script: |-
           resp_list += resp
 
   common_groups = set()
+
 
   for resp in resp_list:
 
@@ -41,12 +47,13 @@ script: |-
       answer = 'no'
 
   res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : answer } )
+
   demisto.results(res)
 type: python
 subtype: python2
 tags:
 - active directory
-comment: Use Active Directory to get common groups between supplied users.
+comment: Deprecated. Use Active Directory to get common groups between supplied users.
 system: true
 args:
 - name: name
@@ -60,3 +67,4 @@ dependson:
   must:
   - ad-search
 timeout: 0s
+fromversion: 5.0.0

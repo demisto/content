@@ -1,0 +1,689 @@
+id: Microsoft Advanced Threat Analytics - Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Microsoft Advanced Threat Analytics - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a2624673-cbcf-4edf-892b-5814056cd115
+    type: start
+    task:
+      id: a2624673-cbcf-4edf-892b-5814056cd115
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 05e20f53-409d-40df-8b26-bdbb58199f22
+    type: regular
+    task:
+      id: 05e20f53-409d-40df-8b26-bdbb58199f22
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 8868760f-1c54-477d-88f6-ab57a00fd24b
+    type: regular
+    task:
+      id: 8868760f-1c54-477d-88f6-ab57a00fd24b
+      version: -1
+      name: ms-ata-suspicious-activities-list
+      script: '|||ms-ata-suspicious-activities-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 349a09dc-db73-455a-8c2b-810300cb9cd8
+    type: condition
+    task:
+      id: 349a09dc-db73-455a-8c2b-810300cb9cd8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.SuspiciousActivity.EndTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.SuspiciousActivity.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.SuspiciousActivity.RelatedUniqueEntityIds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.SuspiciousActivity.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.SuspiciousActivity.StartTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.SuspiciousActivity.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.SuspiciousActivity.StatusUpdateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.SuspiciousActivity.SystemCreationTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.SuspiciousActivity.SystemUpdateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.SuspiciousActivity.Type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: a781f1cc-8de9-4d87-817e-2e6102f0dbc5
+    type: regular
+    task:
+      id: a781f1cc-8de9-4d87-817e-2e6102f0dbc5
+      version: -1
+      name: Set suspicious activity status to Closed
+      script: '|||ms-ata-suspicious-activity-status-set'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      id:
+        complex:
+          root: MicrosoftATA.SuspiciousActivity
+          accessor: Id
+          transformers:
+          - operator: FirstArrayElement
+      status:
+        simple: Closed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 594b6b06-d5e2-45fe-8370-f5687ca572c0
+    type: regular
+    task:
+      id: 594b6b06-d5e2-45fe-8370-f5687ca572c0
+      version: -1
+      name: ms-ata-monitoring-alerts-list
+      script: '|||ms-ata-monitoring-alerts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 41d99241-355d-48cd-85ab-61fa69e5bfc3
+    type: condition
+    task:
+      id: 41d99241-355d-48cd-85ab-61fa69e5bfc3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.MonitoringAlert.EndTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.MonitoringAlert.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.MonitoringAlert.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.MonitoringAlert.StartTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.MonitoringAlert.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.MonitoringAlert.Type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: e73bffd5-2a93-4a32-8b2a-4807fbcda046
+    type: regular
+    task:
+      id: e73bffd5-2a93-4a32-8b2a-4807fbcda046
+      version: -1
+      name: ms-ata-entity-get
+      script: '|||ms-ata-entity-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      id:
+        complex:
+          root: MicrosoftATA.SuspiciousActivity
+          accessor: RelatedUniqueEntityIds
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 8cad2164-81de-464b-8a2d-e4c9b135f3e9
+    type: title
+    task:
+      id: 8cad2164-81de-464b-8a2d-e4c9b135f3e9
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: a7287cca-dc4e-4d31-8827-0f8b94e0bc39
+    type: condition
+    task:
+      id: a7287cca-dc4e-4d31-8827-0f8b94e0bc39
+      version: -1
+      name: Is suspicious activity status Open ?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATA.SuspiciousActivity
+                accessor: Status
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: Open
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 66206b40-5489-406f-8a9f-3e4b2f8542a3
+    type: regular
+    task:
+      id: 66206b40-5489-406f-8a9f-3e4b2f8542a3
+      version: -1
+      name: Set suspicious activity status to Open
+      script: '|||ms-ata-suspicious-activity-status-set'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      id:
+        complex:
+          root: MicrosoftATA.SuspiciousActivity
+          accessor: Id
+          transformers:
+          - operator: FirstArrayElement
+      status:
+        simple: Open
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 4256e360-103e-49c8-83ec-931918b6f34a
+    type: regular
+    task:
+      id: 4256e360-103e-49c8-83ec-931918b6f34a
+      version: -1
+      name: Get updated suspicious activity
+      script: '|||ms-ata-suspicious-activities-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      end_time: {}
+      id:
+        complex:
+          root: MicrosoftATA.SuspiciousActivity
+          accessor: Id
+          transformers:
+          - operator: FirstArrayElement
+      limit: {}
+      severity: {}
+      start_time: {}
+      status: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: d5fd2fde-65c1-41fb-873c-b9c4e07226e3
+    type: condition
+    task:
+      id: d5fd2fde-65c1-41fb-873c-b9c4e07226e3
+      version: -1
+      name: Verify suspicious activity status is Closed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    defaultassigneecomplex:
+      complex:
+        root: MicrosoftATA.SuspiciousActivity
+        accessor: Status
+        transformers:
+        - operator: FirstArrayElement
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATA.SuspiciousActivity
+                accessor: Status
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: Closed
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 32a4ce93-0697-47d9-881e-849296572b35
+    type: regular
+    task:
+      id: 32a4ce93-0697-47d9-881e-849296572b35
+      version: -1
+      name: Get updated suspicious activity
+      script: '|||ms-ata-suspicious-activities-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      end_time: {}
+      id:
+        complex:
+          root: MicrosoftATA.SuspiciousActivity
+          accessor: Id
+          transformers:
+          - operator: FirstArrayElement
+      limit: {}
+      severity: {}
+      start_time: {}
+      status: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 24cafd75-6dcb-4e60-8c8b-202b2f314011
+    type: condition
+    task:
+      id: 24cafd75-6dcb-4e60-8c8b-202b2f314011
+      version: -1
+      name: Verify suspicious activity status is Open
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    defaultassigneecomplex:
+      complex:
+        root: MicrosoftATA.SuspiciousActivity
+        accessor: Status
+        transformers:
+        - operator: FirstArrayElement
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATA.SuspiciousActivity
+                accessor: Status
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: Open
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: b7158684-f0dc-4d60-897e-ae7dc2a72a9a
+    type: condition
+    task:
+      id: b7158684-f0dc-4d60-897e-ae7dc2a72a9a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.Entity.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.Entity.Profile.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.Entity.SystemDisplayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.Entity.DistinguishedName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.Entity.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATA.Entity.CreationTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

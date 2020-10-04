@@ -1,0 +1,30 @@
+{
+    "name": "QueryAI",
+    "description": "Query.AI is a decentralized data access and analysis technology that simplifies security investigations across disparate platforms without data duplication.",
+    "support": "partner",
+    "currentVersion": "1.0.2",
+    "author": "Query.AI",
+    "url": "https://www.query.ai",
+    "email": "support@query.ai",
+    "created": "2020-07-28T20:25:41Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Virtual SIEM",
+        "Security Analytics",
+        "Ask question get answer",
+        "Threat Hunting",
+        "Incident Response",
+        "Analyst Assistive-AI"
+    ],
+    "useCases": [],
+    "keywords": [
+        "query",
+        "ai",
+        "query.ai"
+    ],
+    "githubUser": [
+        "query-ai"
+    ]
+}

@@ -228,7 +228,7 @@ class NitroESM(object):
             if ready:
                 return
             else:
-                time.sleep(60)
+                time.sleep(60)  # pylint: disable=sleep-exists
 
         raise ValueError('Waited more than {} min for query results : {}'.format(max_wait, result_id))
 
@@ -581,6 +581,10 @@ class NitroESM(object):
 
         if organization is not None:
             case['orgId'] = self.organization_name_to_id(organization)
+
+        # due to error 400 from api - java.util.ArrayList` out of VALUE_STRING
+        del case['notes']
+        del case['history']
 
         cmd = 'caseEditCase'
         query = json.dumps({'caseDetail': case})

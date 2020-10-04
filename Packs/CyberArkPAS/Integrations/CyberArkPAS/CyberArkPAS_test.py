@@ -3,19 +3,21 @@ import pytest
 from CyberArkPAS import Client, add_user_command, get_users_command, \
     update_user_command, add_safe_command, update_safe_command, get_list_safes_command, get_safe_by_name_command, \
     add_safe_member_command, update_safe_member_command, list_safe_members_command, add_account_command, \
-    update_account_command, get_list_accounts_command, get_list_account_activity_command, fetch_incidents
+    update_account_command, get_list_accounts_command, get_list_account_activity_command, fetch_incidents, \
+    get_account_details_command
 from test_data.context import ADD_USER_CONTEXT, GET_USERS_CONTEXT, \
     UPDATE_USER_CONTEXT, UPDATE_SAFE_CONTEXT, GET_LIST_SAFES_CONTEXT, GET_SAFE_BY_NAME_CONTEXT, ADD_SAFE_CONTEXT, \
     ADD_SAFE_MEMBER_CONTEXT, UPDATE_SAFE_MEMBER_CONTEXT, LIST_SAFE_MEMBER_CONTEXT, ADD_ACCOUNT_CONTEXT, \
     UPDATE_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT, INCIDENTS, INCIDENTS_AFTER_FETCH, \
-    INCIDENTS_LIMITED_BY_MAX_SIZE, INCIDENTS_FILTERED_BY_SCORE
+    INCIDENTS_LIMITED_BY_MAX_SIZE, INCIDENTS_FILTERED_BY_SCORE, GET_ACCOUNT_CONTEXT
 from test_data.http_resonses import ADD_USER_RAW_RESPONSE, \
     UPDATE_USER_RAW_RESPONSE, GET_USERS_RAW_RESPONSE, ADD_SAFE_RAW_RESPONSE, UPDATE_SAFE_RAW_RESPONSE, \
     GET_LIST_SAFES_RAW_RESPONSE, GET_SAFE_BY_NAME_RAW_RESPONSE, ADD_SAFE_MEMBER_RAW_RESPONSE, \
     UPDATE_SAFE_MEMBER_RAW_RESPONSE, LIST_SAFE_MEMBER_RAW_RESPONSE, ADD_ACCOUNT_RAW_RESPONSE, \
     UPDATE_ACCOUNT_RAW_RESPONSE, GET_LIST_ACCOUNT_RAW_RESPONSE, GET_LIST_ACCOUNT_ACTIVITIES_RAW_RESPONSE, \
     GET_SECURITY_EVENTS_RAW_RESPONSE, GET_SECURITY_EVENTS_WITH_UNNECESSARY_INCIDENT_RAW_RESPONSE, \
-    GET_SECURITY_EVENTS_WITH_15_INCIDENT_RAW_RESPONSE
+    GET_SECURITY_EVENTS_WITH_15_INCIDENT_RAW_RESPONSE, GET_ACCOUNT_RAW_RESPONSE
+
 
 ADD_USER_ARGS = {
     "change_password_on_the_next_logon": "true",
@@ -98,6 +100,10 @@ UPDATE_ACCOUNT_ARGS = {
     "account_name": "NewName"
 }
 
+GET_ACCOUNT_ARGS = {
+    "account_id": "11_1",
+}
+
 GET_LIST_ACCOUNT_ARGS = {
     "limit": "2",
     "offset": "0"
@@ -121,6 +127,7 @@ GET_LIST_ACCOUNT_ACTIVITIES_ARGS = {
     (list_safe_members_command, LIST_SAFE_MEMBER_ARGS, LIST_SAFE_MEMBER_RAW_RESPONSE, LIST_SAFE_MEMBER_CONTEXT),
     (add_account_command, ADD_ACCOUNT_ARGS, ADD_ACCOUNT_RAW_RESPONSE, ADD_ACCOUNT_CONTEXT),
     (update_account_command, UPDATE_ACCOUNT_ARGS, UPDATE_ACCOUNT_RAW_RESPONSE, UPDATE_ACCOUNT_CONTEXT),
+    (get_account_details_command, GET_ACCOUNT_ARGS, GET_ACCOUNT_RAW_RESPONSE, GET_ACCOUNT_CONTEXT),
     (get_list_accounts_command, GET_LIST_ACCOUNT_ARGS, GET_LIST_ACCOUNT_RAW_RESPONSE, GET_LIST_ACCOUNT_CONTEXT),
     (get_list_account_activity_command, GET_LIST_ACCOUNT_ACTIVITIES_ARGS, GET_LIST_ACCOUNT_ACTIVITIES_RAW_RESPONSE,
      GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT),
@@ -144,6 +151,7 @@ def test_cyberark_pas_commands(command, args, http_response, context, mocker):
 
     outputs = command(client, **args)
     results = outputs.to_context()
+
     assert results.get("EntryContext") == context
 
 
