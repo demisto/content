@@ -2255,7 +2255,11 @@ def list_incident_summaries_command():
         incidents_ids = get_incidents_ids(filter_arg=fetch_query)
     else:
         incidents_ids = get_incidents_ids()
-    incidents_response_data = get_incidents_entities(incidents_ids)
+    handle_response_errors(incidents_ids)
+    ids = incidents_ids.get('resources')
+    if not ids:
+        return CommandResults(readable_output='No incidents were found.')
+    incidents_response_data = get_incidents_entities(ids)
     incidents = [resource for resource in incidents_response_data.get('resources')]
     incidents_human_readable = detections_to_human_readable(incidents)
     return CommandResults(

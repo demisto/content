@@ -1661,3 +1661,343 @@ Retrieves the details of a process, according to process ID, that is running or 
 >|command_line|device_id|file_name|process_id|process_id_local|start_timestamp|start_timestamp_raw|stop_timestamp|stop_timestamp_raw|
 >|---|---|---|---|---|---|---|---|---|
 >| "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" | deviceId | \Device\HarddiskVolume1\Program Files (x86)\Google\Chrome\Application\chrome.exe | device_id:pid | pid | 2020-10-01T09:05:51Z | 132460167512852140 | 2020-10-02T06:43:45Z | 132460946259334768 |
+
+
+### 31. cs-falcon-device-ran-on
+***
+Returns a list of device IDs on which an indicator ran.
+
+
+#### Base Command
+
+`cs-falcon-device-ran-on`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The type of indicator from the list of supported indicator types. Can be "domain", "ipv4", "ipv6", "md5", "sha1", or "sha256". | Required | 
+| value | The actual string representation of the indicator. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.DeviceID | string | Device IDs on which an indicator ran. | 
+
+
+#### Command Example
+```!cs-falcon-device-ran-on type=domain value=value```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "DeviceID": [
+            "15dbb9d8f06b45fe9f61eb46e829d986"
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Devices that encountered the IOC domain:value
+>|Device ID|
+>|---|
+>| 15dbb9d8f06b45fe9f61eb46e829d986 |
+
+
+### 32. cs-falcon-list-detection-summaries
+***
+Lists detection summaries.
+
+
+#### Base Command
+
+`cs-falcon-list-detection-summaries`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| fetch_query | The query for which to filter. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Detections.cid | String | The organization's customer ID \(CID\). | 
+| CrowdStrike.Detections.created_timestamp | Date | The time when the detection occurred. | 
+| CrowdStrike.Detections.detection_id | String | The ID of the detection. | 
+| CrowdStrike.Detections.device.device_id | String | The device ID as seen by CrowdStrike. | 
+| CrowdStrike.Detections.device.cid | String | The CrowdStrike Customer ID \(CID\) to which the device belongs. | 
+| CrowdStrike.Detections.device.agent_load_flags | String | The CrowdStrike agent configuration notes. | 
+| CrowdStrike.Detections.device.agent_local_time | Date | The local time of the sensor. | 
+| CrowdStrike.Detections.device.agent_version | String | The version of the sensor that the device is running. | 
+| CrowdStrike.Detections.device.bios_manufacturer | String | The BIOS manufacturer. | 
+| CrowdStrike.Detections.device.bios_version | String | The device's BIOS version. | 
+| CrowdStrike.Detections.device.config_id_base | String | The CrowdStrike agent configuration notes. | 
+| CrowdStrike.Detections.device.config_id_build | String | The version of the sensor that the device is running. | 
+| CrowdStrike.Detections.device.config_id_platform | String | The CrowdStrike agent configuration notes. | 
+| CrowdStrike.Detections.device.external_ip | String | The external IP of the device. | 
+| CrowdStrike.Detections.device.hostname | String | The host name of the device. | 
+| CrowdStrike.Detections.device.first_seen | Date | The date time value representing the time at which the host was first seen by CrowdStrike. | 
+| CrowdStrike.Detections.device.last_seen | Date | The date time value representing the time at which the host was last seen by CrowdStrike. | 
+| CrowdStrike.Detections.device.local_ip | String | The local IP address of the device. | 
+| CrowdStrike.Detections.device.mac_address | String | The MAC address of the device. | 
+| CrowdStrike.Detections.device.major_version | String | The major version of the OS. | 
+| CrowdStrike.Detections.device.minor_version | String | The minor version of the OS. | 
+| CrowdStrike.Detections.device.os_version | String | The operating system of the device. | 
+| CrowdStrike.Detections.device.platform_id | String | The CrowdStrike agent configuration notes. | 
+| CrowdStrike.Detections.device.platform_name | String | The platform name of the device. | 
+| CrowdStrike.Detections.device.product_type_desc | String | The value indicating the product type. For example, 1 = Workstation, 2 = Domain Controller, 3 = Server. | 
+| CrowdStrike.Detections.device.status | String | The containment status of the machine. Values include normal, containment_pending, contained, and lift_containment_pending. | 
+| CrowdStrike.Detections.device.system_manufacturer | String | The system manufacturer of the device. | 
+| CrowdStrike.Detections.device.system_product_name | String | The product name of the system. | 
+| CrowdStrike.Detections.device.modified_timestamp | Date | The date time value representing the time at which the host was last modified. | 
+| CrowdStrike.Detections.behaviors.device_id | String | The Device ID of the device associated with the behavior. | 
+| CrowdStrike.Detections.behaviors.timestamp | Date | The time when the behavior detection occurred. | 
+| CrowdStrike.Detections.behaviors.behavior_id | String | The behavior ID. | 
+| CrowdStrike.Detections.behaviors.filename | String | The file name of the triggering process. | 
+| CrowdStrike.Detections.behaviors.alleged_filetype | String | The file extension of the behaviors filename value. | 
+| CrowdStrike.Detections.behaviors.cmdline | String | The command line of the triggering process. | 
+| CrowdStrike.Detections.behaviors.scenario | String | The name of the scenario to which the behavior belongs. | 
+| CrowdStrike.Detections.behaviors.objective | String | The name of the objective associated with the behavior. | 
+| CrowdStrike.Detections.behaviors.tactic | String | The name of the tactic associated with the behavior. | 
+| CrowdStrike.Detections.behaviors.technique | String | The name of the technique associated with the behavior. | 
+| CrowdStrike.Detections.behaviors.severity | Number | Severity rating for the behavior. Value can be any integer between 1-100. | 
+| CrowdStrike.Detections.behaviors.confidence | Number | True positive confidence rating for the behavior. Value can be any integer between 1-100. | 
+| CrowdStrike.Detections.behaviors.ioc_type | String | The type of the triggering IOC. Values include hash_sha256, hash_md5,domain,filename,registry_key,command_line, and behavior. | 
+| CrowdStrike.Detections.behaviors.ioc_value | String | The IOC value. | 
+| CrowdStrike.Detections.behaviors.ioc_source | String | Source that triggered an IOC detection. Values include library_load, primary_module, file_read, and file_write. | 
+| CrowdStrike.Detections.behaviors.ioc_description | String | The IOC description. | 
+| CrowdStrike.Detections.behaviors.user_name | String | The user's name. | 
+| CrowdStrike.Detections.behaviors.user_id | String | The Security Identifier \(SID\) of the user in Windows. | 
+| CrowdStrike.Detections.behaviors.control_graph_id | String | The behavior hit key for the Threat Graph API. | 
+| CrowdStrike.Detections.behaviors.triggering_process_graph_id | String | The ID of the process that triggered the behavior detection. | 
+| CrowdStrike.Detections.behaviors.sha256 | String | The SHA256 of the triggering process. | 
+| CrowdStrike.Detections.behaviors.md5 | String | The MD5 of the triggering process. | 
+| CrowdStrike.Detections.behaviors.parent_details.parent_sha256 | String | The SHA256 hash of the parent process. | 
+| CrowdStrike.Detections.behaviors.parent_details.parent_md5 | String | The MD5 hash of the parent process. | 
+| CrowdStrike.Detections.behaviors.parent_details.parent_cmdline | String | The command line of the parent process. | 
+| CrowdStrike.Detections.behaviors.parent_details.parent_process_graph_id | String | The process graph ID of the parent process. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition | Number | The pattern associated with the action taken on the behavior. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.indicator | Boolean | Whether the detection behavior is like an indicator. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.detect | Boolean | Whether this behavior is detected. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.inddet_mask | Boolean | Whether this behavior is an inddet mask. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.sensor_only | Boolean | Whether this detection is sensor only. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.rooting | Boolean | Whether this behavior is rooting. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.kill_process | Boolean | Whether this detection kills the process. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.kill_subprocess | Boolean | Whether this detection kills the subprocess. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.quarantine_machine | Boolean | Whether this detection was on a quarantine machine. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.quarantine_file | Boolean | Whether this detection was on a quarantine file. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.policy_disabled | Boolean | Whether this policy is disabled. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.kill_parent | Boolean | Whether this detection kills the parent process. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.operation_blocked | Boolean | Whether the operation is blocked. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.process_blocked | Boolean | Whether the process is blocked. | 
+| CrowdStrike.Detections.behaviors.pattern_disposition_details.registry_operation_blocked | Boolean | Whether the registry operation is blocked. | 
+| CrowdStrike.Detections.email_sent | Boolean | Whether an email is sent about this detection. | 
+| CrowdStrike.Detections.first_behavior | Date | The timestamp of the first behavior. | 
+| CrowdStrike.Detections.last_behavior | Date | The timestamp of the last behavior. | 
+| CrowdStrike.Detections.max_confidence | Number | The highest confidence value of all behaviors. Value can be any integer between 1-100. | 
+| CrowdStrike.Detections.max_severity | Number | The highest severity value of all behaviors. Value can be any integer between 1-100. | 
+| CrowdStrike.Detections.max_severity_displayname | String | The name used in the UI to determine the severity of the detection. Values include Critical, High, Medium, and Low. | 
+| CrowdStrike.Detections.show_in_ui | Boolean | Whether the detection displays in the UI. | 
+| CrowdStrike.Detections.status | String | The status of detection. | 
+| CrowdStrike.Detections.assigned_to_uid | String | The UID of the user for which the detection is assigned. | 
+| CrowdStrike.Detections.assigned_to_name | String | The human-readable name of the user to whom the detection is currently assigned. | 
+| CrowdStrike.Detections.hostinfo.domain | String | The domain of ActiveDirectory. | 
+| CrowdStrike.Detections.seconds_to_triaged | Number | The time it took to move a detection from new to in_progress. | 
+| CrowdStrike.Detections.seconds_to_resolved | Number | The time it took to move a detection from new to a resolved state \(true_positive, false_positive, and ignored\). | 
+
+
+#### Command Example
+```!cs-falcon-list-detection-summaries```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "Detections": [
+            {
+                "behaviors": [
+                    {
+                        "alleged_filetype": "exe",
+                        "behavior_id": "10197",
+                        "cmdline": "choice  /m crowdstrike_sample_detection",
+                        "confidence": 80,
+                        "control_graph_id": "ctg:ctg:ctg",
+                        "device_id": "deviceid",
+                        "display_name": "",
+                        "filename": "choice.exe",
+                        "filepath": "",
+                        "ioc_description": "",
+                        "ioc_source": "",
+                        "ioc_type": "",
+                        "ioc_value": "",
+                        "md5": "md5",
+                        "objective": "Falcon Detection Method",
+                        "parent_details": {
+                            "parent_cmdline": "\"C:\\Windows\\system32\\cmd.exe\" ",
+                            "parent_md5": "md5",
+                            "parent_process_graph_id": "pid:pid:pid",
+                            "parent_sha256": "sha256"
+                        },
+                        "pattern_disposition": 0,
+                        "pattern_disposition_details": {
+                            "bootup_safeguard_enabled": false,
+                            "critical_process_disabled": false,
+                            "detect": false,
+                            "fs_operation_blocked": false,
+                            "inddet_mask": false,
+                            "indicator": false,
+                            "kill_parent": false,
+                            "kill_process": false,
+                            "kill_subprocess": false,
+                            "operation_blocked": false,
+                            "policy_disabled": false,
+                            "process_blocked": false,
+                            "quarantine_file": false,
+                            "quarantine_machine": false,
+                            "registry_operation_blocked": false,
+                            "rooting": false,
+                            "sensor_only": false
+                        },
+                        "scenario": "suspicious_activity",
+                        "severity": 30,
+                        "sha256": "sha256",
+                        "tactic": "Malware",
+                        "tactic_id": "",
+                        "technique": "Malicious File",
+                        "technique_id": "",
+                        "template_instance_id": "382",
+                        "timestamp": "2020-07-06T08:10:44Z",
+                        "triggering_process_graph_id": "pid:pid:pid",
+                        "user_id": "user_id",
+                        "user_name": "user_name"
+                    }
+                ],
+                "behaviors_processed": [
+                    "pid:pid:pid:10197"
+                ],
+                "cid": "cid",
+                "created_timestamp": "2020-07-06T08:10:55.538668036Z",
+                "detection_id": "ldt:ldt:ldt",
+                "device": {
+                    "agent_load_flags": "0",
+                    "agent_local_time": "2020-07-02T01:42:07.640Z",
+                    "agent_version": "5.32.11406.0",
+                    "bios_manufacturer": "Google",
+                    "bios_version": "Google",
+                    "cid": "cid",
+                    "config_id_base": "id",
+                    "config_id_build": "id",
+                    "config_id_platform": "3",
+                    "device_id": "device_id",
+                    "external_ip": "external_ip",
+                    "first_seen": "2020-02-10T12:40:18Z",
+                    "hostname": "FALCON-CROWDSTR",
+                    "last_seen": "2020-07-06T07:59:12Z",
+                    "local_ip": "local_ip",
+                    "mac_address": "mac_address",
+                    "major_version": "major_version",
+                    "minor_version": "minor_version",
+                    "modified_timestamp": "modified_timestamp",
+                    "os_version": "os_version",
+                    "platform_id": "platform_id",
+                    "platform_name": "platform_name",
+                    "product_type": "product_type",
+                    "product_type_desc": "product_type_desc",
+                    "status": "status",
+                    "system_manufacturer": "system_manufacturer",
+                    "system_product_name": "system_product_name"
+                },
+                "email_sent": false,
+                "first_behavior": "2020-07-06T08:10:44Z",
+                "hostinfo": {
+                    "domain": ""
+                },
+                "last_behavior": "2020-07-06T08:10:44Z",
+                "max_confidence": 80,
+                "max_severity": 30,
+                "max_severity_displayname": "Low",
+                "seconds_to_resolved": 0,
+                "seconds_to_triaged": 0,
+                "show_in_ui": true,
+                "status": "new"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Detections
+>|detection_id|created_time|status|max_severity|
+>|---|---|---|---|
+>| ldt:ldt:ldt | 2020-07-06T08:10:55.538668036Z | new | Low |
+
+
+### 33. cs-falcon-list-incident-summaries
+***
+Lists incident summaries.
+
+
+#### Base Command
+
+`cs-falcon-list-incident-summaries`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| fetch_query | The query for which to filter. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Incidents.incident_id | String | The ID of the incident. | 
+| CrowdStrike.Incidents.cid | String | The organization's customer ID \(CID\). | 
+| CrowdStrike.Incidents.host_ids | String | The device IDs of all the hosts on which the incident occurred. | 
+| CrowdStrike.Incidents.hosts.device_id | String | The device ID as seen by CrowdStrike. | 
+| CrowdStrike.Incidents.hosts.cid | String | The organization's customer ID \(CID\). | 
+| CrowdStrike.Incidents.hosts.agent_load_flags | String | The CrowdStrike agent configuration notes. | 
+| CrowdStrike.Incidents.hosts.agent_local_time | Date | The local time of the sensor. | 
+| CrowdStrike.Incidents.hosts.agent_version | String | The version of the sensor that the device is running. | 
+| CrowdStrike.Incidents.hosts.bios_manufacturer | String | The BIOS manufacturer. | 
+| CrowdStrike.Incidents.hosts.bios_version | String | The BIOS version of the device. | 
+| CrowdStrike.Incidents.hosts.config_id_base | String | CrowdStrike agent configuration notes. | 
+| CrowdStrike.Incidents.hosts.config_id_build | String | The version of the sensor that the device is running. | 
+| CrowdStrike.Incidents.hosts.config_id_platform | String | CrowdStrike agent configuration notes. | 
+| CrowdStrike.Incidents.hosts.external_ip | String | The external IP of the host. | 
+| CrowdStrike.Incidents.hosts.hostname | String | The name of the host. | 
+| CrowdStrike.Incidents.hosts.first_seen | Date | The date time value representing the time at which the host was first seen by CrowdStrike. | 
+| CrowdStrike.Incidents.hosts.last_seen | Date | The date time value representing the time at which the host was last seen by CrowdStrike. | 
+| CrowdStrike.Incidents.hosts.local_ip | String | The device's local IP address. | 
+| CrowdStrike.Incidents.hosts.mac_address | String | The device's MAC address. | 
+| CrowdStrike.Incidents.hosts.major_version | String | The major version of the OS. | 
+| CrowdStrike.Incidents.hosts.minor_version | String | The minor version of the OS. | 
+| CrowdStrike.Incidents.hosts.os_version | String | The operating system of the host. | 
+| CrowdStrike.Incidents.hosts.platform_id | String | The CrowdStrike agent configuration notes. | 
+| CrowdStrike.Incidents.hosts.platform_name | String | The platform name of the host. | 
+| CrowdStrike.Incidents.hosts.product_type_desc | String | The value indicating the product type. For example, 1 = Workstation, 2 = Domain Controller, 3 = Server. | 
+| CrowdStrike.Incidents.hosts.status | String | The incident status as a number. For example, 20 = New, 25 = Reopened, 30 = In Progress, 40 = Closed. | 
+| CrowdStrike.Incidents.hosts.system_manufacturer | String | The system manufacturer of the device. | 
+| CrowdStrike.Incidents.hosts.system_product_name | String | The product name of the system. | 
+| CrowdStrike.Incidents.hosts.modified_timestamp | Date | The most recent time a user has updated the incident. | 
+| CrowdStrike.Incidents.created | Date | The time that the incident created. | 
+| CrowdStrike.Incidents.start | Date | The recorded time of the earliest incident. | 
+| CrowdStrike.Incidents.end | Date | The recorded time of the latest incident. | 
+| CrowdStrike.Incidents.state | String | The state of the incident. | 
+| CrowdStrike.Incidents.status | Number | The status of the incident. | 
+| CrowdStrike.Incidents.name | String | The name of the incident. | 
+| CrowdStrike.Incidents.description | String | The description of the incident. | 
+| CrowdStrike.Incidents.tags | String | The tags of the incident. | 
+| CrowdStrike.Incidents.fine_score | Number | The incident score. | 
+
+
+#### Command Example
+```!cs-falcon-list-incident-summaries```
