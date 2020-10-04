@@ -947,5 +947,5 @@ script:
     description: Delete rule from firewall
   runonce: false
 tests:
-- CheckpointFW-test
+- No tests - deprecated
 fromversion: 5.0.0
