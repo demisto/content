@@ -3035,6 +3035,12 @@
             "playbookID": "Imperva WAF - Test"
         },
         {
+            "integrations": "CheckPointFirewall_v2",
+            "playbookID": "checkpoint-testplaybook",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
@@ -3176,6 +3182,7 @@
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
         "Check Point": "Issue 18643",
+        "CheckPointFirewall_v2": "Issue 18643",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Jask": "Issue 18879",
