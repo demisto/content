@@ -432,6 +432,90 @@ script:
       required: true
     description: Deletes an existing Active Directory security or distribution group.
     execution: true
+  - arguments:
+      - default: false
+        isArray: false
+        name: user-profile
+        required: true
+        secret: false
+    deprecated: false
+    description: Creates an Active Directory user. This command requires a secure
+      connection (SSL,TLS).
+    execution: false
+    name: create-user
+  - arguments:
+      - default: false
+        isArray: false
+        name: user-profile
+        required: true
+        secret: false
+      - default: false
+        isArray: false
+        name: default_attribute
+        required: false
+        secret: false
+    deprecated: false
+    execution: false
+    name: get-user
+  - arguments:
+      - default: false
+        isArray: false
+        name: user-profile
+        required: true
+        secret: false
+      - default: false
+        isArray: false
+        name: attribute
+        required: false
+        secret: false
+      - default: false
+        isArray: false
+        name: value
+        required: false
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        defaultValue: 'true'
+        isArray: false
+        name: create-if-not-exists
+        predefined:
+          - 'true'
+          - 'false'
+        required: false
+        secret: false
+    deprecated: false
+    execution: false
+    name: update-user
+  - arguments:
+      - default: false
+        isArray: false
+        name: user-profile
+        required: true
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        defaultValue: 'true'
+        isArray: false
+        name: create-if-not-exists
+        predefined:
+          - 'true'
+          - 'false'
+        required: false
+        secret: false
+    deprecated: false
+    description: Enables a user.
+    execution: false
+    name: enable-user
+  - arguments:
+      - default: false
+        isArray: false
+        name: user-profile
+        required: true
+        secret: false
+    deprecated: false
+    description: Disables a user.
+    execution: true
+    name: disable-user
   dockerimage: demisto/ldap:1.0.0.8854
   runonce: false
 tests:
