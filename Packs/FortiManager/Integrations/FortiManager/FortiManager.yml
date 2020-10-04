@@ -668,6 +668,49 @@ script:
     description: List ADOM policy packages
     execution: false
     name: fortimanager-firewall-policy-package-list
+    outputs:
+    - contextPath: FortiManager.PolicyPackage.name
+      description: 'Policy Package name.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.obj_ver
+      description: 'Policy package object version.'
+      type: Number
+    - contextPath: FortiManager.PolicyPackage.oid
+      description: 'Policy package OID.'
+      type: Number
+    - contextPath: FortiManager.PolicyPackage.package setting.central-nat
+      description: 'Whether to use central NAT.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.package setting.consolidated-firewall-mode
+      description: 'Whether to enable consolidate firewall mode.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.package setting.fwpolicy-implicit-log
+      description: 'Whether to enable firewall policy implicit log.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.package setting.fwpolicy6-implicit-log
+      description: 'Whether to enable firewall policy 6 implicit log.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.package setting.inspection-mode
+      description: 'Whether to enable inspection mode.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.package setting.ngfw-mode
+      description: 'Whether to enable NGFW mode.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.package setting.ssl-ssh-profile
+      description: 'Whether to enable SSL SSH profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.scope_member.name
+      description: 'Policy package scope member name.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.scope_member.vdom
+      description: 'Policy Package scope member VDOM.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.subobj
+      description: 'Policy Package sub-objects.'
+      type: Unknown
+    - contextPath: FortiManager.PolicyPackage.type
+      description: 'Policy Package type.'
+      type: String
   - arguments:
     - default: false
       description: The package from which to fetch the policies
@@ -698,6 +741,394 @@ script:
     description: List specific firewall policies from a policy package
     execution: false
     name: fortimanager-firewall-policy-list
+    outputs:
+    - contextPath: FortiManager.PolicyPackage.Policy.action
+      description: 'Policy action (allow/deny/ipsec).'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.app-category
+      description: 'Application category ID list.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.app-group
+      description: 'Application group names.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.application
+      description: 'Application ID list.'
+      type: Number
+    - contextPath: FortiManager.PolicyPackage.Policy.application-list
+      description: 'Name of an existing Application list.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.auth-cert
+      description: 'HTTPS server certificate for policy authentication.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.auth-path
+      description: 'Enable/disable authentication-based routing.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.auth-redirect-addr
+      description: 'HTTP-to-HTTPS redirect address for firewall authentication.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.auto-asic-offload
+      description: 'Enable/disable offloading security profile processing to CP processors.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.av-profile
+      description: 'Name of an existing Antivirus profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.block-notification
+      description: 'Enable/disable block notification.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.captive-portal-exempt
+      description: 'Enable to exempt some users from the captive portal.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.capture-packet
+      description: 'Enable/disable capture packets.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.comments
+      description: 'Comments.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.custom-log-fields
+      description: 'Custom fields to append to log messages for this policy.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.delay-tcp-npu-session
+      description: 'Enable TCP NPU session delay to guarantee packet order of 3-way handshake.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.devices
+      description: 'Names of devices or device groups that can be matched by the policy.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.diffserv-forward
+      description: 'Enable to change packet DiffServ values to the specified diffservcode-forward value.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.diffserv-reverse
+      description: 'Enable to change packet reverse (reply) DiffServ values to the specified diffservcode-rev value.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.diffservcode-forward
+      description: 'Change packet DiffServ to this value.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.diffservcode-rev
+      description: 'Change packet reverse (reply) DiffServ to this value.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.disclaimer
+      description: 'Enable/disable user authentication disclaimer.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.dlp-sensor
+      description: 'Name of an existing DLP sensor.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.dnsfilter-profile
+      description: 'Name of an existing DNS filter profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.dscp-match
+      description: 'Enable DSCP check.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.dscp-negate
+      description: 'Enable negated DSCP match.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.dscp-value
+      description: 'DSCP value.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.dsri
+      description: 'Enable DSRI to ignore HTTP server responses.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.dstaddr
+      description: 'Destination address and address group names.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.dstaddr-negate
+      description: 'When enabled dstaddr specifies what the destination address must NOT be.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.dstintf
+      description: 'Outgoing (egress) interface.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.firewall-session-dirty
+      description: 'How to handle sessions if the configuration of this firewall policy changes.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.fixedport
+      description: 'Enable to prevent source NAT from changing a session source port.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.fsso
+      description: 'Enable/disable Fortinet Single Sign-On.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.fsso-agent-for-ntlm
+      description: 'FSSO agent to use for NTLM authentication.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.global-label
+      description: 'Label for the policy that appears when the GUI is in Global View mode.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.groups
+      description: 'Names of user groups that can authenticate with this policy.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.gtp-profile
+      description: 'GTP profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.icap-profile
+      description: 'Name of an existing ICAP profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.identity-based-route
+      description: 'Name of identity-based routing rule.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.inbound
+      description: 'Policy-based IPsec VPN: only traffic from the remote network can initiate a VPN.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.internet-service
+      description: 'Enable/disable use of Internet Services for this policy. If enabled, destination address and service are not used.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.internet-service-custom
+      description: 'Custom Internet Service name.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.internet-service-id
+      description: 'Internet Service ID.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.internet-service-negate
+      description: 'When enabled internet-service specifies what the service must NOT be.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src
+      description: 'Enable/disable use of Internet Services in source for this policy. If enabled, source address is not used.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src-custom
+      description: 'Custom Internet Service source name.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src-id
+      description: 'Internet Service source ID.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src-negate
+      description: 'When enabled internet-service-src specifies what the service must NOT be.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.ippool
+      description: 'Enable to use IP Pools for source NAT.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.ips-sensor
+      description: 'Name of an existing IPS sensor.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.label
+      description: 'Label for the policy that appears when the GUI is in Section View mode.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.learning-mode
+      description: 'Enable to allow everything, but log all of the meaningful data for security information gathering. A learning report will be generated.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.logtraffic
+      description: 'Enable or disable logging. Log all sessions or security profile sessions.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.logtraffic-start
+      description: 'Record logs when a session starts and ends.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.match-vip
+      description: 'Enable to match packets that have had their destination addresses changed by a VIP.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.mms-profile
+      description: 'Name of an existing MMS profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.name
+      description: 'Policy name.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.nat
+      description: 'Enable/disable source NAT.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.natinbound
+      description: 'Policy-based IPsec VPN: apply destination NAT to inbound traffic.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.natip
+      description: 'Policy-based IPsec VPN: source NAT IP address for outgoing traffic.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.natoutbound
+      description: 'Policy-based IPsec VPN: apply source NAT to outbound traffic.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.np-acceleration
+      description: 'Enable/disable UTM Network Processor acceleration.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.ntlm
+      description: 'Enable/disable NTLM authentication.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.ntlm-enabled-browsers
+      description: 'HTTP-User-Agent value of supported browsers.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.ntlm-guest
+      description: 'Enable/disable NTLM guest user access.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.outbound
+      description: 'Policy-based IPsec VPN: only traffic from the internal network can initiate a VPN.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.per-ip-shaper
+      description: 'Per-IP traffic shaper.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.permit-any-host
+      description: 'Accept UDP packets from any host.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.permit-stun-host
+      description: 'Accept UDP packets from any Session Traversal Utilities for NAT (STUN) host.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.policyid
+      description: 'Policy ID.'
+      type: Number
+    - contextPath: FortiManager.PolicyPackage.Policy.poolname
+      description: 'IP Pool names.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.profile-group
+      description: 'Name of profile group.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.profile-protocol-options
+      description: 'Name of an existing Protocol options profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.profile-type
+      description: 'Determine whether the firewall policy allows security profile groups or single profiles only.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.radius-mac-auth-bypass
+      description: 'Enable MAC authentication bypass. The bypassed MAC address must be received from RADIUS server.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.redirect-url
+      description: 'URL users are directed to after seeing and accepting the disclaimer or authenticating.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.replacemsg-override-group
+      description: 'Override the default replacement message group for this policy.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.rsso
+      description: 'Enable/disable RADIUS single sign-on (RSSO).'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.rtp-addr
+      description: 'Address names if this is an RTP NAT policy.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.rtp-nat
+      description: 'Enable Real Time Protocol (RTP) NAT.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.scan-botnet-connections
+      description: 'Block or monitor connections to Botnet servers or disable Botnet scanning.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.schedule
+      description: 'Schedule name.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.schedule-timeout
+      description: 'Enable to force current sessions to end when the schedule object times out. Disable allows them to end from inactivity.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.send-deny-packet
+      description: 'Enable to send a reply when a session is denied or blocked by a firewall policy.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.service
+      description: 'Service and service group names.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.service-negate
+      description: 'When enabled service specifies what the service must NOT be.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.session-ttl
+      description: 'TTL in seconds for sessions accepted by this policy (0 means use the system default session TTL).'
+      type: Number
+    - contextPath: FortiManager.PolicyPackage.Policy.spamfilter-profile
+      description: 'Name of an existing Spam filter profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.srcaddr
+      description: 'Source address and address group names.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.srcaddr-negate
+      description: 'When enabled srcaddr specifies what the source address must NOT be.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.srcintf
+      description: 'Incoming (ingress) interface.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.ssh-filter-profile
+      description: 'Name of an existing SSH filter profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.ssl-mirror
+      description: 'Enable to copy decrypted SSL traffic to a FortiGate interface (called SSL mirroring).'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.ssl-mirror-intf
+      description: 'SSL mirror interface name.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.ssl-ssh-profile
+      description: 'Name of an existing SSL SSH profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.status
+      description: 'Enable or disable this policy.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.tcp-mss-receiver
+      description: 'Receiver TCP maximum segment size (MSS).'
+      type: Number
+    - contextPath: FortiManager.PolicyPackage.Policy.tcp-mss-sender
+      description: 'Sender TCP maximum segment size (MSS).'
+      type: Number
+    - contextPath: FortiManager.PolicyPackage.Policy.tcp-session-without-syn
+      description: 'Enable/disable creation of TCP session without SYN flag.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.timeout-send-rst
+      description: 'Enable/disable sending RST packets when TCP sessions expire.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.traffic-shaper
+      description: 'Traffic shaper.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.traffic-shaper-reverse
+      description: 'Reverse traffic shaper.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.url-category
+      description: 'URL category ID list.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.users
+      description: 'Names of individual users that can authenticate with this policy.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.utm-status
+      description: 'Enable to add one or more security profiles (AV, IPS, etc.) to the firewall policy.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.uuid
+      description: 'Universally Unique Identifier (UUID; automatically assigned but can be manually reset).'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.vlan-cos-fwd
+      description: 'VLAN forward direction user priority: 255 passthrough, 0 lowest, 7 highest.'
+      type: Number
+    - contextPath: FortiManager.PolicyPackage.Policy.vlan-cos-rev
+      description: 'VLAN reverse direction user priority: 255 passthrough, 0 lowest, 7 highest.'
+      type: Number
+    - contextPath: FortiManager.PolicyPackage.Policy.vlan-filter
+      description: 'Set VLAN filters.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.voip-profile
+      description: 'Name of an existing VoIP profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.vpn_dst_node.host
+      description: 'VPN destination node host.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.vpn_dst_node.seq
+      description: 'VPN destination node sequence.'
+      type: Number
+    - contextPath: FortiManager.PolicyPackage.Policy.vpn_dst_node.subnet
+      description: 'VPN destination node subnet.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.vpn_src_node.host
+      description: 'VPN source node host.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.vpn_src_node.seq
+      description: 'VPN source node sequence.'
+      type: Number
+    - contextPath: FortiManager.PolicyPackage.Policy.vpn_src_node.subnet
+      description: 'VPN source node subnet.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.vpntunnel
+      description: 'Policy-based IPsec VPN: name of the IPsec VPN Phase 1.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.waf-profile
+      description: 'Name of an existing Web application firewall profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.wanopt
+      description: 'Enable/disable WAN optimization.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.wanopt-detection
+      description: 'WAN optimization auto-detection mode.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.wanopt-passive-opt
+      description: 'WAN optimization passive mode options. This option decides what IP address will be used to connect server.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.wanopt-peer
+      description: 'WAN optimization peer.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.wanopt-profile
+      description: 'WAN optimization profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.wccp
+      description: 'Enable/disable forwarding traffic matching this policy to a configured WCCP server.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.webcache
+      description: 'Enable/disable web cache.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.webcache-https
+      description: 'Enable/disable web cache for HTTPS.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.webfilter-profile
+      description: 'Name of an existing Web filter profile.'
+      type: String
+    - contextPath: FortiManager.PolicyPackage.Policy.wsso
+      description: 'Enable/disable WiFi Single Sign On (WSSO).'
+      type: String
   - arguments:
     - default: false
       description: The ADOM on which to create the address. Leave empty to use the
@@ -1079,7 +1510,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: Wheter to use central NAT
+      description: Whether to use central NAT
       isArray: false
       name: central_nat
       predefined:
@@ -1101,7 +1532,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: Wheter to enable firewall policy implicit log
+      description: Whether to enable firewall policy implicit log
       isArray: false
       name: fwpolicy_implicit_log
       predefined:
@@ -1112,7 +1543,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: Wheter to enable firewall policy 6 implicit log
+      description: Whether to enable firewall policy 6 implicit log
       isArray: false
       name: fwpolicy6_implicit_log
       predefined:
@@ -1123,7 +1554,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: proxy
-      description: Wheter to enable inspection mode.
+      description: Whether to enable inspection mode.
       isArray: false
       name: inspection_mode
       predefined:
@@ -1134,7 +1565,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: profile-based
-      description: Wheter to enable NGFW mode
+      description: Whether to enable NGFW mode
       isArray: false
       name: ngfw_mode
       predefined:
@@ -1143,7 +1574,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Wheter to enable SSL SSH profile
+      description: Whether to enable SSL SSH profile
       isArray: false
       name: ssl_ssh_profile
       predefined:
@@ -1181,7 +1612,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: Wheter to use central NAT
+      description: Whether to use central NAT
       isArray: false
       name: central_nat
       predefined:
@@ -1203,7 +1634,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: Wheter to enable firewall policy implicit log
+      description: Whether to enable firewall policy implicit log
       isArray: false
       name: fwpolicy_implicit_log
       predefined:
@@ -1214,7 +1645,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: Wheter to enable firewall policy 6 implicit log
+      description: Whether to enable firewall policy 6 implicit log
       isArray: false
       name: fwpolicy6_implicit_log
       predefined:
@@ -1225,7 +1656,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: proxy
-      description: Wheter to enable inspection mode.
+      description: Whether to enable inspection mode.
       isArray: false
       name: inspection_mode
       predefined:
@@ -1236,7 +1667,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: profile-based
-      description: Wheter to enable NGFW mode
+      description: Whether to enable NGFW mode
       isArray: false
       name: ngfw_mode
       predefined:
@@ -1245,7 +1676,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Wheter to enable SSL SSH profile
+      description: Whether to enable SSL SSH profile
       isArray: false
       name: ssl_ssh_profile
       predefined:
@@ -2123,7 +2554,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: before
-      description: Wheter to move the policy before or after the target policy.
+      description: Whether to move the policy before or after the target policy.
       isArray: false
       name: option
       predefined:
