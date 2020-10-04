@@ -2178,9 +2178,11 @@ def validate_response(raw_res):
 
 def get_indicator_device_id():
     args = demisto.args()
+    ioc_type = args.get('type')
+    ioc_value = args.get('value')
     params = assign_params(
-        indicator_type=args.get('type'),
-        indicator_value=args.get('value')
+        type=ioc_type,
+        value=ioc_value
     )
     raw_res = http_request('GET', '/indicators/queries/devices/v1', params=params)
     context_output = ''
@@ -2189,11 +2191,14 @@ def get_indicator_device_id():
     else:
         error_message = build_error_message(raw_res)
         return_error(error_message)
+    ioc_id = f"{ioc_type}:{ioc_value}"
+    readable_output = tableToMarkdown(f"Devices that encountered the IOC {ioc_id}", context_output, headers='Device ID')
     return CommandResults(
-        readable_output=context_output,
+        readable_output=readable_output,
         outputs_prefix='CrowdStrike.DeviceID',
         outputs_key_field='DeviceID',
-        outputs=context_output
+        outputs=context_output,
+        raw_response=raw_res
     )
 
 
@@ -2290,7 +2295,7 @@ def main():
         if command == 'test-module':
             result = test_module()
             return_results(result)
-        elif demisto.command() == 'cs-device-ran-on':
+        elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':
             demisto.results(search_device_command())
