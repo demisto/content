@@ -36,25 +36,28 @@ def create_related_indicator_object(value: str, type_: str, description: str):
 def feed_related_indicator(args) -> CommandResults:
     indicator = args['indicator']
     feed_related_indicators = indicator.get('CustomFields', {}).get('feedrelatedindicators', [])
-    ioc = list(filter(lambda x: x.get('value'), feed_related_indicators))
-    ioc_value = ioc[0].get('value') if ioc else ''
 
-    content = []
-    results = demisto.searchIndicators(value=ioc_value).get('iocs', [])
     urls = demisto.demistoUrls()
     server_url = urls.get('server', '')
-    if results:
-        ioc_id = results[0].get('id')
 
-        for item in feed_related_indicators:
+    content = []
+
+    for item in feed_related_indicators:
+        ioc_value = item.get('value', '')
+
+        results = demisto.searchIndicators(value=ioc_value).get('iocs', [])
+
+        if results:
+            ioc_id = results[0].get('id')
+
             content.append(create_related_indicator_object(
                 f"[{item.get('value')}]({server_url}/#/indicator/{ioc_id})" if item.get('value') else '',
                 item.get('type'),
                 item.get('description')
             ))
-    else:
-        # In case that no related indicators were found, return the table without the link.
-        for item in feed_related_indicators:
+
+        else:
+            # In case that no related indicators were found, return the table without the link.
             content.append(create_related_indicator_object(
                 item.get('value', ''),
                 item.get('type'),

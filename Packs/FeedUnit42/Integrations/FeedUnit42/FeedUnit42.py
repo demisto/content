@@ -137,14 +137,22 @@ def parse_indicators_relationships(indicators: List, matched_relationships: Dict
                     indicator['fields'][field_type] = [relation_value_field]
 
             else:  # a feedrelatedindicators is a list of dict
+                all_urls = []
+                external_id = ''
+
                 for item in relation_value_field:
-                    if 'url' in item or 'external_id' in item:
-                        feedrelatedindicators_obj = {
-                            'type': 'MITRE ATT&CK',
-                            'value': item.get('external_id'),
-                            'description': item.get('url')
-                        }
-                        indicator['fields'][field_type].extend([feedrelatedindicators_obj])
+                    if 'url' in item:
+                        all_urls.append(item.get('url'))
+
+                        if 'external_id' in item:
+                            external_id = item.get('external_id')
+
+                feedrelatedindicators_obj = {
+                    'type': 'MITRE ATT&CK',
+                    'value': external_id,
+                    'description': ','.join(all_urls)
+                }
+                indicator['fields'][field_type].extend([feedrelatedindicators_obj])
 
     return indicators
 
