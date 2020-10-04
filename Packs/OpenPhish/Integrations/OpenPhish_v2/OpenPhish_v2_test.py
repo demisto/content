@@ -1,16 +1,12 @@
-import json
-from datetime import datetime, timedelta
-
+from datetime import datetime
 import pytest
-import requests_mock
-
+import OpenPhish_v2
+import demistomock as demisto
+from OpenPhish_v2 import Client, _is_reload_needed, remove_backslash, reload_command, status_command, url_command
+from freezegun import freeze_time
+from test_data.api_raw import RAW_DATA
 MOCK_URL = "http://openphish.com"
 MOCK_DELIVERED_MESSAGE = {}
-from OpenPhish_v2 import Client, _is_reload_needed, remove_backslash, reload_command, status_command, url_command
-import OpenPhish_v2
-from freezegun import freeze_time
-
-import demistomock as demisto
 
 RELOADED_DATA = [
     (Client(MOCK_URL, True, False, 2), {}, True),  # case no data in memory
@@ -25,22 +21,23 @@ RELOADED_DATA = [
                'http://lloyds.settlemypayee.uk',
                'https://whatsapp-chat02.zzux.com',
                'http://dd0ddddddcuser.ey.r.appspot.com'],
-      "timestamp": 1601532000000},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)
-      True),
+      "timestamp": 1601542800000},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)
+     True),
     (Client(MOCK_URL, True, False, 2),
      {"list": ['http://www.niccakorea.com/board/index.html',
                'http://lloyds.settlemypayee.uk',
                'https://whatsapp-chat02.zzux.com',
                'http://dd0ddddddcuser.ey.r.appspot.com'],
-      "timestamp": 1601532000000},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)
+      "timestamp": 1601542800000},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)
      False),
     (Client(MOCK_URL, True, False, 0.5),
      {"list": ['http://www.niccakorea.com/board/index.html',
                'http://lloyds.settlemypayee.uk',
                'https://whatsapp-chat02.zzux.com',
                'http://dd0ddddddcuser.ey.r.appspot.com'],
-       "timestamp": 1601532000000},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)
+      "timestamp": 1601542800000},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)
      True),
+
 ]
 
 
@@ -91,7 +88,7 @@ def test_reload_command(mocker):
                - checks if the reloading finished successfully
 
            """
-    mock_data_from_api = 'https://cnannord.com/paypal/firebasecloud/83792/htmjrtfgdsaopjdnbhhdmmdgrhehnndnmmmbvvbnmndmnbnnbbmnm/service/paypal\nhttp://payameghdir.ir/cxxc/Owa/\nhttps://fxsearchdesk.net/Client/tang/step4.html\nhttps://fxsearchdesk.net/Client/tang/step3.html\nhttps://fxsearchdesk.net/Client/tang/step2.html\nhttp://fxsearchdesk.net/Client/tang/step2.html\nhttp://fxsearchdesk.net/Client/tang/step3.html\nhttp://fxsearchdesk.net/Client/tang/step4.html\nhttps://fxsearchdesk.net/Client/tang\nhttp://fxsearchdesk.net/Client/tang/\nhttp://fxsearchdesk.net/Client/tang\nhttp://revisepayee.com/admin\nhttp://hmrc.resolutionfix.com/\nhttps://hmrc.resolutionfix.com/refund/details'
+    mock_data_from_api = RAW_DATA
     mocker.patch.object(Client, 'http_request', return_value=mock_data_from_api)
     mocker.patch.object(demisto, "setIntegrationContext")
     client = Client(
@@ -138,26 +135,27 @@ def test_status_command(mocker, data, expected_result):
     status = status_command(client)
     assert status.readable_output == expected_result
 
+
 CONTEXT_MOCK_WITH_URL = [
-    ({'url':'http://lloyds.settlemypayee.uk'},
+    ({'url': 'http://lloyds.settlemypayee.uk'},
      {"list": ['http://www.niccakorea.com/board/index.html',
-                  'http://lloyds.settlemypayee.uk',
-                  'https://whatsapp-chat02.zzux.com',
-                  'http://dd0ddddddcuser.ey.r.appspot.com'],
-         "timestamp": "1601532000000"},
-     {'URL':[{'Data': 'http://lloyds.settlemypayee.uk',
-     'Malicious': {'Vendor': 'OpenPhish', 'Description': 'Match found in OpenPhish database'}}],
-     'DBOTSCORE': [{'Indicator': 'http://lloyds.settlemypayee.uk', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 3}]}
+               'http://lloyds.settlemypayee.uk',
+               'https://whatsapp-chat02.zzux.com',
+               'http://dd0ddddddcuser.ey.r.appspot.com'],
+      "timestamp": "1601532000000"},
+     {'URL': [{'Data': 'http://lloyds.settlemypayee.uk',
+               'Malicious': {'Vendor': 'OpenPhish', 'Description': 'Match found in OpenPhish database'}}],
+      'DBOTSCORE': [{'Indicator': 'http://lloyds.settlemypayee.uk', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 3}]}
      ),
     ({'url': 'http://goo.co'},
-         {"list": ['http://www.niccakorea.com/board/index.html',
-                      'http://lloyds.settlemypayee.uk',
-                      'https://whatsapp-chat02.zzux.com',
-                      'http://dd0ddddddcuser.ey.r.appspot.com'],
-             "timestamp": "1601532000000"},
-         {'URL': [{'Data': 'http://goo.co'}],
-         'DBOTSCORE': [{'Indicator': 'http://goo.co', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 0}]}
-         )
+     {"list": ['http://www.niccakorea.com/board/index.html',
+               'http://lloyds.settlemypayee.uk',
+               'https://whatsapp-chat02.zzux.com',
+               'http://dd0ddddddcuser.ey.r.appspot.com'],
+      "timestamp": "1601532000000"},
+     {'URL': [{'Data': 'http://goo.co'}],
+      'DBOTSCORE': [{'Indicator': 'http://goo.co', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 0}]}
+     )
 ]
 
 

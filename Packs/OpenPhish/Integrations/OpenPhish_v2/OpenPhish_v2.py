@@ -4,11 +4,10 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import requests
-import dateparser
+import traceback
 from typing import Dict
 
 requests.packages.urllib3.disable_warnings()
-import traceback
 
 # Disable insecure warnings
 ''' CONSTANTS '''
@@ -87,10 +86,11 @@ def _is_reload_needed(client: Client, data: Dict) -> bool:
     """
     if not data or not data.get('timestamp') or not data.get('list'):
         return True
-
     now = datetime.now()
+
     if data.get('timestamp') <= date_to_timestamp(now - timedelta(hours=client.fetch_interval_hours)):
         return True
+
     return False
 
 
@@ -145,7 +145,7 @@ def url_command(client: Client, **kwargs) -> CommandResults:
             markdown += "#### Found matches for given URL " + url + "\n"
         else:
             dbotscore = Common.DBotScore.NONE
-            desc = None
+            desc = ""
             markdown += "#### No matches for URL " + url + "\n"
 
         dbot = Common.DBotScore(url, DBotScoreType.URL, 'OpenPhish', dbotscore, desc)
@@ -191,12 +191,9 @@ def main():
     }
 
     hours_to_refresh = demisto.params().get('fetchIntervalHours', '1')
-    try:
-        hours_to_refresh = float(hours_to_refresh)
-    except ValueError:
-        return_error(f'Invalid parameter was given as database refresh interval.')
 
     try:
+        hours_to_refresh = float(hours_to_refresh)
         use_ssl = not demisto.params().get('insecure', False)
         use_proxy = demisto.params().get('proxy', False)
         client = Client(
@@ -209,16 +206,14 @@ def main():
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            demisto.results(result)
+            return_results(result)
 
         elif command in commands:
             return_results(commands[command](client, **demisto.args()))
 
-        else:
-
-            return_error('Command not found.')
-
     # Log exceptions
+    except ValueError:
+        return_error('Invalid parameter was given as database refresh interval.')
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)} \n '
                      f'tracback: {traceback.format_exc()}')
