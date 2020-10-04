@@ -1,6 +1,6 @@
 from typing import Optional
 
-# import demistomock as demisto
+import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
