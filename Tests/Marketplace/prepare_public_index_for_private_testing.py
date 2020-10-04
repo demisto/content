@@ -185,6 +185,7 @@ def main():
     dummy_index_blob = public_storage_bucket.blob(dummy_index_path)
 
     with lock_and_unlock_dummy_index(public_storage_bucket, dummy_index_lock_path):
+        time.sleep(300)
         if storage_base_path:
             GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
