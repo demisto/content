@@ -23,7 +23,7 @@ Ingest indicator feeds from OpenCTI.
 | proxy | Use system proxy settings | False |
 
 #### Indicator type parameter
-The Possible values that they are supported in XSOAR are:
+Possible values that are supported in XSOAR and will be generated out of the box:
 
 | **Types** |
 | --- |
