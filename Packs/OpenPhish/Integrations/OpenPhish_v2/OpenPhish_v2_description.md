@@ -1,1 +1,1 @@
- 
+In order to configure an instance you can configure interval from fetching data from the api.

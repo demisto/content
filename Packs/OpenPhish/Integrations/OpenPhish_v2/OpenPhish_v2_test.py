@@ -6,7 +6,8 @@ import requests_mock
 
 MOCK_URL = "http://openphish.com"
 MOCK_DELIVERED_MESSAGE = {}
-from OpenPhish_v2 import Client, _is_reload_needed, remove_backslash, reload_command, status_command
+from OpenPhish_v2 import Client, _is_reload_needed, remove_backslash, reload_command, status_command, url_command
+import OpenPhish_v2
 from freezegun import freeze_time
 
 import demistomock as demisto
@@ -136,3 +137,37 @@ def test_status_command(mocker, data, expected_result):
     mocker.patch.object(demisto, "getIntegrationContext", return_value=data)
     status = status_command(client)
     assert status.readable_output == expected_result
+
+CONTEXT_MOCK_WITH_URL = [
+    ({'url':'http://lloyds.settlemypayee.uk'},
+     {"list": ['http://www.niccakorea.com/board/index.html',
+                  'http://lloyds.settlemypayee.uk',
+                  'https://whatsapp-chat02.zzux.com',
+                  'http://dd0ddddddcuser.ey.r.appspot.com'],
+         "timestamp": "1601532000000"},
+     {'URL':[{'Data': 'http://lloyds.settlemypayee.uk',
+     'Malicious': {'Vendor': 'OpenPhish', 'Description': 'Match found in OpenPhish database'}}],
+     'DBOTSCORE': [{'Indicator': 'http://lloyds.settlemypayee.uk', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 3}]}
+     ),
+    ({'url': 'http://goo.co'},
+         {"list": ['http://www.niccakorea.com/board/index.html',
+                      'http://lloyds.settlemypayee.uk',
+                      'https://whatsapp-chat02.zzux.com',
+                      'http://dd0ddddddcuser.ey.r.appspot.com'],
+             "timestamp": "1601532000000"},
+         {'URL': [{'Data': 'http://goo.co'}],
+         'DBOTSCORE': [{'Indicator': 'http://goo.co', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 0}]}
+         )
+]
+
+
+@pytest.mark.parametrize('url,context,expected_results', CONTEXT_MOCK_WITH_URL)
+def test_url_command(mocker, url, context, expected_results):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=context, )
+    mocker.patch.object(OpenPhish_v2, "_is_reload_needed", return_value=False)
+    client = Client(MOCK_URL, True, False, 1)
+    results = url_command(client, **url)
+    output = results.to_context().get('EntryContext', {})
+    DBOT_KEY = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)'
+    assert output.get('URL(val.Data && val.Data == obj.Data)', []) == expected_results.get('URL')
+    assert output.get(DBOT_KEY, []) == expected_results.get('DBOTSCORE')
