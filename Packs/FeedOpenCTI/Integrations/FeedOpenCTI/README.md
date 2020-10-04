@@ -40,7 +40,7 @@ Possible values that are supported in XSOAR and will be generated out of the box
 |Registry-Key-Value|
 |URL|
  
-The following types are supported in OpenCTI but are not supported out of the box in XSOAR. To pull these indicator types from OpenCTI you will need to either create a dedicated [classification and mapping](https://xsoar.pan.dev/docs/incidents/incident-classification-mapping) and/or create a corresponding indicator type in your XSOAR system.
+The following types are supported in OpenCTI but are not supported out of the box in XSOAR. To pull these indicator types from OpenCTI you will need to either create dedicated [classification and mapping](https://xsoar.pan.dev/docs/incidents/incident-classification-mapping) and/or create corresponding indicator types in your XSOAR system.
 
 
 | **Types** |
