@@ -59,5 +59,6 @@ script:
   subtype: python3
   type: python
 hidden: false
+fromversion: 5.0.0
 tests:
   - No test
