@@ -423,7 +423,7 @@ class MITMProxy:
             time.sleep(PROXY_PROCESS_INIT_INTERVAL)
             seconds_since_init += PROXY_PROCESS_INIT_INTERVAL
         if not log_file_exists:
-            self.stop()
+            self.stop(thread_index, prints_manager)
             raise Exception("Proxy process took to long to go up.")
         proxy_up_message = 'Proxy process up and running. Took {} seconds'.format(seconds_since_init)
         prints_manager.add_print_job(proxy_up_message, print, thread_index)
