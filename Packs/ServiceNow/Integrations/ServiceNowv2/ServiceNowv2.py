@@ -10,7 +10,7 @@ requests.packages.urllib3.disable_warnings()
 TICKET_STATES = {
     'incident': {
         '1': '1 - New',
-        '2': '2 - In Progress',
+        '2': '2 - In Progress test',
         '3': '3 - On Hold',
         '4': '4 - Awaiting Caller',
         '5': '5 - Awaiting Evidence',
