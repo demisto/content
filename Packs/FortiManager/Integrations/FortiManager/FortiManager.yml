@@ -622,6 +622,22 @@ script:
     description: List ADOM service groups
     execution: false
     name: fortimanager-service-group-list
+    outputs:
+    - contextPath: FortiManager.ServiceGroup.color
+      description: 'Color of icon on the GUI.'
+      type: Number
+    - contextPath: FortiManager.ServiceGroup.comment
+      description: 'Comment.'
+      type: String
+    - contextPath: FortiManager.ServiceGroup.member
+      description: 'Service objects contained within the group.'
+      type: String
+    - contextPath: FortiManager.ServiceGroup.name
+      description: 'Address group name.'
+      type: String
+    - contextPath: FortiManager.ServiceGroup.proxy
+      description: 'Enable/disable web proxy service group.'
+      type: String
   - arguments:
     - default: false
       description: The ADOM from which to fetch the firewall policy packages. Leave
