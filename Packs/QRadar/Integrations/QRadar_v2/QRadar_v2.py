@@ -531,12 +531,42 @@ class QRadarClient:
         )
 
     def get_custom_fields(
-            self, limit: Optional[int] = None) -> List[dict]:
+            self, limit: Optional[int] = None, field_name: Optional[List[str]] = None,
+            likes: Optional[List[str]] = None, filter_: Optional[str] = None, fields: Optional[List[str]] = None
+    ) -> List[dict]:
+        """Get regex event properties from the API.
+
+        Args:
+            limit: Max properties to fetch.
+            field_name: a list of exact names to pull.
+            likes: a list of case insensitive and name (contains).
+            filter_: a filter to send instead of likes/field names.
+            fields: a list of fields to retrieve from the API.
+
+        Returns:
+            List of properties
+        """
         url = urljoin(self._server, "api/config/event_sources/custom_properties/regex_properties")
         headers = self._auth_headers
-        if limit:
+        if limit is not None:
             headers['Range'] = f"items=0-{limit-1}"
-        return self.send_request("GET", url, headers=headers)
+        params = {}
+        # Build filter if not given
+        if not filter_:
+            filter_ = ''
+            if field_name:
+                for field in field_name:
+                    filter_ += f'name= "{field}" or '
+            if likes:
+                for like in likes:
+                    filter_ += f'name ILIKE "%{like}%" or '
+            # Remove trailing `or `
+            filter_ = filter_.rstrip('or ')
+        if filter_:
+            params['filter'] = filter_
+        if fields:
+            params['fields'] = ' or '.join(fields)
+        return self.send_request("GET", url, headers=headers, params=params)
 
     def enrich_source_addresses_dict(self, src_adrs):
         """
@@ -2092,6 +2122,51 @@ def get_mapping_fields(client: QRadarClient) -> dict:
     return fields
 
 
+def get_custom_properties_command(
+        client: QRadarClient, limit: Optional[str] = None, field_name: Optional[str] = None,
+        like_name: Optional[str] = None, filter: Optional[str] = None, fields: Optional[str] = None) -> dict:
+    """Gives the user the regex event properties
+
+    Args:
+        client: QRadar Client
+        limit: Maximum of properties to fetch
+        field_name: exact name in `field`
+        like_name: contains and case insensitive name in `field`
+        filter: a custom filter query
+        fields: Fields to retrieve. if None, will retrieve them all
+
+    Returns:
+        CortexXSOAR entry.
+    """
+    limit = int(limit) if limit else None
+    field_names = argToList(field_name)
+    likes = argToList(like_name)
+    fields = argToList(fields)
+    if filter and (likes or field_names):
+        raise DemistoException('Can\'t send the `filter` argument with `field_name` or `like_name`')
+    response = client.get_custom_fields(limit, field_names, likes, filter, fields)
+    # Convert epoch times
+    if not fields:
+        for i in range(len(response)):
+            for key in ['creation_date', 'modification_date']:
+                try:
+                    response[i][key] = epochToTimestamp(response[i][key])
+                except KeyError:
+                    pass
+    return {
+        "Type": entryTypes["note"],
+        "Contents": response,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": tableToMarkdown(
+            "Custom Properties",
+            response,
+            removeNull=True
+        ),
+        "EntryContext": {'QRadar.Properties': response},
+    }
+
+
 def main():
     params = demisto.params()
 
@@ -2162,6 +2237,7 @@ def main():
             "qradar-get-domains": get_domains_command,
             "qradar-get-domain-by-id": get_domains_by_id_command,
             "qradar-upload-indicators": upload_indicators_command,
+            "qradar-get-custom-properties": get_custom_properties_command
         }
         if command in normal_commands:
             args = demisto.args()
