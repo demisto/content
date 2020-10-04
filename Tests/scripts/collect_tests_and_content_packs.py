@@ -270,7 +270,7 @@ def get_modified_files_for_testing(files_string):
                     re.match(PACKS_INDICATOR_TYPE_JSON_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
-            elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
+            elif checked_type(file_path, JSON_ALL_INDICATOR_FIELDS_REGEXES):
                 is_indicator_json = True
 
             # conf.json

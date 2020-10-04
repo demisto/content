@@ -55,6 +55,21 @@ def test_get_investigations():
     assert inv == investigations
 
 
+def test_get_investigations__on_fail():
+    """
+    Given:
+        a failure message from getDBStatistics command.
+    When:
+        Running get_investigations.
+    Then:
+        check the resulting incidents are in a dict.
+    """
+    from GetLargestInvestigations import get_investigations
+    inv: Dict = {}
+    get_investigations('Failed getting DB stats with filter [102020], minBytes [1000000]', inv)
+    assert inv == {}
+
+
 def test_parse_investigations_to_table():
     """
     Given:
