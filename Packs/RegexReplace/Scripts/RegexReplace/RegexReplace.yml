@@ -9,16 +9,15 @@ args:
   name: output_format
   required: true
 - auto: PREDEFINED
-  default: true
   defaultValue: "false"
-  description: True if the pattern matching take places in case insensitive, otherwise
+  description: True if the pattern matching is case insensitive, otherwise
     False.
   name: ignore_case
   predefined:
   - "true"
   - "false"
 comment: |-
-  Format patterns matched with regex.
+  Format patterns matched with regex. If the regex does not match any pattern, the original value is returned.
 
   Example 1:
    value: user=john
@@ -34,7 +33,7 @@ comment: |-
 commonfields:
   id: RegexReplace
   version: -1
-dockerimage: demisto/python3:3.8.5.10845
+dockerimage: demisto/python3:3.8.5.11789
 enabled: true
 name: RegexReplace
 runas: DBotWeakRole
