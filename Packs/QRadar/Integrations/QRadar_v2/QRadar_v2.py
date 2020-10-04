@@ -1147,7 +1147,7 @@ def enrich_offense_result(
                         rule_ids.add(rule['id'])
 
         if ip_enrich or asset_enrich:
-            enrich_offense_res_with_source_and_destination_address(
+            enrich_offenses_with_assets_and_source_destination_addresses(
                 client, response, ip_enrich, asset_enrich
             )
             if asset_enrich:
@@ -1212,38 +1212,53 @@ def enrich_offense_timestamps_and_closing_reason(
         )
 
 
-def enrich_offense_res_with_source_and_destination_address(
-    client: QRadarClient, response, ip_enrich=False, asset_enrich=False
+def enrich_offenses_with_assets_and_source_destination_addresses(
+    client: QRadarClient, offenses, ip_enrich=False, asset_enrich=False
 ):
     """
-    Enriches offense result dictionary with source and destination addresses
+    Enriches offense result dictionary with source and destination addresses and assets depending on the ips
     """
-    src_adrs, dst_adrs = extract_source_and_destination_addresses_ids(response)
+    src_adrs, dst_adrs = extract_source_and_destination_addresses_ids(offenses)
     # This command might encounter HTML error page in certain cases instead of JSON result. Fallback: cancel operation
     try:
         if src_adrs:
             client.enrich_source_addresses_dict(src_adrs)
         if dst_adrs:
             client.enrich_destination_addresses_dict(dst_adrs)
-        if isinstance(response, list) and (ip_enrich or asset_enrich):
-            for offense in response:
-                asset_ip_ids = enrich_single_offense_res_with_source_and_destination_address(
+        if isinstance(offenses, list) and (ip_enrich or asset_enrich):
+            for offense in offenses:
+                # calling this function changes given offenses IP ids to IP values
+                assets_ips = get_asset_ips_and_enrich_offense_addresses(
                     offense, src_adrs, dst_adrs, not ip_enrich
                 )
-                if asset_enrich:
-                    for b in batch(list(asset_ip_ids), batch_size=BATCH_SIZE):
-                        query = ""
-                        for val in b:
-                            query = (f"{query} or " if query else "") + 'interfaces contains ip_addresses ' \
-                                                                        f'contains value="{val}"'
-                        if query:
-                            assets = client.get_assets(_filter=query)
-                            if assets:
-                                transform_asset_time_fields_recursive(assets)
-                                offense["assets"] = assets
-    # The function is meant to be safe, so it shouldn't raise any error
+                if asset_enrich and (assets := get_assets_for_offense(client, assets_ips)):
+                    offense["assets"] = assets
     finally:
-        return response
+        return offenses
+
+
+def get_assets_for_offense(client: QRadarClient, assets_ips):
+    """
+    Get the assets that correlate to the given asset_ip_ids in the expected offense result format
+    """
+    assets = []
+    for ips_batch in batch(list(assets_ips), batch_size=BATCH_SIZE):
+        query = ""
+        for ip in ips_batch:
+            query = (f"{query} or " if query else "") + f'interfaces contains ip_addresses contains value="{ip}"'
+        if query:
+            assets = client.get_assets(_filter=query)
+            if assets:
+                transform_asset_time_fields_recursive(assets)
+                # flatten properties
+                for asset in assets:
+                    if isinstance(asset.get('properties'), list):
+                        properties = {p['name']: p['value'] for p in asset['properties'] if
+                                      ('name' in p and 'value' in p)}
+                        asset.update(properties)
+                        # remove previous format of properties
+                        asset.pop('properties')
+    return assets
 
 
 def transform_asset_time_fields_recursive(asset):
@@ -1294,11 +1309,13 @@ def populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids):
     return None
 
 
-def enrich_single_offense_res_with_source_and_destination_address(
+def get_asset_ips_and_enrich_offense_addresses(
     offense, src_adrs, dst_adrs, skip_enrichment=False
 ):
     """
-    helper function: For a single offense replaces the source and destination ids with the actual addresses
+    Get offense asset IPs,
+    and given skip_enrichment=False,
+        replace the source and destination ids of the offense with the real addresses
     """
     asset_ips = set()
     if isinstance(offense.get("source_address_ids"), list):
@@ -2098,14 +2115,6 @@ def get_mapping_fields(client: QRadarClient) -> dict:
                 "first_seen_profiler": "int"
             },
             "id": "int",
-            "properties": {
-                "last_reported": "str",
-                "name": "str",
-                "type_id": "int",
-                "id": "int",
-                "last_reported_by": "str",
-                "value": "str"
-            },
             "domain_id": "int",
             "domain_name": "str"
         }
