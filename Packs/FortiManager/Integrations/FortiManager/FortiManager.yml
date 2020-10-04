@@ -289,7 +289,7 @@ script:
       description: 'VM memory limit.'
       type: Number
     - contextPath: FortiManager.Device.vm_status
-      description: 'VM status'
+      description: 'VM status.'
       type: Number
   - arguments:
     - default: false
@@ -309,6 +309,22 @@ script:
     description: List ADOM device groups.
     execution: false
     name: fortimanager-device-groups-list
+    outputs:
+    - contextPath: FortiManager.DeviceGroup.desc
+      description: 'Desc.'
+      type: String
+    - contextPath: FortiManager.DeviceGroup.meta_fields
+      description: 'Device group meta fields.'
+      type: String
+    - contextPath: FortiManager.DeviceGroup.name
+      description: 'Device group name.'
+      type: String
+    - contextPath: FortiManager.DeviceGroup.os_type
+      description: 'Device group OS type.'
+      type: String
+    - contextPath: FortiManager.DeviceGroup.type
+      description: 'Device group type'
+      type: String
   - arguments:
     - default: false
       description: The ADOM from which to fetch the addresses. Leave empty to use
@@ -460,9 +476,85 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List ADOM IPv4 address groups
+    description: List ADOM IPv4 address groupsאני
     execution: false
     name: fortimanager-address-groups-list
+    outputs:
+    - contextPath: FortiManager.AddressGroup._image-base64
+      description: 'Base64 of the address group image'
+      type: String
+    - contextPath: FortiManager.AddressGroup.allow-routing
+      description: 'Enable/disable use of this group in the static route configuration.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.color
+      description: 'Color of icon on the GUI.'
+      type: Number
+    - contextPath: FortiManager.AddressGroup.comment
+      description: 'Comment about the address group.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping._image-base64
+      description: 'Address group dynamic mapping base64 image.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping._scope.name
+      description: 'Address group dynamic mapping scope name.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping._scope.vdom
+      description: 'Address group dynamic mapping scope VDOM.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping.allow-routing
+      description: 'Enable/disable use of this dynamic mapping in the static route configuration.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping.color
+      description: 'Color of icon on the GUI.'
+      type: Number
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping.comment
+      description: 'Comment about the address group dynamic mapping.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping.exclude
+      description: 'Whether to enable or disable the exclusion of the dynamic mapping.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping.exclude-member
+      description: 'Exclude member.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping.global-object
+      description: 'Global object.'
+      type: Number
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping.member
+      description: 'Address group dynamic mapping member.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping.tags
+      description: 'Address group dynamic mapping tags.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping.type
+      description: 'Address group dynamic mapping type.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping.uuid
+      description: 'Address group dynamic mapping uuid.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.dynamic_mapping.visibility
+      description: 'Address group dynamic mapping visibility.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.member
+      description: 'Address objects contained within the group.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.name
+      description: 'Address group name.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.tagging.category
+      description: 'Tag category.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.tagging.name
+      description: 'Tagging entry name.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.tagging.tags
+      description: 'Tags.'
+      type: String
+    - contextPath: FortiManager.AddressGroup.uuid
+      description: 'Universally Unique Identifier (UUID; automatically assigned but can be manually reset).'
+      type: String
+    - contextPath: FortiManager.AddressGroup.visibility
+      description: 'Enable/disable address visibility in the GUI.'
+      type: String
   - arguments:
     - default: false
       description: The ADOM from which to fetch the service categories. Leave empty
@@ -493,6 +585,13 @@ script:
     description: List ADOM service categories
     execution: false
     name: fortimanager-service-categories-list
+    outputs:
+    - contextPath: FortiManager.ServiceCategory.comment
+      description: 'Comment.'
+      type: String
+    - contextPath: FortiManager.ServiceCategory.name
+      description: 'Service category name.'
+      type: String
   - arguments:
     - default: false
       description: The ADOM from which to fetch the service groups. Leave empty to
@@ -2428,7 +2527,7 @@ script:
     description: Unlock a package.
     execution: false
     name: fortimanager-package-unlock
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.5.11789
   feed: false
   isfetch: false
   longRunning: false
@@ -2437,5 +2536,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - No tests
