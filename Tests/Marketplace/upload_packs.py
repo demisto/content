@@ -531,7 +531,7 @@ def get_recent_commits_data(content_repo):
         str: last commit hash of head.
         str: previous commit of origin/master (origin/master~1)
     """
-    return content_repo.head.commit.hexsha, content_repo.commit('origin/master~1').hexsha
+    return content_repo.head.commit.hexsha, content_repo.commit('origin/upload-packs-build-flow~1').hexsha
 
 
 def check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
