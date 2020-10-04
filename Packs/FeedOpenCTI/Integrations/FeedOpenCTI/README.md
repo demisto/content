@@ -52,7 +52,7 @@ they are:
 |email-subject|
 |directory|
 |file-name|
-|ile-path|
+|file-path|
 |mac-addr|
 |mutex|
 |pdb-path|
