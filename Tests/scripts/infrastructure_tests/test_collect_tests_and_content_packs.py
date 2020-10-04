@@ -856,7 +856,8 @@ def test_modified_integration_content_pack_is_collected(mocker):
         assert not collect_tests_and_content_packs._FAILED
     finally:
         TestUtils.delete_files([
-            fake_integration["path"]
+            fake_integration["path"],
+            fake_test_playbook["path"]
         ])
 
         collect_tests_and_content_packs._FAILED = False
@@ -920,7 +921,8 @@ def test_pack_ignore_test_is_skipped(mocker):
             assert not collect_tests_and_content_packs._FAILED
     finally:
         TestUtils.delete_files([
-            fake_integration["path"]
+            fake_integration["path"],
+            fake_test_playbook["path"]
         ])
 
         collect_tests_and_content_packs._FAILED = False
