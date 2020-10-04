@@ -1,4 +1,4 @@
-from jmespath_transformer import jmespath_search, main
+from Jmespath import jmespath_search, main
 import demistomock as demisto
 import json
 
