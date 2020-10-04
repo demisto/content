@@ -4,6 +4,7 @@ import sys
 import shutil
 import json
 import argparse
+from contextlib import contextmanager
 from datetime import datetime
 from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS
 from Tests.Marketplace.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
@@ -11,6 +12,16 @@ from Tests.Marketplace.upload_packs_private import download_and_extract_index, u
 from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
 
 MAX_SECONDS_TO_WAIT_FOR_LOCK = 600
+LOCK_FILE_PATH = 'lock.txt'
+
+
+@contextmanager
+def lock_and_unlock_dummy_index(public_storage_bucket, dummy_index_lock_path):
+    try:
+        lock_dummy_index(public_storage_bucket, dummy_index_lock_path)
+        yield
+    finally:
+        release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
 
 
 def change_pack_price_to_zero(path_to_pack_metadata):
@@ -120,18 +131,26 @@ def is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path):
 
 def lock_dummy_index(public_storage_bucket, dummy_index_lock_path):
     dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
-    with open('lock.txt', 'w') as lock_file:
+    with open(LOCK_FILE_PATH, 'w') as lock_file:
         lock_file.write('locked')
 
-    with open('lock.txt', 'rb') as lock_file:
+    with open(LOCK_FILE_PATH, 'rb') as lock_file:
         dummy_index_lock_blob.upload_from_file(lock_file)
+
+    os.remove(LOCK_FILE_PATH)
 
 
 def acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
     total_seconds_waited = 0
     while is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path):
         if total_seconds_waited >= MAX_SECONDS_TO_WAIT_FOR_LOCK:
-            exit(1)
+            print_error("Error: Failed too long to acquire lock, exceeded max wait time.")
+            sys.exit(1)
+
+        if total_seconds_waited % 60 == 0:
+            # Printing a message every minute to keep the machine from dying due to no output
+            print(f"Waiting to acquire lock.")
+
         total_seconds_waited += 10
         time.sleep(10)
 
@@ -165,9 +184,7 @@ def main():
 
     dummy_index_blob = public_storage_bucket.blob(dummy_index_path)
 
-    acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
-
-    try:
+    with lock_and_unlock_dummy_index(public_storage_bucket, dummy_index_lock_path):
         if storage_base_path:
             GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
@@ -184,8 +201,6 @@ def main():
                                                                                                changed_pack, True)
         upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
                               private_packs)
-    finally:
-        release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
 
 
 if __name__ == '__main__':
