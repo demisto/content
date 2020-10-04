@@ -22,7 +22,7 @@ Ingest indicator feeds from OpenCTI.
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-####The indicator types parameter
+#### Indicator type parameter
 The Possible values that they are supported in XSOAR are:
 
 | **Types** |
