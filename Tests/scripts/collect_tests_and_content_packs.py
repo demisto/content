@@ -1191,6 +1191,12 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
+    # remove tests that were skipped via the pack-ignore
+    ignored_tests_set = set()
+    for pack in packs_to_install:
+        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
+    tests.difference_update(ignored_tests_set)
+
     return tests, packs_to_install
 
 
