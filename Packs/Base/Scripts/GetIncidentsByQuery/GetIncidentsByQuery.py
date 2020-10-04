@@ -118,12 +118,14 @@ def get_incidents(query, time_field, size, from_date, fields_to_populate, includ
         if from_datetime:
             args['from'] = from_datetime.isoformat()
     incident_list = []  # type: ignore
-    for page in range(0, int(math.ceil(float(query_size) / float(PAGE_SIZE)))):
+    page = 0
+    while len(incident_list) < size:
         incidents = get_incidents_by_page(args, page, fields_to_populate, include_context)
         if not incidents:
             break
         incident_list += incidents
-    return incident_list
+        page += 1
+    return incident_list[:size]
 
 
 def get_comma_sep_list(value):
