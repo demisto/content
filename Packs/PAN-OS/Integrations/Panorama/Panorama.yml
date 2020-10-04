@@ -1822,21 +1822,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: Type of the EDL. Required when refreshing an EDL object which is
+      description: The type of the EDL. Required when refreshing an EDL object which is
         configured on Panorama.
       isArray: false
       name: edl_type
       required: false
       secret: false
     - default: false
-      description: Location of the EDL. Required when refreshing an EDL object which
+      description: The location of the EDL. Required when refreshing an EDL object which
         is configured on Panorama.
       isArray: false
       name: location
       required: false
       secret: false
     - default: false
-      description: Vsys of the EDL. Required when refreshing an EDL object which is
+      description: The Vsys of the EDL. Required when refreshing an EDL object which is
         configured on Panorama.
       isArray: false
       name: vsys
