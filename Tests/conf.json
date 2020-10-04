@@ -3119,8 +3119,7 @@
         "Logzio - Test": "Issue 26729",
         "pyEWS_Test": "Issue 28339",
         "DuoAdmin API test playbook": "Issue 24937",
-        "GmailTest": "Issue 27057",
-        "McAfee ESM v2 (v11.3) - Test": "Issue 29028"
+        "GmailTest": "Issue 27057"
     },
     "skipped_integrations": {
         
