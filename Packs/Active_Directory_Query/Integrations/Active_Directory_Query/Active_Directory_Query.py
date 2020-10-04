@@ -668,12 +668,12 @@ def create_group():
 
 def modify_object(dn, modification):
     """
-    modifys object in the DIT
+    modifies object in the DIT
     """
     assert conn is not None
     success = conn.modify(dn, modification)
     if not success:
-        raise Exception("Failed to update object {} with the following modofication: {}".format(
+        raise Exception("Failed to update object {} with the following modification: {}".format(
             dn, json.dumps(modification)))
 
 
@@ -929,7 +929,7 @@ def unlock_account(default_base_dn):
 
 
 def delete_user():
-    # can acually delete any object...
+    # can actually delete any object...
     assert conn is not None
     success = conn.delete(demisto.args().get('user-dn'))
     if not success:
@@ -964,7 +964,7 @@ def delete_group():
 
 '''
     TEST CONFIGURATION
-    authenticate user credentials while initializing connection wiith AD server
+    authenticate user credentials while initializing connection with AD server
     verify base DN is configured correctly
 '''
 
