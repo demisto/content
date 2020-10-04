@@ -248,6 +248,8 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                 for object_id in sub_report.get('object_refs', []):
                     if object_id.startswith('malware'):
                         report_malware_set.add(object_id)
+                    elif object_id.startswith('attack-pattern'):
+                        related_ids.append(object_id)
 
         report['fields']['feedrelatedindicators'] = []
 
