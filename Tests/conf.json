@@ -3352,7 +3352,8 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "QRadar": "Playbooks has parallel steps which are causing inconsistent results"
+        "QRadar": "Playbooks has parallel steps which are causing inconsistent results",
+        "MISP V2": "Issue 26905"
     },
     "parallel_integrations": [
         "SNDBOX",
@@ -3410,6 +3411,9 @@
                 "pid_threshold": 11
             },
             "demisto/py-ews:2.0": {
+                "memory_threshold": 150
+            },
+            "demisto/pymisp:1.0.0.52": {
                 "memory_threshold": 150
             },
             "demisto/pytan": {
