@@ -21,7 +21,7 @@ def lock_and_unlock_dummy_index(public_storage_bucket, dummy_index_lock_path):
         acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
         yield
     except Exception as e:
-        print(f"Exception is: {str(e)}")
+        print(f"Error: {str(e)}")
     finally:
         release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
 
@@ -132,7 +132,6 @@ def is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path):
 
 
 def lock_dummy_index(public_storage_bucket, dummy_index_lock_path):
-    print("locking dummy index")
     dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
     with open(LOCK_FILE_PATH, 'w') as lock_file:
         lock_file.write('locked')
@@ -142,7 +141,6 @@ def lock_dummy_index(public_storage_bucket, dummy_index_lock_path):
 
 
 def acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
-    print("acquiring dummy index")
     total_seconds_waited = 0
     while is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path):
         if total_seconds_waited >= MAX_SECONDS_TO_WAIT_FOR_LOCK:
@@ -188,8 +186,6 @@ def main():
     dummy_index_blob = public_storage_bucket.blob(dummy_index_path)
 
     with lock_and_unlock_dummy_index(public_storage_bucket, dummy_index_lock_path):
-        print('Starting sleep')
-        time.sleep(300)
         if storage_base_path:
             GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
