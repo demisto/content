@@ -82,7 +82,7 @@ Gets indicators from the feed.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of indicators to return per fetch. The default value is "50". | Optional | 
-| indicator_types | The indicator types to fetch. Possible values are: "ALL", "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", "URL" That they are supported in XSOAR, or another unsupported type, a clear explanation and the list of all types appears in the README. The default is "ALL". | Optional | 
+| indicator_types | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer to the integration documentation for more information. The default is "ALL". | Optional | 
 | last_id | The last ID from the previous call from which to begin pagination for this call. | Optional | 
 
 
