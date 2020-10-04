@@ -50,7 +50,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Export context data to xlsx file.
+comment: Export context data to an xlsx file.
 commonfields:
   id: ExportToXLSX
   version: -1
