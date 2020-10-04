@@ -54,6 +54,7 @@ comment: Export context data to xlsx file.
 commonfields:
   id: ExportToXLSX
   version: -1
+dockerimage: demisto/xslxwriter:1.0.0.11942
 enabled: true
 name: ExportToXLSX
 script: '-'
@@ -61,7 +62,6 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/xslxwriter:1.0.0.11942
 runas: DBotWeakRole
 runonce: false
 tests:
