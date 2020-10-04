@@ -1,47 +1,69 @@
 args:
-- description: ' Output file name (for example "Report.xlsx")'
-  name: fileName
+- default: false
+  description: The output file name (for example "Report.xlsx").
+  isArray: false
+  name: file_name
   required: true
-- description: ' Data to export, accepts a context key of a dictionary or a list of
-    dictionaries for a single sheet file (${data}), comma separated for a multi-sheet
-    file (${data1},${data2})'
+  secret: false
+- default: false
+  description: The data to export. accepts a context key of a dictionary or a list
+    of dictionaries for a single sheet file (${data}), comma separated keys for a
+    multi-sheet file (${data1},${data2}).
   isArray: true
   name: data
   required: true
-- description: Sheet name, comma separated if multiple sheets are required (sheet1,sheet2)
-  name: sheetName
+  secret: false
+- default: false
+  description: The sheet name, comma separated sheet names if multiple sheets are
+    required (sheet1,sheet2).
+  isArray: false
+  name: sheet_name
   required: true
-- description: Comma separated string to hold the sheet headers in order. if multiple
-    sheets are being used, a ";" should separate each sheet headers
+  secret: false
+- default: false
+  description: 'Comma separated list of headers to hold the sheet headers in order.
+    if multiple sheets are being used, a ";" should separate each sheet headers list.
+    For example: "header1,header2;header3,header4.'
+  isArray: false
   name: headers
+  required: false
+  secret: false
 - auto: PREDEFINED
-  defaultValue: "true"
+  default: false
+  defaultValue: 'true'
   description: Bold table headers
+  isArray: false
   name: bold
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
 - auto: PREDEFINED
-  defaultValue: "true"
+  default: false
+  defaultValue: 'true'
   description: Add border to table cells
+  isArray: false
   name: border
   predefined:
-  - "true"
-  - "false"
-comment: Export data to xlsx file
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: Export context data to xlsx file.
 commonfields:
   id: ExportToXLSX
   version: -1
-dockerimage: docker.io/soarguardian/xlsxwriter:latest
 enabled: true
 name: ExportToXLSX
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/xslxwriter:1.0.0.11942
 runas: DBotWeakRole
 runonce: false
-script: ''
-scripttarget: 0
-subtype: python3
-tags: []
-type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0
