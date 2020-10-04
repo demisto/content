@@ -13,7 +13,7 @@ configuration:
   name: base_url
   required: true
   type: 0
-- additionalinfo: 'The indicator types to fetch. Possible values are: "ALL", "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", "URL" That they are supported in XSOAR, or another unsupported type, a clear explanation and the list of all types appears in the README. The default is "ALL".'
+- additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer to the integration documentation for more information. The default is "ALL".'
   defaultvalue: ALL
   display: Indicators Type to fetch
   name: indicator_types
@@ -123,7 +123,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ALL
-      description: 'The indicator types to fetch. Possible values are: "ALL", "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", "URL" That they are supported in XSOAR, or another unsupported type, a clear explanation and the list of all types appears in the README. The default is "ALL".'
+      description: 'The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer to the integration documentation for more information. The default is "ALL".'
       isArray: true
       name: indicator_types
       predefined:
