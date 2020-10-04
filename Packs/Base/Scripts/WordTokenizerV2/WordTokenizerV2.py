@@ -52,6 +52,7 @@ LANGUAGES_TO_MODEL_NAMES = {'English': 'en_core_web_sm',
 _unicode_chr_splitter = _Re('(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)').split
 nlp = None
 
+
 def clean_html(text):
     if not CLEAN_HTML:
         return text
