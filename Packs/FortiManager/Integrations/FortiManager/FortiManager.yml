@@ -2590,6 +2590,61 @@ script:
     description: List dynamic interfaces
     execution: false
     name: fortimanager-dynamic-interface-list
+    outputs:
+    - contextPath: FortiManager.DynamicInterface.color
+      description: 'Color of icon on the GUI.'
+      type: Number
+    - contextPath: FortiManager.DynamicInterface.default-mapping
+      description: 'Default mapping of the Interface.'
+      type: String
+    - contextPath: FortiManager.DynamicInterface.defmap-intf
+      description: 'Default mapping interface.'
+      type: String
+    - contextPath: FortiManager.DynamicInterface.defmap-intrazone-deny
+      description: 'Default mapping intrazone deny.'
+      type: String
+    - contextPath: FortiManager.DynamicInterface.defmap-zonemember
+      description: 'Default mapping zone members'
+      type: String
+    - contextPath: FortiManager.DynamicInterface.description
+      description: 'Dynamic interface description.'
+      type: String
+    - contextPath: FortiManager.DynamicInterface.dynamic_mapping._scope.name
+      description: 'Dynamic mapping scope name.'
+      type: String
+    - contextPath: FortiManager.DynamicInterface.dynamic_mapping._scope.vdom
+      description: 'Dynamic mapping scope VDOM.'
+      type: String
+    - contextPath: FortiManager.DynamicInterface.dynamic_mapping.egress-shaping-profile
+      description: 'Dynamic mapping egress shaping profile.'
+      type: String
+    - contextPath: FortiManager.DynamicInterface.dynamic_mapping.intrazone-deny
+      description: 'Dynamic mapping intrazone deny.'
+      type: String
+    - contextPath: FortiManager.DynamicInterface.dynamic_mapping.local-intf
+      description: 'Dynamic mapping local interface.'
+      type: String
+    - contextPath: FortiManager.DynamicInterface.egress-shaping-profile
+      description: ''
+      type: String
+    - contextPath: FortiManager.DynamicInterface.name
+      description: ''
+      type: String
+    - contextPath: FortiManager.DynamicInterface.platform_mapping.egress-shaping-profile
+      description: ''
+      type: String
+    - contextPath: FortiManager.DynamicInterface.platform_mapping.intf-zone
+      description: ''
+      type: String
+    - contextPath: FortiManager.DynamicInterface.platform_mapping.intrazone-deny
+      description: ''
+      type: String
+    - contextPath: FortiManager.DynamicInterface.platform_mapping.name
+      description: ''
+      type: String
+    - contextPath: FortiManager.DynamicInterface.single-intf
+      description: ''
+      type: String
   - arguments:
     - default: false
       description: The ADOM from which to fetch the dynamic address mapping. Leave
