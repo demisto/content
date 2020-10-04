@@ -1308,7 +1308,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '25'
-      description: The maximum number of regex event properties to fetch. Default is 25.
+      description: The maximum number of regex event properties to fetch.
       isArray: false
       name: limit
       required: false
