@@ -6,7 +6,7 @@ from re import compile as _Re
 from CommonServerPython import *
 import sys
 reload(sys)
-sys.setdefaultencoding('utf-8')
+sys.setdefaultencoding('utf-8')  # pylint: disable=no-member
 
 MAX_TEXT_LENGTH = 10 ** 5
 
