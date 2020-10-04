@@ -1,15 +1,18 @@
 id: Google Chronicle Backstory List IOCs - Test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: Google Chronicle Backstory List IOCs - Test
-description: This playbook uses the Google Chronicle Backstory integration and tests the various scenarios of the "gcb-list-iocs" command.
+description: This playbook uses the Google Chronicle Backstory integration and tests
+  the various scenarios of the "gcb-list-iocs" command.
 starttaskid: "0"
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
-    taskid: e0bf41ff-38f9-460c-8f0f-6c4570fee4f8
+    taskid: 435a02ae-0551-4768-80ae-fe0f9e47368c
     type: start
     task:
-      id: e0bf41ff-38f9-460c-8f0f-6c4570fee4f8
+      id: 435a02ae-0551-4768-80ae-fe0f9e47368c
       version: -1
       name: ""
       iscommand: false
@@ -21,19 +24,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 37ac2c94-7278-437b-806a-4b5be222da96
+    taskid: baaf791e-f7f5-4666-89b3-5aaec14a2511
     type: regular
     task:
-      id: 37ac2c94-7278-437b-806a-4b5be222da96
+      id: baaf791e-f7f5-4666-89b3-5aaec14a2511
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -57,29 +62,32 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: fe36dedb-affa-43df-81be-e39fbac23eb8
+    taskid: c3a66716-9239-4365-8033-888563456810
     type: regular
     task:
-      id: fe36dedb-affa-43df-81be-e39fbac23eb8
+      id: c3a66716-9239-4365-8033-888563456810
       version: -1
       name: Get list of IoCs
-      description: List all of the IoCs discovered within your enterprise within the specified time range.
+      description: List all of the IoCs discovered within your enterprise within the
+        specified time range.
       script: Google Chronicle Backstory|||gcb-list-iocs
       type: regular
       iscommand: true
       brand: Google Chronicle Backstory
     nexttasks:
       '#none#':
-      - "3"
+      - "11"
     scriptarguments:
       page_size:
         simple: "3"
@@ -95,12 +103,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 3a496ee1-89b0-4ce3-8882-af0075f635fa
+    taskid: f0a9b578-fdb3-4f4f-8fe9-b45d784d2ac8
     type: condition
     task:
-      id: 3a496ee1-89b0-4ce3-8882-af0075f635fa
+      id: f0a9b578-fdb3-4f4f-8fe9-b45d784d2ac8
       version: -1
       name: Verify results
       type: condition
@@ -206,19 +216,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 162.5,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 7523827b-50b9-4379-8515-14d558d5dc39
+    taskid: b6737e0e-9b6d-415e-8a9f-96c3f27561d4
     type: title
     task:
-      id: 7523827b-50b9-4379-8515-14d558d5dc39
+      id: b6737e0e-9b6d-415e-8a9f-96c3f27561d4
       version: -1
       name: Done
       type: title
@@ -228,22 +240,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 377.5,
+          "y": 1420
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 26d0890f-773e-4560-8764-f63d6083637f
+    taskid: eb62a51b-be60-4f62-8b62-2249e1349dc2
     type: regular
     task:
-      id: 26d0890f-773e-4560-8764-f63d6083637f
+      id: eb62a51b-be60-4f62-8b62-2249e1349dc2
       version: -1
       name: Invalid page size argument
-      description: List all of the IoCs discovered within your enterprise within the specified time range.
+      description: List all of the IoCs discovered within your enterprise within the
+        specified time range.
       script: Google Chronicle Backstory|||gcb-list-iocs
       type: regular
       iscommand: true
@@ -261,22 +276,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 370
+          "x": 592.5,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 7943d48b-3364-4e7a-815b-a814af179b71
+    taskid: acb827f9-72e1-4f3c-8200-cfe8a2b445e0
     type: condition
     task:
-      id: 7943d48b-3364-4e7a-815b-a814af179b71
+      id: acb827f9-72e1-4f3c-8200-cfe8a2b445e0
       version: -1
       name: Is error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -291,22 +310,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 592.5,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 2df2d226-8733-4378-8083-b2eaa0faf1e6
+    taskid: 27459e5f-a4c5-451f-8bb8-133f7020905f
     type: regular
     task:
-      id: 2df2d226-8733-4378-8083-b2eaa0faf1e6
+      id: 27459e5f-a4c5-451f-8bb8-133f7020905f
       version: -1
       name: Invalid start time argument
-      description: List all of the IoCs discovered within your enterprise within the specified time range.
+      description: List all of the IoCs discovered within your enterprise within the
+        specified time range.
       script: Google Chronicle Backstory|||gcb-list-iocs
       type: regular
       iscommand: true
@@ -323,22 +345,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 370
+          "x": 1022.5,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 81ae629f-3ca3-4f06-853a-994f95bd9adc
+    taskid: b3f3d9b4-b834-4020-8b9f-f186462dcb1f
     type: condition
     task:
-      id: 81ae629f-3ca3-4f06-853a-994f95bd9adc
+      id: b3f3d9b4-b834-4020-8b9f-f186462dcb1f
       version: -1
       name: Is error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -353,19 +379,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 545
+          "x": 1022.5,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 0cce4e4f-461f-4ffd-835f-3d3a6c550a6c
+    taskid: 5a7ff94a-753d-47b9-8457-0df307cf7b7a
     type: regular
     task:
-      id: 0cce4e4f-461f-4ffd-835f-3d3a6c550a6c
+      id: 5a7ff94a-753d-47b9-8457-0df307cf7b7a
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -387,19 +415,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 377.5,
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 6c7c3c53-4641-4fe8-8ef5-322f4de04079
+    taskid: 8a6540c5-bd5d-4038-82db-393d4e736fb8
     type: regular
     task:
-      id: 6c7c3c53-4641-4fe8-8ef5-322f4de04079
+      id: 8a6540c5-bd5d-4038-82db-393d4e736fb8
       version: -1
       name: Close Investigation
       description: commands.local.cmd.close.inv
@@ -421,22 +451,98 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 377.5,
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 07035431-03cf-4dfd-802e-cae6be7717ef
+    type: condition
+    task:
+      id: 07035431-03cf-4dfd-802e-cae6be7717ef
+      version: -1
+      name: Is error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: d28a97fb-f08b-489d-8240-74d0320e8137
+    type: condition
+    task:
+      id: d28a97fb-f08b-489d-8240-74d0320e8137
+      version: -1
+      name: Are There Any IOCs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Iocs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
+      "11_12_no": 0.45,
       "6_9_yes": 0.4
     },
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 1240,
+        "height": 1435,
+        "width": 1352.5,
         "x": 50,
         "y": 50
       }
@@ -444,4 +550,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
