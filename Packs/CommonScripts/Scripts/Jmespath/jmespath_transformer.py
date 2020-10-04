@@ -1,9 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
+from typing import Union
 import jmespath
 
 
-def jmespath_search(expression: str, value: [dict, list]) -> dict:
+def jmespath_search(expression: str, value: Union[dict, list]) -> dict:
     try:
         expression_compiled = jmespath.compile(expression)
     except Exception as err:
@@ -19,7 +20,7 @@ def main():
         try:
             value = json.loads(value)
         except Exception as err:
-            return_error("The input is not valid JSON")
+            return_error(f"The input is not valid JSON: {err}")
     expression = args.get("expression")
     result = jmespath_search(expression, value)
     return_results(result)
