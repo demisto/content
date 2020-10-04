@@ -81,6 +81,8 @@ script:
                 ],
                 Service: args.service,
                 Title: args.title,
+                BusinessUnit: args.businessUnit,
+                ServiceCategory: args.serviceCategory
             }
         };
 
@@ -391,6 +393,10 @@ script:
       description: 'Example: "Categorize"'
     - name: subarea
       description: "Example: system or application hangs, function or feature not working, error message, job failed, hardware failure, etc."
+    - name: serviceCategory
+      required: true
+    - name: businessUnit
+      required: true
     outputs:
     - contextPath: Ticket.ID
       description: The id of the ticket
