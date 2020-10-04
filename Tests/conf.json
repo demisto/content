@@ -3238,7 +3238,7 @@
         
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
-        "SafeBreach v2": "it is a partner integration, no instance",
+        "SafeBreach v2": "Issue 21205",
         "IllusiveNetworks": "supported by partner",
         "Recorded Future v2": "supported by partner",
         "Humio": "supported by the partner",
