@@ -655,8 +655,9 @@ def main():
             else:
                 commands[demisto.command()](client, demisto.args())
     except Exception as e:
-        if demisto.command() == 'test-module':
-            return_error(f'Could not connect to instance. Error: {str(e)}')
+        if not logged_in:
+            return_error(f"Could not connect to instance. Make sure your credentials are correct and haven't changed."
+                         f" Error: {str(e)}")
         else:
             return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}',
                          error=traceback.format_exc())

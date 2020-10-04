@@ -1,7 +1,6 @@
 <p>
 Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration to send and receive secure MIME data.
 
-This integration was integrated and tested with version xx of SMIME Messaging
 </p>
 <h2>Use Cases</h2>
 <ul>
@@ -9,12 +8,18 @@ This integration was integrated and tested with version xx of SMIME Messaging
 <li>Send an S/MIME-encrypted message.</li>
 <li>Send an S/MIME-signed and encrypted message.</li>
 <li>Decrypt an S/MIME message</li>
-</ul><h2>Detailed Description</h2>
-<p>To send signed/encrypted messages via the S/MIME Messaging integration, 
-use the "send-mail" command in "Mail Sender(new) integration.
-Use the output from S/MIME Messaging integration and send it in the raw_message argument in send-mail command.</p>
+</ul>
 
-<h2>Configure SMIME Messaging on Demisto</h2>
+<h2>Usage</h2>
+<p>
+In order to send signed/encrypted messages using the S/MIME Messaging and Mail Sender (New) perform the following steps.
+  
+1. Run the required command in the S/MIME Messaging integration (e.g., `smime-sign-and-encrypt`).
+2. Enter the output of the command executed from step 1 as the input for the `raw_message` argument of the `send-mail` command in the Mail Sender (New) integration (e.g. the value stored in the Context Data under `SMIME.SignedAndEncrypted.Message`).
+3. Run the `send-mail` command with the `raw_message` argument (as described in step 2), with any of the optional arguments `to`, `cc` and `bcc` (e.g., `!send-mail to=user@email.com raw_message=${SMIME.SignedAndEncrypted.Message}`).
+</p>
+
+<h2>Configure SMIME Messaging on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -33,7 +38,7 @@ Use the output from S/MIME Messaging integration and send it in the raw_message 
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -287,11 +292,6 @@ czqUdgV8Uh6pxJ8t+n31GvrBSLA3xo1MwV6Nvj1AGYTQx53jDp9H0NSjqw8/LURP
 NG8dZ3YwMwYJKoZIhvcNAQcBMBQGCCqGSIb3DQMHBAhJHDbFpz5R94AQ6QST/8pU
 ijTpyt7V40F8Pg==
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>3. smime-verify-sign</h3>
@@ -611,5 +611,4 @@ The private key parameter will start and end as the following:
 key
 
 -----END RSA PRIVATE KEY-----
-<h2>Known Limitations</h2>
-<h2>Troubleshooting</h2>
+</p>

@@ -7,7 +7,8 @@ type: python
 subtype: python3
 tags:
 - transformer
-comment: Returns a string with all matches of a regex pattern groups replaced by a replacement.
+comment: Returns a string with all matches of a regex pattern groups replaced by a
+  replacement.
 enabled: true
 args:
 - name: value
@@ -21,7 +22,8 @@ args:
   description: The replacement string.
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.7.3.286
+dockerimage: demisto/python3:3.8.5.10845
 runas: DBotWeakRole
 tests:
 - No test - unit test
+fromversion: 5.0.0

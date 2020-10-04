@@ -12,6 +12,7 @@ configuration:
   name: feed
   required: false
   type: 8
+  defaultvalue: 'true'
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
@@ -35,6 +36,16 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
   type: 15
 - display: ''
   name: feedExpirationPolicy
@@ -61,7 +72,8 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- display: Tags
+- additionalinfo: Supports CSV values.
+  display: Tags
   hidden: false
   name: feedTags
   required: false
@@ -92,7 +104,7 @@ script:
     description: Retrieves a limited number of the indicators.
     execution: false
     name: unit42-get-indicators
-  dockerimage: demisto/taxii2:1.0.0.9219
+  dockerimage: demisto/taxii2:1.0.0.11306
   feed: true
   isfetch: false
   longRunning: false

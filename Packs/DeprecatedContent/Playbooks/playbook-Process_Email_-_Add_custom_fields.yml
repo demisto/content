@@ -1,9 +1,10 @@
 id: process_email_-_add_custom_fields
 version: -1
 name: Process Email - Add custom fields
-fromversion: 3.6.0
-description: Deprecated - We recommend using Process Email - Generic playbook instead. Process email - Add email data to a phishing incident's custom fields
+fromversion: 5.0.0
+description: Deprecated. We recommend using Process Email - Generic playbook instead. Process email - Add email data to a phishing incident's custom fields
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -648,4 +649,4 @@ inputs:
   description: Email object to extract
 outputs: []
 tests:
-  - No tests
+- No tests

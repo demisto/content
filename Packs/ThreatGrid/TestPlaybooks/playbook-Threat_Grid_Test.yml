@@ -92,9 +92,7 @@ tasks:
       id: 28717024-c17a-4602-83f4-cc999b6b60c4
       version: -1
       name: Get samples (limit of 1) from given time range
-      description: Search samples on the Threat Grid platform. Input parameters are
-        ANDed together. Only finished samples can be searched (that is, the ones that
-        are having a status of succ or fail.)
+      description: Search samples on the Threat Grid platform. Input parameters are ANDed together. Only finished samples can be searched (that is, the ones that are having a status of succ or fail.)
       script: Threat Grid|||threat-grid-get-samples
       type: regular
       iscommand: true
@@ -135,11 +133,7 @@ tasks:
       id: bf7891c5-2f6f-4d6f-84cc-f66bea619105
       version: -1
       name: Get user rate limit
-      description: Get rate limit for a specific user name. ThreatGrid employs a simple
-        rate limiting method for sample submissions by specifying the number of samples
-        which can be submitted within some variable time period by a user. Multiple
-        rate limits can be employed to form overlapping submission limits. For example,
-        20 submissions per hour AND 400 per day.
+      description: Get rate limit for a specific user name. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by a user. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.
       script: Threat Grid|||threat-grid-user-get-rate-limit
       type: regular
       iscommand: true
@@ -164,8 +158,7 @@ tasks:
       id: d11b9e22-f125-4151-8f2b-ca4f9d8e48ac
       version: -1
       name: 'Download the sample '
-      description: Download a sample by using its ID. The downloaded file is an archive
-        of the sample itself, in a zip format as a form of quarantine.
+      description: Download a sample by using its ID. The downloaded file is an archive of the sample itself, in a zip format as a form of quarantine.
       script: Threat Grid|||threat-grid-download-sample-by-id
       type: regular
       iscommand: true
@@ -227,12 +220,7 @@ tasks:
       id: f3299dd5-9061-4701-80bc-c71a98646e72
       version: -1
       name: threat-grid-organization-get-rate-limit
-      description: Get rate limits applied to an organization. ThreatGrid employs
-        a simple rate limiting method for sample submissions by specifying the number
-        of samples which can be submitted within some variable time period by an entire
-        organization and/or per a license basis. Multiple rate limits can be employed
-        to form overlapping submission limits. For example, 20 submissions per hour
-        AND 400 per day.
+      description: Get rate limits applied to an organization. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by an entire organization and/or per a license basis. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.
       script: Threat Grid|||threat-grid-organization-get-rate-limit
       type: regular
       iscommand: true
@@ -401,3 +389,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

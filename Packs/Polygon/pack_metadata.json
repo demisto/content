@@ -12,11 +12,6 @@
     ],
     "tags": [],
     "useCases": [
-        "Submit a file and get a report (detonation)",
-        "Submit a URL and get a report (detonation)",
-        "Lookup file reputation by hash",
-        "Retrieve a PCAP file",
-        "Retrieve video taken during analysis"
     ],
     "keywords": [
         "sandbox"

@@ -1,8 +1,9 @@
 id: DuoAdmin API test playbook
 version: -1
 name: DuoAdmin API test playbook
+description: Test playbook for DuoAdmin Integration.
+fromversion: 5.5.0
 starttaskid: "0"
-description: Test playbook for DuoAdmin Integration
 tasks:
   "0":
     id: "0"
@@ -14,7 +15,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -104,7 +104,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "40"
@@ -204,7 +203,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -232,7 +230,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -260,7 +257,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -392,10 +388,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: f12d17ea-9ece-43ac-881a-ebe4b544ae73
+    taskid: a46da5dd-bb0b-437e-8fe8-d56b9af79dd3
     type: condition
     task:
-      id: f12d17ea-9ece-43ac-881a-ebe4b544ae73
+      id: a46da5dd-bb0b-437e-8fe8-d56b9af79dd3
       version: -1
       name: Does the user have a phone?
       type: condition
@@ -423,10 +419,7 @@ tasks:
                     field:
                       value:
                         simple: username
-                    getField: {}
-                - operator: getField
-                  args:
-                    field:
+                    getField:
                       value:
                         simple: phones
                 - operator: atIndex
@@ -513,10 +506,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 1873a847-d9e4-47e0-8386-a652a46b83d4
+    taskid: 34e37675-796a-43cb-865c-b5c3147b2f40
     type: condition
     task:
-      id: 1873a847-d9e4-47e0-8386-a652a46b83d4
+      id: 34e37675-796a-43cb-865c-b5c3147b2f40
       version: -1
       name: Does the user still has a phone?
       type: condition
@@ -529,7 +522,7 @@ tasks:
     conditions:
     - label: "no"
       condition:
-      - - operator: isNotExists
+      - - operator: isEmpty
           left:
             value:
               complex:
@@ -544,10 +537,7 @@ tasks:
                     field:
                       value:
                         simple: username
-                    getField: {}
-                - operator: getField
-                  args:
-                    field:
+                    getField:
                       value:
                         simple: phones
                 - operator: atIndex
@@ -579,7 +569,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -587,7 +576,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1740,
+          "x": 1750,
           "y": 1230
         }
       }
@@ -598,10 +587,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: e2382114-7cbb-4317-8b81-bad9a50faae3
+    taskid: 2ace0195-51a7-4770-88d3-bebe17f76eb1
     type: regular
     task:
-      id: e2382114-7cbb-4317-8b81-bad9a50faae3
+      id: 2ace0195-51a7-4770-88d3-bebe17f76eb1
       version: -1
       name: Get User Tokens
       description: |-
@@ -633,10 +622,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: adc71739-96f3-4791-84d6-f74edf5ea5b0
+    taskid: 764efcd2-95c9-4cc3-8f47-cf9fa63d594f
     type: condition
     task:
-      id: adc71739-96f3-4791-84d6-f74edf5ea5b0
+      id: 764efcd2-95c9-4cc3-8f47-cf9fa63d594f
       version: -1
       name: Does the user have a U2F token?
       type: condition
@@ -651,7 +640,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEqualString
           left:
             value:
               complex:
@@ -666,23 +655,19 @@ tasks:
                     field:
                       value:
                         simple: username
-                    getField: {}
-                - operator: getField
-                  args:
-                    field:
+                    getField:
                       value:
                         simple: u2ftokens
-                - operator: atIndex
-                  args:
-                    index:
-                      value:
-                        simple: "0"
+                - operator: Stringify
             iscontext: true
+          right:
+            value:
+              simple: "null"
     view: |-
       {
         "position": {
           "x": 1750,
-          "y": 1565
+          "y": 1580
         }
       }
     note: false
@@ -692,10 +677,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 4ccc1a79-85d3-4ef2-81d5-c13e674b203a
+    taskid: 25df3375-3147-4136-8cb7-d453c2248829
     type: regular
     task:
-      id: 4ccc1a79-85d3-4ef2-81d5-c13e674b203a
+      id: 25df3375-3147-4136-8cb7-d453c2248829
       version: -1
       name: Delete the token
       script: '|||duoadmin-delete-u2f-token'
@@ -719,22 +704,15 @@ tasks:
               field:
                 value:
                   simple: username
-              getField: {}
-          - operator: getField
-            args:
-              field:
+              getField:
                 value:
-                  simple: u2ftokens
+                  simple: DuoAdmin.UserDetails.u2ftokens.registration_id
+                iscontext: true
           - operator: atIndex
             args:
               index:
                 value:
                   simple: "0"
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: registration_id
     separatecontext: false
     view: |-
       {
@@ -750,10 +728,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: e49beec9-f9f9-4381-8a91-0d1399615185
+    taskid: 66a71237-0476-49eb-84c7-77fa50da9c20
     type: condition
     task:
-      id: e49beec9-f9f9-4381-8a91-0d1399615185
+      id: 66a71237-0476-49eb-84c7-77fa50da9c20
       version: -1
       name: Does the user still have a token
       type: condition
@@ -781,10 +759,7 @@ tasks:
                     field:
                       value:
                         simple: username
-                    getField: {}
-                - operator: getField
-                  args:
-                    field:
+                    getField:
                       value:
                         simple: u2ftokens
                 - operator: atIndex
@@ -921,7 +896,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -1030,4 +1004,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0

@@ -16,9 +16,9 @@ configuration:
   name: database
   required: true
   type: 0
-- display: Use SSL/TLS secured connection
+- defaultvalue: 'false'
+  display: Use SSL/TLS secured connection
   hidden: false
-  defaultvalue: false
   name: use_ssl
   required: false
   type: 8
@@ -40,8 +40,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of ObjectIds to get. Can be retrieved from
-        the `mongodb-query` command.
+      description: A comma-separated list of ObjectIds to get. Can be retrieved from the `mongodb-query` command.
       isArray: true
       name: object_id
       required: true
@@ -65,8 +64,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A JSON query to search for in the collection, in the format: `{"key":
-        "value"}`. e.g {"_id": "mongodbid"}'
+      description: 'A JSON query to search for in the collection, in the format: `{"key": "value"}`. e.g {"_id": "mongodbid"}'
       isArray: false
       name: query
       required: true
@@ -76,6 +74,12 @@ script:
       description: Limits the result returned from MongoDB
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Sorting order for the query results. Use the format "field1:asc,field2:desc".
+      isArray: false
+      name: sort
       required: false
       secret: false
     deprecated: false
@@ -97,8 +101,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The entry to insert, in JSON format. Can include the `_id` argument
-        or not, for example: `{"key": "value"}`'
+      description: 'The entry to insert, in JSON format. Can include the `_id` argument or not, for example: `{"key": "value"}`'
       isArray: false
       name: entry
       required: true
@@ -122,16 +125,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A query that matches the document to update, in the format: `{"key":
-        "value"}`.'
+      description: 'A query that matches the document to update, in the format: `{"key": "value"}`.'
       isArray: false
       name: filter
       required: true
       secret: false
     - default: false
-      description: 'The content with which to update the entry, in the format: {"$set":
-        {"key": "value"}}. You can use Update Operators or Aggregation Pipeline. For
-        more information, see the integration documentation.'
+      description: 'The content with which to update the entry, in the format: {"$set": {"key": "value"}}. You can use Update Operators or Aggregation Pipeline. For more information, see the integration documentation.'
       isArray: false
       name: update
       required: true
@@ -139,8 +139,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to update a single entry. If false, will set all found
-        entries. If false, will set all found entries.
+      description: Whether to update a single entry. If false, will set all found entries. If false, will set all found entries.
       isArray: false
       name: update_one
       predefined:
@@ -160,8 +159,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A query that matches the document to delete, for example: `{"key":
-        "value"}`.'
+      description: 'A query that matches the document to delete, for example: `{"key": "value"}`.'
       isArray: false
       name: filter
       required: true
@@ -169,8 +167,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to delete a single entry from the database. If false, will
-        set all found entries.
+      description: Whether to delete a single entry from the database. If false, will set all found entries.
       isArray: false
       name: delete_one
       predefined:
@@ -212,7 +209,7 @@ script:
     description: Drops a collection from the database.
     execution: true
     name: mongodb-drop-collection
-  dockerimage: demisto/pymongo:1.0.0.8854
+  dockerimage: demisto/pymongo:1.0.0.10664
   feed: false
   isfetch: false
   longRunning: false
@@ -223,3 +220,4 @@ script:
   type: python
 tests:
 - MongoDB - Test
+fromversion: 5.0.0

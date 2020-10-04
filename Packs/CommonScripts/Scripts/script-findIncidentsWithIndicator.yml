@@ -1,13 +1,18 @@
 commonfields:
   id: findIncidentsWithIndicator
-  version: -1 
+  version: -1
 name: findIncidentsWithIndicator
-script: |-
+script: >-
   var res = executeCommand("getIncidents", {"query": 'indicator.value:"'+args.indicator+'"'});
+
   var incidentsIDs=[];
+
   var foundIncidents = [];
+
   var currIncidentID = incidents[0].id;
+
   var ec = {};
+
 
   var dict={
       'severity':{0:'Informational',1:'Low',2:'Medium',3:'High',4:'Critical'},
@@ -21,7 +26,9 @@ script: |-
       });
   }
 
+
   var md="#### Searching for incidents with indicator: *" + args.indicator + "*\n";
+
 
 
   if (foundIncidents.length > 0) {
@@ -38,12 +45,12 @@ script: |-
   } else {
       md += "No incidents found"
   }
+
   return {Type: entryTypes.note, Contents: foundIncidents, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 type: javascript
 tags:
 - Utility
-comment: Lookup incidents with specified indicator. Use currentIncidentId to omit
-  the existing incident from output
+comment: Lookup incidents with specified indicator. Use currentIncidentId to omit the existing incident from output
 enabled: true
 args:
 - name: indicator
@@ -55,6 +62,8 @@ outputs:
   description: Indicator that was found in other incidents
 - contextPath: IncidentsWithIndicator.incidentIDs
   description: Incident IDs that the indicator was found in
+runas: DBotRole
 scripttarget: 0
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

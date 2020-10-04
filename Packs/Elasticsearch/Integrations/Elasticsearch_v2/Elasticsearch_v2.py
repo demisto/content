@@ -13,7 +13,6 @@ import requests
 import warnings
 from dateutil.parser import parse
 
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
@@ -37,7 +36,6 @@ HTTP_ERRORS = {
     500: '500 Internal Server Error - Internal error',
     503: '503 Service Unavailable'
 }
-
 
 '''VARIABLES FOR FETCH INCIDENTS'''
 TIME_FIELD = demisto.params().get('fetch_time_field', '')
@@ -552,7 +550,8 @@ def fetch_incidents():
 
     # handle first time fetch
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S.%f', utc=False, to_timestamp=False)
+        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S.%f', utc=False,
+                                         to_timestamp=False)
         last_fetch = parse(str(last_fetch))
         last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
 
@@ -594,6 +593,36 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
 
+def parse_subtree(my_map):
+    """
+    param: my_map - tree element for the schema
+    return: tree elements under each branch
+    """
+    # Recursive search in order to retrieve the elements under the branches in the schema
+    res = {}
+    for k in my_map:
+        if 'properties' in my_map[k]:
+            res[k] = parse_subtree(my_map[k]['properties'])
+        else:
+            res[k] = "type: " + my_map[k].get('type', "")
+    return res
+
+
+def get_mapping_fields_command():
+    """
+    Maps a schema from a given index
+    return: Elasticsearch schema structure
+    """
+    indexes = FETCH_INDEX.split(',')
+    elastic_mapping = {}
+    for index in indexes:
+        res = requests.get(SERVER + '/' + index + '/_mapping', auth=(USERNAME, PASSWORD), verify=INSECURE)
+        my_map = res.json()[index]['mappings']['properties']
+        elastic_mapping[index] = {"_id": "doc_id", "_index": index}
+        elastic_mapping[index]["_source"] = parse_subtree(my_map)
+    demisto.results(elastic_mapping)
+
+
 def main():
     try:
         LOG('command is %s' % (demisto.command(),))
@@ -603,6 +632,8 @@ def main():
             fetch_incidents()
         elif demisto.command() in ['search', 'es-search']:
             search_command()
+        elif demisto.command() == 'get-mapping-fields':
+            get_mapping_fields_command()
     except Exception as e:
         return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
 

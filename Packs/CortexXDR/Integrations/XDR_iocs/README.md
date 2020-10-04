@@ -5,6 +5,10 @@ Use the Cortex XDR - IOCs feed integration to sync indicators between Cortex XSO
 
 This integration was integrated and tested with Branch: stable-50 of XDR.
 
+## Prerequisites
+
+An API key of type **Advanced** with an **Administrator** role.
+
 ## Configure Cortex XDR - IOC on Cortex XSOAR  
   
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.  
@@ -23,6 +27,7 @@ This integration was integrated and tested with Branch: stable-50 of XDR.
 | proxy | Use system proxy settings | False |  
 | feedReputation | Indicator Reputation | False |  
 | feedReliability | Source Reliability | True |  
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
 | feedExpirationPolicy |  | False |  
 | feedExpirationInterval |  | False |  
 | feedFetchInterval | Feed Fetch Interval | False |  

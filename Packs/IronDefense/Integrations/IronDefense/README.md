@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>IronDefense gives users the ability to rate alerts, update alert statuses, add comments to alerts, and to report observed bad activity. This integration was integrated and tested with version xx of IronDefense</p>
 <p> </p>
-<h2>Configure IronDefense on Demisto</h2>
+<h2>Configure IronDefense on XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>  &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for IronDefense.</li>
@@ -18,7 +18,7 @@
 <li>Click <strong>Test</strong> to validate the new instance.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#irondefense-rate-alert" target="_self">Rate an alert: irondefense-rate-alert</a></li>
 <li><a href="#irondefense-comment-alert" target="_self">Add a comment to an alert: irondefense-comment-alert</a></li>

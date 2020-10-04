@@ -2,17 +2,24 @@ commonfields:
   id: PanoramaBlockIP
   version: -1
 name: PanoramaBlockIP
-script: |-
+script: >-
   var direction = args.direction || 'both';
+
   var blockingDestination = direction === 'to' || direction === 'both';
+
   var blockingSource = direction === 'from' || direction === 'both';
+
   var blockedDestination = false;
+
   var blockedSource = true;
+
   var resp = null;
+
 
   if (!args.rulename) {
       args.rulename = 'ip' + args.ip + ' blocked in direction ' + args.direction;
   }
+
 
   if (blockingDestination) {
       resp = executeCommand('PanoramaConfig', {action: 'drop', destination: args.ip, ruleName: args.ruleName + '-to'});
@@ -22,6 +29,7 @@ script: |-
       blockedDestination = 'success' == dq(resp[0],'Contents');
   }
 
+
   if (blockingSource) {
       resp = executeCommand('PanoramaConfig', {action: 'drop', destination: args.ip, ruleName: args.ruleName + '-from'});
       if (isError(resp[0])){
@@ -29,6 +37,7 @@ script: |-
       }
       blockedSource = 'success' == dq(resp[0],'Contents');
   }
+
 
   if ((blockedSource && blockingSource) || (blockingDestination && blockedDestination)) {
       resp = executeCommand('PanoramaCommit', {});
@@ -47,6 +56,7 @@ script: |-
       entryB.EntryContext = context;
       return entryB;
   }
+
   return {
       Contents: 'no rules commited',
       ContentsFormat: formats.text,
@@ -56,7 +66,7 @@ type: javascript
 tags:
 - firewall
 - panorama
-comment: Blocks IP with Panorama
+comment: Deprecated. Blocks IP with Panorama
 enabled: true
 args:
 - name: ip
@@ -92,3 +102,4 @@ dependson:
   - panorama
 tests:
 - No tests
+fromversion: 5.0.0

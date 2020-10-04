@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
-  defaultvalue: true
+  defaultvalue: 'true'
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
@@ -32,6 +32,16 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
   type: 15
 - defaultvalue: indicatorType
   display: ""
@@ -176,7 +186,7 @@ script:
     - contextPath: CSV.Indicator.rawJSON
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/jmespath:1.0.0.8854
+  dockerimage: demisto/jmespath:1.0.0.10854
   feed: true
   isfetch: false
   longRunning: false

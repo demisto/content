@@ -2,8 +2,9 @@ commonfields:
   id: IPReputation
   version: -1
 name: IPReputation
-script: |-
+script: >-
   results = demisto.executeCommand('ip', {'ip': demisto.get(demisto.args(),'ip')})
+
 
   for item in results:
       if isError(item):
@@ -23,3 +24,4 @@ args:
   description: IP address to look up
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

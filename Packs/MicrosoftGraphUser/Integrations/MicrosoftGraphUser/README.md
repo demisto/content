@@ -50,6 +50,7 @@ For more details about the authentication used in this integration, see <a href=
 <li><a href="#get-new-updated-or-deleted-user-information" target="_self">Get new, updated, or deleted user information: msgraph-user-get-delta</a></li>
 <li><a href="#get-user-object-information" target="_self">Get user object information: msgraph-user-get</a></li>
 <li><a href="#get-a-list-of-user-objects" target="_self">Get a list of user objects: msgraph-user-list</a></li>
+<li><a href="#change-user-password" target="_self">Changes the user password: msgraph-user-change-password</a></li>
 <li><a href="#get-direct-reports" target="_self">Get the direct reports of a user: msgraph-direct-reports</a></li>
 <li><a href="#user-get-manager" target="_self">Get the manager of a user: msgraph-user-get-manager</a></li>
 <li><a href="#user-assign-manager" target="_self">Assign a manager to a user: msgraph-user-assign-manager</a></li>
@@ -60,7 +61,7 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Terminates a user’s session from all Office 365 applications, and prevents sign in.</p>
+<p>Terminates a user’s session from all Office 365 applications, and prevents sign in. Can only work with a self-deployed application and the permission: Directory.AccessAsUser.All(Delegated)</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command">Base Command</h5>
@@ -1543,4 +1544,56 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section">
 <p>A manager was assigned to user "oren@demistodev.onmicrosoft.com". It might take several minutes for the changes to take affect across all applications.</p>
+</div>
+<div class="cl-preview-section">
+<h3 id="change-user-password">9. Changes the user password</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Changes the user password. Can only work with a self-deployed application and the permission: Directory.AccessAsUser.All(Delegated)</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-7">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>msgraph-user-change-password</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-7">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 748px;">
+<thead>
+<tr>
+<th style="width: 139px;"><strong>Argument Name</strong></th>
+<th style="width: 530px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 139px;">password</td>
+<td style="width: 530px;">The new password.</td>
+<td style="width: 71px;">Required</td>
+</tr>
+<tr>
+<td style="width: 139px;">force_change_password_next_sign_in</td>
+<td style="width: 530px;">Whether the password will be changed on the next sign in.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 139px;">force_change_password_with_mfa</td>
+<td style="width: 530px;">Whether to change the password with MFA.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+</tbody>
+</table>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-3">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>user: {user_id} password was changed successfully.</p>
+</div>
+</div>
 </div>
