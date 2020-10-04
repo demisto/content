@@ -1,5 +1,7 @@
 id: Integrations and Playbooks Health Check - Running Scripts
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Integrations and Playbooks Health Check - Running Scripts
 description: This playbook is triggered by a 'JOB - Integrations and Playbooks Health'
   playbook and is responsible for running failed integrations and failed incidents
@@ -120,10 +122,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 8c617c6e-6205-433a-8965-efb7b6fc5ef5
+    taskid: 13b2a514-f431-41a4-8545-c25216f1b308
     type: regular
     task:
-      id: 8c617c6e-6205-433a-8965-efb7b6fc5ef5
+      id: 13b2a514-f431-41a4-8545-c25216f1b308
       version: -1
       name: Set scripts result
       description: Adds the scripts result from previous tasks to the incident data.
@@ -151,9 +153,11 @@ tasks:
       agentid: {}
       app: {}
       appendMultiSelect: {}
+      appendTags: {}
       approximatenumberofaffecteddatasubjects: {}
       approximatenumberofencryptedendpoints: {}
       assetid: {}
+      assigneduser: {}
       assignmentgroup: {}
       associatedmaliciousdomains: {}
       attachmentcount: {}
@@ -255,8 +259,11 @@ tasks:
       detectionticketed: {}
       detectionupdatetime: {}
       detectionurl: {}
+      deviceexternalip: {}
       devicegsuiteaccountstatus: {}
       devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
       devicename: {}
       deviceserialnumber: {}
       digitalguardianactivity: {}
@@ -373,6 +380,7 @@ tasks:
       illusivenetworkssourceoperatingsystem: {}
       illusivenetworksstepstocrownjewel: {}
       illusivenetworksstepstodomainadmin: {}
+      incomingmirrorerror: {}
       indenideviceid: {}
       indeniissueid: {}
       individualsnotification: {}
@@ -408,9 +416,11 @@ tasks:
       maliciouscauseifthecauseisamaliciousattack: {}
       maliciousdomainsblocked: {}
       malwarefamily: {}
+      malwarename: {}
       managementnotification: {}
       manageremail: {}
       markdowntest: {}
+      md5: {}
       measurestomitigate: {}
       medianotification: {}
       medicalinformationbreached: {}
@@ -430,6 +440,7 @@ tasks:
           root: GetFailedTasks
           accessor: Incident ID
           transformers:
+          - operator: uniq
           - operator: count
       numberofports: {}
       numberofuniqueports: {}
@@ -440,6 +451,7 @@ tasks:
       os: {}
       osversion: {}
       otherpiidatabreached: {}
+      outgoingmirrorerror: {}
       owner: {}
       parentprocessid: {}
       participants: {}
@@ -573,6 +585,7 @@ tasks:
       servicenowurgency: {}
       servicetest: {}
       severity: {}
+      sha256: {}
       signature: {}
       signindatetime: {}
       similarincident: {}
@@ -691,6 +704,7 @@ tasks:
       xdrnotes: {}
       xdrresolvecomment: {}
       xdrstatus: {}
+      xdrstatusv2: {}
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
@@ -1045,6 +1059,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1060,5 +1075,5 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- No tests (auto formatted)
+- No tests
 fromversion: 6.0.0

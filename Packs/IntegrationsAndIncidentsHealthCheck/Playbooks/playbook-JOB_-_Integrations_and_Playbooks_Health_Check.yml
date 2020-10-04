@@ -340,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1680
+          "y": 1850
         }
       }
     note: false
@@ -370,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1830
+          "y": 1980
         }
       }
     note: false
@@ -405,8 +405,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
-          "y": 2000
+          "x": 610,
+          "y": 2150
         }
       }
     note: false
@@ -431,7 +431,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 2510
+          "y": 2650
         }
       }
     note: false
@@ -466,8 +466,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
-          "y": 2340
+          "x": 610,
+          "y": 2480
         }
       }
     note: false
@@ -817,8 +817,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -310,
-          "y": 1160
+          "x": -540,
+          "y": 1350
         }
       }
     note: false
@@ -828,10 +828,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: a9384f14-39dc-48a7-8a99-420d4e4c277b
+    taskid: 019ae5c9-1933-4bdd-8ed9-21fa9c9c1b4d
     type: regular
     task:
-      id: a9384f14-39dc-48a7-8a99-420d4e4c277b
+      id: 019ae5c9-1933-4bdd-8ed9-21fa9c9c1b4d
       version: -1
       name: Close linked incident
       description: commands.local.cmd.close.inv
@@ -851,14 +851,22 @@ tasks:
       id:
         complex:
           root: similarIncident
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: similarIncident
+                iscontext: true
           accessor: rawId
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
       phishingsubtype: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -310,
-          "y": 1510
+          "x": -540,
+          "y": 1680
         }
       }
     note: false
@@ -868,10 +876,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: eac1a104-08c2-482d-8743-ff9c2164c3f8
+    taskid: 1aa23ad1-fe00-462d-8773-a6521ef840b8
     type: regular
     task:
-      id: eac1a104-08c2-482d-8743-ff9c2164c3f8
+      id: 1aa23ad1-fe00-462d-8773-a6521ef840b8
       version: -1
       name: Copies analyst notes from linked incident
       description: Copies the anaylst's notes from the integrations and incidents
@@ -887,8 +895,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -310,
-          "y": 1350
+          "x": -540,
+          "y": 1520
         }
       }
     note: false
@@ -961,8 +969,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
-          "y": 2170
+          "x": 610,
+          "y": 2305
         }
       }
     note: false
@@ -985,7 +993,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "36"
     scriptarguments:
       filterQuery: {}
       hoursBack: {}
@@ -1015,6 +1023,45 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "36":
+    id: "36"
+    taskid: 318d9e89-ac74-4629-8e41-0f3e21bab904
+    type: condition
+    task:
+      id: 318d9e89-ac74-4629-8e41-0f3e21bab904
+      version: -1
+      name: Found similar incidents?
+      description: "Checks if found similar incident from previous task"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: similarIncident
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 system: true
 view: |-
   {
@@ -1024,13 +1071,15 @@ view: |-
       "18_17_yes": 0.47,
       "18_21_#default#": 0.18,
       "22_24_Yes": 0.33,
-      "22_25_#default#": 0.19
+      "22_25_#default#": 0.19,
+      "36_21_#default#": 0.14,
+      "36_30_yes": 0.3
     },
     "paper": {
       "dimensions": {
-        "height": 2615,
-        "width": 1350,
-        "x": -310,
+        "height": 2755,
+        "width": 1580,
+        "x": -540,
         "y": -40
       }
     }
