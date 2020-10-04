@@ -232,7 +232,7 @@ def list_custom_service_command(client, args):
                                                    range_info=get_range_for_list_command(args))
 
     return CommandResults(
-        outputs_prefix='FortiManager.CustomServices',
+        outputs_prefix='FortiManager.CustomService',
         outputs_key_field='name',
         outputs=custom_services,
         readable_output=tableToMarkdown("Custom Services", custom_services, removeNull=True,

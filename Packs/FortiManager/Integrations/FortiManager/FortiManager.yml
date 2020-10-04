@@ -1598,6 +1598,82 @@ script:
     description: List the custom services.
     execution: false
     name: fortimanager-custom-service-list
+    outputs:
+    - contextPath: FortiManager.CustomService.app-category
+      description: 'Application category ID.'
+      type: Number
+    - contextPath: FortiManager.CustomService.app-service-type
+      description: 'Application service type.'
+      type: String
+    - contextPath: FortiManager.CustomService.application
+      description: 'Application ID.'
+      type: Number
+    - contextPath: FortiManager.CustomService.category
+      description: 'Service category.'
+      type: String
+    - contextPath: FortiManager.CustomService.check-reset-range
+      description: 'Configure the type of ICMP error message verification.'
+      type: String
+    - contextPath: FortiManager.CustomService.color
+      description: 'Color of icon on the GUI.'
+      type: Number
+    - contextPath: FortiManager.CustomService.comment
+      description: 'Comment.'
+      type: String
+    - contextPath: FortiManager.CustomService.fqdn
+      description: 'Fully qualified domain name.'
+      type: String
+    - contextPath: FortiManager.CustomService.helper
+      description: 'Helper name.'
+      type: String
+    - contextPath: FortiManager.CustomService.icmpcode
+      description: 'ICMP code.'
+      type: Number
+    - contextPath: FortiManager.CustomService.icmptype
+      description: 'ICMP type.'
+      type: Number
+    - contextPath: FortiManager.CustomService.iprange
+      description: 'Start and end of the IP range associated with service.'
+      type: String
+    - contextPath: FortiManager.CustomService.name
+      description: 'Custom service name.'
+      type: String
+    - contextPath: FortiManager.CustomService.protocol
+      description: 'Protocol type based on IANA numbers.'
+      type: String
+    - contextPath: FortiManager.CustomService.protocol-number
+      description: 'IP protocol number.'
+      type: Number
+    - contextPath: FortiManager.CustomService.proxy
+      description: 'Enable/disable web proxy service.'
+      type: String
+    - contextPath: FortiManager.CustomService.sctp-portrange
+      description: 'Multiple SCTP port ranges.'
+      type: String
+    - contextPath: FortiManager.CustomService.session-ttl
+      description: 'Session TTL (300 - 604800, 0 = default).'
+      type: Number
+    - contextPath: FortiManager.CustomService.tcp-halfclose-timer
+      description: 'Wait time to close a TCP session waiting for an unanswered FIN packet (1 - 86400 sec, 0 = default).'
+      type: Number
+    - contextPath: FortiManager.CustomService.tcp-halfopen-timer
+      description: 'Wait time to close a TCP session waiting for an unanswered open session packet (1 - 86400 sec, 0 = default).'
+      type: Number
+    - contextPath: FortiManager.CustomService.tcp-portrange
+      description: 'Multiple TCP port ranges.'
+      type: String
+    - contextPath: FortiManager.CustomService.tcp-timewait-timer
+      description: 'Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec, 0 = default).'
+      type: Number
+    - contextPath: FortiManager.CustomService.udp-idle-timer
+      description: 'UDP half close timeout (0 - 86400 sec, 0 = default).'
+      type: Number
+    - contextPath: FortiManager.CustomService.udp-portrange
+      description: 'Multiple UDP port ranges.'
+      type: String
+    - contextPath: FortiManager.CustomService.visibility
+      description: 'Enable/disable the visibility of the service on the GUI.'
+      type: String
   - arguments:
     - default: false
       description: The ADOM from which to fetch the custom servicse. Leave empty to
