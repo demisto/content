@@ -1333,7 +1333,7 @@ def fetch_incidents():
                                     'incident_offset': offset + INCIDENTS_PER_FETCH})
             else:
                 demisto.setLastRun({'first_behavior_incident_time': last_fetch_time})
-        return incidents
+    return incidents
 
 
 def upload_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=None,
