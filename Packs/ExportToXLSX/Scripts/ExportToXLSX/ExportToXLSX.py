@@ -91,7 +91,7 @@ def main():
                 multi_header_list.append(header_list.split(","))
         else:
             multi_header_list = [None] * len(sheets)
-        for sheet, data_item, multi_header_list in zip(sheets, data, multi_header_list):
+        for sheet, data_item, headers_list in zip(sheets, data, multi_header_list):
             write_data(sheet, data_item, headers_list, workbook, bold, border)
 
         workbook.close()
