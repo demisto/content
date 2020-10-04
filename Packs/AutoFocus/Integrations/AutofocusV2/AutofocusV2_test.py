@@ -4,7 +4,6 @@ import requests
 import requests_mock
 import sys
 
-
 IP_ADDRESS = '127.0.0.1'
 
 FILE_RES_JSON = {
@@ -142,3 +141,25 @@ def test_connection_error(mocker):
             AutofocusV2.search_indicator('ip', '8.8.8.8')
         assert 'Error connecting to server. Check your URL/Proxy/Certificate settings'\
                in return_error_mock.call_args[0][0]
+
+
+def test_search_ip_command(mocker):
+    """
+    Given
+    - AF ip command
+    When
+    - mock the search_indicator with a malicious ip results.
+    Then
+    - run the search_ip_command
+    Validate the indicator contains FirstSeenBySource, LastSeenBySource and Tags.
+    """
+    from test_data.response import MALICIOUS_IP
+    import AutofocusV2
+    mocker.patch.object(AutofocusV2, 'search_indicator', return_value=MALICIOUS_IP)
+
+    command_results = AutofocusV2.search_ip_command('200.63.47.3')
+    outputs = command_results.to_context().get('EntryContext', {})
+    ip_outputs = outputs.get('IP(val.Address && val.Address == obj.Address)', [])[0]
+    assert ip_outputs.get('FirstSeenBySource') == '2019-08-20T00:38:15.000Z'
+    assert ip_outputs.get('LastSeenBySource') == '2020-05-28T03:04:19.000Z'
+    assert 'TagName' in ip_outputs.get('Tags')[0].keys()

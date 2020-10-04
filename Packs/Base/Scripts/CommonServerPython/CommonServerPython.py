@@ -2022,6 +2022,15 @@ class Common(object):
         :type positive_engines: ``int``
         :param positive_engines: The number of engines that positively detected the indicator as malicious.
 
+        :type firstseenbysource: ``date``
+        :param firstseenbysource: The first seen date of the indicator.
+
+        :type lastseenbysource: ``date``
+        :param lastseenbysource: The last seen date of the indicator.
+
+        :type tags: ``list``
+        :param tags: The tags of the indicator.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
 
@@ -2031,7 +2040,8 @@ class Common(object):
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
         def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
-                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None):
+                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
+                     firstseenbysource=None, lastseenbysource=None, tags=None):
             self.ip = ip
             self.asn = asn
             self.hostname = hostname
@@ -2041,6 +2051,9 @@ class Common(object):
             self.geo_description = geo_description
             self.detection_engines = detection_engines
             self.positive_engines = positive_engines
+            self.firstseenbysource = firstseenbysource
+            self.lastseenbysource = lastseenbysource
+            self.tags = tags
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2075,6 +2088,15 @@ class Common(object):
 
             if self.positive_engines:
                 ip_context['PositiveDetections'] = self.positive_engines
+
+            if self.firstseenbysource:
+                ip_context['FirstSeenBySource'] = self.firstseenbysource
+
+            if self.lastseenbysource:
+                ip_context['LastSeenBySource'] = self.lastseenbysource
+
+            if self.tags:
+                ip_context['Tags'] = self.tags
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 ip_context['Malicious'] = {
@@ -2182,8 +2204,14 @@ class Common(object):
         :type actor: ``str``
         :param actor: The actor reference.
 
-        :type tags: ``str``
-        :param tags: Tags of the file.
+        :type firstseenbysource: ``date``
+        :param firstseenbysource: The first seen date of the indicator.
+
+        :type lastseenbysource: ``date``
+        :param lastseenbysource: The last seen date of the indicator.
+
+        :type tags: ``list``
+        :param tags: The tags of the indicator.
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
@@ -2198,7 +2226,8 @@ class Common(object):
 
         def __init__(self, dbot_score, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None,
                      sha512=None, ssdeep=None, extension=None, file_type=None, hostname=None, path=None, company=None,
-                     product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None):
+                     product_name=None, digital_signature__publisher=None, signature=None, actor=None,
+                     firstseenbysource=None, lastseenbysource=None, tags=None):
 
             self.name = name
             self.entry_id = entry_id
@@ -2217,6 +2246,8 @@ class Common(object):
             self.digital_signature__publisher = digital_signature__publisher
             self.signature = signature
             self.actor = actor
+            self.firstseenbysource = firstseenbysource
+            self.lastseenbysource = lastseenbysource
             self.tags = tags
 
             self.dbot_score = dbot_score
@@ -2260,6 +2291,10 @@ class Common(object):
                 file_context['Signature'] = self.signature.to_context()
             if self.actor:
                 file_context['Actor'] = self.actor
+            if self.firstseenbysource:
+                file_context['FirstSeenBySource'] = self.firstseenbysource
+            if self.lastseenbysource:
+                file_context['LastSeenBySource'] = self.lastseenbysource
             if self.tags:
                 file_context['Tags'] = self.tags
 
@@ -2352,6 +2387,15 @@ class Common(object):
         :type category: ``str``
         :param category: The category associated with the indicator.
 
+        :type firstseenbysource: ``date``
+        :param firstseenbysource: The first seen date of the indicator.
+
+        :type lastseenbysource: ``date``
+        :param lastseenbysource: The last seen date of the indicator.
+
+        :type tags: ``list``
+        :param tags: The tags of the indicator.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
 
@@ -2360,11 +2404,15 @@ class Common(object):
         """
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None):
+        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
+                     firstseenbysource=None, lastseenbysource=None, tags=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
             self.category = category
+            self.firstseenbysource = firstseenbysource
+            self.lastseenbysource = lastseenbysource
+            self.tags = tags
 
             self.dbot_score = dbot_score
 
@@ -2381,6 +2429,15 @@ class Common(object):
 
             if self.category:
                 url_context['Category'] = self.category
+
+            if self.firstseenbysource:
+                url_context['FirstSeenBySource'] = self.firstseenbysource
+
+            if self.lastseenbysource:
+                url_context['LastSeenBySource'] = self.lastseenbysource
+
+            if self.tags:
+                url_context['Tags'] = self.tags
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 url_context['Malicious'] = {
@@ -2408,7 +2465,8 @@ class Common(object):
                      domain_status=None, name_servers=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
-                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None):
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None,
+                     firstseenbysource=None, lastseenbysource=None, tags=None):
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
@@ -2432,6 +2490,10 @@ class Common(object):
             self.admin_email = admin_email
             self.admin_phone = admin_phone
             self.admin_country = admin_country
+
+            self.firstseenbysource = firstseenbysource
+            self.lastseenbysource = lastseenbysource
+            self.tags = tags
 
             self.domain_status = domain_status
             self.name_servers = name_servers
@@ -2504,6 +2566,15 @@ class Common(object):
             if self.name_servers:
                 domain_context['NameServers'] = self.name_servers
                 whois_context['NameServers'] = domain_context['NameServers']
+
+            if self.firstseenbysource:
+                domain_context['FirstSeenBySource'] = self.firstseenbysource
+
+            if self.lastseenbysource:
+                domain_context['LastSeenBySource'] = self.lastseenbysource
+
+            if self.tags:
+                domain_context['Tags'] = self.tags
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {

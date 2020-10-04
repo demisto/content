@@ -1,6 +1,6 @@
 from typing import Optional
 
-import demistomock as demisto
+# import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
@@ -1319,6 +1319,8 @@ def search_ip_command(ip):
         indicator = raw_res.get('indicator')
         raw_tags = raw_res.get('tags')
 
+        autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+
         score = calculate_dbot_score(indicator, indicator_type)
         dbot_score = Common.DBotScore(
             indicator=ip_address,
@@ -1326,13 +1328,13 @@ def search_ip_command(ip):
             integration_name=VENDOR_NAME,
             score=score
         )
-
         ip = Common.IP(
             ip=ip_address,
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            firstseenbysource=autofocus_ip_output.get('FirstSeen'),
+            lastseenbysource=autofocus_ip_output.get('LastSeen'),
+            tags=autofocus_ip_output.get('Tags'),
         )
-
-        autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         # create human readable markdown for ip
         tags = autofocus_ip_output.get('Tags')
@@ -1381,8 +1383,9 @@ def search_domain_command(args):
         indicator = raw_res.get('indicator')
         raw_tags = raw_res.get('tags')
 
-        score = calculate_dbot_score(indicator, indicator_type)
+        autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
+        score = calculate_dbot_score(indicator, indicator_type)
         dbot_score = Common.DBotScore(
             indicator=domain_name,
             indicator_type=DBotScoreType.DOMAIN,
@@ -1396,16 +1399,14 @@ def search_domain_command(args):
             creation_date=indicator.get('whoisDomainCreationDate'),
             expiration_date=indicator.get('whoisDomainExpireDate'),
             updated_date=indicator.get('whoisDomainUpdateDate'),
-
             admin_email=indicator.get('whoisAdminEmail'),
             admin_name=indicator.get('whoisAdminName'),
-
             registrar_name=indicator.get('whoisRegistrar'),
-
-            registrant_name=indicator.get('whoisRegistrant')
+            registrant_name=indicator.get('whoisRegistrant'),
+            firstseenbysource=indicator.get('FirstSeen'),
+            lastseenbysource=indicator.get('LastSeen'),
+            tags=indicator.get('Tags'),
         )
-
-        autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         # create human readable markdown for ip
         tags = autofocus_domain_output.get('Tags')
@@ -1455,8 +1456,9 @@ def search_url_command(url):
         indicator = raw_res.get('indicator')
         raw_tags = raw_res.get('tags')
 
-        score = calculate_dbot_score(indicator, indicator_type)
+        autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
+        score = calculate_dbot_score(indicator, indicator_type)
         dbot_score = Common.DBotScore(
             indicator=url_name,
             indicator_type=DBotScoreType.URL,
@@ -1466,10 +1468,11 @@ def search_url_command(url):
 
         url = Common.URL(
             url=url_name,
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            firstseenbysource=indicator.get('FirstSeen'),
+            lastseenbysource=indicator.get('LastSeen'),
+            tags=indicator.get('Tags'),
         )
-
-        autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         tags = autofocus_url_output.get('Tags')
         table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {url_name}'
@@ -1517,6 +1520,8 @@ def search_file_command(file):
         indicator = raw_res.get('indicator')
         raw_tags = raw_res.get('tags')
 
+        autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+
         score = calculate_dbot_score(indicator, indicator_type)
         dbot_score = Common.DBotScore(
             indicator=sha256,
@@ -1527,10 +1532,11 @@ def search_file_command(file):
 
         file = Common.File(
             sha256=sha256,
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            firstseenbysource=indicator.get('FirstSeen'),
+            lastseenbysource=indicator.get('LastSeen'),
+            tags=indicator.get('Tags'),
         )
-
-        autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         tags = autofocus_file_output.get('Tags')
         table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {sha256}'
