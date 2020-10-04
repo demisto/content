@@ -494,7 +494,7 @@ inputs:
 - key: IncidentID
   value: {}
   required: false
-  description: ServiceNow Incident number to mirror.
+  description: ServiceNow Incident ID to mirror.
   playbookInputQuery:
 - key: MirrorInstanceName
   value: {}
