@@ -1231,8 +1231,10 @@ def enrich_offenses_with_assets_and_source_destination_addresses(
                 assets_ips = get_asset_ips_and_enrich_offense_addresses(
                     offense, src_adrs, dst_adrs, not ip_enrich
                 )
-                if asset_enrich and (assets := get_assets_for_offense(client, assets_ips)):
-                    offense["assets"] = assets
+                if asset_enrich:
+                    assets = get_assets_for_offense(client, assets_ips)
+                    if assets:
+                        offense["assets"] = assets
     finally:
         return offenses
 
