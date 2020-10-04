@@ -3127,7 +3127,8 @@
         "DuoAdmin API test playbook": "Issue 24937",
         "GmailTest": "Issue 27057",
         "playbook-SafeBreach-Test": "Issue 21205",
-        "IllusiveNetworks-Test": "Issue 29087"
+        "IllusiveNetworks-Test": "Issue 29087",
+        "Code42-Test": "Issue 29093"
     },
     "skipped_integrations": {
 
