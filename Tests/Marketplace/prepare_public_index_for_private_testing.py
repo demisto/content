@@ -18,7 +18,7 @@ LOCK_FILE_PATH = 'lock.txt'
 @contextmanager
 def lock_and_unlock_dummy_index(public_storage_bucket, dummy_index_lock_path):
     try:
-        lock_dummy_index(public_storage_bucket, dummy_index_lock_path)
+        acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
         yield
     except Exception as e:
         print(f"Exception is: {str(e)}")
