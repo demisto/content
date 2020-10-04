@@ -49,8 +49,7 @@ tasks:
       details: {}
       extend-context: {}
       labels:
-        simple: '[{"url": "https://www.threathq.com"}, {"ip": "123.57.77.130"}, {"hash":
-          "666a8dbc172bcf7cd698bf95e5b58de17535121fed7de5ce1349db4446a1fa5c"}]'
+        simple: '[{"url": "https://www.threathq.com"}, {"ip": "123.57.77.130"}, {"hash": "666a8dbc172bcf7cd698bf95e5b58de17535121fed7de5ce1349db4446a1fa5c"}]'
       name: {}
       owner: {}
       playbook: {}
@@ -183,3 +182,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

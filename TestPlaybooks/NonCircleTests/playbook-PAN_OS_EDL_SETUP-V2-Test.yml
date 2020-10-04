@@ -246,8 +246,7 @@ tasks:
       id: 5646efaf-932d-47ea-8a5c-42bcad9c14c6
       version: -1
       name: Dump internal list content to context
-      description: Dumps (copies) instance context to either the incident context
-        or a file.
+      description: Dumps (copies) instance context to either the incident context or a file.
       script: '|||pan-os-edl-dump-internal-list'
       type: regular
       iscommand: true
@@ -417,3 +416,6 @@ inputs:
   required: false
   description: the name of the external file
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

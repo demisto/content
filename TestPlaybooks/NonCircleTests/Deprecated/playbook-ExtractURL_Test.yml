@@ -38,8 +38,7 @@ tasks:
       id: 404b82b0-817d-43e4-8d10-e4a244edc254
       version: -1
       name: ExtractURL
-      description: Extract URLs from the given text and place them both as output
-        and in the context of a playbook. If given an object, will convert to JSON.
+      description: Extract URLs from the given text and place them both as output and in the context of a playbook. If given an object, will convert to JSON.
       script: ExtractURL
       type: regular
       iscommand: false
@@ -85,8 +84,7 @@ tasks:
       right:
         simple: https://google.com?bla=www.nba.com
       value:
-        simple: ${URL.Data(val.indexOf('https://google.com?bla=www.nba.com&kuku=lalahttp://www.cnn.com&nana=http://1.2.3.4')
-          === 0)}
+        simple: ${URL.Data(val.indexOf('https://google.com?bla=www.nba.com&kuku=lalahttp://www.cnn.com&nana=http://1.2.3.4') === 0)}
     separatecontext: false
     view: |-
       {
@@ -249,3 +247,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

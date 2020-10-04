@@ -227,8 +227,7 @@ tasks:
       id: "332"
       version: -1
       name: Search file
-      description: Search for files on multiple hosts, using file hash, extension,
-        file size, and other search criteria.
+      description: Search for files on multiple hosts, using file hash, extension, file size, and other search criteria.
       script: '|||fidelis-endpoint-file-search'
       type: regular
       iscommand: true
@@ -1078,3 +1077,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

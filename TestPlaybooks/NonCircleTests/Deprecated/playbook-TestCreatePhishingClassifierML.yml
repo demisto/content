@@ -36,8 +36,7 @@ tasks:
       id: 024c14f4-bbeb-4269-8dbc-399eaa48daa4
       version: -1
       name: CreatePhishingClassifierML
-      description: Create a phishing classifier using machine learning technique,
-        based on email content
+      description: Create a phishing classifier using machine learning technique, based on email content
       playbookName: DBot Create Phishing Classifier
       type: playbook
       iscommand: false
@@ -396,3 +395,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

@@ -40,8 +40,7 @@ tasks:
       id: 3b9762a2-4911-4632-8989-f5b7fb534b46
       version: -1
       name: ExtractEmail
-      description: Extract Emails from the given text and place them both as output
-        and in the context of a playbook. If given an object, will convert to JSON.
+      description: Extract Emails from the given text and place them both as output and in the context of a playbook. If given an object, will convert to JSON.
       script: ExtractEmail
       type: regular
       iscommand: false
@@ -73,8 +72,7 @@ tasks:
       id: cea56ee7-aca9-4240-86b7-e2cc6ad3c97c
       version: -1
       name: ExtractHash
-      description: Extract md5, sha1, sha256 from the given text and place them both
-        as output and in the context of a playbook
+      description: Extract md5, sha1, sha256 from the given text and place them both as output and in the context of a playbook
       script: ExtractHash
       type: regular
       iscommand: false
@@ -109,8 +107,7 @@ tasks:
       id: b679f00b-e759-47fc-861b-aa49e9179126
       version: -1
       name: ExtractIP
-      description: Extract IPs from the given text and place them both as output and
-        in the context of a playbook.
+      description: Extract IPs from the given text and place them both as output and in the context of a playbook.
       script: ExtractIP
       type: regular
       iscommand: false
@@ -769,3 +766,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

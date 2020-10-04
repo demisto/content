@@ -226,6 +226,11 @@ def edit_reputations_json(new_to_version):
         ujson.dump(rep_content, f, indent=4, encode_html_chars=True)
 
 
+def edit_non_circle_tests(new_to_version):
+    edit_playbooks_directory(new_to_version, 'TestPlaybooks')
+    edit_playbooks_directory(new_to_version, os.path.join('TestPlaybooks', 'NonCircleTests', 'Deprecated'))
+
+
 def main():
     new_to_version = parser.parse_args().new_to_version
     if new_to_version.count('.') == 1:
@@ -235,7 +240,7 @@ def main():
     edit_all_packs(new_to_version)
 
     edit_reputations_json(new_to_version)
-
+    edit_non_circle_tests(new_to_version)
     click.secho("Deleting empty directories\n")
     subprocess.call(["find", "Packs", "-type", "d", "-empty", "-delete"])
 

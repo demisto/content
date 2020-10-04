@@ -132,8 +132,7 @@ tasks:
       id: 414adf2d-d6d4-4c63-8799-6388498d254c
       version: -1
       name: Check if URL decoded correctly
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       script: AreValuesEqual
       type: condition
       iscommand: false
@@ -231,11 +230,14 @@ inputs:
     simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__click.email.runrocknroll.com_-3Fqs-3D3399a02bcfe05857350e94d66fd69e46a560a106e06d86e4a3b4662dfee779a80faed86d6690e500dbecd1c29c095d37a9e3b86fd3b2d4fe&d=DwMCAg&c=zUSW9Sw6oKY41zSJbj5J3w&r=iS3ZuoeZ1yaYppIXUoPsWqTPKlEYaBW589w4TanZDw4&m=54km3Jd2D7cQOiBejejbVtTEUvgMb4o5jdhpzsDRWzs&s=acsysafcaHo2XheywEUD3BREeLNfq1P6wtmHijY5bMg&e=
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: DecodedURL
   value:
     simple: http://click.email.runrocknroll.com/?qs=3399a02bcfe05857350e94d66fd69e46a560a106e06d86e4a3b4662dfee779a80faed86d6690e500dbecd1c29c095d37a9e3b86fd3b2d4fe
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+toversion: 4.5.9
+tests:
+- No test
