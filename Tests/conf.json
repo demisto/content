@@ -3126,7 +3126,9 @@
         "pyEWS_Test": "Issue 28339",
         "DuoAdmin API test playbook": "Issue 24937",
         "GmailTest": "Issue 27057",
-        "SafeBreach v2": "Issue 21205"
+        "playbook-SafeBreach-Test": "Issue 21205",
+        "IllusiveNetworks-Test": "Issue 29087",
+        "Recorded Future Test Playbook": "Issue 29090"
     },
     "skipped_integrations": {
 
