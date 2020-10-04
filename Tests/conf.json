@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Endpoint Configuration Manager",
+            "playbookID": "Microsoft ECM - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "CrowdStrike Falcon Intel v2",
             "playbookID": "CrowdStrike Falcon Intel v2 - Test",
             "fromversion": "5.0.0"
@@ -3030,6 +3035,12 @@
             "playbookID": "Imperva WAF - Test"
         },
         {
+            "integrations": "CheckPointFirewall_v2",
+            "playbookID": "checkpoint-testplaybook",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
@@ -3171,6 +3182,7 @@
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
         "Check Point": "Issue 18643",
+        "CheckPointFirewall_v2": "Issue 18643",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Jask": "Issue 18879",
@@ -3252,6 +3264,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Microsoft Endpoint Configuration Manager": "Uses Microsoft winRM",
         "VirusTotal - Private API": "proxy failures with recording. related issues: 26463, 28888",
         "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",
         "BPA": "Playbook using GenericPolling which is inconsistent",
