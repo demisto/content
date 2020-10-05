@@ -1,14 +1,14 @@
 {
-    "name": "SplunkPy",
-    "description": "Run queries on Splunk servers.",
+    "name": "Feed OpenCTI",
+    "description": "Ingest indicator feeds from OpenCTI.",
     "support": "xsoar",
-  "currentVersion": "1.2.3",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-04-14T00:00:00Z",
+    "created": "2020-08-04T09:29:46Z",
     "categories": [
-        "Analytics & SIEM"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
     "useCases": [],
