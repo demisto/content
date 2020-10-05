@@ -439,7 +439,11 @@ def search_reports_command(triage_instance) -> None:
     created_at = parse_date_range(demisto.args().get('created_at', '7 days'))[
         0
     ].replace(tzinfo=timezone.utc)
-    max_matches = int(demisto.getArg('max_matches'))  # type: int
+    try:
+        max_matches = int(demisto.getArg('max_matches'))  # type: int
+    except ValueError:
+        return_error("max_matches must be an integer if specified")
+        return
     verbose = demisto.getArg('verbose') == "true"
 
     try:
@@ -537,6 +541,12 @@ def search_inbox_reports_command(triage_instance) -> None:
         return_outputs("Reporter not found.", {}, {})
         return
 
+    try:
+        max_pages = int(demisto.getArg("max_matches") or 10) / 10  # TODO Triage's number of items per page
+    except ValueError:
+        return_error("max_matches must be an integer if specified")
+        return
+
     reports = TriageInboxReports(
         triage_instance,
         start_date=reported_at,
@@ -546,8 +556,7 @@ def search_inbox_reports_command(triage_instance) -> None:
             "file_hash": demisto.getArg("file_hash"),
             **reporters_clause,
         },
-        max_pages=int(demisto.getArg("max_matches") or 10)
-        / 10,  # TODO Triage's number of items per page
+        max_pages=max_pages,
     ).inbox_reports()
 
     if not reports:
