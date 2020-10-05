@@ -50,6 +50,10 @@ configuration:
     name: isFetch
     required: false
     type: 8
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: fasle
+    type: 8
 script:
   commands:
     - name: wootcloud-get-pkt-alerts
