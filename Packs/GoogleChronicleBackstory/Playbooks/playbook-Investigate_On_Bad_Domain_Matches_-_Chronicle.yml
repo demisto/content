@@ -2,8 +2,7 @@ id: Investigate On Bad Domain Matches - Chronicle
 version: -1
 name: Investigate On Bad Domain Matches - Chronicle
 description: |-
-  Use this playbook to investigate and remediate Bad IOC domain matches with recent activity found in the enterprise, as well as 
- notify the SOC lead and network team about the matches.
+  Use this playbook to investigate and remediate Bad IOC domain matches with recent activity found in the enterprise, as well as notify the SOC lead and network team about the matches.
   Supported Integrations:
   - Chronicle
   - Whois
@@ -242,7 +241,8 @@ tasks:
       id: 9dcfa248-f379-4d2e-896f-c90af39f16b7
       version: -1
       name: Notify network team
-      description: Sends an email to the network team that a malicious domain has been detected.
+      description: Sends an email to the network team that a malicious domain has
+        been detected.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -538,8 +538,8 @@ tasks:
       subject:
         simple: please enter the userid and tagname
       body:
-        simple: 'Hi, Please provide the user id for the employee, and the corresponding tagname, that is
-          trying to access this bad domain? '
+        simple: 'Hi, Please provide the user id for the employee, and the corresponding
+          tagname, that is trying to access this bad domain? '
       methods:
       - email
       format: ""
@@ -1125,8 +1125,8 @@ tasks:
       id: 307d253e-5072-438f-8a36-f6e9e39ec58c
       version: -1
       name: Get userid and tagname
-      description: Collect the user id, and the corresponding tag name, for the employee that is trying to get access
-        to this bad domain.
+      description: Collect the user id, and the corresponding tag name, for the employee
+        that is trying to get access to this bad domain.
       type: collection
       iscommand: false
       brand: ""
@@ -1157,8 +1157,8 @@ tasks:
       subject:
         simple: please enter the userid and tagname
       body:
-        simple: 'Hi, Please provide the user id, and the corresponding tag name, for the employee that is trying
-          to get access to this bad domain. '
+        simple: 'Hi, Please provide the user id, and the corresponding tag name, for
+          the employee that is trying to get access to this bad domain. '
       methods: []
       format: ""
       bcc:
@@ -1251,8 +1251,8 @@ tasks:
       id: d735d256-8d4d-45f2-83e7-ff215fd39c11
       version: -1
       name: Get stakeholder email address.
-      description: Collect the user id, and the corresponding tag name, for the employee that is trying to get access
-        to this bad domain.
+      description: Collect the user id, and the corresponding tag name, for the employee
+        that is trying to get access to this bad domain.
       type: collection
       iscommand: false
       brand: ""
@@ -1446,7 +1446,8 @@ inputs:
 - key: stakeholder_email
   value: {}
   required: false
-  description: Enter the email of the stakeholder to whom you want to send the investigation summary report.
+  description: Enter the email of the stakeholder to whom you want to send the investigation
+    summary report.
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
