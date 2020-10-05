@@ -58,238 +58,238 @@ script:
     name: fortimanager-devices-list
     outputs:
     - contextPath: FortiManager.Device.adm_pass
-      description: 'ADOM password.'
+      description: ADOM password.
       type: String
     - contextPath: FortiManager.Device.adm_usr
-      description: 'ADOM user.'
+      description: ADOM user.
       type: String
     - contextPath: FortiManager.Device.app_ver
-      description: 'Device app version.'
+      description: Device app version.
       type: String
     - contextPath: FortiManager.Device.av_ver
-      description: 'Device AV version.'
+      description: Device AV version.
       type: String
     - contextPath: FortiManager.Device.beta
-      description: 'Beta.'
+      description: Beta.
       type: Number
     - contextPath: FortiManager.Device.branch_pt
-      description: 'Branch pt.'
+      description: Branch pt.
       type: Number
     - contextPath: FortiManager.Device.build
-      description: 'Build.'
+      description: Build.
       type: Number
     - contextPath: FortiManager.Device.checksum
-      description: 'Checksum.'
+      description: Checksum.
       type: String
     - contextPath: FortiManager.Device.conf_status
-      description: 'Conf status'
+      description: Conf status
       type: String
     - contextPath: FortiManager.Device.conn_mode
-      description: 'Conn mode'
+      description: Conn mode
       type: String
     - contextPath: FortiManager.Device.conn_status
-      description: 'Conn status.'
+      description: Conn status.
       type: String
     - contextPath: FortiManager.Device.db_status
-      description: 'DB status.'
+      description: DB status.
       type: String
     - contextPath: FortiManager.Device.desc
-      description: 'Desc.'
+      description: Desc.
       type: String
     - contextPath: FortiManager.Device.dev_status
-      description: 'Device status.'
+      description: Device status.
       type: String
     - contextPath: FortiManager.Device.fap_cnt
-      description: 'Fap count.'
+      description: Fap count.
       type: Number
     - contextPath: FortiManager.Device.faz.full_act
-      description: 'Full act.'
+      description: Full act.
       type: Number
     - contextPath: FortiManager.Device.faz.perm
-      description: 'Perm.'
+      description: Perm.
       type: Number
     - contextPath: FortiManager.Device.faz.quota
-      description: 'Quota'
+      description: Quota
       type: Number
     - contextPath: FortiManager.Device.faz.used
-      description: 'Used.'
+      description: Used.
       type: Number
     - contextPath: FortiManager.Device.fex_cnt
-      description: 'Fex count.'
+      description: Fex count.
       type: Number
     - contextPath: FortiManager.Device.flags
-      description: 'Flags.'
+      description: Flags.
       type: String
     - contextPath: FortiManager.Device.foslic_cpu
-      description: 'Foslic cpu.'
+      description: Foslic cpu.
       type: Number
     - contextPath: FortiManager.Device.foslic_dr_site
-      description: 'Foslic dr site.'
+      description: Foslic dr site.
       type: String
     - contextPath: FortiManager.Device.foslic_inst_time
-      description: 'Foslic inst time.'
+      description: Foslic inst time.
       type: Number
     - contextPath: FortiManager.Device.foslic_last_sync
-      description: 'Foslic Last sync.'
+      description: Foslic Last sync.
       type: Number
     - contextPath: FortiManager.Device.foslic_ram
-      description: 'Foslic RAM.'
+      description: Foslic RAM.
       type: Number
     - contextPath: FortiManager.Device.foslic_type
-      description: 'Foslic Type.'
+      description: Foslic Type.
       type: String
     - contextPath: FortiManager.Device.foslic_utm
-      description: 'Foslic UTM.'
+      description: Foslic UTM.
       type: String
     - contextPath: FortiManager.Device.fsw_cnt
-      description: 'FSW count.'
+      description: FSW count.
       type: Number
     - contextPath: FortiManager.Device.ha_group_id
-      description: 'Ha group id.'
+      description: Ha group id.
       type: Number
     - contextPath: FortiManager.Device.ha_group_name
-      description: 'Ha group name.'
+      description: Ha group name.
       type: String
     - contextPath: FortiManager.Device.ha_mode
-      description: 'Ha mode.'
+      description: Ha mode.
       type: String
     - contextPath: FortiManager.Device.hdisk_size
-      description: 'Hard disk size.'
+      description: Hard disk size.
       type: Number
     - contextPath: FortiManager.Device.hostname
-      description: 'Hostname.'
+      description: Hostname.
       type: String
     - contextPath: FortiManager.Device.hw_rev_major
-      description: 'HW rev major.'
+      description: HW rev major.
       type: Number
     - contextPath: FortiManager.Device.hw_rev_minor
-      description: 'HW rev minor.'
+      description: HW rev minor.
       type: Number
     - contextPath: FortiManager.Device.ip
-      description: 'Device IP.'
+      description: Device IP.
       type: String
     - contextPath: FortiManager.Device.ips_ext
-      description: 'External IP.'
+      description: External IP.
       type: Number
     - contextPath: FortiManager.Device.ips_ver
-      description: 'IP version.'
+      description: IP version.
       type: String
     - contextPath: FortiManager.Device.last_checked
-      description: 'Last checked.'
+      description: Last checked.
       type: Number
     - contextPath: FortiManager.Device.last_resync
-      description: 'Last resync.'
+      description: Last resync.
       type: Number
     - contextPath: FortiManager.Device.latitude
-      description: 'Latitude.'
+      description: Latitude.
       type: String
     - contextPath: FortiManager.Device.lic_flags
-      description: 'Lic flags.'
+      description: Lic flags.
       type: Number
     - contextPath: FortiManager.Device.lic_region
-      description: 'Lic region.'
+      description: Lic region.
       type: String
     - contextPath: FortiManager.Device.location_from
-      description: 'Location from.'
+      description: Location from.
       type: String
     - contextPath: FortiManager.Device.logdisk_size
-      description: 'Log disk size.'
+      description: Log disk size.
       type: Number
     - contextPath: FortiManager.Device.longitude
-      description: 'Longitude.'
+      description: Longitude.
       type: String
     - contextPath: FortiManager.Device.maxvdom
-      description: 'Max VDOM.'
+      description: Max VDOM.
       type: Number
     - contextPath: FortiManager.Device.meta_fields
-      description: 'Meta fields.'
+      description: Meta fields.
       type: String
     - contextPath: FortiManager.Device.mgmt_id
-      description: 'Management ID.'
+      description: Management ID.
       type: Number
     - contextPath: FortiManager.Device.mgmt_if
-      description: 'Management IF.'
+      description: Management IF.
       type: String
     - contextPath: FortiManager.Device.mgmt_mode
-      description: 'Management mode.'
+      description: Management mode.
       type: String
     - contextPath: FortiManager.Device.mgt_vdom
-      description: 'Management VDOM.'
+      description: Management VDOM.
       type: String
     - contextPath: FortiManager.Device.module_sn
-      description: 'Module sn.'
+      description: Module sn.
       type: String
     - contextPath: FortiManager.Device.mr
-      description: 'Mr.'
+      description: Mr.
       type: Number
     - contextPath: FortiManager.Device.name
-      description: 'Device name.'
+      description: Device name.
       type: String
     - contextPath: FortiManager.Device.os_type
-      description: 'Device OS type.'
+      description: Device OS type.
       type: String
     - contextPath: FortiManager.Device.os_ver
-      description: 'Device OS version.'
+      description: Device OS version.
       type: String
     - contextPath: FortiManager.Device.patch
-      description: 'Patch.'
+      description: Patch.
       type: Number
     - contextPath: FortiManager.Device.platform_str
-      description: 'Platform string.'
+      description: Platform string.
       type: String
     - contextPath: FortiManager.Device.prefer_img_ver
-      description: 'Prefer image version.'
+      description: Prefer image version.
       type: String
     - contextPath: FortiManager.Device.prio
-      description: 'Prio.'
+      description: Prio.
       type: Number
     - contextPath: FortiManager.Device.psk
-      description: 'PSK.'
+      description: PSK.
       type: String
     - contextPath: FortiManager.Device.role
-      description: 'Device role.'
+      description: Device role.
       type: String
     - contextPath: FortiManager.Device.sn
-      description: 'SN.'
+      description: SN.
       type: String
     - contextPath: FortiManager.Device.vdom.comments
-      description: 'VDOM comments.'
+      description: VDOM comments.
       type: String
     - contextPath: FortiManager.Device.vdom.name
-      description: 'VDOM name.'
+      description: VDOM name.
       type: String
     - contextPath: FortiManager.Device.vdom.opmode
-      description: 'VDOM opmode.'
+      description: VDOM opmode.
       type: String
     - contextPath: FortiManager.Device.vdom.rtm_prof_id
-      description: 'VDOM rtm prof id.'
+      description: VDOM rtm prof id.
       type: Number
     - contextPath: FortiManager.Device.vdom.status
-      description: 'VDOM status.'
+      description: VDOM status.
       type: String
     - contextPath: FortiManager.Device.vdom.vpn_id
-      description: 'VDOM VPN id.'
+      description: VDOM VPN id.
       type: Number
     - contextPath: FortiManager.Device.version
-      description: 'Device version.'
+      description: Device version.
       type: Number
     - contextPath: FortiManager.Device.vm_cpu
-      description: 'VM CPU.'
+      description: VM CPU.
       type: Number
     - contextPath: FortiManager.Device.vm_cpu_limit
-      description: 'VM CPU limit.'
+      description: VM CPU limit.
       type: Number
     - contextPath: FortiManager.Device.vm_lic_expire
-      description: 'VM licence expiration.'
+      description: VM licence expiration.
       type: Number
     - contextPath: FortiManager.Device.vm_mem
-      description: 'VM memory.'
+      description: VM memory.
       type: Number
     - contextPath: FortiManager.Device.vm_mem_limit
-      description: 'VM memory limit.'
+      description: VM memory limit.
       type: Number
     - contextPath: FortiManager.Device.vm_status
-      description: 'VM status.'
+      description: VM status.
       type: Number
   - arguments:
     - default: false
@@ -311,19 +311,19 @@ script:
     name: fortimanager-device-groups-list
     outputs:
     - contextPath: FortiManager.DeviceGroup.desc
-      description: 'Desc.'
+      description: Desc.
       type: String
     - contextPath: FortiManager.DeviceGroup.meta_fields
-      description: 'Device group meta fields.'
+      description: Device group meta fields.
       type: String
     - contextPath: FortiManager.DeviceGroup.name
-      description: 'Device group name.'
+      description: Device group name.
       type: String
     - contextPath: FortiManager.DeviceGroup.os_type
-      description: 'Device group OS type.'
+      description: Device group OS type.
       type: String
     - contextPath: FortiManager.DeviceGroup.type
-      description: 'Device group type'
+      description: Device group type
       type: String
   - arguments:
     - default: false
@@ -354,100 +354,102 @@ script:
     deprecated: false
     description: List ADOM firewall IPv4 addresses
     execution: false
-    name: fortimanager-addresses-list
+    name: fortimanager-address-list
     outputs:
     - contextPath: FortiManager.Address._image-base64
-      description: 'Base64 of the address image'
+      description: Base64 of the address image
       type: String
     - contextPath: FortiManager.Address.allow-routing
-      description: 'Enable/disable use of this address in the static route configuration.'
+      description: Enable/disable use of this address in the static route configuration.
       type: String
     - contextPath: FortiManager.Address.associated-interface
-      description: 'Network interface associated with address.'
+      description: Network interface associated with address.
       type: String
     - contextPath: FortiManager.Address.cache-ttl
-      description: 'Defines the minimal TTL of individual IP addresses in FQDN cache measured in seconds.'
+      description: Defines the minimal TTL of individual IP addresses in FQDN cache
+        measured in seconds.
       type: Number
     - contextPath: FortiManager.Address.color
-      description: 'Color of icon on the GUI.'
+      description: Color of icon on the GUI.
       type: Number
     - contextPath: FortiManager.Address.comment
-      description: 'Comments attached to the address.'
+      description: Comments attached to the address.
       type: String
     - contextPath: FortiManager.Address.country
-      description: 'IP addresses associated to a specific country.'
+      description: IP addresses associated to a specific country.
       type: String
     - contextPath: FortiManager.Address.dynamic_mapping
-      description: 'Address dynamic mapping information.'
+      description: Address dynamic mapping information.
       type: String
     - contextPath: FortiManager.Address.end-ip
-      description: 'Final IP address (inclusive) in the range for the address.'
+      description: Final IP address (inclusive) in the range for the address.
       type: String
     - contextPath: FortiManager.Address.epg-name
-      description: 'Endpoint group name.'
+      description: Endpoint group name.
       type: String
     - contextPath: FortiManager.Address.filter
-      description: 'Match criteria filter.'
+      description: Match criteria filter.
       type: String
     - contextPath: FortiManager.Address.fqdn
-      description: 'Fully Qualified Domain Name address.'
+      description: Fully Qualified Domain Name address.
       type: String
     - contextPath: FortiManager.Address.list.ip
-      description: 'IP list associated with the address.'
+      description: IP list associated with the address.
       type: String
     - contextPath: FortiManager.Address.name
-      description: 'Address name.'
+      description: Address name.
       type: String
     - contextPath: FortiManager.Address.obj-id
-      description: 'Object ID for NSX.'
+      description: Object ID for NSX.
       type: String
     - contextPath: FortiManager.Address.organization
       description: 'Organization domain name (Syntax: organization/domain).'
       type: String
     - contextPath: FortiManager.Address.policy-group
-      description: 'Policy group name.'
+      description: Policy group name.
       type: String
     - contextPath: FortiManager.Address.sdn
-      description: 'SDN.'
+      description: SDN.
       type: String
     - contextPath: FortiManager.Address.sdn-tag
-      description: 'SDN Tag.'
+      description: SDN Tag.
       type: String
     - contextPath: FortiManager.Address.start-ip
-      description: 'First IP address (inclusive) in the range for the address.'
+      description: First IP address (inclusive) in the range for the address.
       type: String
     - contextPath: FortiManager.Address.subnet
-      description: 'IP address and subnet mask of address.'
+      description: IP address and subnet mask of address.
       type: String
     - contextPath: FortiManager.Address.subnet-name
-      description: 'Subnet name.'
+      description: Subnet name.
       type: String
     - contextPath: FortiManager.Address.tagging.category
-      description: 'Tag category.'
+      description: Tag category.
       type: String
     - contextPath: FortiManager.Address.tagging.name
-      description: 'Tagging entry name.'
+      description: Tagging entry name.
       type: String
     - contextPath: FortiManager.Address.tagging.tags
-      description: 'Tags.'
+      description: Tags.
       type: String
     - contextPath: FortiManager.Address.tenant
-      description: 'Tenant.'
+      description: Tenant.
       type: String
     - contextPath: FortiManager.Address.type
-      description: 'Type of address.'
+      description: Type of address.
       type: String
     - contextPath: FortiManager.Address.uuid
-      description: 'Universally Unique Identifier (UUID; automatically assigned but can be manually reset).'
+      description: Universally Unique Identifier (UUID; automatically assigned but
+        can be manually reset).
       type: String
     - contextPath: FortiManager.Address.visibility
-      description: 'Enable/disable address visibility in the GUI.'
+      description: Enable/disable address visibility in the GUI.
       type: String
     - contextPath: FortiManager.Address.wildcard
-      description: 'IP address and wildcard netmask.'
+      description: IP address and wildcard netmask.
       type: String
     - contextPath: FortiManager.Address.wildcard-fqdn
-      description: 'Fully Qualified Domain Name with wildcard characters.'
+      description: Fully Qualified Domain Name with wildcard characters.
       type: String
   - arguments:
     - default: false
@@ -476,84 +478,86 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List ADOM IPv4 address groupsאני
+    description: List ADOM IPv4 address groups
     execution: false
-    name: fortimanager-address-groups-list
+    name: fortimanager-address-group-list
     outputs:
     - contextPath: FortiManager.AddressGroup._image-base64
-      description: 'Base64 of the address group image'
+      description: Base64 of the address group image
       type: String
     - contextPath: FortiManager.AddressGroup.allow-routing
-      description: 'Enable/disable use of this group in the static route configuration.'
+      description: Enable/disable use of this group in the static route configuration.
       type: String
     - contextPath: FortiManager.AddressGroup.color
-      description: 'Color of icon on the GUI.'
+      description: Color of icon on the GUI.
       type: Number
     - contextPath: FortiManager.AddressGroup.comment
-      description: 'Comment about the address group.'
+      description: Comment about the address group.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping._image-base64
-      description: 'Address group dynamic mapping base64 image.'
+      description: Address group dynamic mapping base64 image.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping._scope.name
-      description: 'Address group dynamic mapping scope name.'
+      description: Address group dynamic mapping scope name.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping._scope.vdom
-      description: 'Address group dynamic mapping scope VDOM.'
+      description: Address group dynamic mapping scope VDOM.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.allow-routing
-      description: 'Enable/disable use of this dynamic mapping in the static route configuration.'
+      description: Enable/disable use of this dynamic mapping in the static route
+        configuration.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.color
-      description: 'Color of icon on the GUI.'
+      description: Color of icon on the GUI.
       type: Number
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.comment
-      description: 'Comment about the address group dynamic mapping.'
+      description: Comment about the address group dynamic mapping.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.exclude
-      description: 'Whether to enable or disable the exclusion of the dynamic mapping.'
+      description: Whether to enable or disable the exclusion of the dynamic mapping.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.exclude-member
-      description: 'Exclude member.'
+      description: Exclude member.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.global-object
-      description: 'Global object.'
+      description: Global object.
       type: Number
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.member
-      description: 'Address group dynamic mapping member.'
+      description: Address group dynamic mapping member.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.tags
-      description: 'Address group dynamic mapping tags.'
+      description: Address group dynamic mapping tags.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.type
-      description: 'Address group dynamic mapping type.'
+      description: Address group dynamic mapping type.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.uuid
-      description: 'Address group dynamic mapping uuid.'
+      description: Address group dynamic mapping uuid.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.visibility
-      description: 'Address group dynamic mapping visibility.'
+      description: Address group dynamic mapping visibility.
       type: String
     - contextPath: FortiManager.AddressGroup.member
-      description: 'Address objects contained within the group.'
+      description: Address objects contained within the group.
       type: String
     - contextPath: FortiManager.AddressGroup.name
-      description: 'Address group name.'
+      description: Address group name.
       type: String
     - contextPath: FortiManager.AddressGroup.tagging.category
-      description: 'Tag category.'
+      description: Tag category.
       type: String
     - contextPath: FortiManager.AddressGroup.tagging.name
-      description: 'Tagging entry name.'
+      description: Tagging entry name.
       type: String
     - contextPath: FortiManager.AddressGroup.tagging.tags
-      description: 'Tags.'
+      description: Tags.
       type: String
     - contextPath: FortiManager.AddressGroup.uuid
-      description: 'Universally Unique Identifier (UUID; automatically assigned but can be manually reset).'
+      description: Universally Unique Identifier (UUID; automatically assigned but
+        can be manually reset).
       type: String
     - contextPath: FortiManager.AddressGroup.visibility
-      description: 'Enable/disable address visibility in the GUI.'
+      description: Enable/disable address visibility in the GUI.
       type: String
   - arguments:
     - default: false
@@ -587,10 +591,10 @@ script:
     name: fortimanager-service-categories-list
     outputs:
     - contextPath: FortiManager.ServiceCategory.comment
-      description: 'Comment.'
+      description: Comment.
       type: String
     - contextPath: FortiManager.ServiceCategory.name
-      description: 'Service category name.'
+      description: Service category name.
       type: String
   - arguments:
     - default: false
@@ -624,19 +628,19 @@ script:
     name: fortimanager-service-group-list
     outputs:
     - contextPath: FortiManager.ServiceGroup.color
-      description: 'Color of icon on the GUI.'
+      description: Color of icon on the GUI.
       type: Number
     - contextPath: FortiManager.ServiceGroup.comment
-      description: 'Comment.'
+      description: Comment.
       type: String
     - contextPath: FortiManager.ServiceGroup.member
-      description: 'Service objects contained within the group.'
+      description: Service objects contained within the group.
       type: String
     - contextPath: FortiManager.ServiceGroup.name
-      description: 'Address group name.'
+      description: Address group name.
       type: String
     - contextPath: FortiManager.ServiceGroup.proxy
-      description: 'Enable/disable web proxy service group.'
+      description: Enable/disable web proxy service group.
       type: String
   - arguments:
     - default: false
@@ -670,46 +674,46 @@ script:
     name: fortimanager-firewall-policy-package-list
     outputs:
     - contextPath: FortiManager.PolicyPackage.name
-      description: 'Policy Package name.'
+      description: Policy Package name.
       type: String
     - contextPath: FortiManager.PolicyPackage.obj_ver
-      description: 'Policy package object version.'
+      description: Policy package object version.
       type: Number
     - contextPath: FortiManager.PolicyPackage.oid
-      description: 'Policy package OID.'
+      description: Policy package OID.
       type: Number
     - contextPath: FortiManager.PolicyPackage.package setting.central-nat
-      description: 'Whether to use central NAT.'
+      description: Whether to use central NAT.
       type: String
     - contextPath: FortiManager.PolicyPackage.package setting.consolidated-firewall-mode
-      description: 'Whether to enable consolidate firewall mode.'
+      description: Whether to enable consolidate firewall mode.
       type: String
     - contextPath: FortiManager.PolicyPackage.package setting.fwpolicy-implicit-log
-      description: 'Whether to enable firewall policy implicit log.'
+      description: Whether to enable firewall policy implicit log.
       type: String
     - contextPath: FortiManager.PolicyPackage.package setting.fwpolicy6-implicit-log
-      description: 'Whether to enable firewall policy 6 implicit log.'
+      description: Whether to enable firewall policy 6 implicit log.
       type: String
     - contextPath: FortiManager.PolicyPackage.package setting.inspection-mode
-      description: 'Whether to enable inspection mode.'
+      description: Whether to enable inspection mode.
       type: String
     - contextPath: FortiManager.PolicyPackage.package setting.ngfw-mode
-      description: 'Whether to enable NGFW mode.'
+      description: Whether to enable NGFW mode.
       type: String
     - contextPath: FortiManager.PolicyPackage.package setting.ssl-ssh-profile
-      description: 'Whether to enable SSL SSH profile.'
+      description: Whether to enable SSL SSH profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.scope_member.name
-      description: 'Policy package scope member name.'
+      description: Policy package scope member name.
       type: String
     - contextPath: FortiManager.PolicyPackage.scope_member.vdom
-      description: 'Policy Package scope member VDOM.'
+      description: Policy Package scope member VDOM.
       type: String
     - contextPath: FortiManager.PolicyPackage.subobj
-      description: 'Policy Package sub-objects.'
+      description: Policy Package sub-objects.
       type: Unknown
     - contextPath: FortiManager.PolicyPackage.type
-      description: 'Policy Package type.'
+      description: Policy Package type.
       type: String
   - arguments:
     - default: false
@@ -743,181 +747,196 @@ script:
     name: fortimanager-firewall-policy-list
     outputs:
     - contextPath: FortiManager.PolicyPackage.Policy.action
-      description: 'Policy action (allow/deny/ipsec).'
+      description: Policy action (allow/deny/ipsec).
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.app-category
-      description: 'Application category ID list.'
+      description: Application category ID list.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.app-group
-      description: 'Application group names.'
+      description: Application group names.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.application
-      description: 'Application ID list.'
+      description: Application ID list.
       type: Number
     - contextPath: FortiManager.PolicyPackage.Policy.application-list
-      description: 'Name of an existing Application list.'
+      description: Name of an existing Application list.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.auth-cert
-      description: 'HTTPS server certificate for policy authentication.'
+      description: HTTPS server certificate for policy authentication.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.auth-path
-      description: 'Enable/disable authentication-based routing.'
+      description: Enable/disable authentication-based routing.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.auth-redirect-addr
-      description: 'HTTP-to-HTTPS redirect address for firewall authentication.'
+      description: HTTP-to-HTTPS redirect address for firewall authentication.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.auto-asic-offload
-      description: 'Enable/disable offloading security profile processing to CP processors.'
+      description: Enable/disable offloading security profile processing to CP processors.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.av-profile
-      description: 'Name of an existing Antivirus profile.'
+      description: Name of an existing Antivirus profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.block-notification
-      description: 'Enable/disable block notification.'
+      description: Enable/disable block notification.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.captive-portal-exempt
-      description: 'Enable to exempt some users from the captive portal.'
+      description: Enable to exempt some users from the captive portal.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.capture-packet
-      description: 'Enable/disable capture packets.'
+      description: Enable/disable capture packets.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.comments
-      description: 'Comments.'
+      description: Comments.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.custom-log-fields
-      description: 'Custom fields to append to log messages for this policy.'
+      description: Custom fields to append to log messages for this policy.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.delay-tcp-npu-session
-      description: 'Enable TCP NPU session delay to guarantee packet order of 3-way handshake.'
+      description: Enable TCP NPU session delay to guarantee packet order of 3-way
+        handshake.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.devices
-      description: 'Names of devices or device groups that can be matched by the policy.'
+      description: Names of devices or device groups that can be matched by the policy.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.diffserv-forward
-      description: 'Enable to change packet DiffServ values to the specified diffservcode-forward value.'
+      description: Enable to change packet DiffServ values to the specified diffservcode-forward
+        value.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.diffserv-reverse
-      description: 'Enable to change packet reverse (reply) DiffServ values to the specified diffservcode-rev value.'
+      description: Enable to change packet reverse (reply) DiffServ values to the
+        specified diffservcode-rev value.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.diffservcode-forward
-      description: 'Change packet DiffServ to this value.'
+      description: Change packet DiffServ to this value.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.diffservcode-rev
-      description: 'Change packet reverse (reply) DiffServ to this value.'
+      description: Change packet reverse (reply) DiffServ to this value.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.disclaimer
-      description: 'Enable/disable user authentication disclaimer.'
+      description: Enable/disable user authentication disclaimer.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.dlp-sensor
-      description: 'Name of an existing DLP sensor.'
+      description: Name of an existing DLP sensor.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.dnsfilter-profile
-      description: 'Name of an existing DNS filter profile.'
+      description: Name of an existing DNS filter profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.dscp-match
-      description: 'Enable DSCP check.'
+      description: Enable DSCP check.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.dscp-negate
-      description: 'Enable negated DSCP match.'
+      description: Enable negated DSCP match.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.dscp-value
-      description: 'DSCP value.'
+      description: DSCP value.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.dsri
-      description: 'Enable DSRI to ignore HTTP server responses.'
+      description: Enable DSRI to ignore HTTP server responses.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.dstaddr
-      description: 'Destination address and address group names.'
+      description: Destination address and address group names.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.dstaddr-negate
-      description: 'When enabled dstaddr specifies what the destination address must NOT be.'
+      description: When enabled dstaddr specifies what the destination address must
+        NOT be.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.dstintf
-      description: 'Outgoing (egress) interface.'
+      description: Outgoing (egress) interface.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.firewall-session-dirty
-      description: 'How to handle sessions if the configuration of this firewall policy changes.'
+      description: How to handle sessions if the configuration of this firewall policy
+        changes.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.fixedport
-      description: 'Enable to prevent source NAT from changing a session source port.'
+      description: Enable to prevent source NAT from changing a session source port.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.fsso
-      description: 'Enable/disable Fortinet Single Sign-On.'
+      description: Enable/disable Fortinet Single Sign-On.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.fsso-agent-for-ntlm
-      description: 'FSSO agent to use for NTLM authentication.'
+      description: FSSO agent to use for NTLM authentication.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.global-label
-      description: 'Label for the policy that appears when the GUI is in Global View mode.'
+      description: Label for the policy that appears when the GUI is in Global View
+        mode.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.groups
-      description: 'Names of user groups that can authenticate with this policy.'
+      description: Names of user groups that can authenticate with this policy.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.gtp-profile
-      description: 'GTP profile.'
+      description: GTP profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.icap-profile
-      description: 'Name of an existing ICAP profile.'
+      description: Name of an existing ICAP profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.identity-based-route
-      description: 'Name of identity-based routing rule.'
+      description: Name of identity-based routing rule.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.inbound
-      description: 'Policy-based IPsec VPN: only traffic from the remote network can initiate a VPN.'
+      description: 'Policy-based IPsec VPN: only traffic from the remote network can
+        initiate a VPN.'
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service
-      description: 'Enable/disable use of Internet Services for this policy. If enabled, destination address and service are not used.'
+      description: Enable/disable use of Internet Services for this policy. If enabled,
+        destination address and service are not used.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-custom
-      description: 'Custom Internet Service name.'
+      description: Custom Internet Service name.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-id
-      description: 'Internet Service ID.'
+      description: Internet Service ID.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-negate
-      description: 'When enabled internet-service specifies what the service must NOT be.'
+      description: When enabled internet-service specifies what the service must NOT
+        be.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src
-      description: 'Enable/disable use of Internet Services in source for this policy. If enabled, source address is not used.'
+      description: Enable/disable use of Internet Services in source for this policy.
+        If enabled, source address is not used.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src-custom
-      description: 'Custom Internet Service source name.'
+      description: Custom Internet Service source name.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src-id
-      description: 'Internet Service source ID.'
+      description: Internet Service source ID.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src-negate
-      description: 'When enabled internet-service-src specifies what the service must NOT be.'
+      description: When enabled internet-service-src specifies what the service must
+        NOT be.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.ippool
-      description: 'Enable to use IP Pools for source NAT.'
+      description: Enable to use IP Pools for source NAT.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.ips-sensor
-      description: 'Name of an existing IPS sensor.'
+      description: Name of an existing IPS sensor.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.label
-      description: 'Label for the policy that appears when the GUI is in Section View mode.'
+      description: Label for the policy that appears when the GUI is in Section View
+        mode.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.learning-mode
-      description: 'Enable to allow everything, but log all of the meaningful data for security information gathering. A learning report will be generated.'
+      description: Enable to allow everything, but log all of the meaningful data
+        for security information gathering. A learning report will be generated.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.logtraffic
-      description: 'Enable or disable logging. Log all sessions or security profile sessions.'
+      description: Enable or disable logging. Log all sessions or security profile
+        sessions.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.logtraffic-start
-      description: 'Record logs when a session starts and ends.'
+      description: Record logs when a session starts and ends.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.match-vip
-      description: 'Enable to match packets that have had their destination addresses changed by a VIP.'
+      description: Enable to match packets that have had their destination addresses
+        changed by a VIP.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.mms-profile
-      description: 'Name of an existing MMS profile.'
+      description: Name of an existing MMS profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.name
-      description: 'Policy name.'
+      description: Policy name.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.nat
-      description: 'Enable/disable source NAT.'
+      description: Enable/disable source NAT.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.natinbound
       description: 'Policy-based IPsec VPN: apply destination NAT to inbound traffic.'
@@ -929,205 +948,222 @@ script:
       description: 'Policy-based IPsec VPN: apply source NAT to outbound traffic.'
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.np-acceleration
-      description: 'Enable/disable UTM Network Processor acceleration.'
+      description: Enable/disable UTM Network Processor acceleration.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.ntlm
-      description: 'Enable/disable NTLM authentication.'
+      description: Enable/disable NTLM authentication.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.ntlm-enabled-browsers
-      description: 'HTTP-User-Agent value of supported browsers.'
+      description: HTTP-User-Agent value of supported browsers.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.ntlm-guest
-      description: 'Enable/disable NTLM guest user access.'
+      description: Enable/disable NTLM guest user access.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.outbound
-      description: 'Policy-based IPsec VPN: only traffic from the internal network can initiate a VPN.'
+      description: 'Policy-based IPsec VPN: only traffic from the internal network
+        can initiate a VPN.'
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.per-ip-shaper
-      description: 'Per-IP traffic shaper.'
+      description: Per-IP traffic shaper.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.permit-any-host
-      description: 'Accept UDP packets from any host.'
+      description: Accept UDP packets from any host.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.permit-stun-host
-      description: 'Accept UDP packets from any Session Traversal Utilities for NAT (STUN) host.'
+      description: Accept UDP packets from any Session Traversal Utilities for NAT
+        (STUN) host.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.policyid
-      description: 'Policy ID.'
+      description: Policy ID.
       type: Number
     - contextPath: FortiManager.PolicyPackage.Policy.poolname
-      description: 'IP Pool names.'
+      description: IP Pool names.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.profile-group
-      description: 'Name of profile group.'
+      description: Name of profile group.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.profile-protocol-options
-      description: 'Name of an existing Protocol options profile.'
+      description: Name of an existing Protocol options profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.profile-type
-      description: 'Determine whether the firewall policy allows security profile groups or single profiles only.'
+      description: Determine whether the firewall policy allows security profile groups
+        or single profiles only.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.radius-mac-auth-bypass
-      description: 'Enable MAC authentication bypass. The bypassed MAC address must be received from RADIUS server.'
+      description: Enable MAC authentication bypass. The bypassed MAC address must
+        be received from RADIUS server.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.redirect-url
-      description: 'URL users are directed to after seeing and accepting the disclaimer or authenticating.'
+      description: URL users are directed to after seeing and accepting the disclaimer
+        or authenticating.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.replacemsg-override-group
-      description: 'Override the default replacement message group for this policy.'
+      description: Override the default replacement message group for this policy.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.rsso
-      description: 'Enable/disable RADIUS single sign-on (RSSO).'
+      description: Enable/disable RADIUS single sign-on (RSSO).
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.rtp-addr
-      description: 'Address names if this is an RTP NAT policy.'
+      description: Address names if this is an RTP NAT policy.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.rtp-nat
-      description: 'Enable Real Time Protocol (RTP) NAT.'
+      description: Enable Real Time Protocol (RTP) NAT.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.scan-botnet-connections
-      description: 'Block or monitor connections to Botnet servers or disable Botnet scanning.'
+      description: Block or monitor connections to Botnet servers or disable Botnet
+        scanning.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.schedule
-      description: 'Schedule name.'
+      description: Schedule name.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.schedule-timeout
-      description: 'Enable to force current sessions to end when the schedule object times out. Disable allows them to end from inactivity.'
+      description: Enable to force current sessions to end when the schedule object
+        times out. Disable allows them to end from inactivity.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.send-deny-packet
-      description: 'Enable to send a reply when a session is denied or blocked by a firewall policy.'
+      description: Enable to send a reply when a session is denied or blocked by a
+        firewall policy.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.service
-      description: 'Service and service group names.'
+      description: Service and service group names.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.service-negate
-      description: 'When enabled service specifies what the service must NOT be.'
+      description: When enabled service specifies what the service must NOT be.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.session-ttl
-      description: 'TTL in seconds for sessions accepted by this policy (0 means use the system default session TTL).'
+      description: TTL in seconds for sessions accepted by this policy (0 means use
+        the system default session TTL).
       type: Number
     - contextPath: FortiManager.PolicyPackage.Policy.spamfilter-profile
-      description: 'Name of an existing Spam filter profile.'
+      description: Name of an existing Spam filter profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.srcaddr
-      description: 'Source address and address group names.'
+      description: Source address and address group names.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.srcaddr-negate
-      description: 'When enabled srcaddr specifies what the source address must NOT be.'
+      description: When enabled srcaddr specifies what the source address must NOT
+        be.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.srcintf
-      description: 'Incoming (ingress) interface.'
+      description: Incoming (ingress) interface.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.ssh-filter-profile
-      description: 'Name of an existing SSH filter profile.'
+      description: Name of an existing SSH filter profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.ssl-mirror
-      description: 'Enable to copy decrypted SSL traffic to a FortiGate interface (called SSL mirroring).'
+      description: Enable to copy decrypted SSL traffic to a FortiGate interface (called
+        SSL mirroring).
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.ssl-mirror-intf
-      description: 'SSL mirror interface name.'
+      description: SSL mirror interface name.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.ssl-ssh-profile
-      description: 'Name of an existing SSL SSH profile.'
+      description: Name of an existing SSL SSH profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.status
-      description: 'Enable or disable this policy.'
+      description: Enable or disable this policy.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.tcp-mss-receiver
-      description: 'Receiver TCP maximum segment size (MSS).'
+      description: Receiver TCP maximum segment size (MSS).
       type: Number
     - contextPath: FortiManager.PolicyPackage.Policy.tcp-mss-sender
-      description: 'Sender TCP maximum segment size (MSS).'
+      description: Sender TCP maximum segment size (MSS).
       type: Number
     - contextPath: FortiManager.PolicyPackage.Policy.tcp-session-without-syn
-      description: 'Enable/disable creation of TCP session without SYN flag.'
+      description: Enable/disable creation of TCP session without SYN flag.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.timeout-send-rst
-      description: 'Enable/disable sending RST packets when TCP sessions expire.'
+      description: Enable/disable sending RST packets when TCP sessions expire.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.traffic-shaper
-      description: 'Traffic shaper.'
+      description: Traffic shaper.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.traffic-shaper-reverse
-      description: 'Reverse traffic shaper.'
+      description: Reverse traffic shaper.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.url-category
-      description: 'URL category ID list.'
+      description: URL category ID list.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.users
-      description: 'Names of individual users that can authenticate with this policy.'
+      description: Names of individual users that can authenticate with this policy.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.utm-status
-      description: 'Enable to add one or more security profiles (AV, IPS, etc.) to the firewall policy.'
+      description: Enable to add one or more security profiles (AV, IPS, etc.) to
+        the firewall policy.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.uuid
-      description: 'Universally Unique Identifier (UUID; automatically assigned but can be manually reset).'
+      description: Universally Unique Identifier (UUID; automatically assigned but
+        can be manually reset).
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.vlan-cos-fwd
-      description: 'VLAN forward direction user priority: 255 passthrough, 0 lowest, 7 highest.'
+      description: 'VLAN forward direction user priority: 255 passthrough, 0 lowest,
+        7 highest.'
       type: Number
     - contextPath: FortiManager.PolicyPackage.Policy.vlan-cos-rev
-      description: 'VLAN reverse direction user priority: 255 passthrough, 0 lowest, 7 highest.'
+      description: 'VLAN reverse direction user priority: 255 passthrough, 0 lowest,
+        7 highest.'
       type: Number
     - contextPath: FortiManager.PolicyPackage.Policy.vlan-filter
-      description: 'Set VLAN filters.'
+      description: Set VLAN filters.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.voip-profile
-      description: 'Name of an existing VoIP profile.'
+      description: Name of an existing VoIP profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.vpn_dst_node.host
-      description: 'VPN destination node host.'
+      description: VPN destination node host.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.vpn_dst_node.seq
-      description: 'VPN destination node sequence.'
+      description: VPN destination node sequence.
       type: Number
     - contextPath: FortiManager.PolicyPackage.Policy.vpn_dst_node.subnet
-      description: 'VPN destination node subnet.'
+      description: VPN destination node subnet.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.vpn_src_node.host
-      description: 'VPN source node host.'
+      description: VPN source node host.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.vpn_src_node.seq
-      description: 'VPN source node sequence.'
+      description: VPN source node sequence.
       type: Number
     - contextPath: FortiManager.PolicyPackage.Policy.vpn_src_node.subnet
-      description: 'VPN source node subnet.'
+      description: VPN source node subnet.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.vpntunnel
       description: 'Policy-based IPsec VPN: name of the IPsec VPN Phase 1.'
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.waf-profile
-      description: 'Name of an existing Web application firewall profile.'
+      description: Name of an existing Web application firewall profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.wanopt
-      description: 'Enable/disable WAN optimization.'
+      description: Enable/disable WAN optimization.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.wanopt-detection
-      description: 'WAN optimization auto-detection mode.'
+      description: WAN optimization auto-detection mode.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.wanopt-passive-opt
-      description: 'WAN optimization passive mode options. This option decides what IP address will be used to connect server.'
+      description: WAN optimization passive mode options. This option decides what
+        IP address will be used to connect server.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.wanopt-peer
-      description: 'WAN optimization peer.'
+      description: WAN optimization peer.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.wanopt-profile
-      description: 'WAN optimization profile.'
+      description: WAN optimization profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.wccp
-      description: 'Enable/disable forwarding traffic matching this policy to a configured WCCP server.'
+      description: Enable/disable forwarding traffic matching this policy to a configured
+        WCCP server.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.webcache
-      description: 'Enable/disable web cache.'
+      description: Enable/disable web cache.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.webcache-https
-      description: 'Enable/disable web cache for HTTPS.'
+      description: Enable/disable web cache for HTTPS.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.webfilter-profile
-      description: 'Name of an existing Web filter profile.'
+      description: Name of an existing Web filter profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.wsso
-      description: 'Enable/disable WiFi Single Sign On (WSSO).'
+      description: Enable/disable WiFi Single Sign On (WSSO).
       type: String
   - arguments:
     - default: false
@@ -1360,7 +1396,7 @@ script:
         the group.
       isArray: false
       name: member
-      required: false
+      required: true
       secret: false
     - default: false
       description: A comment about the address group
@@ -1391,7 +1427,7 @@ script:
         the group.
       isArray: false
       name: member
-      required: false
+      required: true
       secret: false
     - default: false
       description: A comment about the address group
@@ -1437,7 +1473,7 @@ script:
       description: A CSV list of Service objects to be contained within the group.
       isArray: false
       name: member
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Create a new Service Group
@@ -1477,7 +1513,7 @@ script:
       description: A CSV list of Service objects to be contained within the group.
       isArray: false
       name: member
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Create a new Service Group
@@ -1791,6 +1827,12 @@ script:
       name: name
       required: true
       secret: false
+    - default: false
+      description: The policy ID to create.
+      isArray: false
+      name: policyid
+      required: true
+      secret: false
     deprecated: false
     description: Create a firewall policy.
     execution: false
@@ -2031,79 +2073,82 @@ script:
     name: fortimanager-custom-service-list
     outputs:
     - contextPath: FortiManager.CustomService.app-category
-      description: 'Application category ID.'
+      description: Application category ID.
       type: Number
     - contextPath: FortiManager.CustomService.app-service-type
-      description: 'Application service type.'
+      description: Application service type.
       type: String
     - contextPath: FortiManager.CustomService.application
-      description: 'Application ID.'
+      description: Application ID.
       type: Number
     - contextPath: FortiManager.CustomService.category
-      description: 'Service category.'
+      description: Service category.
       type: String
     - contextPath: FortiManager.CustomService.check-reset-range
-      description: 'Configure the type of ICMP error message verification.'
+      description: Configure the type of ICMP error message verification.
       type: String
     - contextPath: FortiManager.CustomService.color
-      description: 'Color of icon on the GUI.'
+      description: Color of icon on the GUI.
       type: Number
     - contextPath: FortiManager.CustomService.comment
-      description: 'Comment.'
+      description: Comment.
       type: String
     - contextPath: FortiManager.CustomService.fqdn
-      description: 'Fully qualified domain name.'
+      description: Fully qualified domain name.
       type: String
     - contextPath: FortiManager.CustomService.helper
-      description: 'Helper name.'
+      description: Helper name.
       type: String
     - contextPath: FortiManager.CustomService.icmpcode
-      description: 'ICMP code.'
+      description: ICMP code.
       type: Number
     - contextPath: FortiManager.CustomService.icmptype
-      description: 'ICMP type.'
+      description: ICMP type.
       type: Number
     - contextPath: FortiManager.CustomService.iprange
-      description: 'Start and end of the IP range associated with service.'
+      description: Start and end of the IP range associated with service.
       type: String
     - contextPath: FortiManager.CustomService.name
-      description: 'Custom service name.'
+      description: Custom service name.
       type: String
     - contextPath: FortiManager.CustomService.protocol
-      description: 'Protocol type based on IANA numbers.'
+      description: Protocol type based on IANA numbers.
       type: String
     - contextPath: FortiManager.CustomService.protocol-number
-      description: 'IP protocol number.'
+      description: IP protocol number.
       type: Number
     - contextPath: FortiManager.CustomService.proxy
-      description: 'Enable/disable web proxy service.'
+      description: Enable/disable web proxy service.
       type: String
     - contextPath: FortiManager.CustomService.sctp-portrange
-      description: 'Multiple SCTP port ranges.'
+      description: Multiple SCTP port ranges.
       type: String
     - contextPath: FortiManager.CustomService.session-ttl
-      description: 'Session TTL (300 - 604800, 0 = default).'
+      description: Session TTL (300 - 604800, 0 = default).
       type: Number
     - contextPath: FortiManager.CustomService.tcp-halfclose-timer
-      description: 'Wait time to close a TCP session waiting for an unanswered FIN packet (1 - 86400 sec, 0 = default).'
+      description: Wait time to close a TCP session waiting for an unanswered FIN
+        packet (1 - 86400 sec, 0 = default).
       type: Number
     - contextPath: FortiManager.CustomService.tcp-halfopen-timer
-      description: 'Wait time to close a TCP session waiting for an unanswered open session packet (1 - 86400 sec, 0 = default).'
+      description: Wait time to close a TCP session waiting for an unanswered open
+        session packet (1 - 86400 sec, 0 = default).
       type: Number
     - contextPath: FortiManager.CustomService.tcp-portrange
-      description: 'Multiple TCP port ranges.'
+      description: Multiple TCP port ranges.
       type: String
     - contextPath: FortiManager.CustomService.tcp-timewait-timer
-      description: 'Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec, 0 = default).'
+      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec,
+        0 = default).
       type: Number
     - contextPath: FortiManager.CustomService.udp-idle-timer
-      description: 'UDP half close timeout (0 - 86400 sec, 0 = default).'
+      description: UDP half close timeout (0 - 86400 sec, 0 = default).
       type: Number
     - contextPath: FortiManager.CustomService.udp-portrange
-      description: 'Multiple UDP port ranges.'
+      description: Multiple UDP port ranges.
       type: String
     - contextPath: FortiManager.CustomService.visibility
-      description: 'Enable/disable the visibility of the service on the GUI.'
+      description: Enable/disable the visibility of the service on the GUI.
       type: String
   - arguments:
     - default: false
@@ -2592,58 +2637,58 @@ script:
     name: fortimanager-dynamic-interface-list
     outputs:
     - contextPath: FortiManager.DynamicInterface.color
-      description: 'Color of icon on the GUI.'
+      description: Color of icon on the GUI.
       type: Number
     - contextPath: FortiManager.DynamicInterface.default-mapping
-      description: 'Default mapping of the Interface.'
+      description: Default mapping of the Interface.
       type: String
     - contextPath: FortiManager.DynamicInterface.defmap-intf
-      description: 'Default mapping interface.'
+      description: Default mapping interface.
       type: String
     - contextPath: FortiManager.DynamicInterface.defmap-intrazone-deny
-      description: 'Default mapping intrazone deny.'
+      description: Default mapping intrazone deny.
       type: String
     - contextPath: FortiManager.DynamicInterface.defmap-zonemember
-      description: 'Default mapping zone members'
+      description: Default mapping zone members
       type: String
     - contextPath: FortiManager.DynamicInterface.description
-      description: 'Dynamic interface description.'
+      description: Dynamic interface description.
       type: String
     - contextPath: FortiManager.DynamicInterface.dynamic_mapping._scope.name
-      description: 'Dynamic mapping scope name.'
+      description: Dynamic mapping scope name.
       type: String
     - contextPath: FortiManager.DynamicInterface.dynamic_mapping._scope.vdom
-      description: 'Dynamic mapping scope VDOM.'
+      description: Dynamic mapping scope VDOM.
       type: String
     - contextPath: FortiManager.DynamicInterface.dynamic_mapping.egress-shaping-profile
-      description: 'Dynamic mapping egress shaping profile.'
+      description: Dynamic mapping egress shaping profile.
       type: String
     - contextPath: FortiManager.DynamicInterface.dynamic_mapping.intrazone-deny
-      description: 'Dynamic mapping intrazone deny.'
+      description: Dynamic mapping intrazone deny.
       type: String
     - contextPath: FortiManager.DynamicInterface.dynamic_mapping.local-intf
-      description: 'Dynamic mapping local interface.'
+      description: Dynamic mapping local interface.
       type: String
     - contextPath: FortiManager.DynamicInterface.egress-shaping-profile
-      description: 'Egress shaping profile.'
+      description: Egress shaping profile.
       type: String
     - contextPath: FortiManager.DynamicInterface.name
-      description: 'Dynamic interface name.'
+      description: Dynamic interface name.
       type: String
     - contextPath: FortiManager.DynamicInterface.platform_mapping.egress-shaping-profile
-      description: 'Platform mapping egress shaping profile.'
+      description: Platform mapping egress shaping profile.
       type: String
     - contextPath: FortiManager.DynamicInterface.platform_mapping.intf-zone
-      description: 'Platform mapping interface zone.'
+      description: Platform mapping interface zone.
       type: String
     - contextPath: FortiManager.DynamicInterface.platform_mapping.intrazone-deny
-      description: 'Platform mapping intrazone deny.'
+      description: Platform mapping intrazone deny.
       type: String
     - contextPath: FortiManager.DynamicInterface.platform_mapping.name
-      description: 'Platform mapping name.'
+      description: Platform mapping name.
       type: String
     - contextPath: FortiManager.DynamicInterface.single-intf
-      description: 'Dynamic interface single interface.'
+      description: Dynamic interface single interface.
       type: String
   - arguments:
     - default: false
@@ -2683,121 +2728,123 @@ script:
     name: fortimanager-dynamic-address-mappings-list
     outputs:
     - contextPath: FortiManager.Address.DynamicMapping._image-base64
-      description: 'Dynamic address mapping base64 image.'
+      description: Dynamic address mapping base64 image.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping._scope.name
-      description: 'Dynamic mapping scope name.'
+      description: Dynamic mapping scope name.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping._scope.vdom
-      description: 'Dynamic mapping scope VDOM.'
+      description: Dynamic mapping scope VDOM.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.allow-routing
-      description: 'Enable/disable use of this address in the static route configuration.'
+      description: Enable/disable use of this address in the static route configuration.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.associated-interface
-      description: 'Network interface associated with address.'
+      description: Network interface associated with address.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.cache-ttl
-      description: 'Defines the minimal TTL of individual IP addresses in FQDN cache measured in seconds.'
+      description: Defines the minimal TTL of individual IP addresses in FQDN cache
+        measured in seconds.
       type: Number
     - contextPath: FortiManager.Address.DynamicMapping.clearpass-spt
-      description: 'Clearpass spt.'
+      description: Clearpass spt.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.color
-      description: 'Color of icon on the GUI.'
+      description: Color of icon on the GUI.
       type: Number
     - contextPath: FortiManager.Address.DynamicMapping.comment
-      description: 'Comment.'
+      description: Comment.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.country
-      description: 'IP addresses associated to a specific country.'
+      description: IP addresses associated to a specific country.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.end-ip
-      description: 'Final IP address (inclusive) in the range for the address.'
+      description: Final IP address (inclusive) in the range for the address.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.end-mac
-      description: 'Final MAC address (inclusive) in the range for the address.'
+      description: Final MAC address (inclusive) in the range for the address.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.epg-name
-      description: 'Endpoint group name.'
+      description: Endpoint group name.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.filter
-      description: 'Match criteria filter.'
+      description: Match criteria filter.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.fqdn
-      description: 'Fully Qualified Domain Name address.'
+      description: Fully Qualified Domain Name address.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.fsso-group
-      description: 'Fortinet Single Sign-On group.'
+      description: Fortinet Single Sign-On group.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.global-object
-      description: 'Global object.'
+      description: Global object.
       type: Number
     - contextPath: FortiManager.Address.DynamicMapping.interface
-      description: 'Dynamic mapping interface.'
+      description: Dynamic mapping interface.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.obj-id
-      description: 'Object ID for NSX.'
+      description: Object ID for NSX.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.obj-tag
-      description: 'Object tag.'
+      description: Object tag.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.obj-type
-      description: 'Object type.'
+      description: Object type.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.organization
       description: 'Organization domain name (Syntax: organization/domain).'
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.policy-group
-      description: 'Policy group name.'
+      description: Policy group name.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.sdn
-      description: 'SDN.'
+      description: SDN.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.sdn-addr-type
-      description: 'SDN address type.'
+      description: SDN address type.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.sdn-tag
-      description: 'SDN tag.'
+      description: SDN tag.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.start-ip
-      description: 'First IP address (inclusive) in the range for the address.'
+      description: First IP address (inclusive) in the range for the address.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.start-mac
-      description: 'First MAC address (inclusive) in the range for the address.'
+      description: First MAC address (inclusive) in the range for the address.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.sub-type
-      description: 'Dynamic mapping sub type.'
+      description: Dynamic mapping sub type.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.subnet
-      description: 'IP address and subnet mask of address.'
+      description: IP address and subnet mask of address.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.subnet-name
-      description: 'Subnet name.'
+      description: Subnet name.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.tags
-      description: 'Tags.'
+      description: Tags.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.tenant
-      description: 'Tenant.'
+      description: Tenant.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.type
-      description: 'Dynamic mapping type.'
+      description: Dynamic mapping type.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.url
-      description: 'Dynamic mapping URL.'
+      description: Dynamic mapping URL.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.uuid
-      description: 'Universally Unique Identifier (UUID; automatically assigned but can be manually reset).'
+      description: Universally Unique Identifier (UUID; automatically assigned but
+        can be manually reset).
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.visibility
-      description: 'Enable/disable address visibility in the GUI.'
+      description: Enable/disable address visibility in the GUI.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.wildcard
-      description: 'IP address and wildcard netmask.IP address and wildcard netmask.'
+      description: IP address and wildcard netmask.IP address and wildcard netmask.
       type: String
     - contextPath: FortiManager.Address.DynamicMapping.wildcard-fqdn
-      description: 'Fully Qualified Domain Name with wildcard characters.'
+      description: Fully Qualified Domain Name with wildcard characters.
       type: String
   - arguments:
     - default: false
@@ -3232,6 +3279,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No tests
+fromversion: 5.0.0

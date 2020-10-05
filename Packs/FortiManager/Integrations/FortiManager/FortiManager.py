@@ -77,7 +77,7 @@ class Client(BaseClient):
                                                   other_params=other_params, json_data=json_data)
 
         # catch session token expiration - fetch new token and retry
-        if response.get('result')[0].get('status').get('code') != -11:
+        if response.get('result')[0].get('status').get('code') == -11:
             self.session_token = self.get_session_token(get_new_token=True)
             response = self.fortimanager_http_request(method, url, data_in_list=data_in_list, range_info=range_info,
                                                       other_params=other_params, json_data=json_data)
@@ -303,37 +303,45 @@ def update_address_command(client, args):
 
 
 def create_firewall_address_groups_command(client, args):
+    data = setup_request_data(args, ['adom'])
+    data['member'] = data.get('member').split(',')
     firewall_address_groups = client.fortimanager_api_call("add", f"/pm/config/"
                                                                   f"{get_global_or_adom(client, args)}"
                                                                   f"/obj/firewall/addrgrp",
-                                                           data_in_list=setup_request_data(args, ['adom']))
+                                                           data_in_list=data)
 
     return f"Created new Address Group {firewall_address_groups.get('name')}"
 
 
 def update_firewall_address_groups_command(client, args):
+    data = setup_request_data(args, ['adom'])
+    data['member'] = data.get('member').split(',')
     firewall_address_groups = client.fortimanager_api_call("update", f"/pm/config/"
                                                                      f"{get_global_or_adom(client, args)}"
                                                                      f"/obj/firewall/addrgrp",
-                                                           data_in_list=setup_request_data(args, ['adom']))
+                                                           data_in_list=data)
 
     return f"Updated Address Group {firewall_address_groups.get('name')}"
 
 
 def create_service_groups_command(client, args):
+    data = setup_request_data(args, ['adom'])
+    data['member'] = data.get('member').split(',')
     service_groups = client.fortimanager_api_call("add", f"/pm/config/"
                                                          f"{get_global_or_adom(client, args)}"
                                                          f"/obj/firewall/service/group",
-                                                  data_in_list=setup_request_data(args, ['adom']))
+                                                  data_in_list=data)
 
     return f"Created new Service Group {service_groups.get('name')}"
 
 
 def update_service_groups_command(client, args):
+    data = setup_request_data(args, ['adom'])
+    data['member'] = data.get('member').split(',')
     service_groups = client.fortimanager_api_call("update", f"/pm/config/"
                                                             f"{get_global_or_adom(client, args)}"
                                                             f"/obj/firewall/service/group",
-                                                  data_in_list=setup_request_data(args, ['adom']))
+                                                  data_in_list=data)
 
     return f"Updated Service Group {service_groups.get('name')}"
 
@@ -381,9 +389,10 @@ def update_policy_packages_command(client, args):
 
 
 def create_policy_command(client, args):
-    for additional_param in args.get('additional_params').split(','):
-        field_and_value = additional_param.split('=')
-        args[field_and_value[0]] = field_and_value[1]
+    if args.get('additional_params'):
+        for additional_param in args.get('additional_params').split(','):
+            field_and_value = additional_param.split('=')
+            args[field_and_value[0]] = field_and_value[1]
 
     policies = client.fortimanager_api_call("add", f"/pm/config/"
                                                    f"{get_global_or_adom(client, args)}"
@@ -626,10 +635,10 @@ def main() -> None:
         elif demisto.command() == 'fortimanager-device-groups-list':
             return_results(list_adom_devices_groups_command(client, demisto.args()))
 
-        elif demisto.command() == 'fortimanager-addresses-list':
+        elif demisto.command() == 'fortimanager-address-list':
             return_results(list_firewall_addresses_command(client, demisto.args()))
 
-        elif demisto.command() == 'fortimanager-address-groups-list':
+        elif demisto.command() == 'fortimanager-address-group-list':
             return_results(list_firewall_address_groups_command(client, demisto.args()))
 
         elif demisto.command() == 'fortimanager-service-categories-list':
