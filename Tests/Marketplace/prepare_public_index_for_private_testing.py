@@ -170,7 +170,7 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
     extracted_dummy_index_path = 'dummy_index'
     dummy_index_json_path = os.path.join(extracted_dummy_index_path, 'index.json')
     dummy_index_blob.download_to_filename(downloaded_dummy_index_path)
-
+    os.mkdir(extracted_dummy_index_path)
     if os.path.exists(downloaded_dummy_index_path):
         print(f'{downloaded_dummy_index_path} path exists')
         with ZipFile(downloaded_dummy_index_path, 'r') as index_zip:
@@ -179,6 +179,9 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
     print("Doing LS")
     print(subprocess.check_output('ls', shell=True))
     print("Finished LS")
+    print("Doing new LS")
+    print(subprocess.check_output('ls index_json', shell=True))
+    print("Finished new LS")
     if not os.path.exists(downloaded_dummy_index_path):
         print_error(f'downloaded_dummy_index_path {downloaded_dummy_index_path} does not exist')
     if not os.path.exists(extracted_dummy_index_path):
