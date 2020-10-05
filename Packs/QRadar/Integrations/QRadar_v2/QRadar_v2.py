@@ -1068,7 +1068,7 @@ def create_incident_from_offense(offense, incident_type):
     """
     Creates incidents from offense
     """
-    occured = offense["start_time"]
+    occured = epoch_to_iso(offense["start_time"])
     keys = list(offense.keys())
     labels = []
     for i in range(len(keys)):
