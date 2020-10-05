@@ -8,16 +8,16 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Database refresh interval (hours)
-  name: fetchIntervalHours
-  defaultvalue: 1
-  type: 0
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
   required: false
+- display: Database refresh interval (hours)
+    name: fetchIntervalHours
+    defaultvalue: 1
+    type: 0
+    required: false
 description: OpenPhish uses proprietary Artificial Intelligence algorithms to automatically
   identify zero-day phishing sites and provide comprehensive, actionable, real-time
   threat intelligence.
