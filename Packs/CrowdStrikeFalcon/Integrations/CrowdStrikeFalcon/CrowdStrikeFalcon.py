@@ -12,7 +12,7 @@ from typing import List
 from dateutil.parser import parse
 from typing import Dict, Tuple, Any, Optional, Union
 
-# changes were done here
+# change was done here
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
