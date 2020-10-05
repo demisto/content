@@ -2625,25 +2625,25 @@ script:
       description: 'Dynamic mapping local interface.'
       type: String
     - contextPath: FortiManager.DynamicInterface.egress-shaping-profile
-      description: ''
+      description: 'Egress shaping profile.'
       type: String
     - contextPath: FortiManager.DynamicInterface.name
-      description: ''
+      description: 'Dynamic interface name.'
       type: String
     - contextPath: FortiManager.DynamicInterface.platform_mapping.egress-shaping-profile
-      description: ''
+      description: 'Platform mapping egress shaping profile.'
       type: String
     - contextPath: FortiManager.DynamicInterface.platform_mapping.intf-zone
-      description: ''
+      description: 'Platform mapping interface zone.'
       type: String
     - contextPath: FortiManager.DynamicInterface.platform_mapping.intrazone-deny
-      description: ''
+      description: 'Platform mapping intrazone deny.'
       type: String
     - contextPath: FortiManager.DynamicInterface.platform_mapping.name
-      description: ''
+      description: 'Platform mapping name.'
       type: String
     - contextPath: FortiManager.DynamicInterface.single-intf
-      description: ''
+      description: 'Dynamic interface single interface.'
       type: String
   - arguments:
     - default: false
