@@ -94,7 +94,7 @@ tasks:
     task:
       id: 4991346d-2fa3-4efe-8c21-d531312deacb
       version: -1
-      name: Waiting for Ticket State Polling  to complete (Automated Task)
+      name: Waiting for Ticket State Polling to complete (Automated Task)
       description: This task will complete automatically when polling is complete.
       tags:
       - polling
@@ -234,7 +234,7 @@ inputs:
 - key: TicketNumber
   value: {}
   required: true
-  description: ServiceNow ticket number to poll its state.
+  description: The ServiceNow ticket number to poll for its state.
   playbookInputQuery:
 - key: Interval
   value: {}
