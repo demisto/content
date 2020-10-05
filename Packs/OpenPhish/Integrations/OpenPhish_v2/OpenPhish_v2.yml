@@ -3,7 +3,12 @@ commonfields:
   id: OpenPhish_v2
   version: -1
 configuration:
-- display: Use system proxy settings
+  - display: Database refresh interval (hours)
+    name: fetchIntervalHours
+    defaultvalue: 1
+    type: 0
+    required: false
+  - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
@@ -12,11 +17,6 @@ configuration:
   name: insecure
   defaultvalue: ""
   type: 8
-  required: false
-- display: Database refresh interval (hours)
-  name: fetchIntervalHours
-  defaultvalue: 1
-  type: 0
   required: false
 description: OpenPhish uses proprietary Artificial Intelligence algorithms to automatically
   identify zero-day phishing sites and provide comprehensive, actionable, real-time
