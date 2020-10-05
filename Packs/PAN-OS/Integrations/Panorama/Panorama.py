@@ -3620,7 +3620,7 @@ def panorama_refresh_edl(edl_name: str, edl_type: str, location: str, vsys: str)
                             ' please use the: edl_type, location and vsys arguments.')
 
     params['cmd'] = f'<request><system><external-list><refresh><type><{edl_type}><name>{edl_name}' \
-                    f'</name></{edl_type}></type></refresh></external-list></system></request>',
+                    f'</name></{edl_type}></type></refresh></external-list></system></request>'
     if location:
         params['location'] = location
     if vsys:
