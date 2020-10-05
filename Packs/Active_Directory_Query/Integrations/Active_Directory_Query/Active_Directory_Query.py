@@ -680,8 +680,6 @@ def update_user_iam(default_base_dn, default_page_size, args, iam):
 
     iam.set_command_name(demisto.command().split('-')[0])
     user = iam.map_user_profile_to_app_data()
-    demisto.log("user after mapping to active directory:")
-    demisto.log(str(user))
 
     try:
         # check it user exists and if it doesn't, create it
