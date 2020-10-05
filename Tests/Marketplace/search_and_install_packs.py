@@ -361,7 +361,10 @@ def upload_zipped_packs(client, host, prints_manager, thread_index, pack_path):
             err_msg = 'Failed to install packs - with status code {}\n{}\n'.format(status_code, message)
             raise Exception(err_msg)
     except Exception as e:
-        err_msg = 'The request to install packs has failed. Reason:\n{}\n'.format(str(e))
+        if e.__class__ == ApiException:
+            err_msg = 'The request to install packs has failed. Reason:\n{}\n'.format(str(e.body))
+        else:
+            err_msg = 'The request to install packs has failed. Reason:\n{}\n'.format(str(e))
         raise Exception(err_msg)
 
 
