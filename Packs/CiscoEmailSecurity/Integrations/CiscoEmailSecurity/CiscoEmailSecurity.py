@@ -9,17 +9,14 @@ from typing import Any, Dict
 urllib3.disable_warnings()
 
 MAX_MESSAGES_TO_GET = 20
-SAFELIST_AND_BLOCKLIST_TO_FILTER_URL = {
-    "safelist": "/sma/api/v2.0/quarantine/safelist",
-    "blocklist": "/sma/api/v2.0/quarantine/blocklist"
-}
 
 
 class Client(BaseClient):
 
     def __init__(self, params):
-        self.username = params.get('api_username')
-        self.password = params.get('api_password')
+        self.username = params.get('credentials').get('identifier')
+        self.password = params.get('credentials').get('password')
+        self.timeout = params.get('timeout')
         super().__init__(base_url=params.get('base_url'), verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))
 
@@ -42,64 +39,64 @@ class Client(BaseClient):
                     "passphrase": base64.b64encode(self.password.encode('ascii')).decode('utf-8')
                 }
         }
-        output = self._http_request('POST', '/sma/api/v2.0/login', json_data=data, headers=headers)
-        jwt_token = output.get('data').get('jwtToken')
+        response_token = self._http_request('POST', '/sma/api/v2.0/login', json_data=data, headers=headers)
+        jwt_token = response_token.get('data').get('jwtToken')
         return jwt_token
 
     def list_report(self, url_params) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/sma/api/v2.0/reporting' + url_params,
-            timeout=2000
+            timeout=self.timeout
         )
 
     def list_messages(self, url_params) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/sma/api/v2.0/message-tracking/messages' + url_params,
-            timeout=2000
+            timeout=self.timeout
         )
 
     def list_get_message_details(self, url_params):
         return self._http_request(
             method='GET',
             url_suffix='/sma/api/v2.0/message-tracking/details' + url_params,
-            timeout=2000
+            timeout=self.timeout
         )
 
     def list_get_dlp_details(self, url_params):
         return self._http_request(
             method='GET',
             url_suffix='/sma/api/v2.0/message-tracking/dlp-details' + url_params,
-            timeout=2000
+            timeout=self.timeout
         )
 
     def list_get_amp_details(self, url_params):
         return self._http_request(
             method='GET',
             url_suffix='/sma/api/v2.0/message-tracking/amp-details' + url_params,
-            timeout=2000
+            timeout=self.timeout
         )
 
     def list_get_url_details(self, url_params):
         return self._http_request(
             method='GET',
             url_suffix='/sma/api/v2.0/message-tracking/url-details' + url_params,
-            timeout=2000
+            timeout=self.timeout
         )
 
     def list_spam_quarantine(self, url_params):
         return self._http_request(
             method='GET',
             url_suffix='/sma/api/v2.0/quarantine/messages' + url_params,
-            timeout=2000
+            timeout=self.timeout
         )
 
     def list_quarantine_get_details(self, message_id):
         return self._http_request(
             method='GET',
             url_suffix=f'/sma/api/v2.0/quarantine/messages/details?mid={message_id}&quarantineType=spam',
-            timeout=2000
+            timeout=self.timeout
         )
 
     def list_delete_quarantine_messages(self, request_body):
@@ -107,7 +104,7 @@ class Client(BaseClient):
             method='DELETE',
             url_suffix='/sma/api/v2.0/quarantine/messages',
             json_data=request_body,
-            timeout=2000
+            timeout=self.timeout
         )
 
     def list_release_quarantine_messages(self, request_body):
@@ -115,14 +112,14 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/sma/api/v2.0/quarantine/messages',
             json_data=request_body,
-            timeout=2000
+            timeout=self.timeout
         )
 
     def list_entries_get(self, url_params, list_type):
         return self._http_request(
             method='GET',
             url_suffix=f"/sma/api/v2.0/quarantine/{list_type}" + url_params,
-            timeout=2000
+            timeout=self.timeout
         )
 
     def list_entries_add(self, list_type, request_body):
@@ -130,7 +127,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix=f"/sma/api/v2.0/quarantine/{list_type}",
             json_data=request_body,
-            timeout=2000
+            timeout=self.timeout
         )
 
     def list_entries_delete(self, list_type, request_body):
@@ -138,7 +135,7 @@ class Client(BaseClient):
             method='DELETE',
             url_suffix=f"/sma/api/v2.0/quarantine/{list_type}",
             json_data=request_body,
-            timeout=2000
+            timeout=self.timeout
         )
 
 
@@ -174,18 +171,31 @@ def test_module(client: Client) -> str:
         client.list_messages(suffix_url)
     except DemistoException as e:
         if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+            return 'Authorization Error: make sure API Key or Service URL are correctly set'
         else:
             raise e
     return 'ok'
 
 
 def date_to_cisco_date(date):
+    """
+    This function gets a date and returns it according to the standard of Cisco Email security.
+    Args:
+        date: YYYY-MM-DD hh:mm:ss.
+    Returns:
+        The date according to the standard of Cisco Email security - YYYY-MM-DDThh:mm:ss.000Z.
+    """
     return date.replace(' ', 'T') + '.000Z'
 
 
 def set_limit(limit):
     return int(limit) if limit and int(limit) <= MAX_MESSAGES_TO_GET else MAX_MESSAGES_TO_GET
+
+
+def message_ids_to_list_of_integers(args):
+    messages_ids = args.get('messages_ids').split(',')
+    messages_ids = [int(message_id) for message_id in messages_ids]
+    return messages_ids
 
 
 def build_url_params_for_list_report(args, report_counter):
@@ -195,8 +205,15 @@ def build_url_params_for_list_report(args, report_counter):
     return url_params
 
 
-def set_var_to_output_prefix(report_counter):
-    list_counter_words = report_counter.split('_')
+def set_var_to_output_prefix(counter):
+    """
+    This function gets a variable and returns it according to the standard of outputs prefix.
+    Args:
+        counter: report counter - mail_incoming_traffic_summary.
+    Returns:
+        The counter according to the standard of outputs prefix - MailIncomingTrafficSummary.
+    """
+    list_counter_words = counter.split('_')
     counter_words = ''
     for word in list_counter_words:
         counter_words += word + ' '
@@ -206,7 +223,7 @@ def set_var_to_output_prefix(report_counter):
 
 
 def list_report_command(client: Client, args: Dict[str, Any]):
-    counter = args.get('report_counter')
+    counter = args.get('counter')
     url_params = build_url_params_for_list_report(args, counter)
     report_response_data = client.list_report(url_params)
     report_data = report_response_data.get('data', {}).get('resultSet', [None])[0]
@@ -266,7 +283,7 @@ def build_url_params_for_list_messages(args):
             url_params += f'&fileSha256={value}'
         elif key == 'message_id':
             url_params += f'&messageIdHeader={int(value)}'
-        elif key == 'cisco_message_id':
+        elif key == 'cisco_id':
             url_params += f'&ciscoMid={int(value)}'
         elif key == 'sender_ip':
             url_params += f'&senderIp={value}'
@@ -286,14 +303,14 @@ def messages_to_human_readable(messages):
     messages_readable_outputs = []
     for message in messages:
         readable_output = assign_params(message_id=dict_safe_get(message, ['attributes', 'mid'], None),
-                                        cisco_message_id=dict_safe_get(message, ['attributes', 'icid'], None),
+                                        cisco_id=dict_safe_get(message, ['attributes', 'icid'], None),
                                         sender=dict_safe_get(message, ['attributes', 'sender'], None),
                                         sender_ip=dict_safe_get(message, ['attributes', 'senderIp'], None),
                                         subject=dict_safe_get(message, ['attributes', 'subject'], None),
                                         serial_number=dict_safe_get(message, ['attributes', 'serialNumber'], None),
                                         timestamp=dict_safe_get(message, ['attributes', 'timestamp'], None))
         messages_readable_outputs.append(readable_output)
-    headers = ['message_id', 'cisco_message_id', 'sender', 'sender_ip', 'subject', 'serial_number', 'timestamp']
+    headers = ['message_id', 'cisco_id', 'sender', 'sender_ip', 'subject', 'serial_number', 'timestamp']
     human_readable = tableToMarkdown('CiscoEmailSecurity Messages', messages_readable_outputs, headers, removeNull=True)
     return human_readable
 
@@ -317,9 +334,9 @@ def build_url_params_for_get_details(args):
     start_date = date_to_cisco_date(args.get('start_date'))
     end_date = date_to_cisco_date(args.get('end_date'))
     message_id = args.get('message_id')
-    injection_connection_id = args.get('icid')
+    cisco_id = args.get('cisco_id')
     appliance_serial_number = args.get('appliance_serial_number')
-    url_params = f'?startDate={start_date}&endDate={end_date}&mid={message_id}&icid={injection_connection_id}' \
+    url_params = f'?startDate={start_date}&endDate={end_date}&mid={message_id}&icid={cisco_id}' \
                  f'&serialNumber={appliance_serial_number}'
     return url_params
 
@@ -359,7 +376,7 @@ def list_get_dlp_details_command(client, args):
     message_data, human_readable = response_data_to_context_and_human_readable(message_get_details_response_data)
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='CiscoEmailSecurity.Dlp',
+        outputs_prefix='CiscoEmailSecurity.DLP',
         outputs_key_field='mid',
         outputs=message_data
     )
@@ -371,7 +388,7 @@ def list_get_amp_details_command(client, args):
     message_data, human_readable = response_data_to_context_and_human_readable(message_get_details_response_data)
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='CiscoEmailSecurity.Amp',
+        outputs_prefix='CiscoEmailSecurity.AMP',
         outputs_key_field='mid',
         outputs=message_data
     )
@@ -383,7 +400,7 @@ def list_get_url_details_command(client, args):
     message_data, human_readable = response_data_to_context_and_human_readable(message_get_details_response_data)
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='CiscoEmailSecurity.Url',
+        outputs_prefix='CiscoEmailSecurity.URL',
         outputs_key_field='mid',
         outputs=message_data
     )
@@ -465,15 +482,14 @@ def list_get_quarantine_message_details_command(client, args):
     human_readable = quarantine_message_details_data_to_human_readable(quarantine_message_details.get('attributes'))
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='CiscoEmailSecurity.QuarantineMessageDetails',
+        outputs_prefix='CiscoEmailSecurity.QuarantineMessageDetail',
         outputs_key_field='mid',
         outputs=quarantine_message_details
     )
 
 
 def list_delete_quarantine_messages_command(client, args):
-    messages_ids = args.get('messages_ids').split(',')
-    messages_ids = [int(message_id) for message_id in messages_ids]
+    messages_ids = message_ids_to_list_of_integers(args)
     request_body = {
         "quarantineType": "spam",
         "mids": messages_ids
@@ -486,8 +502,7 @@ def list_delete_quarantine_messages_command(client, args):
 
 
 def list_release_quarantine_messages_command(client, args):
-    messages_ids = args.get('messages_ids').split(',')
-    messages_ids = [int(message_id) for message_id in messages_ids]
+    messages_ids = message_ids_to_list_of_integers(args)
     request_body = {
         "action": "release",
         "quarantineType": "spam",
@@ -518,7 +533,7 @@ def list_entries_get_command(client, args):
     output_prefix = list_type.title()
     return CommandResults(
         readable_output=list_entries,
-        outputs_prefix=f'CiscoEmailSecurity.ListEntries.{output_prefix}',
+        outputs_prefix=f'CiscoEmailSecurity.ListEntry.{output_prefix}',
         outputs_key_field=output_prefix,
         outputs=list_entries
     )
@@ -555,7 +570,7 @@ def list_entries_add_command(client, args):
     outputs_key_field = set_outputs_key_field_for_list_entries(args)
     return CommandResults(
         readable_output=list_entries,
-        outputs_prefix=f'CiscoEmailSecurity.listEntries.{output_prefix}',
+        outputs_prefix=f'CiscoEmailSecurity.listEntry.{output_prefix}',
         outputs_key_field=outputs_key_field,
     )
 
@@ -581,7 +596,7 @@ def list_entries_delete_command(client, args):
     outputs_key_field = set_outputs_key_field_for_list_entries(args)
     return CommandResults(
         readable_output=list_entries,
-        outputs_prefix=f'CiscoEmailSecurity.listEntries.{output_prefix}',
+        outputs_prefix=f'CiscoEmailSecurity.listEntry.{output_prefix}',
         outputs_key_field=outputs_key_field,
     )
 

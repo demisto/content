@@ -7,6 +7,10 @@ configuration:
   name: base_url
   required: true
   type: 0
+- display: API Username
+  name: credentials
+  required: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -15,16 +19,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: API Username
+- defaultvalue: '2000'
+  display: request timeout
   hidden: false
-  name: api_username
-  required: true
+  name: timeout
+  required: false
   type: 0
-- display: API Password
-  hidden: false
-  name: api_password
-  required: true
-  type: 4
 description: Cisco Email Security is an email security gateway . It detects and blocks
   a wide variety of email-borne threats, such as malware, spam and phishing.
 display: Cisco Email Security
@@ -34,13 +34,13 @@ script:
   - arguments:
     - default: false
       description: Date from which the search begins. Template for date - YYYY-MM-DD
-        hh:mm:00
+        hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: start_date
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -168,13 +168,13 @@ script:
   - arguments:
     - default: false
       description: Date from which the search begins. Template for date - YYYY-MM-DD
-        hh:mm:00
+        hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: start_date
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -478,13 +478,13 @@ script:
   - arguments:
     - default: false
       description: Date from which the search begins. Template for date - YYYY-MM-DD
-        hh:mm:00
+        hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: start_date
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -492,7 +492,7 @@ script:
     - default: false
       description: Cisco message ID to filter with.
       isArray: false
-      name: icid
+      name: cisco_id
       required: true
       secret: false
     - default: false
@@ -590,13 +590,13 @@ script:
   - arguments:
     - default: false
       description: Date from which the search begins. Template for date - YYYY-MM-DD
-        hh:mm:00
+        hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: start_date
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -618,13 +618,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Address to filter with.
+      description: From address to filter with.
       isArray: false
       name: order_by_from_address
       required: false
       secret: false
     - default: false
-      description: Address to filter with.
+      description: To address to filter with.
       isArray: false
       name: order_by_to_address
       required: false
@@ -637,7 +637,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Address order filtering.
+      description: From address order filtering.
       isArray: false
       name: order_dir_from_address
       predefined:
@@ -647,7 +647,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Address order filtering.
+      description: To address order filtering.
       isArray: false
       name: order_dir_to_address
       predefined:
@@ -717,13 +717,13 @@ script:
   - arguments:
     - default: false
       description: Date from which the search begins. Template for date - YYYY-MM-DD
-        hh:mm:00
+        hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: start_date
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -731,7 +731,7 @@ script:
     - default: false
       description: Cisco message ID to filter with.
       isArray: false
-      name: icid
+      name: cisco_id
       required: true
       secret: false
     - default: false
@@ -751,85 +751,85 @@ script:
     execution: false
     name: cisco-email-security-dlp-details-get
     outputs:
-    - contextPath: CiscoEmailSecurity.Dlp.attachments
+    - contextPath: CiscoEmailSecurity.DLP.attachments
       description: The attachments of the DLP.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.direction
+    - contextPath: CiscoEmailSecurity.DLP.direction
       description: The DLP direction.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.dlpMatchedContent.messagePart
+    - contextPath: CiscoEmailSecurity.DLP.dlpDetails.dlpMatchedContent.messagePart
       description: The message part of the DLP details.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.dlpMatchedContent.messagePartMatch.classifier
+    - contextPath: CiscoEmailSecurity.DLP.dlpDetails.dlpMatchedContent.messagePartMatch.classifier
       description: The classifier of the DLP details.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.dlpMatchedContent.messagePartMatch.classifierMatch
+    - contextPath: CiscoEmailSecurity.DLP.dlpDetails.dlpMatchedContent.messagePartMatch.classifierMatch
       description: The classifier match of the DLP details.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.dlpPolicy
+    - contextPath: CiscoEmailSecurity.DLP.dlpDetails.dlpPolicy
       description: The DLP policy.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.mid
+    - contextPath: CiscoEmailSecurity.DLP.dlpDetails.mid
       description: The message ID of the DLP details.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.riskFactor
+    - contextPath: CiscoEmailSecurity.DLP.dlpDetails.riskFactor
       description: The risk factor of the DLP.
       type: Number
-    - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.violationSeverity
+    - contextPath: CiscoEmailSecurity.DLP.dlpDetails.violationSeverity
       description: The violation severity of the DLP.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.hostName
+    - contextPath: CiscoEmailSecurity.DLP.hostName
       description: The host name of the DLP.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.messageSize
+    - contextPath: CiscoEmailSecurity.DLP.messageSize
       description: The message size of the DLP.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.mid
+    - contextPath: CiscoEmailSecurity.DLP.mid
       description: The message ID of the DLP.
       type: Number
-    - contextPath: CiscoEmailSecurity.Dlp.midHeader
+    - contextPath: CiscoEmailSecurity.DLP.midHeader
       description: The header message ID of the DLP.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.recipient
+    - contextPath: CiscoEmailSecurity.DLP.recipient
       description: The recipient of the Dlp.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.sender
+    - contextPath: CiscoEmailSecurity.DLP.sender
       description: The sender of the Dlp.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.senderGroup
+    - contextPath: CiscoEmailSecurity.DLP.senderGroup
       description: The sender group of the DLP.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.sendingHostSummary.ipAddress
+    - contextPath: CiscoEmailSecurity.DLP.sendingHostSummary.ipAddress
       description: The IP address of the host DLP.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.sendingHostSummary.reverseDnsHostname
+    - contextPath: CiscoEmailSecurity.DLP.sendingHostSummary.reverseDnsHostname
       description: The dns host name of the DLP.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.sendingHostSummary.sbrsScore
+    - contextPath: CiscoEmailSecurity.DLP.sendingHostSummary.sbrsScore
       description: The sender base score host of the DLP.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.showDLPDetails
+    - contextPath: CiscoEmailSecurity.DLP.showDLPDetails
       description: Is DLP details is shown.
       type: Boolean
-    - contextPath: CiscoEmailSecurity.Dlp.smtpAuthId
+    - contextPath: CiscoEmailSecurity.DLP.smtpAuthId
       description: The SMTP auth ID of the DLP.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.subject
+    - contextPath: CiscoEmailSecurity.DLP.subject
       description: The subject of the DLP.
       type: String
-    - contextPath: CiscoEmailSecurity.Dlp.timestamp
+    - contextPath: CiscoEmailSecurity.DLP.timestamp
       description: The date time of the DLP.
       type: String
   - arguments:
     - default: false
       description: Date from which the search begins. Template for date - YYYY-MM-DD
-        hh:mm:00
+        hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: start_date
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -837,7 +837,7 @@ script:
     - default: false
       description: Cisco message ID to filter with.
       isArray: false
-      name: icid
+      name: cisco_id
       required: true
       secret: false
     - default: false
@@ -857,73 +857,73 @@ script:
     execution: false
     name: cisco-email-security-amp-details-get
     outputs:
-    - contextPath: CiscoEmailSecurity.Amp.ampDetails.description
+    - contextPath: CiscoEmailSecurity.AMP.ampDetails.description
       description: The description of the AMP details.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.ampDetails.lastEvent
+    - contextPath: CiscoEmailSecurity.AMP.ampDetails.lastEvent
       description: Is this the last event of the AMP details.
       type: Boolean
-    - contextPath: CiscoEmailSecurity.Amp.ampDetails.timestamp
+    - contextPath: CiscoEmailSecurity.AMP.ampDetails.timestamp
       description: The dete time of the AMP details.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.attachments
+    - contextPath: CiscoEmailSecurity.AMP.attachments
       description: The attachments of the AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.direction
+    - contextPath: CiscoEmailSecurity.AMP.direction
       description: The direction of the AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.hostName
+    - contextPath: CiscoEmailSecurity.AMP.hostName
       description: The host name of the AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.messageSize
+    - contextPath: CiscoEmailSecurity.AMP.messageSize
       description: The message size of the AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.mid
+    - contextPath: CiscoEmailSecurity.AMP.mid
       description: The message ID of the AMP.
       type: Number
-    - contextPath: CiscoEmailSecurity.Amp.midHeader
+    - contextPath: CiscoEmailSecurity.AMP.midHeader
       description: The header message ID of the AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.recipient
+    - contextPath: CiscoEmailSecurity.AMP.recipient
       description: The recipient of the AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.sender
+    - contextPath: CiscoEmailSecurity.AMP.sender
       description: The sender of the AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.senderGroup
+    - contextPath: CiscoEmailSecurity.AMP.senderGroup
       description: The sender group of the AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.sendingHostSummary.ipAddress
+    - contextPath: CiscoEmailSecurity.AMP.sendingHostSummary.ipAddress
       description: The IP address of the host AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.sendingHostSummary.reverseDnsHostname
+    - contextPath: CiscoEmailSecurity.AMP.sendingHostSummary.reverseDnsHostname
       description: The dns host name of the AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.sendingHostSummary.sbrsScore
+    - contextPath: CiscoEmailSecurity.AMP.sendingHostSummary.sbrsScore
       description: The sender base score host of the AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.showAMPDetails
+    - contextPath: CiscoEmailSecurity.AMP.showAMPDetails
       description: Is AMP details is shown.
       type: Boolean
-    - contextPath: CiscoEmailSecurity.Amp.smtpAuthId
+    - contextPath: CiscoEmailSecurity.AMP.smtpAuthId
       description: The SMTP auth ID of the AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.subject
+    - contextPath: CiscoEmailSecurity.AMP.subject
       description: The subject of the AMP.
       type: String
-    - contextPath: CiscoEmailSecurity.Amp.timestamp
+    - contextPath: CiscoEmailSecurity.AMP.timestamp
       description: The date time of the AMP.
       type: String
   - arguments:
     - default: false
       description: Date from which the search begins. Template for date - YYYY-MM-DD
-        hh:mm:00
+        hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: start_date
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -931,7 +931,7 @@ script:
     - default: false
       description: Cisco message ID to filter with.
       isArray: false
-      name: icid
+      name: cisco_id
       required: true
       secret: false
     - default: false
@@ -951,64 +951,64 @@ script:
     execution: false
     name: cisco-email-security-url-details-get
     outputs:
-    - contextPath: CiscoEmailSecurity.Url.attachments
+    - contextPath: CiscoEmailSecurity.URL.attachments
       description: The attachments of the URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.direction
+    - contextPath: CiscoEmailSecurity.URL.direction
       description: The direction of the URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.hostName
+    - contextPath: CiscoEmailSecurity.URL.hostName
       description: The hostName of the URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.mid
+    - contextPath: CiscoEmailSecurity.URL.mid
       description: The message ID of the URL.
       type: Number
-    - contextPath: CiscoEmailSecurity.Url.midHeader
+    - contextPath: CiscoEmailSecurity.URL.midHeader
       description: The header message ID of the URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.recipient
+    - contextPath: CiscoEmailSecurity.URL.recipient
       description: The recipient of the URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.sdrAge
+    - contextPath: CiscoEmailSecurity.URL.sdrAge
       description: The software defined radio age of the URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.sdrCategory
+    - contextPath: CiscoEmailSecurity.URL.sdrCategory
       description: The software defined radio category of the URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.sdrReputation
+    - contextPath: CiscoEmailSecurity.URL.sdrReputation
       description: The software defined radio reputation of the URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.sender
+    - contextPath: CiscoEmailSecurity.URL.sender
       description: The URL of thesender.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.senderGroup
+    - contextPath: CiscoEmailSecurity.URL.senderGroup
       description: The sender group of the URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.sendingHostSummary.ipAddress
+    - contextPath: CiscoEmailSecurity.URL.sendingHostSummary.ipAddress
       description: The IP address of the host URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.sendingHostSummary.reverseDnsHostname
+    - contextPath: CiscoEmailSecurity.URL.sendingHostSummary.reverseDnsHostname
       description: The dns host name of the URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.sendingHostSummary.sbrsScore
+    - contextPath: CiscoEmailSecurity.URL.sendingHostSummary.sbrsScore
       description: The sender base score host of the URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.showURLDetails
+    - contextPath: CiscoEmailSecurity.URL.showURLDetails
       description: Is URL details is shown.
       type: Boolean
-    - contextPath: CiscoEmailSecurity.Url.smtpAuthId
+    - contextPath: CiscoEmailSecurity.URL.smtpAuthId
       description: The SMTP auth ID of the URL.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.subject
+    - contextPath: CiscoEmailSecurity.URL.subject
       description: The URL subject.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.urlDetails.description
+    - contextPath: CiscoEmailSecurity.URL.urlDetails.description
       description: The description of the URL details.
       type: String
-    - contextPath: CiscoEmailSecurity.Url.urlDetails.lastEvent
+    - contextPath: CiscoEmailSecurity.URL.urlDetails.lastEvent
       description: Is this the last event of the URL details.
       type: Boolean
-    - contextPath: CiscoEmailSecurity.Url.urlDetails.timestamp
+    - contextPath: CiscoEmailSecurity.URL.urlDetails.timestamp
       description: The date time of the URL details.
       type: String
   - arguments:
@@ -1036,7 +1036,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Llist type
+      description: List type
       isArray: false
       name: list_type
       predefined:
@@ -1216,5 +1216,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+beta: true
 tests:
 - No tests
