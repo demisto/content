@@ -162,34 +162,19 @@ def merge_zip_files(feature_branch_content_zip_file_path, artifacts_zip_path, or
     feature_zip.close()
 
 
-def get_new_feature_zip_file_path(feature_branch_name, job_num):
-    """Merge content_new zip files and remove the unnecessary files.
+def get_feature_zip_file_path(feature_branch_name, job_num, zip_name):
+    """Merge zip files and remove the unnecessary files.
 
     Args:
         feature_branch_name (str): The name of the feature branch.
         job_num (str): Last successful create instance job of the feature branch.
+        zip_name (str): The zip we want to download (all_content or content_new).
 
     """
-    current_feature_content_zip_file_path = f'content/{feature_branch_name}/{job_num}/0/content_new.zip'
-    zip_destination_path = f'{ARTIFACTS_PATH}feature_content_new_zip'
-    new_feature_content_zip_file_path = download_zip_file_from_gcp(current_feature_content_zip_file_path,
-                                                                   zip_destination_path)
-    return new_feature_content_zip_file_path, zip_destination_path
-
-
-def get_all_content_feature_zip_file_path(feature_branch_name, job_num):
-    """Merge all_content zip files and remove the unnecessary files.
-
-    Args:
-        feature_branch_name (str): The name of the feature branch.
-        job_num (str): Last successful create instance job of the feature branch.
-
-    """
-    current_feature_all_content_zip_file_path = f'content/{feature_branch_name}/{job_num}/0/all_content.zip'
-    zip_destination_path = f'{ARTIFACTS_PATH}feature_all_content_zip'
-    feature_all_content_zip_file_path = download_zip_file_from_gcp(current_feature_all_content_zip_file_path,
-                                                                   zip_destination_path)
-    return feature_all_content_zip_file_path, zip_destination_path
+    current_feature_zip_file_path = f'content/{feature_branch_name}/{job_num}/0/{zip_name}.zip'
+    zip_destination_path = f'{ARTIFACTS_PATH}feature_{zip_name}_zip'
+    feature_zip_file_path = download_zip_file_from_gcp(current_feature_zip_file_path, zip_destination_path)
+    return feature_zip_file_path, zip_destination_path
 
 
 def remove_directory(dir_path):
@@ -215,22 +200,22 @@ def main():
 
     create_instances_job_num = get_job_num(feature_branch_successful_workflow_id)
 
-    new_feature_content_zip_file_path, content_new_zip_destination_path = \
-        get_new_feature_zip_file_path(feature_branch_name, create_instances_job_num)
+    feature_content_new_zip_file_path, content_new_zip_destination_path = \
+        get_feature_zip_file_path(feature_branch_name, create_instances_job_num, 'content_new')
 
-    current_feature_all_content_zip_file_path, all_content_zip_destination_path = \
-        get_all_content_feature_zip_file_path(feature_branch_name, create_instances_job_num)
+    feature_all_content_zip_file_path, all_content_zip_destination_path = \
+        get_feature_zip_file_path(feature_branch_name, create_instances_job_num, 'all_content')
 
-    if new_feature_content_zip_file_path:
-        merge_zip_files(new_feature_content_zip_file_path, artifacts_zip_path=CONTENT_NEW_ZIP_PATH,
+    if feature_content_new_zip_file_path:
+        merge_zip_files(feature_content_new_zip_file_path, artifacts_zip_path=CONTENT_NEW_ZIP_PATH,
                         original_zip_path=ORIGINAL_CONTENT_NEW_ZIP_PATH)
         remove_directory(content_new_zip_destination_path)
         print('Done merging content_new.zip files')
     else:
         print(f'Failed to download content_new.zip from feature branch {feature_branch_name}')
 
-    if current_feature_all_content_zip_file_path:
-        merge_zip_files(current_feature_all_content_zip_file_path, artifacts_zip_path=ALL_CONTENT_ZIP_PATH,
+    if feature_all_content_zip_file_path:
+        merge_zip_files(feature_all_content_zip_file_path, artifacts_zip_path=ALL_CONTENT_ZIP_PATH,
                         original_zip_path=ORIGINAL_ALL_CONTENT_ZIP_PATH)
         remove_directory(all_content_zip_destination_path)
         print('Done merging all_content.zip files')
