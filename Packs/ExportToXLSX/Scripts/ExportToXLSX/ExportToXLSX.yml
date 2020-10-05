@@ -1,0 +1,69 @@
+args:
+- default: false
+  description: The output file name (for example "Report.xlsx").
+  isArray: false
+  name: file_name
+  required: true
+  secret: false
+- default: false
+  description: The data to export. accepts a context key of a dictionary or a list
+    of dictionaries for a single sheet file (${data}), comma separated keys for a
+    multi-sheet file (${data1},${data2}).
+  isArray: true
+  name: data
+  required: true
+  secret: false
+- default: false
+  description: The sheet name, comma separated sheet names if multiple sheets are
+    required (sheet1,sheet2).
+  isArray: false
+  name: sheet_name
+  required: true
+  secret: false
+- default: false
+  description: 'Comma separated list of headers to hold the sheet headers in order.
+    if multiple sheets are being used, a ";" should separate each sheet headers list.
+    For example: "header1,header2;header3,header4.'
+  isArray: false
+  name: headers
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: Bold table headers
+  isArray: false
+  name: bold
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: Add border to table cells
+  isArray: false
+  name: border
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: Export context data to an xlsx file.
+commonfields:
+  id: ExportToXLSX
+  version: -1
+dockerimage: demisto/xslxwriter:1.0.0.11942
+enabled: true
+name: ExportToXLSX
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+runas: DBotWeakRole
+runonce: false
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
