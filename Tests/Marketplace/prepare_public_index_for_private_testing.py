@@ -179,9 +179,12 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
     print("Doing LS")
     print(subprocess.check_output('ls', shell=True))
     print("Finished LS")
-    print("Doing new LS")
-    print(subprocess.check_output('ls index_json', shell=True))
-    print("Finished new LS")
+    try:
+        print("Doing new LS")
+        print(subprocess.check_output('ls dummy_index', shell=True))
+        print("Finished new LS")
+    except Exception:
+        print('whoops, second ls did not work')
     if not os.path.exists(downloaded_dummy_index_path):
         print_error(f'downloaded_dummy_index_path {downloaded_dummy_index_path} does not exist')
     if not os.path.exists(extracted_dummy_index_path):
