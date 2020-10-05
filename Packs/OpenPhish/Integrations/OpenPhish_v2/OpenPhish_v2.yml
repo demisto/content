@@ -48,8 +48,7 @@ script:
           description: The vendor used to calculate the score.
         - contextPath: DBotScore.Score
           description: The actual score.
-
-      description: Check URL Reputation
+      description: Checks the reputation of a URL.
     - name: openphish-reload
       arguments: []
       description: Reload OpenPhish database
