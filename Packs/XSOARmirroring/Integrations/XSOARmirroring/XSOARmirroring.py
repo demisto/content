@@ -107,7 +107,7 @@ class Client(BaseClient):
             )
         else:
             demisto.debug(f'the entry has inv_id {incident_id}\ndata {entry.get("date")}\n'
-                         f'markdown {entry.get("markdown")}')
+                          f'markdown {entry.get("markdown")}')
             entry_format = True if entry.get('format') == 'markdown' else False
             self._http_request(
                 method='POST',
@@ -308,7 +308,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     )
 
     for incident in incidents:
-        incident['mirror_direction'] = MIRROR_DIRECTION[mirror_direction]
+        incident['mirror_direction']: Optional[str] = MIRROR_DIRECTION[mirror_direction]
         incident['mirror_instance'] = demisto.integrationInstance()
         incident['mirror_tag'] = demisto.params().get('mirror_tag')
 
@@ -473,7 +473,7 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
 
     types = client.get_incident_types()
     for incident_type_obj in types:
-        incident_type_name = incident_type_obj.get('name')  # type: ignore
+        incident_type_name: str = incident_type_obj.get('name')  # type: ignore
         incident_type_scheme = SchemeTypeMapping(type_name=incident_type_name)
         demisto.debug(f'Collecting incident mapping for incident type - "{incident_type_name}"')
 
@@ -481,10 +481,9 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
             if field.get('group') == 0 and field.get('cliName') is not None and \
                     (field.get('associatedToAll') or incident_type_name in
                      field.get('associatedTypes')):  # type: ignore
-                incident_field = incident_type_scheme.add_field(name=field.get('cliName'),
+                incident_type_scheme.add_field(name=field.get('cliName'),
                                                                 description=f"{field.get('name')} - "
                                                                             f"{field.get('type')}")
-                incident_type_scheme.add_field(incident_field)
 
         all_mappings.add_scheme_type(incident_type_scheme)
 
@@ -492,9 +491,8 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     demisto.debug('Collecting the default incident scheme')
     for field in incident_fields:
         if field.get('group') == 0 and field.get('associatedToAll'):
-            incident_field = default_scheme.add_field(name=field.get('cliName'),
-                                                      description=f"{field.get('name')} - {field.get('type')}")
-            default_scheme.add_field(incident_field)
+            default_scheme.add_field(name=field.get('cliName'),
+                                     description=f"{field.get('name')} - {field.get('type')}")
 
     all_mappings.add_scheme_type(default_scheme)
     return all_mappings
@@ -552,9 +550,10 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         )
 
         if (datetime.fromtimestamp(modified) - datetime.fromtimestamp(occurred) < timedelta(minutes=1)
-                and datetime.fromtimestamp(remote_args.last_update) -
-                datetime.fromtimestamp(modified) < timedelta(minutes=1)):
-            remote_args.last_update = occurred + 1  # in case new entries created less than a minute after incident creation
+                and datetime.fromtimestamp(remote_args.last_update) - datetime.fromtimestamp(modified)
+                < timedelta(minutes=1)):
+            remote_args.last_update = occurred + 1
+            # in case new entries created less than a minute after incident creation
 
         entries = client.get_incident_entries(
             incident_id=remote_args.remote_incident_id,  # type: ignore
@@ -601,7 +600,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
 
     except Exception as e:
         demisto.debug(f"Error in XSOAR incoming mirror for incident {args['id']} \nError message: {str(e)}")
-        if incident:
+        if incident and isinstance(incident, dict):
             incident['in_mirror_error'] = str(e)
 
         else:

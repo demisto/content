@@ -62,16 +62,16 @@ def test_mirroring(mocker):
     mocker.patch.object(client, 'get_incident_types', return_value=INCIDENT_TYPES)
     response = get_mapping_fields_command(client)
     assert len(response) == 3
-    assert 'Default Schema' in response
-    assert response['Default Schema'] == {
-        'cliName1': 'field1 - type1 - description1'
+    assert 'Default Mapping' in response
+    assert response['Default Mapping'] == {
+        'cliName1': 'field1 - type1'
     }
     assert response['test'] == {
-        'cliName1': 'field1 - type1 - description1',
-        'cliName2': 'field2 - type2 - description2'
+        'cliName1': 'field1 - type1',
+        'cliName2': 'field2 - type2'
     }
     assert response['Something'] == {
-        'cliName1': 'field1 - type1 - description1'
+        'cliName1': 'field1 - type1'
     }
 
 
