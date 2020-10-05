@@ -491,7 +491,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Assigns a manager to the specified user. Permissions: - User.ReadWrite (Delegated & Application)"
+    description: |-
+      Assigns a manager to the specified user.
+      Permission: User.ReadWrite (Delegated) or User.ReadWrite (Application)
     execution: false
     name: msgraph-user-assign-manager
   - arguments:
