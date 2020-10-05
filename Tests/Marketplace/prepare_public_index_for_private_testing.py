@@ -168,7 +168,7 @@ def release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
 def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
     downloaded_dummy_index_path = 'current_dummy_index.zip'
     extracted_dummy_index_path = 'dummy_index'
-    dummy_index_json_path = os.path.join(extracted_dummy_index_path, 'index.json')
+    dummy_index_json_path = os.path.join(extracted_dummy_index_path, 'index', 'index.json')
     dummy_index_blob.download_to_filename(downloaded_dummy_index_path)
     os.mkdir(extracted_dummy_index_path)
     if os.path.exists(downloaded_dummy_index_path):
