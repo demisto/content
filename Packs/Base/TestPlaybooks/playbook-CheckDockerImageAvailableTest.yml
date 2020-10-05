@@ -71,9 +71,7 @@ tasks:
       id: ae3ab3d9-afad-4fdf-8e5a-8657fea0d49f
       version: -1
       name: Check docker valid image (docker hub)
-      description: Check if a docker image is available for performing docker pull.
-        Script simulates the docker pull flow but doesn't actually pull the image.
-        Returns an entry with 'ok' if all is good otherwise will return an error.
+      description: Check if a docker image is available for performing docker pull. Script simulates the docker pull flow but doesn't actually pull the image. Returns an entry with 'ok' if all is good otherwise will return an error.
       scriptName: CheckDockerImageAvailable
       type: regular
       iscommand: false
@@ -109,9 +107,7 @@ tasks:
       id: a1f9c603-7ed5-4ddd-8b52-546e10df1836
       version: -1
       name: Check docker in-valid image
-      description: Check if a docker image is available for performing docker pull.
-        Script simulates the docker pull flow but doesn't actually pull the image.
-        Returns an entry with 'ok' if all is good otherwise will return an error.
+      description: Check if a docker image is available for performing docker pull. Script simulates the docker pull flow but doesn't actually pull the image. Returns an entry with 'ok' if all is good otherwise will return an error.
       scriptName: CheckDockerImageAvailable
       type: regular
       iscommand: false
@@ -258,9 +254,7 @@ tasks:
       id: f4073b55-4e19-47cf-8722-8d5d596a1182
       version: -1
       name: Check docker valid image (gcr.io)
-      description: Check if a docker image is available for performing docker pull.
-        Script simulates the docker pull flow but doesn't actually pull the image.
-        Returns an entry with 'ok' if all is good otherwise will return an error.
+      description: Check if a docker image is available for performing docker pull. Script simulates the docker pull flow but doesn't actually pull the image. Returns an entry with 'ok' if all is good otherwise will return an error.
       scriptName: CheckDockerImageAvailable
       type: regular
       iscommand: false
@@ -302,3 +296,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

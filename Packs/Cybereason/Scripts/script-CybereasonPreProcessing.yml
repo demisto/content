@@ -2,16 +2,21 @@ commonfields:
   id: CybereasonPreProcessingExample
   version: -1
 name: CybereasonPreProcessingExample
-script: |-
+script: >-
   res = True
+
   incident = demisto.incidents()[0]
+
   malop_guid = ''
+
   for label in incident['labels']:
       if label['type'] == 'guidString':
           malop_guid = label['value']
 
   response = demisto.executeCommand('getIncidents', {'query': '-status:Closed and malopguid: {}'.format(malop_guid)})
+
   malop_incident = response[0]['Contents']['data']
+
 
   if malop_incident:
       # Malop was already fetched - updating the relevant incident
@@ -33,5 +38,7 @@ comment: |-
 enabled: true
 scripttarget: 0
 runonce: false
+runas: DBotWeakRole
 tests:
- - No test
+- No test
+fromversion: 5.0.0

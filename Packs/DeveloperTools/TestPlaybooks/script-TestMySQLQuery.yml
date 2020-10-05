@@ -4,8 +4,9 @@ commonfields: {id: TestMysqlQuery, version: -1}
 enabled: true
 name: TestMysqlQuery
 outputs: []
-script: |-
+script: >-
   # Script to testout various mysql queries
+
   def main():
       res = demisto.executeCommand("query", {'query': 'select user()', 'using-brand': 'mysql'})
       if not res[0]['Contents'][0].get('user()'):
@@ -56,3 +57,4 @@ runas: DBotWeakRole
 runonce: false
 dependson:
   must: [mysql|||query]
+fromversion: 5.0.0

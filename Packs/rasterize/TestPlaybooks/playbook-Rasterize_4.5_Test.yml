@@ -1,8 +1,7 @@
 id: Rasterize 4.5 Test
 version: -1
 name: Rasterize 4.5 Test
-description: "Test playbook to run with Rasterize up to version 4.5. When adding tests you probably want to add to 'Rasterize Test'
-  and NOT this playbook"
+description: "Test playbook to run with Rasterize up to version 4.5. When adding tests you probably want to add to 'Rasterize Test' and NOT this playbook"
 starttaskid: "0"
 tasks:
   "0":
@@ -504,3 +503,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

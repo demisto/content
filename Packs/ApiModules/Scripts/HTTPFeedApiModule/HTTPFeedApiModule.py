@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 
 ''' GLOBALS '''
 TAGS = 'feedTags'
+TLP_COLOR = 'trafficlightprotocol'
 
 
 class Client(BaseClient):
@@ -248,8 +249,8 @@ class Client(BaseClient):
     def custom_fields_creator(self, attributes: dict):
         created_custom_fields = {}
         for attribute in attributes.keys():
-            if attribute in self.custom_fields_mapping.keys() or attribute == TAGS:
-                if attribute == TAGS:
+            if attribute in self.custom_fields_mapping.keys() or attribute in [TAGS, TLP_COLOR]:
+                if attribute in [TAGS, TLP_COLOR]:
                     created_custom_fields[attribute] = attributes[attribute]
                 else:
                     created_custom_fields[self.custom_fields_mapping[attribute]] = attributes[attribute]
@@ -262,13 +263,14 @@ def datestring_to_millisecond_timestamp(datestring):
     return int(date.timestamp() * 1000)
 
 
-def get_indicator_fields(line, url, feed_tags: list, client: Client):
+def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], client: Client):
     """
     Extract indicators according to the feed type
     :param line: The current line in the feed
     :param url: The feed URL
     :param client: The client
     :param feed_tags: The indicator tags.
+    :param tlp_color: Traffic Light Protocol color.
     :return: The indicator
     """
     attributes = None
@@ -325,16 +327,20 @@ def get_indicator_fields(line, url, feed_tags: list, client: Client):
         attributes['value'] = value = extracted_indicator
         attributes['type'] = feed_config.get('indicator_type', client.indicator_type)
         attributes['tags'] = feed_tags
+
+        if tlp_color:
+            attributes['trafficlightprotocol'] = tlp_color
+
     return attributes, value
 
 
-def fetch_indicators_command(client, feed_tags, itype, auto_detect, **kwargs):
+def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, **kwargs):
     iterators = client.build_iterator(**kwargs)
     indicators = []
     for iterator in iterators:
         for url, lines in iterator.items():
             for line in lines:
-                attributes, value = get_indicator_fields(line, url, feed_tags, client)
+                attributes, value = get_indicator_fields(line, url, feed_tags, tlp_color, client)
                 if value:
                     if 'lastseenbysource' in attributes.keys():
                         attributes['lastseenbysource'] = datestring_to_millisecond_timestamp(
@@ -381,8 +387,9 @@ def get_indicators_command(client: Client, args):
     itype = args.get('indicator_type', client.indicator_type)
     limit = int(args.get('limit'))
     feed_tags = args.get('feedTags')
+    tlp_color = args.get('tlp_color')
     auto_detect = demisto.params().get('auto_detect_type')
-    indicators_list = fetch_indicators_command(client, feed_tags, itype, auto_detect)[:limit]
+    indicators_list = fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect)[:limit]
     entry_result = camelize(indicators_list)
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
     return hr, {}, indicators_list
@@ -409,6 +416,7 @@ def feed_main(feed_name, params=None, prefix=''):
     if 'feed_name' not in params:
         params['feed_name'] = feed_name
     feed_tags = argToList(demisto.params().get('feedTags'))
+    tlp_color = demisto.params().get('tlp_color')
     client = Client(**params)
     command = demisto.command()
     if command != 'fetch-indicators':
@@ -422,7 +430,7 @@ def feed_main(feed_name, params=None, prefix=''):
     }
     try:
         if command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, feed_tags, params.get('indicator_type'),
+            indicators = fetch_indicators_command(client, feed_tags, tlp_color, params.get('indicator_type'),
                                                   params.get('auto_detect_type'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
@@ -432,6 +440,8 @@ def feed_main(feed_name, params=None, prefix=''):
             args['feed_name'] = feed_name
             if feed_tags:
                 args['feedTags'] = feed_tags
+            if tlp_color:
+                args['tlp_color'] = tlp_color
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:

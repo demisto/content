@@ -79,8 +79,7 @@ tasks:
       id: 6b41e663-db7a-4bad-8666-995e93a83da3
       version: -1
       name: Print indicators
-      description: Prints indicators to the war room and lets auto-extract put them
-        in context.
+      description: Prints indicators to the war room and lets auto-extract put them in context.
       scriptName: autoextract_test
       type: regular
       iscommand: false
@@ -112,8 +111,7 @@ tasks:
       id: e6d0c59e-21d1-4cca-8bff-d9ad1c87f54f
       version: -1
       name: Were the IP addresses extracted?
-      description: Checks whether the internal, external and escaped IP addresses
-        that were printed are found in context.
+      description: Checks whether the internal, external and escaped IP addresses that were printed are found in context.
       type: condition
       iscommand: false
       brand: ""
@@ -207,8 +205,7 @@ tasks:
       id: 549fc882-fd38-432e-8059-1a1fd8f644e3
       version: -1
       name: Were the URLs extracted?
-      description: Checks whether the URLs and escaped URLs that were printed are
-        found in context.
+      description: Checks whether the URLs and escaped URLs that were printed are found in context.
       type: condition
       iscommand: false
       brand: ""
@@ -289,8 +286,7 @@ tasks:
       id: b4c3ac46-08cc-407e-87f1-b0a1dd5d46b4
       version: -1
       name: Were the hashes extracted?
-      description: Checks whether the MD5, SHA1 and SHA256 hashes that were printed
-        are found in context.
+      description: Checks whether the MD5, SHA1 and SHA256 hashes that were printed are found in context.
       type: condition
       iscommand: false
       brand: ""
@@ -423,8 +419,7 @@ tasks:
       id: bf681094-49c7-4ccf-8719-721be65759fb
       version: -1
       name: Were the email addresses extracted?
-      description: Checks whether the email addresses that were printed are found
-        in context.
+      description: Checks whether the email addresses that were printed are found in context.
       type: condition
       iscommand: false
       brand: ""
@@ -489,8 +484,7 @@ tasks:
       id: 4a63db05-d3ae-49e1-81e2-a44c0ad68eea
       version: -1
       name: Were the domains extracted?
-      description: Checks whether domains were extracted from URLs and email addresses
-        that were printed to context.
+      description: Checks whether domains were extracted from URLs and email addresses that were printed to context.
       type: condition
       iscommand: false
       brand: ""
@@ -598,8 +592,7 @@ tasks:
       - "24"
     scriptarguments:
       message:
-        simple: Extraction of an indicator has failed. Check which indicators were
-          not found in the previous conditions of the playbook.
+        simple: Extraction of an indicator has failed. Check which indicators were not found in the previous conditions of the playbook.
     separatecontext: false
     view: |-
       {
@@ -730,3 +723,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
