@@ -1,0 +1,36 @@
+{
+  "uid": "1234",
+  "name": "threat_indicator_1",
+  "type": "threat-indicator",
+  "domain": {
+    "uid": "9876",
+    "name": "SMC User",
+    "domain-type": "domain"
+  },
+  "action": "Prevent",
+  "number-of-observables": 1,
+  "profile-overrides": [
+    
+  ],
+  "comments": "",
+  "color": "black",
+  "icon": "General/Node",
+  "tags": [
+    
+  ],
+  "meta-info": {
+    "lock": "locked by current session",
+    "validation-state": "ok",
+    "last-modify-time": {
+      "posix": 1598283131980,
+      "iso-8601": "2020-08-24T18:32+0300"
+    },
+    "last-modifier": "admin",
+    "creation-time": {
+      "posix": 1598283131980,
+      "iso-8601": "2020-08-24T18:32+0300"
+    },
+    "creator": "admin"
+  },
+  "read-only": false
+}

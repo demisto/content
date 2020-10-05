@@ -1,9 +1,9 @@
 id: Calculate Severity - Generic
 version: -1
 name: Calculate Severity - Generic
-fromversion: 3.6.0
+fromversion: 5.0.0
 description: |-
-  DEPRECATED. Use "Calculate Severity - Generic v2" playbook instead. Calculates and assign the incident severity based on the highest returned severity level from the following severity calculations:
+  Deprecated. Use "Calculate Severity - Generic v2" playbook instead. Calculates and assign the incident severity based on the highest returned severity level from the following severity calculations:
 
   * Indicators DBotScore - Calculates the incident severity level according to the highest indicator DBotScore.
   * Critical assets - Determines if a critical assest is associated with the invesigation.
@@ -11,6 +11,7 @@ description: |-
 
   NOTE: the new severity level overwrites the previous severity level even if the previous severity level was more severe.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -491,10 +492,7 @@ tasks:
       id: 1850d92e-938e-4f29-827a-ff8dd4d1da40
       version: -1
       name: Calculate Severity - Critical assets
-      description: "Determines if a critical assest is associated with the invesigation.
-        The playbook returns a severity level of \"Critical\" if a critical asset
-        is associated with the investigation.\n\nThis playbook verifies if a User
-        Account or an Endpoint is part of a critical list or a critical AD group. "
+      description: "Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of \"Critical\" if a critical asset is associated with the investigation.\n\nThis playbook verifies if a User Account or an Endpoint is part of a critical list or a critical AD group. "
       playbookName: Calculate Severity - Critical assets
       type: playbook
       iscommand: false
@@ -575,8 +573,7 @@ tasks:
       id: 9cb71dfd-3f18-403f-8351-c370d5a58987
       version: -1
       name: Set severity based on the highest returned severity level
-      description: Determines the severity level based on the highest result of all
-        severity calculations.
+      description: Determines the severity level based on the highest result of all severity calculations.
       type: condition
       iscommand: false
       brand: ""
@@ -682,8 +679,7 @@ tasks:
       id: e628aa74-143a-4068-8a75-3abd96479000
       version: -1
       name: Calculate Severity - 3rd-party integrations
-      description: Calculates the incident severity level according to the methodology
-        of a 3rd-party integration.
+      description: Calculates the incident severity level according to the methodology of a 3rd-party integration.
       playbookName: Calculate Severity - 3rd-party integrations
       type: playbook
       iscommand: false
@@ -758,4 +754,4 @@ inputs:
   description: Nexpose Vulnerability Severity score (Moderate, Severe, Critical)
 outputs: []
 tests:
-  - no test
+- no test

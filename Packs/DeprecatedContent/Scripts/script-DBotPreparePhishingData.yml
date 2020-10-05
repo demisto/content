@@ -2,13 +2,18 @@ commonfields:
   id: DBotPreparePhishingData
   version: -1
 name: DBotPreparePhishingData
-script: |+
+script: >+
   import base64, uuid, re, zlib
+
   import demisto_ml
 
+
   TRAIN_FILE_NAME = str(uuid.uuid4()) + ".train"
+
   ALL_LABELS = "*"
+
   TAG_PREFIX = demisto_ml.DEFAULT_LABEL_PREFIX
+
 
   def get_context(incident_id):
       res = demisto.executeCommand("getContext", {'id': incident_id})
@@ -53,27 +58,48 @@ script: |+
 
 
   EMAIL_TEXT_DT = demisto.args()['emailTextKey']
+
   EMAIL_SUBJECT_DT = demisto.args()['emailSubjectKey']
+
   TAG_DT = demisto.args()['tagKey']
+
   PHISHING_LABELS = get_phishing_map_labels(demisto.args()['phishingLabels'])
+
   IS_CONTEXNT_DATA_NEEDED = (demisto.args()['isContextNeeded'] == 'yes')
+
   HASH_WORDS = (demisto.args()['hashData'] == 'yes')
+
   LIST_NAME_TO_STORE = demisto.args().get('storeFileInList')
+
   HASH_SEED = 5381
+
   MAX_INCIDENTS = int(demisto.args()['maxNumberOfIncidents'])
 
+
   # get the incidents for training
+
   incidents = get_incidents(demisto.args()['incidentsQuery'], MAX_INCIDENTS, IS_CONTEXNT_DATA_NEEDED)
+
   # parse the incidents
+
   skipped_empty = 0
+
   skipped_missing_labels = 0
+
   skipped_invalid_label = 0
+
   skipped_missing_body = 0
+
   skipped_exception = 0
+
   labels_value_counts = {}
+
   data_texts = []
+
   data_labels = []
+
   skipped_labels = []
+
   if len(incidents) == MAX_INCIDENTS:
       demisto.log('Number of results returned from incidentsQuery has reached the limit (maxNumberOfIncidents=%d). Consider increase maxNumberOfIncidents to train on more data.' % MAX_INCIDENTS)
   for i in incidents:
@@ -118,16 +144,22 @@ script: |+
 
 
   # tokenize text and remove empty strings
+
   res = demisto.executeCommand('WordTokenizer', {'value': data_texts, 'hashWordWithSeed': HASH_SEED if HASH_WORDS else None, 'type': 'punkt'})
+
   if isError(res[0]):
       demisto.results(res)
       sys.exit(0)
   data_texts = res[0]['Contents']
+
   if type(data_texts) is not list:
       data_texts = [data_texts]
   data = [{'txt': txt, 'label': label} for (txt, label) in zip(data_texts, data_labels)]
+
   skipped_empty += len([x for x in data if len(x['txt']) == 0])
+
   data = [x for x in data if len(x['txt']) > 0]
+
 
   if skipped_empty > 0:
       demisto.log("%d incidents skipped due to missing text or subject" % skipped_empty)
@@ -143,6 +175,7 @@ script: |+
       return_error("There is no data to train")
 
   labels_value_counts_hr = [{'Email Label': k, 'Count': v} for k,v in labels_value_counts.items()]
+
   demisto.results({
       'Type': entryTypes['note'],
       'Contents': data,
@@ -151,13 +184,19 @@ script: |+
       'HumanReadableFormat': formats['markdown']
   })
 
+
   file_lines = map(lambda x: x['txt'] + ' %s%s' % (TAG_PREFIX, x['label']), data)
+
   txt_to_write = "\n".join(file_lines)
+
   data_to_write = txt_to_write.encode('utf-8').lower()
+
   file_entry = fileResult(TRAIN_FILE_NAME, data_to_write)
+
   if LIST_NAME_TO_STORE:
       store_data_as_list(data_to_write, LIST_NAME_TO_STORE)
   demisto.results(file_entry)
+
   demisto.setContext('DBotPreparePhishingDataFilename', TRAIN_FILE_NAME)
 
 
@@ -166,7 +205,7 @@ subtype: python2
 tags:
 - ml
 - phishing
-comment: This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
+comment: Deprecated. This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
 enabled: true
 args:
 - name: incidentsQuery
@@ -185,15 +224,7 @@ args:
   description: Incident key to extract email tag
   defaultValue: closeReason
 - name: phishingLabels
-  description: 'Comma-separated values of email tags values and mapping (or "*" value
-    for all labels). The script going to consider only the tags specify in this field.
-    You can map label to another value by using this format: LABEL:MAPPED_LABEL. For
-    example: let''s say we have 4 values in email tag: malicious, credentials harvesting,
-    inner communitcation, external legit email, unclassified. While training, we want
-    to ignore "unclassified" tag, and refer to "credentials harvesting" as "malicious"
-    too. Also, we want to merge "inner communitcation" and "external legit email"
-    to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious,
-    inner communitcation:non-malicious, external legit email:non-malicious'
+  description: 'Comma-separated values of email tags values and mapping (or "*" value for all labels). The script going to consider only the tags specify in this field. You can map label to another value by using this format: LABEL:MAPPED_LABEL. For example: let''s say we have 4 values in email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to merge "inner communitcation" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious, external legit email:non-malicious'
   defaultValue: '*'
 - name: isContextNeeded
   auto: PREDEFINED
@@ -218,8 +249,9 @@ outputs:
 scripttarget: 0
 timeout: 12µs
 runonce: true
+runas: DBotWeakRole
 dockerimage: demisto/dl:1.1
 deprecated: true
-fromversion: 4.1.0
+fromversion: 5.0.0
 tests:
-  - No tests
+- No tests

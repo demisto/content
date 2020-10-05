@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 # IMPORTS
 import re
 import requests
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
 # Disable insecure warnings
@@ -173,7 +173,7 @@ class Client(BaseClient):
         initiate_sample_res.raise_for_status()
 
         af_cookie = initiate_sample_res.json()['af_cookie']
-        time.sleep(20)
+        time.sleep(20)  # pylint: disable=sleep-exists
 
         get_results_res = requests.request(
             method="POST",
@@ -244,6 +244,10 @@ class Client(BaseClient):
             'creationdate': raw_json_data.get('autofocus_create_date'),
         }
 
+        tlp_color = demisto.params().get('tlp_color')
+        if tlp_color:
+            fields_mapping['trafficlightprotocol'] = tlp_color
+
         return [
             {
                 'value': raw_json_data['value'],
@@ -287,6 +291,10 @@ class Client(BaseClient):
             'threattypes': [{'threatcategory': threat} for threat in raw_json_data.get('autofocus_tags_groups', [])],
             'service': 'AutoFocus Samples Feed'
         }
+
+        tlp_color = demisto.params().get('tlp_color')
+        if tlp_color:
+            fields_mapping['trafficlightprotocol'] = tlp_color
 
         return {
             'value': raw_json_data['value'],
@@ -370,7 +378,7 @@ class Client(BaseClient):
         else:
             return FeedIndicatorType.Domain
 
-    def create_indicators_from_response(self, feed_type, response, feed_tags):
+    def create_indicators_from_response(self, feed_type, response, feed_tags, tlp_color):
         parsed_indicators = []  # type:List
 
         for indicator in response:
@@ -382,7 +390,7 @@ class Client(BaseClient):
                                       FeedIndicatorType.IPv6CIDR, FeedIndicatorType.IPv6] and ":" in indicator:
                     indicator = indicator.split(":", 1)[0]
 
-                parsed_indicators.append({
+                indicator_obj = {
                     "type": indicator_type,
                     "value": indicator,
                     "rawJSON": {
@@ -391,11 +399,15 @@ class Client(BaseClient):
                         'service': feed_type
                     },
                     'fields': {'service': feed_type, 'tags': feed_tags}
-                })
+                }
+                if tlp_color:
+                    indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+                parsed_indicators.append(indicator_obj)
 
         return parsed_indicators
 
-    def build_iterator(self, feed_tags: List, limit=None, offset=None):
+    def build_iterator(self, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None):
         """Builds a list of indicators.
 
         Returns:
@@ -406,7 +418,7 @@ class Client(BaseClient):
         for service in ["Daily Threat Feed", "Custom Feed"]:
             if service in self.indicator_feeds:
                 response = self.daily_custom_http_request(feed_type=service)
-                parsed_indicators.extend(self.create_indicators_from_response(service, response, feed_tags))
+                parsed_indicators.extend(self.create_indicators_from_response(service, response, feed_tags, tlp_color))
 
         # for get_indicator_command only
         if limit:
@@ -422,14 +434,15 @@ class Client(BaseClient):
         return parsed_indicators
 
 
-def module_test_command(client: Client, args: dict, feed_tags: list):
+def module_test_command(client: Client, args: dict, feed_tags: list, tlp_color: Optional[str]):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
     Args:
         client(Client): Autofocus Feed client
         args(Dict): The instance parameters
-        feed_tags: The indicator tags
+        feed_tags(List): The indicator tags
+        tlp_color(str): Traffic Light Protocol color
 
     Returns:
         'ok' if test passed, anything else will fail the test.
@@ -445,7 +458,7 @@ def module_test_command(client: Client, args: dict, feed_tags: list):
         for url in url_list:
             client.custom_feed_url_list = [url]
             try:
-                client.build_iterator(feed_tags, 1, 0)
+                client.build_iterator(feed_tags, tlp_color, 1, 0)
             except Exception:
                 exception_list.append(f"Could not fetch Custom Feed {url}\n"
                                       f"\nCheck your API key the URL for the feed and Check "
@@ -454,7 +467,7 @@ def module_test_command(client: Client, args: dict, feed_tags: list):
     if 'Samples Feed' in indicator_feeds:
         client.indicator_feeds = ['Samples Feed']
         try:
-            client.build_iterator(feed_tags, 1, 0)
+            client.build_iterator(feed_tags, tlp_color, 1, 0)
         except Exception:
             exception_list.append("Could not fetch Samples Feed\n"
                                   "\nCheck your instance configuration and your connection to AutoFocus.")
@@ -465,20 +478,21 @@ def module_test_command(client: Client, args: dict, feed_tags: list):
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, args: dict, feed_tags):
+def get_indicators_command(client: Client, args: dict, feed_tags, tlp_color):
     """Initiate a single fetch-indicators
 
     Args:
         client(Client): The AutoFocus Client.
         args(dict): Command arguments.
-        feed_tags: The indicator tags
+        feed_tags: The indicator tags.
+        tlp_color: Traffic Light Protocol color.
 
     Returns:
         str, dict, list. the markdown table, context JSON and list of indicators
     """
     offset = int(args.get('offset', 0))
     limit = int(args.get('limit', 100))
-    indicators = fetch_indicators_command(client, feed_tags, limit, offset)
+    indicators = fetch_indicators_command(client, feed_tags, tlp_color, limit, offset)
 
     hr_indicators = []
     for indicator in indicators:
@@ -500,19 +514,20 @@ def get_indicators_command(client: Client, args: dict, feed_tags):
     return human_readable, {}, indicators
 
 
-def fetch_indicators_command(client: Client, feed_tags: List, limit=None, offset=None):
+def fetch_indicators_command(client: Client, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None):
     """Fetch-indicators command from AutoFocus Feeds
 
     Args:
         client(Client): AutoFocus Feed client.
-        feed_tags: The indicator tags
+        feed_tags: The indicator tags.
+        tlp_color: Traffic Light Protocol color.
         limit: limit the amount of incidators fetched.
         offset: the index of the first index to fetch.
 
     Returns:
         list. List of indicators.
     """
-    indicators = client.build_iterator(feed_tags, limit, offset)
+    indicators = client.build_iterator(feed_tags, tlp_color, limit, offset)
 
     return indicators
 
@@ -520,6 +535,7 @@ def fetch_indicators_command(client: Client, feed_tags: List, limit=None, offset
 def main():
     params = demisto.params()
     feed_tags = argToList(params.get('feedTags'))
+    tlp_color = params.get('tlp_color')
 
     client = Client(api_key=params.get('api_key'),
                     insecure=params.get('insecure'),
@@ -538,13 +554,13 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, feed_tags)
+            indicators = fetch_indicators_command(client, feed_tags, tlp_color)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args(),
-                                                                       feed_tags)  # type: ignore
+                                                                       feed_tags, tlp_color)  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         raise Exception(f'Error in {SOURCE_NAME} Integration [{e}]')

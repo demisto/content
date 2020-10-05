@@ -1,7 +1,7 @@
 id: IsInternalHostName Test
 version: -1
 name: IsInternalHostName Test
-fromversion: 4.5.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -36,8 +36,7 @@ tasks:
       id: 9b051556-250f-4683-8a67-e7908ae798dd
       version: -1
       name: Check if hosts are intenal
-      description: Returns yes if the host name provided matches the organizations
-        internal nameing convenstion.
+      description: Returns yes if the host name provided matches the organizations internal nameing convenstion.
       scriptName: IsInternalHostName
       type: regular
       iscommand: false

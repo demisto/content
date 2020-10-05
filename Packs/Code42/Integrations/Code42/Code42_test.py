@@ -1,12 +1,15 @@
 import json
 import pytest
+from py42.sdk.queries.fileevents.filters import FileCategory
 from requests import Response
 from py42.sdk import SDKClient
 from py42.response import Py42Response
+from py42.sdk.queries.alerts.filters import Severity
 from Code42 import (
     Code42Client,
     Code42LegalHoldMatterNotFoundError,
     Code42InvalidLegalHoldMembershipError,
+    get_file_category_value,
     build_query_payload,
     map_observation_to_security_query,
     map_to_code42_event_context,
@@ -476,6 +479,13 @@ MOCK_ALERT_DETAILS_RESPONSE = """{
                 "fileCount": 3,
                 "totalFileSize": 533846,
                 "isSignificant": true
+              },
+              {
+                "type$": "OBSERVED_FILE_CATEGORY",
+                "category": "Pdf",
+                "fileCount": 3,
+                "totalFileSize": 533846,
+                "isSignificant": true
               }
             ],
             "files": [
@@ -723,9 +733,12 @@ MOCK_OBSERVATION_QUERIES = [
                 "filters": [{"operator": "IS", "term": "exposure", "value": "ApplicationRead"}],
             },
             {
-                "filterClause": "AND",
-                "filters": [{"operator": "IS", "term": "fileCategory", "value": "SOURCE_CODE"}],
-            },
+                "filterClause": "OR",
+                "filters": [
+                    {"operator": "IS", "term": "fileCategory", "value": "PDF"},
+                    {"operator": "IS", "term": "fileCategory", "value": "SOURCE_CODE"}
+                ]
+            }
         ],
         "pgNum": 1,
         "pgSize": 10000,
@@ -1345,6 +1358,48 @@ def assert_detection_list_outputs_match_response_items(outputs_list, response_it
 
 
 """TESTS"""
+
+
+def test_get_file_category_value_handles_screaming_snake_case():
+    actual = get_file_category_value("SOURCE_CODE")
+    expected = FileCategory.SOURCE_CODE
+    assert actual == expected
+
+
+def test_get_file_category_value_handles_capitalized_case():
+    actual = get_file_category_value("Pdf")
+    expected = FileCategory.PDF
+    assert actual == expected
+
+
+def test_get_file_category_value_handles_lower_case():
+    actual = get_file_category_value("pdf")
+    expected = FileCategory.PDF
+    assert actual == expected
+
+
+def test_get_file_category_value_handles_upper_case():
+    actual = get_file_category_value("PDF")
+    expected = FileCategory.PDF
+    assert actual == expected
+
+
+def test_get_file_category_value_handles_pascal_case():
+    actual = get_file_category_value("SourceCode")
+    expected = FileCategory.SOURCE_CODE
+    assert actual == expected
+
+
+def test_get_file_category_value_handles_hungarian_case():
+    actual = get_file_category_value("sourceCode")
+    expected = FileCategory.SOURCE_CODE
+    assert actual == expected
+
+
+def test_get_file_category_value_handles_hyphenated_case():
+    actual = get_file_category_value("source-code")
+    expected = FileCategory.SOURCE_CODE
+    assert actual == expected
 
 
 def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
@@ -1992,8 +2047,8 @@ def test_fetch_incidents_handles_multi_severity(code42_fetch_incidents_mock):
         integration_context=None,
     )
     call_args = str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
-    assert "HIGH" in call_args
-    assert "LOW" in call_args
+    assert Severity.HIGH in call_args
+    assert Severity.LOW in call_args
 
 
 def test_fetch_when_include_files_includes_files(code42_fetch_incidents_mock):
