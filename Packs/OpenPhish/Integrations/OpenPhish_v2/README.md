@@ -58,7 +58,7 @@ Check URL Reputation
             "Vendor": "OpenPhish"
         },
         {
-            "Indicator": "http://hang3clip.ddns.net/",
+            "Indicator": "hxxp://hang3clip.ddns.net/",
             "Score": 3,
             "Type": "url",
             "Vendor": "OpenPhish"
