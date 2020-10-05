@@ -2,8 +2,9 @@ commonfields:
   id: AggregateIOCs
   version: -1
 name: AggregateIOCs
-script: |-
+script: >-
   foundIocs = []
+
   for k in ['found_ips', 'found_hashes', 'found_domains']:
       i = demisto.get(demisto.context(), k)
       if i:
@@ -17,8 +18,9 @@ subtype: python2
 tags:
 - Utility
 system: true
-comment: "DEPRECATED - Aggregating several context items for IOCs into a single list"
+comment: Deprecated.  Aggregating several context items for IOCs into a single list
 deprecated: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

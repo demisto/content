@@ -48,7 +48,7 @@ class CymulateModuleTypeEnum(enum.Enum):
     MAIL = '10'
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class Client(BaseClient):

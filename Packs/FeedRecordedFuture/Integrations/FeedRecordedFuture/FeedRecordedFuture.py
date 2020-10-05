@@ -36,7 +36,7 @@ class Client(BaseClient):
     def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
                  polling_timeout: int = 20, proxy: bool = False, threshold: int = 65,
-                 tags: Optional[list] = None):
+                 tags: Optional[list] = None, tlp_color: Optional[str] = None):
         """
         Attributes:
              indicator_type: string, the indicator type of the feed.
@@ -49,6 +49,7 @@ class Client(BaseClient):
              proxy: Sets whether use proxy when sending requests
              threshold: The minimum score from the feed in order to to determine whether the indicator is malicious.
              tags: A list of tags to add to indicators
+             :param tlp_color: Traffic Light Protocol color
         """
         if tags is None:
             tags = []
@@ -64,6 +65,7 @@ class Client(BaseClient):
         self.indicator_type = indicator_type
         self.threshold = int(threshold)
         self.tags = tags
+        self.tlp_color = tlp_color
         super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
 
     def _build_request(self, service, indicator_type):
@@ -322,16 +324,22 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
             risk_string = item.get('RiskString')
             if isinstance(risk_string, str):
                 raw_json['RiskString'] = format_risk_string(risk_string)
-            indicators.append({
+
+            indicator_obj = {
                 'value': value,
                 'type': raw_json['type'],
                 'rawJSON': raw_json,
                 'fields': {
                     'recordedfutureevidencedetails': lower_case_evidence_details_keys,
-                    'tags': client.tags
+                    'tags': client.tags,
                 },
                 'score': score
-            })
+            }
+
+            if client.tlp_color:
+                indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+
+            indicators.append(indicator_obj)
 
     return indicators
 
@@ -380,7 +388,7 @@ def main():
     client = Client(params.get('indicator_type'), params.get('api_token'), params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
-                    argToList(params.get('feedTags'))
+                    argToList(params.get('feedTags'), params.get('tlp_color'))
                     )
     command = demisto.command()
     demisto.info('Command being called is {}'.format(command))

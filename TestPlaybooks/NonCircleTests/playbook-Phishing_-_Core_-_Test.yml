@@ -1,6 +1,6 @@
 id: Phishing - Core - Test
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Phishing - Core - Test
 description: A test for the Phishing - Core playbook.
 starttaskid: "0"

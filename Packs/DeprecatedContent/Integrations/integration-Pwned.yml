@@ -5,29 +5,28 @@ name: Pwned
 display: Have I Been Pwned? (Deprecated)
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAABg1BMVEU6m8U7m8U6nMY7m8U7m8U7nMY6m8U6m8U6msQ2mMM5msQwlcH/+/n///0ylsL//fr//PpJocg5mcQ4mcQ7msQ0l8I1l8MxlsIvlcE0l8MvlMH///v//vsxlcLr8fTU5u7///zM4us3mcM3mMNytdNeq80ulMHx9vYzl8I4mcPJ4OpJosjX5+7a6vAtlMFFn8dKosg9m8WPxNr9+vjF3elRpcrc6vD09vZ0ttOy1eRdq82q0eKy1OT5+Pfv8/X6+fiDvthLoslTpsu62ea82+culMB1t9Sayt+y1uVBncZ5udWTxdtosNCt0eL///9HoMdKocjN4uzW5+6Ow9tAncZZqcxhrM7C3emkzuDQ4+zx9PXt8/Tk7fFLoshPpMnm7vLt8vSey9/p8PMtlMDG3+r29vdXqMu62edcqs2Wyd6Xyd41mMMzlsLQ5O3Q5Oy21+VGn8fn7/L8+vj//PmJwdn//fu52OY5msPn7/NIochzttP9+/l1ttNTpsp8u9dlr8/U5u3+U0u0AAAACHRSTlPp6dXu6tXu6tr1+I4AAAFsSURBVHhe7dZFjyMxEAXgTiazKdvNGGamYWZmZmZeZIafPp1or9uT2uMqT5b8Lt/Bckk25/ZyqHibuWeATBPHYYnrvyQNEmY+omMITbRP9o2bGKLmu2OxXoYhlMT5jkULRXKd8lA6hyHAJqSrawNFfIOh/S4TgPhYvk6SWVruUQiQsfnUplYfMftnRnWqwV4wNhCuj+j+KQZAlOER/jehiIFJzJ0HhUsRqFoLwJ/dgYA5fTOb9gPRqknaS60W4kRADAQM3VooR6PRUnxldW3dLuUN66lJpmJBkGVZCm1tB2U7wg57igDbzUYikYPDo+OTU7tkz5yIblQuDF1tKyqK0tqiqi2tdim2UQdi3t7dpx9AI9UkAZK1ojocnz4vCELcwNwLJS94/iVBESPOS68YIAh5/ebtu5SFIZX30oePIkUQ7VMp9PmLAQjCvsa+fc8AhpAfP3/5AUV0EhAbj8Vf0yD/8rlye1yoeJofAa0ZbOr9kpaFAAAAAElFTkSuQmCC
-description: Deprecated. Use the Have I Been Pwned? V2 integration instead.
-  Checks whether emails or domains have  been compromised in recent breaches, using the Have I Been Pwned? service.
+description: Deprecated. Use the Have I Been Pwned? V2 integration instead. Checks whether emails or domains have  been compromised in recent breaches, using the Have I Been Pwned? service.
 configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-- display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS
-    or MALICIOUS)'
+- display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS or MALICIOUS)'
   name: defaultdbotscoreEmail
   defaultvalue: SUSPICIOUS
   type: 0
   required: false
-- display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS
-    or MALICIOUS)'
+- display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS or MALICIOUS)'
   name: defaultdbotscoreDomain
   defaultvalue: SUSPICIOUS
   type: 0
   required: false
 script:
-  script: |-
+  script: >-
     DEFAULT_DBOT_SCORE_EMAIL = params.defaultdbotscoreEmail == 'SUSPICIOUS' ? 2 : 3;
+
     DEFAULT_DBOT_SCORE_DOMAIN = params.defaultdbotscoreDomain == 'SUSPICIOUS' ? 2 : 3;
+
 
     function sendRequest(url) {
         var res = http(
@@ -59,10 +58,12 @@ script:
     }
 
 
+
     function fixDesc(desc) {
         var newDesc = desc.replace(/<a href="(.+?)"(.+?)\>(.+?)<\/a>/g,'[$3]($1)');
         return newDesc;
     }
+
 
 
     function dataToMd(type,arg,obj) {
@@ -82,10 +83,12 @@ script:
     }
 
 
+
     function addCompromised(context, path, obj) {
       obj['properties_to_append'] = ['Compromised'];
       context[path] = obj;
     }
+
 
 
     function emailToEc(email,obj) {
@@ -121,6 +124,7 @@ script:
     }
 
 
+
     function domainToEc(domain,obj) {
         var compSites = [];
         obj.forEach(function (item) {
@@ -153,6 +157,7 @@ script:
         compDomain.DBotScore = dBotScore;
         return compDomain;
     }
+
 
 
     switch (command) {
@@ -191,8 +196,7 @@ script:
       description: For comporomised emails, the vendor that made the decision.
       type: string
     - contextPath: Account.Email.Compromised.Reporters
-      description: For comporomised emails, the reporters for the vendor to make the
-        compromised decision.
+      description: For comporomised emails, the reporters for the vendor to make the compromised decision.
       type: string
     - contextPath: Account.Email.Address
       description: Email address.
@@ -232,8 +236,7 @@ script:
       description: For compromised domains, the vendor that made the decision.
       type: string
     - contextPath: Domain.Compromised.Reporters
-      description: For compromised domains, the reporters for the vendor to make the
-        compromised decision.
+      description: For compromised domains, the reporters for the vendor to make the compromised decision.
       type: string
     - contextPath: Domain.Name
       description: Domain name.
@@ -344,4 +347,5 @@ script:
   runonce: false
 deprecated: true
 tests:
-  - No tests
+- No tests
+fromversion: 5.0.0

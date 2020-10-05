@@ -1,0 +1,934 @@
+{
+ "id": "3b99ce96-278e-4345-8442-f6f7c4a52b8f",
+ "version": -1,
+ "modified": "2020-07-01T20:37:00.535753097-04:00",
+ "defaultIncidentType": "",
+ "mapping": {
+  "IronDefense Alert Notification": {
+   "internalMapping": {
+    "IronDefense Aggregation Criteria": {
+     "simple": "aggregation_criteria",
+     "complex": null
+    },
+    "IronDefense Alert ID": {
+     "simple": "",
+     "complex": {
+      "root": "id",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Analyst Expectation": {
+     "simple": "",
+     "complex": {
+      "root": "analyst_expectation",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+       {
+        "operator": "toLowerCase",
+        "args": {
+
+        }
+       },
+       {
+        "operator": "substring",
+        "args": {
+         "from": {
+          "value": {
+           "simple": "4",
+           "complex": null
+          },
+          "isContext": false
+         },
+         "to": {
+          "value": null,
+          "isContext": false
+         }
+        }
+       }
+      ]
+     }
+    },
+    "IronDefense Analyst Severity": {
+     "simple": "",
+     "complex": {
+      "root": "analyst_severity",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+       {
+        "operator": "toLowerCase",
+        "args": {
+
+        }
+       },
+       {
+        "operator": "substring",
+        "args": {
+         "from": {
+          "value": {
+           "simple": "9",
+           "complex": null
+          },
+          "isContext": false
+         },
+         "to": {
+          "value": null,
+          "isContext": false
+         }
+        }
+       }
+      ]
+     }
+    },
+    "IronDefense Category": {
+     "simple": "",
+     "complex": {
+      "root": "category",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+       {
+        "operator": "toLowerCase",
+        "args": {
+
+        }
+       }
+      ]
+     }
+    },
+    "IronDefense Created": {
+     "simple": "",
+     "complex": {
+      "root": "created",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Event Count": {
+     "simple": "",
+     "complex": {
+      "root": "event_count",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense First Event Created": {
+     "simple": "",
+     "complex": {
+      "root": "first_event_created",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Last event Created": {
+     "simple": "",
+     "complex": {
+      "root": "last_event_created",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Raw Data Format": {
+     "simple": "",
+     "complex": {
+      "root": "raw_data_formats",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Severity": {
+     "simple": "",
+     "complex": {
+      "root": "severity",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Status": {
+     "simple": "",
+     "complex": {
+      "root": "status",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+       {
+        "operator": "toLowerCase",
+        "args": {
+
+        }
+       },
+       {
+        "operator": "substring",
+        "args": {
+         "from": {
+          "value": {
+           "simple": "7",
+           "complex": null
+          },
+          "isContext": false
+         },
+         "to": {
+          "value": null,
+          "isContext": false
+         }
+        }
+       },
+       {
+        "operator": "replace",
+        "args": {
+         "limit": {
+          "value": null,
+          "isContext": false
+         },
+         "replaceWith": {
+          "value": {
+           "simple": " ",
+           "complex": null
+          },
+          "isContext": false
+         },
+         "toReplace": {
+          "value": {
+           "simple": "_",
+           "complex": null
+          },
+          "isContext": false
+         }
+        }
+       }
+      ]
+     }
+    },
+    "IronDefense SubCategory": {
+     "simple": "",
+     "complex": {
+      "root": "sub_category",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+       {
+        "operator": "toLowerCase",
+        "args": {
+
+        }
+       },
+       {
+        "operator": "replace",
+        "args": {
+         "limit": {
+          "value": null,
+          "isContext": false
+         },
+         "replaceWith": {
+          "value": {
+           "simple": " ",
+           "complex": null
+          },
+          "isContext": false
+         },
+         "toReplace": {
+          "value": {
+           "simple": "_",
+           "complex": null
+          },
+          "isContext": false
+         }
+        }
+       }
+      ]
+     }
+    },
+    "IronDefense Updated": {
+     "simple": "",
+     "complex": {
+      "root": "updated",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense VUE URL": {
+     "simple": "",
+     "complex": {
+      "root": "vue_url",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    }
+   },
+   "dontMapEventToLabels": false
+  },
+  "IronDefense Event Notification": {
+   "internalMapping": {
+    "IronDefense Alert ID": {
+     "simple": "",
+     "complex": {
+      "root": "alert_id",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense App Domains": {
+     "simple": "",
+     "complex": {
+      "root": "id",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Bytes In": {
+     "simple": "",
+     "complex": {
+      "root": "bytes_in",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Bytes Out": {
+     "simple": "",
+     "complex": {
+      "root": "bytes_out",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Category": {
+     "simple": "",
+     "complex": {
+      "root": "category",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+       {
+        "operator": "toLowerCase",
+        "args": {
+
+        }
+       }
+      ]
+     }
+    },
+    "IronDefense Confidence": {
+     "simple": "",
+     "complex": {
+      "root": "confidence",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Dome Shared Time": {
+     "simple": "",
+     "complex": {
+      "root": "iron_dome_shared_time",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Dst Entity Attribute": {
+     "simple": "",
+     "complex": {
+      "root": "dst_entity_attribute",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Dst Entity Attribute Type": {
+     "simple": "",
+     "complex": {
+      "root": "dst_entity_attribute_type",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+       {
+        "operator": "substring",
+        "args": {
+         "from": {
+          "value": {
+           "simple": "4",
+           "complex": null
+          },
+          "isContext": false
+         },
+         "to": {
+          "value": null,
+          "isContext": false
+         }
+        }
+       }
+      ]
+     }
+    },
+    "IronDefense Dst IP": {
+     "simple": "",
+     "complex": {
+      "root": "dst_ip",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Dst Network ID": {
+     "simple": "",
+     "complex": {
+      "root": "dst_network_id",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Dst Port": {
+     "simple": "",
+     "complex": {
+      "root": "dst_port",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense End Time": {
+     "simple": "",
+     "complex": {
+      "root": "end_time",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Event ID": {
+     "simple": "",
+     "complex": {
+      "root": "id",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Is Blacklisted": {
+     "simple": "",
+     "complex": {
+      "root": "is_blacklisted",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Is Whitelisted": {
+     "simple": "",
+     "complex": {
+      "root": "is_whitelisted",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Primary App Protocol": {
+     "simple": "",
+     "complex": {
+      "root": "primary_app_protocol",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Raw Data Format": {
+     "simple": "",
+     "complex": {
+      "root": "raw_data_formats",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Secondary App Protocol": {
+     "simple": "",
+     "complex": {
+      "root": "secondary_app_protocol",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Severity": {
+     "simple": "",
+     "complex": {
+      "root": "severity",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Src Entity Attribute": {
+     "simple": "",
+     "complex": {
+      "root": "src_entity_attribute",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Src Entity Attribute Type": {
+     "simple": "",
+     "complex": {
+      "root": "src_entity_attribute_type",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+       {
+        "operator": "substring",
+        "args": {
+         "from": {
+          "value": {
+           "simple": "4",
+           "complex": null
+          },
+          "isContext": false
+         },
+         "to": {
+          "value": null,
+          "isContext": false
+         }
+        }
+       }
+      ]
+     }
+    },
+    "IronDefense Src IP": {
+     "simple": "",
+     "complex": {
+      "root": "src_ip",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Src Network ID": {
+     "simple": "",
+     "complex": {
+      "root": "src_network_id",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Start Time": {
+     "simple": "",
+     "complex": {
+      "root": "start_time",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense SubCategory": {
+     "simple": "",
+     "complex": {
+      "root": "sub_category",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Total Bytes": {
+     "simple": "",
+     "complex": {
+      "root": "total_bytes",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense VUE URL": {
+     "simple": "",
+     "complex": {
+      "root": "vue_url",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    }
+   },
+   "dontMapEventToLabels": false
+  },
+  "IronDefense IronDome Notification": {
+   "internalMapping": {
+    "IronDefense Alert IDs": {
+     "simple": "",
+     "complex": {
+      "root": "alert_ids",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Comment Details": {
+     "simple": "",
+     "complex": {
+      "root": "comment_details",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Created": {
+     "simple": "",
+     "complex": {
+      "root": "created",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Dome Tags": {
+     "simple": "",
+     "complex": {
+      "root": "dome_tags",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense High Cognitive System Details": {
+     "simple": "",
+     "complex": {
+      "root": "high_cognitive_system_score_details",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense IronDome Category": {
+     "simple": "",
+     "complex": {
+      "root": "category",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+       {
+        "operator": "toLowerCase",
+        "args": {
+
+        }
+       },
+       {
+        "operator": "substring",
+        "args": {
+         "from": {
+          "value": {
+           "simple": "4",
+           "complex": null
+          },
+          "isContext": false
+         },
+         "to": {
+          "value": null,
+          "isContext": false
+         }
+        }
+       },
+       {
+        "operator": "replace",
+        "args": {
+         "limit": {
+          "value": null,
+          "isContext": false
+         },
+         "replaceWith": {
+          "value": {
+           "simple": " ",
+           "complex": null
+          },
+          "isContext": false
+         },
+         "toReplace": {
+          "value": {
+           "simple": "_",
+           "complex": null
+          },
+          "isContext": false
+         }
+        }
+       }
+      ]
+     }
+    },
+    "IronDefense IronDome ID": {
+     "simple": "",
+     "complex": {
+      "root": "id",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Mismatch Details": {
+     "simple": "",
+     "complex": {
+      "root": "mismatch_details",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Severity Details": {
+     "simple": "",
+     "complex": {
+      "root": "severity_details",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Severity Malicious Details": {
+     "simple": "",
+     "complex": {
+      "root": "severity_malicious_details",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    },
+    "IronDefense Severity Suspicious Details": {
+     "simple": "",
+     "complex": {
+      "root": "severity_suspicious_details",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+
+      ]
+     }
+    }
+   },
+   "dontMapEventToLabels": false
+  }
+ },
+ "unclassifiedCases": {
+
+ },
+ "incidentSamples": [
+
+ ],
+ "custom": true,
+ "isDefault": false,
+ "transformer": {
+  "simple": "type",
+  "complex": null
+ },
+ "keyTypeMap": {
+  "alert": "IronDefense Alert Notification",
+  "dome": "IronDefense IronDome Notification",
+  "event": "IronDefense Event Notification"
+ },
+ "brandName": "IronDefense",
+ "toVersion": "5.9.9",
+ "fromVersion": "5.0.0"
+}

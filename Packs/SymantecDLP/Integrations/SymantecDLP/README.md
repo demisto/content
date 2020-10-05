@@ -1,6 +1,12 @@
 <p>
 Symantec Data Loss Prevention let's you discover, monitor and protect your sensitive corporate information.
 </p>
+<p>
+This integration was integrated and tested with Symantec DLP version 15.5. The integration uses the SOAP-based Incident Reporting and Update API. 
+</p>
+<p>
+<b>Important Note:</b> Symantec DLP 15.7 introduced a new RESTful API, which this integration does not support. If you want to use the new REST API, please file a feature request that we can track. For more information about the Symantec DLP REST API see the <a href="https://community.broadcom.com/symantecenterprise/communities/community-home/librarydocuments/viewdocument?DocumentKey=f6319a99-6c61-4d58-8554-f8cbdd380e4d&CommunityKey=65cf8c43-bb97-4e96-ae0b-0db8ba1b4d07&tab=librarydocuments">Synantec documentation</>.
+</p>
 <h2>Permissions</h2>
 <p>Symantec Data Loss Prevention requires that the integration user be assigned to the "Incident Reporting API Web Service" role. Make sure to follow Symantec's documentation on how to create such a role and assign it to the user:
 <ul>

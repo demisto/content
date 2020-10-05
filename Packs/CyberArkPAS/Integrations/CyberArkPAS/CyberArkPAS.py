@@ -82,7 +82,7 @@ def filter_by_score(events_data: list, score: int) -> list:
 
 class Client(BaseClient):
     """
-    Client to use in the CrowdStrikeFalconX integration. Uses BaseClient
+    Client to use in the CyberArk PAS integration. Uses BaseClient
     """
 
     def __init__(self, server_url: str, username: str, password: str, use_ssl: bool, proxy: bool, max_fetch: int):
@@ -467,6 +467,12 @@ class Client(BaseClient):
         url_suffix = f"/PasswordVault/api/Accounts/{account_id}/Activities"
         return self._http_request("GET", url_suffix)
 
+    def get_account_details(self,
+                            account_id: str,
+                            ):
+        url_suffix = f"/PasswordVault/api/Accounts/{account_id}"
+        return self._http_request("GET", url_suffix)
+
     def change_credentials_random_password(self,
                                            account_id: str,
                                            ):
@@ -503,7 +509,7 @@ class Client(BaseClient):
         """
         This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
         """
-        url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Accounts/{account_id}/VerifyCredentials"
+        url_suffix = f"/PasswordVault/API/Accounts/{account_id}/Verify"
 
         self._http_request("POST", url_suffix, resp_type='text')
 
@@ -1118,6 +1124,25 @@ def get_list_account_activity_command(
     return results
 
 
+def get_account_details_command(
+        client: Client,
+        account_id: str = "",
+) -> CommandResults:
+    """Returns information of a specific account that is identified by its account id.
+    :param client: The client object with an access token
+    :param account_id: The id of the account whose details will be retrieved.
+    :return: CommandResults
+    """
+    response = client.get_account_details(account_id)
+    results = CommandResults(
+        raw_response=response,
+        outputs_prefix='CyberArkPAS.Accounts',
+        outputs_key_field='id',
+        outputs=response
+    )
+    return results
+
+
 def change_credentials_random_password_command(
         client: Client,
         account_id: str,
@@ -1327,6 +1352,7 @@ def main():
         'cyberark-pas-account-delete': delete_account_command,
         'cyberark-pas-accounts-list': get_list_accounts_command,
         'cyberark-pas-account-get-list-activity': get_list_account_activity_command,
+        'cyberark-pas-account-get-details': get_account_details_command,
 
         'cyberark-pas-credentials-change-random-password': change_credentials_random_password_command,
         'cyberark-pas-credentials-change-set-new-password': change_credentials_set_new_password_command,

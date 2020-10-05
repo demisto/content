@@ -14,7 +14,7 @@
                 "sections": [
                     {
                         "description": "All 50 US states, Washington, DC, and most US territories (including Puerto Rico, Guam, and the Virgin Islands) have passed breach notification laws that require notifying state residents and the Attorney General in case of personally identifiable information (PII) security breach.\nA security breach involving personal information, such as Social Security numbers and other government identifiers, credit card and financial account numbers, health or medical information, insurance ID, tax ID, birthdate, as well as online account credentials, digital signatures and/or biometrics.",
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 3,
                         "hideName": false,
                         "i": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
@@ -284,7 +284,7 @@
                         "y": 3
                     },
                     {
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 2,
                         "hideName": false,
                         "i": "sfmcsjvzpo-4d600c80-905d-11ea-8355-67a9bcbc519c",
@@ -371,7 +371,7 @@
                         "minW": 1,
                         "moved": false,
                         "name": "Breach Confirmation",
-                        "query": "732935e9-448a-457f-86e3-325f3fd9f51d",
+                        "query": "BreachConfirmationHTML",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",

@@ -2,8 +2,9 @@ commonfields:
   id: AlgosecGetTicket
   version: -1
 name: AlgosecGetTicket
-script: |
+script: >
   resp = demisto.executeCommand("algosec-get-ticket", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -36,3 +37,4 @@ timeout: 0s
 dependson:
   must:
   - algosec-get-ticket
+fromversion: 5.0.0

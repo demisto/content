@@ -33,12 +33,16 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     // handle '/' at the end of the url
+
     var base_url = params.url.slice(0, params.url.length - params.url.match('/*$')[0].length) + ':' + params.port + '/Konfigurator/REST';
+
     var session_id = '';
 
+
     //body should be in xml format
+
     function sendRequest(method, url_suffix, headers, body) {
         headers = headers || {};
         body = body || '';
@@ -72,6 +76,7 @@ script:
         return res.Body;
     }
 
+
     function login() {
         var cmd_url = '/login' + encodeToURLQuery({
             'userName' : params.credentials.identifier,
@@ -80,10 +85,12 @@ script:
         session_id = sendRequest('POST', cmd_url);
     }
 
+
     function logout() {
         var cmd_url = '/logout';
         sendRequest('POST', cmd_url);
     }
+
 
     function list_to_demisto_entry(title, list_header, list_id) {
         var list_entries = [];
@@ -130,6 +137,7 @@ script:
         };
     }
 
+
     function list_entry_to_demisto_entry(title, list_entry, ids, update_context) {
         update_context = update_context || true;
         list_entry.ListID = ids[0];
@@ -158,6 +166,7 @@ script:
             }, undefined, pascalToSpace);
         }
     }
+
 
     function get_lists() {
         var cmd_url = '/list';
@@ -192,6 +201,7 @@ script:
         });
     }
 
+
     function get_list(list_id) {
         var cmd_url = '/list/' + list_id;
         var res = '';
@@ -208,6 +218,7 @@ script:
         return list_to_demisto_entry(res.list['-name'] + ': ' + res.list.description, res.list, list_id);
     }
 
+
     function get_list_entry(list_id, entry_pos) {
         var cmd_url = '/list/' + list_id + '/entry/' + entry_pos;
         var res = '';
@@ -223,6 +234,7 @@ script:
         res = JSON.parse(x2j(res));
         return list_entry_to_demisto_entry('entry #' + entry_pos, res.listEntry, [list_id, entry_pos]);
     }
+
 
     function insert_entry(list_id, entry_pos, name, description) {
         var cmd_url = '/list/' + list_id + '/entry/' + entry_pos + '/insert';
@@ -242,6 +254,7 @@ script:
         return list_entry_to_demisto_entry('entry #' + entry_pos, res.listEntry, [list_id, entry_pos]);
     }
 
+
     function delete_entry(list_id, entry_pos) {
         var cmd_url = '/list/' + list_id + '/entry/' + entry_pos;
         var res = '';
@@ -259,7 +272,9 @@ script:
         return list_entry_to_demisto_entry('Deleting entry #' + entry_pos, res.listEntry, [list_id, entry_pos], false);
     }
 
+
     // The command input arg holds the command sent from the user.
+
     switch (command) {
         case 'mwg-get-available-lists':
             return get_lists();
@@ -364,4 +379,5 @@ script:
     description: Delete an entry from a list
   runonce: false
 tests:
-  - McAfeeWebGatewayTest
+- McAfeeWebGatewayTest
+fromversion: 5.0.0

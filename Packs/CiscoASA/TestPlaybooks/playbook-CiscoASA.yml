@@ -390,7 +390,7 @@ tasks:
         simple: Global
       rule_id:
         complex:
-          root: CiscoASA
+          root: CiscoASA.Rules
           filters:
           - - operator: isEqualString
               left:
@@ -416,7 +416,7 @@ tasks:
               right:
                 value:
                   simple: 2.2.2.2
-          accessor: Rules.ID
+          accessor: ID
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 720\n  }\n}"
     note: false
@@ -454,10 +454,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 1990,\n      \"width\": 572.5,\n      \"x\": -30,\n      \"y\"\
-  : 50\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1990,\n      \"width\": 572.5,\n      \"x\": -30,\n      \"y\": 50\n    }\n  }\n}"
 inputs: []
 outputs: []
-fromversion: 1.0.0
+fromversion: 5.0.0
 description: ''

@@ -4,14 +4,7 @@ commonfields:
 name: SlashNext Phishing Incident Response
 display: SlashNext Phishing Incident Response
 category: Data Enrichment & Threat Intelligence
-description: "SlashNext Phishing Incident Response integration allows Cortex XSOAR users
-  to fully automate analysis of suspicious URLs. For example, IR teams responsible
-  for abuse inbox management can extract links or domains out of suspicious emails
-  and automatically analyze them with the SlashNext SEER threat detection cloud to
-  get definitive, binary verdicts (malicious or benign) along with IOCs, screen shots,
-  and more. Automating URL analysis can save IR teams hundreds of hours versus manually
-  triaging these emails or checking URLs and domains against less accurate phishing
-  databases and domain reputation services."
+description: "SlashNext Phishing Incident Response integration allows Cortex XSOAR users to fully automate analysis of suspicious URLs. For example, IR teams responsible for abuse inbox management can extract links or domains out of suspicious emails and automatically analyze them with the SlashNext SEER threat detection cloud to get definitive, binary verdicts (malicious or benign) along with IOCs, screen shots, and more. Automating URL analysis can save IR teams hundreds of hours versus manually triaging these emails or checking URLs and domains against less accurate phishing databases and domain reputation services."
 configuration:
 - display: SlashNext API Base URL
   name: apiurl
@@ -32,7 +25,7 @@ configuration:
   type: 8
   required: false
 script:
-  dockerimage: demisto/python3:3.7.3.260
+  dockerimage: demisto/python3:3.8.5.11789
   type: python
   subtype: python3
   script: '-'
@@ -310,8 +303,7 @@ script:
     - contextPath: SlashNext.Domain.LastSeen
       description: Time when the IoC was last observed.
       type: date
-    description: Queries the SlashNext Cloud database and retrieves a detailed report
-      for a host and associated URL.
+    description: Queries the SlashNext Cloud database and retrieves a detailed report for a host and associated URL.
   - name: slashnext-host-urls
     arguments:
     - name: host
@@ -405,8 +397,7 @@ script:
     - contextPath: SlashNext.URL.Landing.LastSeen
       description: Time when the landing IoC was last observed.
       type: date
-    description: Queries the SlashNext Cloud database and retrieves a list of all URLs
-      associated with the specified host.
+    description: Queries the SlashNext Cloud database and retrieves a list of all URLs associated with the specified host.
   - name: slashnext-url-scan
     arguments:
     - name: url
@@ -500,21 +491,14 @@ script:
     - contextPath: SlashNext.URL.Landing.LastSeen
       description: Time when the landing IoC was last observed.
       type: date
-    description: Performs a real-time URL scan with SlashNext cloud-based
-      SEER Engine. If the specified URL already exists in the cloud database, scan
-      results will be returned immediately. If not, this command will submit a URL
-      scan request and return with the message "check back later" and include a unique
-      Scan ID. You can check the results of this scan using the "slashnext-scan-report" command anytime 
-      after 60 seconds using the returned Scan ID.
+    description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine. If the specified URL already exists in the cloud database, scan results will be returned immediately. If not, this command will submit a URL scan request and return with the message "check back later" and include a unique Scan ID. You can check the results of this scan using the "slashnext-scan-report" command anytime after 60 seconds using the returned Scan ID.
   - name: slashnext-url-scan-sync
     arguments:
     - name: url
       required: true
       description: The URL to scan.
     - name: timeout
-      description: A timeout value in seconds. If the system is unable to complete
-        a scan within the specified timeout, a timeout error will be returned. You can run the command again with a different timeout. If no timeout value is specified,
-        a default timeout value is 60 seconds.
+      description: A timeout value in seconds. If the system is unable to complete a scan within the specified timeout, a timeout error will be returned. You can run the command again with a different timeout. If no timeout value is specified, a default timeout value is 60 seconds.
       defaultValue: "60"
     - name: extended_info
       description: Whether to download forensics data, such as screenshot, HTML, and rendered text. If "true", forensics data will be returned. If "false" (or empty) forensics data will not be returned. Default is "false".
@@ -604,11 +588,7 @@ script:
     - contextPath: SlashNext.URL.Landing.LastSeen
       description: Time when the landing IoC was last observed.
       type: date
-    description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine
-      in a blocking mode. If the specified URL already exists in the cloud database,
-      scan result will be returned immediately. If not, this command will submit
-      a URL scan request and wait for the scan to finish. The scan may take up to
-      60 seconds to finish.
+    description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine in a blocking mode. If the specified URL already exists in the cloud database, scan result will be returned immediately. If not, this command will submit a URL scan request and wait for the scan to finish. The scan may take up to 60 seconds to finish.
   - name: slashnext-scan-report
     arguments:
     - name: scanid
@@ -702,9 +682,7 @@ script:
     - contextPath: SlashNext.URL.Landing.LastSeen
       description: Time when the landing IoC was last observed.
       type: date
-    description: Retrieves the results of a URL scan against a previous scan request. If the
-      scan is finished, results will be returned immediately; otherwise the message "check back
-      later" will be returned.
+    description: Retrieves the results of a URL scan against a previous scan request. If the scan is finished, results will be returned immediately; otherwise the message "check back later" will be returned.
   - name: slashnext-download-screenshot
     arguments:
     - name: scanid
@@ -724,9 +702,23 @@ script:
     arguments:
     - name: scanid
       required: true
-      description:  Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
+      description: Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
     description: Downloads the text of a web page against a previous URL scan request.
   - name: slashnext-api-quota
     arguments: []
+    outputs:
+    - contextPath: SlashNext.Quota.LicensedQuota
+      description: Licensed Quota
+      type: string
+    - contextPath: SlashNext.Quota.RemainingQuota
+      description: Remaining Quota
+      type: string
+    - contextPath: SlashNext.Quota.ExpirationDate
+      description: Quota Expiration Date
+      type: date
+    - contextPath: SlashNext.Quota.IsExpired
+      description: Quota Expiration Status
+      type: boolean
     description: Queries the SlashNext cloud database and retrieves the details of API quota.
   runonce: false
+fromversion: 5.0.0

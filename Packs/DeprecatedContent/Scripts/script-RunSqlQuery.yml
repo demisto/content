@@ -2,8 +2,9 @@ commonfields:
   id: RunSqlQuery
   version: -1
 name: RunSqlQuery
-script: |
+script: >
   resp = demisto.executeCommand("query", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -19,7 +20,7 @@ type: python
 subtype: python2
 tags:
 - sql
-comment: Query a relational DB using SQL
+comment: Deprecated. Query a relational DB using SQL
 system: true
 args:
 - name: query
@@ -34,3 +35,4 @@ dependson:
   must:
   - query
 timeout: 0s
+fromversion: 5.0.0
