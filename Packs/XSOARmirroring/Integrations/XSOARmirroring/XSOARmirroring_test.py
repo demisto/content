@@ -62,15 +62,18 @@ def test_mirroring(mocker):
     mocker.patch.object(client, 'get_incident_types', return_value=INCIDENT_TYPES)
     response = get_mapping_fields_command(client).extract_mapping()
     assert len(response) == 3
-    assert 'Default Mapping' in response
-    assert response['Default Mapping'] == {
+    assert 'Default Mapping' in str(response)
+    parsed_response = {}
+    for mapping in response:
+        parsed_response.update(mapping)
+    assert parsed_response['Default Mapping'] == {
         'cliName1': 'field1 - type1'
     }
-    assert response['test'] == {
+    assert parsed_response['test'] == {
         'cliName1': 'field1 - type1',
         'cliName2': 'field2 - type2'
     }
-    assert response['Something'] == {
+    assert parsed_response['Something'] == {
         'cliName1': 'field1 - type1'
     }
 

@@ -123,7 +123,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def arg_to_timestamp(arg: str, arg_name: str, required=False):
+def arg_to_timestamp(arg: str, arg_name: str, required: bool = False):
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -247,7 +247,7 @@ def test_module(client: Client, first_fetch_time: int) -> str:
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int], query: Optional[str], mirror_direction: Optional[str],
+                    first_fetch_time: Optional[int], query: Optional[str], mirror_direction: str,
                     mirror_tag: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
@@ -271,7 +271,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     :param query:
         query to fetch the relevant incidents
 
-    :type mirror_direction: ``Optional[str]``
+    :type mirror_direction: ``str``
     :param mirror_direction:
         Mirror direction for the fetched incidents
 
@@ -312,7 +312,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     )
 
     for incident in incidents:
-        incident['mirror_direction']: Optional[None, str] = MIRROR_DIRECTION[mirror_direction]
+        incident['mirror_direction'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
         incident['mirror_instance'] = demisto.integrationInstance()
         incident['mirror_tag'] = mirror_tag
 
@@ -327,7 +327,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
         incidents_result.append(incident_result)
 
         incident_created_time = arg_to_timestamp(
-            arg=incident.get('created'),
+            arg=incident.get('created'),  # type: ignore
             arg_name='created',
             required=True
         )
@@ -521,7 +521,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
     incident = None
     try:
         args['lastUpdate'] = arg_to_timestamp(
-            arg=args.get('lastUpdate'),
+            arg=args.get('lastUpdate'),  # type: ignore
             arg_name='lastUpdate',
             required=True
         )
@@ -542,12 +542,12 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         incident = client.get_incident(incident_id=remote_args.remote_incident_id)  # type: ignore
         # If incident was modified before we last updated, no need to return it
         modified = arg_to_timestamp(
-            arg=incident.get('modified'),
+            arg=incident.get('modified'),  # type: ignore
             arg_name='modified',
             required=False
         )
         occurred = arg_to_timestamp(
-            arg=incident.get('occurred'),
+            arg=incident.get('occurred'),  # type: ignore
             arg_name='occurred',
             required=False
         )
@@ -603,14 +603,10 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
 
     except Exception as e:
         demisto.debug(f"Error in XSOAR incoming mirror for incident {args['id']} \nError message: {str(e)}")
-        if incident and isinstance(incident, dict):
-            incident['in_mirror_error'] = str(e)  # type: ignore
-
-        else:
-            incident = {
-                'id': args['id'],
-                'in_mirror_error': str(e)
-            }
+        incident = {
+            'id': args['id'],
+            'in_mirror_error': str(e)
+        }
 
         return GetRemoteDataResponse(
             mirrored_object=incident,
@@ -618,7 +614,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         )
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_arg: Optional[str]) -> str:
+def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_tag: Optional[str]) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
     :type client: ``Client``
@@ -755,7 +751,7 @@ def main() -> None:
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
 
         elif demisto.command() == 'update-remote-system':
-            return_results(update_remote_system_command(client, demisto.args()))
+            return_results(update_remote_system_command(client, demisto.args(), demisto.params().get('mirror_tag')))
 
     # Log exceptions and return errors
     except Exception as e:
