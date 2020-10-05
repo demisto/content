@@ -172,40 +172,18 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
     dummy_index_blob.download_to_filename(downloaded_dummy_index_path)
     os.mkdir(extracted_dummy_index_path)
     if os.path.exists(downloaded_dummy_index_path):
-        print(f'{downloaded_dummy_index_path} path exists')
         with ZipFile(downloaded_dummy_index_path, 'r') as index_zip:
             index_zip.extractall(extracted_dummy_index_path)
 
-    print("Doing LS")
-    print(subprocess.check_output('ls', shell=True))
-    print("Finished LS")
-    try:
-        print("Doing new LS")
-        print(subprocess.check_output('ls dummy_index\index', shell=True))
-        print("Finished new LS")
-    except Exception:
-        print('whoops, second ls did not work')
-    if not os.path.exists(downloaded_dummy_index_path):
-        print_error(f'downloaded_dummy_index_path {downloaded_dummy_index_path} does not exist')
-    if not os.path.exists(extracted_dummy_index_path):
-        print_error(f'extracted_dummy_index_path {downloaded_dummy_index_path} does not exist')
-    if not os.path.exists(dummy_index_json_path):
-        print_error(f'dummy_index_json_path {dummy_index_json_path} does not exist')
-
     with open(dummy_index_json_path) as index_file:
         index_json = json.load(index_file)
-        print(f'index_json is: {index_json}')
         packs_from_dummy_index = index_json.get('packs', [])
-        print(f'packs_from_dummy_index is: {packs_from_dummy_index}')
         for pack in private_packs:
-            print(f'current pack is: {pack}')
             is_pack_in_dummy_index = any(
                 [pack['id'] == dummy_index_pack['id'] for dummy_index_pack in packs_from_dummy_index])
             if not is_pack_in_dummy_index:
-                print(f'current pack is: {pack}')
                 packs_from_dummy_index.append(pack)
 
-    print('removing files')
     os.remove(downloaded_dummy_index_path)
     shutil.rmtree(extracted_dummy_index_path)
     return packs_from_dummy_index
@@ -247,9 +225,7 @@ def main():
                                                                                                extract_destination_path,
                                                                                                public_index_folder_path,
                                                                                                changed_pack, True)
-        print(f'private packs found before merge: {private_packs}')
         private_packs = add_private_packs_from_dummy_index(private_packs, dummy_index_blob)
-        print(f'private packs found before merge: {private_packs}')
         upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
                               private_packs)
 
