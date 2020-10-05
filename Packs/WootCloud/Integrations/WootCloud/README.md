@@ -18,7 +18,7 @@ This integration was integrated and tested with version 1.0 of WootCloud
     * __Name__: a textual name for the integration instance.
     * __Client ID__
     * __API Key__
-    * __Time to retrieve the first fetch (<number> <time unit>, e.g., 12 hours, 7 days)__
+    * __Time to retrieve the first fetch (number time unit, e.g., 12 hours, 7 days)__
     * __Alert Type__
     * __Severity Type__
     * __ Trust any certificate (not secure)__
