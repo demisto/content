@@ -53,8 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": -180,
+          "y": 380
         }
       }
   "3":
@@ -72,7 +72,7 @@ tasks:
       brand: carbonblack
     nexttasks:
       '#none#':
-      - "4"
+      - "6"
     scriptarguments:
       sensor:
         simple: ${CbResponse.Sensors.CbSensorID}
@@ -80,8 +80,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": -180,
+          "y": 585
         }
       }
   "4":
@@ -101,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 720
+          "y": 960
         }
       }
   "5":
@@ -151,18 +151,58 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 161,
+          "x": 162.5,
           "y": 210
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 5c297191-5859-4f5a-8d26-f5f1818c00aa
+    type: regular
+    task:
+      id: 5c297191-5859-4f5a-8d26-f5f1818c00aa
+      version: -1
+      name: Get host information from Carbon Black Enterprise Response
+      description: Query  Carbon Black Enterprise Response for the host
+      script: carbonblack|||cb-sensor-info
+      type: regular
+      iscommand: true
+      brand: carbonblack
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      groupid: {}
+      hostname:
+        simple: ${inputs.Hostname}
+      ip: {}
+      sensor: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 492.5,
-        "x": 50,
+        "height": 975,
+        "width": 722.5,
+        "x": -180,
         "y": 50
       }
     }
@@ -175,8 +215,17 @@ inputs:
   description: The hostname to isolate.
 outputs:
 - contextPath: CbResponse.Sensors.CbSensorID
-  description: Carbon Black Response Sensors ids that has been isolated
+  description: Carbon Black Response Sensors ids that has been isolated.
 - contextPath: Endpoint
-  description: The isolated enpoint
+  description: The isolated enpoint.
+- contextPath: CbResponse.Sensors.Status
+  description: Sensor status.
+  type: unknown
+- contextPath: CbResponse.Sensors.Isolated
+  description: Is sensor isolated.
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: Endpoint hostname.
+  type: unknown
 tests:
 - no test
