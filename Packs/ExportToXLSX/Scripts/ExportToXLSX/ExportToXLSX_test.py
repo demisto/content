@@ -1,4 +1,3 @@
-from CommonServerPython import *
 from ExportToXLSX import parse_data
 
 DATA_INPUT_SINGLE_DICT = {"key1": "val1", "key2": "val2"}
@@ -37,7 +36,7 @@ def test_parse_data_single_item_with_error():
         Validate the method raises a Value error
     """
     try:
-        parsed_data = parse_data(data=DATA_INPUT_SINGLE_DICT, sheets=['sheet1', 'sheets2'])
+        parse_data(data=DATA_INPUT_SINGLE_DICT, sheets=['sheet1', 'sheets2'])
         assert False
     except ValueError as err:
         assert 'Number of sheet names should be equal to the number of data items.' in err.args[0]
@@ -75,7 +74,7 @@ def test_parse_data_multiple_items_with_error():
         Validate the method raises a Value error
     """
     try:
-        parsed_data = parse_data(data=DATA_INPUT_MULTIPLE_DICTS, sheets=['sheet1'])
+        parse_data(data=DATA_INPUT_MULTIPLE_DICTS, sheets=['sheet1'])
         assert False
     except ValueError as err:
         assert 'Number of sheet names should be equal to the number of data items.' in err.args[0]
