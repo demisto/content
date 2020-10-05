@@ -2681,6 +2681,124 @@ script:
     description: List dynamic address mappings.
     execution: false
     name: fortimanager-dynamic-address-mappings-list
+    outputs:
+    - contextPath: FortiManager.Address.DynamicMapping._image-base64
+      description: 'Dynamic address mapping base64 image.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping._scope.name
+      description: 'Dynamic mapping scope name.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping._scope.vdom
+      description: 'Dynamic mapping scope VDOM.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.allow-routing
+      description: 'Enable/disable use of this address in the static route configuration.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.associated-interface
+      description: 'Network interface associated with address.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.cache-ttl
+      description: 'Defines the minimal TTL of individual IP addresses in FQDN cache measured in seconds.'
+      type: Number
+    - contextPath: FortiManager.Address.DynamicMapping.clearpass-spt
+      description: 'Clearpass spt.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.color
+      description: 'Color of icon on the GUI.'
+      type: Number
+    - contextPath: FortiManager.Address.DynamicMapping.comment
+      description: 'Comment.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.country
+      description: 'IP addresses associated to a specific country.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.end-ip
+      description: 'Final IP address (inclusive) in the range for the address.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.end-mac
+      description: 'Final MAC address (inclusive) in the range for the address.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.epg-name
+      description: 'Endpoint group name.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.filter
+      description: 'Match criteria filter.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.fqdn
+      description: 'Fully Qualified Domain Name address.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.fsso-group
+      description: 'Fortinet Single Sign-On group.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.global-object
+      description: 'Global object.'
+      type: Number
+    - contextPath: FortiManager.Address.DynamicMapping.interface
+      description: 'Dynamic mapping interface.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.obj-id
+      description: 'Object ID for NSX.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.obj-tag
+      description: 'Object tag.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.obj-type
+      description: 'Object type.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.organization
+      description: 'Organization domain name (Syntax: organization/domain).'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.policy-group
+      description: 'Policy group name.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.sdn
+      description: 'SDN.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.sdn-addr-type
+      description: 'SDN address type.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.sdn-tag
+      description: 'SDN tag.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.start-ip
+      description: 'First IP address (inclusive) in the range for the address.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.start-mac
+      description: 'First MAC address (inclusive) in the range for the address.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.sub-type
+      description: 'Dynamic mapping sub type.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.subnet
+      description: 'IP address and subnet mask of address.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.subnet-name
+      description: 'Subnet name.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.tags
+      description: 'Tags.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.tenant
+      description: 'Tenant.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.type
+      description: 'Dynamic mapping type.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.url
+      description: 'Dynamic mapping URL.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.uuid
+      description: 'Universally Unique Identifier (UUID; automatically assigned but can be manually reset).'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.visibility
+      description: 'Enable/disable address visibility in the GUI.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.wildcard
+      description: 'IP address and wildcard netmask.IP address and wildcard netmask.'
+      type: String
+    - contextPath: FortiManager.Address.DynamicMapping.wildcard-fqdn
+      description: 'Fully Qualified Domain Name with wildcard characters.'
+      type: String
   - arguments:
     - default: false
       description: The ADOM in which to create the dynamic address mapping. Leave

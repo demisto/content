@@ -475,7 +475,7 @@ def list_dynamic_address_mapping_command(client, args):
 
     return CommandResults(
         outputs_prefix='FortiManager.Address.DynamicMapping',
-        outputs_key_field='name',
+        outputs_key_field='obj-id',
         outputs=dynamic_mapping,
         readable_output=tableToMarkdown(f"Address {args.get('dynamic_mapping')} Dynamic Mapping",
                                         dynamic_mapping, removeNull=True, headerTransform=string_to_table_header),
