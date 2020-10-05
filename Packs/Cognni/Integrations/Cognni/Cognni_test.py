@@ -62,6 +62,114 @@ def test_fetch_incidents(requests_mock):
     assert len(incidents) == 8
 
 
+def test_get_event_with_special_character(requests_mock):
+    """Tests the get event command when event id contains special chearcters
+    """
+    from Cognni import Client, get_event_command
+
+    mock_response = util_load_json('test_data/get_event_with_special_character.json')
+    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+                       json=mock_response)
+
+    client = Client(
+        base_url='https://stage-webapi.cognni.ai',
+        verify=False,
+        headers={
+            'Authorization': 'Bearer some_api_key'
+        }
+    )
+
+    event_id = 'a!@#'
+    args = {
+        "event_id": event_id
+    }
+    response = get_event_command(client, args)
+
+    # assert response.outputs[0] == mock_response
+    assert response.raw_response is None
+
+
+def test_get_event_with_whitespace(requests_mock):
+    """Tests the get event command when event id contains whitespaces
+    """
+    from Cognni import Client, get_event_command
+
+    mock_response = util_load_json('test_data/get_event_with_whitespace.json')
+    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+                        json=mock_response)
+
+    client = Client(
+        base_url='https://stage-webapi.cognni.ai',
+        verify=False,
+        headers={
+              'Authorization': 'Bearer some_api_key'
+        }
+    )
+
+    event_id = 'Test with whitespaces'
+    args = {
+        "event_id": event_id
+    }
+    response = get_event_command(client, args)
+
+    # assert response.outputs[0] == mock_response
+    assert response.raw_response is None
+
+
+def test_get_insight_with_whitespace(requests_mock):
+    """Tests the get insight command when insight id contains whitespaces
+    """
+    from Cognni import Client, get_insight_command
+
+    mock_response = util_load_json('test_data/get_insight_with_whitespace.json')
+    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+                       json=mock_response)
+
+    client = Client(
+        base_url='https://stage-webapi.cognni.ai',
+        verify=False,
+        headers={
+            'Authorization': 'Bearer some_api_key'
+        }
+    )
+
+    insight_id = 'Test with whitespaces'
+    args = {
+        "insight_id": insight_id
+    }
+    response = get_insight_command(client, args)
+
+    # assert response.outputs[0] == mock_response
+    assert response.outputs_prefix == 'Cognni.insight'
+    assert response.raw_response['id'] is None
+
+
+def test_get_insight_with_special_characters(requests_mock):
+    """Tests the get insight command with unexist insight id
+      """
+    from Cognni import Client, get_insight_command
+
+    mock_response = util_load_json('test_data/get_insight_with_special_characters.json')
+    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+                       json=mock_response)
+
+    client = Client(
+        base_url='https://stage-webapi.cognni.ai',
+        verify=False,
+        headers={
+            'Authorization': 'Bearer some_api_key'
+        }
+    )
+
+    insight_id = 'a!@#$%^&*()1'
+    args = {
+        "insight_id": insight_id
+    }
+    response = get_insight_command(client, args)
+
+    assert response.raw_response['id'] is None
+
+
 def test_fetch_incidents_command(requests_mock):
     """Tests the cognni-fetch-incidents command
     """
