@@ -1,0 +1,14 @@
+{
+    "name": "Common Scripts",
+    "description": "Frequently used scripts pack.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "",
+    "email": "",
+    "created": "2020-10-05T11:45:21Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
