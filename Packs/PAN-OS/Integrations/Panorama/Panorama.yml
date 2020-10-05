@@ -1821,23 +1821,28 @@ script:
       name: device-group
       required: false
       secret: false
-    - default: false
-      description: The type of the EDL. Required when refreshing an EDL object which is
-        configured on Panorama.
+    - auto: PREDEFINED
+      default: false
+      description: The type of the EDL. Required when refreshing an EDL object which
+        is configured on Panorama.
       isArray: false
       name: edl_type
+      predefined:
+      - ip
+      - url
+      - domain
       required: false
       secret: false
     - default: false
-      description: The location of the EDL. Required when refreshing an EDL object which
-        is configured on Panorama.
+      description: The location of the EDL. Required when refreshing an EDL object
+        which is configured on Panorama.
       isArray: false
       name: location
       required: false
       secret: false
     - default: false
-      description: The Vsys of the EDL. Required when refreshing an EDL object which is
-        configured on Panorama.
+      description: The Vsys of the EDL. Required when refreshing an EDL object which
+        is configured on Panorama.
       isArray: false
       name: vsys
       required: false
