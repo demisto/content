@@ -417,6 +417,8 @@ def test_get_assets_for_offense__happy(requests_mock):
     - Calling get_assets_for_offense
     Then:
     - Return the asset correlating to assets_ips
+    - The asset properties are flatten
+    - The interfaces are simplified
     """
     from QRadar_v2 import get_assets_for_offense
     client = QRadarClient("https://example.com", {}, {"identifier": "*", "password": "*"})
@@ -425,9 +427,18 @@ def test_get_assets_for_offense__happy(requests_mock):
         json=RAW_RESPONSES['qradar-get-asset-by-id']
     )
     res = get_assets_for_offense(client, ['8.8.8.8'])
+    res_interfaces = res[0]['interfaces'][0]
 
+    assert res[0]['id'] == 1928
+
+    # flatten properties check
     assert res[0]['Unified Name'] == 'ec2-44-234-115-112.us-west-2.compute.amazonaws.com'
-    assert res[0]['interfaces'][0]['ip_addresses'][0]['value'] == '8.8.8.8'
+
+    # simplify interfaces check
+    assert len(res_interfaces) == 3
+    assert res_interfaces['mac_address'] == 'Unknown NIC'
+    assert res_interfaces['id'] == 1915
+    assert res_interfaces['ip_addresses'] == [{'type': 'IPV4', 'value': '8.8.8.8'}]
 
 
 def test_get_mapping_fields(mocker):

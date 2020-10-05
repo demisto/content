@@ -1252,15 +1252,42 @@ def get_assets_for_offense(client: QRadarClient, assets_ips):
             assets = client.get_assets(_filter=query)
             if assets:
                 transform_asset_time_fields_recursive(assets)
-                # flatten properties
                 for asset in assets:
+                    # flatten properties
                     if isinstance(asset.get('properties'), list):
                         properties = {p['name']: p['value'] for p in asset['properties'] if
                                       ('name' in p and 'value' in p)}
                         asset.update(properties)
                         # remove previous format of properties
                         asset.pop('properties')
+                    # simplify interfaces
+                    if isinstance(asset.get('interfaces'), list):
+                        asset['interfaces'] = get_simplified_asset_interfaces(asset['interfaces'])
     return assets
+
+
+def get_simplified_asset_interfaces(interfaces):
+    """
+    Get a simplified version of asset interfaces with just the following fields:
+     * id
+     * mac_address
+     * ip_addresses.type
+     * ip_addresses.value
+    """
+    new_interfaces = []
+    for interface in interfaces:
+        new_ip_adrss = []
+        for ip_adrs in interface.get('ip_addresses', []):
+            new_ip_adrss.append(assign_params(
+                type=ip_adrs.get('type'),
+                value=ip_adrs.get('value')
+            ))
+        new_interfaces.append(assign_params(
+            mac_address=interface.get('mac_address'),
+            id=interface.get('id'),
+            ip_addresses=new_ip_adrss
+        ))
+    return new_interfaces
 
 
 def transform_asset_time_fields_recursive(asset):
