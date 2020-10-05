@@ -2,11 +2,10 @@ id: Create ServiceNow Ticket
 version: -1
 name: Create ServiceNow Ticket
 description: "Create ServiceNow Ticket allows you to open new tickets as a task from\
-  \ a parent playbook.\nIt is an option to set sync with the ticket's state, which\
-  \ will wait for the ticket to resolve or close with StatePolling. \nYou can alternatively\
-  \ select to mirror the ServiceNow ticket and incident fields. Mirroring includes\
-  \ its equivalent for StatePolling -  FieldPolling.\nTo apply either of these options,\
-  \ set the SyncTicket value in the playbook inputs to one of the following options:\
+  \ a parent playbook.\nWhen creating the ticket, you can decide to update based on on the ticket's state, which\
+  \ will wait for the ticket to resolve or close with StatePolling. \nAlternatively, you can\
+  \ select to mirror the ServiceNow ticket and incident fields. 
+  \ To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options:\
   \ \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none."
 starttaskid: "0"
 tasks:
@@ -45,7 +44,7 @@ tasks:
       id: ae4ddf63-1283-46ce-8c36-31173098968b
       version: -1
       name: Create ServiceNow ticket
-      description: Creates new ServiceNow ticket.
+      description: Creates a ServiceNow ticket.
       script: ServiceNow v2|||servicenow-create-ticket
       type: regular
       iscommand: true
@@ -196,7 +195,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: 'Check for a playbook input to instruct the sync mode'
+      description: 'Check for a playbook input to indicate which sync mode was selected.'
     nexttasks:
       '#default#':
       - "8"
@@ -250,13 +249,13 @@ tasks:
       name: Mirror ServiceNow Ticket
       description: |-
         Mirror ServiceNow Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with ServiceOne.
-        It will allow you to manage ServiceNow tickets in Cortex xSOAR. While data is continuously synced between ServiceNow and Cortex xSOAR, including ServiceNow schema, fields, comments, work notes, and attachments.
-        To enable OoB mirroring, use the ServiceNow Create ticket  - common mappers for incoming and outgoing mirroring.
+        It enables you to manage ServiceNow tickets in Cortex xSOAR while data is continuously synced between ServiceNow and Cortex xSOAR, including ServiceNow schema, fields, comments, work notes, and attachments.
+        To enable OOTB mirroring, use the ServiceNow Create ticket  - common mappers for incoming and outgoing mirroring.
 
-        FieldPolling - It is optional to set the FieldPolling value to true if it is desirable to wait for the ticket to resolve or close. If FieldPolling is set to true, the FieldPolling Playbook will poll for the state(ServiceNow State field) of the ServiceNow ticket until it marks as resolved/closed.
+        FieldPolling - You can the FieldPolling value to true if you only want to be informed when the ticket is resolved or closed. If FieldPolling is set to true, the FieldPolling Playbook will poll for the state(ServiceNow State field) of the ServiceNow ticket until it marks as either resolved or closed.
 
-        In Addition to the Playbook, It is recommended to use the included layout for ServiceNow Ticket, which helps visualize ServiceNow ticket information in Cortex xSAOAR.
-        You can add the new layout as a tab to existing layouts at the edit layout screen.
+        In Addition to the playbook, we recommend that you use the included layout for ServiceNow Ticket, which helps visualize ServiceNow ticket information in Cortex xSOAR.
+        You can add the new layout as a tab to existing layouts using the Edit Layout page.
       playbookName: Mirror ServiceNow Ticket
       type: playbook
       iscommand: false
@@ -381,27 +380,27 @@ inputs:
 - key: AssignmentGroup
   value: {}
   required: false
-  description: 'The group to assign the new ticket to '
+  description: 'The group to which to assign the new ticket.'
   playbookInputQuery:
 - key: ShortDescription
   value: {}
   required: false
-  description: Set A short description of the ticket.
+  description: Set a short description of the ticket.
   playbookInputQuery:
 - key: Impact
   value: {}
   required: false
-  description: Set Impact for the new ticket, leave empty for ServiceNow default impact.
+  description: Set the impact for the new ticket. Leave empty for ServiceNow default impact.
   playbookInputQuery:
 - key: Urgency
   value: {}
   required: false
-  description: Set urgency to the new ticket, leave empty for ServiceNow default urgency.
+  description: Set the urgency of the new ticket. Leave empty for ServiceNow default urgency.
   playbookInputQuery:
 - key: 'Severity '
   value: {}
   required: false
-  description: Set severity to the new ticket, leave empty for ServiceNow default
+  description: Set the severity of the new ticket. Leave empty for ServiceNow default
     severity.
   playbookInputQuery:
 - key: Comment
@@ -414,10 +413,10 @@ inputs:
   required: false
   description: "Set the value of the desired sync method with ServiceNow Ticket. you\
     \ can choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for\
-    \ none \n\nGenericPolling uses as cold sync, which polls for the state of the\
-    \ ticket.\nGenericPoliing will run until the ticket state is either resolved or\
+    \ none \n\nGenericPolling polls for the state of the\
+    \ ticket and runs until the ticket state is either resolved or\
     \ closed. \n\nMirror - You can use the Mirror option to perform a full sync with\
-    \ ServiceNow Ticket. The ticket data is synced automatically between ServiceNow\
+    \ the ServiceNow Ticket. The ticket data is synced automatically between ServiceNow\
     \ and Cortex xSOAR with the ServiceNow mirror feature.\nIf this option is selected,\
     \ FieldPolling is true by default. "
   playbookInputQuery:
