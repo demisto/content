@@ -1196,8 +1196,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     for pack in packs_to_install:
         ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
     if ignored_tests_set:
-        logging.debug("Skipping tests that were ignored via .pack-ignore:\n -" +
-                      "\n -".join(map(str, ignored_tests_set)))
+        ignored_tests = "-" + "\n -".join(map(str, ignored_tests_set))
+        logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{ignored_tests}")
         tests.difference_update(ignored_tests_set)
 
     return tests, packs_to_install
