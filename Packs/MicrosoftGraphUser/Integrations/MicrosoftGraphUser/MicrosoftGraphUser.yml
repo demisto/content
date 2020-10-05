@@ -493,7 +493,7 @@ script:
     deprecated: false
     description: |-
       Assigns a manager to the specified user.
-      Permission: User.ReadWrite (Delegated) or User.ReadWrite (Application)
+      Permission: - User.ReadWrite (Delegated) or - User.ReadWrite (Application)
     execution: false
     name: msgraph-user-assign-manager
   - arguments:
