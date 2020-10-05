@@ -69,7 +69,7 @@ Check URL Reputation
             "Data": "google.com"
         },
         {
-            "Data": "http://hang3clip.ddns.net/",
+            "Data": "hxxp://hang3clip.ddns.net/",
             "Malicious": {
                 "Description": "Match found in OpenPhish database",
                 "Vendor": "OpenPhish"
