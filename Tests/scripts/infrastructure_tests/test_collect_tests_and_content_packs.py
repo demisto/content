@@ -35,7 +35,6 @@ class TestUtils(object):
             with open(self.pack_ignore_path, 'w') as f:
                 f.write(self.previous_pack_ignore_contents)
 
-
     @staticmethod
     def save_yaml(path, data):
         ryaml = YAML()
