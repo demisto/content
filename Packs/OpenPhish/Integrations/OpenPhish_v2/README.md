@@ -1,5 +1,5 @@
 OpenPhish uses proprietary Artificial Intelligence algorithms to automatically identify zero-day phishing sites and provide comprehensive, actionable, real-time threat intelligence.
-
+This integration was integrated and tested with version xx of OpenPhish_v2
 ## Configure OpenPhish_v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -35,20 +35,20 @@ Check URL Reputation
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | unknown | Bad URLs found | 
-| URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision | 
-| URL.Malicious.Description | unknown | For malicious URLs, the reason for the vendor to make the decision | 
-| DBotScore.Indicator | unknown | The indicator we tested | 
-| DBotScore.Type | unknown | The type of the indicator | 
-| DBotScore.Vendor | unknown | Vendor used to calculate the score | 
-| DBotScore.Score | unknown | The actual score | 
+| URL.Data | unknown | The URL | 
+| URL.Malicious.Vendor | unknown | The vendor reporting the URL as malicious. | 
+| URL.Malicious.Description | unknown | A description of the malicious URL. | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+| DBotScore.Score | unknown | The actual score. | 
 
 
 #### Command Example
-```!url using-brand=OpenPhish_v2 url="google.com, http://dd0ddddddcuser.ey.r.appspot.com/"```
+```!url using-brand=OpenPhish_v2 url="google.com, hxxp://hang3clip.ddns.net/"```
 
 #### Context Example
-```
+```json
 {
     "DBotScore": [
         {
@@ -58,8 +58,8 @@ Check URL Reputation
             "Vendor": "OpenPhish"
         },
         {
-            "Indicator": "http://dd0ddddddcuser.ey.r.appspot.com/",
-            "Score": 0,
+            "Indicator": "http://hang3clip.ddns.net/",
+            "Score": 3,
             "Type": "url",
             "Vendor": "OpenPhish"
         }
@@ -69,7 +69,11 @@ Check URL Reputation
             "Data": "google.com"
         },
         {
-            "Data": "http://dd0ddddddcuser.ey.r.appspot.com/"
+            "Data": "http://hang3clip.ddns.net/",
+            "Malicious": {
+                "Description": "Match found in OpenPhish database",
+                "Vendor": "OpenPhish"
+            }
         }
     ]
 }
@@ -79,7 +83,7 @@ Check URL Reputation
 
 >### OpenPhish Database - URL Query
 >#### No matches for URL google.com
->#### No matches for URL http://dd0ddddddcuser.ey.r.appspot.com/
+>#### Found matches for given URL hxxp://hang3clip.ddns.net/
 
 
 ### openphish-reload
@@ -96,17 +100,9 @@ Reload OpenPhish database
 | --- | --- | --- |
 
 
-#### Context Output
-
-There is no context output for this command.
-
 #### Command Example
 ```!openphish-reload```
 
-#### Context Example
-```
-{}
-```
 
 #### Human Readable Output
 
@@ -133,11 +129,9 @@ There is no context output for this command.
 #### Command Example
 ```!openphish-status```
 
-#### Context Example
-```
-{}
-```
 
 #### Human Readable Output
 
 ![image](https://user-images.githubusercontent.com/71636766/94807766-c5c92a80-03f8-11eb-9339-d8e399d895c5.png)
+
+

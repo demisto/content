@@ -35,19 +35,20 @@ script:
           description: URL to check
       outputs:
         - contextPath: URL.Data
-          description: Bad URLs found
+          description: The URL
         - contextPath: URL.Malicious.Vendor
-          description: For malicious URLs, the vendor that made the decision
+          description: The vendor reporting the URL as malicious.
         - contextPath: URL.Malicious.Description
-          description: For malicious URLs, the reason for the vendor to make the decision
+          description: A description of the malicious URL.
         - contextPath: DBotScore.Indicator
-          description: The indicator we tested
+          description: The indicator that was tested.
         - contextPath: DBotScore.Type
-          description: The type of the indicator
+          description: The indicator type.
         - contextPath: DBotScore.Vendor
-          description: Vendor used to calculate the score
+          description: The vendor used to calculate the score.
         - contextPath: DBotScore.Score
-          description: The actual score
+          description: The actual score.
+
       description: Check URL Reputation
     - name: openphish-reload
       arguments: []

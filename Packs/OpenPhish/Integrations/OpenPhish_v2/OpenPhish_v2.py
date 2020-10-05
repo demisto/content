@@ -7,13 +7,12 @@ import requests
 import traceback
 from typing import Dict
 
+# Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# Disable insecure warnings
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-API_PATH = "http://openphish.com"
 
 
 class Error(Exception):
@@ -33,10 +32,6 @@ class NotFoundError(Error):
 
 
 class Client(BaseClient):
-    """
-    Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
-    """
 
     def __init__(self, url: str, use_ssl: bool, use_proxy: bool, fetch_interval_hours: float = 1):
         super().__init__(url, verify=use_ssl, proxy=use_proxy)
@@ -44,7 +39,7 @@ class Client(BaseClient):
 
     def http_request(self, name, resp_type=None):
         """
-        initiates a http request to a test url
+        initiates a http request to openphish
         """
         data = self._http_request(
             method='GET',
@@ -61,7 +56,7 @@ def _save_urls_to_instance(client: Client):
 
     """
     try:
-        # gets the urls from api with unite format
+        # gets the urls from api and formats them
         data = client.http_request('feed.txt', resp_type='text')
         data = data.splitlines()
         data = list(map(remove_backslash, data))
@@ -71,7 +66,7 @@ def _save_urls_to_instance(client: Client):
         set_integration_context(context)
 
     except NotFoundError as e:
-        return_error('Check server URL - ' + e.message)
+        raise Exception(f'Check server URL - {e.message}')
 
 
 def _is_reload_needed(client: Client, data: Dict) -> bool:
@@ -94,7 +89,7 @@ def _is_reload_needed(client: Client, data: Dict) -> bool:
     return False
 
 
-def test_module(client) -> str:
+def test_module(client: Client) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -132,7 +127,7 @@ def url_command(client: Client, **kwargs) -> CommandResults:
 
     url_object_list = []
     if not data:
-        raise DemistoException("Data was not saved correctly")
+        raise DemistoException("Data was not saved correctly to the integration context.")
 
     url_list_from_user = argToList(kwargs.get('url'))
     markdown = "### OpenPhish Database - URL Query\n"
@@ -142,11 +137,11 @@ def url_command(client: Client, **kwargs) -> CommandResults:
         if url_fixed in urls_in_db:
             dbotscore = Common.DBotScore.BAD
             desc = 'Match found in OpenPhish database'
-            markdown += "#### Found matches for given URL " + url + "\n"
+            markdown += f"#### Found matches for given URL {url}\n"
         else:
             dbotscore = Common.DBotScore.NONE
             desc = ""
-            markdown += "#### No matches for URL " + url + "\n"
+            markdown += f"#### No matches for URL {url}\n"
 
         dbot = Common.DBotScore(url, DBotScoreType.URL, 'OpenPhish', dbotscore, desc)
         url_object_list.append(Common.URL(url, dbot))
@@ -156,7 +151,7 @@ def url_command(client: Client, **kwargs) -> CommandResults:
 
 def reload_command(client: Client, **kwargs) -> CommandResults:
     _save_urls_to_instance(client)
-    return CommandResults(readable_output='updated successfully')
+    return CommandResults(readable_output='Database was updated successfully to the integration context.')
 
 
 def status_command(client: Client, **kwargs) -> CommandResults:
@@ -164,38 +159,38 @@ def status_command(client: Client, **kwargs) -> CommandResults:
 
     md = "OpenPhish Database Status\n"
     if data and data.get('list', None):
-        md += "Total **" + str(len(data.get('list'))) + "** URLs loaded.\n"
-        md += "Last load time **" + timestamp_to_datestring(data.get('timestamp'),
-                                                            "%a %b %d %Y %H:%M:%S (UTC)",
-                                                            is_utc=True) + "**\n"
+        md += f"Total **{str(len(data.get('list')))}** URLs loaded.\n"
+        load_time = timestamp_to_datestring(data.get('timestamp'),
+                                            "%a %b %d %Y %H:%M:%S (UTC)",
+                                            is_utc=True)
+        md += f"Last load time **{load_time}**\n"
     else:
         md += "Database not loaded.\n"
 
     return CommandResults(readable_output=md)
 
 
-demisto.debug(f'Command being called is {demisto.command()}')
-
-
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    demisto.debug(f'Command being called is {demisto.command()}')
+
     # get the service API url
-    base_url = API_PATH
+    base_url = "http://openphish.com"
 
     commands = {
         'url': url_command,
         'openphish-reload': reload_command,
         'openphish-status': status_command,
     }
-
-    hours_to_refresh = demisto.params().get('fetchIntervalHours', '1')
+    user_params = demisto.params()
+    hours_to_refresh = user_params.get('fetchIntervalHours', '1')
 
     try:
         hours_to_refresh = float(hours_to_refresh)
-        use_ssl = not demisto.params().get('insecure', False)
-        use_proxy = demisto.params().get('proxy', False)
+        use_ssl = not user_params.get('insecure', False)
+        use_proxy = user_params.get('proxy', False)
         client = Client(
             url=base_url,
             use_ssl=use_ssl,
@@ -207,7 +202,6 @@ def main():
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-
         elif command in commands:
             return_results(commands[command](client, **demisto.args()))
 

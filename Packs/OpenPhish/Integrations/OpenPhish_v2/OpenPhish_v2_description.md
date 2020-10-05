@@ -1,1 +1,1 @@
-In order to configure an instance you can configure interval from fetching data from the api.
+To configure an integration instance, you only need to set the refresh interval. All of the URLs are stored in the integration context and are refreshed according to the refresh interval.

@@ -12,29 +12,29 @@ RELOADED_DATA = [
     (Client(MOCK_URL, True, False, 2), {}, True),  # case no data in memory
     (Client(MOCK_URL, True, False, 2), {"list": []}, True),  # case no timestamp and list is emtpy
     (Client(MOCK_URL, True, False, 2),
-     {"list": ['http://www.niccakorea.com/board/index.html',
-               'http://lloyds.settlemypayee.uk',
-               'https://whatsapp-chat02.zzux.com',
-               'http://dd0ddddddcuser.ey.r.appspot.com'], "timestamp": None}, True),  # case no timestamp
+     {"list": ['hxxp://www.niccakorea.com/board/index.html',
+               'hxxp://lloyds.settlemypayee.uk',
+               'hxxp://whatsapp-chat02.zzux.com',
+               'hxxp://dd0ddddddcuser.ey.r.appspot.com'], "timestamp": None}, True),  # case no timestamp
     (Client(MOCK_URL, True, False, 1),
-     {"list": ['http://www.niccakorea.com/board/index.html',
-               'http://lloyds.settlemypayee.uk',
-               'https://whatsapp-chat02.zzux.com',
-               'http://dd0ddddddcuser.ey.r.appspot.com'],
+     {"list": ['hxxp://www.niccakorea.com/board/index.html',
+               'hxxp://lloyds.settlemypayee.uk',
+               'hxxp://whatsapp-chat02.zzux.com',
+               'hxxp://dd0ddddddcuser.ey.r.appspot.com'],
       "timestamp": 1601542800000},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)
      True),
     (Client(MOCK_URL, True, False, 2),
-     {"list": ['http://www.niccakorea.com/board/index.html',
-               'http://lloyds.settlemypayee.uk',
-               'https://whatsapp-chat02.zzux.com',
-               'http://dd0ddddddcuser.ey.r.appspot.com'],
+     {"list": ['hxxp://www.niccakorea.com/board/index.html',
+               'hxxp://lloyds.settlemypayee.uk',
+               'hxxp://whatsapp-chat02.zzux.com',
+               'hxxp://dd0ddddddcuser.ey.r.appspot.com'],
       "timestamp": 1601542800000},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)
      False),
     (Client(MOCK_URL, True, False, 0.5),
-     {"list": ['http://www.niccakorea.com/board/index.html',
-               'http://lloyds.settlemypayee.uk',
-               'https://whatsapp-chat02.zzux.com',
-               'http://dd0ddddddcuser.ey.r.appspot.com'],
+     {"list": ['hxxp://www.niccakorea.com/board/index.html',
+               'hxxp://lloyds.settlemypayee.uk',
+               'hxxp://whatsapp-chat02.zzux.com',
+               'hxxp://dd0ddddddcuser.ey.r.appspot.com'],
       "timestamp": 1601542800000},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)
      True),
 
@@ -109,10 +109,10 @@ CONTEXT_MOCK_WITH_STATUS = [
     ({"list": [], "timestamp": "1601532000000"},
      STANDARD_NOT_LOADED_MSG),  # case no timestamp and list is emtpy
     (
-        {"list": ['http://www.niccakorea.com/board/index.html',
-                  'http://lloyds.settlemypayee.uk',
-                  'https://whatsapp-chat02.zzux.com',
-                  'http://dd0ddddddcuser.ey.r.appspot.com'],
+        {"list": ['hxxp://www.niccakorea.com/board/index.html',
+                  'hxxp://lloyds.settlemypayee.uk',
+                  'hxxp://whatsapp-chat02.zzux.com',
+                  'hxxp://dd0ddddddcuser.ey.r.appspot.com'],
          "timestamp": "1601532000000"},  # datetime(2020, 10, 1, 10, 00, 00, 0) - timedelta(hours=1)}
         STANDARD_4_LOADED_MSG)
 ]
@@ -137,30 +137,41 @@ def test_status_command(mocker, data, expected_result):
 
 
 CONTEXT_MOCK_WITH_URL = [
-    ({'url': 'http://lloyds.settlemypayee.uk'},
-     {"list": ['http://www.niccakorea.com/board/index.html',
-               'http://lloyds.settlemypayee.uk',
-               'https://whatsapp-chat02.zzux.com',
-               'http://dd0ddddddcuser.ey.r.appspot.com'],
+    ({'url': 'hxxp://lloyds.settlemypayee.uk'},
+     {"list": ['hxxp://www.niccakorea.com/board/index.html',
+               'hxxp://lloyds.settlemypayee.uk',
+               'hxxp://whatsapp-chat02.zzux.com',
+               'hxxp://dd0ddddddcuser.ey.r.appspot.com'],
       "timestamp": "1601532000000"},
-     {'URL': [{'Data': 'http://lloyds.settlemypayee.uk',
+     {'URL': [{'Data': 'hxxp://lloyds.settlemypayee.uk',
                'Malicious': {'Vendor': 'OpenPhish', 'Description': 'Match found in OpenPhish database'}}],
-      'DBOTSCORE': [{'Indicator': 'http://lloyds.settlemypayee.uk', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 3}]}
+      'DBOTSCORE': [{'Indicator': 'hxxp://lloyds.settlemypayee.uk', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 3}]}
      ),
-    ({'url': 'http://goo.co'},
-     {"list": ['http://www.niccakorea.com/board/index.html',
-               'http://lloyds.settlemypayee.uk',
-               'https://whatsapp-chat02.zzux.com',
-               'http://dd0ddddddcuser.ey.r.appspot.com'],
+    ({'url': 'hxxp://goo.co'},
+     {"list": ['hxxp://www.niccakorea.com/board/index.html',
+               'hxxp://lloyds.settlemypayee.uk',
+               'hxxp://whatsapp-chat02.zzux.com',
+               'hxxp://dd0ddddddcuser.ey.r.appspot.com'],
       "timestamp": "1601532000000"},
-     {'URL': [{'Data': 'http://goo.co'}],
-      'DBOTSCORE': [{'Indicator': 'http://goo.co', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 0}]}
+     {'URL': [{'Data': 'hxxp://goo.co'}],
+      'DBOTSCORE': [{'Indicator': 'hxxp://goo.co', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 0}]}
      )
 ]
 
 
 @pytest.mark.parametrize('url,context,expected_results', CONTEXT_MOCK_WITH_URL)
 def test_url_command(mocker, url, context, expected_results):
+    """
+    Given:
+        - a url
+
+    When:
+        - mocking the integration context data, runnig url_command
+
+    Then:
+        - validating whether the url is malicious (in integration context)
+
+    """
     mocker.patch.object(demisto, "getIntegrationContext", return_value=context, )
     mocker.patch.object(OpenPhish_v2, "_is_reload_needed", return_value=False)
     client = Client(MOCK_URL, True, False, 1)
