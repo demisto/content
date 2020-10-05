@@ -2,12 +2,16 @@ commonfields:
   id: NotInContextVerification
   version: -1
 name: NotInContextVerification
-script: |+
+script: >+
   var val = invContext.keyToWatch;
+
   var argumentsVal = args.cmdArguments;
+
   var argsArr = argumentsVal.split(",");
 
+
   var argsToCmd = {};
+
   for (i = 0; i < argsArr.length ; i++) {
       var keyval = argsArr[i].split("=");
       if (keyval.length == 2) {
@@ -15,10 +19,13 @@ script: |+
       }
   }
 
+
   var entry = executeCommand(args.cmdToRun, argsToCmd);
+
   if(!entry[0].EntryContext[args.keyToWatch]){
       return entry;
   }
+
   else{
       throw args.keyToWatch + ' in context is not empty';
   }
@@ -27,8 +34,7 @@ script: |+
 type: javascript
 tags:
 - Utility
-comment: "Not in context verification is a script that executes the given command\
-  \ and verifies that the specified field is not in the context after execution. \n"
+comment: "Not in context verification is a script that executes the given command and verifies that the specified field is not in the context after execution. \n"
 enabled: true
 args:
 - name: cmdToRun
@@ -37,11 +43,10 @@ args:
   description: Command or Automation script to execute each while loop iteration
 - name: cmdArguments
   required: true
-  description: 'comma separated list of command/automation arguments and values to
-    run: key=val,key=val,key=val'
+  description: 'comma separated list of command/automation arguments and values to run: key=val,key=val,key=val'
 - name: keyToWatch
   required: true
-  description: watch this key, if it is equal to value argument (${key}==value) then
-    exit while loop, otherwise continue to next loop iteration (will run command again)
+  description: watch this key, if it is equal to value argument (${key}==value) then exit while loop, otherwise continue to next loop iteration (will run command again)
 scripttarget: 0
 timeout: 900ns
+fromversion: 5.0.0

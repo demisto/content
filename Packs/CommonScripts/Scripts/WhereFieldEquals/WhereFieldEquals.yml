@@ -1,28 +1,37 @@
 args:
 - default: true
-  description: List to apply the transformer on
+  description: The list to apply the transformer to.
   isArray: false
   name: value
   required: true
   secret: false
 - default: false
-  description: Attribute in the collection's items check equality against 'equalTo'
+  description: The attribute in the collection items to check equality against `equalTo`.
   isArray: false
   name: field
   required: true
   secret: false
 - default: false
-  description: Value to filter all items in the collection
+  description: The value to filter all items by in the collection.
   isArray: false
   name: equalTo
   required: true
   secret: false
 - default: false
-  description: Optional - field to extract from each item
+  description: The field to extract from each item (Optional).
   isArray: false
   name: getField
   predefined:
   - ''
+  required: false
+  secret: false
+- name: stringify
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether the argument should be saved as a string (Optional).
+  defaultValue: "true"
   required: false
   secret: false
 comment: "Return all items from the list where their given 'field' attribute is equal\
@@ -46,5 +55,5 @@ tags:
 - entirelist
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.5.10455
+dockerimage: demisto/python3:3.8.5.10845
 runonce: false

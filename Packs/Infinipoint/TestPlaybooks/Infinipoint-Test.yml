@@ -1,5 +1,5 @@
-id: 663e1ec3-5590-4e23-8d99-d8a4e0c22a52
-version: 119
+id: Infinipoint-Test
+version: -1
 name: Infinipoint-Test
 starttaskid: "0"
 tasks:
@@ -240,8 +240,7 @@ tasks:
       id: 07e6dd49-771a-405d-8e13-f2aee77fcb18
       version: -1
       name: Validate Output (infinipoint-get-assets-hardware)
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1119,15 +1118,16 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: a009174d-4f51-4d62-869f-0800596649ab
+    taskid: 25e18909-33bb-44b0-80cf-938d4a98cea2
     type: regular
     task:
-      id: a009174d-4f51-4d62-869f-0800596649ab
+      id: 25e18909-33bb-44b0-80cf-938d4a98cea2
       version: -1
       name: infinipoint-get-action
+      description: Get results for a given action ID
       tags:
       - polling
-      script: '|||infinipoint-get-action'
+      script: '|||infinipoint-get-action-results'
       type: regular
       iscommand: true
       brand: ""
@@ -1137,16 +1137,6 @@ tasks:
     scriptarguments:
       action_id:
         simple: ${Infinipoint.Scripts.execute.actionId}
-      action_id, e.g. 9ef2494d-862e-43c8-963c-3587cde75c4d:
-        complex:
-          root: Infinipoint
-          accessor: Scripts.execute.actionId
-      execution-timeout:
-        simple: "60"
-      retry-count:
-        simple: "10"
-      retry-interval:
-        simple: "10"
     separatecontext: false
     view: |-
       {
@@ -1260,15 +1250,16 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: 9d2008c7-07d9-4576-8fb6-353043cb6e14
+    taskid: be08ccaa-842b-44cc-86c9-890baca3d50e
     type: regular
     task:
-      id: 9d2008c7-07d9-4576-8fb6-353043cb6e14
+      id: be08ccaa-842b-44cc-86c9-890baca3d50e
       version: -1
       name: infinipoint-get-action
+      description: Get results for a given action ID
       tags:
       - polling
-      script: '|||infinipoint-get-action'
+      script: '|||infinipoint-get-action-results'
       type: regular
       iscommand: true
       brand: ""
@@ -1293,10 +1284,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: 90a75549-9a0a-4b41-8143-1467b9ca725d
+    taskid: f2d8c32f-ceed-4456-808e-38a8562face7
     type: condition
     task:
-      id: 90a75549-9a0a-4b41-8143-1467b9ca725d
+      id: f2d8c32f-ceed-4456-808e-38a8562face7
       version: -1
       name: Validate Output (infinipoint-run-osquery flow)
       type: condition
@@ -1309,7 +1300,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEmpty
           left:
             value:
               simple: Infinipoint.Responses
@@ -1447,13 +1438,14 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: 28ade735-bf3b-4bd3-8b4a-ebfe318b1d20
+    taskid: ee77d7a0-e2ea-4f54-86d3-0b855c7cb5ec
     type: regular
     task:
-      id: 28ade735-bf3b-4bd3-8b4a-ebfe318b1d20
+      id: ee77d7a0-e2ea-4f54-86d3-0b855c7cb5ec
       version: -1
       name: infinipoint-run-osquery
-      script: '|||infinipoint-run-queries'
+      description: Run queries on managed devices
+      script: '|||infinipoint-execute-action'
       type: regular
       iscommand: true
       brand: ""
@@ -1479,13 +1471,14 @@ tasks:
     quietmode: 0
   "57":
     id: "57"
-    taskid: 2412e89d-3194-41c0-8020-ea5eef8edbdb
+    taskid: a2774f79-9abb-4b32-89af-b4e652950145
     type: regular
     task:
-      id: 2412e89d-3194-41c0-8020-ea5eef8edbdb
+      id: a2774f79-9abb-4b32-89af-b4e652950145
       version: -1
       name: Infinipoint-run-scripts
-      script: '|||infinipoint-run-queries'
+      description: Run queries on managed devices
+      script: '|||infinipoint-execute-action'
       type: regular
       iscommand: true
       brand: ""
@@ -1542,13 +1535,14 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: d321f266-99cf-470c-822d-31aa0f759c0b
+    taskid: ec1562ea-bd60-4230-8183-bba03e7ab6bb
     type: regular
     task:
-      id: d321f266-99cf-470c-822d-31aa0f759c0b
+      id: ec1562ea-bd60-4230-8183-bba03e7ab6bb
       version: -1
       name: infinipoint-get-assets-hardware
-      script: '|||infinipoint-get-assets-hardware'
+      description: Get managed devices
+      script: '|||infinipoint-get-assets-devices'
       type: regular
       iscommand: true
       brand: ""
@@ -1556,7 +1550,7 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      host: {}
+      $host: {}
       os_type:
         simple: "1"
     separatecontext: false
@@ -1586,3 +1580,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

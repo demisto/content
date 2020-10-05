@@ -35,17 +35,17 @@ response_users_accounts_data = {"type": "user", "status": 'N/A', "group_id": '12
 
 
 @pytest.mark.parametrize(
-    "response_data, url_suffix, expected",
+    "response_data, expected",
     [
-        (response_alerts_data, '/alerts/', expected_filtered_alerts),
-        (response_activities_data, '/activities/', expected_filtered_activities),
-        (response_files_data, '/files/', expected_filtered_files),
-        (response_users_accounts_data, '/entities/', expected_filtered_users_accounts)
+        (response_alerts_data, expected_filtered_alerts),
+        (response_activities_data, expected_filtered_activities),
+        (response_files_data, expected_filtered_files),
+        (response_users_accounts_data, expected_filtered_users_accounts)
     ]
 )
-def test_args_or_params_to_filter(response_data, url_suffix, expected):
-    from MicrosoftCloudAppSecurity import args_or_params_to_filter
-    res = args_or_params_to_filter(response_data, url_suffix)
+def test_args_to_filter(response_data, expected):
+    from MicrosoftCloudAppSecurity import args_to_filter
+    res = args_to_filter(response_data)
     assert res == expected
 
 
@@ -78,11 +78,16 @@ def test_list_alerts_command(requests_mock):
 def test_list_activities_command(requests_mock):
     activities = get_fetch_data()
     from MicrosoftCloudAppSecurity import list_activities_command
+    from CommonServerPython import Common
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/activities/'
                       '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7',
                       json=activities["ACTIVITIES_BY_ID_DATA"])
     res = list_activities_command(client_mocker, {'activity_id': '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7'})
     assert res.outputs[0] == activities["ACTIVITIES_BY_ID_DATA_CONTEXT"]
+    assert isinstance(res.indicators[0], Common.IP)
+    assert res.indicators[0].ip == '8.8.8.8'
+    assert res.indicators[0].geo_latitude == 32.0679
+    assert res.indicators[0].geo_longitude == 34.7604
 
 
 def test_list_files_command(requests_mock):
@@ -103,3 +108,17 @@ def test_list_users_accounts_command(requests_mock):
                                       {'username': '{ "id": "7e14f6a3-185d-49e3-85e8-40a33d90dc90",'
                                                    ' "saas": 11161, "inst": 0 }'})
     assert users_accounts["ENTITIES_BY_USERNAME_DATA_CONTEXT"] == res.outputs[0]
+
+
+@pytest.mark.parametrize(
+    "severity, resolution_status, expected",
+    [
+        (['All'], ['All'], {'resolutionStatus': {'eq': [0, 1, 2]}, 'severity': {'eq': [0, 1, 2]}}),
+        (['Low'], ['Open', 'Dismissed'], {'resolutionStatus': {'eq': [0, 1]}, 'severity': {'eq': 0}}),
+        ([], [], {'resolutionStatus': {'eq': []}, 'severity': {'eq': []}})
+    ]
+)
+def test_params_to_filter(severity, resolution_status, expected):
+    from MicrosoftCloudAppSecurity import params_to_filter
+    res = params_to_filter(severity, resolution_status)
+    assert res == expected

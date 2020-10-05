@@ -44,10 +44,10 @@ class MsGraphClient:
             filters.append("category eq '{}'".format(category))
         if severity:
             filters.append("severity eq '{}'".format(severity))
-        if time_from:
-            filters.append("createdDateTime gt {}".format(time_from))
+        if time_from:  # changed to ge and le in order to solve issue #27884
+            filters.append("createdDateTime ge {}".format(time_from))
         if time_to:
-            filters.append("createdDateTime lt {}".format(time_to))
+            filters.append("createdDateTime le {}".format(time_to))
         if filter_query:
             filters.append("{}".format(filter_query))
         filters = " and ".join(filters)
@@ -468,7 +468,7 @@ def test_function(client: MsGraphClient, args):
        Returns ok if successful.
        """
     response = client.ms_client.http_request(
-        method='GET', url_suffix='users', params={'$select': 'displayName'}, resp_type='response')
+        method='GET', url_suffix='security/alerts', params={'$top': 1}, resp_type='response')
     try:
         data = response.json() if response.text else {}
         if not response.ok:

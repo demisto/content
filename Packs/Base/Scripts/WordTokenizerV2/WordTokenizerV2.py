@@ -4,6 +4,11 @@ from HTMLParser import HTMLParser
 from re import compile as _Re
 
 from CommonServerPython import *
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')  # pylint: disable=no-member
+
+MAX_TEXT_LENGTH = 10 ** 5
 
 NUMBER_PATTERN = "NUMBER_PATTERN"
 URL_PATTERN = "URL_PATTERN"
@@ -44,8 +49,8 @@ LANGUAGES_TO_MODEL_NAMES = {'English': 'en_core_web_sm',
                             'Dutch': 'nl_core_news_sm'
                             }
 
-
 _unicode_chr_splitter = _Re('(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)').split
+nlp = None
 
 
 def clean_html(text):
@@ -115,7 +120,9 @@ def tokenize_text_other(unicode_text):
 
 
 def tokenize_text_spacy(unicode_text, language):
-    nlp = spacy.load(LANGUAGES_TO_MODEL_NAMES[language], disable=['tagger', 'parser', 'ner', 'textcat'])
+    global nlp
+    if nlp is None:
+        nlp = spacy.load(LANGUAGES_TO_MODEL_NAMES[language], disable=['tagger', 'parser', 'ner', 'textcat'])
     doc = nlp(unicode(unicode_text))
     original_text_indices_to_words = map_indices_to_words(unicode_text)
     tokens_list = []
@@ -165,6 +172,13 @@ def map_indices_to_words(unicode_text):
     return original_text_indices_to_words
 
 
+def handle_long_text(t, input_length):
+    if input_length == 1:
+        return_error("Input text length ({}) exceeds the legal maximum length for preprocessing".format(len(t)))
+    else:
+        return '', '', {}, {}
+
+
 def word_tokenize(text):
     if VALUE_IS_JSON:
         try:
@@ -181,7 +195,11 @@ def word_tokenize(text):
         t = remove_line_breaks(t)
         t = clean_html(t)
         t = remove_multiple_whitespaces(t)
-        tokenized_text, hash_tokenized_text, original_words_to_tokens, words_to_hashed_tokens = tokenize_text(t)
+        if len(t) < MAX_TEXT_LENGTH:
+            tokenized_text, hash_tokenized_text, original_words_to_tokens, words_to_hashed_tokens = tokenize_text(t)
+        else:
+            tokenized_text, hash_tokenized_text, original_words_to_tokens, words_to_hashed_tokens =\
+                handle_long_text(t, input_length=len(text))
         text_result = {
             'originalText': original_text,
             'tokenizedText': tokenized_text,

@@ -2,7 +2,8 @@ commonfields:
   id: ScheduleCommand
   version: -1
 name: ScheduleCommand
-script: return executeCommand("scheduleEntry", args);
+script: >-
+  return executeCommand("scheduleEntry", args);
 type: javascript
 tags:
 - Utility
@@ -17,10 +18,10 @@ args:
   required: true
   description: The scheduled time to run
 - name: endDate
-  description: When should we end the schedule. Will be only relevant if times is
-    not provided. Optional. Format is 'Mon, 02 Jan 2006 15:04:05 MST'
+  description: When should we end the schedule. Will be only relevant if times is not provided. Optional. Format is 'Mon, 02 Jan 2006 15:04:05 MST'
 - name: times
   description: The number of times to run. Optional.
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

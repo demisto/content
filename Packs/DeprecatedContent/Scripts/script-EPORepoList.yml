@@ -2,10 +2,13 @@ commonfields:
   id: EPORepoList
   version: -1
 name: EPORepoList
-script: |-
+script: >-
   cmds = demisto.getAllSupportedCommands()
+
   repos = [x for x in cmds.keys() if cmds[x] and len(cmds[x]) == 1 and cmds[x][0]['name'] == 'epo-command']
+
   demisto.setContext('eporepos', repos)
+
   if repos:
       mdText = '### Repositories:'
       for r in repos:
@@ -17,7 +20,7 @@ type: python
 subtype: python2
 tags:
 - epo
-comment: List all configured instances of ePO integration.
+comment: Deprecated. List all configured instances of ePO integration.
 system: true
 deprecated: true
 scripttarget: 0
@@ -25,3 +28,4 @@ dependson:
   must:
   - epo-command
 timeout: 0s
+fromversion: 5.0.0
