@@ -1,2 +1,4 @@
 [file:CrowdStrikeFalcon.yml]
 ignore=IN126
+[file:playbook-CrowdStrikeFalcon-Test.yml]
+ignore=auto-test
