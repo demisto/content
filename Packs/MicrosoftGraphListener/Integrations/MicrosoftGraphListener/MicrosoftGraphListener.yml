@@ -370,7 +370,7 @@ script:
     description: Tests connectivity of the email.
     execution: false
     name: msgraph-mail-test
-  dockerimage: demisto/crypto:1.0.0.11412
+  dockerimage: demisto/crypto:1.0.0.11650
   isfetch: true
   longRunning: false
   longRunningPort: false
