@@ -3121,7 +3121,6 @@
         "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
-        "MISP V2 Test": "Issue 26905",
         "Logzio - Test": "Issue 26729",
         "pyEWS_Test": "Issue 28339",
         "DuoAdmin API test playbook": "Issue 24937",
@@ -3361,7 +3360,8 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "QRadar": "Playbooks has parallel steps which are causing inconsistent results"
+        "QRadar": "Playbooks has parallel steps which are causing inconsistent results",
+        "MISP V2": "Issue 26905"
     },
     "parallel_integrations": [
         "SNDBOX",
@@ -3419,6 +3419,9 @@
                 "pid_threshold": 11
             },
             "demisto/py-ews:2.0": {
+                "memory_threshold": 150
+            },
+            "demisto/pymisp:1.0.0.52": {
                 "memory_threshold": 150
             },
             "demisto/pytan": {
