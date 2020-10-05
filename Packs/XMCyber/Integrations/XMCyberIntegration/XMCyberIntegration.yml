@@ -42,19 +42,22 @@ script:
         isArray: true
         required: false
     outputs:
-      - contextPath: EntityId
+      - contextPath: entity_id
         description: 'XMCyber Entity ID'
         type: String
-      - contextPath: Name
+      - contextPath: name
         description: 'Entity Name'
         type: String
-      - contextPath: IsAsset
+      - contextPath: is_asset
         description: Is Entity a Critical Asset
         type: Boolean
-      - contextPath: AffectedAssets.Value
+      - contextPath: is_choke_point
+        description: Is Entity a Choke Point to Critical Assets
+        type: Boolean
+      - contextPath: affected_assets.value
         description: Number of affected critical assets
         type: Number
-      - contextPath: AffectedAssets.Level
+      - contextPath: affected_assets.level
         description: None, Low, Medium, or High
         type: String
   - name: xmcyber-attack-complexity-to-ip

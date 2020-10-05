@@ -521,22 +521,23 @@ def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             name = entity['name']
             try:
                 is_asset = entity['asset']
-            except AttributeError:
+            except KeyError:
                 is_asset = False
             affected_assets = entity['affectedUniqueAssets']['count']
             readable_output += f'\n- {name}'
             outputs.append({
-                'EntityId': entity['entityId'],
-                'Name': name,
-                'IsAsset': is_asset,
-                'AffectedAssets': {
-                    'Value': affected_assets['value'],
-                    'Level': affected_assets['level']
+                'entity_id': entity['entityId'],
+                'name': name,
+                'is_asset': is_asset,
+                'is_choke_point': affected_assets['level']!='none',
+                'affected_assets': {
+                    'value': affected_assets['value'],
+                    'level': affected_assets['level']
                 }
             })
     return CommandResults(
         outputs_prefix='XMCyber',
-        outputs_key_field='EntityId',
+        outputs_key_field='entity_id',
         outputs=outputs,
         readable_output=readable_output
     )
