@@ -1,12 +1,12 @@
 args:
 - default: false
-  description: The input url
+  description: The URL to  encode.
   isArray: false
   name: value
   required: true
   secret: false
-comment: 'Encode a url string by replace special characters in string using the %xx
-  escape. For example: https://example.com converts into https:%2F%2Fexample.com.'
+comment: 'Encodes a URL string by replacing special characters in the string using the %xx
+  escape. For example: https://example.com converts to https:%2F%2Fexample.com.'
 commonfields:
   id: URLEncode
   version: -1
