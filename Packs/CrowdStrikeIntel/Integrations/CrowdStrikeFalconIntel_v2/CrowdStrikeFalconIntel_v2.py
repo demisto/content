@@ -137,7 +137,7 @@ def get_score_from_resource(r: Dict[str, Any]) -> int:
     :return: The DBotScore
     """
     malicious_confidence: int = MALICIOUS_DICTIONARY.get(r.get('malicious_confidence'), 0)
-    if malicious_confidence == 3 or MALICIOUS_THRESHOLD == 1:
+    if malicious_confidence == 3 or MALICIOUS_THRESHOLD == 4:
         score = 3
     elif malicious_confidence == 2 or MALICIOUS_THRESHOLD == 2:
         score = 2
