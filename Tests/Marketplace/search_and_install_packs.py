@@ -4,6 +4,7 @@ import os
 import ast
 import json
 import glob
+import sys
 import demisto_client
 from demisto_client.demisto_api.rest import ApiException
 from threading import Thread, Lock
@@ -365,7 +366,9 @@ def upload_zipped_packs(client, host, prints_manager, thread_index, pack_path):
             err_msg = 'The request to install packs has failed. Reason:\n{}\n'.format(str(e.body))
         else:
             err_msg = 'The request to install packs has failed. Reason:\n{}\n'.format(str(e))
-        raise Exception(err_msg)
+        prints_manager.add_print_job(err_msg, print_color, thread_index, LOG_COLORS.GREEN)
+        prints_manager.execute_thread_prints(thread_index)
+        sys.exit(1)
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager, is_private, thread_index=0):
