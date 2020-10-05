@@ -1,5 +1,5 @@
 id: Field polling test
-version: 6
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Field polling test
 starttaskid: "0"
@@ -860,5 +860,6 @@ view: |-
       }
     }
   }
+fromversion: 5.0.0
 inputs: []
 outputs: []
