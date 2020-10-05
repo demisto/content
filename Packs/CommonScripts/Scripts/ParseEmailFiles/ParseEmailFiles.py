@@ -193,8 +193,7 @@ class DataModel(object):
         if data_value:
             try:
                 res = chardet.detect(data_value)
-                enc = res[
-                          'encoding'] or 'ascii'  # in rare cases chardet fails to detect and
+                enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and
                 # return None as encoding
                 data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
             except UnicodeDecodeError:
@@ -3738,11 +3737,7 @@ def main():
             output = create_email_output(email_data, attached_emails)
 
         elif ('ascii text' in file_type_lower or 'unicode text' in file_type_lower
-              or (
-                      'data' == file_type_lower.strip() and file_name and file_name.lower(
-
-              ).strip().endswith(
-                  '.eml'))):
+              or ('data' == file_type_lower.strip() and file_name and file_name.lower().strip().endswith('.eml'))):
             try:
                 # Try to open the email as-is
                 with open(file_path, 'rb') as f:
