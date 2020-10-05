@@ -10,6 +10,10 @@ from CommonServerUserPython import *
 
 
 def get_investigations(raw_output, investigations):
+    # in case getDBStatistics fails to fetch information it will return a message like so:
+    # `Failed getting DB stats with filter [102020], minBytes [1000000]` - in this case there are no incidents to report
+    if isinstance(raw_output, str):
+        return
     for db in raw_output:
         buckets = db.get('buckets')
         for entry in buckets.keys():

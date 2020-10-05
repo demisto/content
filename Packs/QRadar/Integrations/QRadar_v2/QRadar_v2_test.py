@@ -391,3 +391,74 @@ def test_enrich_single_offense_res_with_source_and_destination_address__with_enr
     assert offense['source_address_ids'] == [src_adrs[254]]
     assert offense['local_destination_address_ids'] == [dst_adrs[4]]
     assert expected_assets == actual
+
+
+def test_get_mapping_fields(mocker):
+    """Check keys available in the mapping
+
+    Given:
+    - One custom field
+
+    When:
+    - Calling get-mapping-fields from the UI
+
+    Then:
+    - Validate main keys are in
+    - Validate custom field came back as intended
+    """
+    from QRadar_v2 import get_mapping_fields
+    custom_fields = [{'name': 'bloop', 'property_type': 'string'}]
+    mocker.patch.object(QRadarClient, 'get_custom_fields', return_value=custom_fields)
+    client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
+    response = get_mapping_fields(client)
+    assert response['Offense']
+    assert response['Events: Builtin Fields']
+    assert response['Assets']
+    assert response['Events: Custom Fields']['events']['bloop'] == 'string'
+
+
+class TestGetCustomProperties:
+    error = 'Can\'t send the `filter` argument with `field_name` or `like_name`'
+    client = QRadarClient("https://example.com", {}, {"identifier": "*", "password": "*"})
+
+    def test_filter_with_field_name(self):
+        from QRadar_v2 import get_custom_properties_command
+        with pytest.raises(DemistoException, match=self.error):
+            get_custom_properties_command(self.client, filter='name="hatul"', field_name='b,c')
+
+    def test_filter_with_like_name(self):
+        from QRadar_v2 import get_custom_properties_command
+        with pytest.raises(DemistoException, match=self.error):
+            get_custom_properties_command(self.client, filter='name="hatul"', like_name='b,c')
+
+    def test_filter_with_like_name_and_name_field(self):
+        from QRadar_v2 import get_custom_properties_command
+        with pytest.raises(DemistoException, match=self.error):
+            get_custom_properties_command(self.client, filter='name="hatul"', field_name='a,g', like_name='b,c')
+
+    def test_filter_only(self, requests_mock):
+        from QRadar_v2 import get_custom_properties_command
+        requests_mock.get(
+            'https://example.com/api/config/event_sources/custom_properties/regex_properties?filter=name%3D%22trol%22',
+            json=[{'name': 'bloop'}]
+        )
+        resp = get_custom_properties_command(self.client, filter='name="trol"')
+        assert resp['EntryContext']['QRadar.Properties'][0]['name'] == 'bloop'
+
+    def test_name_field_only(self, requests_mock):
+        from QRadar_v2 import get_custom_properties_command
+        requests_mock.get(
+            'https://example.com/api/config/event_sources/custom_properties/regex_properties?filter=name%3D+%22trol%22',
+            json=[{'name': 'bloop'}]
+        )
+        resp = get_custom_properties_command(self.client, field_name='trol')
+        assert resp['EntryContext']['QRadar.Properties'][0]['name'] == 'bloop'
+
+    def test_like_name_only(self, requests_mock):
+        from QRadar_v2 import get_custom_properties_command
+        requests_mock.get(
+            'https://example.com/api/config/event_sources/custom_properties/regex_properties?filter=name+ILIKE+%22%25trol%25%22',
+            json=[{'name': 'bloop'}]
+        )
+        resp = get_custom_properties_command(self.client, like_name='trol')
+        assert resp['EntryContext']['QRadar.Properties'][0]['name'] == 'bloop'
