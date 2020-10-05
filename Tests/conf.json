@@ -35,6 +35,10 @@
             ]
         },
         {
+            "integrations": "OpenCTI Feed",
+            "playbookID": "OpenCTI Feed Test"
+        },
+        {
             "integrations": "AWS - Security Hub",
             "playbookID": "AWS-securityhub Test"
         },
