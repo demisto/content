@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - display: API Key
-  name: apikey
+  name: token
   required: true
   type: 4
 - display: Trust any certificate (not secure)
@@ -20,6 +20,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: project name
+  hidden: false
+  name: project_name
+  required: true
+  type: 0
 description: Rundeck is runbook automation for incident management, business continuity,
   and self-service operations.
 display: Rundeck

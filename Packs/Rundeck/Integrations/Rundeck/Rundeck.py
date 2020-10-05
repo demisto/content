@@ -15,9 +15,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INCIDENTS_TO_FETCH = 50
-HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
+VERSION = 18
 
 ''' CLIENT CLASS '''
 
@@ -31,198 +29,166 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this HelloWorld implementation, no special attributes defined
     """
+    def __init__(self, base_url, project_name, params, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+        self.project_name = project_name
+        self.params = params
+        super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
 
-    def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
-        """Gets the IP reputation using the '/ip' API endpoint
-
-        :type ip: ``str``
-        :param ip: IP address to get the reputation for
-
-        :return: dict containing the IP reputation as returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
-
+    def get_project_list(self):
         return self._http_request(
             method='GET',
-            url_suffix='/ip',
-            params={
-                'ip': ip
-            }
+            url_suffix=f'/projects',
+            params=self.params
         )
 
+    def get_webhooks_list(self):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/project/{self.project_name}/webhooks',
+            params=self.params
+        )
 
-    def search_alerts(self, alert_status: Optional[str], severity: Optional[str],
-                      alert_type: Optional[str], max_results: Optional[int],
-                      start_time: Optional[int]) -> List[Dict[str, Any]]:
-        """Searches for HelloWorld alerts using the '/get_alerts' API endpoint
-
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
-
-        :type alert_status: ``Optional[str]``
-        :param alert_status: status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'
-
-        :type severity: ``Optional[str]``
-        :param severity:
-            severity of the alert to search for. Comma-separated values.
-            Options are: "Low", "Medium", "High", "Critical"
-
-        :type alert_type: ``Optional[str]``
-        :param alert_type: type of alerts to search for. There is no list of predefined types
-
-        :type max_results: ``Optional[int]``
-        :param max_results: maximum number of results to return
-
-        :type start_time: ``Optional[int]``
-        :param start_time: start timestamp (epoch in seconds) for the alert search
-
-        :return: list containing the found HelloWorld alerts as dicts
-        :rtype: ``List[Dict[str, Any]]``
+    def get_jobs_list(self, id_list: list, group_path: str, job_filter: str, job_exec_filter: str, group_path_exact: str,
+                      scheduled_filter: str, server_node_uuid_filter: str):
         """
-
+        This function returns a list of all existing projects.
+        :param id_list: list of Job IDs to include
+        :param group_path: include all jobs within that group path. if not specified, default is: "*".
+        :param job_filter: specify a filter for a job Name, apply to any job name that contains this value
+        :param job_exec_filter: specify an exact job name to match
+        :param group_path_exact: specify an exact group path to match. if not specified, default is: "*".
+        :param scheduled_filter: return only scheduled or only not scheduled jobs
+        :param server_node_uuid_filter: return all jobs related to a selected server UUID. can either be "true" or "false".
+        :return: api response.
+        """
         request_params: Dict[str, Any] = {}
 
-        if alert_status:
-            request_params['alert_status'] = alert_status
+        if id_list:
+            request_params['idlist'] = ','.join(id_list)
+        if group_path:
+            request_params['groupPath'] = group_path
+        if job_filter:
+            request_params['jobFilter'] = job_filter
+        if job_exec_filter:
+            request_params['jobExactFilter'] = job_exec_filter
+        if group_path_exact:
+            request_params['groupPathExact'] = group_path_exact
+        if scheduled_filter:
+            request_params['scheduledFilter'] = scheduled_filter
+        if server_node_uuid_filter:
+            request_params['serverNodeUUIDFilter'] = server_node_uuid_filter
 
-        if alert_type:
-            request_params['alert_type'] = alert_type
-
-        if severity:
-            request_params['severity'] = severity
-
-        if max_results:
-            request_params['max_results'] = max_results
-
-        if start_time:
-            request_params['start_time'] = start_time
+        request_params.update(self.params)
 
         return self._http_request(
             method='GET',
-            url_suffix='/get_alerts',
+            url_suffix=f'/project/{self.project_name}/jobs',
             params=request_params
         )
-
-
-    def update_alert_status(self, alert_id: str, alert_status: str) -> Dict[str, Any]:
-        """Changes the status of a specific HelloWorld alert
-
-        :type alert_id: ``str``
-        :param alert_id: id of the alert to return
-
-        :type alert_status: ``str``
-        :param alert_status: new alert status. Options are: 'ACTIVE' or 'CLOSED'
-
-        :return: dict containing the alert as returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/change_alert_status',
-            params={
-                'alert_id': alert_id,
-                'alert_status': alert_status
-            }
-        )
-
-    def scan_start(self, hostname: str) -> Dict[str, Any]:
-        """Starts a HelloWorld scan on a specific hostname
-
-        :type hostname: ``str``
-        :param hostname: hostname of the machine to scan
-
-        :return: dict containing the scan status as returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/start_scan',
-            params={
-                'hostname': hostname
-            }
-        )
-
-    def scan_status(self, scan_id: str) -> Dict[str, Any]:
-        """Gets the status of a HelloWorld scan
-
-        :type scan_id: ``str``
-        :param scan_id: ID of the scan to retrieve status for
-
-        :return: dict containing the scan status as returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/check_scan',
-            params={
-                'scan_id': scan_id
-            }
-        )
-
-    def scan_results(self, scan_id: str) -> Dict[str, Any]:
-        """Gets the results of a HelloWorld scan
-
-        :type scan_id: ``str``
-        :param scan_id: ID of the scan to retrieve results for
-
-        :return: dict containing the scan results as returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/get_scan_results',
-            params={
-                'scan_id': scan_id
-            }
-        )
-
-    def say_hello(self, name: str) -> str:
-        """Returns 'Hello {name}'
-
-        :type name: ``str``
-        :param name: name to append to the 'Hello' string
-
-        :return: string containing 'Hello {name}'
-        :rtype: ``str``
-        """
-
-        return f'Hello {name}'
 
 
 ''' HELPER FUNCTIONS '''
 
 
-
-
-
-
-
-
+def filter_results(results: list, fields_to_remove: list) -> List:
+    new_results = []
+    for record in results:
+        new_record = {}
+        for key, value in record.items():
+            if key not in fields_to_remove:
+                new_record[key] = value
+        new_results.append(new_record)
+    return new_results
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, first_fetch_time: int) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
-
-    :type name: ``str``
-    :param name: name to append to the 'Hello' string
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+def project_list_command(client: Client):
     """
+    This function returns a list of all existing projects.
+    :param client: Demisto client
+    :return: CommandResults object
+    """
+    result: list = client.get_project_list()
+    if not isinstance(result, list):
+        raise DemistoException(f"Got unexpected output from api: {result}")
 
+    filtered_results = filter_results(result, ['url'])
+    query_entries: list = createContext(
+        filtered_results, keyTransform=underscoreToCamelCase
+    )
+    headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
+
+    readable_output = tableToMarkdown('Projects List:', filtered_results, headers=headers, headerTransform=pascalToSpace)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Rundeck.Projects',
+        outputs=query_entries,
+        outputs_key_field='name'
+    )
+
+
+def jobs_list_command(client: Client, args: dict):
+    """
+    This function returns a list of all existing jobs.
+    :param client: Demisto client
+    :param args: command's arguments
+    :return: CommandResults object
+    """
+    id_list: list = argToList(args.get('id_list', []))
+    group_path: str = args.get('group_path', '')
+    job_filter: str = args.get('job_filter', '')
+    job_exec_filter: str = args.get('job_exec_filter', '')
+    group_path_exact: str = args.get('group_path_exact', '')
+    scheduled_filter: str = args.get('scheduled_filter', '')
+    server_node_uuid_filter: str = args.get('server_node_uuid_filter', '')
+
+    result = client.get_jobs_list(id_list, group_path, job_filter, job_exec_filter, group_path_exact, scheduled_filter,
+                                  server_node_uuid_filter)
+    if not isinstance(result, list):
+        raise DemistoException(f"Got unexpected output from api: {result}")
+
+    filtered_results = filter_results(result, ['href', 'permalink'])
+    query_entries: list = createContext(
+        filtered_results, keyTransform=underscoreToCamelCase
+    )
+    headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
+
+    readable_output = tableToMarkdown('Jobs List:', filtered_results, headers=headers, headerTransform=pascalToSpace)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Rundeck.Jobs',
+        outputs=query_entries,
+        outputs_key_field='id'
+    )
+
+
+def webhooks_list_command(client: Client):
+    """
+    This function returns a list of all existing webhooks.
+    :param client: Demisto client
+    :return: CommandResults object
+    """
+    result: list = client.get_webhooks_list()
+    if not isinstance(result, list):
+        raise DemistoException(f"Got unexpected output from api: {result}")
+
+    query_entries: list = createContext(
+        result, keyTransform=underscoreToCamelCase
+    )
+    headers = [key.replace("_", " ") for key in [*result[0].keys()]]
+
+    readable_output = tableToMarkdown('Webhooks List:', result, headers=headers, headerTransform=pascalToSpace)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Rundeck.Webhooks',
+        outputs=query_entries,
+        outputs_key_field='id'
+    )
+
+
+def test_module(client: Client) -> str:
     # INTEGRATION DEVELOPER TIP
     # Client class should raise the exceptions, but if the test fails
     # the exception text is printed to the Cortex XSOAR UI.
@@ -232,14 +198,15 @@ def test_module(client: Client, first_fetch_time: int) -> str:
     # invalid').
     # Cortex XSOAR will print everything you return different than 'ok' as
     # an error
-    try:
-        client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None, severity=None)
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return 'ok'
+    # try:
+    #     client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None, severity=None)
+    # except DemistoException as e:
+    #     if 'Forbidden' in str(e):
+    #         return 'Authorization Error: make sure API Key is correctly set'
+    #     else:
+    #         raise e
+    # return 'ok'
+    pass
 
 
 ''' MAIN FUNCTION '''
@@ -251,27 +218,18 @@ def main() -> None:
     :return:
     :rtype:
     """
-
-    api_key = demisto.params().get('apikey')
+    params: dict = demisto.params()
+    token: str = params.get('token')
+    project_name: str = params.get('project_name')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_url: str = urljoin(demisto.params()['url'], f'/api/{VERSION}')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
 
-    # How much time before the first fetch to retrieve incidents
-    first_fetch_time = arg_to_timestamp(
-        arg=demisto.params().get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
-    )
-    # Using assert as a type guard (since first_fetch_time is always an int when required=True)
-    assert isinstance(first_fetch_time, int)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
 
@@ -281,22 +239,34 @@ def main() -> None:
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
+    args: Dict = demisto.args()
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         headers = {
-            'Authorization': f'Bearer {api_key}'
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
         }
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+            params={'authtoken': f'{token}'},
+            project_name=project_name)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, first_fetch_time)
+            result = test_module(client)
             return_results(result)
-
+        elif demisto.command() == 'rundeck-projects-list':
+            result = project_list_command(client)
+            return_results(result)
+        elif demisto.command() == 'rundeck-jobs-list':
+            result = jobs_list_command(client, args)
+            return_results(result)
+        elif demisto.command() == 'rundeck-webhooks-list':
+            result = webhooks_list_command(client)
+            return_results(result)
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
