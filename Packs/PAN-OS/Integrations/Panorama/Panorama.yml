@@ -2477,6 +2477,18 @@ script:
       name: password
       required: false
       secret: false
+    - default: false
+      description: The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation.
+      isArray: false
+      name: deviceName
+      required: false
+      secret: false
+    - default: false
+      description: The Session ID of the PCAP. For further information, see the Panorama XML API Documentation.
+      isArray: false
+      name: sessionID
+      required: false
+      secret: false
     deprecated: false
     description: Returns information for a Panorama PCAP file. The recommended maximum
       file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall
