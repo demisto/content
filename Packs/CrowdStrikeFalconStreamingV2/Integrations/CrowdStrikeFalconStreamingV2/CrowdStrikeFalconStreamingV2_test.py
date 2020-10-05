@@ -124,7 +124,7 @@ def test_get_sample_events_integration_param(mocker):
      - Running get sample events command.
 
     Then:
-     - Ensure the command runs successfully
+     - Ensure the command runs successfully.
      - Verify output message.
     """
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
