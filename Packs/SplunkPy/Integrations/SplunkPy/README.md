@@ -37,6 +37,7 @@ This integration was integrated and tested with Splunk v7.2.
 | hec_url | The HEC URL. For example, https://localhost:8088. | False |
 | fetch_time | The first timestamp to fetch in \<number\>\<time unit\> format. For example, "12 hours", "7 days", "3 months", "1 year". | False |
 | use_requests_handler | Use Python requests handler  | False |
+| type_field | Used only for Mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for Notable Events, however you may choose any custom field that suits the need. | False |
 
 The (!) `Earliest time to fetch` and `Latest time to fetch` are search parameters options. The search uses `All Time` as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as `earliest_time`, `index_earliest`, or `latest_time`.
 
@@ -198,7 +199,7 @@ There is no context output for this command.
 
 ### Update notable events
 ***
-Update an existing notable event in Splunk ES
+Update an existing notable event in Splunk ES.
 
 ##### Base Command
 
@@ -301,7 +302,7 @@ Sends events to an HTTP event collector using the Splunk platform JSON event pro
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | event | The event payload key-value. An example string: "event": "Access log test message.". | Required |
-| fields | The fields for indexing that do not occur in the event payload itself. This accepts multiple comma separated fields. | Optional |
+| fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma separated, fields. | Optional |
 | index | The index name. | Optional |
 | host | The hostname. | Optional |
 | source_type | The user-defined event source type. | Optional |
@@ -626,7 +627,7 @@ Deletes all data within the specified KV store collection or collections.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_name | The name of the Splunk application that contains the KV store collection. in for example "search" | Required | 
+| app_name | The name of the Splunk application that contains the KV store collection. For example, "search"." | Required | 
 | kv_store_collection_name | A comma-separated list of KV store collections. | Required | 
 
 
