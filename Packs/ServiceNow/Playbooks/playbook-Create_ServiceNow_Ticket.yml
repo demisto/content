@@ -4,7 +4,7 @@ name: Create ServiceNow Ticket
 description: "Create ServiceNow Ticket allows you to open new tickets as a task from\
   \ a parent playbook.\nWhen creating the ticket, you can decide to update based on on the ticket's state, which\
   \ will wait for the ticket to resolve or close with StatePolling. \nAlternatively, you can\
-  \ select to mirror the ServiceNow ticket and incident fields. 
+  \ select to mirror the ServiceNow ticket and incident fields.
   \ To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options:\
   \ \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none."
 starttaskid: "0"
@@ -453,8 +453,8 @@ inputs:
   value:
     simple: Both
   required: false
-  description: "Set the mirror direction, should be one of the following: \n1. Out\n\
-    2. Both"
+  description: "Set the mirror direction, should be one of the following: \n1. in\n2.Out\n3.
+    Both"
   playbookInputQuery:
 - key: MirrorCommentTags
   value:

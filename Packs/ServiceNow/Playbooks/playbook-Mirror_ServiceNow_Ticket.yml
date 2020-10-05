@@ -4,7 +4,7 @@ name: Mirror ServiceNow Ticket
 description: |-
   Mirror ServiceNow Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with ServiceOne.
   It enables you to manage ServiceNow tickets in Cortex xSOAR while data is continuously synced between ServiceNow and Cortex xSOAR, including ServiceNow schema, fields, comments, work notes, and attachments.
-  
+
   To enable OOTB mirroring, use the ServiceNow Create ticket  - common mappers for incoming and outgoing mirroring.
 
   FieldPolling - You can the FieldPolling value to true if you only want to be informed when the ticket is resolved or closed. If FieldPolling is set to true, the FieldPolling Playbook will poll for the state(ServiceNow State field) of the ServiceNow ticket until it marks as either resolved or closed.
@@ -506,8 +506,8 @@ inputs:
   value:
     simple: Both
   required: false
-  description: "Set the mirror direction, should be one of the following: \n1. Out\n\
-    2. Both"
+  description: "Set the mirror direction, should be one of the following: \n1. in\n2.Out\n3.
+    Both"
   playbookInputQuery:
 - key: MirrorCommentTags
   value:
