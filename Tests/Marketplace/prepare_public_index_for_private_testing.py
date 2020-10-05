@@ -186,7 +186,8 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
     if not os.path.exists(dummy_index_json_path):
         print_error(f'dummy_index_json_path {dummy_index_json_path} does not exist')
 
-    with open(dummy_index_json_path) as index_json:
+    with open(dummy_index_json_path) as index_file:
+        index_json = json.load(index_file)
         print(f'index_json is: {index_json}')
         packs_from_dummy_index = index_json.get('packs', [])
         print(f'packs_from_dummy_index is: {packs_from_dummy_index}')
@@ -203,8 +204,8 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
     shutil.rmtree(extracted_dummy_index_path)
     return packs_from_dummy_index
 
-def main():
 
+def main():
     upload_config = option_handler()
     service_account = upload_config.service_account
     build_number = upload_config.ci_build_number
