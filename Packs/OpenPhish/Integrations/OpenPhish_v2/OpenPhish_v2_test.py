@@ -97,7 +97,7 @@ def test_reload_command(mocker):
         use_proxy=False,
         fetch_interval_hours=1)
     status = reload_command(client)
-    assert status.readable_output == "updated successfully"
+    assert status.readable_output == "Database was updated successfully to the integration context."
 
 
 STANDARD_NOT_LOADED_MSG = 'OpenPhish Database Status\nDatabase not loaded.\n'
