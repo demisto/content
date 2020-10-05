@@ -45,7 +45,7 @@
     "start_date": "2017-02-14 09:51:46",
     "end_date": "2017-02-14 09:51:46",
     "message_id": "1234",
-    "icid": "1234",
+    "cisco_id": "1234",
     "appliance_serial_number": "1234"
   },
 
@@ -506,7 +506,7 @@
                                         }
   ],
 
-  "messages_human_readable": "### CiscoEmailSecurity Messages\n|message_id|cisco_message_id|sender|sender_ip|subject|serial_number|timestamp|\n|---|---|---|---|---|---|---|\n| 110 | 110 | confikr.qa | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:33:19 (GMT) |\n| 104 | 103 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n| 103 | 105 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n| 102 | 107 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n| 101 | 106 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n| 100 | 100 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n| 99 | 104 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n| 98 | 98 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n",
+  "messages_human_readable": "### CiscoEmailSecurity Messages\n|message_id|cisco_id|sender|sender_ip|subject|serial_number|timestamp|\n|---|---|---|---|---|---|---|\n| 110 | 110 | confikr.qa | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:33:19 (GMT) |\n| 104 | 103 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n| 103 | 105 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n| 102 | 107 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n| 101 | 106 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n| 100 | 100 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n| 99 | 104 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n| 98 | 98 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 | 15 Oct 2018 08:24:39 (GMT) |\n",
 
   "get_message_details_response_data": {
                                           "data": {

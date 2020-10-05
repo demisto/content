@@ -27,7 +27,7 @@ configuration:
   type: 0
 description: Cisco Email Security is an email security gateway . It detects and blocks
   a wide variety of email-borne threats, such as malware, spam and phishing.
-display: Cisco Email Security
+display: Cisco Email Security (beta)
 name: CiscoEmailSecurity
 script:
   commands:
@@ -1216,6 +1216,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
 beta: true
 tests:
 - No tests
