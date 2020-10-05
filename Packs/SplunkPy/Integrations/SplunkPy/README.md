@@ -69,12 +69,12 @@ Use the following naming convention: (demisto_fields_{type}).
 
 ### Mapping fetched incidents using Select Schema
 This integration supports the `Select Schema` feature of XSOAR 6.0 by providing the `get-mapping-fields` command. 
-When creating a new field Mapping for fetched incidents, the `Pull Instances` option retrieves current alerts which can be clicked to visually picking fields for the mapping.
-The `Select Schema` option retrieves possible objects, even if they are not the next objects to be fetched, or have not triggered in the past 24 hours. 
-This enables us to map fields for an incident without having to generate a new alert or incident just for the sake of mapping.
+When creating a new field Mapping for fetched incidents, the `Pull Instances` option retrieves current alerts which can be clicked to visually map fields.
+The `Select Schema` option retrieves possible objects, even if they are not the next objects to be fetched, or have not been triggered in the past 24 hours. 
+This enables you to map fields for an incident without having to generate a new alert or incident just for the sake of mapping.
 The `get-mapping-fields` command can be executed in the Playground to test and review the list of sample objects that are returned under the current configuration.
 
-In order to use this feature, you must set several integration instance parameters:
+To use this feature, you must set several integration instance parameters:
  - `Fetch notable events ES query` - The query used for fetching new incidents. `Select Schema` will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
  - `Event Type Field` - The name of the field that contains the type of the event or alert. The default value is `source` which for `Notable Events` will contains the rule name. However you may choose any custom field that suits this purpose.
  - `First fetch timestamp` - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
