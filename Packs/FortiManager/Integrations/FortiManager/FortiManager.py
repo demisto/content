@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 
 import urllib3
 import traceback
+from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -19,14 +20,14 @@ GLOBAL_VAR = 'global'
 
 class Client(BaseClient):
 
-    def __init__(self, url, credentials, verify, proxy, adom):
+    def __init__(self, url: str, credentials: Dict, verify: bool, proxy: bool, adom: str):
         super().__init__(base_url=url.rstrip('/'), verify=verify, proxy=proxy, ok_codes=(200, 204))
         self.username = credentials["identifier"]
         self.password = credentials["password"]
         self.session_token = self.get_session_token()
         self.adom = adom
 
-    def get_session_token(self, get_new_token=False):
+    def get_session_token(self, get_new_token: bool = False):
         if get_new_token:
             response = self.fortimanager_http_request('exec', "/sys/login/user",
                                                       json_data={'user': self.username, 'passwd': self.password},
@@ -39,9 +40,9 @@ class Client(BaseClient):
             current_token = demisto.getIntegrationContext().get('session')
             return current_token if current_token else self.get_session_token(get_new_token=True)
 
-    def fortimanager_http_request(self, method, url, data_in_list=None, json_data=None, range_info=None,
-                                  other_params=None, add_session_token=True):
-        body = {
+    def fortimanager_http_request(self, method: str, url: str, data_in_list: Dict = None, json_data: Dict = None,
+                                  range_info: List = None, other_params: Dict = None, add_session_token: bool = True):
+        body: Dict = {
             "id": 1,
             "method": method,
             "params": [{
@@ -72,7 +73,8 @@ class Client(BaseClient):
         )
         return response
 
-    def fortimanager_api_call(self, method, url, data_in_list=None, json_data=None, range_info=None, other_params=None):
+    def fortimanager_api_call(self, method: str, url: str, data_in_list: Dict = None, json_data: Dict = None,
+                              range_info: List = None, other_params: Dict = None):
         response = self.fortimanager_http_request(method, url, data_in_list=data_in_list, range_info=range_info,
                                                   other_params=other_params, json_data=json_data)
 
@@ -88,7 +90,7 @@ class Client(BaseClient):
         return response.get('result')[0].get('data')
 
 
-def get_global_or_adom(client, args):
+def get_global_or_adom(client: Client, args: Dict):
     adom = args.get('adom') if args.get('adom') else client.adom
     if adom == GLOBAL_VAR:
         return GLOBAL_VAR
@@ -96,18 +98,18 @@ def get_global_or_adom(client, args):
         return f"adom/{adom}"
 
 
-def setup_request_data(args, excluded_args):
+def setup_request_data(args: Dict, excluded_args: List):
     return {key.replace('_', '-'): args.get(key) for key in args if key not in excluded_args}
 
 
-def get_specific_entity(entity_name):
+def get_specific_entity(entity_name: str):
     if entity_name:
         return f"/{entity_name}"
     else:
         return ""
 
 
-def get_range_for_list_command(args):
+def get_range_for_list_command(args: Dict):
     first_index = args.get('from')
     last_index = args.get('to')
     list_range = []
