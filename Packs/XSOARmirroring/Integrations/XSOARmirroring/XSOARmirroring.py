@@ -123,7 +123,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def arg_to_timestamp(arg, arg_name, required=False):
+def arg_to_timestamp(arg: str, arg_name: str, required=False):
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -247,8 +247,8 @@ def test_module(client: Client, first_fetch_time: int) -> str:
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int], query: Optional[str], mirror_direction: Optional[str]
-                    ) -> Tuple[Dict[str, int], List[dict]]:
+                    first_fetch_time: Optional[int], query: Optional[str], mirror_direction: Optional[str],
+                    mirror_tag: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -274,6 +274,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     :type mirror_direction: ``Optional[str]``
     :param mirror_direction:
         Mirror direction for the fetched incidents
+
+    :type mirror_tag: ``Optional[str]``
+    :param mirror_tag:
+        The tag that you will mirror out of the incident.
 
     :return:
         A tuple containing two elements:
@@ -308,9 +312,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     )
 
     for incident in incidents:
-        incident['mirror_direction']: Optional[str] = MIRROR_DIRECTION[mirror_direction]
+        incident['mirror_direction']: Optional[None, str] = MIRROR_DIRECTION[mirror_direction]
         incident['mirror_instance'] = demisto.integrationInstance()
-        incident['mirror_tag'] = demisto.params().get('mirror_tag')
+        incident['mirror_tag'] = mirror_tag
 
         incident_result = {
             'name': incident.get('name', 'XSOAR Mirror'),
@@ -479,11 +483,10 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
 
         for field in incident_fields:
             if field.get('group') == 0 and field.get('cliName') is not None and \
-                    (field.get('associatedToAll') or incident_type_name in
+                    (field.get('associatedToAll') or incident_type_name in  # type: ignore
                      field.get('associatedTypes')):  # type: ignore
                 incident_type_scheme.add_field(name=field.get('cliName'),
-                                                                description=f"{field.get('name')} - "
-                                                                            f"{field.get('type')}")
+                                               description=f"{field.get('name')} - {field.get('type')}")
 
         all_mappings.add_scheme_type(incident_type_scheme)
 
@@ -601,7 +604,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
     except Exception as e:
         demisto.debug(f"Error in XSOAR incoming mirror for incident {args['id']} \nError message: {str(e)}")
         if incident and isinstance(incident, dict):
-            incident['in_mirror_error'] = str(e)
+            incident['in_mirror_error'] = str(e)  # type: ignore
 
         else:
             incident = {
@@ -615,7 +618,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         )
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_arg: Optional[str]) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
     :type client: ``Client``
@@ -628,6 +631,10 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         ``args['entries']`` the entries to send to the remote system
         ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
         ``args['remoteId']`` the remote incident id
+
+    :type mirror_tag: ``Optional[str]``
+    :param mirror_tag:
+        The tag that you will mirror out of the incident.
 
     :return:
         ``str`` containing the remote incident id - really important if the incident is newly created remotely
@@ -669,7 +676,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     if parsed_args.entries:
         for entry in parsed_args.entries:
-            mirror_tag = demisto.params().get('mirror_tag')
             demisto.info(f"this is the tag {entry.get('tags', [])}")
             if mirror_tag and mirror_tag in entry.get('tags', []):
                 demisto.debug(f'Sending entry {entry.get("id")}')
@@ -730,7 +736,8 @@ def main() -> None:
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
                 query=query,
-                mirror_direction=demisto.params().get('mirror_direction')
+                mirror_direction=demisto.params().get('mirror_direction'),
+                mirror_tag=demisto.params().get('mirror_tag')
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

@@ -60,7 +60,7 @@ def test_mirroring(mocker):
     client = generate_dummy_client()
     mocker.patch.object(client, 'get_incident_fields', return_value=INCIDENT_FIELDS)
     mocker.patch.object(client, 'get_incident_types', return_value=INCIDENT_TYPES)
-    response = get_mapping_fields_command(client)
+    response = get_mapping_fields_command(client).extract_mapping()
     assert len(response) == 3
     assert 'Default Mapping' in response
     assert response['Default Mapping'] == {
