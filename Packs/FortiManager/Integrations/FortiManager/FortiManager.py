@@ -129,7 +129,7 @@ def list_adom_devices_command(client, args):
     devices_data = client.fortimanager_api_call("get", f"/dvmdb/{get_global_or_adom(client, args)}/device"
                                                        f"{get_specific_entity(args.get('device'))}")
 
-    headers = ['name', 'ip', 'hostname', 'os_type', 'adm_usr', 'app_ver', 'vdom']
+    headers = ['name', 'ip', 'hostname', 'os_type', 'adm_usr', 'app_ver', 'vdom', 'ha_mode']
 
     return CommandResults(
         outputs_prefix='FortiManager.Device',
@@ -145,12 +145,14 @@ def list_adom_devices_groups_command(client, args):
     device_groups_data = client.fortimanager_api_call("get", f"/dvmdb/{get_global_or_adom(client, args)}/group"
                                                              f"{get_specific_entity(args.get('group'))}")
 
+    headers = ['name', 'type', 'os_type']
+
     return CommandResults(
         outputs_prefix='FortiManager.DeviceGroup',
         outputs_key_field='name',
         outputs=device_groups_data,
         readable_output=tableToMarkdown(f"ADOM {get_global_or_adom(client, args)} Device Groups", device_groups_data,
-                                        removeNull=True, headerTransform=string_to_table_header),
+                                        removeNull=True, headerTransform=string_to_table_header, headers=headers),
         raw_response=device_groups_data,
     )
 
@@ -180,12 +182,14 @@ def list_firewall_address_groups_command(client, args):
                                                                   f"/obj/firewall/addrgrp{address_group}",
                                                            range_info=get_range_for_list_command(args))
 
+    headers = ['name', 'member', 'tagging', 'allow-routing']
+
     return CommandResults(
         outputs_prefix='FortiManager.AddressGroup',
         outputs_key_field='name',
         outputs=firewall_address_groups,
         readable_output=tableToMarkdown("Firewall IPv4 Address Groups", firewall_address_groups,
-                                        removeNull=True, headerTransform=string_to_table_header),
+                                        removeNull=True, headerTransform=string_to_table_header, headers=headers),
         raw_response=firewall_address_groups,
     )
 
@@ -196,13 +200,14 @@ def list_service_categories_command(client, args):
                                                              f"obj/firewall/service/category"
                                                              f"{get_specific_entity(args.get('service_category'))}",
                                                       range_info=get_range_for_list_command(args))
+    headers = ['name', 'comment']
 
     return CommandResults(
         outputs_prefix='FortiManager.ServiceCategory',
         outputs_key_field='name',
         outputs=service_categories,
         readable_output=tableToMarkdown("Service Categories", service_categories, removeNull=True,
-                                        headerTransform=string_to_table_header),
+                                        headerTransform=string_to_table_header, headers=headers),
         raw_response=service_categories,
     )
 
@@ -214,12 +219,14 @@ def list_service_groups_command(client, args):
                                                          f"{get_specific_entity(args.get('service_group'))}",
                                                   range_info=get_range_for_list_command(args))
 
+    headers = ['name', 'member', 'proxy', 'comment']
+
     return CommandResults(
         outputs_prefix='FortiManager.ServiceGroup',
         outputs_key_field='name',
         outputs=service_groups,
         readable_output=tableToMarkdown("Service Groups", service_groups, removeNull=True,
-                                        headerTransform=string_to_table_header),
+                                        headerTransform=string_to_table_header, headers=headers),
         raw_response=service_groups,
     )
 
@@ -230,13 +237,13 @@ def list_custom_service_command(client, args):
                                                           f"/obj/firewall/service/custom"
                                                           f"{get_specific_entity(args.get('custom_service'))}",
                                                    range_info=get_range_for_list_command(args))
-
+    headers = ['name', 'category', 'protocol', 'iprange', 'fqdn']
     return CommandResults(
         outputs_prefix='FortiManager.CustomService',
         outputs_key_field='name',
         outputs=custom_services,
         readable_output=tableToMarkdown("Custom Services", custom_services, removeNull=True,
-                                        headerTransform=string_to_table_header),
+                                        headerTransform=string_to_table_header, headers=headers),
         raw_response=custom_services,
     )
 
