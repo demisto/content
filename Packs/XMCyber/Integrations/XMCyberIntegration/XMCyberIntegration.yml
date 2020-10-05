@@ -5,6 +5,7 @@ name: XMCyber
 display: XM Cyber
 category: Data Enrichment & Threat Intelligence
 description: Simulates attack vectors to critical assets
+fromversion: 5.0.0
 tests:
 - No tests
 configuration:
@@ -2256,7 +2257,7 @@ script:
     - contextPath: XMCyber.AttackPath.pathComplexity
       description: ''
       type: Number
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.5.11789
   isfetch: false
   longRunning: false
   longRunningPort: false
