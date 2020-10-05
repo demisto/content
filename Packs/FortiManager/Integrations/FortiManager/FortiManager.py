@@ -237,7 +237,9 @@ def list_custom_service_command(client, args):
                                                           f"/obj/firewall/service/custom"
                                                           f"{get_specific_entity(args.get('custom_service'))}",
                                                    range_info=get_range_for_list_command(args))
+
     headers = ['name', 'category', 'protocol', 'iprange', 'fqdn']
+
     return CommandResults(
         outputs_prefix='FortiManager.CustomService',
         outputs_key_field='name',
@@ -253,12 +255,14 @@ def list_policy_packages_command(client, args):
                                                           f"{get_specific_entity(args.get('policy_package'))}",
                                                    range_info=get_range_for_list_command(args))
 
+    headers = ['name', 'obj_ver', 'type', 'scope_member']
+
     return CommandResults(
         outputs_prefix='FortiManager.PolicyPackage',
         outputs_key_field='name',
         outputs=policy_packages,
         readable_output=tableToMarkdown("Policy Packages", policy_packages, removeNull=True,
-                                        headerTransform=string_to_table_header),
+                                        headerTransform=string_to_table_header, headers=headers),
         raw_response=policy_packages,
     )
 
@@ -269,12 +273,15 @@ def list_policies_command(client, args):
                                                    f"/pkg/{args.get('package')}/firewall/policy",
                                             range_info=get_range_for_list_command(args))
 
+    headers = ['name', 'srcintf', 'dstintf', 'srcaddr', 'dstaddr', 'service', 'users']
+
     return CommandResults(
         outputs_prefix='FortiManager.PolicyPackage.Policy',
         outputs_key_field='name',
         outputs=policies,
         readable_output=tableToMarkdown(f"ADOM {client.adom} Policy Package {args.get('package')} Policies",
-                                        policies, removeNull=True, headerTransform=string_to_table_header),
+                                        policies, removeNull=True, headerTransform=string_to_table_header,
+                                        headers=headers),
         raw_response=policies,
     )
 
@@ -465,12 +472,15 @@ def list_dynamic_interface_command(client, args):
                                                              f"/obj/dynamic/interface",
                                                       range_info=get_range_for_list_command(args))
 
+    headers = ['name']
+
     return CommandResults(
         outputs_prefix='FortiManager.DynamicInterface',
         outputs_key_field='name',
         outputs=dynamic_interfaces,
         readable_output=tableToMarkdown(f"ADOM {client.adom} Dynamic Interfaces",
-                                        dynamic_interfaces, removeNull=True, headerTransform=string_to_table_header),
+                                        dynamic_interfaces, removeNull=True, headerTransform=string_to_table_header,
+                                        headers=headers),
         raw_response=dynamic_interfaces,
     )
 
@@ -482,12 +492,15 @@ def list_dynamic_address_mapping_command(client, args):
                                                           f"{get_specific_entity(args.get('dynamic_mapping'))}",
                                                    range_info=get_range_for_list_command(args))
 
+    headers = ['name', 'type', 'subnet', 'start-ip', 'end-ip', 'fqdn', 'wildcard', 'country', 'wildcard-fqdn']
+
     return CommandResults(
         outputs_prefix='FortiManager.Address.DynamicMapping',
         outputs_key_field='obj-id',
         outputs=dynamic_mapping,
         readable_output=tableToMarkdown(f"Address {args.get('dynamic_mapping')} Dynamic Mapping",
-                                        dynamic_mapping, removeNull=True, headerTransform=string_to_table_header),
+                                        dynamic_mapping, removeNull=True, headerTransform=string_to_table_header,
+                                        headers=headers),
         raw_response=dynamic_mapping,
     )
 
