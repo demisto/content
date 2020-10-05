@@ -27,6 +27,7 @@ PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
 REPLACE_FLAG = params.get('replaceKeys', False)
 FETCH_TIME = demisto.params().get('fetch_time')
+PROXIES = handle_proxy()
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
 
@@ -558,10 +559,17 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
+    parsed_fields = None
+    if fields:
+        try:
+            parsed_fields = json.loads(fields)
+        except Exception:
+            parsed_fields = {'fields': fields}
+
     args = assign_params(
         event=event,
         host=host,
-        fields={'fields': fields} if fields else None,
+        fields=parsed_fields,
         index=index,
         sourcetype=source_type,
         source=source,
