@@ -2,14 +2,19 @@ commonfields:
   id: SplunkSearchJsonPy
   version: -1
 name: SplunkSearchJsonPy
-script: |+
+script: >
   import json
+
   rows = 30
+
   if 'rows' in demisto.args():
       rows = demisto.args()['rows']
   query = demisto.args()['query']
+
   query = query + ' | head ' + str(rows)
+
   res = demisto.executeCommand('search', {'query': query, 'using-brand': 'splunk'})
+
   if isError(res[0]):
       demisto.results(res)
   else:
@@ -42,8 +47,7 @@ type: python
 subtype: python2
 tags:
 - enhancement
-comment: Run a query through Splunk and format the results as a markdown with raw
-  data parsed as JSON
+comment: Deprecated. Run a query through Splunk and format the results as a markdown with raw data parsed as JSON
 system: true
 args:
 - name: query
@@ -58,3 +62,4 @@ dependson:
   - splunk|||search
 timeout: 0s
 deprecated: true
+fromversion: 5.0.0

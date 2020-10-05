@@ -44,8 +44,8 @@ configuration:
   name: freshness
   required: false
   type: 0
-description: Threat intelligence platform.
-display: ThreatConnect
+description: Deprecated. Threat intelligence platform.
+display: ThreatConnect (Deprecated)
 name: ThreatConnect
 script:
   commands:
@@ -74,7 +74,7 @@ script:
       name: confidenceThreshold
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Searches for an indicator of type IP address.
     execution: false
     name: ip
@@ -152,7 +152,7 @@ script:
       name: confidenceThreshold
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Searches for an indicator of type URL.
     execution: false
     name: url
@@ -230,7 +230,7 @@ script:
       name: confidenceThreshold
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Searches for an indicator of type file.
     execution: false
     name: file
@@ -298,7 +298,7 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
-  - deprecated: false
+  - deprecated: true
     description: Retrieves all owners for the current account.
     execution: false
     name: tc-owners
@@ -325,7 +325,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieves a list of all indicators.
     execution: false
     name: tc-indicators
@@ -423,7 +423,7 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
-  - deprecated: false
+  - deprecated: true
     description: Returns a list of all ThreatConnect tags.
     execution: false
     name: tc-get-tags
@@ -450,7 +450,7 @@ script:
       name: owner
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Adds a tag to an existing indicator.
     execution: false
     name: tc-tag-indicator
@@ -473,7 +473,7 @@ script:
       name: confidenceThreshold
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieves information about an indicator.
     execution: false
     name: tc-get-indicator
@@ -584,7 +584,7 @@ script:
       name: owner
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Fetches all indicators that have a tag.
     execution: false
     name: tc-get-indicators-by-tag
@@ -707,7 +707,7 @@ script:
       name: owner
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Adds a new indicator to ThreatConnect.
     execution: false
     name: tc-add-indicator
@@ -836,7 +836,7 @@ script:
       name: description
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Creates a new incident group.
     execution: false
     name: tc-create-incident
@@ -867,7 +867,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The fetched incidents filtered by owner. 
+      description: The fetched incidents filtered by owner.
       isArray: false
       name: owner
       required: false
@@ -878,7 +878,7 @@ script:
       name: incidentName
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Fetches incidents from ThreatConnect.
     execution: false
     name: tc-fetch-incidents
@@ -925,7 +925,7 @@ script:
       name: owner
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Associates an indicator with an existing incident. The indicator must exist before running this command. To add an indicator, run the tc-add-indicator command.
     execution: false
     name: tc-incident-associate-indicator
@@ -1036,7 +1036,7 @@ script:
       name: confidenceThreshold
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Searches for an indicator of type domain.
     execution: false
     name: domain
@@ -1105,7 +1105,7 @@ script:
       name: owner
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns indicators that are related to a specific incident.
     execution: false
     name: tc-get-incident-associate-indicators
@@ -1286,7 +1286,7 @@ script:
       name: threatAssessRating
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Updates the indicator in ThreatConnect.
     execution: false
     name: tc-update-indicator
@@ -1385,7 +1385,7 @@ script:
       name: tag
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Removes a tag from a specified indicator.
     execution: false
     name: tc-delete-indicator-tag
@@ -1478,7 +1478,7 @@ script:
       name: indicator
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Deletes an indicator from ThreatConnect.
     execution: false
     name: tc-delete-indicator
@@ -1519,7 +1519,7 @@ script:
       name: securityLabel
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Creates a group based on the "Campaign" type.
     execution: false
     name: tc-create-campaign
@@ -1585,7 +1585,7 @@ script:
       name: tag
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Creates a group based on the "Event" type.
     execution: false
     name: tc-create-event
@@ -1615,7 +1615,7 @@ script:
       name: name
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Creates a group based on the "Threats" type.
     execution: false
     name: tc-create-threat
@@ -1645,7 +1645,7 @@ script:
       - Threats
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Deletes a group.
     execution: false
     name: tc-delete-group
@@ -1686,7 +1686,7 @@ script:
       - threats
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Adds an attribute to a specified group.
     execution: false
     name: tc-add-group-attribute
@@ -1706,7 +1706,7 @@ script:
     - contextPath: TC.Group.ID
       description: The group ID to which the attribute was added.
       type: Number
-  - deprecated: false
+  - deprecated: true
     description: Returns a list of events.
     execution: false
     name: tc-get-events
@@ -1745,7 +1745,7 @@ script:
       - threats
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns all groups, filtered by the group type.
     execution: false
     name: tc-get-groups
@@ -1799,7 +1799,7 @@ script:
       name: security_label_name
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Adds a security label to a group.
     execution: false
     name: tc-add-group-security-label
@@ -1834,11 +1834,11 @@ script:
       name: tag_name
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Adds tags to a specified group.
     execution: false
     name: tc-add-group-tag
-  - deprecated: false
+  - deprecated: true
     description: Returns all indicator types available.
     execution: false
     name: tc-get-indicator-types
@@ -1872,7 +1872,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the indicator. For example, "indicator_type=emailAddresses" where "indicator=a@a.co.il".        
+      description: The name of the indicator. For example, "indicator_type=emailAddresses" where "indicator=a@a.co.il".
       isArray: false
       name: indicator
       required: true
@@ -1901,7 +1901,7 @@ script:
       name: group_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Associates an indicator with a group.
     execution: false
     name: tc-group-associate-indicator
@@ -1965,7 +1965,7 @@ script:
       name: entry_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Creates a document group.
     execution: false
     name: tc-create-document-group
@@ -1991,8 +1991,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of group for which to return the ID. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
+      description: The type of group for which to return the ID. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -2014,7 +2013,7 @@ script:
       name: group_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieves a single group.
     execution: false
     name: tc-get-group
@@ -2065,7 +2064,7 @@ script:
       name: group_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieves the attribute of a group.
     execution: false
     name: tc-get-group-attributes
@@ -2113,7 +2112,7 @@ script:
       name: group_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieves the security labels of a group.
     execution: false
     name: tc-get-group-security-labels
@@ -2152,7 +2151,7 @@ script:
       name: group_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieves the tags of a group.
     execution: false
     name: tc-get-group-tags
@@ -2167,7 +2166,7 @@ script:
       name: document_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Downloads the contents of a document.
     execution: false
     name: tc-download-document
@@ -2201,7 +2200,7 @@ script:
       type: String
     - contextPath: File.Extension
       description: The extension of the file.
-      type: String  
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -2227,7 +2226,7 @@ script:
       name: group_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns indicators associated with a group.
     execution: false
     name: tc-get-group-indicators
@@ -2284,7 +2283,7 @@ script:
       name: group_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns indicators associated with a specified group.
     execution: false
     name: tc-get-associated-groups
@@ -2353,7 +2352,7 @@ script:
       name: associated_group_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Associates one group with another group.
     execution: false
     name: tc-associate-group-to-group
@@ -2370,7 +2369,6 @@ script:
     - contextPath: TC.Group.AssociatedGroup.GroupType
       description: The type of the group to associate to.
       type: String
-  dockerimage45: demisto/threatconnect-sdk
   dockerimage: demisto/threatconnect-sdk:1.0.0.7659
   isfetch: false
   runonce: false
@@ -2379,3 +2377,4 @@ script:
   subtype: python2
 tests:
 - No tests - deprecated
+fromversion: 5.0.0

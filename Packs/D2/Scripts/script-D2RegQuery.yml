@@ -2,7 +2,8 @@ commonfields:
   id: D2RegQuery
   version: -1
 name: D2RegQuery
-script: pack(registry(args.regpath));
+script: >-
+  pack(registry(args.regpath));
 type: javascript
 tags:
 - agent
@@ -17,3 +18,4 @@ args:
 scripttarget: 1
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

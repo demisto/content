@@ -1,10 +1,11 @@
 id: playbook16
-fromversion: 2.5.0
+fromversion: 5.0.0
 system: true
 version: -1
 name: CrowdStrike Rapid IOC Hunting
-description: DEPRECATED. Use "CrowdStrike Rapid IOC Hunting v2" playbook instead. Hunt for endpoint activity involving hash and domain IOCs, using Crowdstrike Falcon Host.\nAlso use AnalystEmail label to determine where to send an email alert if something is found.
+description: Deprecated. Use "CrowdStrike Rapid IOC Hunting v2" playbook instead. Hunt for endpoint activity involving hash and domain IOCs, using Crowdstrike Falcon Host.\nAlso use AnalystEmail label to determine where to send an email alert if something is found.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -41,8 +42,7 @@ tasks:
       id: 295e9ac6-c665-4a4e-8d23-a0903a666143
       version: -1
       name: Are there domains to hunt?
-      description: Check if a context key is set. Can also optionally provide a value
-        argument to compare against context data for this key.
+      description: Check if a context key is set. Can also optionally provide a value argument to compare against context data for this key.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -77,8 +77,7 @@ tasks:
       id: ddaf36d8-5125-4b61-8f48-190aee2586f0
       version: -1
       name: Are there MD5s to hunt?
-      description: Check if a context key is set. Can also optionally provide a value
-        argument to compare against context data for this key.
+      description: Check if a context key is set. Can also optionally provide a value argument to compare against context data for this key.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -113,8 +112,7 @@ tasks:
       id: ca2f470d-41dd-4d21-8c26-98a5169bc0cd
       version: -1
       name: Are there SHA1s to hunt?
-      description: Check if a context key is set. Can also optionally provide a value
-        argument to compare against context data for this key.
+      description: Check if a context key is set. Can also optionally provide a value argument to compare against context data for this key.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -149,8 +147,7 @@ tasks:
       id: 0f812845-70a9-4408-83cf-74c92d1915a2
       version: -1
       name: Are there SHA256s to hunt?
-      description: Check if a context key is set. Can also optionally provide a value
-        argument to compare against context data for this key.
+      description: Check if a context key is set. Can also optionally provide a value argument to compare against context data for this key.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -403,8 +400,7 @@ tasks:
       attachIDs: {}
       bcc: {}
       body:
-        simple: 'Hello,\nPlease review Demisto incident "${incident.name} # ${incident.id}
-          " - results are waiting for you.'
+        simple: 'Hello,\nPlease review Demisto incident "${incident.name} # ${incident.id} " - results are waiting for you.'
       cc: {}
       htmlBody: {}
       noteEntryID: {}
@@ -520,8 +516,7 @@ tasks:
       id: 9ba5d50c-d454-4b3e-8149-847fdfff135c
       version: -1
       name: Is FalconHost enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -596,4 +591,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No test - old playbook
+- No test - old playbook
