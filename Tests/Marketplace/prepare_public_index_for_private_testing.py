@@ -181,7 +181,7 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
     print("Finished LS")
     try:
         print("Doing new LS")
-        print(subprocess.check_output('ls dummy_index', shell=True))
+        print(subprocess.check_output('ls dummy_index\index', shell=True))
         print("Finished new LS")
     except Exception:
         print('whoops, second ls did not work')
