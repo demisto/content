@@ -22,8 +22,8 @@
 
 !f5-asm-policy-hostnames-list policy_md5=kpD2qFaUlGAbw8RhN5IFQA
 !f5-asm-policy-hostnames-add policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=qmasters.co
-!f5-asm-policy-hostnames-update policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=qmasters.co include_subdomains=true
-!f5-asm-policy-hostnames-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=qmasters.co
+!f5-asm-policy-hostnames-update policy_md5=kpD2qFaUlGAbw8RhN5IFQA hostname_name=qmasters.co include_subdomains=true
+!f5-asm-policy-hostnames-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA hostname_name=qmasters.co
 
 !f5-asm-policy-blocking-settings-list policy_md5=kpD2qFaUlGAbw8RhN5IFQA endpoint=evasions
 !f5-asm-policy-blocking-settings-update policy_md5=kpD2qFaUlGAbw8RhN5IFQA endpoint=evasions description="Bad unescape"
@@ -32,8 +32,8 @@
 
 !f5-asm-policy-urls-list policy_md5=kpD2qFaUlGAbw8RhN5IFQA
 !f5-asm-policy-urls-add policy_md5=kpD2qFaUlGAbw8RhN5IFQA protocol=https name=validation
-!f5-asm-policy-urls-update policy_md5=kpD2qFaUlGAbw8RhN5IFQA  name=/validation
-!f5-asm-policy-urls-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA  name=/validation
+!f5-asm-policy-urls-update policy_md5=kpD2qFaUlGAbw8RhN5IFQA  url_name=/validation
+!f5-asm-policy-urls-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA  url_name=/validation
 
 !f5-asm-policy-whitelist-ips-list policy_md5=kpD2qFaUlGAbw8RhN5IFQA
 !f5-asm-policy-whitelist-ips-add policy_md5=kpD2qFaUlGAbw8RhN5IFQA ip_address=1.2.3.4
@@ -42,25 +42,25 @@
 
 !f5-asm-policy-parameters-list policy_md5=kpD2qFaUlGAbw8RhN5IFQA
 !f5-asm-policy-parameters-add policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=test_policy_parameter
-!f5-asm-policy-parameters-update policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=test_policy_parameter
-!f5-asm-policy-parameters-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=test_policy_parameter
+!f5-asm-policy-parameters-update policy_md5=kpD2qFaUlGAbw8RhN5IFQA parameter_name=test_policy_parameter
+!f5-asm-policy-parameters-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA parameter_name=test_policy_parameter
 
 !f5-asm-policy-gwt-profiles-list policy_md5=kpD2qFaUlGAbw8RhN5IFQA
 !f5-asm-policy-gwt-profiles-add policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=test_gwt_profile
-!f5-asm-policy-gwt-profiles-update policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=test_gwt_profile
-!f5-asm-policy-gwt-profiles-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=test_gwt_profile
+!f5-asm-policy-gwt-profiles-update policy_md5=kpD2qFaUlGAbw8RhN5IFQA gwt_profile_name=test_gwt_profile
+!f5-asm-policy-gwt-profiles-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA gwt_profile_name=test_gwt_profile
 
 !f5-asm-policy-json-profiles-list policy_md5=kpD2qFaUlGAbw8RhN5IFQA
 !f5-asm-policy-json-profiles-add policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=test_json_profile
-!f5-asm-policy-json-profiles-update policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=test_json_profile
-!f5-asm-policy-json-profiles-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=test_json_profile
+!f5-asm-policy-json-profiles-update policy_md5=kpD2qFaUlGAbw8RhN5IFQA json_name=test_json_profile
+!f5-asm-policy-json-profiles-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA json_name=test_json_profile
 
 !f5-asm-policy-xml-profiles-list policy_md5=kpD2qFaUlGAbw8RhN5IFQA
 !f5-asm-policy-xml-profiles-add policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=test_xml_profile
-!f5-asm-policy-xml-profiles-update  policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=test_xml_profile
-!f5-asm-policy-xml-profiles-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=test_xml_profile
+!f5-asm-policy-xml-profiles-update  policy_md5=kpD2qFaUlGAbw8RhN5IFQA xml_name=test_xml_profile
+!f5-asm-policy-xml-profiles-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA xml_name=test_xml_profile
 	
 !f5-asm-policy-server-technologies-list policy_md5=7FWxqE2a-3bbpJimP4amtA
-!f5-asm-policy-server-technologies-add policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=ASP
-!f5-asm-policy-server-technologies-delete policy_md5=kpD2qFaUlGAbw8RhN5IFQA name=ASP
+!f5-asm-policy-server-technologies-add policy_md5=7FWxqE2a-3bbpJimP4amtA technology_name=ASP
+!f5-asm-policy-server-technologies-delete policy_md5=7FWxqE2a-3bbpJimP4amtA technology_name=ASP
 

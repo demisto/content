@@ -3042,7 +3042,7 @@
         },
 		{
             "integrations": "F5 WAF",
-            "playbookID": "playbook-F5_ASM-Testk",
+            "playbookID": "playbook-F5_ASM-Test",
             "timeout": 600,
             "fromversion": "5.0.0",
             "nightly": true
