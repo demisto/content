@@ -1,0 +1,80 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: PhishTankV2
+  version: -1
+configuration:
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: '1'
+  display: Database refresh interval (hours)
+  hidden: false
+  name: fetchIntervalHours
+  required: false
+  type: 0
+description: PhishTank is a free community site where anyone can submit, verify, track
+  and share phishing data.
+display: PhishTank v2
+name: PhishTankV2
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: 'true'
+      description: URL to check
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Check URL Reputation
+    execution: false
+    name: url
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: or malicious URLs, the reason for the vendor to make the decision
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: String
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+  - deprecated: false
+    description: Reload PhishTank database
+    execution: false
+    name: phishtank-reload
+  - deprecated: false
+    description: Show PhishTank database status
+    execution: false
+    name: phishtank-status
+  dockerimage: demisto/python3:3.8.5.11789
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultEnabled: false
+tests:
+- PhishTank Testing
+fromversion: 5.0.0
