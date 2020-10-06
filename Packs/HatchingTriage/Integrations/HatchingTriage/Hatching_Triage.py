@@ -153,6 +153,7 @@ def get_kernel_monitor(client: Client, **args) -> fileResult:
 
     r = client._http_request('GET', f'samples/{sample_id}/{task_id}/logs/onemon.json', resp_type='text')
 
+    return_results('Kernel monitor results:')
     results = fileResult(f'{sample_id}-{task_id}-kernel-monitor.json', r)
 
     return results
@@ -167,6 +168,7 @@ def get_pcap(client: Client, **args) -> fileResult:
     filename = f'{sample_id}.pcap'
     file_content = r.content
 
+    return_results('PCAP results:')
     return fileResult(filename, file_content)
 
 
