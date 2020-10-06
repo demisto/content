@@ -54,8 +54,8 @@
   "args_for_spam_quarantine": {
     "start_date": "2017-02-14 09:51:46",
     "end_date": "2017-02-14 09:51:46",
-    "order_by_from_address": "name",
-    "order_dir_from_address": "asc",
+    "order_by": "name",
+    "order_dir": "asc",
     "recipient_value": "name",
     "recipient_operator": "is",
     "filter_value": "name"

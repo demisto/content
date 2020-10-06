@@ -120,7 +120,7 @@ def test_list_search_messages_command(requests_mock):
     res = list_search_messages_command(client, {"start_date": "2017-02-14T09:51:46.000-0600",
                                                 "end_date": "2017-02-14T09:51:46.000-0600"})
     assert res.outputs == test_data['search_messages_context']
-    assert res.outputs_prefix == 'CiscoEmailSecurity.Messages'
+    assert res.outputs_prefix == 'CiscoEmailSecurity.Message'
     assert res.outputs_key_field == 'attributes.mid'
 
 
