@@ -62,7 +62,7 @@ def options_handler():
     parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
-    parser.add_argument('-p', '--private', help='Is the build private.', required=False, default=False)
+    parser.add_argument('-p', '--private', help='Is the build private.',type=str2bool, required=False, default=False)
     parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
     parser.add_argument('-m', '--memCheck', type=str2bool,
                         help='Should trigger memory checks or not. The slack channel to check the data is: '
@@ -91,6 +91,7 @@ class TestsSettings:
         self.isAMI = options.isAMI
         self.memCheck = options.memCheck
         self.serverVersion = options.serverVersion
+        self.is_private = options.private
         self.serverNumericVersion = None
         self.specific_tests_to_run = self.parse_tests_list_arg(options.testsList)
         self.is_local_run = (self.server is not None)
