@@ -79,12 +79,12 @@ class Client(BaseClient):
                                                   other_params=other_params, json_data=json_data)
 
         # catch session token expiration - fetch new token and retry
-        if response.get('result')[0].get('status').get('code') == -11:
+        if response.get('result')[0].get('status', {}).get('code') == -11:
             self.session_token = self.get_session_token(get_new_token=True)
             response = self.fortimanager_http_request(method, url, data_in_list=data_in_list, range_info=range_info,
                                                       other_params=other_params, json_data=json_data)
 
-        if response.get('result')[0].get('status').get('code') != 0:
+        if response.get('result')[0].get('status', {}).get('code') != 0:
             raise DemistoException(response.get('result')[0].get('status').get('message'))
 
         return response.get('result')[0].get('data')
