@@ -502,6 +502,11 @@ script:
           - 'false'
         required: false
         secret: false
+      - default: false
+        isArray: false
+        name: group-cn
+        required: false
+        secret: false
     deprecated: false
     description: Enables a user.
     execution: false
@@ -511,6 +516,11 @@ script:
         isArray: false
         name: user-profile
         required: true
+        secret: false
+      - default: false
+        isArray: false
+        name: group-cn
+        required: false
         secret: false
     deprecated: false
     description: Disables a user.

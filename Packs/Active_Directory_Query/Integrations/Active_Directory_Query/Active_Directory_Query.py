@@ -176,6 +176,14 @@ def check_if_user_exists_by_samaccountname(default_base_dn, page_size, samaccoun
     return False
 
 
+def modify_user_ou(dn, new_ou):
+    assert conn is not None
+    cn = dn.split(',', 1)[0]
+
+    success = conn.modify_dn(dn, cn, new_superior=new_ou)
+    return success
+
+
 ''' COMMANDS '''
 
 ''' SEARCH '''
@@ -654,25 +662,35 @@ def create_user():
     demisto.results(demisto_entry)
 
 
-def create_user_iam(iam):
+def create_user_iam(default_base_dn, default_page_size, iam):
     assert conn is not None
+
     iam.set_command_name(demisto.command().split('-')[0])
-
     user = iam.map_user_profile_to_app_data()
-    user_dn = generate_dn_and_remove_from_user_profile(user)
 
-    object_classes = ["top", "person", "organizationalPerson", "user"]
+    try:
+        sam_account_name = user.get("samaccountname")
+        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
 
-    success = conn.add(user_dn, object_classes, user)
-    if not success:
-        iam.return_outputs(success=False, error_message="Failed to create user")
+        if user_exists:
+            return return_results("User already exists")
 
-    else:
-        iam.return_outputs(success=True,
-                           email=user.get('email'),
-                           username=user.get('name'),
-                           details=user,
-                           active=user.get("userAccountControl"))
+        user_dn = generate_dn_and_remove_from_user_profile(user)
+
+        object_classes = ["top", "person", "organizationalPerson", "user"]
+
+        success = conn.add(user_dn, object_classes, user)
+        if not success:
+            iam.return_outputs(success=False, error_message="Failed to create user")
+
+        else:
+            iam.return_outputs(success=True,
+                               email=user.get('email'),
+                               username=user.get('name'),
+                               details=user,
+                               active=user.get("userAccountControl"))
+    except Exception as e:
+        iam.return_outputs(success=False, error_message=str(e))
 
 
 def update_user_iam(default_base_dn, default_page_size, args, iam):
@@ -684,6 +702,7 @@ def update_user_iam(default_base_dn, default_page_size, args, iam):
     try:
         # check it user exists and if it doesn't, create it
         sam_account_name = user.get("samaccountname")
+        new_ou = user.get("ou")
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
 
         if not user_exists and args.get('create-if-not-exists') == "true":
@@ -693,9 +712,10 @@ def update_user_iam(default_base_dn, default_page_size, args, iam):
             dn = user_dn(sam_account_name, default_base_dn)
 
             #  removing fields that can't be modified
-            user.pop("cn")
-            user.pop("dn")
+            if user.get("dn"):
+                user.pop("dn")
             user.pop("samaccountname")
+            user.pop("cn")
 
             fail_to_modify = []
 
@@ -704,6 +724,10 @@ def update_user_iam(default_base_dn, default_page_size, args, iam):
                 success = conn.modify(dn, modification)
                 if not success:
                     fail_to_modify.append(key)
+
+            ou_modified_succeed = modify_user_ou(dn, new_ou)
+            if not ou_modified_succeed:
+                fail_to_modify.append("ou")
 
             if fail_to_modify:
                 error_list = ','.join(fail_to_modify)
@@ -965,7 +989,7 @@ def disable_user(default_base_dn):
     demisto.results(demisto_entry)
 
 
-def enable_user_iam(default_base_dn, default_page_size, args, iam):
+def enable_user_iam(default_base_dn, default_page_size, group, args, iam):
     iam.set_command_name(demisto.command().split('-')[0])
 
     user = iam.map_user_profile_to_app_data()
@@ -979,7 +1003,6 @@ def enable_user_iam(default_base_dn, default_page_size, args, iam):
         return
 
     dn = user_dn(sam_account_name, default_base_dn)
-    group = args.get("group-cn")
 
     # modify user to enable account
     modification = {
@@ -1008,7 +1031,7 @@ def enable_user_iam(default_base_dn, default_page_size, args, iam):
                        active=user.get("userAccountControl"))
 
 
-def disable_user_iam(default_base_dn, default_page_size, args, iam):
+def disable_user_iam(default_base_dn, default_page_size, group, iam):
     iam.set_command_name(demisto.command().split('-')[0])
 
     user = iam.map_user_profile_to_app_data()
@@ -1021,7 +1044,6 @@ def disable_user_iam(default_base_dn, default_page_size, args, iam):
         return
 
     dn = user_dn(sam_account_name, default_base_dn)
-    group = args.get("group-cn")
 
     # modify user
     modification = {
@@ -1217,6 +1239,7 @@ def main():
     NTLM_AUTH = demisto.params().get('ntlm')
     UNSECURE = demisto.params().get('unsecure', False)
     PORT = demisto.params().get('port')
+    GROUP_CN = demisto.params().get('group-cn')
 
     if PORT:
         # port was configured, cast to int
@@ -1351,16 +1374,16 @@ def main():
             get_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args, iam)
 
         if demisto.command() == 'create-user':
-            create_user_iam(iam)
+            create_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, iam)
 
         if demisto.command() == 'update-user':
             update_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args, iam)
 
         if demisto.command() == 'enable-user':
-            enable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args, iam)
+            enable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, GROUP_CN, args, iam)
 
         if demisto.command() == 'disable-user':
-            disable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args, iam)
+            disable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, GROUP_CN, iam)
 
     except Exception as e:
         message = str(e)
