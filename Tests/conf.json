@@ -1401,7 +1401,7 @@
             "nightly": true
         },
         {
-            "integrations": "PhishTankV2",
+            "integrations": "PhishTank v2",
             "playbookID": "PhishTank Testing"
         },
         {

@@ -116,7 +116,6 @@ def url_command(client: Client, url: str):
         mark_down += f'#### No matches for URL {url} \n'
         d_bot = Common.DBotScore(url, DBotScoreType.URL, "PhishTankV2", 0)
         output = Common.URL(url, d_bot).to_context()
-    # res = {'url': url, 'match': True}
     return CommandResults(readable_output=mark_down, outputs=output)
 
 

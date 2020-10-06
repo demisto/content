@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: PhishTankV2
+  id: PhishTank v2
   version: -1
 configuration:
 - display: Use system proxy settings
@@ -20,7 +20,7 @@ configuration:
 description: PhishTank is a free community site where anyone can submit, verify, track
   and share phishing data.
 display: PhishTank v2
-name: PhishTankV2
+name: PhishTank v2
 script:
   commands:
   - arguments:
