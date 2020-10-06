@@ -690,17 +690,18 @@ def update_user_iam(default_base_dn, default_page_size, args, iam):
             create_user_iam(iam)
 
         elif user_exists:
-            user_dn = generate_dn_and_remove_from_user_profile(user)
+            dn = user_dn(sam_account_name, default_base_dn)
 
             #  removing fields that can't be modified
             user.pop("cn")
+            user.pop("dn")
             user.pop("samaccountname")
 
             fail_to_modify = []
 
             for key in user:
                 modification = {key: [('MODIFY_REPLACE', user.get(key))]}
-                success = conn.modify(user_dn, modification)
+                success = conn.modify(dn, modification)
                 if not success:
                     fail_to_modify.append(key)
 
@@ -978,6 +979,7 @@ def enable_user_iam(default_base_dn, default_page_size, args, iam):
         return
 
     dn = user_dn(sam_account_name, default_base_dn)
+    group = args.get("group-cn")
 
     # modify user to enable account
     modification = {
@@ -987,6 +989,14 @@ def enable_user_iam(default_base_dn, default_page_size, args, iam):
     try:
         # Enable account and update with attributes if any
         modify_object(dn, modification)
+        if group:
+            grp_dn = group_dn(group, default_base_dn)
+            success = microsoft.removeMembersFromGroups.ad_remove_members_from_groups(conn, [dn], [grp_dn], True)
+            if not success:
+                e = 'Failed to add user to {} group'.format(group)
+                iam.return_outputs(success=False, error_message=e)
+                return
+
     except Exception as e:
         iam.return_outputs(success=False, error_message=e)
         return
@@ -998,7 +1008,7 @@ def enable_user_iam(default_base_dn, default_page_size, args, iam):
                        active=user.get("userAccountControl"))
 
 
-def disable_user_iam(default_base_dn, default_page_size, iam):
+def disable_user_iam(default_base_dn, default_page_size, args, iam):
     iam.set_command_name(demisto.command().split('-')[0])
 
     user = iam.map_user_profile_to_app_data()
@@ -1011,6 +1021,7 @@ def disable_user_iam(default_base_dn, default_page_size, iam):
         return
 
     dn = user_dn(sam_account_name, default_base_dn)
+    group = args.get("group-cn")
 
     # modify user
     modification = {
@@ -1019,6 +1030,14 @@ def disable_user_iam(default_base_dn, default_page_size, iam):
 
     try:
         modify_object(dn, modification)
+        if group:
+            grp_dn = group_dn(group, default_base_dn)
+            success = microsoft.addMembersToGroups.ad_add_members_to_groups(conn, [dn], [grp_dn])
+            if not success:
+                e = 'Failed to add user to {} group'.format(group)
+                iam.return_outputs(success=False, error_message=e)
+                return
+
     except Exception as e:
         iam.return_outputs(success=False, error_message=e)
 
@@ -1341,7 +1360,7 @@ def main():
             enable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args, iam)
 
         if demisto.command() == 'disable-user':
-            disable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, iam)
+            disable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args, iam)
 
     except Exception as e:
         message = str(e)
