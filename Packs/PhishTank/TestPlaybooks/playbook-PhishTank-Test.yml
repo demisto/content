@@ -16,7 +16,6 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -25,26 +24,37 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 5a505f28-e3be-4c95-81c6-ae394b129f80
+    taskid: ea01decf-54f8-45f1-8a7d-3a3873e8dc29
     type: regular
     task:
-      id: 5a505f28-e3be-4c95-81c6-ae394b129f80
+      id: ea01decf-54f8-45f1-8a7d-3a3873e8dc29
       version: -1
       name: Check URL
-      script: PhishTank|||url
+      description: Check URL Reputation
+      script: '|||url'
       type: regular
       iscommand: true
-      brand: PhishTank
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
       - "3"
     scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
       url:
         simple: ${badURL}
-    reputationcalc: 0
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -53,6 +63,11 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 0a2da204-3f8f-4eab-83df-f878268723f5
@@ -80,7 +95,6 @@ tasks:
         simple: Data
       path:
         simple: URL
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -89,6 +103,11 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: 5cc2b958-d69e-43b2-89f6-55ceb23ef902
@@ -116,7 +135,6 @@ tasks:
         simple: Indicator,Score,Type,Vendor
       path:
         simple: DBotScore
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -125,6 +143,11 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: ff7a088b-0315-4569-85e8-ec5556bd0b1f
@@ -136,7 +159,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -145,6 +167,11 @@ tasks:
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: be16d6b0-c31f-48c8-8802-a4d71351a0e9
@@ -175,7 +202,6 @@ tasks:
       url:
         simple: http://data.phishtank.com/data/online-valid.csv
       username: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -184,6 +210,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 2460c597-5995-4288-887d-60873622416e
@@ -204,7 +235,6 @@ tasks:
         simple: ${File.EntryID}
       maxFileSize:
         simple: "2000"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -213,6 +243,11 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: e8f9b718-59b5-431e-8e37-66b1025b321e
@@ -234,7 +269,6 @@ tasks:
         simple: badURL
       value:
         simple: ${FileData=val.split('\n')[1].split(',')[1]}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -243,6 +277,11 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 60b545ed-5c7c-4bc2-8131-00da26d2b52c
@@ -262,7 +301,6 @@ tasks:
       all:
         simple: "yes"
       key: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -271,6 +309,12 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
