@@ -266,7 +266,7 @@ class TestChangedTestPlaybook:
         assert filter_envs.get('Demisto PreGA') is True
         assert filter_envs.get('Demisto Marketplace') is True
         assert filter_envs.get('Demisto 6.0') is True
-        # assert filter_envs.get('Demisto one before GA') is False
+        assert filter_envs.get('Demisto one before GA') is False
         assert filter_envs.get('Demisto GA') is False
 
     def test_changed_unrunnable_test__playbook_fromvesion_2(self, mocker):
@@ -415,8 +415,7 @@ class TestChangedCommonTesting:
     def test_all_tests(self):
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        # TODO: fix test
-        # assert content_packs == {"DeveloperTools", 'Base', 'fake_pack'}
+        assert content_packs == {"DeveloperTools", 'Base', 'HelloWorld'}
 
 
 class TestPackageFilesModified:
@@ -443,7 +442,7 @@ class TestNoChange:
         filterd_tests, content_packs = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        # assert content_packs == {"Base", "DeveloperTools", "HelloWorld", "fake_pack"}
+        assert content_packs == {"Base", "DeveloperTools", "HelloWorld"}
 
 
 def create_get_modified_files_ret(modified_files_list=None, modified_tests_list=None, changed_common=None,

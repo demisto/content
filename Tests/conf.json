@@ -35,6 +35,10 @@
             ]
         },
         {
+            "integrations": "OpenCTI Feed",
+            "playbookID": "OpenCTI Feed Test"
+        },
+        {
             "integrations": "AWS - Security Hub",
             "playbookID": "AWS-securityhub Test"
         },
@@ -710,13 +714,6 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "playbookID": "palo_alto_panorama_test_pb",
-            "timeout": 1000,
-            "nightly": true
-        },
-        {
-            "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "Panorama Query Logs - Test",
             "fromversion": "5.5.0",
@@ -725,8 +722,25 @@
         },
         {
             "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall",
+            "playbookID": "palo_alto_firewall_test_pb",
+            "fromversion": "5.5.0",
+            "timeout": 1000,
+            "nightly": true
+        },
+        {
+            "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "palo_alto_firewall_test_pb",
+            "fromversion": "5.5.0",
+            "timeout": 1000,
+            "nightly": true
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "playbookID": "palo_alto_panorama_test_pb",
+            "fromversion": "5.5.0",
             "timeout": 1000,
             "nightly": true
         },
@@ -734,6 +748,7 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "palo_alto_panorama_test_pb",
+            "fromversion": "5.5.0",
             "timeout": 1000,
             "nightly": true
         },
@@ -2683,7 +2698,8 @@
         {
             "integrations": "BruteForceBlocker Feed",
             "playbookID": "playbook-BruteForceBlocker_test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 190
         },
         {
             "integrations": "illuminate",
@@ -3121,7 +3137,6 @@
         "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
-        "MISP V2 Test": "Issue 26905",
         "Logzio - Test": "Issue 26729",
         "pyEWS_Test": "Issue 28339",
         "DuoAdmin API test playbook": "Issue 24937",
@@ -3244,7 +3259,7 @@
         "Zabbix": "Supported by external developer",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-        
+
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3362,7 +3377,8 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "QRadar": "Playbooks has parallel steps which are causing inconsistent results"
+        "QRadar": "Playbooks has parallel steps which are causing inconsistent results",
+        "MISP V2": "Issue 26905"
     },
     "parallel_integrations": [
         "SNDBOX",
@@ -3413,13 +3429,16 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
                 "pid_threshold": 11
             },
             "demisto/py-ews:2.0": {
+                "memory_threshold": 150
+            },
+            "demisto/pymisp:1.0.0.52": {
                 "memory_threshold": 150
             },
             "demisto/pytan": {
