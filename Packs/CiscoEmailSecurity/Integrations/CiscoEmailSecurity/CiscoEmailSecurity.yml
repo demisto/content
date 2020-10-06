@@ -27,8 +27,6 @@ configuration:
   type: 0
 description: Cisco Email Security is an email security gateway . It detects and blocks
   a wide variety of email-borne threats, such as malware, spam and phishing.
-detaileddescription: |-
-  Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
 display: Cisco Email Security (beta)
 name: CiscoEmailSecurity
 script:
@@ -42,7 +40,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss,
+        Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -176,7 +175,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss,
+        Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -423,58 +423,58 @@ script:
     execution: false
     name: cisco-email-security-messages-search
     outputs:
-    - contextPath: CiscoEmailSecurity.Messages.attributes.direction
+    - contextPath: CiscoEmailSecurity.message.attributes.direction
       description: The message direction.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.hostName
+    - contextPath: CiscoEmailSecurity.message.attributes.hostName
       description: The message hostName.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.icid
+    - contextPath: CiscoEmailSecurity.message.attributes.icid
       description: The message injection connection ID.
       type: Number
-    - contextPath: CiscoEmailSecurity.Messages.attributes.isCompleteData
+    - contextPath: CiscoEmailSecurity.message.attributes.isCompleteData
       description: Is there in the message all the data.
       type: Boolean
-    - contextPath: CiscoEmailSecurity.Messages.attributes.mailPolicy
+    - contextPath: CiscoEmailSecurity.message.attributes.mailPolicy
       description: The message mailPolicy.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.messageStatus
+    - contextPath: CiscoEmailSecurity.message.attributes.messageStatus
       description: The status of the message.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.mid
+    - contextPath: CiscoEmailSecurity.message.attributes.mid
       description: The message ID.
       type: Number
-    - contextPath: CiscoEmailSecurity.Messages.attributes.recipient
+    - contextPath: CiscoEmailSecurity.message.attributes.recipient
       description: The recipient of the message.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.replyTo
+    - contextPath: CiscoEmailSecurity.message.attributes.replyTo
       description: Who the message reply to.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.sbrs
+    - contextPath: CiscoEmailSecurity.message.attributes.sbrs
       description: The message sender base score
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.sender
+    - contextPath: CiscoEmailSecurity.message.attributes.sender
       description: The message sender.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.senderDomain
+    - contextPath: CiscoEmailSecurity.message.attributes.senderDomain
       description: The message sender domain.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.senderGroup
+    - contextPath: CiscoEmailSecurity.message.attributes.senderGroup
       description: The message sender group.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.senderIp
+    - contextPath: CiscoEmailSecurity.message.attributes.senderIp
       description: The message sender IP.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.serialNumber
+    - contextPath: CiscoEmailSecurity.message.attributes.serialNumber
       description: The message serial number.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.subject
+    - contextPath: CiscoEmailSecurity.message.attributes.subject
       description: The message subject.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.timestamp
+    - contextPath: CiscoEmailSecurity.message.attributes.timestamp
       description: The message date time.
       type: String
-    - contextPath: CiscoEmailSecurity.Messages.attributes.verdictChart
+    - contextPath: CiscoEmailSecurity.message.attributes.verdictChart
       description: The message verdict chart.
       type: String
   - arguments:
@@ -486,7 +486,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss,
+        Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -598,7 +599,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss,
+        Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -619,49 +621,22 @@ script:
       name: offset
       required: false
       secret: false
-    - default: false
-      description: From address to filter with.
-      isArray: false
-      name: order_by_from_address
-      required: false
-      secret: false
-    - default: false
-      description: To address to filter with.
-      isArray: false
-      name: order_by_to_address
-      required: false
-      secret: false
-    - default: false
-      description: Subject to filter with.
-      isArray: false
-      name: order_by_subject
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
-      description: From address order filtering.
+      description: Order by to filter with.
       isArray: false
-      name: order_dir_from_address
+      name: order_by
       predefined:
-      - asc
-      - desc
+      - sender
+      - subject
+      - received
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: To address order filtering.
+      description: The direction order filtering.
       isArray: false
-      name: order_dir_to_address
-      predefined:
-      - asc
-      - desc
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Subject order filtering.
-      isArray: false
-      name: order_dir_subject
+      name: order_dir
       predefined:
       - asc
       - desc
@@ -725,7 +700,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss,
+        Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -831,7 +807,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss,
+        Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -925,7 +902,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss, Please note - the seconds must be 00 do to the API limits.
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:ss,
+        Please note - the seconds must be 00 do to the API limits.
       isArray: false
       name: end_date
       required: true
@@ -1087,28 +1065,28 @@ script:
     execution: false
     name: cisco-email-security-list-entries-get
     outputs:
-    - contextPath: CiscoEmailSecurity.ListEntries.Safelist.senderList
+    - contextPath: CiscoEmailSecurity.ListEntry.Safelist.senderList
       description: The safelist sender list.
       type: String
-    - contextPath: CiscoEmailSecurity.ListEntries.Safelist.recipientAddresses
+    - contextPath: CiscoEmailSecurity.ListEntry.Safelist.recipientAddresses
       description: The safelist recipient addresses of sender list.
       type: String
-    - contextPath: CiscoEmailSecurity.ListEntries.Safelist.recipientList
+    - contextPath: CiscoEmailSecurity.ListEntry.Safelist.recipientList
       description: The safelist recipient list.
       type: String
-    - contextPath: CiscoEmailSecurity.ListEntries.Safelist.senderAddresses
+    - contextPath: CiscoEmailSecurity.ListEntry.Safelist.senderAddresses
       description: The safelist sender addresses of recipient list.
       type: Number
-    - contextPath: CiscoEmailSecurity.ListEntries.Blocklist.senderList
+    - contextPath: CiscoEmailSecurity.ListEntry.Blocklist.senderList
       description: The blocklist sender list.
       type: String
-    - contextPath: CiscoEmailSecurity.ListEntries.Blocklist.recipientAddresses
+    - contextPath: CiscoEmailSecurity.ListEntry.Blocklist.recipientAddresses
       description: The blocklist recipient addresses of sender list.
       type: String
-    - contextPath: CiscoEmailSecurity.ListEntries.Blocklist.recipientList
+    - contextPath: CiscoEmailSecurity.ListEntry.Blocklist.recipientList
       description: The blocklist recipient list.
       type: String
-    - contextPath: CiscoEmailSecurity.ListEntries.Blocklist.senderAddresses
+    - contextPath: CiscoEmailSecurity.ListEntry.Blocklist.senderAddresses
       description: The blocklist sender addresses of recipient list.
       type: Number
   - arguments:
@@ -1218,7 +1196,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
-beta: true
 tests:
 - No tests
+fromversion: 5.0.0
+beta: true

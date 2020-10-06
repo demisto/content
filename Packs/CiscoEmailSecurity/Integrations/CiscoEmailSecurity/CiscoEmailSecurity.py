@@ -320,11 +320,13 @@ def list_search_messages_command(client, args):
     messages_response_data = client.list_messages(url_params)
     messages_data = messages_response_data.get('data')
     for message in messages_data:
-        message['attributes']['mid'] = message.get('attributes', {}).get('mid', [None])[0]
+        message_details = message.get('attributes', {})
+        message_id = message_details.get('mid', [None])[0]
+        message['attributes']['mid'] = message_id
     human_readable = messages_to_human_readable(messages_data)
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='CiscoEmailSecurity.Messages',
+        outputs_prefix='CiscoEmailSecurity.Message',
         outputs_key_field='attributes.mid',
         outputs=messages_data
     )
@@ -416,15 +418,9 @@ def build_url_params_for_spam_quarantine(args):
     arguments = assign_params(**args)
 
     for key, value in arguments.items():
-        if key == 'order_by_from_address':
-            order_dir_from_address = arguments.get('order_dir_from_address', 'asc')
-            url_params += f'&orderBy={value}&orderDir={order_dir_from_address}'
-        elif key == 'order_by_to_address':
-            order_dir_to_address = arguments.get('order_dir_to_address', 'asc')
-            url_params += f'&orderBy={value}&orderDir={order_dir_to_address}'
-        elif key == 'order_by_subject':
-            order_dir_subject = arguments.get('order_dir_subject', 'asc')
-            url_params += f'&orderBy={value}&orderDir={order_dir_subject}'
+        if key == 'order_by':
+            order_dir = arguments.get('order_dir', 'asc')
+            url_params += f'&orderBy={value}&orderDir={order_dir}'
 
         elif key == 'recipient_value':
             recipient_operator = arguments.get('recipient_operator', 'is')
@@ -546,18 +542,25 @@ def build_request_body_for_add_list_entries(args):
         "viewBy": args.get('view_by')
     }
 
-    if args.get('recipient_addresses'):
+    if 'recipient_addresses' in args:
         request_body["recipientAddresses"] = args.get('recipient_addresses').split(',')
-    if args.get('recipient_list'):
+    if 'recipient_list' in args:
         request_body["recipientList"] = args.get('recipient_list').split(',')
-    if args.get('sender_addresses'):
+    if 'sender_addresses' in args:
         request_body["senderAddresses"] = args.get('sender_addresses').split(',')
-    if args.get('sender_list'):
+    if 'sender_list' in args:
         request_body["senderList"] = args.get('sender_list').split(',')
     return request_body
 
 
-def set_outputs_key_field_for_list_entries(args):
+def set_outputs_key_for_list_recipient_and_sender(args):
+    """
+    This function checks which argument used and returns it for the outputs prefix.
+    Args:
+        args: The recipient list or the sender list.
+    Returns:
+        The recipient list or the sender list, depending on what was used.
+    """
     return args.get('recipient_list') if args.get('recipient_list') else args.get('sender_list')
 
 
@@ -567,7 +570,7 @@ def list_entries_add_command(client, args):
     list_entries_response = client.list_entries_add(list_type, request_body)
     list_entries = list_entries_response.get('data')
     output_prefix = list_type.title()
-    outputs_key_field = set_outputs_key_field_for_list_entries(args)
+    outputs_key_field = set_outputs_key_for_list_recipient_and_sender(args)
     return CommandResults(
         readable_output=list_entries,
         outputs_prefix=f'CiscoEmailSecurity.listEntry.{output_prefix}',
@@ -593,7 +596,7 @@ def list_entries_delete_command(client, args):
     list_entries_response = client.list_entries_delete(list_type, request_body)
     list_entries = list_entries_response.get('data')
     output_prefix = list_type.title()
-    outputs_key_field = set_outputs_key_field_for_list_entries(args)
+    outputs_key_field = set_outputs_key_for_list_recipient_and_sender(args)
     return CommandResults(
         readable_output=list_entries,
         outputs_prefix=f'CiscoEmailSecurity.listEntry.{output_prefix}',
