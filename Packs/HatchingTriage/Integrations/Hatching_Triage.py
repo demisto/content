@@ -10,14 +10,12 @@ class Client(BaseClient):
         super().__init__(base_url, *args, **kwarg)
 
 
-# Works
 def test_module(client: Client) -> str:
     client._http_request('GET', 'users')
 
     return 'ok'
 
 
-# Works
 def query_samples(client, **args) -> CommandResults:
     params = {
         'subset': args.get('subset')
@@ -33,8 +31,6 @@ def query_samples(client, **args) -> CommandResults:
     return results
 
 
-# Works
-#   - Need to add more parameters
 def submit_sample(client: Client, **args) -> CommandResults:
 
     data = {
@@ -65,7 +61,7 @@ def submit_sample(client: Client, **args) -> CommandResults:
     )
     return results
 
-# Works
+
 def get_sample(client: Client, **args) -> CommandResults:
     sample_id = args.get("sample_id")
     r = client._http_request('GET', f'samples/{sample_id}')
@@ -78,7 +74,6 @@ def get_sample(client: Client, **args) -> CommandResults:
     return results
 
 
-# Works
 def get_sample_summary(client: Client, **args) -> CommandResults:
     sample_id = args.get('sample_id')
     r = client._http_request('GET', f'samples/{sample_id}/summary')
@@ -91,7 +86,6 @@ def get_sample_summary(client: Client, **args) -> CommandResults:
     return results
 
 
-# Works
 def delete_sample(client: Client, **args) -> str:
     sample_id=args.get('sample_id')
     client._http_request('DELETE', f'samples/{sample_id}')
@@ -99,7 +93,6 @@ def delete_sample(client: Client, **args) -> str:
     return f'Sample {sample_id} successfully deleted'
 
 
-# Works
 def set_sample_profile(client: Client, **args) -> str:
     '''
     Used to move a submitted sample from static analysis to behavioural by giving it a profile to run under
@@ -119,7 +112,6 @@ def set_sample_profile(client: Client, **args) -> str:
     return f'Profile successfully set for sample {sample_id}'
 
 
-# Works
 def get_static_report(client: Client, **args) -> CommandResults:
     '''
     Get's the static analysis report from a given sample
@@ -137,10 +129,8 @@ def get_static_report(client: Client, **args) -> CommandResults:
     return results
 
 
-# Works
 def get_report_triage(client: Client, **args) -> CommandResults:
     '''
-    Works
     Outputs a score, should map to a DBot score
     '''
     sample_id=args.get('sample_id')
@@ -157,7 +147,6 @@ def get_report_triage(client: Client, **args) -> CommandResults:
     return results
 
 
-# Working
 def get_kernel_monitor(client: Client, **args) -> fileResult:
     sample_id=args.get('sample_id')
     task_id=args.get('task_id')
@@ -169,7 +158,6 @@ def get_kernel_monitor(client: Client, **args) -> fileResult:
     return results
 
 
-# Works
 def get_pcap(client: Client, **args) -> fileResult:
     sample_id = args.get('sample_id')
     task_id = args.get('task_id')
@@ -183,10 +171,6 @@ def get_pcap(client: Client, **args) -> fileResult:
 
 
 def get_dumped_files(client: Client, **args) -> CommandResults:
-    '''
-    Need to test
-        - Need to upload a sample that will have a file to dump, maybe an installer e.g. msi?
-    '''
     sample_id=args.get('sample_id')
     task_id=args.get('task_id')
     file_name=args.get('file_name')
@@ -202,11 +186,7 @@ def get_dumped_files(client: Client, **args) -> CommandResults:
     return results
 
 
-# Working
 def get_users(client: Client, **args) -> CommandResults:
-    '''
-    Works
-    '''
     if args.get('userID'):
         url_suffix = f'users/{args.get("userID")}'
     else:
@@ -228,13 +208,7 @@ def get_users(client: Client, **args) -> CommandResults:
 
 
 
-# Working
 def create_user(client: Client, **args) -> CommandResults:
-    '''
-    Works
-    '''
-
-    # Make the following data variable parameters
     data = {
         "username": args.get('username'),
         "first_name": args.get('firstName'),
@@ -256,13 +230,7 @@ def create_user(client: Client, **args) -> CommandResults:
     return results
 
 
-
-# Working
 def delete_user(client: Client, **args) -> CommandResults:
-    '''
-    Works
-    '''
-
     userID = args.get('userID')
 
     r = client._http_request('DELETE', f'users/{userID}')
@@ -277,13 +245,7 @@ def delete_user(client: Client, **args) -> CommandResults:
     return results
 
 
-
-# Working
 def create_apikey(client: Client, **args) -> CommandResults:
-    '''
-    - Check the formatting of the output once instance UI is working better
-    - Note: It seems you can't create an API key for yourself through the API
-    '''
     userID = args.get('userID')
     name = args.get('name')
 
@@ -302,11 +264,7 @@ def create_apikey(client: Client, **args) -> CommandResults:
     return results
 
 
-# Working
 def get_apikey(client: Client, **args) -> CommandResults:
-    '''
-    - Check the formatting of the output once instance UI is working better
-    '''
     userID = args.get('userID')
     r = client._http_request('GET', f'users/{userID}/apikeys')
 
@@ -319,11 +277,7 @@ def get_apikey(client: Client, **args) -> CommandResults:
     return results
 
 
-# Working
 def delete_apikey(client: Client, **args) -> CommandResults:
-    '''
-    Working
-    '''
     userID = args.get('userID')
     apiKeyName = args.get('apiKeyName', 'Created from XSOAR')
 
@@ -338,12 +292,7 @@ def delete_apikey(client: Client, **args) -> CommandResults:
     return results
 
 
-# Working
 def get_profile(client: Client, **args) -> CommandResults:
-    '''
-    - Need to check the UI for results formatting
-    '''
-
     profileID = args.get('profileID')
 
     if profileID:
@@ -364,8 +313,6 @@ def get_profile(client: Client, **args) -> CommandResults:
     return results
 
 
-
-# Working
 def create_profile(client: Client, **args) -> CommandResults:
 
     data = json.dumps({
@@ -387,7 +334,6 @@ def create_profile(client: Client, **args) -> CommandResults:
     return results
 
 
-# Working
 def update_profile(client: Client, **args) -> CommandResults:
     profileID = args.get('profileID')
 
@@ -411,12 +357,7 @@ def update_profile(client: Client, **args) -> CommandResults:
     return results
 
 
-# Working
 def delete_profile(client: Client, **args) -> CommandResults:
-    '''
-    Working
-    '''
-
     profileID = args.get('profileID')
 
     r = client._http_request('DELETE', f'profiles/{profileID}')
