@@ -1513,7 +1513,7 @@ script:
       description: A CSV list of Service objects to be contained within the group.
       isArray: false
       name: member
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Create a new Service Group

@@ -1,3 +1,4 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+## FortiManager
+- FortiManager is a single console central management system that manages Fortinet Devices.
+- You can use FortiManger integration to:
+  - View, create, update and delete Addresses, Address-Groups, Services, Service-Groups, Policies and Policy-Packages found in FortiManger.
