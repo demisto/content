@@ -26,10 +26,10 @@ EOF
 if [ $code_1 -ne 1 ] ; then
   if [ -n "${NON_AMI_RUN}" ]; then
     # non AMI
-    python3 ./Tests/test_content.py -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$GITHUB_RUN_NUMBER" -g "$BRANCH_NAME" -m "$MEM_CHECK" -d "$1"
+    python3 ./Tests/test_content.py -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$GITHUB_RUN_NUMBER" -g "$BRANCH_NAME" -m "$MEM_CHECK" -d "$1" --private true
   else
     # AMI
-    python3 ./Tests/test_content.py -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$GITHUB_RUN_NUMBER" -g "$BRANCH_NAME" -m "$MEM_CHECK" --isAMI true -d "$1"
+    python3 ./Tests/test_content.py -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$GITHUB_RUN_NUMBER" -g "$BRANCH_NAME" -m "$MEM_CHECK" --isAMI true -d "$1" --private true
   fi
 fi
 

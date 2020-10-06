@@ -62,6 +62,7 @@ def options_handler():
     parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
+    parser.add_argument('-p', '--private', help='Is the build private.', required=False, default=False)
     parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
     parser.add_argument('-m', '--memCheck', type=str2bool,
                         help='Should trigger memory checks or not. The slack channel to check the data is: '
@@ -800,6 +801,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     circle_ci = tests_settings.circleci
     build_number = tests_settings.buildNumber
     build_name = tests_settings.buildName
+    is_private = tests_settings.private
     conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
     demisto_api_key = tests_settings.api_key
     demisto_user = secret_conf['username']
@@ -845,6 +847,9 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     prints_manager.execute_thread_prints(thread_index)
     mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
     unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
+    if is_private:
+        unmockable_tests.extend(mockable_tests)
+        mockable_tests = []
 
     if is_nightly and is_memory_check:
         mem_lim, err = get_docker_limit()
