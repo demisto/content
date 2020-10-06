@@ -1,0 +1,1 @@
+To configure an integration instance, you only need to set the refresh interval. All of the URLs are stored in the integration context and are refreshed according to the refresh interval.
