@@ -2125,23 +2125,11 @@ def get_mapping_fields(client: QRadarClient) -> dict:
         "assets": {
             "interfaces": {
                 "mac_address": "str",
-                "last_seen_profiler": "int",
-                "created": "str",
-                "last_seen_scanner": "int",
-                "first_seen_scanner": "int",
                 "ip_addresses": {
-                    "last_seen_profiler": "int",
-                    "created": "str",
-                    "last_seen_scanner": "int",
-                    "first_seen_scanner": "int",
-                    "network_id": "int",
-                    "id": "int",
                     "type": "str",
-                    "first_seen_profiler": "int",
                     "value": "str"
                 },
                 "id": "int",
-                "first_seen_profiler": "int"
             },
             "id": "int",
             "domain_id": "int",
