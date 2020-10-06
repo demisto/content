@@ -1002,7 +1002,6 @@ class IntegrationLogger(object):
     def encode(self, message):
         try:
             res = str(message)
-            res = stringUnEscape(res)
         except UnicodeEncodeError as exception:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
@@ -1029,7 +1028,7 @@ class IntegrationLogger(object):
             Add strings which will be replaced when logging.
             Meant for avoiding passwords and so forth in the log.
         '''
-        to_add = [self.encode(a) for a in args if a]
+        to_add = [stringUnEscape(self.encode(a)) for a in args if a]
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
