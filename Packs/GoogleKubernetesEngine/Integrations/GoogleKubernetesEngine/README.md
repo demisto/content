@@ -20,11 +20,11 @@ Command, argument, and output desctiptions were taken from the Google documentat
 
    <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/create-project-1.png" alt="create-project" style="zoom:40%;" />
 
-   > After creating the new project - We will refer `ID` column (marked in green) as `project id`.
+   > The value in the `ID` column (marked in green) will be used from this point on as the `project id`.
 
 2. Enable the Google Container Engine API:
 
-   1. Choose `APIs & Services` in main menu -> Choose 'Libary':
+   1. Under the main menu, select `APIs & Services` -> 'Libary':
 
       <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-menu.png" alt="Menu" style="zoom:40%;" />
 
@@ -32,43 +32,41 @@ Command, argument, and output desctiptions were taken from the Google documentat
 
       <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-search.png" alt="Search" style="zoom:40%;" />
 
-   3. Enable `Kubernetes Engine API`:
+   3. Click `Enable`:
 
       <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-enable-1.png" alt="enable-1" style="zoom:40%;" />
 
-   4. Select project -> Choose 'open':
+   4. Select the project and click 'OPEN':
 
       <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-enable-2.png" alt="enable-2" style="zoom: 40%;" />
 
-3. Create service account with right restricted permissions:
+3. Create a service account with correct restricted permissions:
 
-   1. Choose `IAM & Admin` in main menu -> Choose `Service Accounts`:
+   1. Under the main menu, select `IAM & Admin` -> `Service Accounts`:
 
       <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-acount-menu.png" alt="menu" style="zoom:40%;" />
 
-   2. Press `CREATE SERVICE ACCOUNT` from top bar:
+   2. In the top bar, select `CREATE SERVICE ACCOUNT`:
 
       <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-1.png" alt="create-1" style="zoom:40%;" />
 
-   3. In step number 2 of the creation process -> Choose role `Kubernetes Engine Admin`:
+   3. In step number 2, under role, select `Kubernetes Engine Admin`:
 
       <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-2.png" alt="create-2" style="zoom:40%;" />
 
-   4. Choose `IAM & Admin` in main menu -> Choose `Service Accounts` -> Open the account you just created .
+   4. Under the main menu, select `IAM & Admin` -> `Service Accounts` and open the account you just created.
 
-   5. Generate new credentials by the following steps:
+   5. Generate new credentials:
 
-      1. Create new key:
+      1. On the Service account details page, under Keys, click ADD KEY and select Create new key:
 
          <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-3.png" alt="create-3" style="zoom:40%;" />
 
       
 
-      2. Choose `JSON` type -> Press `CREATE` and save the credentials in known and secured location :
+      2. Under Key type, select `JSON` and click `CREATE`. Save the credentials in a secure location. You will need the generated `credentials.json` file when you configure the instance in Cortex XSOAR:
 
          <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-4.png" alt="create-3" style="zoom:40%;" />
-
-         > This generated file will be refer as `credentials.json` that you will use to configure the instance in Cortex XSOAR.
 
 ## Configure GoogleKubernetesEngine on Cortex XSOAR
 
