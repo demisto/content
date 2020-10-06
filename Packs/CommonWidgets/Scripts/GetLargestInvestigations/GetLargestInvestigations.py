@@ -33,10 +33,11 @@ def parse_investigations_to_table(investigations):
                 "IncidentID": investigation.split('-')[1],
                 "Size": investigations[investigation].get('leafSize'),
                 "AmountOfEntries": investigations[investigation].get('keyN'),
-                "Date": db_name[:2] + "-" + db_name[2:]
+                "Date": db_name[:2] + "-" + db_name[2:],
+                "SizeNumber": float(size[0])
             })
 
-    widget_table['data'] = sorted(data, key=itemgetter('Size'), reverse=True)  # type: ignore
+    widget_table['data'] = sorted(data, key=itemgetter('SizeNumber'), reverse=True)  # type: ignore
 
     return widget_table
 
