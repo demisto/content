@@ -591,6 +591,16 @@
             "playbookID": "servicenow_test_v2"
         },
         {
+            "playbookID": "Create ServiceNow Ticket and Mirror Test",
+            "integrations": "ServiceNow v2",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "Create ServiceNow Ticket and State Polling Test",
+            "integrations": "ServiceNow v2",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "ExtraHop v2",
             "playbookID": "ExtraHop_v2-Test"
         },
