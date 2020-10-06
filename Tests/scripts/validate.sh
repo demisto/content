@@ -5,7 +5,7 @@ echo "CIRCLE_BRANCH: $CIRCLE_BRANCH CHECK_BACKWARD: $CHECK_BACKWARD CI: $CI DEMI
 
 if [[ $CIRCLE_BRANCH = $FEATURE_BRANCH ]];
   then
-    demisto-sdk validate -a
+    demisto-sdk validate -a --prev-ver origin/$FEATURE_BRANCH
 
 elif [ "${CHECK_BACKWARD}" = "true" ] ;
   then
