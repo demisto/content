@@ -1,13 +1,29 @@
-from Tests.Marketplace.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
-    extract_packs_artifacts
-from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
+import time
 import os
 import sys
 import shutil
 import json
 import argparse
+from contextlib import contextmanager
 from datetime import datetime
 from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS
+from Tests.Marketplace.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
+    extract_packs_artifacts
+from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
+
+MAX_SECONDS_TO_WAIT_FOR_LOCK = 600
+LOCK_FILE_PATH = 'lock.txt'
+
+
+@contextmanager
+def lock_and_unlock_dummy_index(public_storage_bucket, dummy_index_lock_path):
+    try:
+        acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
+        yield
+    except Exception as e:
+        print(f"Error: {str(e)}")
+    finally:
+        release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
 
 
 def change_pack_price_to_zero(path_to_pack_metadata):
@@ -40,13 +56,11 @@ def upload_modified_index(public_index_folder_path, extract_destination_path, pu
     """Upload updated index zip to cloud storage.
 
     Args:
-        index_folder_path (str): index folder full path.
+        public_index_folder_path (str): public index folder full path.
         extract_destination_path (str): extract folder full path.
         public_ci_dummy_index_blob (Blob): google cloud storage object that represents the dummy index.zip blob.
         build_number (str): circleCI build number, used as an index revision.
         private_packs (list): List of private packs and their price.
-        current_commit_hash (str): last commit hash of head.
-        index_generation (str): downloaded index generation.
 
     """
     with open(os.path.join(public_index_folder_path, "index.json"), "w+") as index_file:
@@ -105,11 +119,48 @@ def option_handler():
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
     parser.add_argument('-ea', '--extract_artifacts_path', help="Full path of folder to extract wanted packs",
                         required=True)
-    parser.add_argument('-di', '--dummy_index_path', help="Full path to the dummy index in the private CI bucket",
+    parser.add_argument('-di', '--dummy_index_dir_path', help="Full path to the dummy index in the private CI bucket",
                         required=True)
 
     # disable-secrets-detection-end
     return parser.parse_args()
+
+
+def is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path):
+    dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
+    return dummy_index_lock_blob.exists()
+
+
+def lock_dummy_index(public_storage_bucket, dummy_index_lock_path):
+    dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
+    with open(LOCK_FILE_PATH, 'w') as lock_file:
+        lock_file.write('locked')
+
+    with open(LOCK_FILE_PATH, 'rb') as lock_file:
+        dummy_index_lock_blob.upload_from_file(lock_file)
+
+
+def acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
+    total_seconds_waited = 0
+    while is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path):
+        if total_seconds_waited >= MAX_SECONDS_TO_WAIT_FOR_LOCK:
+            print_error("Error: Failed too long to acquire lock, exceeded max wait time.")
+            sys.exit(1)
+
+        if total_seconds_waited % 60 == 0:
+            # Printing a message every minute to keep the machine from dying due to no output
+            print("Waiting to acquire lock.")
+
+        total_seconds_waited += 10
+        time.sleep(10)
+
+    lock_dummy_index(public_storage_bucket, dummy_index_lock_path)
+
+
+def release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
+    dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
+    dummy_index_lock_blob.delete()
+    os.remove(LOCK_FILE_PATH)
 
 
 def main():
@@ -124,7 +175,9 @@ def main():
     changed_pack = upload_config.pack_name
     extract_destination_path = upload_config.extract_artifacts_path
     packs_artifacts_path = upload_config.artifacts_path
-    dummy_index_path = upload_config.dummy_index_path
+    dummy_index_dir_path = upload_config.dummy_index_dir_path
+    dummy_index_path = os.path.join(dummy_index_dir_path, 'index.zip')
+    dummy_index_lock_path = os.path.join(dummy_index_dir_path, 'lock.txt')
 
     storage_client = init_storage_client(service_account)
     public_storage_bucket = storage_client.bucket(public_bucket_name)
@@ -132,23 +185,23 @@ def main():
 
     dummy_index_blob = public_storage_bucket.blob(dummy_index_path)
 
-    if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path
+    with lock_and_unlock_dummy_index(public_storage_bucket, dummy_index_lock_path):
+        if storage_base_path:
+            GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
-    extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    public_index_folder_path, public_index_blob, _ = download_and_extract_index(public_storage_bucket,
-                                                                                extract_public_index_path)
+        extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
+        public_index_folder_path, public_index_blob, _ = download_and_extract_index(public_storage_bucket,
+                                                                                    extract_public_index_path)
 
-    # In order for the packs to be downloaded successfully, their price has to be 0
-    change_packs_price_to_zero(public_index_folder_path)
+        # In order for the packs to be downloaded successfully, their price has to be 0
+        change_packs_price_to_zero(public_index_folder_path)
 
-    private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
-                                                                                           extract_destination_path,
-                                                                                           public_index_folder_path,
-                                                                                           changed_pack, True)
-
-    upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
-                          private_packs)
+        private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
+                                                                                               extract_destination_path,
+                                                                                               public_index_folder_path,
+                                                                                               changed_pack, True)
+        upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
+                              private_packs)
 
 
 if __name__ == '__main__':
