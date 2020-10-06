@@ -1,6 +1,6 @@
-id: 2142f8de-29d5-4288-8426-0db39abe988b
+id: AWS - EC2 Test Playbook
 version: -1
-name: 'AWS - EC2 Test Playbook '
+name: AWS - EC2 Test Playbook
 starttaskid: "0"
 tasks:
   "0":
@@ -71,10 +71,7 @@ tasks:
       id: 9537683d-aeb4-4a39-85e7-4b013a305e43
       version: -1
       name: aws-ec2-describe-images
-      description: Describes one or more of the images (AMIs, AKIs, and ARIs) available
-        to you. Images available to you include public images, private images that
-        you own, and private images owned by other AWS accounts but for which you
-        have explicit launch permissions.
+      description: Describes one or more of the images (AMIs, AKIs, and ARIs) available to you. Images available to you include public images, private images that you own, and private images owned by other AWS accounts but for which you have explicit launch permissions.
       script: AWS - EC2|||aws-ec2-describe-images
       type: regular
       iscommand: true
@@ -1584,3 +1581,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

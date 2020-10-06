@@ -112,6 +112,6 @@ There is no context output for this command.
 }]```
 
 ## Additional Information
-Contact us: support@cybersixgill.com
+Contact us: sales@cybersixgill.com
 
 ## Known Limitations

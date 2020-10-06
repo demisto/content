@@ -24,17 +24,21 @@ configuration:
   type: 0
   required: false
 script:
-  script: |
+  script: >
     var listSource = 'http://data.phishtank.com/data/online-valid.csv';
+
     var listUpdateIntervalHours = 1;
+
 
     var isNumber = function(obj) {
         return (obj == parseFloat(obj) && obj > 0);
     }
 
+
     if (isNumber(params.fetchIntervalHours)) {
         listUpdateIntervalHours = params.fetchIntervalHours;
     }
+
 
     var getList = function() {
         var res = http(listSource, {Method: 'GET'}, params.insecure, params.proxy);
@@ -64,12 +68,14 @@ script:
         return obj;
     };
 
+
     var reload = function() {
         var list = getList();
         var data={'list':list,'timestamp':new Date().getTime()};
         setIntegrationContext(data);
         return data;
     };
+
 
     var isReloadNeeded = function(data) {
         if (!data || !data.timestamp || !data.list) {
@@ -82,6 +88,7 @@ script:
         return false;
     }
 
+
     var removeLastSlash=function(pUrl) {
         var url=pUrl;
         if (url) {
@@ -91,6 +98,7 @@ script:
         }
         return url;
     }
+
     var doURL = function(pUrl) {
         var data = getIntegrationContext();
         if (isReloadNeeded(data)) {
@@ -123,6 +131,7 @@ script:
         var res = {'url':args.url, 'match': true};
         return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
+
 
     switch (command) {
         case 'test-module':
