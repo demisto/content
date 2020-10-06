@@ -2348,5 +2348,5 @@ script:
   subtype: python3
   type: python
 tests:
-- servicenow_test_new
+- servicenow_test_v2
 fromversion: 5.0.0

@@ -588,7 +588,7 @@
         },
         {
             "integrations": "ServiceNow v2",
-            "playbookID": "servicenow_test_new"
+            "playbookID": "servicenow_test_v2"
         },
         {
             "integrations": "ExtraHop v2",
