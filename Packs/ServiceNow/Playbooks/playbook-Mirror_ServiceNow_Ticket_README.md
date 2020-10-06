@@ -1,4 +1,4 @@
-Mirror ServiceNow Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with ServiceOne.
+Mirror ServiceNow Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with ServiceNow.
 It will allow you to manage ServiceNow tickets in Cortex xSOAR. While data is continuously synced between ServiceNow and Cortex xSOAR, including ServiceNow schema, fields, comments, work notes, and attachments.
 To enable OoB mirroring, use the ServiceNow Create ticket  - common mappers for incoming and outgoing mirroring.
 
