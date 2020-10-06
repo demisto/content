@@ -447,7 +447,7 @@ FETCH_ALERTS = {
                 "network": "internal",
                 "port": 56402,
                 "state": "Unknown",
-                "subnet": "10.1.10.0/24",
+                "subnet": "10.10.10.10/24",
                 "time_zone": "Unknown",
                 "zip": "Unknown",
                 "inferred": {

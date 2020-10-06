@@ -153,7 +153,7 @@ list packet alerts generated in requested time span
                     "network": "internal", 
                     "zip": "Unknown", 
                     "state": "Unknown", 
-                    "ip": "10.1.10.127", 
+                    "ip": "10.10.10.10", 
                     "inferred": {
                         "category": "computer", 
                         "control": "user", 
@@ -177,7 +177,7 @@ list packet alerts generated in requested time span
                     "time_zone": "Unknown", 
                     "country": "Unknown", 
                     "latitude": -1, 
-                    "subnet": "10.1.10.0/24", 
+                    "subnet": "10.10.10.10/24", 
                     "continent": "Unknown"
                 }, 
                 "payload": "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", 
@@ -186,7 +186,7 @@ list packet alerts generated in requested time span
                     "network": "external", 
                     "zip": "94107", 
                     "state": "California", 
-                    "ip": "162.125.7.13", 
+                    "ip": "4.4.4.4", 
                     "inferred": {
                         "category": "networking_equipment", 
                         "control": "auto", 
@@ -489,60 +489,15 @@ list anomaly alerts generated in requested time span
                         "port": 53
                     }, 
                     {
-                        "ip": "149.20.37.36", 
+                        "ip": "2.2.2.2", 
                         "connection_count": 0, 
                         "port": 80
                     }, 
                     {
-                        "ip": "198.145.21.9", 
+                        "ip": "3.3.3.3", 
                         "connection_count": 0, 
                         "port": 80
-                    }, 
-                    {
-                        "ip": "23.144.160.2", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "51.79.80.20", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "13.227.77.187", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "157.131.0.16", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "23.203.182.58", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "157.131.0.16", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "51.161.13.101", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "67.219.148.138", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "67.219.144.68", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }
+                    },
                 ], 
                 "deviation_from_norm": "4", 
                 "minimum": 0, 
@@ -646,54 +601,19 @@ list anomaly alerts generated in requested time span
                         "port": 53
                     }, 
                     {
-                        "ip": "104.27.1.117", 
+                        "ip": "3.3.3.3", 
                         "connection_count": 0, 
                         "port": 80
                     }, 
                     {
-                        "ip": "198.236.66.41", 
+                        "ip": "4.4.4.4", 
                         "connection_count": 0, 
                         "port": 80
                     }, 
                     {
-                        "ip": "204.12.217.19", 
+                        "ip": "5.5.5.5", 
                         "connection_count": 0, 
                         "port": 80
-                    }, 
-                    {
-                        "ip": "3.20.165.167", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "96.43.137.99", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "204.93.207.12", 
-                        "connection_count": 0, 
-                        "port": 123
-                    }, 
-                    {
-                        "ip": "13.227.73.93", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "151.101.2.49", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "3.20.165.167", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "34.210.254.183", 
-                        "connection_count": 0, 
-                        "port": 443
                     }
                 ], 
                 "deviation_from_norm": "4", 
@@ -868,7 +788,7 @@ retrieve single packet alert given packet id
             "network": "external", 
             "zip": "97818", 
             "state": "Oregon", 
-            "ip": "34.214.78.45", 
+            "ip": "3.3.3.3", 
             "inferred": {
                 "category": "networking_equipment", 
                 "control": "auto", 
@@ -901,7 +821,7 @@ retrieve single packet alert given packet id
             "network": "internal", 
             "zip": "Unknown", 
             "state": "Unknown", 
-            "ip": "10.1.10.149", 
+            "ip": "10.10.10.10", 
             "inferred": {
                 "category": "computer", 
                 "control": "auto", 
@@ -925,7 +845,7 @@ retrieve single packet alert given packet id
             "time_zone": "Unknown", 
             "country": "Unknown", 
             "latitude": -1, 
-            "subnet": "10.1.10.0/24", 
+            "subnet": "10.10.10.10/24", 
             "continent": "Unknown"
         }, 
         "type": "pkt_alert", 
@@ -944,7 +864,7 @@ retrieve single packet alert given packet id
 ### Results
 |address|category|description|destination|group|http|id|payload|references|severity|signature|source|subtype|timestamp|title|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 3c:a9:f4:64:06:e0 | Generic Protocol Command Decode | ET INFO WinHttp AutoProxy Request wpad.dat Possible BadTunnel | city: Boardman<br/>continent: North America<br/>country: United States<br/>ip: 34.214.78.45<br/>latitude: 45.8696<br/>longitude: -119.688<br/>mac: c4:24:56:87:ef:11<br/>network: external<br/>port: 80<br/>state: Oregon<br/>subnet: <br/>time_zone: America/Los_Angeles<br/>zip: 97818<br/>inferred: {"device_id": "5d73f6a3c250255491ce3839", "asset": "unmanaged", "managed": false, "category": "networking_equipment", "control": "auto", "host_name": "", "os": "linux", "os_version": "", "ownership": "corporate-unmanaged", "total_risk": 0, "type": "network infrastructure", "username": "", "managed_info": {"host_name": ""}} | alert | hostname: api-wootuno-1606049077.us-west-2.elb.amazonaws.com<br/>http_method: GET<br/>http_user_agent: WinHttp-Autoproxy-Service/5.1<br/>length: 134<br/>protocol: HTTP/1.1<br/>redirect: https://api-wootuno-1606049077.us-west-2.elb.amazonaws.com:443/wpad.dat<br/>http_refer: <br/>status: 301<br/>url: /wpad.dat | eyJpIjoiU05XT09UQVBQUFJPRDAxXzI2MzY1XzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDQifQ== | R0VUIC93cGFkLmRhdCBIVFRQLzEuMQ0KQ29ubmVjdGlvbjogS2VlcC1BbGl2ZQ0KQWNjZXB0OiAqLyoNClVzZXItQWdlbnQ6IFdpbkh0dHAtQXV0b3Byb3h5LVNlcnZpY2UvNS4xDQpIb3N0OiBhcGktd29vdHVuby0xNjA2MDQ5MDc3LnVzLXdlc3QtMi5lbGIuYW1hem9uYXdzLmNvbQ0KDQo= |  | info | ET INFO WinHttp AutoProxy Request wpad.dat Possible BadTunnel | city: Unknown<br/>continent: Unknown<br/>country: Unknown<br/>ip: 10.1.10.149<br/>latitude: -1<br/>longitude: -1<br/>mac: 3c:a9:f4:64:06:e0<br/>network: internal<br/>port: 63202<br/>state: Unknown<br/>subnet: 10.1.10.0/24<br/>time_zone: Unknown<br/>zip: Unknown<br/>inferred: {"device_id": "5b4c3c91072c98142d308b29", "asset": "managed", "managed": true, "category": "computer", "control": "auto", "host_name": "DESKTOP-EV607JG", "os": "windows", "os_version": "10", "ownership": "corporate", "total_risk": 0, "type": "computer", "username": "3ca9f46406e0", "managed_info": {"host_name": "DESKTOP-EV607JG"}} | protocol-command-decode | 2020-10-04T04:09:05Z | Generic Protocol Command Decode | pkt_alert |
+| 3c:a9:f4:64:06:e0 | Generic Protocol Command Decode | ET INFO WinHttp AutoProxy Request wpad.dat Possible BadTunnel | city: Boardman<br/>continent: North America<br/>country: United States<br/>ip: 3.3.3.3<br/>latitude: 45.8696<br/>longitude: -119.688<br/>mac: c4:24:56:87:ef:11<br/>network: external<br/>port: 80<br/>state: Oregon<br/>subnet: <br/>time_zone: America/Los_Angeles<br/>zip: 97818<br/>inferred: {"device_id": "5d73f6a3c250255491ce3839", "asset": "unmanaged", "managed": false, "category": "networking_equipment", "control": "auto", "host_name": "", "os": "linux", "os_version": "", "ownership": "corporate-unmanaged", "total_risk": 0, "type": "network infrastructure", "username": "", "managed_info": {"host_name": ""}} | alert | hostname: api-wootuno-1606049077.us-west-2.elb.amazonaws.com<br/>http_method: GET<br/>http_user_agent: WinHttp-Autoproxy-Service/5.1<br/>length: 134<br/>protocol: HTTP/1.1<br/>redirect: https://api-wootuno-1606049077.us-west-2.elb.amazonaws.com:443/wpad.dat<br/>http_refer: <br/>status: 301<br/>url: /wpad.dat | eyJpIjoiU05XT09UQVBQUFJPRDAxXzI2MzY1XzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDQifQ== | R0VUIC93cGFkLmRhdCBIVFRQLzEuMQ0KQ29ubmVjdGlvbjogS2VlcC1BbGl2ZQ0KQWNjZXB0OiAqLyoNClVzZXItQWdlbnQ6IFdpbkh0dHAtQXV0b3Byb3h5LVNlcnZpY2UvNS4xDQpIb3N0OiBhcGktd29vdHVuby0xNjA2MDQ5MDc3LnVzLXdlc3QtMi5lbGIuYW1hem9uYXdzLmNvbQ0KDQo= |  | info | ET INFO WinHttp AutoProxy Request wpad.dat Possible BadTunnel | city: Unknown<br/>continent: Unknown<br/>country: Unknown<br/>ip: 10.10.10.10<br/>latitude: -1<br/>longitude: -1<br/>mac: 3c:a9:f4:64:06:e0<br/>network: internal<br/>port: 63202<br/>state: Unknown<br/>subnet: 10.10.10.10/24<br/>time_zone: Unknown<br/>zip: Unknown<br/>inferred: {"device_id": "5b4c3c91072c98142d308b29", "asset": "managed", "managed": true, "category": "computer", "control": "auto", "host_name": "DESKTOP-EV607JG", "os": "windows", "os_version": "10", "ownership": "corporate", "total_risk": 0, "type": "computer", "username": "3ca9f46406e0", "managed_info": {"host_name": "DESKTOP-EV607JG"}} | protocol-command-decode | 2020-10-04T04:09:05Z | Generic Protocol Command Decode | pkt_alert |
 
 
 ### 5. wootcloud-fetch-bluetooth-alert
