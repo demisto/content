@@ -7,18 +7,6 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - hidden: false
   name: creds
   required: false
@@ -29,12 +17,15 @@ configuration:
   name: adom
   required: false
   type: 0
-- display: Incident type
-  name: incidentType
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
-  type: 13
-description: FortiManager is a single console central management system that manages
-  Fortinet Devices.
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: This is the Hello World integration for getting started.
 display: FortiManager
 name: FortiManager
 script:
