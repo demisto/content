@@ -3604,16 +3604,28 @@ def panorama_delete_edl_command():
     })
 
 
-def panorama_refresh_edl(edl_name):
-    edl = panorama_get_edl(edl_name)
-    edl_type = ''.join(edl['type'].keys())
-
+def panorama_refresh_edl(edl_name: str, edl_type: str, location: str, vsys: str):
     params = {
         'type': 'op',
-        'cmd': '<request><system><external-list><refresh><type><' + edl_type + '><name>' + edl_name + '</name></'
-               + edl_type + '></type></refresh></external-list></system></request>',
         'key': API_KEY
     }
+    # if refreshing an EDL on the FW
+    if not edl_type and not location and not vsys:
+        edl = panorama_get_edl(edl_name)
+        edl_type = ''.join(edl['type'].keys())
+    # if refreshing an EDL on the Panorama
+    else:
+        if not edl_type or not location or not vsys:
+            raise Exception('To refresh an EDL from the Firewall on Panorama'
+                            ' please use the: edl_type, location and vsys arguments.')
+
+    params['cmd'] = f'<request><system><external-list><refresh><type><{edl_type}><name>{edl_name}' \
+                    f'</name></{edl_type}></type></refresh></external-list></system></request>'
+    if location:
+        params['location'] = location
+    if vsys:
+        params['vsys'] = vsys
+
     result = http_request(
         URL,
         'POST',
@@ -3627,12 +3639,16 @@ def panorama_refresh_edl_command():
     """
     Refresh an EDL
     """
+    args = demisto.args()
     if DEVICE_GROUP:
         raise Exception('EDL refresh is only supported on Firewall (not Panorama).')
 
-    edl_name = demisto.args()['name']
+    edl_name = args.get('name')
+    edl_type = args.get('edl_type', '')
+    location = args.get('location', '')
+    vsys = args.get('vsys', '')
 
-    result = panorama_refresh_edl(edl_name)
+    result = panorama_refresh_edl(edl_name, edl_type, location, vsys)
 
     demisto.results({
         'Type': entryTypes['note'],
