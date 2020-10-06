@@ -39,8 +39,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. wootcloud-get-pkt-alerts
 ---
 list packet alerts generated in requested time span
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `wootcloud-get-pkt-alerts`
@@ -218,7 +216,7 @@ list packet alerts generated in requested time span
                 "type": "pkt_alert", 
                 "references": [], 
                 "title": "User Activity Detected", 
-                "address": "7c:67:a2:37:77:51", 
+                "address": "7c:12:a2:45:77:51", 
                 "group": "alert", 
                 "signature": "ET POLICY Dropbox.com Offsite File Backup in Use", 
                 "id": "eyJpIjoiU05XT09UQVBQUFJPRDAxXzQxMTYzXzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDUifQ==", 
@@ -379,79 +377,24 @@ list anomaly alerts generated in requested time span
                 "maximum": 0, 
                 "connections": [
                     {
-                        "ip": "13.88.28.53", 
+                        "ip": "2.2.2.2", 
                         "connection_count": 0, 
                         "port": 443
                     }, 
                     {
-                        "ip": "191.232.139.2", 
+                        "ip": "3.3.3.3", 
                         "connection_count": 0, 
                         "port": 443
                     }, 
                     {
-                        "ip": "52.114.77.34", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.137.106.217", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.137.110.235", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.159.17.76", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.250.46.232", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "96.6.230.52", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "239.255.255.250", 
-                        "connection_count": 0, 
-                        "port": 1900
-                    }, 
-                    {
-                        "ip": "205.185.216.42", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "52.114.88.28", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "72.21.81.240", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "52.114.76.34", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.38.103.25", 
+                        "ip": "4.4.4.4", 
                         "connection_count": 0, 
                         "port": 443
                     }
                 ], 
                 "deviation_from_norm": "2", 
                 "minimum": 0, 
-                "id": "eyJpIjoiU05XT09UQVBQUFJPRDAxX3JlYWx0aW1lX3AwMDIscGt0c3RhdHMzLDNjOmE5OmY0OjY0OjA2OmUwLDE2MDE3NDQ4OTcuNzg0NTg0LDI2ODkzXzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDMifQ==", 
+                "id": "eyJpIjoiU05XT09UQVBQUFJPRDAxV4JlYWx0aW1lX3AwMDIscGt0c3RhdHMzLDNjOmE5OmY0OjY0OjA2OmUwLDE2MDE3NDQ4OTcuNzg0NTg0LDI2ODkzXzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDMifQ==", 
                 "group": "anomaly", 
                 "severity": "low", 
                 "title": "Connection Anomaly", 
@@ -470,13 +413,13 @@ list anomaly alerts generated in requested time span
                     "category": "computer", 
                     "control": "auto", 
                     "managed_info": {
-                        "host_name": "DESKTOP-EV607JG"
+                        "host_name": "DESKTOP-EV123JG"
                     }, 
                     "managed": true, 
                     "type": "computer", 
                     "username": "3ca9f46406e0", 
                     "os_version": "10", 
-                    "host_name": "DESKTOP-EV607JG", 
+                    "host_name": "DESKTOP-EV123JG", 
                     "ownership": "corporate", 
                     "total_risk": 0, 
                     "device_id": "5b4c3c91072c98142d308b29", 
@@ -490,74 +433,14 @@ list anomaly alerts generated in requested time span
                 "maximum": 0, 
                 "connections": [
                     {
-                        "ip": "239.255.255.250", 
-                        "connection_count": 0, 
-                        "port": 1900
-                    }, 
-                    {
-                        "ip": "104.64.144.191", 
+                        "ip": "4.4.4.4", 
                         "connection_count": 0, 
                         "port": 443
                     }, 
                     {
-                        "ip": "104.86.25.99", 
+                        "ip": "3.3.3.3", 
                         "connection_count": 0, 
                         "port": 443
-                    }, 
-                    {
-                        "ip": "20.191.46.109", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.114.76.35", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.114.77.34", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "13.107.4.50", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "191.232.139.2", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.137.106.217", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.170.57.27", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.177.83.224", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.242.231.33", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "205.185.216.10", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "205.185.216.42", 
-                        "connection_count": 0, 
-                        "port": 80
                     }
                 ], 
                 "deviation_from_norm": "2", 
@@ -702,44 +585,9 @@ list anomaly alerts generated in requested time span
                 "maximum": 0, 
                 "connections": [
                     {
-                        "ip": "205.185.216.10", 
+                        "ip": "3.3.3.3", 
                         "connection_count": 0, 
                         "port": 80
-                    }, 
-                    {
-                        "ip": "104.45.177.233", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "104.86.25.99", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.114.132.20", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.114.159.22", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "52.137.103.130", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "65.52.108.90", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "172.217.0.35", 
-                        "connection_count": 0, 
-                        "port": 443
                     }, 
                     {
                         "ip": "8.8.4.4", 
@@ -750,36 +598,6 @@ list anomaly alerts generated in requested time span
                         "ip": "8.8.8.8", 
                         "connection_count": 0, 
                         "port": 53
-                    }, 
-                    {
-                        "ip": "13.73.26.107", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "13.78.168.230", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "40.90.22.184", 
-                        "connection_count": 0, 
-                        "port": 443
-                    }, 
-                    {
-                        "ip": "184.25.56.149", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "23.218.80.179", 
-                        "connection_count": 0, 
-                        "port": 80
-                    }, 
-                    {
-                        "ip": "52.137.106.217", 
-                        "connection_count": 0, 
-                        "port": 443
                     }
                 ], 
                 "deviation_from_norm": "2", 
@@ -933,8 +751,6 @@ list anomaly alerts generated in requested time span
 ### 4. wootcloud-fetch-packet-alert
 ---
 retrieve single packet alert given packet id
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `wootcloud-fetch-packet-alert`
@@ -1249,72 +1065,17 @@ retrieve single anomaly alert given packet id
         "maximum": 0, 
         "connections": [
             {
-                "ip": "13.88.28.53", 
+                "ip": "2.2.2.2", 
                 "connection_count": 0, 
                 "port": 443
             }, 
             {
-                "ip": "191.232.139.2", 
+                "ip": "3.3.3.3", 
                 "connection_count": 0, 
                 "port": 443
             }, 
             {
-                "ip": "52.114.77.34", 
-                "connection_count": 0, 
-                "port": 443
-            }, 
-            {
-                "ip": "52.137.106.217", 
-                "connection_count": 0, 
-                "port": 443
-            }, 
-            {
-                "ip": "52.137.110.235", 
-                "connection_count": 0, 
-                "port": 443
-            }, 
-            {
-                "ip": "52.159.17.76", 
-                "connection_count": 0, 
-                "port": 443
-            }, 
-            {
-                "ip": "52.250.46.232", 
-                "connection_count": 0, 
-                "port": 443
-            }, 
-            {
-                "ip": "96.6.230.52", 
-                "connection_count": 0, 
-                "port": 443
-            }, 
-            {
-                "ip": "239.255.255.250", 
-                "connection_count": 0, 
-                "port": 1900
-            }, 
-            {
-                "ip": "205.185.216.42", 
-                "connection_count": 0, 
-                "port": 80
-            }, 
-            {
-                "ip": "52.114.88.28", 
-                "connection_count": 0, 
-                "port": 443
-            }, 
-            {
-                "ip": "72.21.81.240", 
-                "connection_count": 0, 
-                "port": 80
-            }, 
-            {
-                "ip": "52.114.76.34", 
-                "connection_count": 0, 
-                "port": 443
-            }, 
-            {
-                "ip": "52.38.103.25", 
+                "ip": "4.4.4.4", 
                 "connection_count": 0, 
                 "port": 443
             }
@@ -1362,5 +1123,5 @@ retrieve single anomaly alert given packet id
 ### Results
 |address|anomaly_score|anomaly_type|average|connections|count|description|deviation_from_norm|device_details|group|id|maximum|minimum|observed_value|severity|signature|standard_deviation|subtype|timestamp|title|type|units|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 3c:a9:f4:64:06:e0 | 0.41364444218713525 | Connection | 0 | {'ip': '13.88.28.53', 'port': 443, 'connection_count': 0},<br/>{'ip': '191.232.139.2', 'port': 443, 'connection_count': 0},<br/>{'ip': '52.114.77.34', 'port': 443, 'connection_count': 0},<br/>{'ip': '52.137.106.217', 'port': 443, 'connection_count': 0},<br/>{'ip': '52.137.110.235', 'port': 443, 'connection_count': 0},<br/>{'ip': '52.159.17.76', 'port': 443, 'connection_count': 0},<br/>{'ip': '52.250.46.232', 'port': 443, 'connection_count': 0},<br/>{'ip': '96.6.230.52', 'port': 443, 'connection_count': 0},<br/>{'ip': '239.255.255.250', 'port': 1900, 'connection_count': 0},<br/>{'ip': '205.185.216.42', 'port': 80, 'connection_count': 0},<br/>{'ip': '52.114.88.28', 'port': 443, 'connection_count': 0},<br/>{'ip': '72.21.81.240', 'port': 80, 'connection_count': 0},<br/>{'ip': '52.114.76.34', 'port': 443, 'connection_count': 0},<br/>{'ip': '52.38.103.25', 'port': 443, 'connection_count': 0} | 26893 | Realtime Connection anomaly (1-min) triggered based on combination of 3 attributes:<br/>number of connections:15 (normally:2.44+/-1.40)<br/>number of destination ips:14 (normally:1.93+/-1.05)<br/>number of destination ports:3 (normally:1.89+/-0.96)<br/>normal is based on 26,893 observations. | 2 | device_id: 5b4c3c91072c98142d308b29<br/>asset: managed<br/>managed: true<br/>category: computer<br/>control: auto<br/>host_name: DESKTOP-EV607JG<br/>os: windows<br/>os_version: 10<br/>ownership: corporate<br/>total_risk: 0<br/>type: computer<br/>username: 3ca9f46406e0<br/>managed_info: {"host_name": "DESKTOP-EV607JG"} | anomaly | eyJpIjoiU05XT09UQVBQUFJPRDAxX3JlYWx0aW1lX3AwMDIscGt0c3RhdHMzLDNjOmE5OmY0OjY0OjA2OmUwLDE2MDE3NDQ4OTcuNzg0NTg0LDI2ODkzXzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDMifQ== | 0 | 0 | 0 | low | realtime_p002:pktstats3\|1-min\| | 0 | realtime_p002 | 2020-10-03T17:08:17Z | Connection Anomaly | realtime-anomaly |  |
+| 3c:a9:f4:64:06:e0 | 0.41364444218713525 | Connection | 0 | {'ip': '2.2.2.2', 'port': 443, 'connection_count': 0},<br/>{'ip': '3.3.3.3', 'port': 443, 'connection_count': 0},<br/>{'ip': '4.4.4.4', 'port': 443, 'connection_count': 0},<br/>{'ip': '2.2.2.2', 'port': 443, 'connection_count': 0} | 26893 | Realtime Connection anomaly (1-min) triggered based on combination of 3 attributes:<br/>number of connections:15 (normally:2.44+/-1.40)<br/>number of destination ips:14 (normally:1.93+/-1.05)<br/>number of destination ports:3 (normally:1.89+/-0.96)<br/>normal is based on 26,893 observations. | 2 | device_id: 5b4c3c91072c98142d308b29<br/>asset: managed<br/>managed: true<br/>category: computer<br/>control: auto<br/>host_name: DESKTOP-EV607JG<br/>os: windows<br/>os_version: 10<br/>ownership: corporate<br/>total_risk: 0<br/>type: computer<br/>username: 3ca9f46406e0<br/>managed_info: {"host_name": "DESKTOP-EV607JG"} | anomaly | eyJpIjoiU05XT09UQVBQUFJPRDAxX3JlYWx0aW1lX3AwMDIscGt0c3RhdHMzLDNjOmE5OmY0OjY0OjA2OmUwLDE2MDE3NDQ4OTcuNzg0NTg0LDI2ODkzXzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDMifQ== | 0 | 0 | 0 | low | realtime_p002:pktstats3\|1-min\| | 0 | realtime_p002 | 2020-10-03T17:08:17Z | Connection Anomaly | realtime-anomaly |  |
 
