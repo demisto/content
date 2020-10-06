@@ -101,7 +101,7 @@ def set_proxy():
             host, port = get_host_port_from_proxy_settings(proxy_settings)
 
             if USE_PROXY:
-                admin_api.set_proxy(host=host[:-1], port=port)
+                admin_api.set_proxy(host=host.strip(':'), port=port)
 
     # if no proxy settings have been set
     except ValueError:
