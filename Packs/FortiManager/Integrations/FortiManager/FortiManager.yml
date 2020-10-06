@@ -33,7 +33,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: This is the Hello World integration for getting started.
+description: FortiManager is a single console central management system that manages
+  Fortinet Devices.
 display: FortiManager
 name: FortiManager
 script:
