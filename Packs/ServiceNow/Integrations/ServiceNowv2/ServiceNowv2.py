@@ -2116,8 +2116,8 @@ def main():
     LOG(f'Executing command {command}')
 
     params = demisto.params()
-    username = params['credentials']['identifier']
-    password = params['credentials']['password']
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
     verify = not params.get('insecure', False)
 
     version = params.get('api_version')
