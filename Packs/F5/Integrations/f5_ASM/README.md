@@ -235,7 +235,7 @@ Applying a policy in application security manager
 
 ### f5-asm-policy-export-file
 ***
-export policy file
+Exporting policy file
 
 
 #### Base Command
