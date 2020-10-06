@@ -2349,7 +2349,3 @@ script:
 fromversion: 5.0.0
 tests:
 - servicenow_test_v2
-<<<<<<< Updated upstream
-fromversion: 5.0.0
-=======
->>>>>>> Stashed changes
