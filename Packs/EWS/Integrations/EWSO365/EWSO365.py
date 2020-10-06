@@ -2247,8 +2247,10 @@ def test_module(client: EWSClient, max_fetch):
 def sub_main():
     is_test_module = False
     params = demisto.params()
-    client = EWSClient(**params)
     args = prepare_args(demisto.args())
+    if args.get('target_mailbox'):
+        params['default_target_mailbox'] = args['target_mailbox']
+    client = EWSClient(**params)
     start_logging()
     try:
         command = demisto.command()
