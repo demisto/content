@@ -17,11 +17,6 @@ echo "starting configure_and_test_integration_instances"
 python3 ./Tests/configure_and_test_integration_instances.py -u "$USERNAME" -p "$PASSWORD" -c "$CONF_PATH" -s "$SECRET_CONF_PATH" -g "$GIT_SHA1" --ami_env "$1" -n $IS_NIGHTLY --branch "$BRANCH_NAME" --build-number "$GITHUB_RUN_NUMBER" -pr true
 code_1=$?
 
-echo ::set-env name=GOOGLE_APPLICATION_CREDENTIALS::"creds.json"
-export GOOGLE_APPLICATION_CREDENTIALS="creds.json"
-cat <<EOF > "$GOOGLE_APPLICATION_CREDENTIALS"
-$GCS_ARTIFACTS_KEY
-EOF
 
 if [ $code_1 -ne 1 ] ; then
   if [ -n "${NON_AMI_RUN}" ]; then
