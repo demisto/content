@@ -39,7 +39,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Select if sample if a URL or a file
+      description: Select if sample is a URL or a file
       isArray: false
       name: kind
       predefined:
@@ -78,6 +78,7 @@ script:
     name: triage-submit-sample
   - arguments:
     - default: false
+      description: Sample's unique identifier, can be found using the query samples command
       isArray: false
       name: sample_id
       required: true
@@ -91,6 +92,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
+      description: Sample's unique identifier, can be found using the query samples command
       isArray: false
       name: sample_id
       required: true
@@ -102,6 +104,7 @@ script:
   - arguments:
     - default: false
       isArray: false
+      description: Sample's unique identifier, can be found using the query samples command
       name: sample_id
       required: false
       secret: false
@@ -113,6 +116,7 @@ script:
     - default: false
       isArray: false
       name: sample_id
+      description: Sample's unique identifier, can be found using the query samples command
       required: true
       secret: false
     - auto: PREDEFINED
@@ -147,6 +151,7 @@ script:
     - default: false
       isArray: false
       name: sample_id
+      description: Sample's unique identifier, can be found using the query samples command
       required: true
       secret: false
     deprecated: false
@@ -157,11 +162,13 @@ script:
     - default: false
       isArray: false
       name: sample_id
+      description: Sample's unique identifier, can be found using the query samples command
       required: true
       secret: false
     - default: false
       isArray: false
       name: task_id
+      description: Name of the task for the sample (e.g. behavioral1, static1, etc)
       required: true
       secret: false
     deprecated: false
@@ -172,11 +179,13 @@ script:
     - default: false
       isArray: false
       name: sample_id
+      description: Sample's unique identifier, can be found using the query samples command
       required: true
       secret: false
     - default: false
       isArray: false
       name: task_id
+      description: Name of the task for the sample (e.g. behavioral1, static1, etc)
       required: false
       secret: false
     deprecated: false
@@ -187,11 +196,13 @@ script:
     - default: false
       isArray: false
       name: sample_id
+      description: Sample's unique identifier, can be found using the query samples command
       required: true
       secret: false
     - default: false
       isArray: false
       name: task_id
+      description: Name of the task for the sample (e.g. behavioral1, static1, etc)
       required: true
       secret: false
     deprecated: false
@@ -202,16 +213,19 @@ script:
     - default: false
       isArray: false
       name: sample_id
+      description: Sample's unique identifier, can be found using the query samples command
       required: true
       secret: false
     - default: false
       isArray: false
       name: task_id
+      description: Name of the task for the sample (e.g. behavioral1, static1, etc)
       required: true
       secret: false
     - default: false
       isArray: false
       name: file_name
+      description: Name of the dumped file
       required: true
       secret: false
     deprecated: false
@@ -222,6 +236,7 @@ script:
     - default: false
       isArray: false
       name: userID
+      description: Unique identifier of the user. Leave blank to query for all users
       required: false
       secret: false
     deprecated: false
@@ -232,27 +247,32 @@ script:
     - default: false
       isArray: false
       name: username
+      description: Users username, usually their email
       required: true
       secret: false
     - default: false
       isArray: false
       name: firstName
+      description: Users first name
       required: true
       secret: false
     - default: false
       isArray: false
       name: lastName
+      description: Users last name
       required: true
       secret: false
     - default: false
       isArray: false
       name: password
+      description: Users password
       required: true
       secret: true
     - auto: PREDEFINED
       default: false
       isArray: false
       name: permissions
+      description: Users permissions
       predefined:
       - view_samples
       - submit_samples
@@ -271,6 +291,7 @@ script:
     - default: false
       isArray: false
       name: userID
+      description: Users unique identifier, can be found by querying for all users
       required: true
       secret: false
     deprecated: false
@@ -281,13 +302,14 @@ script:
     - default: false
       isArray: false
       name: userID
+      description: Users unique identifier, can be found by querying for all users
       required: true
       secret: false
     - default: false
-      description: Give a name to the API key
       defaultValue: Created from XSOAR
       isArray: false
       name: name
+      description: Name of the API key
       required: false
       secret: false
     deprecated: false
@@ -298,6 +320,7 @@ script:
     - default: false
       isArray: false
       name: userID
+      description: Users unique identifier, can be found by querying for all users
       required: true
       secret: false
     deprecated: false
@@ -308,11 +331,13 @@ script:
     - default: false
       isArray: false
       name: userID
+      description: Users unique identifier, can be found by querying for all users
       required: true
       secret: false
     - default: false
       isArray: false
       name: name
+      description: Name of the API key to delete
       required: false
       secret: false
     deprecated: false
@@ -323,6 +348,7 @@ script:
     - default: false
       isArray: false
       name: profileID
+      description: Unique identifier of the profile, can be found by querying for all profiles
       required: false
       secret: false
     deprecated: false
@@ -333,22 +359,26 @@ script:
     - default: false
       isArray: false
       name: name
+      description: Name of the profile to create
       required: true
       secret: false
     - default: false
       isArray: false
       name: tags
+      description: Tags to apply to the profile
       required: false
       secret: false
     - default: false
       isArray: false
       name: timeout
+      description: Length of time the profile should run for
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       isArray: false
       name: network
+      description: Network configuration the profile should use
       predefined:
         - drop
         - internet
@@ -363,21 +393,25 @@ script:
     - default: false
       isArray: false
       name: profileID
+      description: Unique identifier of the profile to update
       required: true
       secret: false
     - default: false
       isArray: false
       name: name
+      description: Name of the profile
       required: false
       secret: false
     - default: false
       isArray: false
       name: tags
+      description: Tags to apply to the profile
       required: false
       secret: false
     - default: false
       isArray: false
       name: timeout
+      description: Length of time the profile should run for
       required: false
       secret: false
     deprecated: false
@@ -387,6 +421,7 @@ script:
     - default: false
       isArray: false
       name: profileID
+      description: Unique identifier of the profile to delete
       required: true
       secret: false
     deprecated: false
