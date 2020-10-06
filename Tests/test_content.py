@@ -833,7 +833,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     turn_off_telemetry(xsoar_client)
 
     proxy = None
-    if is_ami:
+    if is_ami and not is_private:
         ami = AMIConnection(server_ip)
         ami.clone_mock_data()
         proxy = MITMProxy(server_ip)
@@ -860,7 +860,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     try:
         # first run the mock tests to avoid mockless side effects in container
-        if is_ami and mockable_tests:
+        if is_ami and mockable_tests and not is_private:
             proxy.configure_proxy_in_demisto(proxy=proxy.ami.docker_ip + ':' + proxy.PROXY_PORT,
                                              username=demisto_user, password=demisto_pass,
                                              server=server)
@@ -915,7 +915,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     finally:
         tests_data_keeper.add_tests_data(succeed_playbooks, failed_playbooks, skipped_tests,
                                          skipped_integration, unmockable_integrations)
-        if is_ami:
+        if is_ami and not is_private:
             tests_data_keeper.add_proxy_related_test_data(proxy)
 
             if build_name == 'master':
