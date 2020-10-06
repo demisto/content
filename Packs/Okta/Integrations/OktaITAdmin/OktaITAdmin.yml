@@ -1,0 +1,312 @@
+category: IT Services
+commonfields:
+  id: Okta IT Admin
+  version: -1
+configuration:
+- display: Okta URL (https://<domain>.okta.com)
+  name: url
+  required: true
+  type: 0
+- display: API Token (see Detailed Instructions)
+  name: apitoken
+  required: true
+  type: 4
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- defaultvalue: True
+  display: Create User Command Enabled
+  hidden: false
+  name: create-user-enabled
+  required: false
+  type: 8
+- defaultvalue: True
+  display: Update User Command Enabled
+  hidden: false
+  name: update-user-enabled
+  required: false
+  type: 8
+- defaultvalue: True
+  display: Enable/Disable User Commands Enabled
+  hidden: false
+  name: enable-disable-user-enabled
+  required: false
+  type: 8
+description: Integration with Okta's cloud-based identity management service
+display: Okta IT Admin (Partner Contribution)
+name: Okta IT Admin
+script:
+  commands:
+  - arguments:
+    - default: false
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a user
+    execution: true
+    name: create-user
+    outputs:
+    - contextPath: CreateUser
+      description: Command context path
+      type: Unknown
+    - contextPath: CreateUser.active
+      description: Gives the active status of user. Can be true of false
+      type: Boolean
+    - contextPath: CreateUser.brand
+      description: Name of the Integration
+      type: String
+    - contextPath: CreateUser.details
+      description: Gives the detail error information
+      type: Unknown
+    - contextPath: CreateUser.email
+      description: Value of email ID passed as argument
+      type: String
+    - contextPath: CreateUser.errorCode
+      description: HTTP error response code
+      type: Number
+    - contextPath: CreateUser.errorMessage
+      description: Reason why the API is failed
+      type: String
+    - contextPath: CreateUser.id
+      description: Value of id passed as argument
+      type: String
+    - contextPath: CreateUser.instanceName
+      description: Name of the instance used for testing
+      type: Unknown
+    - contextPath: CreateUser.success
+      description: Status of the result. Can be true or false
+      type: Boolean
+    - contextPath: CreateUser.username
+      description: Value of username passed as argument
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      isArray: false
+      name: create-if-not-exists
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an existing user resource found with the "oldscim" with the
+      data in the "newscim"
+    execution: true
+    name: update-user
+    outputs:
+    - contextPath: UpdateUser
+      description: Command context path
+      type: Unknown
+    - contextPath: UpdateUser.active
+      description: Gives the active status of user. Can be true of false.Name of the
+        Integration
+      type: Boolean
+    - contextPath: UpdateUser.brand
+      description: Name of the Integration
+      type: String
+    - contextPath: UpdateUser.details
+      description: Gives the detail error information
+      type: Unknown
+    - contextPath: UpdateUser.email
+      description: Value of email ID passed as argument
+      type: String
+    - contextPath: UpdateUser.errorCode
+      description: HTTP error response code
+      type: Number
+    - contextPath: UpdateUser.errorMessage
+      description: Reason why the API is failed
+      type: String
+    - contextPath: UpdateUser.id
+      description: Value of id passed as argument
+      type: String
+    - contextPath: UpdateUser.instanceName
+      description: Name of the instance used for testing
+      type: String
+    - contextPath: UpdateUser.success
+      description: Status of the result. Can be true or false.
+      type: Boolean
+    - contextPath: UpdateUser.username
+      description: Value of username passed as argument
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a single user resource.
+    execution: false
+    name: get-user
+    outputs:
+    - contextPath: GetUser
+      description: Command context path
+      type: Unknown
+    - contextPath: GetUser.active
+      description: 'User status, set to one of the following values:  true or false'
+      type: Boolean
+    - contextPath: GetUser.brand
+      description: User's brand name
+      type: String
+    - contextPath: GetUser.details
+      description: Gives the user information if the API is success else error information
+      type: Unknown
+    - contextPath: GetUser.email
+      description: User's email address
+      type: String
+    - contextPath: GetUser.errorCode
+      description: 'Error code in the case of exception.  Example: 404'
+      type: Number
+    - contextPath: GetUser.errorMessage
+      description: Error message in the case of exception
+      type: String
+    - contextPath: GetUser.id
+      description: User''s id
+      type: String
+    - contextPath: GetUser.instanceName
+      description: Instance name for the Integration
+      type: String
+    - contextPath: GetUser.success
+      description: Success status. Can be True or False
+      type: Boolean
+    - contextPath: GetUser.username
+      description: User''s username
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      isArray: false
+      name: create-if-not-exists
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Enable active users by setting the active attribute equal to true.
+    execution: true
+    name: enable-user
+    outputs:
+    - contextPath: EnableUser
+      description: Command context path
+      type: Unknown
+    - contextPath: EnableUser.active
+      description: Gives the active status of user. Can be true of false.
+      type: Boolean
+    - contextPath: EnableUser.details
+      description: Gives the detail error information
+      type: Unknown
+    - contextPath: EnableUser.email
+      description: Value of email ID passed as argument
+      type: String
+    - contextPath: EnableUser.errorCode
+      description: HTTP error response code
+      type: Number
+    - contextPath: EnableUser.errorMessage
+      description: Reason why the API is failed
+      type: String
+    - contextPath: EnableUser.id
+      description: Value of id passed as argument
+      type: String
+    - contextPath: EnableUser.instanceName
+      description: Name of the instance used for testing
+      type: String
+    - contextPath: EnableUser.success
+      description: Status of the result. Can be true or false
+      type: Boolean
+    - contextPath: EnableUser.brand
+      description: Name of the Integration
+      type: String
+    - contextPath: EnableUser.username
+      description: Value of username passed as argument
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Disable active users by setting the active attribute equal to false.
+    execution: true
+    name: disable-user
+    outputs:
+    - contextPath: DisableUser
+      description: Command context path
+      type: Unknown
+    - contextPath: DisableUser.active
+      description: Gives the active status of user. Can be true of false
+      type: Boolean
+    - contextPath: DisableUser.brand
+      description: Name of the Integration
+      type: String
+    - contextPath: DisableUser.details
+      description: Gives the detail error information
+      type: Unknown
+    - contextPath: DisableUser.email
+      description: Value of email ID passed as argument
+      type: String
+    - contextPath: DisableUser.errorCode
+      description: HTTP error response code
+      type: Number
+    - contextPath: DisableUser.errorMessage
+      description: Reason why the API is failed
+      type: String
+    - contextPath: DisableUser.id
+      description: Value of id passed as argument
+      type: String
+    - contextPath: DisableUser.instanceName
+      description: Name of the instance used for testing
+      type: String
+    - contextPath: DisableUser.success
+      description: Status of the result. Can be true or false
+      type: Boolean
+    - contextPath: DisableUser.username
+      description: Value of username passed as argument
+      type: String
+  dockerimage: demisto/python3:3.8.5.10845
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
