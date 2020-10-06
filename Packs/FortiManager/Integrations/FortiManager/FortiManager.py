@@ -91,7 +91,13 @@ class Client(BaseClient):
 
 
 def get_global_or_adom(client: Client, args: Dict):
+    """Get the ADOM scope on which the command should run.
+    If 'adom' command argument is entered use it, otherwise use the default client ADOM parameter.
+
+    """
     adom = args.get('adom') if args.get('adom') else client.adom
+    # if the command is reffereing to a specified ADOM then the command should return "adom/{adom_name}"
+    # if it refferes to the general system then we should return "global"
     if adom == GLOBAL_VAR:
         return GLOBAL_VAR
     else:
