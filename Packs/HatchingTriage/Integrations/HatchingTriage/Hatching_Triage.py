@@ -302,7 +302,7 @@ def get_profile(client: Client, **args) -> CommandResults:
 
     r = client._http_request('GET', url_suffix)
 
-    if not profileID:
+    if not profileID and r.get('data'):
         r = r['data']
 
     results = CommandResults(
@@ -310,6 +310,7 @@ def get_profile(client: Client, **args) -> CommandResults:
         outputs_key_field = 'data',
         outputs = r
     )
+
     return results
 
 
