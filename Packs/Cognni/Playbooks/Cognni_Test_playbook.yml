@@ -1,7 +1,8 @@
-id: Cognni Test playbook
-version: -1
+id: 02ea5cef-3169-4b17-8f4d-604b44e6348a
+version: 2
 vcShouldKeepItemLegacyProdMachine: false
 name: Cognni Test playbook
+description: Cognni Test playbook
 starttaskid: "0"
 tasks:
   "0":

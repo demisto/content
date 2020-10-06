@@ -13,11 +13,11 @@ def test_ping(requests_mock):
     from Cognni import Client, ping_command
 
     mock_response = util_load_json('test_data/ping_response.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -38,11 +38,11 @@ def test_fetch_incidents(requests_mock):
     from Cognni import Client, fetch_incidents
 
     mock_response = util_load_json('test_data/fetch_incidents.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -68,11 +68,11 @@ def test_get_event_with_special_character(requests_mock):
     from Cognni import Client, get_event_command
 
     mock_response = util_load_json('test_data/get_event_with_special_character.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -95,14 +95,14 @@ def test_get_event_with_whitespace(requests_mock):
     from Cognni import Client, get_event_command
 
     mock_response = util_load_json('test_data/get_event_with_whitespace.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
-                        json=mock_response)
+    requests_mock.post('https://localhost/intelligence/data/graphql',
+                       json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
-              'Authorization': 'Bearer some_api_key'
+            'Authorization': 'Bearer some_api_key'
         }
     )
 
@@ -122,11 +122,11 @@ def test_get_insight_with_whitespace(requests_mock):
     from Cognni import Client, get_insight_command
 
     mock_response = util_load_json('test_data/get_insight_with_whitespace.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -150,11 +150,11 @@ def test_get_insight_with_special_characters(requests_mock):
     from Cognni import Client, get_insight_command
 
     mock_response = util_load_json('test_data/get_insight_with_special_characters.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -176,11 +176,11 @@ def test_fetch_incidents_command(requests_mock):
     from Cognni import Client, fetch_incidents_command
 
     mock_response = util_load_json('test_data/fetch_incidents.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -203,11 +203,11 @@ def test_get_event(requests_mock):
     from Cognni import Client, get_event_command
 
     mock_response = util_load_json('test_data/get_event.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -229,11 +229,11 @@ def test_get_event_with_unknown_id(requests_mock):
     from Cognni import Client, get_event_command
 
     mock_response = util_load_json('test_data/get_event_with_unknown_id.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -256,11 +256,11 @@ def test_get_insight(requests_mock):
     from Cognni import Client, get_insight_command
 
     mock_response = util_load_json('test_data/get_insight.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -282,11 +282,11 @@ def test_get_insight_with_unknown_id(requests_mock):
     from Cognni import Client, get_insight_command
 
     mock_response = util_load_json('test_data/get_insight_with_unknown_id.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -308,11 +308,11 @@ def test_fetch_insights(requests_mock):
     from Cognni import Client, fetch_insights_command
 
     mock_response = util_load_json('test_data/fetch_insights.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -332,11 +332,11 @@ def test_fetch_insight_with_small_severity(requests_mock):
     from Cognni import Client, fetch_insights_command
 
     mock_response = util_load_json('test_data/fetch_insights_with_small_severity.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -359,11 +359,11 @@ def test_fetch_insight_with_large_severity(requests_mock):
     from Cognni import Client, fetch_insights_command
 
     mock_response = util_load_json('test_data/fetch_insights_with_large_severity.json')
-    requests_mock.post('https://stage-webapi.cognni.ai/intelligence/data/graphql',
+    requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
     client = Client(
-        base_url='https://stage-webapi.cognni.ai',
+        base_url='https://localhost',
         verify=False,
         headers={
             'Authorization': 'Bearer some_api_key'
@@ -417,4 +417,3 @@ def test_flatten_event_file_items_with_0_items():
     result = flatten_event_file_items(mock_event_with_0_file_items)
 
     assert len(result) == 0
-

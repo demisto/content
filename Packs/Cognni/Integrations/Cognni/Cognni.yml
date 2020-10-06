@@ -3,8 +3,8 @@ commonfields:
   id: Cognni
   version: -1
 configuration:
-- defaultvalue: https://stage-webapi.cognni.ai
-  display: Server URL (e.g. https://stage-webapi.cognni.ai)
+- defaultvalue: ''
+  display: Server URL
   name: url
   required: true
   type: 0
