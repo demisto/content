@@ -1,4 +1,10 @@
+
 <!-- HTML_DOC -->
+<p>
+    This integration was integrated and tested with <strong>QRadar v7.3.1</strong> and <strong>API versions - 8.0, 8.1, and 9.0</strong>.
+    The <strong>QRadar</strong> integration is deprecated from <strong>QRadar v7.3.2 Patch 2</strong>. If you're using a later version of QRadar, make sure you use the <strong>QRadar v2</strong> integration.
+</p>
+
 <p>Use the QRadar integration to query offenses and create Demisto incidents from the offenses.</p>
 <p>For more information about filter syntax, see the <a href="https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/c_rest_api_filtering.html" target="_blank" rel="noopener">IBM support documentation</a>.</p>
 <h2>QRadar Playbook</h2>

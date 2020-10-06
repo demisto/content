@@ -62,8 +62,7 @@ tasks:
     scriptarguments:
       fields: {}
       qualification:
-        simple: '''400127400'' = "BMC.ASSET" AND ''Category'' = "Server" AND ''Company''
-          != "Realtor.com"'
+        simple: '''400127400'' = "BMC.ASSET" AND ''Category'' = "Server" AND ''Company'' != "Realtor.com"'
     separatecontext: false
     view: |-
       {
@@ -182,8 +181,7 @@ tasks:
     scriptarguments:
       fields: {}
       qualification:
-        simple: '''400127400'' = "BMC.ASSET" AND ''Company'' != "Realtor.com" AND
-          ''NC_IOPs'' = "10.238.89.39"'
+        simple: '''400127400'' = "BMC.ASSET" AND ''Company'' != "Realtor.com" AND ''NC_IOPs'' = "10.238.89.39"'
     separatecontext: false
     view: |-
       {
@@ -211,8 +209,7 @@ tasks:
     scriptarguments:
       fields: {}
       qualification:
-        simple: '''400127400'' = "BMC.ASSET" AND ''Company'' != "Realtor.com" AND
-          ''Name'' = "brx1-printa-01"'
+        simple: '''400127400'' = "BMC.ASSET" AND ''Company'' != "Realtor.com" AND ''Name'' = "brx1-printa-01"'
     separatecontext: false
     view: |-
       {
@@ -305,3 +302,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

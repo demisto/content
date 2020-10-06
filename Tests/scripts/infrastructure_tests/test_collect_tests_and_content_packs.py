@@ -384,8 +384,9 @@ class TestSampleTesting:
     def test_sample_tests(self):
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
-        assert len(filterd_tests) == RANDOM_TESTS_NUM
-        assert content_packs == {"Base", "DeveloperTools", 'fake_pack'}
+        assert len(filterd_tests) >= RANDOM_TESTS_NUM
+        assert "Base" in content_packs
+        assert "DeveloperTools" in content_packs
 
     def test_sample_tests__with_test(self, mocker):
         """
@@ -413,9 +414,8 @@ class TestChangedCommonTesting:
 
     def test_all_tests(self):
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
-
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        assert content_packs == {"DeveloperTools", 'Base', 'fake_pack'}
+        assert content_packs == {"DeveloperTools", 'Base', 'HelloWorld'}
 
 
 class TestPackageFilesModified:
@@ -431,7 +431,8 @@ A       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/key.pem
         files_list, tests_list, all_tests, is_conf_json, sample_tests, modified_metadata_list, is_reputations_json, \
             is_indicator_json = get_modified_files_for_testing(self.GIT_DIFF_RET)
         assert len(sample_tests) == 0
-        assert 'Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml' in files_list
+        assert 'Packs/Active_Directory_Query/Integrations/' \
+               'Active_Directory_Query/Active_Directory_Query.yml' in files_list
 
 
 class TestNoChange:
@@ -441,30 +442,32 @@ class TestNoChange:
         filterd_tests, content_packs = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        assert content_packs == {"Base", "DeveloperTools", "HelloWorld", 'fake_pack'}
+        assert content_packs == {"Base", "DeveloperTools", "HelloWorld"}
 
 
-def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[], changed_common=[], is_conf_json=False,
-                                  sample_tests=[], modified_metadata_list=[], is_reputations_json=[], is_indicator_json=[]):
+def create_get_modified_files_ret(modified_files_list=None, modified_tests_list=None, changed_common=None,
+                                  is_conf_json=False, sample_tests=None, modified_metadata_list=None,
+                                  is_reputations_json=None, is_indicator_json=None):
     """
     Returns return value for get_modified_files() to be used with a mocker patch
     """
     return (
-        modified_files_list,
-        modified_tests_list,
-        changed_common,
+        modified_files_list if modified_files_list is not None else [],
+        modified_tests_list if modified_tests_list is not None else [],
+        changed_common if changed_common is not None else [],
         is_conf_json,
-        sample_tests,
-        modified_metadata_list,
-        is_reputations_json,
-        is_indicator_json
+        sample_tests if sample_tests is not None else [],
+        modified_metadata_list if modified_metadata_list is not None else [],
+        is_reputations_json if is_reputations_json is not None else [],
+        is_indicator_json if is_indicator_json is not None else []
     )
 
 
 TWO_BEFORE_GA_VERSION = '4.5.0'
 
 
-def get_mock_test_list(two_before_ga=TWO_BEFORE_GA_VERSION, get_modified_files_ret=None, mocker=None, git_diff_ret=''):
+def get_mock_test_list(minimum_server_version=TWO_BEFORE_GA_VERSION, get_modified_files_ret=None, mocker=None,
+                       git_diff_ret=''):
     branch_name = 'BranchA'
     if get_modified_files_ret is not None:
         mocker.patch(
@@ -472,7 +475,7 @@ def get_mock_test_list(two_before_ga=TWO_BEFORE_GA_VERSION, get_modified_files_r
             return_value=get_modified_files_ret
         )
     tests, content_packs = get_test_list_and_content_packs_to_install(
-        git_diff_ret, branch_name, two_before_ga, id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF)
+        git_diff_ret, branch_name, minimum_server_version, id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF)
     )
     return tests, content_packs
 
@@ -514,7 +517,7 @@ def test_skipped_integration_should_not_be_tested(mocker):
     filtered_tests = get_test_list_and_content_packs_to_install(
         files_string='',
         branch_name='dummy_branch',
-        two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+        minimum_server_version=TWO_BEFORE_GA_VERSION,
         conf=TestConf(mock_conf_dict),
         id_set=fake_id_set
     )
@@ -566,7 +569,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
         get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
-            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            minimum_server_version=TWO_BEFORE_GA_VERSION,
             conf=fake_conf,
             id_set=fake_id_set
         )
@@ -621,7 +624,7 @@ def test_conf_has_modified(mocker):
         get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
-            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            minimum_server_version=TWO_BEFORE_GA_VERSION,
             conf=fake_conf,
             id_set=fake_id_set
         )
@@ -687,7 +690,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
         filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
-            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            minimum_server_version=TWO_BEFORE_GA_VERSION,
             conf=fake_conf,
             id_set=fake_id_set
         )
@@ -762,7 +765,7 @@ class TestExtractMatchingObjectFromIdSet:
             filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
                 files_string='',
                 branch_name='dummy_branch',
-                two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+                minimum_server_version=TWO_BEFORE_GA_VERSION,
                 conf=fake_conf,
                 id_set=fake_id_set
             )
@@ -825,7 +828,7 @@ def test_modified_integration_content_pack_is_collected(mocker):
         filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
             files_string="",
             branch_name="dummy-branch",
-            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            minimum_server_version=TWO_BEFORE_GA_VERSION,
             conf=fake_conf,
             id_set=fake_id_set
         )

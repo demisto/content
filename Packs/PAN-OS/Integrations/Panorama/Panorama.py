@@ -123,7 +123,7 @@ class PAN_OS_Not_Found(Exception):
 
 
 def http_request(uri: str, method: str, headers: Dict = {},
-                 body: Dict = {}, params: Dict = {}, files=None) -> Any:
+                 body: Dict = {}, params: Dict = {}, files=None, is_pcap: bool = False) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -142,10 +142,14 @@ def http_request(uri: str, method: str, headers: Dict = {},
             'Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
     # if pcap download
-    if params.get('type') == 'export':
+    if is_pcap:
         return result
 
     json_result = json.loads(xml2json(result.text))
+
+    # handle raw response that doe not contain the response key, e.g xonfiguration export
+    if 'response' not in json_result or '@code' not in json_result['response']:
+        return json_result
 
     # handle non success
     if json_result['response']['@status'] != 'success':
@@ -197,25 +201,24 @@ def http_request(uri: str, method: str, headers: Dict = {},
             raise Exception('Request Failed.\n' + str(json_result['response']))
 
     # handle @code
-    if 'response' in json_result and '@code' in json_result['response']:
-        if json_result['response']['@code'] in PAN_OS_ERROR_DICT:
-            error_message = 'Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']]
-            if json_result['response']['@code'] == '7' and DEVICE_GROUP:
-                device_group_names = get_device_groups_names()
-                if DEVICE_GROUP not in device_group_names:
-                    error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
-                                      f' The available Device Groups for this instance:'
-                                      f' {", ".join(device_group_names)}.')
-                    raise PAN_OS_Not_Found(error_message)
-            return_warning('List not found and might be empty', True)
-        if json_result['response']['@code'] not in ['19', '20']:
-            # error code non exist in dict and not of success
-            if 'msg' in json_result['response']:
-                raise Exception(
-                    'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
-                        json_result['response']['msg']))
-            else:
-                raise Exception('Request Failed.\n' + str(json_result['response']))
+    if json_result['response']['@code'] in PAN_OS_ERROR_DICT:
+        error_message = 'Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']]
+        if json_result['response']['@code'] == '7' and DEVICE_GROUP:
+            device_group_names = get_device_groups_names()
+            if DEVICE_GROUP not in device_group_names:
+                error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
+                                  f' The available Device Groups for this instance:'
+                                  f' {", ".join(device_group_names)}.')
+                raise PAN_OS_Not_Found(error_message)
+        return_warning('List not found and might be empty', True)
+    if json_result['response']['@code'] not in ['19', '20']:
+        # error code non exist in dict and not of success
+        if 'msg' in json_result['response']:
+            raise Exception(
+                'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
+                    json_result['response']['msg']))
+        else:
+            raise Exception('Request Failed.\n' + str(json_result['response']))
 
     return json_result
 
@@ -3122,7 +3125,7 @@ def panorama_list_pcaps_command():
     elif demisto.args()['pcapType'] == 'dlp-pcap':
         raise Exception('can not provide dlp-pcap without password')
 
-    result = http_request(URL, 'GET', params=params)
+    result = http_request(URL, 'GET', params=params, is_pcap=True)
     json_result = json.loads(xml2json(result.text))['response']
     if json_result['@status'] != 'success':
         raise Exception('Request to get list of Pcaps Failed.\nStatus code: ' + str(
@@ -3170,28 +3173,31 @@ def panorama_get_pcap_command():
     Get pcap file
     """
     if DEVICE_GROUP:
-        raise Exception('Getting a PCAP file is only supported on Firewall (not Panorama).')
-    pcap_type = demisto.args()['pcapType']
+        raise Exception('Downloading a PCAP file is only supported on a Firewall (not on Panorama).')
+    args = demisto.args()
+    pcap_type = args['pcapType']
     params = {
         'type': 'export',
         'key': API_KEY,
         'category': pcap_type
     }
 
-    password = demisto.args().get('password')
-    pcap_id = demisto.args().get('pcapID')
-    search_time = demisto.args().get('searchTime')
+    password = args.get('password')
+    pcap_id = args.get('pcapID')
+    search_time = args.get('searchTime')
+
     if pcap_type == 'dlp-pcap' and not password:
-        raise Exception('Can not provide dlp-pcap without password.')
+        raise Exception('Can not download dlp-pcap without the password argument.')
     else:
         params['dlp-password'] = password
     if pcap_type == 'threat-pcap' and (not pcap_id or not search_time):
-        raise Exception('Can not provide threat-pcap without pcap-id and the searchTime arguments.')
+        raise Exception('Can not download threat-pcap without the pcapID and the searchTime arguments.')
 
-    pcap_name = demisto.args().get('from')
-    local_name = demisto.args().get('localName')
-    serial_no = demisto.args().get('serialNo')
-    search_time = demisto.args().get('searchTime')
+    pcap_name = args.get('from')
+    local_name = args.get('localName')
+    serial_no = args.get('serialNo')
+    session_id = args.get('sessionID')
+    device_name = args.get('deviceName')
 
     file_name = None
     if pcap_id:
@@ -3204,16 +3210,21 @@ def panorama_get_pcap_command():
         file_name = local_name
     if serial_no:
         params['serialno'] = serial_no
+    if session_id:
+        params['sessionid'] = session_id
+    if device_name:
+        params['device_name'] = device_name
     if search_time:
         search_time = validate_search_time(search_time)
         params['search-time'] = search_time
+
     # set file name to the current time if from/to were not specified
     if not file_name:
         file_name = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
 
-    result = http_request(URL, 'GET', params=params)
+    result = http_request(URL, 'GET', params=params, is_pcap=True)
 
-    # due pcap file size limitation in the product, for more details, please see the documentation.
+    # due to pcap file size limitation in the product. For more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':
         raise Exception(
             'PCAP download failed. Most likely cause is the file size limitation.\n'
@@ -3593,16 +3604,28 @@ def panorama_delete_edl_command():
     })
 
 
-def panorama_refresh_edl(edl_name):
-    edl = panorama_get_edl(edl_name)
-    edl_type = ''.join(edl['type'].keys())
-
+def panorama_refresh_edl(edl_name: str, edl_type: str, location: str, vsys: str):
     params = {
         'type': 'op',
-        'cmd': '<request><system><external-list><refresh><type><' + edl_type + '><name>' + edl_name + '</name></'
-               + edl_type + '></type></refresh></external-list></system></request>',
         'key': API_KEY
     }
+    # if refreshing an EDL on the FW
+    if not edl_type and not location and not vsys:
+        edl = panorama_get_edl(edl_name)
+        edl_type = ''.join(edl['type'].keys())
+    # if refreshing an EDL on the Panorama
+    else:
+        if not edl_type or not location or not vsys:
+            raise Exception('To refresh an EDL from the Firewall on Panorama'
+                            ' please use the: edl_type, location and vsys arguments.')
+
+    params['cmd'] = f'<request><system><external-list><refresh><type><{edl_type}><name>{edl_name}' \
+                    f'</name></{edl_type}></type></refresh></external-list></system></request>'
+    if location:
+        params['location'] = location
+    if vsys:
+        params['vsys'] = vsys
+
     result = http_request(
         URL,
         'POST',
@@ -3616,12 +3639,16 @@ def panorama_refresh_edl_command():
     """
     Refresh an EDL
     """
+    args = demisto.args()
     if DEVICE_GROUP:
         raise Exception('EDL refresh is only supported on Firewall (not Panorama).')
 
-    edl_name = demisto.args()['name']
+    edl_name = args.get('name')
+    edl_type = args.get('edl_type', '')
+    location = args.get('location', '')
+    vsys = args.get('vsys', '')
 
-    result = panorama_refresh_edl(edl_name)
+    result = panorama_refresh_edl(edl_name, edl_type, location, vsys)
 
     demisto.results({
         'Type': entryTypes['note'],

@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
@@ -66,11 +66,12 @@ def get_object_type(objects: list, types: list) -> list:
     return [item for item in objects if item.get('type') in types]
 
 
-def parse_indicators(objects: list, feed_tags: list = []) -> list:
+def parse_indicators(objects: list, feed_tags: list = [], tlp_color: Optional[str] = None) -> list:
     """Parse the objects retrieved from the feed.
     Args:
       objects: a list of objects containing the indicators.
       feed_tags: feed tags.
+      tlp_color: Traffic Light Protocol color.
     Returns:
         A list of indicators, containing the indicators.
     """
@@ -82,7 +83,7 @@ def parse_indicators(objects: list, feed_tags: list = []) -> list:
             pattern = indicator_object.get('pattern')
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
-                    indicators.append({
+                    indicator_obj = {
                         "value": indicator_object.get('name'),
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES[key],
                         "rawJSON": indicator_object,
@@ -93,7 +94,12 @@ def parse_indicators(objects: list, feed_tags: list = []) -> list:
                             "modified": indicator_object.get('modified'),
                             "reportedby": 'Unit42',
                         }
-                    })
+                    }
+
+                    if tlp_color:
+                        indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+                    indicators.append(indicator_obj)
 
     return indicators
 
@@ -165,18 +171,19 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_indicators(client: Client, feed_tags: list = []) -> List[Dict]:
+def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[str] = None) -> List[Dict]:
     """Retrieves indicators from the feed
 
     Args:
         client: Client object with request
         feed_tags: feed tags.
+        tlp_color: Traffic Light Protocol color.
     Returns:
         Indicators.
     """
     objects: list = client.get_stix_objects()
     demisto.info(str(f'Fetched Unit42 Indicators. {str(len(objects))} Objects were received.'))
-    indicators = parse_indicators(objects, feed_tags)
+    indicators = parse_indicators(objects, feed_tags, tlp_color)
     relationships = get_object_type(objects, types=['relationship'])
     pivots = get_object_type(objects, types=['attack-pattern', 'malware', 'campaign'])
     indicators = parse_relationships(indicators, relationships, pivots)
@@ -184,19 +191,21 @@ def fetch_indicators(client: Client, feed_tags: list = []) -> List[Dict]:
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = []) -> CommandResults:
+def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = [],
+                           tlp_color: Optional[str] = None) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
         client: Client object with request
         args: demisto.args()
         feed_tags: feed tags.
+        tlp_color: Traffic Light Protocol color.
     Returns:
         Demisto Outputs.
     """
     limit = int(args.get('limit', '10'))
-    objects: list = client.get_stix_objects()
-    indicators = parse_indicators(objects, feed_tags)
+    objects: list = client.get_stix_objects(test=True)
+    indicators = parse_indicators(objects, feed_tags, tlp_color)
     limited_indicators = indicators[:limit]
 
     readable_output = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value'])
@@ -221,6 +230,7 @@ def main():
     api_key = str(params.get('api_key', ''))
     verify = not params.get('insecure', False)
     feed_tags = argToList(params.get('feedTags'))
+    tlp_color = params.get('tlp_color')
 
     command = demisto.command()
     demisto.debug(f'Command being called in Unit42 feed is: {command}')
@@ -233,12 +243,12 @@ def main():
             demisto.results(result)
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators(client, feed_tags)
+            indicators = fetch_indicators(client, feed_tags, tlp_color)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
         elif command == 'unit42-get-indicators':
-            return_results(get_indicators_command(client, args, feed_tags))
+            return_results(get_indicators_command(client, args, feed_tags, tlp_color))
 
     except Exception as err:
         return_error(err)

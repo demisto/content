@@ -556,8 +556,7 @@ outputs:
   description: SHA256 of of sample in submission
   type: string
 - contextPath: VMRay.Submission.Severity
-  description: Severity of sample in submission (Malicious, Suspicious, Good, Blacklisted,
-    Whitelested, Unknown)
+  description: Severity of sample in submission (Malicious, Suspicious, Good, Blacklisted, Whitelested, Unknown)
   type: string
 - contextPath: VMRay.Submission.SSDeep
   description: SSDeep of of sample in submission
@@ -581,8 +580,7 @@ outputs:
   description: SSDeep of sample
   type: string
 - contextPath: VMRay.Sample.Severity
-  description: Severity of sample in submission (Malicious, Suspicious, Good, Blacklisted,
-    Whitelested, Unknown)
+  description: Severity of sample in submission (Malicious, Suspicious, Good, Blacklisted, Whitelested, Unknown)
   type: string
 - contextPath: VMRay.Sample.Type
   description: File type
@@ -656,6 +654,6 @@ outputs:
   description: ID of a threat indicator.
 - contextPath: VMRay.ThreatIndicator.Operation
   description: Operation the indicators caused.
-fromversion: 4.0.0
+fromversion: 5.0.0
 tests:
-  - no test
+- no test
