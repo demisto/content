@@ -1,0 +1,142 @@
+category: Utilities
+commonfields:
+  id: Palo Alto IoT Third-Party-Integration Base
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: https://testing-soho.iot.paloaltonetworks.com/
+  display: url
+  name: url
+  required: true
+  type: 0
+- defaultvalue: testing-soho
+  display: Customer ID
+  name: Customer ID
+  required: true
+  type: 0
+- defaultvalue: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1YzAyMTM4NjdkYjMzMWU4MGU5ODQ3Y2MiLCJlbWFpbCI6ImFkbWluQHRlc3Rpbmctc29oby5jb20iLCJqdGkiOiJ0T21ia0FucU1HIiwic2NvcGUiOnsidGVzdGluZy1zb2hvIjp7Im93bmVyIjp0cnVlLCJhZG1pbiI6dHJ1ZSwic2l0ZXMiOlsiYWxsIl0sImRlcGxveW1lbnQiOmZhbHNlfX0sImlzbG9ja2VkIjpmYWxzZSwidGVuYW50aWQiOiJ0ZXN0aW5nLXNvaG8iLCJ1cmxQYXR0ZXJuIjoiL3B1Yi92NC4wLyIsInR5cGUiOiJkZXZpY2VfcmV0cmlldmFsX2tleSIsImlhdCI6MTYwMDQ0NzAzMCwiZXhwIjoxOTE1ODA3MDMwLCJpc3MiOiJ6aW5nYm94In0.OR5PdF86VJ1qrLRXgK2TSi10AvWSsusfmuq7Yh3Drwg
+  display: Access Key
+  name: Access Key
+  required: true
+  type: 0
+- defaultvalue: '1915807030:cc169d76bf0089ccb5b155dada1329fc4853c5c8d335c6416f4784f961c09290     '
+  display: Key ID
+  name: Key ID
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+description: Base Integration for Palo Alto IOT third party integrations. This integrations
+  communicates with Palo Alto IoT Cloud to get alerts, vulnerabilities,  device inventory.
+display: Palo Alto IoT Third-Party-Integration Base
+name: Palo Alto IoT Third-Party-Integration Base
+script:
+  commands:
+  - arguments: []
+    description: Gets a list of devices detected/modified within the last 15 minutes
+    name: get-incremental-device-inventory
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.Devices
+      description: list of devices attribute maps
+  - arguments: []
+    description: Gets a list of alerts detected within the last 15 minutes
+    name: get-incremental-alerts
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.Alerts
+      description: list of alert detail maps
+  - arguments: []
+    description: Gets a list of vulnerabilities detected within the last 15 minutes
+    name: get-incremental-vulnerabilities
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.Vulnerabilities
+      description: 'List of vulnerabilities detail maps '
+  - arguments:
+    - description: List of device attribute maps
+      name: deviceList
+      required: true
+    description: Converts device attribute maps to CEF syslogs
+    name: convert-device-inventory-to-cef
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.DeviceSyslogs
+      description: List of device syslogs in CEF format
+  - arguments:
+    - description: list of alert detail maps
+      name: alertList
+    description: Converts alert detail maps to CEF syslogs
+    name: convert-alerts-to-cef
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.AlertSyslogs
+      description: List of alert syslogs in CEF format
+  - arguments:
+    - description: list of vulnerability detail maps
+      name: VulnerabilityList
+    description: Converts vulnerability detail maps to CEF syslogs
+    name: convert-vulnerabilities-to-cef
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.VulnerabilitySyslogs
+      description: List of vulnerability syslogs in CEF format
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      description: Represents API or command for which the status is returned
+      name: input_type
+      predefined:
+      - Devices
+      - Vulnerabilities
+      - Alerts
+      - device-cef-conversion
+      - alert-cef-conversion
+      - vulnerability-cef-conversion
+      required: true
+    - auto: PREDEFINED
+      description: playbook name
+      name: playook_name
+      predefined:
+      - PanwIoTSIEMIntegration
+      - PanwIoTISEIntegration
+      required: true
+    description: Sends return status back to Palo Alto IoT Cloud
+    name: report-status-to-iot-cloud
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.DeviceInventoryStatus
+      description: Write status to context
+    - contextPath: PaloAltoIoTIntegrationBase.AlertStatus
+      description: Write status to context
+    - contextPath: PaloAltoIoTIntegrationBase.VulnerabilityStatus
+      description: Write status to context
+    - contextPath: PaloAltoIoTIntegrationBase.Errors
+      description: Write status to context
+  - arguments: []
+    description: 'Gets full device inventory '
+    name: get-bulk-device-inventory
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.Devices
+      description: list of device maps
+  - arguments: []
+    description: Gets complete list of generated alerts
+    name: get-bulk-alerts
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.Alerts
+      description: list of alert maps
+  - arguments: []
+    description: Gets complete list of generated vulnerabilities
+    name: get-bulk-vulnerabilities
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.Vulnerabilities
+      description: list of vulnerability maps
+  dockerimage: demisto/python3:3.8.5.11789
+  longRunning: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

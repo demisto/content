@@ -1,0 +1,1139 @@
+description: Playbook to be run every 15 minutes via a job. Each run will get incremental
+  updates for devices, alerts and vulnerabilities and send syslogs to the configured
+  SIEM server.
+id: a3dd16d4-31b3-43c4-8ee5-eb024e5c7ff6
+inputs: []
+name: panw_iot_siem_integration
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "3"
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Start here
+      id: 59da48d4-b067-4740-8ed5-200e69f22e94
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 59da48d4-b067-4740-8ed5-200e69f22e94
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 60
+        }
+      }
+  "1":
+    continueonerror: true
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Gets a list of vulnerabilities detected within the last 15 minutes
+      id: 9f61b47f-bfb1-42a8-8279-f67b6372d92e
+      iscommand: true
+      name: get-incremental-vulnerabilities
+      script: Palo Alto IoT Third-Party-Integration Base|||get-incremental-vulnerabilities
+      type: regular
+      version: -1
+    taskid: 9f61b47f-bfb1-42a8-8279-f67b6372d92e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 250
+        }
+      }
+  "2":
+    continueonerror: true
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Gets a list of devices detected/modified within the last 15 minutes
+      id: 39e65b93-7a09-4fef-87a7-5c889b42e145
+      iscommand: true
+      name: get-incremental-device-inventory
+      script: Palo Alto IoT Third-Party-Integration Base|||get-incremental-device-inventory
+      type: regular
+      version: -1
+    taskid: 39e65b93-7a09-4fef-87a7-5c889b42e145
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 240
+        }
+      }
+  "3":
+    continueonerror: true
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Gets a list of alerts detected within the last 15 minutes
+      id: 7f8b7eac-90af-46e9-8b34-ecf437effe0b
+      iscommand: true
+      name: get-incremental-alerts
+      script: Palo Alto IoT Third-Party-Integration Base|||get-incremental-alerts
+      type: regular
+      version: -1
+    taskid: 7f8b7eac-90af-46e9-8b34-ecf437effe0b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 220
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input_type:
+        simple: Devices
+      output_type:
+        simple: errors
+      playook_name:
+        simple: PanwIoTSIEMIntegration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Sends return status back to Palo Alto IoT Cloud
+      id: 5444f50e-6787-49a4-8a2c-8fa5df0ddf44
+      iscommand: true
+      name: report-status-to-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||report-status-to-iot-cloud
+      type: regular
+      version: -1
+    taskid: 5444f50e-6787-49a4-8a2c-8fa5df0ddf44
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1080,
+          "y": 660
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input_type:
+        simple: device-cef-conversion
+      output_type:
+        simple: status
+      playook_name:
+        simple: PanwIoTSIEMIntegration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Sends return status back to Palo Alto IoT Cloud
+      id: 8e91e043-03b0-4a0b-89f8-ef87541e3f0d
+      iscommand: true
+      name: report-status-to-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||report-status-to-iot-cloud
+      type: regular
+      version: -1
+    taskid: 8e91e043-03b0-4a0b-89f8-ef87541e3f0d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -980,
+          "y": 1430
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input_type:
+        simple: Vulnerabilities
+      output_type:
+        simple: errors
+      playook_name:
+        simple: PanwIoTSIEMIntegration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Sends return status back to Palo Alto IoT Cloud
+      id: a75230fe-d248-49de-8a29-6c8244112792
+      iscommand: true
+      name: report-status-to-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||report-status-to-iot-cloud
+      type: regular
+      version: -1
+    taskid: a75230fe-d248-49de-8a29-6c8244112792
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 640
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input_type:
+        simple: vulnerability-cef-conversion
+      output_type:
+        simple: status
+      playook_name:
+        simple: PanwIoTSIEMIntegration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Sends return status back to Palo Alto IoT Cloud
+      id: db5d61d6-327f-4102-8e48-87cb626bca88
+      iscommand: true
+      name: report-status-to-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||report-status-to-iot-cloud
+      type: regular
+      version: -1
+    taskid: db5d61d6-327f-4102-8e48-87cb626bca88
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1350
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input_type:
+        simple: Alerts
+      output_type:
+        simple: errors
+      playook_name:
+        simple: PanwIoTSIEMIntegration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Sends return status back to Palo Alto IoT Cloud
+      id: b293c1fd-3424-4f71-8fac-10c743d55b42
+      iscommand: true
+      name: report-status-to-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||report-status-to-iot-cloud
+      type: regular
+      version: -1
+    taskid: b293c1fd-3424-4f71-8fac-10c743d55b42
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 640
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input_type:
+        simple: alert-cef-conversion
+      output_type:
+        simple: status
+      playook_name:
+        simple: PanwIoTSIEMIntegration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Sends return status back to Palo Alto IoT Cloud
+      id: 24daeb94-09c4-4420-80eb-f50aaf78e44b
+      iscommand: true
+      name: report-status-to-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||report-status-to-iot-cloud
+      type: regular
+      version: -1
+    taskid: 24daeb94-09c4-4420-80eb-f50aaf78e44b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 1315
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input_type:
+        simple: Alerts
+      output_type: {}
+      playook_name:
+        simple: PanwIoTSIEMIntegration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Sends return status back to Palo Alto IoT Cloud
+      id: 3574d52a-476d-47e9-8420-1346651c3906
+      iscommand: true
+      name: report-status-to-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||report-status-to-iot-cloud
+      type: regular
+      version: -1
+    taskid: 3574d52a-476d-47e9-8420-1346651c3906
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 1680
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "14"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: d822cede-db64-40be-8287-9b5fd6c919f9
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: d822cede-db64-40be-8287-9b5fd6c919f9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 400
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "15"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: eb143c77-672b-4016-8ddd-68ac5c005fbf
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: eb143c77-672b-4016-8ddd-68ac5c005fbf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 420
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "16"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: 8d025c2b-7900-4afb-8968-817f34affd11
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: 8d025c2b-7900-4afb-8968-817f34affd11
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 390
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "28"
+      "yes":
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${PaloAltoIoTIntegrationBase.Devices}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: ec99bad9-398d-4b79-8d35-5726622854d0
+      iscommand: false
+      name: Exists
+      script: Exists
+      type: condition
+      version: -1
+    taskid: ec99bad9-398d-4b79-8d35-5726622854d0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -520,
+          "y": 700
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "29"
+      "yes":
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${PaloAltoIoTIntegrationBase.Vulnerabilities}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 8cb0ff5b-86fb-4539-899a-f4c9e4c86be6
+      iscommand: false
+      name: Exists
+      script: Exists
+      type: condition
+      version: -1
+    taskid: 8cb0ff5b-86fb-4539-899a-f4c9e4c86be6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 680
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "30"
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${PaloAltoIoTIntegrationBase.Alerts}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: f916c9bf-1e64-4a14-83a6-1287bfda1181
+      iscommand: false
+      name: Exists
+      script: Exists
+      type: condition
+      version: -1
+    taskid: f916c9bf-1e64-4a14-83a6-1287bfda1181
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 670
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      deviceList:
+        simple: ${PaloAltoIoTIntegrationBase.Devices}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Converts device attribute maps to CEF syslogs
+      id: 08be2ee2-405e-4a75-83f6-bd72ea0d8f95
+      iscommand: true
+      name: convert-device-inventory-to-cef
+      script: Palo Alto IoT Third-Party-Integration Base|||convert-device-inventory-to-cef
+      type: regular
+      version: -1
+    taskid: 08be2ee2-405e-4a75-83f6-bd72ea0d8f95
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 1020
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "19"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: 2648b1ed-2563-49ba-87fa-43751c485ad0
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: 2648b1ed-2563-49ba-87fa-43751c485ad0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 1220
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      address: {}
+      facility: {}
+      level: {}
+      message:
+        simple: ${PaloAltoIoTIntegrationBase.DeviceSyslogs}
+      port: {}
+      protocol: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Syslog Sender
+      description: Sends a message to Syslog.
+      id: a46c1560-57fa-4d15-8fc8-8638c6cb24b0
+      iscommand: true
+      name: syslog-send
+      script: Syslog Sender|||syslog-send
+      type: regular
+      version: -1
+    taskid: a46c1560-57fa-4d15-8fc8-8638c6cb24b0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 1540
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      VulnerabilityList:
+        simple: ${PaloAltoIoTIntegrationBase.Vulnerabilities}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Converts vulnerability detail maps to CEF syslogs
+      id: 2a596415-d2f1-4a71-8b9b-207138e442d9
+      iscommand: true
+      name: convert-vulnerabilities-to-cef
+      script: Palo Alto IoT Third-Party-Integration Base|||convert-vulnerabilities-to-cef
+      type: regular
+      version: -1
+    taskid: 2a596415-d2f1-4a71-8b9b-207138e442d9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 980
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "22"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: 3bbbf6e8-37dd-4ecd-8cb7-e15a40543b72
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: 3bbbf6e8-37dd-4ecd-8cb7-e15a40543b72
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1180
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      address: {}
+      facility: {}
+      level: {}
+      message:
+        simple: ${PaloAltoIoTIntegrationBase.VulnerabilitySyslogs}
+      port: {}
+      protocol: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Syslog Sender
+      description: Sends a message to Syslog.
+      id: fec51255-a191-4254-8b6f-c98022cc8e0e
+      iscommand: true
+      name: syslog-send
+      script: Syslog Sender|||syslog-send
+      type: regular
+      version: -1
+    taskid: fec51255-a191-4254-8b6f-c98022cc8e0e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1525
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alertList:
+        simple: ${PaloAltoIoTIntegrationBase.Alerts}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Converts alert detail maps to CEF syslogs
+      id: 0f419eaf-4f35-4764-8efc-4b86e7dcefd6
+      iscommand: true
+      name: convert-alerts-to-cef
+      script: Palo Alto IoT Third-Party-Integration Base|||convert-alerts-to-cef
+      type: regular
+      version: -1
+    taskid: 0f419eaf-4f35-4764-8efc-4b86e7dcefd6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 910
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "25"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: 9c521720-5564-4a29-869f-0de86e99790e
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: 9c521720-5564-4a29-869f-0de86e99790e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 1105
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      address: {}
+      facility: {}
+      level: {}
+      message:
+        simple: ${PaloAltoIoTIntegrationBase.AlertSyslogs}
+      port: {}
+      protocol: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Syslog Sender
+      description: Sends a message to Syslog.
+      id: 546e3ec1-c2b7-43be-8a89-e6fa25133418
+      iscommand: true
+      name: syslog-send
+      script: Syslog Sender|||syslog-send
+      type: regular
+      version: -1
+    taskid: 546e3ec1-c2b7-43be-8a89-e6fa25133418
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 1480
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input_type:
+        simple: Vulnerabilities
+      output_type: {}
+      playook_name:
+        simple: PanwIoTSIEMIntegration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Sends return status back to Palo Alto IoT Cloud
+      id: 477dffac-bc7f-4bca-8229-63dda949b68b
+      iscommand: true
+      name: report-status-to-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||report-status-to-iot-cloud
+      type: regular
+      version: -1
+    taskid: 477dffac-bc7f-4bca-8229-63dda949b68b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1730
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input_type:
+        simple: Devices
+      output_type: {}
+      playook_name:
+        simple: PanwIoTSIEMIntegration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Sends return status back to Palo Alto IoT Cloud
+      id: 31caad31-fe03-4a79-83b2-6226ebc6e7c6
+      iscommand: true
+      name: report-status-to-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||report-status-to-iot-cloud
+      type: regular
+      version: -1
+    taskid: 31caad31-fe03-4a79-83b2-6226ebc6e7c6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -760,
+          "y": 1720
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input_type:
+        simple: Devices
+      output_type:
+        simple: errors
+      playook_name:
+        simple: PanwIoTSIEMIntegration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Sends return status back to Palo Alto IoT Cloud
+      id: 375b3b0b-6106-47e6-828c-3e44b55983c5
+      iscommand: true
+      name: report-status-to-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||report-status-to-iot-cloud
+      type: regular
+      version: -1
+    taskid: 375b3b0b-6106-47e6-828c-3e44b55983c5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 870
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input_type:
+        simple: Vulnerabilities
+      output_type:
+        simple: errors
+      playook_name:
+        simple: PanwIoTSIEMIntegration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Sends return status back to Palo Alto IoT Cloud
+      id: 95ef2905-c828-47b2-8fa1-a180d82afeaa
+      iscommand: true
+      name: report-status-to-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||report-status-to-iot-cloud
+      type: regular
+      version: -1
+    taskid: 95ef2905-c828-47b2-8fa1-a180d82afeaa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 870
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input_type:
+        simple: Alerts
+      output_type:
+        simple: errors
+      playook_name:
+        simple: PanwIoTSIEMIntegration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Sends return status back to Palo Alto IoT Cloud
+      id: 6a9a8836-a30e-416c-8ea9-5edf50166eba
+      iscommand: true
+      name: report-status-to-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||report-status-to-iot-cloud
+      type: regular
+      version: -1
+    taskid: 6a9a8836-a30e-416c-8ea9-5edf50166eba
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 850
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: c1fdc0cf-311d-4f5c-8c78-247bc5dc6447
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: c1fdc0cf-311d-4f5c-8c78-247bc5dc6447
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 2590
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_4_yes": 0.2,
+      "13_8_yes": 0.4,
+      "16_23_yes": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2625,
+        "width": 3130,
+        "x": -1080,
+        "y": 60
+      }
+    }
+  }
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
