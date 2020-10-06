@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from distutils.util import strtobool
 
 ''' IMPORTS '''
 
