@@ -3021,6 +3021,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "WootCloud",
+            "playbookID": "TestWootCloudPlaybook"
+        },  
+        {
             "integrations": "Ivanti Heat",
             "playbookID": "Ivanti Heat - Test"
         },
