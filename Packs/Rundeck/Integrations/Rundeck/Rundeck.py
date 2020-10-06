@@ -11,9 +11,7 @@ from typing import Any, Dict, Tuple, List, Optional, Union, cast
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
-
 
 VERSION = 18
 
@@ -29,7 +27,9 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this HelloWorld implementation, no special attributes defined
     """
-    def __init__(self, base_url, project_name, params, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+
+    def __init__(self, base_url, project_name, params, verify=True, proxy=False, ok_codes=tuple(), headers=None,
+                 auth=None):
         self.project_name = project_name
         self.params = params
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
@@ -48,7 +48,8 @@ class Client(BaseClient):
             params=self.params
         )
 
-    def get_jobs_list(self, id_list: list, group_path: str, job_filter: str, job_exec_filter: str, group_path_exact: str,
+    def get_jobs_list(self, id_list: list, group_path: str, job_filter: str, job_exec_filter: str,
+                      group_path_exact: str,
                       scheduled_filter: str, server_node_uuid_filter: str):
         """
         This function returns a list of all existing projects.
@@ -86,6 +87,73 @@ class Client(BaseClient):
             params=request_params
         )
 
+    def execute_job(self, job_id: str, arg_string: str, log_level: str, as_user: str, node_filter: str, run_at_time: str, options: dict):
+        """
+        This function runs an existing job
+        :param arg_string: execution arguments for the selected job: -opt1 value1 -opt2 value2
+        :param job_id: id of the job you want to execute
+        :param log_level: specifying the loglevel to use: 'DEBUG','VERBOSE','INFO','WARN','ERROR'
+        :param as_user: identifying the user who ran the job
+        :param node_filter: can be a node filter string
+        :param run_at_time:  select a time to run the job
+        :param options: add options for running a job
+        :return: api response
+        """
+        request_body: Dict[str, Any] = {}
+
+        if arg_string:
+            request_body["argString"] = arg_string
+        if log_level:
+            request_body["loglevel"] = log_level
+        if as_user:
+            request_body["asUser"] = as_user
+        if node_filter:
+            request_body["filter"] = node_filter
+        if run_at_time:
+            request_body["runAtTime"] = run_at_time
+        if options:
+            request_body["options"] = options
+
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/job/{job_id}/executions',
+            params=self.params,
+            data=str(request_body)
+        )
+
+    def retry_job(self, job_id: str, arg_string: str, log_level: str, as_user: str, failed_nodes: str, execution_id: str,
+                  options: dict):
+        """
+        This function retry running a failed execution.
+        :param arg_string: execution arguments for the selected job: -opt1 value1 -opt2 value2
+        :param job_id: id of the job you want to execute
+        :param log_level: specifying the loglevel to use: 'DEBUG','VERBOSE','INFO','WARN','ERROR'
+        :param as_user: identifying the user who ran the job
+        :param failed_nodes: can either ben true or false. true for run all nodes and true for running only failed nodes
+        :param execution_id: for specified what execution to rerun
+        :param options: add options for running a job
+        :return: api response
+        """
+        request_body: Dict[str, Any] = {}
+
+        if arg_string:
+            request_body["argString"] = arg_string
+        if log_level:
+            request_body["loglevel"] = log_level
+        if as_user:
+            request_body["asUser"] = as_user
+        if failed_nodes:
+            request_body["failedNodes"] = failed_nodes
+        if options:
+            request_body["options"] = options
+
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/job/{job_id}/retry/{execution_id}',
+            params=self.params,
+            data=str(request_body)
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -101,7 +169,85 @@ def filter_results(results: list, fields_to_remove: list) -> List:
     return new_results
 
 
+def attribute_pairs_to_dict(attrs_str: Optional[str], delim_char: str = ","):
+    """
+    Transforms a string of multiple inputs to a dictionary list
+
+    :param attrs_str: attributes separated by key=val pairs sepearated by ','
+    :param delim_char: delimiter character between atrribute pairs
+    :return:
+    """
+    if not attrs_str:
+        return attrs_str
+    attrs = {}
+    regex = re.compile(r"(.*)=(.*)")
+    for f in attrs_str.split(delim_char):
+        match = regex.match(f)
+        if match is None:
+            raise ValueError(f"Could not parse field: {f}")
+
+        attrs.update({match.group(1): match.group(2)})
+
+    return attrs
+
+
 ''' COMMAND FUNCTIONS '''
+
+
+def job_retry_command(client: Client, args: dict):
+    arg_string: str = args.get('arg_string', '')
+    log_level: str = args.get('log_level', '')  # TODO: add list options 'DEBUG','VERBOSE','INFO','WARN','ERROR'
+    as_user: str = args.get('as_user', '')
+    failed_nodes: str = args.get('failed_nodes', '')  # TODO: add list options 'true' or 'false'
+    job_id: str = args.get('job_id')
+    execution_id: str = args.get('execution_id')
+    options: str = args.get('options')
+
+    converted_options: dict = attribute_pairs_to_dict(options)
+    result = client.retry_job(job_id, arg_string, log_level, as_user, failed_nodes, execution_id, converted_options)
+    if not isinstance(result, dict):
+        raise DemistoException(f"Got unexpected output from api: {result}")
+
+    query_entries: list = createContext(
+        result, keyTransform=underscoreToCamelCase
+    )
+    headers = [key.replace("-", " ") for key in [*result.keys()]]
+
+    readable_output = tableToMarkdown('Execute Job:', result, headers=headers, headerTransform=pascalToSpace)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Rundeck.ExecutedJobs',
+        outputs=query_entries,
+        outputs_key_field='id'
+    )
+
+
+def execute_job_command(client: Client, args: dict):
+    arg_string: str = args.get('arg_string', '')
+    log_level: str = args.get('log_level', '')  # TODO: add list options 'DEBUG','VERBOSE','INFO','WARN','ERROR'
+    as_user: str = args.get('as_user', '')
+    node_filter: str = args.get('filter', '')
+    run_at_time: str = args.get('run_at_time', '')
+    options: str = args.get('options')
+    job_id: str = args.get('job_id')
+
+    converted_options: dict = attribute_pairs_to_dict(options)
+    result = client.execute_job(job_id, arg_string, log_level, as_user, node_filter, run_at_time, converted_options)
+    if not isinstance(result, dict):
+        raise DemistoException(f"Got unexpected output from api: {result}")
+
+    query_entries: list = createContext(
+        result, keyTransform=underscoreToCamelCase
+    )
+    headers = [key.replace("-", " ") for key in [*result.keys()]]
+
+    readable_output = tableToMarkdown('Execute Job:', result, headers=headers, headerTransform=pascalToSpace)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Rundeck.ExecutedJobs',
+        outputs=query_entries,
+        outputs_key_field='id'
+    )
 
 
 def project_list_command(client: Client):
@@ -120,7 +266,8 @@ def project_list_command(client: Client):
     )
     headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
 
-    readable_output = tableToMarkdown('Projects List:', filtered_results, headers=headers, headerTransform=pascalToSpace)
+    readable_output = tableToMarkdown('Projects List:', filtered_results, headers=headers,
+                                      headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.Projects',
@@ -141,7 +288,7 @@ def jobs_list_command(client: Client, args: dict):
     job_filter: str = args.get('job_filter', '')
     job_exec_filter: str = args.get('job_exec_filter', '')
     group_path_exact: str = args.get('group_path_exact', '')
-    scheduled_filter: str = args.get('scheduled_filter', '')
+    scheduled_filter: str = args.get('scheduled_filter', '')  # ￿￿￿￿￿ TODO: set it as list option 'true' or 'false'
     server_node_uuid_filter: str = args.get('server_node_uuid_filter', '')
 
     result = client.get_jobs_list(id_list, group_path, job_filter, job_exec_filter, group_path_exact, scheduled_filter,
@@ -170,7 +317,7 @@ def webhooks_list_command(client: Client):
     :param client: Demisto client
     :return: CommandResults object
     """
-    result: list = client.get_webhooks_list()
+    result = client.get_webhooks_list()
     if not isinstance(result, list):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
@@ -267,6 +414,12 @@ def main() -> None:
         elif demisto.command() == 'rundeck-webhooks-list':
             result = webhooks_list_command(client)
             return_results(result)
+        elif demisto.command() == 'rundeck-job-execute':
+            result = execute_job_command(client, args)
+            return_results(result)
+        elif demisto.command() == 'rundeck-job-retry':
+            result = job_retry_command(client, args)
+            return_results(result)
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
@@ -274,7 +427,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
