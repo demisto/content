@@ -85,46 +85,41 @@ MOCK_PKT_ALERT = {
 
 
 ANOMALY_ALERT = {
-    "total": 26649,
-    "alerts": [
-        {
-            "id": "eyJpIjoibWxub2RlX3AwMDhfY2F0LGY4OjJkOjdjOjJmOjQzOjdjLHVua==",
-            "timestamp": "2019-05-02T08:00:00Z",
-            "anomaly_type": "bytes_received",
-            "signature": "60 (minutes) 'bytes_received'",
-            "description": "Anomaly: 60 minutes unknown-protocol was significantly more than average during this time",
-            "severity": "warning",
-            "count": 1,
-            "average": 0,
-            "minimum": 0,
-            "maximum": 0,
-            "standard_deviation": 0,
-            "anomaly_score": 1,
-            "observed_value": 805,
-            "deviation_from_norm": "8050.0",
-            "units": "bytes",
-            "address": "f8:2d:7c:2f:43:7c",
-            "device_details": {
-                "device_id": "5cc31d4b954fbc0e96c84eff",
-                "asset": "unmanaged",
-                "managed": "false",
-                "category": "mobile_phone",
-                "control": "user",
-                "host_name": "iPhone",
-                "os": "ios",
-                "os_version": "",
-                "ownership": "employee-owned",
-                "total_risk": 0.008771929824570352,
-                "type": "smart phone",
-                "username": "",
-                "managed_info": {
-                    "host_name": ""
-                },
-                "ip": "",
-                "network": ""
-            }
-        }
-    ]
+    "id": "eyJpIjoibWxub2RlX3AwMDhfY2F0LGY4OjJkOjdjOjJmOjQzOjdjLHVua==",
+    "timestamp": "2019-05-02T08:00:00Z",
+    "anomaly_type": "bytes_received",
+    "signature": "60 (minutes) 'bytes_received'",
+    "description": "Anomaly: 60 minutes unknown-protocol was significantly more than average during this time",
+    "severity": "warning",
+    "count": 1,
+    "average": 0,
+    "minimum": 0,
+    "maximum": 0,
+    "standard_deviation": 0,
+    "anomaly_score": 1,
+    "observed_value": 805,
+    "deviation_from_norm": "8050.0",
+    "units": "bytes",
+    "address": "f8:2d:7c:2f:43:7c",
+    "device_details": {
+        "device_id": "5cc31d4b954fbc0e96c84eff",
+        "asset": "unmanaged",
+        "managed": "false",
+        "category": "mobile_phone",
+        "control": "user",
+        "host_name": "iPhone",
+        "os": "ios",
+        "os_version": "",
+        "ownership": "employee-owned",
+        "total_risk": 0.008771929824570352,
+        "type": "smart phone",
+        "username": "",
+        "managed_info": {
+            "host_name": ""
+        },
+        "ip": "",
+        "network": ""
+    }
 }
 
 

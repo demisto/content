@@ -161,7 +161,6 @@ def fetch_single_alert(client, alert_id, type):
     else:
         raise ValueError('{} is not one of the types'.format(type))
     result = client._http_request('GET', f'events/{url}/{alert_id}')
-    print(result)
     return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
 
 
