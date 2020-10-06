@@ -28,7 +28,7 @@ def handle_error(message, is_return_error):
         return_error(message)
     else:
         demisto.results(message)
-        sys.exit(1)
+        sys.exit(0)
 
 
 def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
@@ -36,8 +36,12 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     model_data = get_model_data(model_name, model_store_type, is_return_error)
     model = demisto_ml.decode_model(model_data)
     text = "%s %s" % (email_subject, email_body)
+    language = demisto.args().get('language', 'English')
+    tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
     res = demisto.executeCommand('WordTokenizerNLP', {'value': text,
-                                                      'hashWordWithSeed': demisto.args().get('hashSeed')})
+                                                      'hashWordWithSeed': demisto.args().get('hashSeed'),
+                                                      'language': language,
+                                                      'tokenizationMethod': tokenization})
     if is_error(res[0]):
         handle_error(res[0]['Contents'], is_return_error)
     tokenized_text_result = res[0]['Contents']
@@ -45,9 +49,9 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         tokenized_text_result['tokenizedText']
     filtered_text, filtered_text_number_of_words = demisto_ml.filter_model_words(input_text, model)
     if filtered_text_number_of_words == 0:
-        handle_error("The model does not contains any of the input text words", is_return_error)
+        handle_error("The model does not contain any of the input text words", is_return_error)
     if filtered_text_number_of_words < min_text_length:
-        handle_error("The model contains less then %d words" % min_text_length, is_return_error)
+        handle_error("The model contains fewer than %d words" % min_text_length, is_return_error)
 
     explain_result = demisto_ml.explain_model_words(model,
                                                     input_text,
@@ -56,7 +60,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
                                                     top_word_limit)
     predicted_prob = explain_result["Probability"]
     if predicted_prob < label_threshold:
-        handle_error("Label probability is {:.2f} and it's below the input threshold".format(
+        handle_error("Label probability is {:.2f} and it's below the input confidence threshold".format(
             predicted_prob), is_return_error)
 
     if tokenized_text_result.get('hashedTokenizedText'):
@@ -91,6 +95,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     explain_result_hr['TextTokensHighlighted'] = highlighted_text_markdown
     explain_result_hr['Label'] = predicted_label
     explain_result_hr['Probability'] = "%.2f" % predicted_prob
+    explain_result_hr['Confidence'] = "%.2f" % predicted_prob
     explain_result_hr['PositiveWords'] = ", ".join(positive_words)
     explain_result_hr['NegativeWords'] = ", ".join(negative_words)
     incident_context = demisto.incidents()[0]
@@ -103,7 +108,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         'Contents': explain_result,
         'ContentsFormat': formats['json'],
         'HumanReadable': tableToMarkdown('DBot Predict Phishing Words', explain_result_hr,
-                                         headers=['TextTokensHighlighted', 'Label', 'Probability',
+                                         headers=['TextTokensHighlighted', 'Label', 'Confidence',
                                                   'PositiveWords', 'NegativeWords'],
                                          removeNull=True),
         'HumanReadableFormat': formats['markdown'],
@@ -122,12 +127,16 @@ def find_words_contain_tokens(positive_tokens, words_to_token_maps):
 
 
 def main():
+    confidence_threshold = 0
+    confidence_threshold = float(demisto.args().get("labelProbabilityThreshold", confidence_threshold))
+    confidence_threshold = float(demisto.args().get("confidenceThreshold", confidence_threshold))
+
     result = predict_phishing_words(demisto.args()['modelName'],
                                     demisto.args()['modelStoreType'],
                                     demisto.args().get('emailSubject', ''),
                                     demisto.args().get('emailBody', '') or demisto.args().get('emailBodyHTML', ''),
                                     int(demisto.args()['minTextLength']),
-                                    float(demisto.args().get("labelProbabilityThreshold", 0)),
+                                    confidence_threshold,
                                     float(demisto.args().get('wordThreshold', 0)),
                                     int(demisto.args()['topWordsLimit']),
                                     demisto.args()['returnError'] == 'true',

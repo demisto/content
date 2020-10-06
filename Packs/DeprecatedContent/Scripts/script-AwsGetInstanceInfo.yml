@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: AwsGetInstanceInfo
 deprecated: true
-script: |-
+script: >-
   function markdownTableHeader(columnNames) {
       var header="|";
       var divider="|"
@@ -13,6 +13,7 @@ script: |-
       }
       return header+"\n"+divider+"\n";
   }
+
   function formatSecurityGroupRule(id,name,dir,rule) {
       var tmpSgTable="";
       var tmpProtocol = (rule.ipProtocol == "-1") ? "All" : rule.ipProtocol.toUpperCase();
@@ -32,9 +33,13 @@ script: |-
       return tmpSgTable;
   }
 
+
   var keysToPrint = ['privateIpAddress','instanceType','ipAddress','launchTime','privateDnsName','vpcId'];
+
   var res = "";
+
   var resCmd = executeCommand('get-instance-info', args);
+
 
 
   if (resCmd[0].Contents.DescribeInstancesResponse.reservationSet.length===0) {
@@ -107,7 +112,7 @@ type: javascript
 tags:
 - Amazon Web Services
 system: true
-comment: Get AWS EC2 instance details
+comment: Deprecated. Get AWS EC2 instance details
 args:
 - name: instanceId
   default: true
@@ -122,4 +127,5 @@ dependson:
   - get-ebs-volume-info
 timeout: 0s
 tests:
-  - No tests
+- No tests
+fromversion: 5.0.0

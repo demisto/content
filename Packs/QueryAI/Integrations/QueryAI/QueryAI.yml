@@ -24,6 +24,11 @@ configuration:
   name: connection_params
   required: true
   type: 12
+- display: Request Timeout (in seconds).
+  additionalinfo: Default value is 60 seconds.
+  name: timeout
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -91,5 +96,6 @@ script:
 defaultmapperin: QueryAI-mapper
 defaultclassifier: QueryAI
 tests:
-  - No tests
+- No tests
 
+fromversion: 5.0.0

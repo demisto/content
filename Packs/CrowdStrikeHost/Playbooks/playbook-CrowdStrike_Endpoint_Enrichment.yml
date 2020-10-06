@@ -1,7 +1,7 @@
 id: crowdstrike_endpoint_enrichment
 version: -1
 name: CrowdStrike Endpoint Enrichment
-fromversion: "3.5.0"
+fromversion: "5.0.0"
 description: Enrich Endpoint with CrowdStrike
 starttaskid: "0"
 tasks:

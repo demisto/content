@@ -68,8 +68,7 @@ tasks:
       id: b97192e2-46fc-4ec6-84c4-2fe248f02c65
       version: -1
       name: infoblox-list-response-policy-zone-rules
-      description: List all response policy rules that belongs to the given response
-        policy zone.
+      description: List all response policy rules that belongs to the given response policy zone.
       script: Infoblox|||infoblox-list-response-policy-zone-rules
       type: regular
       iscommand: true
@@ -104,8 +103,7 @@ tasks:
       id: 3f8777ec-682c-4834-8efc-0e9e7b7b1cf4
       version: -1
       name: infoblox-list-response-policy-zone-rules
-      description: List all response policy rules that belongs to the given response
-        policy zone.
+      description: List all response policy rules that belongs to the given response policy zone.
       script: Infoblox|||infoblox-list-response-policy-zone-rules
       type: regular
       iscommand: true
@@ -298,8 +296,7 @@ tasks:
       id: 7309fe32-d2e0-4ab7-882f-7004e3772f30
       version: -1
       name: infoblox-get-object-fields
-      description: Use this command the retrieve object field names to be used later
-        in the search rules command.
+      description: Use this command the retrieve object field names to be used later in the search rules command.
       script: Infoblox|||infoblox-get-object-fields
       type: regular
       iscommand: true
@@ -344,8 +341,7 @@ tasks:
       id: 1646d721-1033-4e68-8079-d2e9924f0aa5
       version: -1
       name: infoblox-disable-rule
-      description: Disable a rule by its reference ID (this could be exctracted by
-        running the 'infoblox-search-rule' command)
+      description: Disable a rule by its reference ID (this could be exctracted by running the 'infoblox-search-rule' command)
       script: Infoblox|||infoblox-disable-rule
       type: regular
       iscommand: true
@@ -377,8 +373,7 @@ tasks:
       id: 3b52d0e4-8672-45e2-83e5-9d5c455e3310
       version: -1
       name: infoblox-enable-rule
-      description: Disable a rule by its reference ID (reference ID could be exctracted
-        by running the serach rules command)
+      description: Disable a rule by its reference ID (reference ID could be exctracted by running the serach rules command)
       script: Infoblox|||infoblox-enable-rule
       type: regular
       iscommand: true
@@ -1165,8 +1160,7 @@ tasks:
       id: 1b34d5a3-5f9d-4e91-8d3d-001d1e602e57
       version: -1
       name: infoblox-list-response-policy-zone-rules
-      description: List all response policy rules that belongs to the given response
-        policy zone.
+      description: List all response policy rules that belongs to the given response policy zone.
       script: Infoblox|||infoblox-list-response-policy-zone-rules
       type: regular
       iscommand: true
@@ -1274,14 +1268,12 @@ tasks:
       - "37"
     scriptarguments:
       object_type:
-        simple: ${Infoblox.ResponsePolicyZoneRulesList(val.Comment.indexOf('nightly')
-          != -1 || val.Name.indexOf('nightly') != -1).Type}
+        simple: ${Infoblox.ResponsePolicyZoneRulesList(val.Comment.indexOf('nightly') != -1 || val.Name.indexOf('nightly') != -1).Type}
       output_fields: {}
       rule_name:
         complex:
           root: ${Infoblox
-          accessor: ResponsePolicyZoneRulesList(val.Comment.indexOf('nightly') !=
-            -1 || val.Name.indexOf('nightly') != -1).Name}
+          accessor: ResponsePolicyZoneRulesList(val.Comment.indexOf('nightly') != -1 || val.Name.indexOf('nightly') != -1).Name}
           transformers:
           - operator: concat
             args:
@@ -1505,8 +1497,7 @@ tasks:
       id: 6f9bbf6b-0f4f-41e9-84f0-7775b4b9affe
       version: -1
       name: Check for leftover rules
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: Infoblox
@@ -1522,8 +1513,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${Infoblox.ResponsePolicyZoneRulesList(val.Comment.indexOf('nightly')
-                != -1 || val.Name.indexOf('nightly') != -1)}
+              simple: ${Infoblox.ResponsePolicyZoneRulesList(val.Comment.indexOf('nightly') != -1 || val.Name.indexOf('nightly') != -1)}
             iscontext: true
     view: |-
       {
@@ -1551,3 +1541,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

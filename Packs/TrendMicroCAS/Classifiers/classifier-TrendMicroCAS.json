@@ -1,0 +1,18 @@
+{
+ "defaultIncidentType": "Trend Micro CAS Event",
+ "feed": false,
+ "id": "26936bd0-316a-4068-805d-75abfaea6f2f",
+ "name": "trend micro cas classifier",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": null,
+  "simple": ""
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "description": "",
+ "keyTypeMap": {}
+}

@@ -5,8 +5,7 @@ name: RSA Archer
 display: RSA Archer
 category: Case Management
 image: data:image/png;base64,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
-description: The RSA Archer GRC Platform provides a common foundation for managing
-  policies, controls, risks, assessments and deficiencies across lines of business.
+description: The RSA Archer GRC Platform provides a common foundation for managing policies, controls, risks, assessments and deficiencies across lines of business.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1/rsaarcher/)
   name: server
@@ -41,8 +40,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: Timezone offset in minutes of the RSA Archer server machine (+60, -60,
-    in minutes)
+- display: Timezone offset in minutes of the RSA Archer server machine (+60, -60, in minutes)
   name: timeZone
   defaultvalue: ""
   type: 0
@@ -73,8 +71,9 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var server = params.server.replace(/\/+$/, "");
+
 
     var commands = {
       createRecord:     'archer-create-record',
@@ -101,52 +100,96 @@ script:
       getValueList: 'archer-get-valuelist'
     };
 
+
     var urlDictionary = {};
+
     urlDictionary.login = '/ws/general.asmx';
+
     urlDictionary.logout = '/ws/general.asmx';
+
     urlDictionary.levelIdByModuleId = '/api/core/system/level/module/%applicationId%';
+
     urlDictionary.fieldByLevelId = '/api/core/system/fielddefinition/level/%levelId%';
+
     urlDictionary[commands.createRecord] = '/ws/record.asmx';
+
     urlDictionary[commands.updateRecord] = '/ws/record.asmx';
+
     urlDictionary[commands.getRecord] = '/ws/record.asmx';
+
     urlDictionary[commands.searchApps] = '/api/core/system/application';
+
     urlDictionary[commands.searchRecords] = '/ws/search.asmx';
+
     urlDictionary[commands.deleteRecord] = '/ws/record.asmx';
+
     urlDictionary[commands.valueListForField] = '/ws/field.asmx';
+
     urlDictionary[commands.getReports] = '/ws/search.asmx';
+
     urlDictionary[commands.executeStatisticSearchByReport] = '/ws/search.asmx';
+
     urlDictionary[commands.getSearchOptionsByGuid] = '/ws/search.asmx';
+
     urlDictionary[commands.searchRecordsByReport] = '/ws/search.asmx';
+
     urlDictionary[commands.getFile] = '/ws/record.asmx';
+
     urlDictionary[commands.uploadFile] = '/api/core/content/attachment';
+
     urlDictionary[commands.getUserId] = '/ws/accesscontrol.asmx';
 
+
     var methodDictionary = {};
+
     methodDictionary.login = 'POST';
+
     methodDictionary.logout = 'POST';
+
     methodDictionary.levelIdByModuleId = 'POST';
+
     methodDictionary.fieldByLevelId = 'POST';
+
     methodDictionary[commands.createRecord] = 'POST';
+
     methodDictionary[commands.updateRecord] = 'POST';
+
     methodDictionary[commands.updateRecordREST] = 'PUT';
+
     methodDictionary[commands.getRecord] = 'POST';
+
     methodDictionary[commands.searchApps] = 'POST';
+
     methodDictionary[commands.searchRecords] = 'POST';
+
     methodDictionary[commands.deleteRecord] = 'POST';
+
     methodDictionary[commands.valueListForField] = 'POST';
+
     methodDictionary[commands.getReports] = 'POST';
+
     methodDictionary[commands.executeStatisticSearchByReport] = 'POST';
+
     methodDictionary[commands.getSearchOptionsByGuid] = 'POST';
+
     methodDictionary[commands.searchRecordsByReport] = 'POST';
+
     methodDictionary[commands.getFile] = 'POST';
+
     methodDictionary[commands.uploadFile] = 'POST';
+
     methodDictionary[commands.getUserId] = 'POST';
+
     methodDictionary[commands.getSubformId] = 'POST';
 
+
     var GLOBAL_MAPPING = {};
+
     var dateRe = /(\d{1,2})\/(\d{1,2})\/(\d{4})\s*(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)/;
 
+
     // Requests senders
+
 
     function sendRestRequest(url, cmd, bodyContent, httpTunneling, queryParams) {
         var headers = {
@@ -274,6 +317,7 @@ script:
         }
     }
 
+
     function soapRequestSender(cmd, bodyContent, SOAPAction) {
         var headers = {'Content-Type': ['text/xml; charset=utf-8']};
         if (SOAPAction) {
@@ -292,6 +336,7 @@ script:
         );
         return result;
     }
+
 
     function sendSoapRequest(cmd, bodyContent, SOAPAction) {
         var headers = {'Content-Type': ['text/xml; charset=utf-8']};
@@ -316,6 +361,7 @@ script:
 
         return result.Body;
     }
+
 
     function getRecordSendSoapRequest(cmd, applicationId, contentId) {
         var currentToken;
@@ -349,6 +395,7 @@ script:
             return result.Body;
         }
     }
+
 
     function searchSendSoapRequest(
       cmd,
@@ -474,6 +521,7 @@ script:
         }
     }
 
+
     function downloadFileSendSoapRequest(cmd, fileId) {
         var currentToken;
         var cache = getIntegrationContext();
@@ -507,6 +555,7 @@ script:
         }
     }
 
+
     function getContentIdsByIncIdsSendSoapRequest(appId, displayFields, incidentIds, levelId, displayId) {
         var currentToken = getAuthToken();
         var incidentIds;
@@ -524,6 +573,7 @@ script:
             return result.Body;
         }
     }
+
 
     function getAuthToken() {
         var soap = createUserSessionFromInstanceSoapRequest(params.instanceName,
@@ -557,6 +607,7 @@ script:
         return token;
     }
 
+
     function destroyAuthToken(token) {
         var soap = terminateSessionSoapRequest(token);
         var SOAPAction = 'http://archer-tech.com/webservices/TerminateSession';
@@ -581,6 +632,7 @@ script:
         }
     }
 
+
     /**
      * Overwrites obj1's values with obj2's and adds obj2's if non existent in obj1
      * @param obj1
@@ -594,6 +646,7 @@ script:
         return obj3;
     }
 
+
     function sleep(ms) {
         var start = new Date().getTime();
         var expire = start + ms;
@@ -603,7 +656,9 @@ script:
         return;
     }
 
+
     // SOAP templates creators
+
 
     function createUserSessionFromInstanceSoapRequest(instanceName, userName, password) {
         return (
@@ -620,6 +675,7 @@ script:
         );
     }
 
+
     function terminateSessionSoapRequest(token) {
         return(
         '<?xml version="1.0" encoding="utf-8"?>' +
@@ -632,6 +688,7 @@ script:
         '</soap:Envelope>'
         );
     }
+
 
     function getContentsByAppIdRequest(token, appId, displayFields, maxResults,
         fieldIdToSearchOn, fieldNameToSearchOn, searchValue, sortByFieldId,
@@ -701,6 +758,7 @@ script:
         );
     }
 
+
     function createContentSoapRequest(token, appId, fields) {
         return (
         '<?xml version="1.0" encoding="utf-8"?>' +
@@ -719,6 +777,7 @@ script:
         '</soap:Envelope>'
         );
     }
+
 
     function updateContentSoapRequest(token, appId, contentId, fields) {
         return (
@@ -740,6 +799,7 @@ script:
         );
     }
 
+
     function getContentSoapRequest(token, appId, contentId) {
         return (
         '<?xml version="1.0" encoding="utf-8"?> ' +
@@ -754,6 +814,7 @@ script:
         '</soap:Envelope>'
         );
     }
+
 
     function deleteContentSoapRequest(token, appId, contentId) {
         return (
@@ -770,6 +831,7 @@ script:
         );
     }
 
+
     function getValueListForFieldSoapRequest(token, fieldID){
         return (
         '<?xml version="1.0" encoding="utf-8"?>'+
@@ -784,6 +846,7 @@ script:
         );
     }
 
+
     function getReportsSoapRequest(token){
         return (
         '<?xml version="1.0" encoding="utf-8"?>'+
@@ -796,6 +859,7 @@ script:
         '</soap:Envelope>'
         );
     }
+
 
     function executeStatisticSearchByReportSoapRequest(token, reportGuid, maxResults) {
         return (
@@ -812,6 +876,7 @@ script:
         );
     }
 
+
     function getSearchOptionsByGuidSoapRequest(token, reportGuid) {
         return (
         '<?xml version="1.0" encoding="utf-8"?>' +
@@ -825,6 +890,7 @@ script:
         '</soap:Envelope>'
         );
     }
+
 
     function searchRecordsByReportSoapRequest(token, reportGuid, pageNumber) {
         return (
@@ -841,6 +907,7 @@ script:
         );
     }
 
+
     function getAttachmentFileSoapRequest(token, fileId) {
         return (
         '<?xml version="1.0" encoding="utf-8"?>' +
@@ -854,6 +921,7 @@ script:
         '</soap:Envelope>'
         );
     }
+
 
     function getRecordIdsByIncIdsSoapRequest(token, appId, displayFields, incidentIds, levelId, displayId) {
         return (
@@ -889,6 +957,7 @@ script:
         );
     }
 
+
     function getContentSubFormSoapRequest(token, appId, fieldId, fieldValues) {
         return (
         '<?xml version="1.0" encoding="utf-8"?> ' +
@@ -909,6 +978,7 @@ script:
         );
     }
 
+
     function getUserIdSoapRequest(token, userName, userDomain) {
         return (
         '<?xml version="1.0" encoding="utf-8"?> ' +
@@ -923,7 +993,9 @@ script:
         '</soap:Envelope>'
         );
     }
+
     // helper functions
+
 
     function extractObjectFromXML(xml, path) {
         var searchRes = dq(xml, path);
@@ -939,9 +1011,11 @@ script:
         return JSON.parse(x2j(searchRes));
     }
 
+
     function verifyOrMakeArray(arr){
         return Array.isArray(arr)? arr : [arr];
     }
+
 
     function createInnerRecordsHumanReadable(tables){
         var markdown = "";
@@ -951,10 +1025,12 @@ script:
         return markdown;
     }
 
+
     function reLogin(token){
         destroyAuthToken(token);
         return getAuthToken();
     }
+
 
     function getValueListJustForField(dataArgs) {
         // used to get a list of values corresponding to a specific field id
@@ -965,6 +1041,7 @@ script:
         results['valueList'] = result
         return results
     }
+
 
     function getValueListResult(command, dataArgs){
         // used to get a list of values corresponding to a specific field id
@@ -1003,6 +1080,7 @@ script:
         return dq(response, 'Envelope.Body.GetValueListForFieldResponse.GetValueListForFieldResult');
     }
 
+
     function getValueListForField(command, dataArgs){
         var result = getValueListResult(command, dataArgs);
         result = dq(JSON.parse(x2j(result)), 'SelectDef.SelectDefValues.SelectDefValue(true)={Name: val.Name, Id : val.Id}');
@@ -1021,6 +1099,7 @@ script:
         }
         return ret;
     }
+
 
     function inputToXML(fieldsToValue, mapping){
         var fields = '';
@@ -1152,6 +1231,7 @@ script:
         }
         return fields;
     }
+
 
     function createFieldsContentsObject(fieldsToValue, mapping){
         // This function prepares the payload for the REST API, specifically it creates an Object for each field in fieldsToValue, with its proper mapping
@@ -1409,6 +1489,7 @@ script:
         return fieldsContent;
     }
 
+
     function getSearchRecords(parsedJSON, getInnerRecords, fullData) {
         /* getSearchRecords is used in searchRecords and creates an Object with each of the search results full records(with all
            of their inner fields) including their full inner records(with all of their inner fields). Note that it does it only
@@ -1479,6 +1560,7 @@ script:
         });
         return outputs;
     }
+
 
     function getOccurredTime(recordTimeStr, tz) {
         var occurred = new Date();
@@ -1564,6 +1646,7 @@ script:
         return occurred;
     }
 
+
     function toDateArcherString(date) {
         var day = Number(date.getDate());
         var month = Number(date.getMonth()) + 1;
@@ -1602,7 +1685,9 @@ script:
         return month + '/' + day + '/' + year + ' ' + finalHour + ':' + minutes + ':' + seconds + ' ' + ext;
     }
 
+
     // mappings functions
+
 
     function createMappingNameToFieldId(levels) {
         var nameToFieldIdMapping = {};
@@ -1635,12 +1720,14 @@ script:
         return nameToFieldIdMapping;
     }
 
+
     function extendMappingFieldIdToName(levels){
         var newMapping = createMappingFieldIdToName(levels);
         for (var attrname in newMapping) {
             GLOBAL_MAPPING[attrname] = newMapping[attrname];
         }
     }
+
 
     function getLevelsByApplicationId(applicationId) {
         var url = replaceInTemplatesAndRemove(urlDictionary.levelIdByModuleId, {
@@ -1650,13 +1737,16 @@ script:
         return dq(lvlResponse, 'RequestedObject.Id');
     }
 
+
     function extendAppIdMapping(applicationId){
         // creates mapping of field ids to names by application and level ids
         var levels = getLevelsByApplicationId(applicationId);
         extendMappingFieldIdToName(levels);
     }
 
+
     // the following group of functions is used almost exclusively for the getRecord function
+
 
     function getRecordContentMapping(fields, applicationId, contentId, saveFiles) {
         /* we have records who are linked to the record we are working on.
@@ -1781,6 +1871,7 @@ script:
         return recordVals;
     }
 
+
     function getRecordInnerRecordsValues(fields, applicationId){
         /* we have inner records who are linked to the record we are working on.
            innerRecordsTable will have the data related to the linked records */
@@ -1848,6 +1939,7 @@ script:
         return innerRecordsTable;
     }
 
+
     function getRecordAttachments(fields){
         /* we have files attached to the record we are getting to Demisto.
            attachedFiles would be an array with the data needed to download the record's attached files
@@ -1864,6 +1956,7 @@ script:
         }
         return attachedFiles;
     }
+
 
     function innerRecordRowBuilder(field, row){
         var users;
@@ -1885,6 +1978,7 @@ script:
         return row;
     }
 
+
     function getFilesString(field){
         var files = "";
         files += "fileID: " + field['-fileID'] + " fileName: " + field['-fileName'];
@@ -1898,6 +1992,7 @@ script:
         return files;
     }
 
+
     function getGroupsString(groups){
         var group = groups.Group;
         var groupValue;
@@ -1909,6 +2004,7 @@ script:
         }
         return groupValue;
     }
+
 
     function getFilesArr(field){
         var filesArr = [];
@@ -1922,6 +2018,7 @@ script:
         }
         return filesArr;
     }
+
 
     function userFieldHandler(usersField){
         var users = " ";
@@ -1952,6 +2049,7 @@ script:
         }
         return users;
     }
+
 
     function findSonLevelId(innerRecords, applicationId, contentId){
         /* Archer has a known bug of bringing records from another module without their correct module id.
@@ -1993,6 +2091,7 @@ script:
         return sonLevelId;
     }
 
+
     function createContentContext (recordId, records) {
         var context = {};
         records.forEach(function (r) {
@@ -2002,6 +2101,7 @@ script:
         return context;
     }
 
+
     function createKeyValsForFetch (recordId, records) {
         var keyVals = {};
         records.forEach(function (r) {
@@ -2010,6 +2110,7 @@ script:
         keyVals.recordId = recordId;
         return keyVals;
     }
+
 
     function downloadFile(fileId){
         // download file from Archer
@@ -2023,6 +2124,7 @@ script:
         return [fileData,fileName];
 
     }
+
 
     function getRecordJSON(command, contentId, applicationId) {
         var contentId = contentId || args.contentId;
@@ -2046,6 +2148,7 @@ script:
         var parsedJSON = extractObjectFromXML(response, 'Envelope.Body.GetRecordByIdResponse.GetRecordByIdResult');
         return parsedJSON;
     }
+
 
     function getFullRecord(contentId, moduleId) {
         /* getFullRecord is used to get the full record data(including full data on its inner records) */
@@ -2085,6 +2188,7 @@ script:
 
         return record;
     }
+
 
     function createIncidentsArr(records, dataArgs){
         logDebug("Entering createIncidentsArr");
@@ -2194,6 +2298,7 @@ script:
         return incidents;
     }
 
+
     function buildIncident(records, contentId, moduleId){
         var labels = [];
         var lastTime;
@@ -2287,6 +2392,7 @@ script:
         }
     }
 
+
     function getContentIdsFromIncIds(applicationId, incidentIds){
         // gets the content ids of the respective incident ids from Archer
 
@@ -2313,6 +2419,7 @@ script:
 
         return contentIdsArr;
     }
+
 
     function getSubformId(fieldId, applicationId, fieldValues, valueForSubform) {
         var result;
@@ -2377,6 +2484,7 @@ script:
         return result;
     }
 
+
     function verifyFieldsToValue(appFieldMapping, fieldsToValueJSON, appID) {
         // For each application ID, the records of that application ID have different fields.
         // This function verifies the fields specified in the fieldsToValue argument are known by Archer to be compatible with the given app ID.
@@ -2391,6 +2499,7 @@ script:
         })
     }
 
+
     function getGroupIDFromGroupName(groupsDataFromArcher, userSuppliedGroupName) {
         var desiredGroupID = -1;
         for (var i=0; i<groupsDataFromArcher.length; i++){
@@ -2402,6 +2511,7 @@ script:
         }
         return desiredGroupID;
     }
+
 
 
     function getUserIDFromUserName(allUsersArcherData, userSuppliedUserName) {
@@ -2417,10 +2527,12 @@ script:
     }
 
 
+
     function getGroupData() {
         var groupsData = sendRestRequest("/api/core/system/group", 'archer-create-record', '', true);
         return groupsData;
     }
+
 
     function getUserData() {
         var userData = sendRestRequest("/api/core/system/user", 'archer-create-record', '', true);
@@ -2428,7 +2540,9 @@ script:
     }
 
 
+
     // integration commands functions
+
     function replaceMultiselectNameWithID(fieldsToValues, createRecordMapping) {
         var modifiedfieldsToValues = fieldsToValues;
         var allGroupsArcherData = getGroupData();
@@ -2476,6 +2590,7 @@ script:
         return modifiedfieldsToValues;
 
     }
+
 
     function createRecord(command, dataArgs) {
         // corresponds to 'archer-create-record' command. Creates a new record in Archer
@@ -2602,6 +2717,7 @@ script:
         };
     }
 
+
     function updateRecord(command, dataArgs) {
         // corresponds to 'archer-update-record' command. Updates the field/s of a record in Archer
         logDebug("Entering updateRecords");
@@ -2723,6 +2839,7 @@ script:
         }
     }
 
+
     function getRecord(command, contentId, applicationId, saveFiles) {
         /* corresponds to 'archer-get-record' command. Gets record from Archer to the war room.
            the logic of this function can be splitted into three parts:
@@ -2800,6 +2917,7 @@ script:
         return reply;
     }
 
+
     function getListOfApplications(command) {
         // corresponds to 'archer-search-applications' command. Returns the list of applications in Archer
 
@@ -2845,6 +2963,7 @@ script:
     }
 
 
+
     function getFieldIdInReverseMapping(idToNameMapping, fieldNameToSearch) {
         for (var fieldID in idToNameMapping) {
             var currentFieldData = idToNameMapping[fieldID];
@@ -2854,6 +2973,7 @@ script:
         }
         return '';
     }
+
 
 
     function searchRecords(command, dataArgs) {
@@ -2982,6 +3102,7 @@ script:
         };
     }
 
+
     function getAppFields() {
         // corresponds to 'archer-get-application-fields' command. Returns the values of a specific field id in Archer
 
@@ -3008,6 +3129,7 @@ script:
             }
         };
     }
+
 
     function deleteRecord(command, dataArgs) {
         // corresponds to 'archer-delete-record' command. Deletes a record from Archer
@@ -3043,6 +3165,7 @@ script:
         }
     }
 
+
     function getValueObjectForFieldId(dataArgs){
         // corresponds to 'archer-get-field' command. Returns the values of a specific field id in Archer
 
@@ -3057,6 +3180,7 @@ script:
         }
         return result;
     }
+
 
     function fetchIncidents(dataArgs) {
         // corresponds to 'archer-fetch-incidents' scenario. Fetch incidents from an specific module in Archer
@@ -3108,6 +3232,7 @@ script:
         return (JSON.stringify(incidents));
     }
 
+
     function getReports(command) {
         // corresponds to 'archer-get-reports' command. Gets all the existing Archer reports
 
@@ -3134,6 +3259,7 @@ script:
             }
         };
     }
+
 
     function executeStatisticSearchByReport(command, dataArgs) {
         // corresponds to 'archer-execute-statistic-search-by-report' command. Performs a statistic search on a specific Archer report
@@ -3165,6 +3291,7 @@ script:
         };
     }
 
+
     function getSearchOptionsByGuid(command, dataArgs) {
         // corresponds to 'archer-get-search-options-by-guid' command. Gets the search option for a specific Archer report
 
@@ -3192,6 +3319,7 @@ script:
             }
         };
     }
+
 
     function searchRecordsByReport(command, dataArgs) {
         // corresponds to 'archer-search-records-by-report' command. Search records by a specific Archer report
@@ -3238,6 +3366,7 @@ script:
         };
     }
 
+
     function createMappingFieldIdToName(levels) {
         // corresponds to 'archer-get-mapping-by-level' command. Creates a mapping of field id to names according to level ids
 
@@ -3274,6 +3403,7 @@ script:
         return fieldIdToNameMapping;
     }
 
+
     function manualFetch(args){
         /* corresponds to 'archer-manually-fetch-incident' command. Fetch an incident or several incidents from Archer to Demisto.
            used for the automation which creates a new incident with the following data */
@@ -3299,6 +3429,7 @@ script:
         return incidents;
     }
 
+
     function getFile(args){
         // corresponds to 'archer-get-file' command. Downloads a file from Archer and adds it to the context
 
@@ -3314,6 +3445,7 @@ script:
             Contents: fileName
         });
     }
+
 
     function uploadFile(args){
         // corresponds to 'archer-upload-file' command. Uploads a file from Demisto to Archer
@@ -3370,6 +3502,7 @@ script:
         return "File uploaded successfully";
     }
 
+
     function addToDetailedAnalysis(args){
         // corresponds to 'archer-add-to-detailed-analysis' command. Adds more data to detailed analysis
 
@@ -3411,6 +3544,7 @@ script:
 
         return "Detailed Analysis updated successfully";
     }
+
 
     function getUserId(args){
         // corresponds to 'archer-get-user-id' command. Retrieves a user id from Archer
@@ -3537,6 +3671,7 @@ script:
         };
     }
 
+
     function isKeyInCache(key){
         cache = getIntegrationContext();
         if (key in cache && cache[key] !== null) {
@@ -3544,6 +3679,7 @@ script:
         }
         return false;
     }
+
 
     function resetIntegrationCache(){
         currentIntegrationContext = getIntegrationContext();
@@ -3557,6 +3693,7 @@ script:
         setIntegrationContext(newIntegrationContext);
     }
 
+
     function test() {
         var isFetch = params.isFetch;
         if (isFetch && !params.fetchApplicationId && !params.fieldsToDisplay) {
@@ -3568,6 +3705,7 @@ script:
         return 'ok';
     }
 
+
     function mergeDicts(dictA, dictB) {
         newDict = {}
         Object.keys(dictA).forEach(function(key){
@@ -3578,6 +3716,7 @@ script:
         })
         return newDict
     }
+
 
     try {
          /*
@@ -3611,7 +3750,9 @@ script:
             // todo add new levels to the cache
         }
     } catch (e) {
+
     }
+
 
 
     switch (command) {
@@ -3673,8 +3814,7 @@ script:
       description: ID of the application to create record in
     - name: fieldsToValues
       required: true
-      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }.
-        Field name is case sensitive.'
+      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }. Field name is case sensitive.'
     outputs:
     - contextPath: Archer.Record.Id
       description: Content Id
@@ -3691,8 +3831,7 @@ script:
       description: ID of the application to update record in
     - name: fieldsToValues
       required: true
-      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }.
-        Field name is case sensitive.'
+      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }. Field name is case sensitive.'
     - name: incidentId
       description: 'The incident id of the record. For example: id=12345 for INC-12345'
     description: Updates existing content record in the given application.
@@ -3759,8 +3898,7 @@ script:
       required: true
       description: ID of the application to search records in
     - name: fieldsToDisplay
-      description: 'Fields to present in the search results in array format (for example:
-        "Title,Incident Summary")'
+      description: 'Fields to present in the search results in array format (for example: "Title,Incident Summary")'
       isArray: true
       defaultValue: Incident ID
     - name: maxResults
@@ -3803,8 +3941,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Get an extended responses with all of the data regarding this search.
-        For example, "fullData=true"
+      description: Get an extended responses with all of the data regarding this search. For example, "fullData=true"
     outputs:
     - contextPath: Archer.Record.Id
       description: Content Id
@@ -3891,10 +4028,8 @@ script:
       description: 'ID of the application to get the incident from. For example: applicationId="75"'
     - name: incidentIds
       required: true
-      description: 'The Incident IDs to get details for, separated by commas. For
-        example: IncidentIds="12345,67891" '
-    description: Fetch specific incident from Archer to the war room. Also used for
-      manual fetching automation
+      description: 'The Incident IDs to get details for, separated by commas. For example: IncidentIds="12345,67891" '
+    description: Fetch specific incident from Archer to the war room. Also used for manual fetching automation
   - name: archer-get-file
     arguments:
     - name: fileId
@@ -3913,11 +4048,9 @@ script:
     - name: entryId
       description: The entry id of the file in Demisto's context
     - name: associatedField
-      description: 'Archer field name to associate the file with. Initial value is:
-        "Supporting Documentation"'
+      description: 'Archer field name to associate the file with. Initial value is: "Supporting Documentation"'
       defaultValue: Supporting Documentation
-    description: Uploads a file to Archer and adds its id to the context attached
-      files
+    description: Uploads a file to Archer and adds its id to the context attached files
   - name: archer-add-to-detailed-analysis
     arguments:
     - name: applicationId
@@ -3929,8 +4062,7 @@ script:
       description: 'The incident id of the record. For example: id=12345 for INC-12345'
     - name: value
       required: true
-      description: 'The value you want to add to Detailed Analysis. For example: value="test
-        string"'
+      description: 'The value you want to add to Detailed Analysis. For example: value="test string"'
     description: Add data to Archer's Detailed Analysis field
   - name: archer-get-user-id
     arguments:
@@ -3946,13 +4078,12 @@ script:
     - name: fieldID
       required: true
       description: Field Id
-    description: Returns a list of values for a specified field, e.g., fieldID=16114.
-      This command only works for value list fields (type 4).
+    description: Returns a list of values for a specified field, e.g., fieldID=16114. This command only works for value list fields (type 4).
   - name: archer-reset-cache
     arguments: []
-    description: Reset Archer's integration cache. Run this command if you change
-      the fields of your Archer application
+    description: Reset Archer's integration cache. Run this command if you change the fields of your Archer application
   isfetch: true
   runonce: false
 tests:
-  - Archer-Test-Playbook
+- Archer-Test-Playbook
+fromversion: 5.0.0

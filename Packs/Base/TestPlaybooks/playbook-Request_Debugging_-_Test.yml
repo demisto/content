@@ -96,8 +96,7 @@ tasks:
       id: 9dbe44f8-f26b-4a87-89e3-f15f905419e5
       version: -1
       name: SimpleRequestGetter
-      description: Read the contents of the debugging file and check that request
-        debugging information is included in the file.
+      description: Read the contents of the debugging file and check that request debugging information is included in the file.
       scriptName: SimpleRequestGetter
       type: regular
       iscommand: false
@@ -152,3 +151,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
