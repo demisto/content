@@ -802,7 +802,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     circle_ci = tests_settings.circleci
     build_number = tests_settings.buildNumber
     build_name = tests_settings.buildName
-    is_private = tests_settings.private
+    is_private = tests_settings.is_private
     conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
     demisto_api_key = tests_settings.api_key
     demisto_user = secret_conf['username']
