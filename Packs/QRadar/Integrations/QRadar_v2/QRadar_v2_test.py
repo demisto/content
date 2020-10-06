@@ -446,7 +446,7 @@ def test_get_assets_for_offense__happy(requests_mock, mocker):
 
     # assets match the mapping fields
     mapping_fields_interfaces = mapping_fields['Assets']['assets']['interfaces']
-    assert res_interfaces.keys() == mapping_fields_interfaces.keys()
+    assert set(res_interfaces.keys()).issubset(mapping_fields_interfaces.keys())
     assert res_interfaces['ip_addresses'][0].keys() == mapping_fields_interfaces['ip_addresses'].keys()
 
 
