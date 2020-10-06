@@ -2348,4 +2348,5 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- No test
+- servicenow_test_v2
+fromversion: 5.0.0
