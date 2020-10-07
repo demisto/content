@@ -62,6 +62,43 @@ script:
       default: false
       isArray: false
       description: "the RQL query to run. Example RQL queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples"
+    outputs:
+    - contextPath: Redlock.RQL.cloudType
+      description: The cloud type
+      type: String
+    - contextPath: Redlock.RQL.data.nextPageToken
+      description: The next page token
+      type: String
+    - contextPath: Redlock.RQL.data.totalRows
+      description: Total rows returned by the query
+      type: Number
+    - contextPath: Redlock.RQL.description
+      description: The RQL description
+      type: String
+    - contextPath: Redlock.RQL.id
+      description: The Policy ID
+      type: String
+    - contextPath: Redlock.RQL.name
+      description: The name
+      type: String
+    - contextPath: Redlock.RQL.query
+      description: The RQL query
+      type: String
+    - contextPath: Redlock.RQL.saved
+      description: Boolean for if saved
+      type: Number
+    - contextPath: Redlock.RQL.searchType
+      description: The RQL search type
+      type: String
+    - contextPath: Redlock.RQL.timeRange.type
+      description: The timerange type
+      type: String
+    - contextPath: Redlock.RQL.timeRange.value.endTime
+      description: The endtime of the time range
+      type: Date
+    - contextPath: Redlock.RQL.timeRange.value.startTime
+      description: The starttime of the time range
+      type: Date
   - name: redlock-remediate-alerts
     description: Remediate alerts in Prisma Cloud
     arguments:
