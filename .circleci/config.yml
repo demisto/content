@@ -177,22 +177,12 @@ references:
         
             # Upload HelloWorld integration
             demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure 
-            if [[ $? -ne 0 ]]
-            then
-                echo "Download command has failed"
-                exit 1
-            fi
         
             # Download the integration
             rm\
                 Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py \
                 Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure 
-            if [[ $? -ne 0 ]]
-            then
-                echo "Download command has failed"
-                exit 1
-            fi
         
             # Format
             yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -ud > ../format.log
@@ -220,18 +210,13 @@ references:
         then
             echo "Validate command failed"
             exit 1
-        else
-            echo "Validade command succeded"
         fi
         
         if [[ $LINT_CODE -ne 0 ]]
         then
             echo "Lint command failed"
             exit 1
-        else
-            echo "Lint command succeded"
-        fi
-        
+          fi
         echo "All tests has been passed"
 
       
