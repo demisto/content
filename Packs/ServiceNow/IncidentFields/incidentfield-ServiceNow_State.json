@@ -1,8 +1,5 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "ServiceNow Ticket"
-    ],
+    "associatedToAll": true,
     "breachScript": "",
     "caseInsensitive": true,
     "cliName": "servicenowstate",
@@ -25,6 +22,7 @@
     "required": false,
     "script": "",
     "selectValues": [
+        "",
         "1 - New",
         "2 - In Progress",
         "3 - On Hold",

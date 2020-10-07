@@ -18,7 +18,14 @@ from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
-coloredlogs.install(level=logging.DEBUG, fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s')
+coloredlogs.install(level=logging.DEBUG,
+                    fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s',
+                    level_styles={
+                        'critical': {'bold': True, 'color': 'red'},
+                        'debug': {'color': 'cyan'},
+                        'error': {'color': 'red'},
+                        'info': {},
+                        'warning': {'color': 'yellow'}})
 
 
 class TestConf(object):
@@ -244,7 +251,6 @@ def get_modified_files_for_testing(files_string):
             file_path = file_data[2]
         else:
             file_path = file_data[1]
-
         # ignoring deleted files.
         # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
         if ((file_status.lower() == 'm' or file_status.lower() == 'a' or file_status.lower().startswith('r'))
@@ -271,7 +277,7 @@ def get_modified_files_for_testing(files_string):
                     re.match(PACKS_INDICATOR_TYPE_JSON_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
-            elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
+            elif checked_type(file_path, JSON_ALL_INDICATOR_FIELDS_REGEXES):
                 is_indicator_json = True
 
             # conf.json
@@ -1049,14 +1055,14 @@ def is_test_uses_active_integration(integration_ids, conf=deepcopy(CONF)):
 
 def get_random_tests(tests_num, rand, conf=deepcopy(CONF), id_set=deepcopy(ID_SET), server_version='0'):
     """Gets runnable tests for the server version"""
-    tests = set([])
-    test_ids = conf.get_test_playbook_ids()
+    all_test_ids = conf.get_test_playbook_ids()
+    runnable_test_ids = [test_id for test_id in all_test_ids if is_test_runnable(test_id, id_set, conf, server_version)]
+    if len(runnable_test_ids) <= tests_num:
+        random_test_ids_to_run = runnable_test_ids
+    else:
+        random_test_ids_to_run = rand.sample(runnable_test_ids, k=tests_num)
 
-    while len(tests) < tests_num:
-        test = rand.choice(test_ids)
-        if is_test_runnable(test, id_set, conf, server_version):
-            tests.add(test)
-    return tests
+    return set(random_test_ids_to_run)
 
 
 def get_tests_for_pack(pack_path):
@@ -1115,7 +1121,8 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
-def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=deepcopy(CONF),
+def get_test_list_and_content_packs_to_install(files_string, branch_name, minimum_server_version='0',
+                                               conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
 
@@ -1160,7 +1167,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if not tests:
         rand = random.Random(branch_name)
         tests = get_random_tests(
-            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
+            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=minimum_server_version)
         packs_to_install = get_content_pack_name_of_test(tests, id_set)
         if changed_common:
             logging.debug('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
@@ -1169,9 +1176,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
         else:
             logging.debug("Running Sanity check only")
 
-            tests.add('TestCommonPython')  # test with no integration configured
-            tests.add('HelloWorld-Test')  # test with integration configured
-            packs_to_install.add("HelloWorld")
+        tests.add('TestCommonPython')  # test with no integration configured
+        tests.add('HelloWorld-Test')  # test with integration configured
+        packs_to_install.add("HelloWorld")
 
     if changed_common:
         tests.add('TestCommonPython')
@@ -1249,7 +1256,25 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
         json.dump(envs_to_test, filter_envs_file)
 
 
-def create_test_file(is_nightly, skip_save=False):
+def get_list_of_files_in_the_pack(path_to_pack):
+    file_paths = []
+    for root, dirs, files in os.walk(path_to_pack):
+        for file in files:
+            file_paths.append(os.path.join(root, file))
+    return file_paths
+
+
+def changed_files_to_string(changed_files):
+    files_with_status = []
+
+    for file_path in changed_files:
+        file_with_status = f'M\t{file_path}'
+        files_with_status.append(file_with_status)
+
+    return '\n'.join(files_with_status)
+
+
+def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
     packs_to_install_string = ''
@@ -1259,7 +1284,10 @@ def create_test_file(is_nightly, skip_save=False):
         branch_name = branch_name_reg.group(1)
 
         logging.info("Getting changed files from the branch: {0}".format(branch_name))
-        if branch_name != 'master':
+        if path_to_pack:
+            changed_files = get_list_of_files_in_the_pack(path_to_pack)
+            files_string = changed_files_to_string(changed_files)
+        elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
             if os.getenv('CONTRIB_BRANCH'):
@@ -1271,9 +1299,10 @@ def create_test_file(is_nightly, skip_save=False):
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
-        two_before_ga = AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
+        minimum_server_version = AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
 
-        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga)
+        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
+                                                                             minimum_server_version)
         tests_string = '\n'.join(tests)
         packs_to_install_string = '\n'.join(packs_to_install)
 
@@ -1303,10 +1332,11 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--nightly', type=tools.str2bool, help='Is nightly or not')
     parser.add_argument('-s', '--skip-save', type=tools.str2bool,
                         help='Skipping saving the test filter file (good for simply doing validation)')
+    parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly, options.skip_save)
+    create_test_file(options.nightly, options.skip_save, options.changed_pack_path)
     if not _FAILED:
         logging.info("Finished test configuration")
         sys.exit(0)

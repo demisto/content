@@ -269,7 +269,7 @@ class TestExtractIndicatorsAndParse:
 
         """
         expected = CORTEX_17_IOCS_19_OBJS
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN')
         actual = mock_client.extract_indicators_from_envelope_and_parse(STIX_ENVELOPE_17_IOCS_19_OBJS)
 
         assert len(actual) == 17
@@ -291,7 +291,7 @@ class TestExtractIndicatorsAndParse:
 
         """
         expected = CORTEX_COMPLEX_20_IOCS_19_OBJS
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN')
         envelope = STIX_ENVELOPE_20_IOCS_19_OBJS
         actual = mock_client.extract_indicators_from_envelope_and_parse(envelope)
 

@@ -70,8 +70,7 @@ tasks:
       id: f12eed24-fb82-4565-8153-c93dcaa7baa4
       version: -1
       name: Check Capture ID Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -101,8 +100,7 @@ tasks:
       id: 6661ea6f-ea95-4997-8042-077389806c7f
       version: -1
       name: Check URL Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -237,8 +235,7 @@ tasks:
       id: 52d55988-9e1d-44e4-8f33-fc4224cc1807
       version: -1
       name: Check  File Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -299,8 +296,7 @@ tasks:
       id: 10e39b8b-b7ac-47e4-890b-94bae7a272e6
       version: -1
       name: Check Capture Info Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -385,8 +381,7 @@ tasks:
       id: 0b23c917-f209-4ea0-8490-53f7b5f8ae47
       version: -1
       name: Check Delete Result Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -502,3 +497,4 @@ inputs:
   required: false
   description: ""
 outputs: []
+fromversion: 5.0.0
