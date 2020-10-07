@@ -36,6 +36,5 @@ if [ $code_1 -eq 0 ] && [ $code_2 -eq 0 ] ; then
   touch "$filepath"
 fi
 let "exit_code = $code_1 + $code_2"
-rm $GOOGLE_APPLICATION_CREDENTIALS
 
 exit $exit_code
