@@ -6,10 +6,9 @@ verify_ssl = true
 [dev-packages]
 pylint = "*"
 pytest = "==5.0.1"
+flake8 = "*"
 pytest-mock = "*"
 xlsxwriter = "*"
-
-[packages]
 
 [requires]
 python_version = "3.7"
