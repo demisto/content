@@ -721,10 +721,10 @@ def main():
     elif command == 'proofpoint-tr-get-incident':
         get_incident_command()
 
-    elif command == 'proofpoint-tr-add-comment-to-incident':
+    elif command == 'proofpoint-tr-update-incident-comment':
         add_comment_to_incident_command()
 
-    elif command == 'proofpoint-tr-add-user-to-incident' :
+    elif command == 'proofpoint-tr-add-user-to-incident':
         add_user_to_incident_command()
 
     elif command == 'proofpoint-tr-ingest-alert':
