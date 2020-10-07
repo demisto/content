@@ -544,6 +544,7 @@ def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def fetch_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
     demisto.info('Running fetch incidents')
+    demisto.debug('@@@@@@@@@@@@@@@@@@@@')
     outputs = [ { 'entity_id': 'markTest' } ]
     return CommandResults(
         outputs_prefix='XMCyber',
@@ -586,6 +587,8 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
+        demisto.debug("Command: " + demisto.command())
+        
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
