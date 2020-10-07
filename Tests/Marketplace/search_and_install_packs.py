@@ -210,6 +210,35 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         except ApiException:
             print("Failed to upload license.")
 
+        test_data = '/home/runner/work/content-private/content-private/content/artifacts/content_test.zip'
+
+        test_data_file_path = os.path.abspath(test_data)
+        test_files = {'file': test_data_file_path}
+
+        message = 'Making "POST" request to server {} - to install test content {}'.format(
+            host, license_path)
+        prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                     include_timestamp=True)
+        prints_manager.execute_thread_prints(thread_index)
+        try:
+            response_data, status_code, _ = client.api_client.call_api(
+                resource_path='/content/bundle',
+                method='POST',
+                header_params=header_params, files=test_files)
+            if 200 <= status_code < 300:
+                message = 'test data was successfully updated!\n'
+                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                             include_timestamp=True)
+            else:
+                result_object = ast.literal_eval(response_data)
+                message = result_object.get('message', '')
+                err_msg = f'Failed to install test data - with status code {status_code}\n{message}\n'
+                prints_manager.add_print_job(err_msg, print_error, thread_index,
+                                             include_timestamp=True)
+                raise Exception(err_msg)
+        except ApiException:
+            print("Failed to upload test data.")
+
         local_packs = glob.glob("/home/runner/work/content-private/content-private/content/artifacts/packs/*.zip")
         for local_pack in local_packs:
             if any(pack_to_install['id'] in local_pack for pack_to_install in packs_to_install):
