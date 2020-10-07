@@ -49,6 +49,7 @@ CIRCLE_BUILD_NUM = os.environ.get('CIRCLE_BUILD_NUM')
 WORKFLOW_ID = os.environ.get('CIRCLE_WORKFLOW_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
 SLACK_MEM_CHANNEL_ID = 'CM55V7J8K'
+ENV_RESULTS_PATH = './env_results.json'
 
 
 def options_handler():
@@ -716,10 +717,20 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
              is_ami, thread_index=thread_index)
 
 
-def get_server_numeric_version(ami_env, is_local_run=False):
+def load_env_results_json():
+    if not os.path.isfile(ENV_RESULTS_PATH):
+        return None
+
+    with open(env_results_path, 'r') as json_file:
+        return json.load(json_file)
+
+
+def get_server_numeric_version(ami_env, is_local_run=False, env_json=None):
     """
     Gets the current server version
     Arguments:
+        env_json: (list)
+            Environment details.
         ami_env: (str)
             AMI version name.
         is_local_run: (bool)
@@ -729,19 +740,15 @@ def get_server_numeric_version(ami_env, is_local_run=False):
         (str) Server numeric version
     """
     default_version = '99.99.98'
-    env_results_path = './env_results.json'
     if is_local_run:
         print_color(f'Local run, assuming server version is {default_version}', LOG_COLORS.GREEN)
         return default_version
 
-    if not os.path.isfile(env_results_path):
-        print_warning(f'Did not find {env_results_path} file, assuming server version is {default_version}.')
+    if not env_json:
+        print_warning(f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
         return default_version
 
-    with open(env_results_path, 'r') as json_file:
-        env_results = json.load(json_file)
-
-    instances_ami_names = set([env.get('AmiName') for env in env_results if ami_env in env.get('Role', '')])
+    instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}
     if len(instances_ami_names) != 1:
         print_warning(f'Did not get one AMI Name, got {instances_ami_names}.'
                       f' Assuming server version is {default_version}')
@@ -763,13 +770,11 @@ def get_server_numeric_version(ami_env, is_local_run=False):
     return server_numeric_version
 
 
-def get_instances_ips_and_names(tests_settings):
+def get_instances_ips_and_names(tests_settings, env_json):
     if tests_settings.server:
         return [tests_settings.server]
-    with open('./Tests/instance_ips.txt', 'r') as instance_file:
-        instance_ips = instance_file.readlines()
-        instance_ips = [line.strip('\n').split(":") for line in instance_ips]
-        return instance_ips
+    instances_ips = [(env.get('Role'), env.get('InstanceDNS')) for env in env_json]
+    return instances_ips
 
 
 def get_test_records_of_given_test_names(tests_settings, tests_names_to_search):
@@ -1000,9 +1005,10 @@ def manage_tests(tests_settings):
         tests_settings (TestsSettings): An object containing all the relevant data regarding how the tests should be ran
 
     """
+    env_json = load_env_results_json()
     tests_settings.serverNumericVersion = get_server_numeric_version(tests_settings.serverVersion,
-                                                                     tests_settings.is_local_run)
-    instances_ips = get_instances_ips_and_names(tests_settings)
+                                                                     tests_settings.is_local_run, env_json)
+    instances_ips = get_instances_ips_and_names(tests_settings, env_json)
     is_nightly = tests_settings.nightly
     number_of_instances = len(instances_ips)
     prints_manager = ParallelPrintsManager(number_of_instances)
