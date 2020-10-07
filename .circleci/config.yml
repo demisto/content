@@ -462,12 +462,6 @@ references:
               SERVER_URL=$(jq -r 'select(.[].Role == "Demisto Marketplace") | .[].InstanceDNS' ./env_results.json)
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 
-  sdk_nightly_jobs: &sdk_nightly_jobs
-    jobs:
-      - Demisto SDK Nightly:
-          context: sdk_nightly_env
-      - Demisto SDK Nightly - Run against CortexXSOAR:
-          context: sdk_nightly_env
 
 jobs:
   Setup Environment:
@@ -1256,9 +1250,17 @@ workflows:
             branches:
               only:
                 - master
-    *sdk_nightly_jobs
+    jobs:
+      - Demisto SDK Nightly:
+          context: sdk_nightly_env
+      - Demisto SDK Nightly - Run against CortexXSOAR:
+          context: sdk_nightly_env
 
   sdk_nightly_trigger:
     # will initiate when usign the trigger script.
     when: << pipeline.parameters.demisto_sdk_nightly>>
-    *sdk_nightly_jobs
+    jobs:
+      - Demisto SDK Nightly:
+          context: sdk_nightly_env
+      - Demisto SDK Nightly - Run against CortexXSOAR:
+          context: sdk_nightly_env
