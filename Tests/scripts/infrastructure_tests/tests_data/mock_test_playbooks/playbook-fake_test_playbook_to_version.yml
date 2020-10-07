@@ -1,8 +1,8 @@
-id: fake_test_playbook
+id: fake_test_playbook_to_version
 version: -1
-name: fake_test_playbook
-description: ''
-brand: ''
+name: fake_test_playbook_to_version
+description: ""
+brand: ""
 starttaskid: "0"
 tasks:
   "0":

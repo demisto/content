@@ -1,8 +1,8 @@
-id: fake_playbook
+id: test_fake_playbook
 version: -1
-name: fake_playbook
+name: test_fake_playbook
 description: 'This is a description'
-brand: ''
+brand: ""
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -14,6 +14,7 @@ tasks:
       id: 4d5802d1-1b08-4057-8638-336acb417cb6
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     separatecontext: false
@@ -43,3 +44,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+  - No tests
