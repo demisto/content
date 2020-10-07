@@ -154,6 +154,132 @@ references:
         python3 --version
         demisto-sdk --version
 
+  download_configuration: &download_configuration
+  run:
+    name: Download Configuration
+    when: always
+    command: |
+      if ./Tests/scripts/is_ami.sh ;
+        then
+          ./Tests/scripts/download_demisto_conf.sh
+
+        else
+          ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
+      fi
+  
+  test_this_shit: &test_this_shit
+  run:
+    name: Test this shit
+    when: on_success
+    command: |
+      # Install SDK Master
+      pip install git+https://github.com/demisto/demisto-sdk.git > sdk_install.log
+      
+      # Clone Content
+      git clone https://github.com/demisto/content.git > clone.log
+      
+      # Get in content
+      cd content 
+      
+          # Upload HelloWorld integration
+          demisto-sdk upload -i Packs/HelloWorld/Integrations/
+          if [[ $? -ne 0 ]]
+          then
+              echo "Download command has failed"
+              exit 1
+          fi
+      
+          # Download the integration
+          rm\
+              Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py \
+              Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml
+          demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld
+          if [[ $? -ne 0 ]]
+          then
+              echo "Download command has failed"
+              exit 1
+          fi
+      
+          # Format
+          yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -ud > ../format.log
+          # Validate and Lint
+          demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > ../validate.log
+          if [[ $? -ne 0 ]]
+          then
+              VALDIATE_CODE=1
+          fi
+          demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld/ > ../lint.log
+          if [[ $? -ne 0 ]]
+          then
+              LINT_CODE=1
+          fi
+      
+          # Remove all
+          ls -A1 | xargs rm -rf
+          cd ..
+      
+      # Remove content dir
+      rmdir content
+      
+      # Check codes
+      if [[ $VALDIATE_CODE -ne 0 ]]
+      then
+          echo "Validate command failed"
+          exit 1
+      else
+          echo "Validade command succeded"
+      fi
+      
+      if [[ $LINT_CODE -ne 0 ]]
+      then
+          echo "Lint command failed"
+          exit 1
+      else
+          echo "Lint command succeded"
+      fi
+      
+      echo "All tests has been passed"
+
+      
+  create_instance: &create_instance
+  run:
+    name: Create Instance
+    when: on_success
+    command: |
+      [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+      if ./Tests/scripts/is_ami.sh ;
+        then
+          if [ -n "${NIGHTLY}" ] ;
+            then
+              export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
+          elif [ -n "${INSTANCE_TESTS}" ] ;
+            then
+              export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
+          elif [ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}"] ;
+            then
+              export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
+          else
+            export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
+          fi
+          python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
+
+        else
+          . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+          python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
+      fi
+
+  setup_instance: &setup_instance
+  run:
+    name: Setup Instance
+    when: on_success
+    command: |
+      if ./Tests/scripts/is_ami.sh ;
+        then
+          python3 ./Tests/scripts/run_content_installation.py
+        else
+          ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
+      fi
+
   create_artifact: &create_artifact
     run:
       name: Create Content Artifacts
@@ -468,17 +594,7 @@ jobs:
       - *common_server_documentation
       - *create_artifact
       - *update_tests_step
-      - run:
-          name: Download Configuration
-          when: always
-          command: |
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/download_demisto_conf.sh
-
-              else
-                ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
-            fi
+      - *download_configuration
       - run:
           name: Download Artifacts
           when: always
@@ -520,41 +636,8 @@ jobs:
                 name: Store Artifacts to GCS
                 command: ./Tests/scripts/upload_artifacts.sh
                 when: always
-            - run:
-                name: Create Instance
-                when: on_success
-                command: |
-                  [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      if [ -n "${NIGHTLY}" ] ;
-                        then
-                          export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
-                      elif [ -n "${INSTANCE_TESTS}" ] ;
-                        then
-                          export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
-                      elif [ -n "${CONTRIB_BRANCH}" ] ;
-                        then
-                          export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
-                      else
-                        export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
-                      fi
-                      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
-
-                    else
-                      . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
-                  fi
-            - run:
-                name: Setup Instance
-                when: on_success
-                command: |
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      python3 ./Tests/scripts/run_content_installation.py
-                    else
-                      ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                  fi
+            - *create_instance
+            - *setup_instance
             - *store_artifacts
       - *persist_to_workspace
   Server 4_5:
@@ -1007,6 +1090,21 @@ jobs:
             ./Tests/scripts/slack_notifier.sh 'sdk_faild_steps' ./env_results.json
           when: always
 
+  Demisto SDK Nightly - Run against CortexXSOAR:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - checkout
+      - setup_remote_docker
+      - *restore_cache
+      - *prepare_environment
+      - *download_configuration
+      - *create_instance
+      - *setup_instance
+      - *wait_until_server_ready
+      - *test_this_shit
+      - *store_artifacts
 
 workflows:
   version: 2
@@ -1134,4 +1232,6 @@ workflows:
                 - master
     jobs:
       - Demisto SDK Nightly:
+          context: sdk_nightly_env
+      - Demisto SDK Nightly - Run against CortexXSOAR:
           context: sdk_nightly_env
