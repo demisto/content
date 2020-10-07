@@ -45,7 +45,7 @@ def check_changed_files():
     branch_name = sys.argv[1]
 
     if branch_name != "master":
-        all_changed_files_string = run_command("git diff --name-status origin/master...{}".format(branch_name))
+        all_changed_files_string = run_command("git diff --name-status origin/v4.5.0...{}".format(branch_name))
         yml_files, md_files = get_modified_files(all_changed_files_string)
         for yml_file in yml_files:
             print("Checking the file - {}".format(yml_file))
