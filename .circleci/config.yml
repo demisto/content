@@ -255,7 +255,7 @@ references:
             elif [ -n "${INSTANCE_TESTS}" ] ;
               then
                 export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
-            elif [ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}"] ;
+            elif [ [ -n "${CONTRIB_BRANCH}" ] || [ -n "${DEMISTO_SDK_NIGHTLY}" ] ] ;
               then
                 export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
             else
@@ -1232,6 +1232,14 @@ workflows:
 
   sdk_nightly:
     when: << pipeline.parameters.demisto_sdk_nightly>>
+    triggers:
+      - schedule:
+          # should trigger every day at 12 AM UTC (3 AM Israel Time)
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
     jobs:
       - Demisto SDK Nightly:
           context: sdk_nightly_env
