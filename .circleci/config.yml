@@ -1227,6 +1227,7 @@ workflows:
           context: nightly_env
 
   sdk_nightly:
+    when: << pipeline.parameters.demisto_sdk_nightly>>
     triggers:
       - schedule:
           # should trigger every day at 12 AM UTC (3 AM Israel Time)
