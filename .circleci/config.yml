@@ -255,7 +255,7 @@ references:
             elif [ -n "${INSTANCE_TESTS}" ] ;
               then
                 export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
-            elif [ [ -n "${CONTRIB_BRANCH}" ] || [ -n "${DEMISTO_SDK_NIGHTLY}" ] ] ;
+            elif [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
               then
                 export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
             else
