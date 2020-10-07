@@ -721,7 +721,7 @@ def load_env_results_json():
     if not os.path.isfile(ENV_RESULTS_PATH):
         return None
 
-    with open(env_results_path, 'r') as json_file:
+    with open(ENV_RESULTS_PATH, 'r') as json_file:
         return json.load(json_file)
 
 
