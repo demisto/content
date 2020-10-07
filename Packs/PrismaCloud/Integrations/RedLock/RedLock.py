@@ -411,7 +411,7 @@ def get_rql_response():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
-        'EntryContext': {'Redlock.Rql(val.query === obj.query)': response},
+        'EntryContext': {'Redlock.RQL(val.query === obj.query)': response},
         'HumanReadable': md
     })
 
