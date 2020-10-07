@@ -11,6 +11,7 @@ Ingest indicator feeds from TAXII 2.0 and 2.1 servers.
 | Fetch indicators | False |
 | Indicator Reputation | False |
 | Source Reliability | True |
+| Traffic Light Protocol Color | False
 | Feed Fetch Interval | False |
 | Bypass exclusion list | False |
 | Discovery Service URL \(e.g. https://example.net/taxii\) | True |

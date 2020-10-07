@@ -663,8 +663,7 @@ tasks:
       id: 8d1ccb6b-eade-48db-8c34-904dbcbf644c
       version: -1
       name: Use Static Address Group?
-      description: Verify if there is a static address group name set as a playbook
-        input.
+      description: Verify if there is a static address group name set as a playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -748,8 +747,7 @@ tasks:
       id: 181b1519-8b3e-4296-8cb2-d0f91984b16b
       version: -1
       name: Use Dynamic Address Group?
-      description: Verify if there is a dynamic address group name set as a playbook
-        input.
+      description: Verify if there is a dynamic address group name set as a playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -1042,6 +1040,6 @@ outputs:
   description: Percentage of rule hits.
 - contextPath: CheckpointFWRule.Hits.Value
   description: Value of rule hits.
-fromversion: 4.0.0
+fromversion: 5.0.0
 tests:
 - block_indicators_-_generic_-_test

@@ -1,4 +1,4 @@
-from google.cloud.kms_v1 import enums
+from google.cloud import kms
 
 
 class Client:
@@ -61,9 +61,9 @@ def test_update_command_body():
     from GoogleKeyManagementService import get_update_command_body, get_update_mask
     update_mask = get_update_mask(MOCK_ARGS_FULL)
     crypto_key = get_update_command_body(args=MOCK_ARGS_FULL, update_mask=update_mask['paths'])
-    assert crypto_key['primary']['state'] == enums.CryptoKeyVersion.CryptoKeyVersionState.ENABLED.value
-    assert crypto_key['version_template']['protection_level'] == enums.ProtectionLevel.SOFTWARE.value
+    assert crypto_key['primary']['state'] == kms.CryptoKeyVersion.CryptoKeyVersionState.ENABLED.value
+    assert crypto_key['version_template']['protection_level'] == kms.ProtectionLevel.SOFTWARE.value
     assert crypto_key['labels']['label1'] == 'value1'
     assert crypto_key['rotation_period']['seconds'] == 7776000
-    val = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm.GOOGLE_SYMMETRIC_ENCRYPTION.value
+    val = kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm.GOOGLE_SYMMETRIC_ENCRYPTION.value
     assert crypto_key['version_template']['algorithm'] == val

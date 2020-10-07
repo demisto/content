@@ -2,9 +2,11 @@ commonfields:
   id: StaticAnalyze
   version: -1
 name: StaticAnalyze
-script: |-
+script: >-
   var entries = executeCommand('getEntries', {});
+
   var res = [];
+
   for (var i=0; i<entries.length; i++) {
       if (entries[i].File) {
           var fileName = fileNameFromEntry(entries[i].ID);
@@ -12,9 +14,11 @@ script: |-
           Array.prototype.push.apply(res, rep);
       }
   }
+
   if (res.length > 0) {
     return res;
   }
+
   return 'No files found';
 type: javascript
 tags:
@@ -26,3 +30,4 @@ dependson:
   must:
   - D2PEDump
 timeout: 0s
+fromversion: 5.0.0

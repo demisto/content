@@ -1,11 +1,10 @@
 id: Process Email
 version: -1
 name: Process Email
-fromversion: 2.5.0
-description: Deprecated - We recommend using Process Email - Generic playbook instead.
-  Add email details into the relevant context entities and handle the case where you
-  have attached original emails.
+fromversion: 5.0.0
+description: Deprecated. We recommend using Process Email - Generic playbook instead. Add email details into the relevant context entities and handle the case where you have attached original emails.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -42,8 +41,7 @@ tasks:
       id: 0a3b6760-ffc7-4a5f-8042-47e9a15402ee
       version: -1
       name: Do we have original emails attached?
-      description: Check if we have any attachments with relevant attachment types
-        like eml or rfc822
+      description: Check if we have any attachments with relevant attachment types like eml or rfc822
       scriptName: Exists
       type: condition
       iscommand: false
@@ -55,10 +53,7 @@ tasks:
       - "3"
     scriptarguments:
       value:
-        simple: ${File(val.Type.toLowerCase().indexOf('composite document file v2
-          document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
-          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
-          val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+        simple: ${File(val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
     separatecontext: false
     view: |-
       {
@@ -89,9 +84,7 @@ tasks:
       key:
         simple: Email
       value:
-        simple: '${incident.labels={To: val[''Email''], CC: val[''Email/cc''], From:
-          val[''Email/from''], Subject: val[''Email/subject''], Text: val[''Email/text''],
-          HTML: val[''Email/html''], Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
+        simple: '${incident.labels={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''], Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''], Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
     separatecontext: false
     view: |-
       {
@@ -120,10 +113,7 @@ tasks:
       brand: ""
     scriptarguments:
       entryid:
-        simple: ${File(val.Type.toLowerCase().indexOf('composite document file v2
-          document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
-          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
-          val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+        simple: ${File(val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
     results:
     - AttachmentName
     separatecontext: false
@@ -154,4 +144,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No tests - Deprecated playbook
+- No tests - Deprecated playbook

@@ -11,7 +11,7 @@
 <li>Manage Slack channels (create, edit, invite, kick, close).</li>
 </ul><h2>Detailed Description</h2>
 <ul>
-<li>To allow us access to Slack, the Cortex XSOAR app has to be added to the relevant workspace. Do so by clicking on the following [link](https://oproxy.demisto.ninja/slack).</li>
+<li>To allow us access to Slack, the Cortex XSOAR app has to be added to the relevant workspace. Do so by clicking on the following <a href="https://oproxy.demisto.ninja/slack">link</a>.</li>
 <li> After adding the Cortex XSOAR app, you will get an Access Token and Bot Token, which should be inserted in the integration instance configuration's corresponding fields.</li>
 </ul>
 <h2>Configure SlackV2 on Cortex XSOAR</h2>
@@ -759,8 +759,8 @@ If a dedicated channel for incident notifications is configured, the following n
 <li>Incident SLA changed</li>
 <li>Task completed</li>
 </ul>
-<h3>Blocks and interactve components</h3>
-<span>The integration supports sending "blocks" to Slack. Blocks are a series of components that can be combined to create visually rich and compellingly interactive messages. In the integration, they can be sent as an array of JSON. More infortmation about that <a href="https://api.slack.com/reference/block-kit/blocks">here.</a> You can experiment with and build your own blocks <a href="https://api.slack.com/tools/block-kit-builder">here.</a>
+<h3>Blocks and interactive components</h3>
+<span>The integration supports sending "blocks" to Slack. Blocks are a series of components that can be combined to create visually rich and compellingly interactive messages. In the integration, they can be sent as an array of JSON. More information about that <a href="https://api.slack.com/reference/block-kit/blocks">here.</a> You can experiment with and build your own blocks <a href="https://api.slack.com/tools/block-kit-builder">here.</a>
 The integration also allows some level of interactivity. When a user interacts with an element in a Slack message, Slack sends a request with the relevant information. 
 This request is processed and stored by a dedicated endpoint outside of Cortex XSOAR in the address: <code>https://oproxy.demisto.ninja</code>
 The integration allows polling this endpoint for user interactions that contain entitlement strings, which are used to perform actions in Cortex XSOAR by external users. See the <a href="https://github.com/demisto/content/tree/master/Packs/Slack/Scripts/SlackAsk">SlackAsk</a> script for an example.

@@ -54,6 +54,19 @@ if DEVICE_GROUP:
 else:
     XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"
 
+# setting security rulebase xpath relevant to FW or panorama management
+if DEVICE_GROUP:
+    device_group_shared = DEVICE_GROUP.lower()
+    if DEVICE_GROUP == 'shared':
+        XPATH_RULEBASE = "/config/shared/"
+        DEVICE_GROUP = device_group_shared
+    else:
+        XPATH_RULEBASE = "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name=\'" + \
+                         DEVICE_GROUP + "\']/"
+else:
+    XPATH_RULEBASE = f"/config/devices/entry[@name=\'localhost.localdomain\']/vsys/entry[@name=\'{VSYS}\']/"
+
+
 # Security rule arguments for output handling
 SECURITY_RULE_ARGS = {
     'rulename': 'Name',
@@ -110,7 +123,7 @@ class PAN_OS_Not_Found(Exception):
 
 
 def http_request(uri: str, method: str, headers: Dict = {},
-                 body: Dict = {}, params: Dict = {}, files=None) -> Any:
+                 body: Dict = {}, params: Dict = {}, files=None, is_pcap: bool = False) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -129,10 +142,14 @@ def http_request(uri: str, method: str, headers: Dict = {},
             'Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
     # if pcap download
-    if params.get('type') == 'export':
+    if is_pcap:
         return result
 
     json_result = json.loads(xml2json(result.text))
+
+    # handle raw response that doe not contain the response key, e.g xonfiguration export
+    if 'response' not in json_result or '@code' not in json_result['response']:
+        return json_result
 
     # handle non success
     if json_result['response']['@status'] != 'success':
@@ -184,25 +201,24 @@ def http_request(uri: str, method: str, headers: Dict = {},
             raise Exception('Request Failed.\n' + str(json_result['response']))
 
     # handle @code
-    if 'response' in json_result and '@code' in json_result['response']:
-        if json_result['response']['@code'] in PAN_OS_ERROR_DICT:
-            error_message = 'Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']]
-            if json_result['response']['@code'] == '7' and DEVICE_GROUP:
-                device_group_names = get_device_groups_names()
-                if DEVICE_GROUP not in device_group_names:
-                    error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
-                                      f' The available Device Groups for this instance:'
-                                      f' {", ".join(device_group_names)}.')
-                    raise PAN_OS_Not_Found(error_message)
-            return_warning('List not found and might be empty', True)
-        if json_result['response']['@code'] not in ['19', '20']:
-            # error code non exist in dict and not of success
-            if 'msg' in json_result['response']:
-                raise Exception(
-                    'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
-                        json_result['response']['msg']))
-            else:
-                raise Exception('Request Failed.\n' + str(json_result['response']))
+    if json_result['response']['@code'] in PAN_OS_ERROR_DICT:
+        error_message = 'Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']]
+        if json_result['response']['@code'] == '7' and DEVICE_GROUP:
+            device_group_names = get_device_groups_names()
+            if DEVICE_GROUP not in device_group_names:
+                error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
+                                  f' The available Device Groups for this instance:'
+                                  f' {", ".join(device_group_names)}.')
+                raise PAN_OS_Not_Found(error_message)
+        return_warning('List not found and might be empty', True)
+    if json_result['response']['@code'] not in ['19', '20']:
+        # error code non exist in dict and not of success
+        if 'msg' in json_result['response']:
+            raise Exception(
+                'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
+                    json_result['response']['msg']))
+        else:
+            raise Exception('Request Failed.\n' + str(json_result['response']))
 
     return json_result
 
@@ -267,7 +283,8 @@ def add_argument_yes_no(arg: Optional[str], field_name: str, option: bool = Fals
 
 def add_argument_target(arg: Optional[str], field_name: str) -> str:
     if arg:
-        return '<' + field_name + '>' + '<devices>' + '<entry name=\"' + arg + '\"/>' + '</devices>' + '</' + field_name + '>'
+        return '<' + field_name + '>' + '<devices>' + '<entry name=\"' + arg + '\"/>' + '</devices>' + '</' + \
+               field_name + '>'
     else:
         return ''
 
@@ -2333,28 +2350,47 @@ def prettify_get_url_filter(url_filter):
         pretty_url_filter['Description'] = url_filter['description']
 
     pretty_url_filter['Category'] = []
-    url_category_list: List[str] = []
-    action: str
-    if 'alert' in url_filter:
-        url_category_list = url_filter['alert']['member']
-        action = 'alert'
-    elif 'allow' in url_filter:
-        url_category_list = url_filter['allow']['member']
-        action = 'allow'
-    elif 'block' in url_filter:
-        url_category_list = url_filter['block']['member']
-        action = 'block'
-    elif 'continue' in url_filter:
-        url_category_list = url_filter['continue']['member']
-        action = 'continue'
-    elif 'override' in url_filter:
-        url_category_list = url_filter['override']['member']
-        action = 'override'
+    alert_category_list = []
+    block_category_list = []
+    allow_category_list = []
+    continue_category_list = []
+    override_category_list = []
 
-    for category in url_category_list:
+    if 'alert' in url_filter:
+        alert_category_list = url_filter['alert']['member']
+    if 'block' in url_filter:
+        block_category_list = url_filter['block']['member']
+    if 'allow' in url_filter:
+        allow_category_list = url_filter['allow']['member']
+    if 'continue' in url_filter:
+        continue_category_list = url_filter['continue']['member']
+    if 'override' in url_filter:
+        override_category_list = url_filter['override']['member']
+
+    for category in alert_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
-            'Action': action
+            'Action': 'alert'
+        })
+    for category in block_category_list:
+        pretty_url_filter['Category'].append({
+            'Name': category,
+            'Action': 'block'
+        })
+    for category in allow_category_list:
+        pretty_url_filter['Category'].append({
+            'Name': category,
+            'Action': 'block'
+        })
+    for category in continue_category_list:
+        pretty_url_filter['Category'].append({
+            'Name': category,
+            'Action': 'block'
+        })
+    for category in override_category_list:
+        pretty_url_filter['Category'].append({
+            'Name': category,
+            'Action': 'block'
         })
 
     if 'allow-list' in url_filter or 'block-list' in url_filter:
@@ -2363,7 +2399,6 @@ def prettify_get_url_filter(url_filter):
             pretty_url_filter['OverrideAllowList'] = url_filter['allow-list']['member']
         else:
             pretty_url_filter['OverrideBlockList'] = url_filter['block-list']['member']
-
     return pretty_url_filter
 
 
@@ -3090,7 +3125,7 @@ def panorama_list_pcaps_command():
     elif demisto.args()['pcapType'] == 'dlp-pcap':
         raise Exception('can not provide dlp-pcap without password')
 
-    result = http_request(URL, 'GET', params=params)
+    result = http_request(URL, 'GET', params=params, is_pcap=True)
     json_result = json.loads(xml2json(result.text))['response']
     if json_result['@status'] != 'success':
         raise Exception('Request to get list of Pcaps Failed.\nStatus code: ' + str(
@@ -3138,28 +3173,31 @@ def panorama_get_pcap_command():
     Get pcap file
     """
     if DEVICE_GROUP:
-        raise Exception('Getting a PCAP file is only supported on Firewall (not Panorama).')
-    pcap_type = demisto.args()['pcapType']
+        raise Exception('Downloading a PCAP file is only supported on a Firewall (not on Panorama).')
+    args = demisto.args()
+    pcap_type = args['pcapType']
     params = {
         'type': 'export',
         'key': API_KEY,
         'category': pcap_type
     }
 
-    password = demisto.args().get('password')
-    pcap_id = demisto.args().get('pcapID')
-    search_time = demisto.args().get('searchTime')
+    password = args.get('password')
+    pcap_id = args.get('pcapID')
+    search_time = args.get('searchTime')
+
     if pcap_type == 'dlp-pcap' and not password:
-        raise Exception('Can not provide dlp-pcap without password.')
+        raise Exception('Can not download dlp-pcap without the password argument.')
     else:
         params['dlp-password'] = password
     if pcap_type == 'threat-pcap' and (not pcap_id or not search_time):
-        raise Exception('Can not provide threat-pcap without pcap-id and the searchTime arguments.')
+        raise Exception('Can not download threat-pcap without the pcapID and the searchTime arguments.')
 
-    pcap_name = demisto.args().get('from')
-    local_name = demisto.args().get('localName')
-    serial_no = demisto.args().get('serialNo')
-    search_time = demisto.args().get('searchTime')
+    pcap_name = args.get('from')
+    local_name = args.get('localName')
+    serial_no = args.get('serialNo')
+    session_id = args.get('sessionID')
+    device_name = args.get('deviceName')
 
     file_name = None
     if pcap_id:
@@ -3172,16 +3210,21 @@ def panorama_get_pcap_command():
         file_name = local_name
     if serial_no:
         params['serialno'] = serial_no
+    if session_id:
+        params['sessionid'] = session_id
+    if device_name:
+        params['device_name'] = device_name
     if search_time:
         search_time = validate_search_time(search_time)
         params['search-time'] = search_time
+
     # set file name to the current time if from/to were not specified
     if not file_name:
         file_name = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
 
-    result = http_request(URL, 'GET', params=params)
+    result = http_request(URL, 'GET', params=params, is_pcap=True)
 
-    # due pcap file size limitation in the product, for more details, please see the documentation.
+    # due to pcap file size limitation in the product. For more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':
         raise Exception(
             'PCAP download failed. Most likely cause is the file size limitation.\n'
@@ -3561,16 +3604,28 @@ def panorama_delete_edl_command():
     })
 
 
-def panorama_refresh_edl(edl_name):
-    edl = panorama_get_edl(edl_name)
-    edl_type = ''.join(edl['type'].keys())
-
+def panorama_refresh_edl(edl_name: str, edl_type: str, location: str, vsys: str):
     params = {
         'type': 'op',
-        'cmd': '<request><system><external-list><refresh><type><' + edl_type + '><name>' + edl_name + '</name></'
-               + edl_type + '></type></refresh></external-list></system></request>',
         'key': API_KEY
     }
+    # if refreshing an EDL on the FW
+    if not edl_type and not location and not vsys:
+        edl = panorama_get_edl(edl_name)
+        edl_type = ''.join(edl['type'].keys())
+    # if refreshing an EDL on the Panorama
+    else:
+        if not edl_type or not location or not vsys:
+            raise Exception('To refresh an EDL from the Firewall on Panorama'
+                            ' please use the: edl_type, location and vsys arguments.')
+
+    params['cmd'] = f'<request><system><external-list><refresh><type><{edl_type}><name>{edl_name}' \
+                    f'</name></{edl_type}></type></refresh></external-list></system></request>'
+    if location:
+        params['location'] = location
+    if vsys:
+        params['vsys'] = vsys
+
     result = http_request(
         URL,
         'POST',
@@ -3584,12 +3639,16 @@ def panorama_refresh_edl_command():
     """
     Refresh an EDL
     """
+    args = demisto.args()
     if DEVICE_GROUP:
         raise Exception('EDL refresh is only supported on Firewall (not Panorama).')
 
-    edl_name = demisto.args()['name']
+    edl_name = args.get('name')
+    edl_type = args.get('edl_type', '')
+    location = args.get('location', '')
+    vsys = args.get('vsys', '')
 
-    result = panorama_refresh_edl(edl_name)
+    result = panorama_refresh_edl(edl_name, edl_type, location, vsys)
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -4814,7 +4873,7 @@ def panorama_get_predefined_threats_list_command():
 
 def panorama_block_vulnerability():
     """
-    Ovverride a vulnerability signature such that it is in block mode
+    Override vulnerability signature such that it is in block mode
     """
     threatid = demisto.args().get('threat_id')
     vulnerability_profile = demisto.args().get('vulnerability_profile')
@@ -5411,6 +5470,1195 @@ def panorama_show_location_ip_command():
     })
 
 
+@logger
+def panorama_get_license() -> Dict:
+    params = {
+        'type': 'op',
+        'cmd': '<request><license><info/></license></request>',
+        'key': API_KEY
+    }
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def panorama_get_license_command():
+    """
+    Get information about PAN-OS available licenses and their statuses.
+    """
+    available_licences = []
+    result = panorama_get_license()
+    if 'response' not in result or '@status' not in result['response'] or result['response']['@status'] != 'success':
+        demisto.debug(str(result))
+        raise Exception('Failed to get the information about PAN-OS available licenses and their statuses.')
+
+    entry = result.get('response', {}).get('result', {}).get('licenses', {}).get('entry', [])
+    for item in entry:
+        available_licences.append({
+            'Authcode': item.get('authcode'),
+            'Base-license-name': item.get('base-license-name'),
+            'Description': item.get('description'),
+            'Expired': item.get('expired'),
+            'Feature': item.get('feature'),
+            'Expires': item.get('expires'),
+            'Issued': item.get('issued'),
+            'Serial': item.get('serial')
+        })
+
+    headers = ['Authcode', 'Base-license-name', 'Description', 'Feature', 'Serial', 'Expired', 'Expires', 'Issued']
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('PAN-OS Available Licenses', available_licences, headers, removeNull=True),
+        'EntryContext': {"Panorama.License(val.Feature == obj.Feature)": available_licences}
+    })
+
+
+def prettify_data_filtering_rule(rule: Dict) -> Dict:
+    """
+    Prettify the data filtering rule to be compatible to our standard.
+    Args:
+        rule: The profile rule to prettify
+
+    Returns: rule dictionary compatible to our standards.
+
+    """
+    pretty_rule = {
+        'Name': rule.get('@name')
+    }
+    if 'application' in rule and 'member' in rule['application']:
+        pretty_rule['Application'] = rule['application']['member']
+    if 'file-type' in rule and 'member' in rule['file-type']:
+        pretty_rule['File-type'] = rule['file-type']['member']
+    if 'direction' in rule:
+        pretty_rule['Direction'] = rule['direction']
+    if 'alert-threshold' in rule:
+        pretty_rule['Alert-threshold'] = rule['alert-threshold']
+    if 'block-threshold' in rule:
+        pretty_rule['Block-threshold'] = rule['block-threshold']
+    if 'data-object' in rule:
+        pretty_rule['Data-object'] = rule['data-object']
+    if 'log-severity' in rule:
+        pretty_rule['Log-severity'] = rule['log-severity']
+    if 'description' in rule:
+        pretty_rule['Description'] = rule['description']
+
+    return pretty_rule
+
+
+def prettify_data_filtering_rules(rules: Dict) -> List:
+    """
+
+    Args:
+        rules: All the rules to prettify
+
+    Returns: A list of all the rules compatible with our standards.
+
+    """
+    if not isinstance(rules, list):
+        return [prettify_data_filtering_rule(rules)]
+    return [prettify_data_filtering_rule(rule) for rule in rules]
+
+
+@logger
+def get_security_profile(xpath: str) -> Dict:
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': xpath,
+        'key': API_KEY
+    }
+
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_security_profiles_command():
+    """
+    Get information about profiles.
+    """
+    security_profile = demisto.args().get('security_profile')
+    if security_profile:
+        xpath = f'{XPATH_RULEBASE}profiles/{security_profile}'
+    else:
+        xpath = f'{XPATH_RULEBASE}profiles'
+
+    result = get_security_profile(xpath)
+    if security_profile:
+        security_profiles = result.get('response', {}).get('result', {})
+    else:
+        security_profiles = result.get('response', {}).get('result', {}).get('profiles', {})
+
+    if '@dirtyId' in security_profiles:
+        demisto.debug(f'Found uncommitted item:\n{security_profiles}')
+        raise Exception('Please commit the instance prior to getting the security profiles.')
+
+    human_readable = ''
+    content = []
+    context = {}
+    if 'spyware' in security_profiles and security_profiles['spyware'] is not None:
+        profiles = security_profiles.get('spyware', {}).get('entry', {})
+        if isinstance(profiles, list):
+            for profile in profiles:
+                rules = profile.get('rules', {}).get('entry', [])
+                spyware_rules = prettify_profiles_rules(rules)
+                content.append({
+                    'Name': profile['@name'],
+                    'Rules': spyware_rules
+                })
+        else:
+            rules = profiles.get('rules', {}).get('entry', [])
+            spyware_rules = prettify_profiles_rules(rules)
+            content = [{
+                'Name': profiles['@name'],
+                'Rules': spyware_rules
+            }]
+
+        human_readable = tableToMarkdown('Anti Spyware Profiles', content)
+        context.update({"Panorama.Spyware(val.Name == obj.Name)": content})
+
+    if 'virus' in security_profiles and security_profiles['virus'] is not None:
+        profiles = security_profiles.get('virus', {}).get('entry', [])
+        if isinstance(profiles, list):
+            for profile in profiles:
+                rules = profile.get('decoder', {}).get('entry', [])
+                antivirus_rules = prettify_profiles_rules(rules)
+                content.append({
+                    'Name': profile['@name'],
+                    'Decoder': antivirus_rules
+                })
+        else:
+            rules = profiles.get('decoder', {}).get('entry', [])
+            antivirus_rules = prettify_profiles_rules(rules)
+            content = [{
+                'Name': profiles['@name'],
+                'Rules': antivirus_rules
+            }]
+
+        human_readable += tableToMarkdown('Antivirus Profiles', content)
+        context.update({"Panorama.Antivirus(val.Name == obj.Name)": content})
+
+    if 'file-blocking' in security_profiles and security_profiles['file-blocking'] is not None:
+        profiles = security_profiles.get('file-blocking', {}).get('entry', {})
+        if isinstance(profiles, list):
+            for profile in profiles:
+                rules = profile.get('rules', {}).get('entry', [])
+                file_blocking_rules = prettify_profiles_rules(rules)
+                content.append({
+                    'Name': profile['@name'],
+                    'Rules': file_blocking_rules
+                })
+        else:
+            rules = profiles.get('rules', {}).get('entry', [])
+            file_blocking_rules = prettify_profiles_rules(rules)
+            content = [{
+                'Name': profiles['@name'],
+                'Rules': file_blocking_rules
+            }]
+
+        human_readable += tableToMarkdown('File Blocking Profiles', content)
+        context.update({"Panorama.FileBlocking(val.Name == obj.Name)": content})
+
+    if 'vulnerability' in security_profiles and security_profiles['vulnerability'] is not None:
+        profiles = security_profiles.get('vulnerability', {}).get('entry', {})
+        if isinstance(profiles, list):
+            for profile in profiles:
+                rules = profile.get('rules', {}).get('entry', [])
+                vulnerability_rules = prettify_profiles_rules(rules)
+                content.append({
+                    'Name': profile['@name'],
+                    'Rules': vulnerability_rules
+                })
+        else:
+            rules = profiles.get('rules', {}).get('entry', [])
+            vulnerability_rules = prettify_profiles_rules(rules)
+            content = [{
+                'Name': profiles['@name'],
+                'Rules': vulnerability_rules
+            }]
+
+        human_readable += tableToMarkdown('Vulnerability Protection Profiles', content)
+        context.update({"Panorama.Vulnerability(val.Name == obj.Name)": content})
+
+    if 'data-filtering' in security_profiles and security_profiles['data-filtering'] is not None:
+        profiles = security_profiles.get('data-filtering', {}).get('entry', {})
+        if isinstance(profiles, list):
+            for profile in profiles:
+                rules = profile.get('rules', {}).get('entry', [])
+                data_filtering_rules = prettify_data_filtering_rules(rules)
+                content.append({
+                    'Name': profile['@name'],
+                    'Rules': data_filtering_rules
+                })
+        else:
+            rules = profiles.get('rules', {}).get('entry', [])
+            data_filtering_rules = prettify_data_filtering_rules(rules)
+            content = [{
+                'Name': profiles['@name'],
+                'Rules': data_filtering_rules
+            }]
+
+        human_readable += tableToMarkdown('Data Filtering Profiles', content)
+        context.update({"Panorama.DataFiltering(val.Name == obj.Name)": content})
+
+    if 'url-filtering' in security_profiles and security_profiles['url-filtering'] is not None:
+        profiles = security_profiles.get('url-filtering', {}).get('entry', {})
+        if isinstance(profiles, list):
+            for profile in profiles:
+                url_filtering_rules = prettify_get_url_filter(profile)
+                content.append({
+                    'Name': profile['@name'],
+                    'Rules': url_filtering_rules
+                })
+        else:
+            url_filtering_rules = prettify_get_url_filter(profiles)
+            content = [{
+                'Name': profiles['@name'],
+                'Rules': url_filtering_rules
+            }]
+
+        human_readable += tableToMarkdown('URL Filtering Profiles', content)
+        context.update({'Panorama.URLFilter(val.Name == obj.Name)': content})
+
+    if 'wildfire-analysis' in security_profiles and security_profiles['wildfire-analysis'] is not None:
+        profiles = security_profiles.get('wildfire-analysis', {}).get('entry', [])
+        if isinstance(profiles, list):
+            for profile in profiles:
+                rules = profile.get('rules', {}).get('entry', [])
+                wildfire_rules = prettify_wildfire_rules(rules)
+                content.append({
+                    'Name': profile['@name'],
+                    'Rules': wildfire_rules
+                })
+        else:
+            rules = profiles.get('rules', {}).get('entry', [])
+            wildfire_rules = prettify_wildfire_rules(rules)
+            content = [{
+                'Name': profiles['@name'],
+                'Rules': wildfire_rules
+            }]
+
+        human_readable += tableToMarkdown('WildFire Profiles', content)
+        context.update({"Panorama.WildFire(val.Name == obj.Name)": content})
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': context
+    })
+
+
+@logger
+def apply_security_profile(pre_post: str, rule_name: str, profile_type: str, profile_name: str) -> Dict:
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"
+        f"profiles/{profile_type}",
+        'key': API_KEY,
+        'element': f'<member>{profile_name}</member>'
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def apply_security_profile_command():
+
+    pre_post = demisto.args().get('pre_post')
+    profile_type = demisto.args().get('profile_type')
+    rule_name = demisto.args().get('rule_name')
+    profile_name = demisto.args().get('profile_name')
+
+    if DEVICE_GROUP:
+        if not pre_post:
+            raise Exception('Please provide the pre_post argument when applying profiles to rules in '
+                            'Panorama instance.')
+
+    apply_security_profile(pre_post, rule_name, profile_type, profile_name)
+    demisto.results(f'The profile {profile_name} has been applied to the rule {rule_name}')
+
+
+@logger
+def get_ssl_decryption_rules(xpath: str) -> Dict:
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': xpath,
+        'key': API_KEY
+    }
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_ssl_decryption_rules_command():
+
+    content = []
+    if DEVICE_GROUP:
+        if 'pre_post' not in demisto.args():
+            raise Exception('Please provide the pre_post argument when getting rules in Panorama instance.')
+        else:
+            xpath = XPATH_RULEBASE + demisto.args()['pre_post'] + '/decryption/rules'
+    else:
+        xpath = XPATH_RULEBASE
+    result = get_ssl_decryption_rules(xpath)
+    ssl_decryption_rules = result.get('response', {}).get('result', {}).get('rules', {}).get('entry')
+    if '@dirtyId' in ssl_decryption_rules:
+        demisto.debug(f'Found uncommitted item:\n{ssl_decryption_rules}')
+        raise Exception('Please commit the instance prior to getting the ssl decryption rules.')
+    if isinstance(ssl_decryption_rules, list):
+        for item in ssl_decryption_rules:
+            content.append({
+                'Name': item.get('@name'),
+                'UUID': item.get('@uuid'),
+                'Target': item.get('target'),
+                'Category': item.get('category'),
+                'Service': item.get('service', {}).get('member'),
+                'Type': item.get('type'),
+                'From': item.get('from').get('member'),
+                'To': item.get('to').get('member'),
+                'Source': item.get('source').get('member'),
+                'Destination': item.get('destination', {}).get('member'),
+                'Source-user': item.get('source-user', {}).get('member'),
+                'Action': item.get('action'),
+                'Description': item.get('description')
+            })
+    else:
+        content = [{
+            'Name': ssl_decryption_rules.get('@name'),
+            'UUID': ssl_decryption_rules.get('@uuid'),
+            'Target': ssl_decryption_rules.get('target'),
+            'Category': ssl_decryption_rules.get('category'),
+            'Service': ssl_decryption_rules.get('service', {}).get('member'),
+            'Type': ssl_decryption_rules.get('type'),
+            'From': ssl_decryption_rules.get('from').get('member'),
+            'To': ssl_decryption_rules.get('to').get('member'),
+            'Source': ssl_decryption_rules.get('source').get('member'),
+            'Destination': ssl_decryption_rules.get('destination', {}).get('member'),
+            'Source-user': ssl_decryption_rules.get('source-user', {}).get('member'),
+            'Action': ssl_decryption_rules.get('action'),
+            'Description': ssl_decryption_rules.get('description')
+        }]
+
+    headers = ['Name', 'UUID', 'Description', 'Target', 'Service', 'Category', 'Type', 'From', 'To', 'Source',
+               'Destination', 'Action', 'Source-user']
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('SSL Decryption Rules', content, headers, removeNull=True),
+        'EntryContext': {"Panorama.SSLRule(val.UUID == obj.UUID)": content}
+    })
+
+
+def prettify_profile_rule(rule: Dict) -> Dict:
+    """
+    Args:
+        rule: The rule dictionary.
+
+    Returns: Dictionary of the rule compatible with our standards.
+
+    """
+    pretty_rule = {
+        'Name': rule['@name'],
+        'Action': rule['action']
+    }
+    if 'application' in rule and 'member' in rule['application']:
+        pretty_rule['Application'] = rule['application']['member']
+    if 'file-type' in rule and 'member' in rule['file-type']:
+        pretty_rule['File-type'] = rule['file-type']['member']
+    if 'wildfire-action' in rule:
+        pretty_rule['WildFire-action'] = rule['wildfire-action']
+    if 'category' in rule and 'member' in rule['category']:
+        pretty_rule['Category'] = rule['category']['member']
+    elif 'category' in rule:
+        pretty_rule['Category'] = rule['category']
+    if 'severity' in rule and 'member' in rule['severity']:
+        pretty_rule['Severity'] = rule['severity']['member']
+    if 'threat-name' in rule and 'member' in rule['threat-name']:
+        pretty_rule['Threat-name'] = rule['threat-name']['member']
+    elif 'threat-name' in rule:
+        pretty_rule['Threat-name'] = rule['threat-name']
+    if 'packet-capture' in rule:
+        pretty_rule['Packet-capture'] = rule['packet-capture']
+    if '@maxver' in rule:
+        pretty_rule['Max_version'] = rule['@maxver']
+    if 'sinkhole' in rule:
+        pretty_rule['Sinkhole'] = {}
+        if 'ipv4-address' in rule['sinkhole']:
+            pretty_rule['Sinkhole']['IPV4'] = rule['sinkhole']['ipv4-address']
+        if 'ipv6-address' in rule['sinkhole']:
+            pretty_rule['Sinkhole']['IPV6'] = rule['sinkhole']['ipv6-address']
+    if 'host' in rule:
+        pretty_rule['Host'] = rule['host']
+    if 'cve' in rule and 'member' in rule['cve']:
+        pretty_rule['CVE'] = rule['cve']['member']
+    if 'vendor-id' in rule and 'member' in rule['vendor-id']:
+        pretty_rule['Vendor-id'] = rule['vendor-id']['member']
+    if 'analysis' in rule:
+        pretty_rule['Analysis'] = rule['analysis']
+    return pretty_rule
+
+
+def prettify_profiles_rules(rules: Dict) -> List:
+    """
+    Args:
+        rules: The rules to prettify.
+
+    Returns: List with the rules that are compatible to our standard.
+
+    """
+    if not isinstance(rules, list):
+        return [prettify_profile_rule(rules)]
+    pretty_rules_arr = []
+    for rule in rules:
+        pretty_rule = prettify_profile_rule(rule)
+        pretty_rules_arr.append(pretty_rule)
+
+    return pretty_rules_arr
+
+
+@logger
+def get_anti_spyware_best_practice() -> Dict:
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': '/config/predefined/profiles/spyware',
+        'key': API_KEY
+    }
+
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_anti_spyware_best_practice_command():
+
+    result = get_anti_spyware_best_practice()
+    spyware_profile = result.get('response', {}).get('result', {}).get('spyware').get('entry', [])
+    strict_profile = next(item for item in spyware_profile if item['@name'] == 'strict')
+
+    botnet_domains = strict_profile.get('botnet-domains', {}).get('lists', {}).get('entry', [])
+    pretty_botnet_domains = prettify_profiles_rules(botnet_domains)
+
+    sinkhole = strict_profile.get('botnet-domains', {}).get('sinkhole', {})
+    sinkhole_content = []
+    if sinkhole:
+        sinkhole_content = [
+            {'ipv6-address': sinkhole['ipv6-address'], 'ipv4-address': sinkhole['ipv4-address']}
+        ]
+
+    botnet_output = pretty_botnet_domains + sinkhole_content
+
+    human_readable = tableToMarkdown('Anti Spyware Botnet-Domains Best Practice', botnet_output,
+                                     ['Name', 'Action', 'Packet-capture', 'ipv4-address', 'ipv6-address'],
+                                     removeNull=True)
+
+    rules = strict_profile.get('rules', {}).get('entry')
+    profile_rules = prettify_profiles_rules(rules)
+    human_readable += tableToMarkdown('Anti Spyware Best Practice Rules', profile_rules,
+                                      ['Name', 'Severity', 'Action', 'Category', 'Threat-name'], removeNull=True)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': strict_profile,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Panorama.Spyware.Rule(val.Name == obj.Name)': profile_rules,
+            'Panorama.Spyware.BotentDomain(val.Name == obj.Name)': pretty_botnet_domains,
+            'Panorama.Spyware.BotentDomain.Sinkhole(val.ipv4-address == obj.ipv4-address)': sinkhole_content
+        }
+    })
+
+
+@logger
+def get_file_blocking_best_practice() -> Dict:
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': '/config/predefined/profiles/file-blocking',
+        'key': API_KEY
+    }
+
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_file_blocking_best_practice_command():
+
+    results = get_file_blocking_best_practice()
+    file_blocking_profile = results.get('response', {}).get('result', {}).get('file-blocking', {}).get('entry', [])
+
+    strict_profile = next(item for item in file_blocking_profile if item['@name'] == 'strict file blocking')
+    file_blocking_rules = strict_profile.get('rules', {}).get('entry', [])
+
+    rules = prettify_profiles_rules(file_blocking_rules)
+    human_readable = tableToMarkdown('File Blocking Profile Best Practice', rules,
+                                     ['Name', 'Action', 'File-type', 'Application'], removeNull=True)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': strict_profile,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Panorama.FileBlocking.Rule(val.Name == obj.Name)': rules,
+        }
+    })
+
+
+@logger
+def get_antivirus_best_practice() -> Dict:
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': '/config/predefined/profiles/virus',
+        'key': API_KEY
+    }
+
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_antivirus_best_practice_command():
+
+    results = get_antivirus_best_practice()
+    antivirus_profile = results.get('response', {}).get('result', {}).get('virus', {})
+    strict_profile = antivirus_profile.get('entry', {})
+    antivirus_rules = strict_profile.get('decoder', {}).get('entry', [])
+
+    rules = prettify_profiles_rules(antivirus_rules)
+    human_readable = tableToMarkdown('Antivirus Best Practice Profile', rules, ['Name', 'Action', 'WildFire-action'],
+                                     removeNull=True)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': strict_profile,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Panorama.Antivirus.Decoder(val.Name == obj.Name)': rules,
+        }
+    })
+
+
+@logger
+def get_vulnerability_protection_best_practice() -> Dict:
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': '/config/predefined/profiles/vulnerability',
+        'key': API_KEY
+    }
+
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_vulnerability_protection_best_practice_command():
+
+    results = get_vulnerability_protection_best_practice()
+    vulnerability_protection = results.get('response', {}).get('result', {}).get('vulnerability', {}).get('entry', [])
+    strict_profile = next(item for item in vulnerability_protection if item['@name'] == 'strict')
+    vulnerability_rules = strict_profile.get('rules', {}).get('entry', [])
+    rules = prettify_profiles_rules(vulnerability_rules)
+    human_readable = tableToMarkdown('vulnerability Protection Best Practice Profile', rules,
+                                     ['Name', 'Action', 'Host', 'Severity', 'Category', 'Threat-name', 'CVE',
+                                      'Vendor-id'], removeNull=True)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': strict_profile,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Panorama.Vulnerability.Rule(val.Name == obj.Name)': rules,
+        }
+    })
+
+
+@logger
+def get_wildfire_best_practice() -> Dict:
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': '/config/predefined/profiles/wildfire-analysis',
+        'key': API_KEY
+    }
+
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def prettify_wildfire_rule(rule: Dict) -> Dict:
+    """
+    Args:
+        rule: The profile security rule to prettify.
+
+    Returns: The rule dict compatible with our standard.
+
+    """
+    pretty_rule = {
+        'Name': rule['@name'],
+    }
+    if 'application' in rule and 'member' in rule['application']:
+        pretty_rule['Application'] = rule['application']['member']
+    if 'file-type' in rule and 'member' in rule['file-type']:
+        pretty_rule['File-type'] = rule['file-type']['member']
+    if 'analysis' in rule:
+        pretty_rule['Analysis'] = rule['analysis']
+
+    return pretty_rule
+
+
+def prettify_wildfire_rules(rules: Dict) -> List:
+    """
+    Args:
+        rules: WildFire rules to prettify.
+
+    Returns: List of the rules that are compatible to our standard.
+
+    """
+    if not isinstance(rules, list):
+        return [prettify_wildfire_rule(rules)]
+    pretty_rules_arr = []
+    for rule in rules:
+        pretty_rule = prettify_wildfire_rule(rule)
+        pretty_rules_arr.append(pretty_rule)
+
+    return pretty_rules_arr
+
+
+def get_wildfire_best_practice_command():
+
+    result = get_wildfire_best_practice()
+    wildfire_profile = result.get('response', {}).get('result', {}).get('wildfire-analysis', {})
+    best_practice = wildfire_profile.get('entry', {}).get('rules', {}).get('entry', {})
+
+    rules = prettify_wildfire_rules(best_practice)
+    wildfire_schedule = {
+        'Recurring': 'every-minute',
+        'Action': 'download-and-install'
+    }
+    ssl_decrypt_settings = {'allow-forward-decrypted-content': 'yes'}
+    system_settings = [
+        {'Name': 'pe', 'File-size': '10'},
+        {'Name': 'apk', 'File-size': '30'},
+        {'Name': 'pdf', 'File-size': '1000'},
+        {'Name': 'ms-office', 'File-size': '2000'},
+        {'Name': 'jar', 'File-size': '5'},
+        {'Name': 'flash', 'File-size': '5'},
+        {'Name': 'MacOS', 'File-size': '1'},
+        {'Name': 'archive', 'File-size': '10'},
+        {'Name': 'linux', 'File-size': '2'},
+        {'Name': 'script', 'File-size': '20'}
+    ]
+
+    human_readable = tableToMarkdown('WildFire Best Practice Profile', rules, ['Name', 'Analysis', 'Application',
+                                                                               'File-type'], removeNull=True)
+    human_readable += tableToMarkdown('Wildfire Best Practice Schedule', wildfire_schedule)
+    human_readable += tableToMarkdown('Wildfire SSL Decrypt Settings', ssl_decrypt_settings)
+    human_readable += tableToMarkdown('Wildfire System Settings\n report-grayware-file: yes', system_settings,
+                                      ['Name', 'File-size'])
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': wildfire_profile,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Panorama.WildFire': rules,
+            'Panorama.WildFire.File(val.Name == obj.Name)': system_settings,
+            'Panorama.WildFire.Schedule': wildfire_schedule,
+            'Panorama.WildFire.SSLDecrypt': ssl_decrypt_settings
+        }
+    })
+
+
+def set_xpath_wildfire(template: str = None) -> str:
+    """
+    Setting wildfire xpath relevant to panorama instances.
+    """
+    if template:
+        xpath_wildfire = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=" \
+            f"'{template}']/config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting/wildfire"
+
+    else:
+        xpath_wildfire = "/config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting"
+    return xpath_wildfire
+
+
+@logger
+def get_wildfire_system_config(template: str) -> Dict:
+
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': set_xpath_wildfire(template),
+        'key': API_KEY,
+    }
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+@logger
+def get_wildfire_update_schedule(template: str) -> Dict:
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']"
+        f"/config/devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
+        'key': API_KEY
+    }
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_wildfire_configuration_command():
+
+    file_size = []
+    template = demisto.args().get('template')
+    result = get_wildfire_system_config(template)
+    system_config = result.get('response', {}).get('result', {}).get('wildfire', {})
+
+    file_size_limit = system_config.get('file-size-limit', {}).get('entry', [])
+    for item in file_size_limit:
+        file_size.append({
+            'Name': item.get('@name'),
+            'Size-limit': item.get('size-limit')
+        })
+
+    report_grayware_file = system_config.get('report-grayware-file') or 'No'
+    human_readable = tableToMarkdown(f'WildFire Configuration\n Report Grayware File: {report_grayware_file}',
+                                     file_size, ['Name', 'Size-limit'], removeNull=True)
+
+    result_schedule = get_wildfire_update_schedule(template)
+
+    schedule = result_schedule.get('response', {}).get('result', {}).get('wildfire')
+    if '@dirtyId' in schedule:
+        demisto.debug(f'Found uncommitted item:\n{schedule}')
+        raise Exception('Please commit the instance prior to getting the WildFire configuration.')
+
+    human_readable += tableToMarkdown('The updated schedule for Wildfire', schedule)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Panorama.WildFire(val.Name == obj.Name)': file_size,
+            'Panorama.WildFire.Schedule': schedule
+        }
+    })
+
+
+@logger
+def enforce_wildfire_system_config(template: str) -> Dict:
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']/"
+        f"config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting",
+        'key': API_KEY,
+        'element': '<wildfire><file-size-limit><entry name="pe"><size-limit>10</size-limit></entry>'
+                   '<entry name="apk"><size-limit>30</size-limit></entry><entry name="pdf">'
+                   '<size-limit>1000</size-limit></entry><entry name="ms-office"><size-limit>2000</size-limit></entry>'
+                   '<entry name="jar"><size-limit>5</size-limit></entry><entry name="flash">'
+                   '<size-limit>5</size-limit></entry><entry name="MacOSX"><size-limit>1</size-limit></entry>'
+                   '<entry name="archive"><size-limit>10</size-limit></entry><entry name="linux">'
+                   '<size-limit>2</size-limit></entry><entry name="script"><size-limit>20</size-limit></entry>'
+                   '</file-size-limit><report-grayware-file>yes</report-grayware-file></wildfire>'
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+@logger
+def enforce_wildfire_schedule(template: str) -> Dict:
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']/config/"
+        f"devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
+        'key': API_KEY,
+        'element': '<recurring><every-min><action>download-and-install</action></every-min></recurring>'
+    }
+
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def enforce_wildfire_best_practice_command():
+
+    template = demisto.args().get('template')
+    enforce_wildfire_system_config(template)
+    enforce_wildfire_schedule(template)
+
+    demisto.results('The schedule was updated according to the best practice.'
+                    '\nRecurring every minute with the action of "download and install"\n'
+                    'The file upload for all file types is set to the maximum size.')
+
+
+@logger
+def url_filtering_block_default_categories(profile_name: str) -> Dict:
+
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/url-filtering/entry[@name='{profile_name}']/block",
+        'key': API_KEY,
+        'element': '<member>adult</member><member>hacking</member><member>command-and-control</member><member>'
+                   'copyright-infringement</member><member>extremism</member><member>malware</member><member>'
+                   'phishing</member><member>proxy-avoidance-and-anonymizers</member><member>parked</member><member>'
+                   'unknown</member><member>dynamic-dns</member>'
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def url_filtering_block_default_categories_command():
+
+    profile_name = demisto.args().get('profile_name')
+    url_filtering_block_default_categories(profile_name)
+    demisto.results(f'The default categories to block has been set successfully to {profile_name}')
+
+
+def get_url_filtering_best_practice_command():
+
+    best_practice = {
+        '@name': 'best-practice', 'credential-enforcement': {
+            'mode': {'disabled': False},
+            'log-severity': 'medium',
+            'alert': {
+                'member': [
+                    'abortion', 'abused-drugs', 'adult', 'alcohol-and-tobacco', 'auctions', 'business-and-economy',
+                    'computer-and-internet-info', 'content-delivery-networks', 'cryptocurrency', 'dating',
+                    'educational-institutions', 'entertainment-and-arts', 'financial-services', 'gambling', 'games',
+                    'government', 'grayware', 'health-and-medicine', 'high-risk', 'home-and-garden',
+                    'hunting-and-fishing', 'insufficient-content', 'internet-communications-and-telephony',
+                    'internet-portals', 'job-search', 'legal', 'low-risk', 'medium-risk', 'military', 'motor-vehicles',
+                    'music', 'newly-registered-domain', 'news', 'not-resolved', 'nudity', 'online-storage-and-backup',
+                    'peer-to-peer', 'personal-sites-and-blogs', 'philosophy-and-political-advocacy',
+                    'private-ip-addresses', 'questionable', 'real-estate', 'recreation-and-hobbies',
+                    'reference-and-research', 'religion', 'search-engines', 'sex-education', 'shareware-and-freeware',
+                    'shopping', 'social-networking', 'society', 'sports', 'stock-advice-and-tools', 'streaming-media',
+                    'swimsuits-and-intimate-apparel', 'training-and-tools', 'translation', 'travel', 'weapons',
+                    'web-advertisements', 'web-based-email', 'web-hosting']},
+            'block': {'member': ['command-and-control', 'copyright-infringement', 'dynamic-dns', 'extremism',
+                                 'hacking', 'malware', 'parked', 'phishing', 'proxy-avoidance-and-anonymizers',
+                                 'unknown']}},
+        'alert': {'member': ['abortion', 'abused-drugs', 'adult', 'alcohol-and-tobacco', 'auctions',
+                             'business-and-economy', 'computer-and-internet-info', 'content-delivery-networks',
+                             'cryptocurrency', 'dating', 'educational-institutions', 'entertainment-and-arts',
+                             'financial-services', 'gambling', 'games', 'government', 'grayware', 'health-and-medicine',
+                             'high-risk', 'home-and-garden', 'hunting-and-fishing', 'insufficient-content',
+                             'internet-communications-and-telephony', 'internet-portals', 'job-search', 'legal',
+                             'low-risk', 'medium-risk', 'military', 'motor-vehicles', 'music',
+                             'newly-registered-domain', 'news', 'not-resolved', 'nudity', 'online-storage-and-backup',
+                             'peer-to-peer', 'personal-sites-and-blogs', 'philosophy-and-political-advocacy',
+                             'private-ip-addresses', 'questionable', 'real-estate', 'recreation-and-hobbies',
+                             'reference-and-research', 'religion', 'search-engines', 'sex-education',
+                             'shareware-and-freeware', 'shopping', 'social-networking', 'society', 'sports',
+                             'stock-advice-and-tools', 'streaming-media', 'swimsuits-and-intimate-apparel',
+                             'training-and-tools', 'translation', 'travel', 'weapons', 'web-advertisements',
+                             'web-based-email', 'web-hosting']},
+        'block': {'member': ['command-and-control', 'copyright-infringement', 'dynamic-dns', 'extremism', 'hacking',
+                             'malware', 'parked', 'phishing', 'proxy-avoidance-and-anonymizers', 'unknown']}}
+
+    headers_best_practice = {
+        'log-http-hdr-xff': 'yes',
+        'log-http-hdr-user': 'yes',
+        'log-http-hdr-referer': 'yes',
+        'log-container-page-only': 'no'
+    }
+    rules = prettify_get_url_filter(best_practice)
+    human_readable = tableToMarkdown('URL Filtering Best Practice Profile Categories', rules)
+    human_readable += tableToMarkdown('Best Practice Headers', headers_best_practice)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': best_practice,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Panorama.URLFilter': rules,
+            'Panorama.URLFilter.Header': headers_best_practice
+        }
+    })
+
+
+@logger
+def create_antivirus_best_practice_profile(profile_name: str) -> Dict:
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/virus/entry[@name='{profile_name}']",
+        'key': API_KEY,
+        'element': '<decoder><entry name="ftp"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+                   '</entry><entry name="http"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+                   '</entry><entry name="http2"><action>reset-both</action><wildfire-action>reset-both'
+                   '</wildfire-action>'
+                   '</entry><entry name="smb"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+                   '</entry><entry name="smtp"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+                   '</entry><entry name="imap"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+                   '</entry><entry name="pop3"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+                   '</entry></decoder>'
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def create_antivirus_best_practice_profile_command():
+
+    profile_name = demisto.args().get('profile_name')
+    create_antivirus_best_practice_profile(profile_name)
+    demisto.results(f'The profile {profile_name} was created successfully.')
+
+
+@logger
+def create_anti_spyware_best_practice_profile(profile_name: str) -> Dict:
+
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/spyware/entry[@name='{profile_name}']",
+        'key': API_KEY,
+        'element': """<rules><entry name="simple-critical"><action><reset-both /></action><severity>
+        <member>critical</member></severity><threat-name>any</threat-name><category>any</category>
+        <packet-capture>disable</packet-capture></entry><entry name="simple-high"><action><reset-both /></action>
+        <severity><member>high</member></severity><threat-name>any</threat-name><category>any</category>
+        <packet-capture>disable</packet-capture></entry><entry name="simple-medium"><action><reset-both />
+        </action><severity><member>medium</member></severity><threat-name>any</threat-name><category>any</category>
+        <packet-capture>disable</packet-capture></entry><entry name="simple-informational"><action><default /></action>
+        <severity><member>informational</member></severity><threat-name>any</threat-name><category>any</category>
+        <packet-capture>disable</packet-capture></entry><entry name="simple-low"><action><default /></action><severity>
+        <member>low</member></severity><threat-name>any</threat-name><category>any</category>
+        <packet-capture>disable</packet-capture></entry></rules>"""
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def create_anti_spyware_best_practice_profile_command():
+
+    profile_name = demisto.args().get('profile_name')
+    create_anti_spyware_best_practice_profile(profile_name)
+    demisto.results(f'The profile {profile_name} was created successfully.')
+
+
+@logger
+def create_vulnerability_best_practice_profile(profile_name: str) -> Dict:
+
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/vulnerability/entry[@name='{profile_name}']",
+        'key': API_KEY,
+        'element': """<rules><entry name="brute-force"><action><block-ip><duration>300</duration>
+        <track-by>source-and-destination</track-by></block-ip></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>any</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>any</host><category>brute-force</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-client-critical"><action><reset-both /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>critical</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>client</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-client-high"><action><reset-both /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>high</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>client</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-client-medium"><action><reset-both /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>medium</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>client</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-client-informational"><action><default /></action><vendor-id><member>any</member>
+        </vendor-id><severity><member>informational</member></severity><cve><member>any</member></cve>
+        <threat-name>any</threat-name><host>client</host><category>any</category>
+        <packet-capture>disable</packet-capture></entry><entry name="simple-client-low"><action><default /></action>
+        <vendor-id><member>any
+        </member></vendor-id><severity><member>low</member></severity><cve><member>any</member></cve><threat-name>any
+        </threat-name><host>client</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-server-critical"><action><reset-both /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>critical</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>server</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-server-high"><action><reset-both /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>high</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>server</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-server-medium"><action><reset-both /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>medium</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>server</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-server-informational"><action><default /></action><vendor-id><member>any</member>
+        </vendor-id><severity><member>informational</member></severity><cve><member>any</member></cve><threat-name>any
+        </threat-name><host>server</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-server-low"><action><default /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>low</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>server</host><category>any</category><packet-capture>disable</packet-capture></entry></rules>"""
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def create_vulnerability_best_practice_profile_command():
+
+    profile_name = demisto.args().get('profile_name')
+    create_vulnerability_best_practice_profile(profile_name)
+    demisto.results(f'The profile {profile_name} was created successfully.')
+
+
+@logger
+def create_url_filtering_best_practice_profile(profile_name: str) -> Dict:
+
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/url-filtering/entry[@name='{profile_name}']",
+        'key': API_KEY,
+        'element': """<credential-enforcement><mode><disabled /></mode><log-severity>medium</log-severity><alert>
+        <member>abortion</member><member>abused-drugs</member><member>alcohol-and-tobacco</member>
+        <member>auctions</member><member>business-and-economy</member><member>computer-and-internet-info</member>
+        <member>content-delivery-networks</member><member>cryptocurrency</member><member>dating</member>
+        <member>educational-institutions</member><member>entertainment-and-arts</member>
+        <member>financial-services</member><member>gambling</member><member>games</member><member>government</member>
+        <member>grayware</member><member>health-and-medicine</member><member>high-risk</member>
+        <member>home-and-garden</member><member>hunting-and-fishing</member><member>insufficient-content</member>
+        <member>internet-communications-and-telephony</member><member>internet-portals</member>
+        <member>job-search</member><member>legal</member><member>low-risk</member><member>medium-risk</member>
+        <member>military</member><member>motor-vehicles</member><member>music</member>
+        <member>newly-registered-domain</member><member>news</member><member>not-resolved</member>
+        <member>nudity</member>
+        <member>online-storage-and-backup</member><member>peer-to-peer</member><member>personal-sites-and-blogs</member>
+        <member>philosophy-and-political-advocacy</member><member>private-ip-addresses</member>
+        <member>questionable</member><member>real-estate</member><member>recreation-and-hobbies</member>
+        <member>reference-and-research</member><member>religion</member><member>search-engines</member>
+        <member>sex-education</member><member>shareware-and-freeware</member><member>shopping</member>
+        <member>social-networking</member><member>society</member><member>sports</member>
+        <member>stock-advice-and-tools</member><member>streaming-media</member>
+        <member>swimsuits-and-intimate-apparel</member><member>training-and-tools</member>
+        <member>translation</member><member>travel</member>
+        <member>weapons</member><member>web-advertisements</member><member>web-based-email</member>
+        <member>web-hosting</member></alert><block><member>adult</member><member>command-and-control</member>
+        <member>copyright-infringement</member><member>dynamic-dns</member><member>extremism</member>
+        <member>hacking</member><member>malware</member><member>parked</member><member>phishing</member>
+        <member>proxy-avoidance-and-anonymizers</member><member>unknown</member></block></credential-enforcement>
+        <log-http-hdr-xff>yes</log-http-hdr-xff><log-http-hdr-user-agent>yes</log-http-hdr-user-agent>
+        <log-http-hdr-referer>yes</log-http-hdr-referer><log-container-page-only>no</log-container-page-only>
+        <alert><member>abortion</member><member>abused-drugs</member><member>alcohol-and-tobacco</member>
+        <member>auctions</member><member>business-and-economy</member><member>computer-and-internet-info</member>
+        <member>content-delivery-networks</member><member>cryptocurrency</member><member>dating</member>
+        <member>educational-institutions</member><member>entertainment-and-arts</member>
+        <member>financial-services</member><member>gambling</member><member>games</member><member>government</member>
+        <member>grayware</member><member>health-and-medicine</member><member>high-risk</member>
+        <member>home-and-garden</member><member>hunting-and-fishing</member><member>insufficient-content</member>
+        <member>internet-communications-and-telephony</member><member>internet-portals</member>
+        <member>job-search</member><member>legal</member><member>low-risk</member>
+        <member>medium-risk</member><member>military</member>
+        <member>motor-vehicles</member><member>music</member><member>newly-registered-domain</member>
+        <member>news</member><member>not-resolved</member><member>nudity</member>
+        <member>online-storage-and-backup</member><member>peer-to-peer</member><member>personal-sites-and-blogs</member>
+        <member>philosophy-and-political-advocacy</member><member>private-ip-addresses</member>
+        <member>questionable</member><member>real-estate</member><member>recreation-and-hobbies</member>
+        <member>reference-and-research</member><member>religion</member><member>search-engines</member>
+        <member>sex-education</member><member>shareware-and-freeware</member><member>shopping</member>
+        <member>social-networking</member><member>society</member><member>sports</member>
+        <member>stock-advice-and-tools</member><member>streaming-media</member>
+        <member>swimsuits-and-intimate-apparel</member><member>training-and-tools</member>
+        <member>translation</member><member>travel</member>
+        <member>weapons</member><member>web-advertisements</member><member>web-based-email</member>
+        <member>web-hosting</member></alert><block><member>adult</member><member>command-and-control</member>
+        <member>copyright-infringement</member><member>dynamic-dns</member><member>extremism</member>
+        <member>hacking</member><member>malware</member><member>parked</member><member>phishing</member>
+        <member>proxy-avoidance-and-anonymizers</member><member>unknown</member></block>"""
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def create_url_filtering_best_practice_profile_command():
+
+    profile_name = demisto.args().get('profile_name')
+    create_url_filtering_best_practice_profile(profile_name)
+    demisto.results(f'The profile {profile_name} was created successfully.')
+
+
+@logger
+def create_file_blocking_best_practice_profile(profile_name: str) -> Dict:
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/file-blocking/entry[@name='{profile_name}']",
+        'key': API_KEY,
+        'element': """<rules><entry name="Block all risky file types"><application><member>any</member></application>
+        <file-type><member>7z</member><member>bat</member><member>cab</member><member>chm</member><member>class</member>
+        <member>cpl</member><member>dll</member><member>exe</member><member>flash</member><member>hlp</member>
+        <member>hta</member><member>jar</member><member>msi</member><member>Multi-Level-Encoding</member>
+        <member>ocx</member><member>PE</member><member>pif</member><member>rar</member><member>scr</member>
+        <member>tar</member><member>torrent</member><member>vbe</member><member>wsf</member></file-type>
+        <direction>both</direction><action>block</action></entry><entry name="Block encrypted files"><application>
+        <member>any</member></application><file-type><member>encrypted-rar</member>
+        <member>encrypted-zip</member></file-type><direction>both</direction><action>block</action></entry>
+        <entry name="Log all other file types"><application><member>any</member></application><file-type>
+        <member>any</member></file-type><direction>both</direction><action>alert</action></entry></rules>"""
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def create_file_blocking_best_practice_profile_command():
+
+    profile_name = demisto.args().get('profile_name')
+    create_file_blocking_best_practice_profile(profile_name)
+    demisto.results(f'The profile {profile_name} was created successfully.')
+
+
+@logger
+def create_wildfire_best_practice_profile(profile_name: str) -> Dict:
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/wildfire-analysis/entry[@name='{profile_name}']",
+        'key': API_KEY,
+        'element': """<rules><entry name="default"><application><member>any</member></application><file-type>
+        <member>any</member></file-type><direction>both</direction><analysis>public-cloud</analysis></entry></rules>"""
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def create_wildfire_best_practice_profile_command():
+
+    profile_name = demisto.args().get('profile_name')
+    create_wildfire_best_practice_profile(profile_name)
+    demisto.results(f'The profile {profile_name} was created successfully.')
+
+
 def main():
     LOG(f'Command being called is: {demisto.command()}')
 
@@ -5691,6 +6939,63 @@ def main():
 
         elif demisto.command() == 'panorama-show-location-ip':
             panorama_show_location_ip_command()
+
+        elif demisto.command() == 'panorama-get-licenses':
+            panorama_get_license_command()
+
+        elif demisto.command() == 'panorama-get-security-profiles':
+            get_security_profiles_command()
+
+        elif demisto.command() == 'panorama-apply-security-profile':
+            apply_security_profile_command()
+
+        elif demisto.command() == 'panorama-get-ssl-decryption-rules':
+            get_ssl_decryption_rules_command()
+
+        elif demisto.command() == 'panorama-get-wildfire-configuration':
+            get_wildfire_configuration_command()
+
+        elif demisto.command() == 'panorama-get-wildfire-best-practice':
+            get_wildfire_best_practice_command()
+
+        elif demisto.command() == 'panorama-enforce-wildfire-best-practice':
+            enforce_wildfire_best_practice_command()
+
+        elif demisto.command() == 'panorama-url-filtering-block-default-categories':
+            url_filtering_block_default_categories_command()
+
+        elif demisto.command() == 'panorama-get-anti-spyware-best-practice':
+            get_anti_spyware_best_practice_command()
+
+        elif demisto.command() == 'panorama-get-file-blocking-best-practice':
+            get_file_blocking_best_practice_command()
+
+        elif demisto.command() == 'panorama-get-antivirus-best-practice':
+            get_antivirus_best_practice_command()
+
+        elif demisto.command() == 'panorama-get-vulnerability-protection-best-practice':
+            get_vulnerability_protection_best_practice_command()
+
+        elif demisto.command() == 'panorama-get-url-filtering-best-practice':
+            get_url_filtering_best_practice_command()
+
+        elif demisto.command() == 'panorama-create-antivirus-best-practice-profile':
+            create_antivirus_best_practice_profile_command()
+
+        elif demisto.command() == 'panorama-create-anti-spyware-best-practice-profile':
+            create_anti_spyware_best_practice_profile_command()
+
+        elif demisto.command() == 'panorama-create-vulnerability-best-practice-profile':
+            create_vulnerability_best_practice_profile_command()
+
+        elif demisto.command() == 'panorama-create-url-filtering-best-practice-profile':
+            create_url_filtering_best_practice_profile_command()
+
+        elif demisto.command() == 'panorama-create-file-blocking-best-practice-profile':
+            create_file_blocking_best_practice_profile_command()
+
+        elif demisto.command() == 'panorama-create-wildfire-best-practice-profile':
+            create_wildfire_best_practice_profile_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

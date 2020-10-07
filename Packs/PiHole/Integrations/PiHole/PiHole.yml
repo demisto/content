@@ -1,0 +1,220 @@
+commonfields:
+  id: PiHole
+  version: -1
+name: PiHole
+display: PiHole
+category: IT Services
+description: Pi-hole is a network-level advertisement and Internet tracker blocking application which acts as a DNS sinkhole and optionally a DHCP server, intended for use on a private network.
+configuration:
+- display: Server URL
+  name: url
+  type: 0
+  required: true
+  additionalinfo: Input the base url excluding the /admin/api.php part
+- display: Auth Token
+  name: token
+  type: 4
+  required: false
+  additionalinfo: get token from GUI API page
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: pihole-get-version
+    arguments: []
+    outputs:
+    - contextPath: PiHole.Version.version
+      description: Version info
+      type: string
+    description: Returns the version of the API
+  - name: pihole-get-type
+    arguments: []
+    outputs:
+    - contextPath: PiHole.Type.type
+      description: Type information
+      type: string
+    description: Returns the backend used by the API (either PHP or FTL)
+  - name: pihole-get-summaryraw
+    arguments: []
+    outputs:
+    - contextPath: PiHole.SummaryRaw
+      description: Summary no formatting
+      type: string
+    description: Gives statistics in raw format (no number formatting applied)
+  - name: pihole-get-overtimedata10mins
+    arguments: []
+    outputs:
+    - contextPath: PiHole.OverTimeData10mins
+      description: Data over last 10mins
+      type: string
+    description: Data needed for generating the domains/ads over time graph on the Pi-hole web dashboard
+  - name: pihole-get-topitems
+    arguments:
+    - name: limit
+      description: how many entries
+      defaultValue: "10"
+    outputs:
+    - contextPath: PiHole.TopItems
+      description: Top Items
+      type: string
+    description: Data needed for generating the Top Domain and Top Advertisers Lists
+  - name: pihole-get-topclients
+    arguments:
+    - name: limit
+      description: how many entries
+      defaultValue: "10"
+    outputs:
+    - contextPath: PiHole.TopClients
+      description: Top Clients
+      type: string
+    description: Data needed for generating the Top Clients list
+  - name: pihole-get-forward-destinations
+    arguments: []
+    outputs:
+    - contextPath: PiHole.ForwardDestinations
+      description: Fowarding destinations
+      type: string
+    description: Shows number of queries that have been forwarded and the target
+  - name: pihole-get-query-types
+    arguments: []
+    outputs:
+    - contextPath: PiHole.QueryTypes
+      description: Query types
+      type: string
+    description: Shows number of queries that the Pi-hole’s DNS server has processed
+  - name: pihole-get-all-queries
+    arguments: []
+    outputs:
+    - contextPath: PiHole.AllQueries
+      description: All Queries (a lot of data)
+      type: string
+    description: Get DNS queries data
+  - name: pihole-status
+    arguments: []
+    outputs:
+    - contextPath: PiHole.Status
+      description: Status
+      type: string
+    description: Show status of pihole action (enabled - disabled)
+  - name: pihole-enable
+    arguments: []
+    outputs:
+    - contextPath: PiHole.Enable
+      description: Enabled blocking
+      type: string
+    description: Enable Pi-hole ad blocking
+    execution: true
+  - name: pihole-disable
+    arguments:
+    - name: time
+      description: Time in seconds for blocking to be disabled
+      defaultValue: "0"
+    outputs:
+    - contextPath: PiHole.Disable
+      description: Disabled
+      type: string
+    description: used to disable pihole for certain amount of time
+    execution: true
+  - name: pihole-get-versions
+    arguments: []
+    outputs:
+    - contextPath: PiHole.Versions
+      description: Version info
+      type: string
+    description: Show versions of all components
+  - name: pihole-get-topclientsblocked
+    arguments: []
+    outputs:
+    - contextPath: PiHole.TopClientsBlocked
+      description: Top blocked clients
+      type: string
+    description: Shows the top clients being blocked
+  - name: pihole-get-cache-info
+    arguments: []
+    outputs:
+    - contextPath: PiHole.CacheInfo
+      description: Cache info
+      type: string
+    description: Show cache info
+  - name: pihole-get-recent-blocked
+    arguments: []
+    outputs:
+    - contextPath: PiHole.RecentBlocked
+      description: Recently blocked
+      type: string
+    description: Show most recent blocked domain
+  - name: pihole-get-overTimeDataQueryTypes
+    arguments: []
+    outputs:
+    - contextPath: PiHole.OverTimeDataQueryTypes
+      description: Over time query types
+      type: string
+    description: Get data over time per query types
+  - name: pihole-get-client-names
+    arguments: []
+    outputs:
+    - contextPath: PiHole.ClientNames
+      description: Client names
+      type: string
+    description: Get client names
+  - name: pihole-get-over-time-data-clients
+    arguments: []
+    outputs:
+    - contextPath: PiHole.OverTimeDataClients
+      description: Over time client data
+      type: string
+    description: Get over time data clients
+  - name: pihole-list-management
+    arguments:
+    - name: domain
+      description: Domain to be added or removed
+    - name: action
+      auto: PREDEFINED
+      predefined:
+      - add
+      - sub
+      description: add or sub
+    - name: list
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - white
+      - black
+      - regex_black
+      - regex_white
+      description: which list to interact with
+    outputs:
+    - contextPath: PiHole.List
+      description: Lists
+      type: string
+    description: Manage lists. Add or remove items from lists
+  - name: pihole-get-list
+    arguments:
+    - name: list
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - white
+      - black
+      - regex_white
+      - regex_black
+      description: which list to get
+    outputs:
+    - contextPath: PiHole.Lists
+      description: get a list data
+      type: string
+    description: Get all available lists from Pihole
+  dockerimage: demisto/python3:3.8.5.10845
+  runonce: false
+  subtype: python3
+tests:
+- No Test
+fromversion: 5.0.0

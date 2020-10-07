@@ -157,6 +157,12 @@ POSITIVE = {
 }
 
 
+# testing the ValueError and json sections
+RAW_JSON = '{"Test": "success"}'
+RAW_STANDARD = '"Test="success"'
+RAW_JSON_AND_STANDARD_OUTPUT = {"Test": "success"}
+
+
 def test_raw_to_dict():
     actual_raw = DICT_RAW_RESPONSE
     response = splunk.rawToDict(actual_raw)
@@ -174,6 +180,8 @@ def test_raw_to_dict():
     assert empty == {}
     assert URL_TESTING_OUT == url_test
     assert POSITIVE == character_check
+    assert splunk.rawToDict(RAW_JSON) == RAW_JSON_AND_STANDARD_OUTPUT
+    assert splunk.rawToDict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
 
 
 data_test_replace_keys = [
@@ -430,3 +438,33 @@ def test_fetch_incidents(mocker):
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
                                    "Recurring Malware Infection - Rule"
+
+
+SPLUNK_RESULTS = [
+    {
+        "rawJSON":
+            '{"source": "This is the alert type", "field_name1": "field_val1", "field_name2": "field_val2"}',
+        "details": "Endpoint - High Or Critical Priority Host With Malware - Rule",
+        "labels": [
+            {
+                "type": "security_domain",
+                "value": "Endpoint - High Or Critical Priority Host With Malware - Rule"
+            }
+        ],
+    }
+]
+
+
+EXPECTED_OUTPUT = {
+    'This is the alert type': {
+        "source": "This is the alert type",
+        "field_name1": "field_val1",
+        "field_name2": "field_val2"
+    }
+
+}
+
+
+def test_create_mapping_dict():
+    mapping_dict = splunk.create_mapping_dict(SPLUNK_RESULTS, type_field='source')
+    assert mapping_dict == EXPECTED_OUTPUT

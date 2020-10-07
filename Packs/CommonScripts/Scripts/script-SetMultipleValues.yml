@@ -2,10 +2,13 @@ commonfields:
   id: SetMultipleValues
   version: -1
 name: SetMultipleValues
-script: |
+script: >
   keys = [k.strip() for k in demisto.args()['keys'].split(',')]
+
   values = [v.strip() for v in demisto.args()['values'].split(',')]
+
   ec = {demisto.args()['parent']+'(true)': dict(zip(keys, values))}
+
   demisto.results({'Type': entryTypes['note'], 'Contents': ec, 'ContentsFormat': formats['json'], 'HumanReadable': 'Keys ' + ','.join(keys) + ' set', 'EntryContext': ec})
 type: python
 subtype: python2
@@ -25,3 +28,4 @@ args:
   required: true
   description: Comma separated list of values
 scripttarget: 0
+fromversion: 5.0.0

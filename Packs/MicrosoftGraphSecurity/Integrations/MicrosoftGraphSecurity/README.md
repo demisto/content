@@ -10,12 +10,11 @@
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
 <h3>Required Permissions</h3>
-<li>SecurityEvents.ReadWrite.All - Application</li>
-<li>User.Read.All - Application</li>
-<li>User.Read - Delegated</li>
-<li>User.ReadWrite.All - Application</li>
-<li>Directory.Read.All - Delegated</li>
-<li>Directory.ReadWrite.All - Application</li>
+<ul>
+<li>SecurityEvents.Read.All - Application (required for the commands: <code>msg-search-alerts</code> and <code>msg-get-alert-details</code>)</li>
+<li>SecurityEvents.ReadWrite.All - Application (required for updating alerts with the command: <code>msg-update-alert</code>)</li>
+<li>User.Read.All - Application (Only required if using the deprecated commands: <code>msg-get-user</code> and <code>msg-get-users</code>)</li>
+</ul> 
 
 
 <h2>Configure Microsoft Graph on Cortex XSOAR</h2>
@@ -38,13 +37,13 @@ For more details about the authentication used in this integration, see <a href=
 </ol>
 
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_842458104521538470633978">Search alerts: msg-search-alerts</a></li>
 <li><a href="#h_3611731291071538470639531">Get details for an alert: msg-get-alert-details</a></li>
 <li><a href="#h_4798847561611538470644248">Update an alert: msg-update-alert</a></li>
-<li><a href="#h_6620251952141538470649590">Get a list of user objects: msg-get-users</a></li>
-<li><a href="#h_4642340712641538470655690">Get information for a user object: msg-get-user</a></li>
+<li><a href="#h_6620251952141538470649590">Get a list of user objects: msg-get-users</a> - Deprecated - Use the Microsoft Graph User integration instead.</li>
+<li><a href="#h_4642340712641538470655690">Get information for a user object: msg-get-user</a> - Deprecated - Use the Microsoft Graph User integration instead.</li>
 </ol>
 <h3 id="h_842458104521538470633978">1. Search alerts</h3>
 <hr>
@@ -548,4 +547,7 @@ For more details about the authentication used in this integration, see <a href=
 <p><a href="https://user-images.githubusercontent.com/31018228/46080581-fa1f0600-c1a2-11e8-894b-38055e85c840.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/31018228/46080581-fa1f0600-c1a2-11e8-894b-38055e85c840.png" alt="screen shot 2018-09-26 at 15 43 39"></a></p>
 <p> </p>
 <h2>Troubleshooting</h2>
-<p>If not all expected alerts were returned, it is possible that partial content was returned from Microsoft Graph. If so, the response headers will be printed to Demisto logs, and you can find more details under the Warning header. For more information, see the <a href="https://docs.microsoft.com/en-us/graph/api/resources/security-error-codes?view=graph-rest-1.0" target="_blank" rel="noopener">Microsoft Graph documentation</a>.</p>
+<p>If not all expected alerts were returned, it is possible that partial content was returned from Microsoft Graph. If so, the response headers will be printed to Cortex XSOAR logs, and you can find more details under the **Warning** header. For more information, see the <a href="https://docs.microsoft.com/en-us/graph/api/resources/security-error-codes?view=graph-rest-1.0" target="_blank" rel="noopener">Microsoft Graph documentation</a>.</p>
+
+<h2>Known Limitations</h2>
+<p>Microsoft does not support updating alerts with Office 365 Security and Compliance set as provider.</p>
