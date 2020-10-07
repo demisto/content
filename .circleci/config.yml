@@ -449,6 +449,7 @@ references:
                 REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
                 python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO
+
   comment_on_contrib_pr: &comment_on_contrib_pr
     when:
       condition: << pipeline.parameters.contrib_branch >>
@@ -460,6 +461,14 @@ references:
               # Demisto Marketplace refers to Server Master
               SERVER_URL=$(jq -r 'select(.[].Role == "Demisto Marketplace") | .[].InstanceDNS' ./env_results.json)
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
+
+  sdk_nightly_jobs: &sdk_nightly_jobs
+    jobs:
+      - Demisto SDK Nightly:
+          context: sdk_nightly_env
+      - Demisto SDK Nightly - Run against CortexXSOAR:
+          context: sdk_nightly_env
+
 jobs:
   Setup Environment:
     <<: *container_config
@@ -1113,8 +1122,8 @@ jobs:
           when: on_success
           command: |
             echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-            export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
-            export DEMISTO_BASE_URL="https://$(cat env_results.json | jq -r '.[0].InstanceDNS')"
+            echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
+            echo "export DEMISTO_BASE_URL=\"https://$(cat env_results.json | jq -r '.[0].InstanceDNS')\"" >> $BASH_ENV
             echo "Server URL: $DEMISTO_BASE_URL"
       - *test_this_shit
       - *store_artifacts
@@ -1247,16 +1256,9 @@ workflows:
             branches:
               only:
                 - master
-    jobs:
-      - Demisto SDK Nightly:
-          context: sdk_nightly_env
-      - Demisto SDK Nightly - Run against CortexXSOAR:
-          context: sdk_nightly_env
+    *sdk_nightly_jobs
 
   sdk_nightly_trigger:
+    # will initiate when usign the trigger script.
     when: << pipeline.parameters.demisto_sdk_nightly>>
-    jobs:
-      - Demisto SDK Nightly:
-          context: sdk_nightly_env
-      - Demisto SDK Nightly - Run against CortexXSOAR:
-          context: sdk_nightly_env
+    *sdk_nightly_jobs
