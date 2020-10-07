@@ -190,6 +190,11 @@ class MITMProxy:
         self.process = None
         self.empty_files = []
         self.rerecorded_tests = []
+        self.failed_tests_count = 0
+        self.successful_tests_count = 0
+        self.successful_rerecord_count = 0
+        self.failed_rerecord_count = 0
+        self.failed_rerecord_tests = []
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
