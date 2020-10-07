@@ -1,0 +1,42 @@
+args:
+- default: false
+  description: The domain name that the sub domain should be in
+  isArray: false
+  name: domainName
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: true
+  description: A comma-separated list of domains to check.
+  isArray: true
+  name: domainToCheck
+  required: false
+  secret: false
+- default: true
+  description: A path of the given array of domains in context
+  isArray: false
+  name: contextPath
+  required: false
+  secret: false
+comment: Check if a Domain or sub domain is in a domain
+commonfields:
+  id: IsInternalDomainName
+  version: -1
+enabled: false
+name: IsInternalDomainName
+outputs:
+- contextPath: Domain.Name
+  description: The domain that was checked
+  type: String
+- contextPath: Domain.IsInternal
+  description: "True if sub domain is part of a domain. \nFalse otherwise"
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- Utility
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.5.11789
+fromversion: 5.0.0
