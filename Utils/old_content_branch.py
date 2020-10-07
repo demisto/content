@@ -223,7 +223,8 @@ def edit_reputations_json(new_to_version):
             reputation['toVersion'] = new_to_version
 
     with open(rep_json_path, 'w') as f:
-        ujson.dump(rep_content, f, indent=4, encode_html_chars=True)
+        ujson.dump(rep_content, f, indent=4, encode_html_chars=True, escape_forward_slashes=False,
+                   ensure_ascii=False)
 
 
 def edit_non_circle_tests(new_to_version):
