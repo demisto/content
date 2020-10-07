@@ -1,5 +1,6 @@
 import json
 import os
+import stat
 import subprocess
 import fnmatch
 import re
@@ -7,6 +8,7 @@ import shutil
 import yaml
 import google.auth
 from google.cloud import storage
+from google.cloud import bigquery
 import enum
 import base64
 import urllib.parse
@@ -34,9 +36,13 @@ class GCPConfig(object):
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     PRODUCTION_BUCKET = "marketplace-dist"
+    PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
+    CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
+    DOWNLOADS_TABLE = "oproxy-dev.shared_views.top_packs"  # packs downloads statistics table
+    BIG_QUERY_MAX_RESULTS = 2000  # big query max row results
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
         CORE_PACKS_LIST = json.load(core_packs_list_file)
@@ -158,6 +164,9 @@ class Pack(object):
         self._hidden = False  # initialized in load_user_metadata function
         self._description = None  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
+        self._is_feed = False  # a flag that specifies if pack is a feed pack
+        self._downloads_count = 0  # number of pack downloads
+        self._bucket_url = None  # URL of where the pack was uploaded.
 
     @property
     def name(self):
@@ -186,6 +195,19 @@ class Pack(object):
         """ str: current status of the packs.
         """
         return self._status
+
+    @property
+    def is_feed(self):
+        """
+        bool: whether the pack is a feed pack
+        """
+        return self._is_feed
+
+    @is_feed.setter
+    def is_feed(self, is_feed):
+        """ setter of is_feed
+        """
+        self._is_feed = is_feed
 
     @status.setter
     def status(self, status_value):
@@ -274,6 +296,30 @@ class Pack(object):
         else:
             return self._sever_min_version
 
+    @property
+    def downloads_count(self):
+        """ str: packs downloads count.
+        """
+        return self._downloads_count
+
+    @downloads_count.setter
+    def downloads_count(self, download_count_value):
+        """ setter of downloads count property of the pack.
+        """
+        self._downloads_count = download_count_value
+
+    @property
+    def bucket_url(self):
+        """ str: pack bucket_url.
+        """
+        return self._bucket_url
+
+    @bucket_url.setter
+    def bucket_url(self, bucket_url):
+        """ str: pack bucket_url.
+        """
+        self._bucket_url = bucket_url
+
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
 
@@ -329,6 +375,23 @@ class Pack(object):
                     pack_integration_images.append(dependency_integration)
 
         return pack_integration_images
+
+    def is_feed_pack(self, yaml_content, yaml_type):
+        """
+        Checks if an integration is a feed integration. If so, updates Pack._is_feed
+        Args:
+            yaml_content: The yaml content extracted by yaml.safe_load().
+            yaml_type: The type of object to check. Should be 'Playbook' or 'Integration'.
+
+        Returns:
+            Doesn't return
+        """
+        if yaml_type == 'Integration':
+            if yaml_content.get('script', {}).get('feed', False) is True:
+                self._is_feed = True
+        if yaml_type == 'Playbook':
+            if yaml_content.get('name').startswith('TIM '):
+                self._is_feed = True
 
     @staticmethod
     def _clean_release_notes(release_notes_lines):
@@ -432,7 +495,8 @@ class Pack(object):
 
     @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
-                             dependencies_data, server_min_version, build_number, commit_hash):
+                             dependencies_data, server_min_version, build_number, commit_hash, downloads_count,
+                             is_feed_pack=False):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -445,6 +509,8 @@ class Pack(object):
             server_min_version (str): server minimum version found during the iteration over content items.
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
+            downloads_count (int): number of packs downloads.
+            is_feed_pack (bool): a flag that indicates if the pack is a feed pack.
 
         Returns:
             dict: parsed pack metadata.
@@ -468,11 +534,20 @@ class Pack(object):
         pack_metadata['certification'] = Pack._get_certification(support_type=pack_metadata['support'],
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
+        if pack_metadata['price'] > 0:
+            pack_metadata['premium'] = True
+            pack_metadata['vendorId'] = user_metadata.get('vendorId')
+            pack_metadata['vendorName'] = user_metadata.get('vendorName')
+            if user_metadata.get('previewOnly'):
+                pack_metadata['previewOnly'] = True
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
         pack_metadata['versionInfo'] = build_number
         pack_metadata['commit'] = commit_hash
+        pack_metadata['downloads'] = downloads_count
         pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
+        if is_feed_pack and 'TIM' not in pack_metadata['tags']:
+            pack_metadata['tags'].append('TIM')
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
@@ -516,6 +591,21 @@ class Pack(object):
                 continue
 
         return dependencies_data_result
+
+    def _get_downloads_count(self, packs_statistic_df):
+        """ Returns number of packs downloads.
+
+        Args:
+             packs_statistic_df (pandas.core.frame.DataFrame): packs downloads statistics table.
+
+        Returns:
+            int: number of packs downloads.
+        """
+        downloads_count = 0
+        if self._pack_name in packs_statistic_df.index.values:
+            downloads_count = int(packs_statistic_df.loc[self._pack_name]['num_count'].astype('int32'))
+
+        return downloads_count
 
     @staticmethod
     def _create_changelog_entry(release_notes, version_display_name, build_number, new_version=True):
@@ -608,14 +698,26 @@ class Pack(object):
         finally:
             return task_status
 
-    def zip_pack(self):
+    def encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
+
+        shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
+        os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
+        current_working_dir = os.getcwd()
+        os.chdir(extract_destination_path)
+        output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
+        subprocess.call('chmod +x ./encryptor', shell=True)
+        full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
+        subprocess.call(full_command, shell=True)
+        os.chdir(current_working_dir)
+
+    def zip_pack(self, extract_destination_path="", pack_name="", encryption_key=""):
         """ Zips pack folder.
 
         Returns:
             bool: whether the operation succeeded.
             str: full path to created pack zip.
         """
-        zip_pack_path = f"{self._pack_path}.zip"
+        zip_pack_path = f"{self._pack_path}.zip" if not encryption_key else f"{self._pack_path}_not_encrypted.zip"
         task_status = False
 
         try:
@@ -626,6 +728,9 @@ class Pack(object):
                         relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
+            if encryption_key:
+                self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
+                zip_pack_path = zip_pack_path.replace("_not_encrypted.zip", ".zip")
             task_status = True
             print_color(f"Finished zipping {self._pack_name} pack.", LOG_COLORS.GREEN)
         except Exception as e:
@@ -684,7 +789,8 @@ class Pack(object):
         finally:
             return task_status, pack_was_modified
 
-    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack):
+    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack,
+                          private_content=False):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
@@ -695,6 +801,7 @@ class Pack(object):
             latest_version (str): pack latest version.
             storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
             override_pack (bool): whether to override existing pack.
+            private_content (bool): Is being used in a private content build.
 
         Returns:
             bool: whether the operation succeeded.
@@ -710,7 +817,7 @@ class Pack(object):
             if existing_files and not override_pack:
                 print_warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
                 print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-                return task_status, True
+                return task_status, True, None
 
             pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
             blob = storage_bucket.blob(pack_full_path)
@@ -718,15 +825,22 @@ class Pack(object):
 
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
+            if private_content:
+                try:
+                    shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content'
+                                               f'-private/content/artifacts/packs/{self._pack_name}.zip')
+                except FileExistsError:
+                    shutil.copy(zip_pack_path,
+                                f'/artifacts/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
 
-            return task_status, False
+            return task_status, False, pack_full_path
         except Exception as e:
             task_status = False
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
-            return task_status, True
+            return task_status, True, None
 
     def prepare_release_notes(self, index_folder_path, build_number):
         """
@@ -911,13 +1025,14 @@ class Pack(object):
                             'tags': content_item.get('tags', [])
                         })
                     elif current_directory == PackFolders.PLAYBOOKS.value:
+                        self.is_feed_pack(content_item, 'Playbook')
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', "")
                         })
                     elif current_directory == PackFolders.INTEGRATIONS.value:
                         integration_commands = content_item.get('script', {}).get('commands', [])
-
+                        self.is_feed_pack(content_item, 'Integration')
                         folder_collected_items.append({
                             'name': content_item.get('display', ""),
                             'description': content_item.get('description', ""),
@@ -1005,7 +1120,6 @@ class Pack(object):
 
         try:
             user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
-
             if not os.path.exists(user_metadata_path):
                 print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
                 return task_status, user_metadata
@@ -1014,7 +1128,6 @@ class Pack(object):
                 user_metadata = json.load(user_metadata_file)  # loading user metadata
                 # part of old packs are initialized with empty list
                 user_metadata = {} if isinstance(user_metadata, list) else user_metadata
-
             # store important user metadata fields
             self.support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
             self.current_version = user_metadata.get('currentVersion', '')
@@ -1030,7 +1143,7 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number, commit_hash):
+                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1044,6 +1157,7 @@ class Pack(object):
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
+            packs_statistic_df (pandas.core.frame.DataFrame): packs downloads statistics table.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -1064,6 +1178,10 @@ class Pack(object):
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
                                                              user_metadata.get('displayedImages', []))
+
+            if packs_statistic_df is not None:
+                self.downloads_count = self._get_downloads_count(packs_statistic_df)
+
             formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,
@@ -1071,7 +1189,9 @@ class Pack(object):
                                                            author_image=author_image,
                                                            dependencies_data=dependencies_data,
                                                            server_min_version=self.server_min_version,
-                                                           build_number=build_number, commit_hash=commit_hash)
+                                                           build_number=build_number, commit_hash=commit_hash,
+                                                           downloads_count=self.downloads_count,
+                                                           is_feed_pack=self._is_feed)
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
@@ -1390,6 +1510,50 @@ def init_storage_client(service_account=None):
         print("Created gcp private account")
 
         return storage_client
+
+
+def init_bigquery_client(service_account=None):
+    """Initialize google cloud big query client.
+
+    In case of local dev usage the client will be initialized with user default credentials.
+    Otherwise, client will be initialized from service account json that is stored in CirlceCI.
+
+    Args:
+        service_account (str): full path to service account json.
+
+    Return:
+         google.cloud.bigquery.client.Client: initialized google cloud big query client.
+    """
+    if service_account:
+        bq_client = bigquery.Client.from_service_account_json(service_account)
+        print("Created big query service account")
+    else:
+        # in case of local dev use, ignored the warning of non use of service account.
+        warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
+        credentials, project = google.auth.default()
+        bq_client = bigquery.Client(credentials=credentials, project=project)
+        print("Created big query private account")
+
+    return bq_client
+
+
+def get_packs_statistics_dataframe(bq_client):
+    """ Runs big query, selects all columns from top_packs table and returns table as pandas data frame.
+    Additionally table index is set to pack_name (pack unique id).
+
+    Args:
+        bq_client (google.cloud.bigquery.client.Client): google cloud big query client.
+
+    Returns:
+        pandas.core.frame.DataFrame: downloads statistics table dataframe.
+    """
+    query = f"SELECT * FROM `{GCPConfig.DOWNLOADS_TABLE}` LIMIT {GCPConfig.BIG_QUERY_MAX_RESULTS}"
+    # ignore missing package warning
+    warnings.filterwarnings("ignore", message="Cannot create BigQuery Storage client, the dependency ")
+    packs_statistic_table = bq_client.query(query).result().to_dataframe()
+    packs_statistic_table.set_index('pack_name', inplace=True)
+
+    return packs_statistic_table
 
 
 def input_to_list(input_data, capitalize_input=False):

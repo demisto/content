@@ -1,6 +1,6 @@
 id: Email Address Enrichment - Generic v2.1
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Email Address Enrichment - Generic v2.1
 description: |-
   Enrich email addresses.
@@ -85,8 +85,7 @@ tasks:
       id: 43ea7e61-2e1e-4d4c-835c-623055112691
       version: -1
       name: Are there email addresses to check?
-      description: Determines whether the playbook's input contains at least one email
-        address.
+      description: Determines whether the playbook's input contains at least one email address.
       type: condition
       iscommand: false
       brand: ''
@@ -128,10 +127,7 @@ tasks:
       id: 7aa90f8f-bdf1-4d72-88ae-f0d7d2d0142f
       version: -1
       name: Classify email addresses as internal or external
-      description: Adds a NetworkType attribute to all email addresses. The NetworkType
-        attribute determines whether the email address is an internal or external
-        email address, according to the domains that were passed as arguments to this
-        playbook.
+      description: Adds a NetworkType attribute to all email addresses. The NetworkType attribute determines whether the email address is an internal or external email address, according to the domains that were passed as arguments to this playbook.
       scriptName: IsEmailAddressInternal
       type: regular
       iscommand: false
@@ -230,8 +226,7 @@ tasks:
       id: 266c8054-586a-4b62-811b-d13147f12e54
       version: -1
       name: Get email address info from Active Directory
-      description: Uses Active Directory to get user information for internal email
-        addresses.
+      description: Uses Active Directory to get user information for internal email addresses.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -260,6 +255,9 @@ tasks:
               getField:
                 value:
                   simple: Address
+              stringify:
+                value:
+                  simple: "false"
           - operator: uniq
       limit: {}
       name: {}
@@ -285,8 +283,7 @@ tasks:
       id: 2d740d11-a326-4913-83f1-8df803c0a3eb
       version: -1
       name: Are there any external email addresses?
-      description: Checks whether there are email addresses with a NetworkType attribute
-        value of "External".
+      description: Checks whether there are email addresses with a NetworkType attribute value of "External".
       scriptName: Exists
       type: condition
       iscommand: false
@@ -332,8 +329,7 @@ tasks:
       id: e521733d-b152-4a1f-8050-e7658405a187
       version: -1
       name: Are there any internal email addresses?
-      description: Checks whether there are email addresses with a NetworkType attribute
-        value of "Internal".
+      description: Checks whether there are email addresses with a NetworkType attribute value of "Internal".
       scriptName: Exists
       type: condition
       iscommand: false
@@ -379,8 +375,7 @@ tasks:
       id: 7d4c6562-651c-487d-834e-f3921527c76e
       version: -1
       name: Check email addresses for domain-squatting
-      description: Checks if an email address's domain is trying to squat other domains
-        using Levenshtein distance algorithm.
+      description: Checks if an email address's domain is trying to squat other domains using Levenshtein distance algorithm.
       scriptName: EmailDomainSquattingReputation
       type: regular
       iscommand: false
@@ -438,8 +433,7 @@ tasks:
       id: 71e0fb34-e1c8-4606-8462-1f83a0a2cb56
       version: -1
       name: Is Active Directory Query v2 enabled?
-      description: Checks if there's an active instance of the Active Directory Query
-        v2 integration enabled.
+      description: Checks if there's an active instance of the Active Directory Query v2 integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -580,8 +574,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: A CSV list of internal domains. The list will be used to determine
-    whether an email address is internal or external.
+  description: A CSV list of internal domains. The list will be used to determine whether an email address is internal or external.
 - key: Email
   value:
     complex:
@@ -604,8 +597,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The domains associated with the incident. These domains will be checked
-    for domain-squatting.
+  description: The domains associated with the incident. These domains will be checked for domain-squatting.
 outputs:
 - contextPath: Account
   description: The Account object.
@@ -623,4 +615,4 @@ outputs:
   description: The DBotScore object.
   type: unknown
 tests:
-  - Email Address Enrichment - Generic v2.1 - Test
+- Email Address Enrichment - Generic v2.1 - Test

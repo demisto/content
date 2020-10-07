@@ -30,7 +30,8 @@ class TestMetadataParsing:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number", commit_hash="dummy_commit")
+                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                    downloads_count=10)
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'test_pack_id'
         assert parsed_metadata['description'] == 'Description of test pack'
@@ -54,6 +55,7 @@ class TestMetadataParsing:
         assert 'integrations' in parsed_metadata
         assert parsed_metadata['useCases'] == ["Some Use Case"]
         assert parsed_metadata['keywords'] == ["dummy keyword", "Additional dummy keyword"]
+        assert parsed_metadata['downloads'] == 10
         assert 'dependencies' in parsed_metadata
 
     def test_parsed_metadata_empty_input(self):
@@ -63,7 +65,8 @@ class TestMetadataParsing:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number", commit_hash="dummy_hash")
+                                                    build_number="dummy_build_number", commit_hash="dummy_hash",
+                                                    downloads_count=10)
 
         assert parsed_metadata['name'] == "test_pack_id"
         assert parsed_metadata['id'] == "test_pack_id"
@@ -86,9 +89,24 @@ class TestMetadataParsing:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
                                                     pack_id="test_pack_id", integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number", commit_hash="dummy_hash")
+                                                    build_number="dummy_build_number", commit_hash="dummy_hash",
+                                                    downloads_count=10)
 
         assert parsed_metadata['price'] == expected
+
+    @pytest.mark.parametrize('is_feed_pack, tags',
+                             [(True, ["tag number one", "Tag number two", 'TIM']),
+                              (False, ["tag number one", "Tag number two"])
+                              ])
+    def test_tim_tag_added_to_feed_pack(self, dummy_pack_metadata, is_feed_pack, tags):
+        """ Test 'TIM' tag is added if is_feed_pack is True
+        """
+        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                    pack_id='test_pack_id', integration_images=[], author_image="",
+                                                    dependencies_data={}, server_min_version="5.5.0",
+                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                    downloads_count=10, is_feed_pack=True)
+        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'TIM']
 
 
 class TestParsingInternalFunctions:
@@ -235,6 +253,36 @@ class TestHelperFunctions:
                                            compared_content_item=compared_content_item, pack_name="dummy")
 
         assert result == expected_result
+
+    @pytest.mark.parametrize('yaml_context, yaml_type, is_actually_feed',
+                             [
+                                 # Check is_feed by Integration
+                                 ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
+                                   'script': {'commands': [], 'dockerimage': 'bla', 'feed': True}},
+                                  'Integration', True),
+                                 ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
+                                   'script': {'commands': [], 'dockerimage': 'bla', 'feed': False}},
+                                  'Integration', False),
+                                 # Checks no feed parameter
+                                 ({'category': 'NotTIM', 'configuration': [{'display': 'Services'}],
+                                   'script': {'commands': [], 'dockerimage': 'bla'}},
+                                  'Integration', False),
+
+                                 # Check is_feed by playbook
+                                 ({'id': 'TIM - Example', 'version': -1, 'fromversion': '5.5.0',
+                                   'name': 'TIM - Example', 'description': 'This is a playbook TIM example'},
+                                  'Playbook', True),
+                                 ({'id': 'NotTIM - Example', 'version': -1, 'fromversion': '5.5.0',
+                                   'name': 'NotTIM - Example', 'description': 'This is a playbook which is not TIM'},
+                                  'Playbook', False)
+                             ])
+    def test_is_feed(self, yaml_context, yaml_type, is_actually_feed):
+        """ Tests that is_feed for pack changes if it has a playbook that starts with "TIM " or an integration with
+            script.feed==true
+        """
+        dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
+        dummy_pack.is_feed_pack(yaml_context, yaml_type)
+        assert dummy_pack.is_feed == is_actually_feed
 
 
 class TestVersionSorting:

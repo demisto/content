@@ -4,18 +4,18 @@ from demisto_sdk.commands.common.tools import str2bool, run_command
 from demisto_sdk.commands.common.constants import FILTER_CONF, RUN_ALL_TESTS_FORMAT
 
 
-SERVER_GA = "Demisto-Circle-CI-Content-GA*"
+SERVER_GA = "Demisto-Marketplace-Content-GA_6_0-*"  # GA is 6.0
 SERVER_MASTER = "Demisto-Circle-CI-Content-Master*"
-SERVER_ONE_BEFORE_GA = "Demisto-Circle-CI-Content-OneBefore-GA*"
-SERVER_TWO_BEFORE_GA = "Demisto-Circle-CI-Content-TwoBefore-GA*"
+SERVER_ONE_BEFORE_GA = "Demisto-Circle-CI-Content-GA*"  # One before is 5.5
+SERVER_TWO_BEFORE_GA = "Demisto-Circle-CI-Content-OneBefore-GA*"  # Two before is 5.0
 
 AMI_LIST = [SERVER_GA, SERVER_MASTER, SERVER_ONE_BEFORE_GA, SERVER_TWO_BEFORE_GA]
 
 AMI_NAME_TO_READABLE = {
-    SERVER_GA: "Demisto GA",
+    SERVER_GA: "Demisto 6.0",
     SERVER_MASTER: "Server Master",
-    SERVER_ONE_BEFORE_GA: "Demisto one before GA",
-    SERVER_TWO_BEFORE_GA: "Demisto two before GA"}
+    SERVER_ONE_BEFORE_GA: "Demisto GA",
+    SERVER_TWO_BEFORE_GA: "Demisto one before GA"}
 
 
 def options_handler():

@@ -7,7 +7,7 @@ type: python
 subtype: python2
 tags:
 - QRadar
-comment: Use the **QRadarCorrelationLog** playbook instead. Return the QRadar Correlation logs if exist
+comment: Deprecated. Use the **QRadarCorrelationLog** playbook instead. Return the QRadar Correlation logs if exist
 system: true
 deprecated: true
 args:
@@ -76,3 +76,4 @@ dependson:
   - qradar-searches
 tests:
 - no tests
+fromversion: 5.0.0

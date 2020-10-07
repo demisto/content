@@ -272,7 +272,7 @@ tasks:
         simple: ${inputs.FileExtensionFilter}
       extensions_inclusive_or_exclusive: {}
       inclusive_or_exclusive:
-        simple: ${inputs.FileTypeFilter}
+        simple: ${inputs.FilterType}
       limit:
         simple: ${inputs.ExtractedFilesLimit}
       rsa_decrypt_key_entry_id:

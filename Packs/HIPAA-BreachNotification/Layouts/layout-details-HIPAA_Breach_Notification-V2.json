@@ -5,7 +5,7 @@
         "TypeName": "",
         "id": "HIPAA Breach Notification",
         "kind": "details",
-        "modified": "2020-06-18T11:33:21.029048828Z",
+        "modified": "2020-08-11T10:56:25.909886981Z",
         "name": "",
         "system": false,
         "tabs": [
@@ -16,7 +16,7 @@
                 "sections": [
                     {
                         "description": "The HIPAA Breach Notification Rule, 45 CFR \u00a7\u00a7 164.400-414, requires HIPAA covered entities and their business associates to provide notification following a breach of unsecured protected health information. Similar breach notification provisions implemented and enforced by the Federal Trade Commission (FTC), apply to vendors of personal health records and their third-party service providers, pursuant to section 13407 of the HITECH Act.",
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 3,
                         "hideName": false,
                         "i": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
@@ -114,9 +114,9 @@
                     },
                     {
                         "description": "Details of the breached company",
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 2,
-                        "hideName": false,
+                        "hideName": true,
                         "i": "sfmcsjvzpo-a02fd1a0-d881-11e9-b030-ad5c55d12ecb",
                         "items": [
                             {
@@ -163,7 +163,7 @@
                         "y": 5
                     },
                     {
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 2,
                         "hideName": false,
                         "i": "sfmcsjvzpo-4d600c80-905d-11ea-8355-67a9bcbc519c",
@@ -311,7 +311,7 @@
                         "minW": 1,
                         "moved": false,
                         "name": "Breach Confirmation ",
-                        "query": "732935e9-448a-457f-86e3-325f3fd9f51d",
+                        "query": "BreachConfirmationHTML",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",

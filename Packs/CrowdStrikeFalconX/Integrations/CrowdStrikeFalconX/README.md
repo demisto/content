@@ -19,7 +19,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### cs-fx-upload-file
 ***
 Uploads a file for sandbox analysis.
-
+Notice that the file identifier (SHA) can be changed as shown in the example below.
 
 #### Base Command
 
@@ -69,6 +69,7 @@ Uploads a file for sandbox analysis.
 ### cs-fx-submit-uploaded-file
 ***
 Submits a sample SHA256 hash for sandbox analysis.
+Notice that the file identifiers, SHA and ID are not the same.
 
 
 #### Base Command
@@ -511,7 +512,7 @@ Submits a URL or FTP for sandbox analysis.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A web page or file URL. It can be HTTP(S) or FTP.<br/>For example: “https://url.com”,“ftp://ftp.com” | Required | 
+| url | A web page or file URL. It can be HTTP(S) or FTP.<br/>For example: `https://url.com or ftp://ftp.com` | Required | 
 | environment_id | Sandbox environment used for analysis. | Required | 
 | action_script | Runtime script for sandbox analysis. Values:<br/>default<br/>default_maxantievasion<br/>default_randomfiles<br/>default_randomtheme<br/>default_openie | Optional | 
 | command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters | Optional | 

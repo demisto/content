@@ -1,10 +1,7 @@
 id: Google_Vault-Search_And_Display_Results_test
 version: -1
 name: Google Vault - Search And Display Results test
-description: 'This is a test for Google Vault playbooks. It calls all search commands:
-  Google Vault - Search Drive, Google Vault - Search Groups, Google Vault - Search
-  Mail. In addition it uses: Google Vault - Search And Display Results with 3 different
-  variations.'
+description: 'This is a test for Google Vault playbooks. It calls all search commands: Google Vault - Search Drive, Google Vault - Search Groups, Google Vault - Search Mail. In addition it uses: Google Vault - Search And Display Results with 3 different variations.'
 starttaskid: "0"
 tasks:
   "0":
@@ -39,8 +36,7 @@ tasks:
       id: 9854eeba-3e06-4fff-861c-cae45e659a81
       version: -1
       name: Google Vault - Search Mail
-      description: This is a playbook for performing Google Vault search in Mail accounts
-        and display the results.
+      description: This is a playbook for performing Google Vault search in Mail accounts and display the results.
       playbookName: Google Vault - Search Mail
       type: playbook
       iscommand: false
@@ -82,7 +78,7 @@ tasks:
       searchMethod:
         simple: Specific Accounts(requires emails argument)
       startTime:
-        simple: 2019-07-10T00:00:00.000000Z
+        simple: 2020-07-10T00:00:00Z
       terms:
         simple: test*
       timeFrame: {}
@@ -109,8 +105,7 @@ tasks:
       id: 402b61a6-8fa3-431e-8839-c193bc644302
       version: -1
       name: Google Vault - Search Groups
-      description: This is a playbook for performing Google Vault search in Groups
-        and display the results.
+      description: This is a playbook for performing Google Vault search in Groups and display the results.
       playbookName: Google Vault - Search Groups
       type: playbook
       iscommand: false
@@ -173,8 +168,7 @@ tasks:
       id: 82c88e57-cc16-43a1-888b-9fef09e55781
       version: -1
       name: Google Vault - Search Drive
-      description: This is a playbook for performing Google Vault search in Drive
-        accounts and display the results.
+      description: This is a playbook for performing Google Vault search in Drive accounts and display the results.
       playbookName: Google Vault - Search Drive
       type: playbook
       iscommand: false
@@ -605,9 +599,7 @@ tasks:
       id: 98bd894a-101f-49e4-8524-247c902fcc89
       version: -1
       name: gvault-create-matter
-      description: Creates a new matter with the specified name and description. The
-        initial state is open, and the owner is the method caller. First, checks if
-        a matter with the same name already exists.
+      description: Creates a new matter with the specified name and description. The initial state is open, and the owner is the method caller. First, checks if a matter with the same name already exists.
       script: '|||gvault-create-matter'
       type: regular
       iscommand: true
@@ -639,9 +631,7 @@ tasks:
       id: 007af3fb-4ea7-42fc-8ea7-0ae9f26cab1e
       version: -1
       name: gvault-create-matter
-      description: Creates a new matter with the specified name and description. The
-        initial state is open, and the owner is the method caller. First, checks if
-        a matter with the same name already exists.
+      description: Creates a new matter with the specified name and description. The initial state is open, and the owner is the method caller. First, checks if a matter with the same name already exists.
       script: '|||gvault-create-matter'
       type: regular
       iscommand: true
@@ -673,9 +663,7 @@ tasks:
       id: c71047a5-24b2-4cd6-8902-dfa182b5502d
       version: -1
       name: gvault-create-matter
-      description: Creates a new matter with the specified name and description. The
-        initial state is open, and the owner is the method caller. First, checks if
-        a matter with the same name already exists.
+      description: Creates a new matter with the specified name and description. The initial state is open, and the owner is the method caller. First, checks if a matter with the same name already exists.
       script: '|||gvault-create-matter'
       type: regular
       iscommand: true
@@ -713,3 +701,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -46,4 +46,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Tufin - Get Application Information from SecureApp](https://github.com/demisto/content/blob/37e0906aef21802f8f4a8ecd5ea16d9eb642f0ed/Packs/Tufin/doc_files/Tufin%20-%20Get%20Application%20Information%20from%20SecureApp.png)
+![Tufin - Get Application Information from SecureApp](https://github.com/demisto/content/raw/37e0906aef21802f8f4a8ecd5ea16d9eb642f0ed/Packs/Tufin/doc_files/Tufin%20-%20Get%20Application%20Information%20from%20SecureApp.png)

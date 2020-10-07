@@ -4,7 +4,6 @@ import json
 
 import demistomock as demisto
 
-
 bundle_index = 0
 submitted_indicators = 0
 mocked_get_token_response = '''{"access_token": "fababfafbh"}'''
@@ -261,9 +260,9 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                                 'id': 'indicator--6e8b5f57-3ee2-4c4a-9283-8547754dfa09',
                                                                 'kill_chain_phases':
                                                                     [{
-                                                                      'kill_chain_name':
-                                                                          'lockheed-martin-cyber-kill-chain',
-                                                                      'phase_name': 'weaponization'}],
+                                                                        'kill_chain_name':
+                                                                            'lockheed-martin-cyber-kill-chain',
+                                                                        'phase_name': 'weaponization'}],
                                                                 'labels': ['url'], 'lang': 'en',
                                                                 'modified': '2020-01-09T07:31:16.757Z',
                                                                 'object_marking_refs': [
@@ -505,7 +504,7 @@ def init_params():
     }
 
 
-def mocked_request(*args, **kwargs) -> MockedResponse:
+def mocked_request(*args, **kwargs):
     global bundle_index
     global submitted_indicators
 
@@ -604,7 +603,8 @@ def test_get_indicators_command(mocker):
     assert output[2] == expected_ioc_output
 
 
-def test_feed_tags(mocker):
+@pytest.mark.parametrize('tlp_color', ['', None, 'AMBER'])
+def test_feed_tags_and_tlp_color(mocker, tlp_color):
     """
     Given:
     - feedTags parameter
@@ -629,6 +629,11 @@ def test_feed_tags(mocker):
                                FeedStream.DARKFEED,
                                demisto, 1000)
 
-    output = fetch_indicators_command(client, tags=['tag1', 'tag2'])
+    output = fetch_indicators_command(client, tags=['tag1', 'tag2'], tlp_color=tlp_color)
     assert all(item in output[0]['fields']['tags'] for item in ['tag1', 'tag2'])
     assert any(item in output[0]['fields']['tags'] for item in ['compromised', 'ip', 'url'])
+    if tlp_color:
+        assert output[0]['fields']['trafficlightprotocol'] == tlp_color
+    else:
+        assert not output[0]['fields'].get('trafficlightprotocol')
+        bundle_index -= 1

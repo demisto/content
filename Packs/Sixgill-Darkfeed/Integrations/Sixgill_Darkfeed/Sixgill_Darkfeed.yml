@@ -41,6 +41,16 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ""
@@ -97,7 +107,7 @@ configuration:
 description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
   Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses
   straight into the Demisto platform.
-display: Sixgill DarkFeed™ Threat Intelligence
+display: Sixgill DarkFeed Threat Intelligence
 name: Sixgill_Darkfeed
 script:
   script: '-'
@@ -114,7 +124,7 @@ script:
     description: Fetching Sixgill DarkFeed indicators
     execution: true
     name: sixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.10254
+  dockerimage: demisto/sixgill:1.0.0.10664
   feed: true
   isfetch: false
   longRunning: false
