@@ -1102,7 +1102,12 @@ jobs:
       - *download_configuration
       - *create_instance
       - *setup_instance
-      - *wait_until_server_ready
+      - run:
+        name: Wait until server ready
+        shell: /bin/bash
+        when: always
+        command: |
+          python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
       - *test_this_shit
       - *store_artifacts
 
