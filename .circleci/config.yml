@@ -1112,10 +1112,10 @@ jobs:
           name: Set Environment Variables
           when: on_success
           command: |
+            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
             export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
             export DEMISTO_BASE_URL="https://$(cat env_results.json | jq -r '.[0].InstanceDNS')"
             echo "Server URL: $DEMISTO_BASE_URL"
-            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
       - *test_this_shit
       - *store_artifacts
 
