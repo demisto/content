@@ -173,7 +173,7 @@ references:
       when: on_success
       command: |
         # Install SDK Master
-        pip install git+https://github.com/demisto/demisto-sdk.git > sdk_install.log
+        pip3 install git+https://github.com/demisto/demisto-sdk.git > sdk_install.log
         
         # Clone Content
         git clone https://github.com/demisto/content.git > clone.log
@@ -1108,6 +1108,12 @@ jobs:
           when: always
           command: |
             python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
+      - run:
+        name: Set Environment Variables
+        when: on_success
+        command: |
+          DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
+          DEMISTO_BASE_URL="https://$(cat env_results.json | jq -r '.[0].InstanceDNS')"
       - *test_this_shit
       - *store_artifacts
 
