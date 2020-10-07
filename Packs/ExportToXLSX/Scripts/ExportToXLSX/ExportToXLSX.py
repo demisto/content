@@ -1,11 +1,10 @@
-import traceback
-from typing import List, Optional, Union
-
 import demistomock as demisto
 import xlsxwriter
-from CommonServerPython import *
+import traceback
 from xlsxwriter import Workbook
+from CommonServerPython import *
 from xlsxwriter.format import Format
+from typing import List, Optional, Union
 
 
 def write_data(sheet: str, data_item: Union[dict, list], data_headers: Optional[list], workbook: Workbook, bold: Format,
