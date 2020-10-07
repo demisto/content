@@ -2,7 +2,7 @@ import os
 import socket
 import ssl
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 import demistomock as demisto  # noqa: F401
 import pem
@@ -192,7 +192,7 @@ def main():
                     'SSL/TLS': docker_container_details(),
                 },
                 'Endpoint': {
-                    'SSL/TLS': endpoint_certificate("google.com", "443"),
+                    'SSL/TLS': endpoint_certificate(demisto.getArg('endpoint'), demisto.getArg("prot") or "443"),
                 }
             }
         }
