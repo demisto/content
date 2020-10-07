@@ -29,7 +29,7 @@ scp artifacts/content_test.zip ${USER}@${PUBLIC_IP}:~/content
 
 # override exiting content with current
 COPY_CONTENT_COMMAND="sudo unzip -o ~/content/content_new.zip -d /usr/local/demisto/res \
-    && sudo unzip -o ~/content/content_test.zip -d /usr/local/demisto/res && sudo cp -r ~/Beta_Integrations/* /usr/local/demisto/res"
+    && sudo unzip -o ~/content/content_test.zip -d /usr/local/demisto/res"
 ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
 echo "start server"
