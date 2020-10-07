@@ -8,9 +8,6 @@ echo "Instance public IP is: $PUBLIC_IP"
 
 echo ${PUBLIC_IP} > public_ip
 
-#copy installer files to instance
-INSTALLER=$(ls demistoserver*.sh)
-
 USER="ec2-user"
 
 echo "wait 90 seconds to ensure server is ready for ssh"
