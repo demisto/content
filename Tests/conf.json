@@ -2778,11 +2778,13 @@
         {
             "integrations": "Code42",
             "playbookID": "Code42-Test",
+            "fromversion": "5.0.0",
             "timeout": 600
         },
         {
             "playbookID": "Code42 File Search Test",
-            "integrations": "Code42"
+            "integrations": "Code42",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "FetchIndicatorsFromFile-test",
