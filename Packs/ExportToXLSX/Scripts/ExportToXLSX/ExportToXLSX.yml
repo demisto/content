@@ -16,7 +16,7 @@ args:
 - default: false
   description: The sheet name, comma separated sheet names if multiple sheets are
     required (sheet1,sheet2).
-  isArray: false
+  isArray: true
   name: sheet_name
   required: true
   secret: false
@@ -54,7 +54,6 @@ comment: Export context data to an xlsx file.
 commonfields:
   id: ExportToXLSX
   version: -1
-dockerimage: demisto/xslxwriter:1.0.0.11942
 enabled: true
 name: ExportToXLSX
 script: '-'
@@ -62,6 +61,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
+dockerimage: demisto/xslxwriter:1.0.0.11942
 runas: DBotWeakRole
 runonce: false
 tests:

@@ -22,7 +22,7 @@ def write_data(sheet, data_item, data_headers, workbook, bold, border):
         col += 1
 
     for item in data_item:
-        if len(item) > 0:
+        if item:
             col = 0
             row += 1
             for value in data_headers:
@@ -30,7 +30,7 @@ def write_data(sheet, data_item, data_headers, workbook, bold, border):
                     worksheet.write(row, col, item.get(value), border)
                     col += 1
                 else:
-                    raise ValueError(f'The header "{value}" does not exist in the given data item.')
+                    col += 1
 
 
 def parse_data(data, sheets):
@@ -62,40 +62,36 @@ def main():
         data = args.get("data")
         file_name = args.get("file_name")
         sheet_name = args.get("sheet_name")
-        headers = args.get("headers", None)
-        is_bold = argToBoolean(args.get("bold", 'true'))
-        is_border = argToBoolean(args.get("border", 'true'))
+        headers = args.get("headers")
+        is_bold = argToBoolean(args.get("bold", "true"))
+        is_border = argToBoolean(args.get("border", "true"))
 
-        sheets = sheet_name.split(",")
+        sheets = argToList(sheet_name)
         data = parse_data(data, sheets)
 
-        if len(sheets) != len(data):
-            raise ValueError("Number of sheet names should be equal to the number of data items.")
-
         if headers:
-            headers_list = headers.split(";")
+            headers_list = argToList(headers, separator=";")
 
             if len(sheets) != len(headers_list):
                 raise ValueError("Number of sheet headers should be equal to the number of sheet names")
         else:
             headers_list = None
 
-        workbook = xlsxwriter.Workbook(file_name)
+        with xlsxwriter.Workbook(file_name) as workbook:
 
-        bold, border = prepare_bold_and_border(workbook, is_bold, is_border)
+            bold, border = prepare_bold_and_border(workbook, is_bold, is_border)
 
-        multi_header_list: List[Optional[List]] = []
-        if headers_list:  # Can be 1 item in case there is one sheet, or multiple items in case there are multiple
-            # sheets
-            for header_list in headers_list:
-                multi_header_list.append(header_list.split(","))
-        else:
-            multi_header_list = [None] * len(sheets)
-        for sheet, data_item, headers_list in zip(sheets, data, multi_header_list):
-            write_data(sheet, data_item, headers_list, workbook, bold, border)
+            multi_header_list: List[Optional[List]] = []
+            if headers_list:  # Can be 1 item in case there is one sheet, or multiple items in case there are multiple
+                # sheets
+                for header_list in headers_list:
+                    multi_header_list.append(header_list.split(","))
+            else:
+                multi_header_list = [None] * len(sheets)
+            for sheet, data_item, headers_list in zip(sheets, data, multi_header_list):
+                write_data(sheet, data_item, headers_list, workbook, bold, border)
 
-        workbook.close()
-        demisto.results(file_result_existing_file(file_name))
+        return_results(file_result_existing_file(file_name))
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback

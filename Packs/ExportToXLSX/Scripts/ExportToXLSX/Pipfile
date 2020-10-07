@@ -7,12 +7,7 @@ verify_ssl = true
 pylint = "*"
 pytest = "==5.0.1"
 pytest-mock = "*"
-requests-mock = "*"
-pytest-asyncio = "*"
-pytest-xdist = "*"
-pytest-datadir-ng = "*"
-freezegun = "*"
-pytest-json = "*"
+xlsxwriter = "*"
 
 [packages]
 
