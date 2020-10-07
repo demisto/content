@@ -190,6 +190,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
 
         message = 'Making "POST" request to server {} - to update the license {}'.format(
             host, license_path)
+        print(message)
         prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
                                      include_timestamp=True)
         prints_manager.execute_thread_prints(thread_index)
@@ -217,6 +218,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
 
         message = 'Making "POST" request to server {} - to install test content {}'.format(
             host, license_path)
+        print(message)
         prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
                                      include_timestamp=True)
         prints_manager.execute_thread_prints(thread_index)
