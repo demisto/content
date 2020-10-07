@@ -18,7 +18,14 @@ from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
-coloredlogs.install(level=logging.DEBUG, fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s')
+coloredlogs.install(level=logging.DEBUG,
+                    fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s',
+                    level_styles={
+                        'critical': {'bold': True, 'color': 'red'},
+                        'debug': {'color': 'cyan'},
+                        'error': {'color': 'red'},
+                        'info': {},
+                        'warning': {'color': 'yellow'}})
 
 
 class TestConf(object):
@@ -270,7 +277,7 @@ def get_modified_files_for_testing(files_string):
                     re.match(PACKS_INDICATOR_TYPE_JSON_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
-            elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
+            elif checked_type(file_path, JSON_ALL_INDICATOR_FIELDS_REGEXES):
                 is_indicator_json = True
 
             # conf.json
