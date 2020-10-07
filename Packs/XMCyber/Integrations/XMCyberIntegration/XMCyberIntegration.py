@@ -542,6 +542,13 @@ def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=readable_output
     )
 
+def fetch_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
+    outputs = [ { 'entity_id': 'markTest' } ]
+    return CommandResults(
+        outputs_prefix='XMCyber',
+        outputs_key_field='entity_id',
+        outputs=outputs
+    )
 
 ''' MAIN FUNCTION '''
 
@@ -606,6 +613,9 @@ def main() -> None:
 
         elif demisto.command() == 'xmcyber-entity-get':
             return_results(entity_get_command(client, demisto.args()))
+
+        elif demisto.command() == 'fetch-incidents':
+            return results(fetch_incidents(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
