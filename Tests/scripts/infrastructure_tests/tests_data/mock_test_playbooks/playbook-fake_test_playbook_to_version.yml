@@ -2,7 +2,6 @@ id: fake_test_playbook_to_version
 version: -1
 name: fake_test_playbook_to_version
 description: ""
-brand: ""
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -44,3 +44,5 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 toversion: 5.9.9
+tests:
+- No tests

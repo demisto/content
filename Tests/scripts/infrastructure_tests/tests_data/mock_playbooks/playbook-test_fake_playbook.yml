@@ -2,7 +2,6 @@ id: test_fake_playbook
 version: -1
 name: test_fake_playbook
 description: 'This is a description'
-brand: ""
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -45,4 +44,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No tests
+- No tests
