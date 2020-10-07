@@ -57,6 +57,11 @@ script:
   - name: redlock-get-rql-response
     description: Run RQL query on Prisma Cloud
     arguments:
+    - name: limit
+      required: false
+      default: false
+      isArray: false
+      description: "determines the limit on the results. '; limit search records to {}' is appended to every query where {} is the value of limit or 1 if not passed"
     - name: rql  
       required: true
       default: false

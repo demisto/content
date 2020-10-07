@@ -399,6 +399,9 @@ def get_rql_response():
     """
     rql = demisto.getArg('rql').encode("utf-8")
 
+    limit = demisto.args().get('limit', '1')
+    rql += "; limit search records to {}".format(limit)
+
     payload = {"query": rql, "filter": {}}
 
     handle_filters(payload['filter'])
