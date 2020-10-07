@@ -9,13 +9,13 @@ configuration:
   type: 0
 - hidden: false
   name: creds
-  required: false
+  required: true
   type: 9
 - defaultvalue: global
   display: The instance ADOM
   hidden: false
   name: adom
-  required: false
+  required: true
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
