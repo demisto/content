@@ -25,6 +25,7 @@ import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
 from slackclient import SlackClient
 
+from Tests.Marketplace.marketplace_services import init_storage_client
 from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_integration import Docker, test_integration, disable_all_integrations
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
@@ -63,6 +64,7 @@ def options_handler():
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
     parser.add_argument('-p', '--private', help='Is the build private.',type=str2bool, required=False, default=False)
+    parser.add_argument('-sa', '--service_account', help="Path to GCS service account.", required=False)
     parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
     parser.add_argument('-m', '--memCheck', type=str2bool,
                         help='Should trigger memory checks or not. The slack channel to check the data is: '
@@ -92,6 +94,7 @@ class TestsSettings:
         self.memCheck = options.memCheck
         self.serverVersion = options.serverVersion
         self.is_private = options.private
+        self.service_account = options.service_account
         self.serverNumericVersion = None
         self.specific_tests_to_run = self.parse_tests_list_arg(options.testsList)
         self.is_local_run = (self.server is not None)
@@ -324,7 +327,7 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, faile
                            test_options.get('timeout'),
                            prints_manager,
                            thread_index,
-                           tests_settings.conf_path) as lock:
+                           tests_settings) as lock:
         if lock:
             status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
                                               is_mock_run, thread_index=thread_index)
@@ -1139,7 +1142,7 @@ def acquire_test_lock(integrations_details: list,
                       test_timeout: int,
                       prints_manager: ParallelPrintsManager,
                       thread_index: int,
-                      conf_json_path: str) -> None:
+                      test_settings: TestsSettings) -> None:
     """
     This is a context manager that handles all the locking and unlocking of integrations.
     Execution is as following:
@@ -1159,17 +1162,17 @@ def acquire_test_lock(integrations_details: list,
                                     prints_manager,
                                     integrations_details,
                                     thread_index,
-                                    conf_json_path)
+                                    test_settings)
     try:
         yield locked
     finally:
         if not locked:
             return
-        safe_unlock_integrations(prints_manager, integrations_details, thread_index)
+        safe_unlock_integrations(prints_manager, integrations_details, thread_index, test_settings)
         prints_manager.execute_thread_prints(thread_index)
 
 
-def safe_unlock_integrations(prints_manager: ParallelPrintsManager, integrations_details: list, thread_index: int):
+def safe_unlock_integrations(prints_manager: ParallelPrintsManager, integrations_details: list, thread_index: int, test_settings: TestsSettings):
     """
     This integration safely unlocks the test's integrations.
     If an unexpected error occurs - this method will log it's details and other tests execution will continue
@@ -1180,7 +1183,7 @@ def safe_unlock_integrations(prints_manager: ParallelPrintsManager, integrations
     """
     try:
         # executing the test could take a while, re-instancing the storage client
-        storage_client = storage.Client()
+        storage_client = init_storage_client(test_settings.service_account)
         unlock_integrations(integrations_details, prints_manager, storage_client, thread_index)
     except Exception as e:
         prints_manager.add_print_job(f'attempt to unlock integration failed for unknown reason.\nError: {e}',
@@ -1193,7 +1196,7 @@ def safe_lock_integrations(test_timeout: int,
                            prints_manager: ParallelPrintsManager,
                            integrations_details: list,
                            thread_index: int,
-                           conf_json_path: str) -> bool:
+                           test_settings: TestsSettings) -> bool:
     """
     This integration safely locks the test's integrations and return it's result
     If an unexpected error occurs - this method will log it's details and return False
@@ -1202,12 +1205,12 @@ def safe_lock_integrations(test_timeout: int,
         prints_manager: ParallelPrintsManager object
         integrations_details: test integrations details
         thread_index: The index of the thread that executes the unlocking
-        conf_json_path: Path to conf.json file
+        test_settings: Path to conf.json file
 
     Returns:
         A boolean indicating the lock attempt result
     """
-    conf, _ = load_conf_files(conf_json_path, None)
+    conf, _ = load_conf_files(test_settings.conf_path, None)
     parallel_integrations_names = conf['parallel_integrations']
     filtered_integrations_details = [integration for integration in integrations_details if
                                      integration['name'] not in parallel_integrations_names]
@@ -1218,7 +1221,7 @@ def safe_lock_integrations(test_timeout: int,
         print_msg = 'No integrations to lock'
     prints_manager.add_print_job(print_msg, print, thread_index, include_timestamp=True)
     try:
-        storage_client = storage.Client()
+        storage_client = init_storage_client(test_settings.service_account)
         locked = lock_integrations(filtered_integrations_details, test_timeout, storage_client, prints_manager, thread_index)
     except Exception as e:
         prints_manager.add_print_job(f'attempt to lock integration failed for unknown reason.\nError: {e}',
