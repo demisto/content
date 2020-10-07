@@ -543,6 +543,7 @@ def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 def fetch_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
+    demisto.info('Running fetch incidents')
     outputs = [ { 'entity_id': 'markTest' } ]
     return CommandResults(
         outputs_prefix='XMCyber',
