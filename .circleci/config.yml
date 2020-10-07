@@ -1109,11 +1109,11 @@ jobs:
           command: |
             python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
       - run:
-        name: Set Environment Variables
-        when: on_success
-        command: |
-          DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
-          DEMISTO_BASE_URL="https://$(cat env_results.json | jq -r '.[0].InstanceDNS')"
+          name: Set Environment Variables
+          when: on_success
+          command: |
+            DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
+            DEMISTO_BASE_URL="https://$(cat env_results.json | jq -r '.[0].InstanceDNS')"
       - *test_this_shit
       - *store_artifacts
 
