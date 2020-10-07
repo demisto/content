@@ -601,15 +601,17 @@ class Client(BaseClient):
         attachments_res = self.get_ticket_attachments(ticket_id)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
-            links = [(attachment.get('download_link', ''), attachment.get('file_name', ''))
+            links = [(attachment.get('download_link', ''), attachment.get('file_name', ''),
+                      attachment.get('sys_created_on'))
                      for attachment in attachments]
 
         for link in links:
             file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
                                     proxies=self._proxies)
             if file_res is not None:
-                entries.append(fileResult(link[1], file_res.content))
-
+                file_ = fileResult(link[1], file_res.content)
+                file_.update({'sys_created_on': link[2]})
+                entries.append(file_)
         return entries
 
     def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str = None) -> dict:
@@ -1936,24 +1938,18 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
     # get latest comments and files
     entries = []
-    attachments_res = client.get_ticket_attachments(ticket_id)
-    file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''))
-    if 'result' in attachments_res:
-        attachments = attachments_res['result']
-        for attachment in attachments:
+    file_entries = client.get_ticket_attachment_entries(ticket_id)
+    if file_entries:
+        for file_ in file_entries:
             entry_time = arg_to_timestamp(
-                arg=attachment.get('sys_created_on'),
+                arg=file_.get('sys_created_on'),
                 arg_name='sys_created_on',
                 required=False
             )
-
-            if file_entries:
-                for file_ in file_entries:
-                    if file_.get('File') == attachment.get('file_name'):
-                        if last_update > entry_time:
-                            continue
-                        else:
-                            entries.append(file_)
+            if last_update > entry_time:
+                continue
+            else:
+                entries.append(file_)
 
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
