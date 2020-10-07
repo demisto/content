@@ -91,4 +91,3 @@ def test_edit_playbooks_directory():
     with open(TEMP_TPB, 'r') as yml_file:
         yml_content = ryaml.load(yml_file)
     assert yml_content['toversion'] == '4.1.9'
-
