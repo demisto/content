@@ -1112,8 +1112,9 @@ jobs:
           name: Set Environment Variables
           when: on_success
           command: |
-            DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
-            DEMISTO_BASE_URL="https://$(cat env_results.json | jq -r '.[0].InstanceDNS')"
+            export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
+            export DEMISTO_BASE_URL="https://$(cat env_results.json | jq -r '.[0].InstanceDNS')"
+            echo "Server URL: $DEMISTO_BASE_URL"
       - *test_this_shit
       - *store_artifacts
 
