@@ -286,7 +286,6 @@ class TestChangedTestPlaybook:
             - Check that the toversion in the default (99.99.99)
             - Check minimum version is 5.5.0
 
-
         """
         two_before_ga = '5.0.0'
         one_before_ga = '5.5.0'
@@ -295,7 +294,7 @@ class TestChangedTestPlaybook:
                                 'test_fake_integration.yml'
         test_playbook_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/' \
                              'playbook-fake_test_playbook_to_version.yml'
-        playbook_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_playbooks/playbook-test_fake_playbook.yml'
+        playbook_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_playbooks/test_fake_playbook.yml'
         modified_files_list, modified_tests_list, changed_common, _, sample_tests, modified_metadata_list, _, _ = \
             create_get_modified_files_ret(modified_files_list=[test_path_integration, playbook_path],
                                           modified_tests_list=[test_playbook_path])
