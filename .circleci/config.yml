@@ -171,18 +171,12 @@ references:
     run:
       name: Test this shit
       when: on_success
-      command: |
-        # Install SDK Master
-        pip3 install git+https://github.com/demisto/demisto-sdk.git > sdk_install.log
-        
-        # Clone Content
-        git clone https://github.com/demisto/content.git > clone.log
-        
+      command: |        
         # Get in content
         cd content 
         
             # Upload HelloWorld integration
-            demisto-sdk upload -i Packs/HelloWorld/Integrations/
+            demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure 
             if [[ $? -ne 0 ]]
             then
                 echo "Download command has failed"
@@ -193,7 +187,7 @@ references:
             rm\
                 Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py \
                 Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml
-            demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld
+            demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure 
             if [[ $? -ne 0 ]]
             then
                 echo "Download command has failed"
@@ -1119,6 +1113,16 @@ jobs:
             echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
             echo "export DEMISTO_BASE_URL=\"https://$(cat env_results.json | jq -r '.[0].InstanceDNS')\"" >> $BASH_ENV
             echo "Server URL: $DEMISTO_BASE_URL"
+      - run:
+          name: Clone content repo
+          shell: /bin/bash
+          when: on_success
+          command: git clone https://github.com/demisto/content.git > clone.log
+      - run:
+          name: Install SDK Master
+          shell: /bin/bash
+          when: on_success
+          command: pip3 install git+https://github.com/demisto/demisto-sdk.git > sdk_install.log
       - *test_this_shit
       - *store_artifacts
 
