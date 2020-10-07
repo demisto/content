@@ -109,9 +109,9 @@ tasks:
     task:
       id: 0342c5df-d2ff-448e-8ef1-3f4674c42bff
       version: -1
-      name: Isolate Endpoint - Cybereason_copy
+      name: Isolate Endpoint - Cybereason
       description: Isolate Endpoint - Cybereason
-      playbookName: Isolate Endpoint - Cybereason_copy
+      playbookName: Isolate Endpoint - Cybereason
       type: playbook
       iscommand: false
       brand: ""
@@ -149,8 +149,8 @@ tasks:
     task:
       id: 8045389b-6e5f-406f-834d-98fc70d8421a
       version: -1
-      name: Cortex XDR - Isolate Endpoint_copy
-      playbookName: Cortex XDR - Isolate Endpoint_copy
+      name: Cortex XDR - Isolate Endpoint
+      playbookName: Cortex XDR - Isolate Endpoint
       type: playbook
       iscommand: false
       brand: ""
@@ -199,8 +199,8 @@ tasks:
     task:
       id: ed275240-5110-4452-88ba-66244c7a914a
       version: -1
-      name: Block Endpoint - Carbon Black Response_copy
-      playbookName: Block Endpoint - Carbon Black Response_copy
+      name: Block Endpoint - Carbon Black Response
+      playbookName: Block Endpoint - Carbon Black Response
       type: playbook
       iscommand: false
       brand: ""
