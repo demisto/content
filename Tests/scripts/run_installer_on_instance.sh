@@ -1,26 +1,25 @@
 #!/usr/bin/env bash
 set -e
 
-INSTANCE_ID=$1
+INSTANCE_ID=$(cat ./env_results.json | jq .[0].InstanceID | sed "s/\"//g")
 
-echo "Making sure instance started"
-aws ec2 wait instance-exists --instance-ids ${INSTANCE_ID}
-aws ec2 wait instance-running --instance-ids ${INSTANCE_ID}
-echo "Instance started. fetching IP"
-
-PUBLIC_IP=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} \
-    --query 'Reservations[0].Instances[0].PublicIpAddress' | tr -d '"')
+PUBLIC_IP=$(cat ./env_results.json | jq .[0].InstanceDNS | sed "s/\"//g")
 echo "Instance public IP is: $PUBLIC_IP"
 
 echo ${PUBLIC_IP} > public_ip
 
-echo "wait 90 seconds to ensure server is ready for ssh"
-sleep 90s
+#copy installer files to instance
+INSTALLER=$(ls demistoserver*.sh)
 
 USER="ec2-user"
 
+echo "wait 90 seconds to ensure server is ready for ssh"
+sleep 90s
+
 echo "add instance to known hosts"
 ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
+
+USER="ec2-user"
 
 # copy content files
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
