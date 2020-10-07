@@ -1,6 +1,8 @@
 id: fake_playbook
 version: -1
 name: fake_playbook
+description: 'This is a description'
+brand: ''
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
