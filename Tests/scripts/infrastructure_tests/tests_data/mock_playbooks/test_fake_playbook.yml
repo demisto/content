@@ -1,6 +1,7 @@
-id: fake_test_playbook
+id: fake_playbook
 version: -1
-name: fake_test_playbook
+name: fake_playbook
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -40,4 +41,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 4.1.0
