@@ -1,12 +1,15 @@
 import traceback
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import demistomock as demisto
 import xlsxwriter
 from CommonServerPython import *
+from xlsxwriter import Workbook
+from xlsxwriter.format import Format
 
 
-def write_data(sheet, data_item, data_headers, workbook, bold, border):
+def write_data(sheet: str, data_item: Union[dict, list], data_headers: Optional[list], workbook: Workbook, bold: Format,
+               border: Format):
     if not isinstance(data_item, list):
         data_item = [data_item]
 
@@ -33,7 +36,7 @@ def write_data(sheet, data_item, data_headers, workbook, bold, border):
                     col += 1
 
 
-def parse_data(data, sheets):
+def parse_data(data: Union[str, dict, list], sheets: list):
     if isinstance(data, str):  # Indicates that the data is a comma-separated list of context keys.
         data_list = json.loads("[" + data + "]")
         if len(sheets) != len(data_list):
@@ -46,7 +49,7 @@ def parse_data(data, sheets):
     return [data]
 
 
-def prepare_bold_and_border(workbook, is_bold, is_border):
+def prepare_bold_and_border(workbook: Workbook, is_bold: bool, is_border: bool):
     bold_value = 1 if is_bold else 0
     border_value = 1 if is_border else 0
 
