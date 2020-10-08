@@ -597,7 +597,7 @@ class Client(BaseClient):
             Array of attachments entries.
         """
         entries = []
-        links = []  # type: List[Tuple[str, str]]
+        links = []
         attachments_res = self.get_ticket_attachments(ticket_id)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
