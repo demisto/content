@@ -13,41 +13,6 @@ from utils import get_env_var, timestamped_print
 
 BOT_NAME = 'content-bot'
 STALE_TIME = 5  # 5 days
-GITHUB_TO_SLACK = {
-    'Itay4': 'ikeren@paloaltonetworks.com',
-    'yaakovi': 'syaakovi@paloaltonetworks.com',
-    'ronykoz': 'rkozakish@paloaltonetworks.com',
-    'yuvalbenshalom': 'ybenshalom@paloaltonetworks.com',
-    'anara123': 'aazadaliyev@paloaltonetworks.com',
-    'adi88d': 'adaud@paloaltonetworks.com',
-    'amshamah419': 'ashamah@paloaltonetworks.com',
-    'Arsenikr': 'akrupnik@paloaltonetworks.com',
-    'bakatzir': 'bkatzir@paloaltonetworks.com',
-    'dantavori': 'dtavori@paloaltonetworks.com',
-    'DeanArbel': 'darbel@paloaltonetworks.com',
-    'guykeller': 'gkeller@paloaltonetworks.com',
-    'GalRabinDemisto': 'grabin@paloaltonetworks.com',
-    'glicht': 'glichtman@paloaltonetworks.com',
-    'guyfreund': 'gfreund@paloaltonetworks.com',
-    'David-BMS': 'dbaumstein@paloaltonetworks.com',
-    'idovandijk': 'ivandijk@paloaltonetworks.com',
-    'IkaDemisto': 'igabashvili@paloaltonetworks.com',
-    'liorblob': 'lblobstein@paloaltonetworks.com',
-    'michalgold': 'mgoldshtein@paloaltonetworks.com',
-    'mayagoldb': 'mgoldberg@paloaltonetworks.com',
-    'orenzohar': 'ozohar@paloaltonetworks.com',
-    'orlichter1': 'olichter@paloaltonetworks.com',
-    'reutshal': 'rshalem@paloaltonetworks.com',
-    'roysagi': 'rsagi@paloaltonetworks.com',
-    'Shellyber': 'sberman@paloaltonetworks.com',
-    'teizenman': 'teizenman@paloaltonetworks.com',
-    'yardensade': 'ysade@paloaltonetworks.com',
-    'avidan-H': 'ahessing@paloaltonetworks.com',
-    'hod-alpert': 'halpert@paloaltonetworks.com',
-    'ShahafBenYakir': 'sbenyakir@paloaltonetworks.com',
-    'moishce': 'mgalitzki@paloaltonetworks.com'
-}
-SLACK_TO_GITHUB = {val: key for key, val in GITHUB_TO_SLACK.items()}
 COMMENTERS_TO_IGNORE = ('CLAassistant', 'guardrails[bot]', 'welcome[bot]', 'lgtm-com[bot]')
 NUDGE_AUTHOR_MSG = 'A lengthy period of time has transpired since the PR was reviewed. Please address the ' \
                    'reviewer\'s comments and push your committed changes.'
@@ -62,6 +27,40 @@ STALE_MSG = 'This PR is starting to get a little stale.'
 
 
 print = timestamped_print
+
+
+def username_to_email(gh: Github, username: str) -> str:
+    """Gets the email address for a gh user
+
+    Args:
+        gh (Github): Github client
+        username (str): The github username to query
+
+    Returns:
+        str: The email address for the passed github username or an empty string if an email could not be resolved
+    """
+    gh_user = gh.get_user(username)
+    email = gh_user.email
+    if email and email.endswith('@paloaltonetworks.com'):
+        return email
+
+    name = gh_user.name
+    if name:
+        name_parts = name.split(' ')
+        if len(name_parts) == 2:
+            constructed_email = f'{name_parts[0][0]}{name_parts[1]}@paloaltonetworks.com'
+            email = constructed_email
+        elif len(name_parts) >= 3:
+            constructed_email = f'{name_parts[0][0]}{"".join(name_parts[1:])}@paloaltonetworks.com'
+            email = constructed_email
+        else:
+            print(f'not sure how to construct email from single word name, {name=}')
+            email = ''
+    else:
+        print(f'did not find valid email nor could construct email for user with {gh_user.login=}')
+        email = ''
+
+    return email
 
 
 def determine_slack_msg(last_event: TimelineEvent) -> str:
@@ -128,11 +127,12 @@ def build_slack_blocks(msg: str, pr: PullRequest) -> List[Dict]:
     return blocks
 
 
-def nudge_appropriate_party(t: Terminal, client: WebClient, stale_pr: PullRequest, f_timeline: List[Any]):
+def nudge_appropriate_party(t: Terminal, gh: Github, client: WebClient, stale_pr: PullRequest, f_timeline: List[Any]):
     """Use the last event to determine who needs a reminder and ping
 
     Args:
         t (Terminal): blessings Terminal for color output to stdout
+        gh (Github): Github client
         client (WebClient): Slack client to message reviewers when necessary
         stale_pr (PullRequest): The stale PR to evaluate
         f_timeline (List[Any]): A filtered list of event data for the PR
@@ -147,19 +147,21 @@ def nudge_appropriate_party(t: Terminal, client: WebClient, stale_pr: PullReques
 
     reviewers, _ = stale_pr.get_review_requests()
     requested_reviewers = [requested_reviewer.login for requested_reviewer in reviewers]
-    slack_handles = [
-        GITHUB_TO_SLACK.get(reviewer, '') for reviewer in requested_reviewers if GITHUB_TO_SLACK.get(reviewer)
-    ]
+    email_address_to_gh_user = {}
+    for requested_reviewer in requested_reviewers:
+        if (email := username_to_email(gh, requested_reviewer)):
+            email_address_to_gh_user[email] = requested_reviewer
+    email_addresses = email_address_to_gh_user.keys()
     if last_event.event.casefold() == 'committed'.casefold():
         msg = determine_slack_msg(last_event)
         if msg:
             # send slack message to right people
             print(f'{t.cyan}Sending slack message reminders for PR #{stale_pr.number}{t.normal}')
-            for slack_handle in slack_handles:
-                response = client.users_lookupByEmail(email=slack_handle)
+            for email_address in email_addresses:
+                response = client.users_lookupByEmail(email=email_address)
                 user_id = response.get('user', {}).get('id', '')
                 if msg == LOTR_NUDGE_MSG:
-                    msg = msg.format(reviewer=SLACK_TO_GITHUB.get(slack_handle))
+                    msg = msg.format(reviewer=email_address_to_gh_user.get(email_address))
                 blocks_message = build_slack_blocks(msg, stale_pr)
                 client.chat_postMessage(channel=user_id, blocks=blocks_message)
     elif last_event.event.casefold() == 'reviewed'.casefold():
@@ -198,8 +200,8 @@ def nudge_appropriate_party(t: Terminal, client: WebClient, stale_pr: PullReques
             print(f'{t.cyan}Nudging the pr - {reviewers_to_ping} - reviewers over slack {t.normal}')
 
             # Send Slack message To requested reviewers
-            for slack_handle in slack_handles:
-                response = client.users_lookupByEmail(email=slack_handle)
+            for email_address in email_addresses:
+                response = client.users_lookupByEmail(email=email_address)
                 user_id = response.get('user', {}).get('id', '')
                 blocks_message = build_slack_blocks(msg, stale_pr)
                 client.chat_postMessage(channel=user_id, blocks=blocks_message)
@@ -245,7 +247,7 @@ def main():
     client = WebClient(token=get_env_var('SLACK_API_TOKEN'))
 
     for stale_pr, f_timeline in stale_prs:
-        nudge_appropriate_party(t, client, stale_pr, f_timeline)
+        nudge_appropriate_party(t, gh, client, stale_pr, f_timeline)
 
 
 if __name__ == '__main__':
