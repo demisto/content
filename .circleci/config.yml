@@ -182,7 +182,7 @@ references:
         { # try
             yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -nv -ud > artifacts/format.log
         } || { # catch 
-          
+            echo "Format exit status: $?"
         }
         echo "Running validate"
         demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > artifacts/validate.log
