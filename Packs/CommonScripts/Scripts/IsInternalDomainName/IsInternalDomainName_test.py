@@ -1,4 +1,4 @@
-from IsInternalDomainName import check_in_domain
+from IsInternalDomainName import check_sub_domains_in_domain
 import pytest
 
 
@@ -6,16 +6,21 @@ import pytest
     # domain valid
     ("paloaltonetworks.com",
      ["paloaltonetworks.com", "apps.paloaltonetworks.com"],
-     [("paloaltonetworks.com", True), ("apps.paloaltonetworks.com", True)]
+     [("paloaltonetworks.com", "paloaltonetworks.com", True),
+      ("apps.paloaltonetworks.com", "paloaltonetworks.com", True)]
      ),
     # domain NOT valid
     ("ppaloaltonetworks.com",
      ["paloaltonetworks.com", "paloaltonetworkss.com", "apps.paloaltonetworks.com"],
-     [("paloaltonetworks.com", False), ("paloaltonetworkss.com", False), ("apps.paloaltonetworks.com", False)]
+     [("paloaltonetworks.com", "ppaloaltonetworks.com", False),
+      ("paloaltonetworkss.com", "ppaloaltonetworks.com", False),
+      ("apps.paloaltonetworks.com", "ppaloaltonetworks.com", False)]
      ),
     ("paloaltonetworks.com",
      ["paloaltonetworks.com", "paloaltonetworkss.com", "apps.paloaltonetworks.com"],
-     [("paloaltonetworks.com", True), ("paloaltonetworkss.com", False), ("apps.paloaltonetworks.com", True)]
+     [("paloaltonetworks.com", "paloaltonetworks.com", True),
+      ("paloaltonetworkss.com", "paloaltonetworks.com", False),
+      ("apps.paloaltonetworks.com", "paloaltonetworks.com", True)]
      ),
 ])
 def test_check_in_domain(domain_name, domain_to_check, expected_output):
@@ -30,7 +35,8 @@ def test_check_in_domain(domain_name, domain_to_check, expected_output):
         - returns for each sub domain if it is a sub domain of given domainName or not
 
     """
-    result = check_in_domain(domain_name, domain_to_check)
-    for i, element in enumerate(result.outputs):
-        assert element["Domain.Name"] == expected_output[i][0]
-        assert element["Domain.IsInternal"] == expected_output[i][1]
+    result = check_sub_domains_in_domain(domain_name, domain_to_check)
+    for index, sub_domain in enumerate(result.outputs["IsInternalDomain"]):
+        assert sub_domain["DomainToTest"] == expected_output[index][0]
+        assert sub_domain["DomainToCompare"] == expected_output[index][1]
+        assert sub_domain["IsInternal"] == expected_output[index][2]

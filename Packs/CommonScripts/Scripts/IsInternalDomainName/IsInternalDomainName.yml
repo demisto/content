@@ -2,14 +2,14 @@ args:
 - default: false
   description: The domain name that the sub domain should be in
   isArray: false
-  name: domainName
+  name: domain_name
   required: true
   secret: false
 - auto: PREDEFINED
   default: true
   description: A comma-separated list of domains to check.
   isArray: true
-  name: domainToCheck
+  name: domain_to_check
   required: true
   secret: false
 comment: Check if a Domain or sub domain is in a domain
@@ -19,11 +19,14 @@ commonfields:
 enabled: false
 name: IsInternalDomainName
 outputs:
-- contextPath: Domain.Name
+- contextPath: IsInternalDomain.DomainToTest
   description: The domain that was checked
   type: String
-- contextPath: Domain.IsInternal
+- contextPath: IsInternalDomain.IsInternal
   description: "True if sub domain is part of a domain. \nFalse otherwise"
+  type: String
+- contextPath: IsInternalDomain.DomainToCompare
+  description: The domain that sub domain is compare to
   type: String
 script: '-'
 subtype: python3
