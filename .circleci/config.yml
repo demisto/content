@@ -1103,11 +1103,7 @@ jobs:
 workflows:
   version: 2
   commit:
-    unless:
-      condition:
-        or:
-        - << pipeline.parameters.force_pack_upload >>
-        - << pipeline.parameters.demisto_sdk_nightly >>
+    unless: << pipeline.parameters.force_pack_upload >>
     jobs:
       - Setup Environment
       - Create Instances:
