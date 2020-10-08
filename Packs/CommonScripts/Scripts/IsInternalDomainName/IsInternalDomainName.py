@@ -28,37 +28,12 @@ def check_in_domain(domain_name: str, domain_to_check: list) -> CommandResults:
     return CommandResults(outputs=context_entry)
 
 
-def get_domains_from_context(context_path: str):
-    """
-
-    Args:
-        context_path: context path to look for list of sub domains
-
-    Returns: list of sub domains
-
-    """
-    context_path_list = context_path.split(".")
-    domain_to_check: List = []
-    for key in context_path_list:
-        if key not in demisto.context():
-            # in case got a key which does not exist in context
-            domain_to_check = []
-            break
-        domain_to_check = demisto.context()[key]
-    return domain_to_check
-
-
 def main():
     args = demisto.args()
     domain_name = args.get('domainName')
     domain_to_check = argToList(args.get('domainToCheck'))
     if len(domain_to_check) == 0:
-        context_path = args.get('contextPath')
-        if not context_path:
-            return_error("IsInternalDomainName has to get one of the following : contextPath or domainToCheck")
-        domain_to_check = get_domains_from_context(context_path)
-        if len(domain_to_check) == 0:
-            return_error("IsInternalDomainName has to get one of the following : contextPath or domainToCheck")
+        return_error("IsInternalDomainName has to get at least one domainToCheck")
     return_results(check_in_domain(domain_name, domain_to_check))
 
 

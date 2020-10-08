@@ -10,13 +10,7 @@ args:
   description: A comma-separated list of domains to check.
   isArray: true
   name: domainToCheck
-  required: false
-  secret: false
-- default: true
-  description: A path of the given array of domains in context
-  isArray: false
-  name: contextPath
-  required: false
+  required: true
   secret: false
 comment: Check if a Domain or sub domain is in a domain
 commonfields:
@@ -38,5 +32,5 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.5.11789
+dockerimage: demisto/python3:3.8.6.12176
 fromversion: 5.0.0
