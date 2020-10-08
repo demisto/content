@@ -7,9 +7,6 @@ import dateparser
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
-import json
-import dateparser
-
 from argus_cli.utils import formatting  # Common helper for creating nice outputs
 from argus_cli.settings import settings
 
@@ -46,7 +43,6 @@ from argus_api.api.reputation.v1.observation import (
     fetch_observations_for_i_p,
 )
 
-from typing import List, Dict, Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()

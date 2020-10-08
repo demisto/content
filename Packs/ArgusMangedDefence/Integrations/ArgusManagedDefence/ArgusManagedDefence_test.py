@@ -1,20 +1,15 @@
-import requests
-import requests_mock
-import pytest
-
-BASE_URL = "https://api.test.com"
-caseID = 1337
+BASE_URL = "https://api.mnemonic.no"
+case_id = 1337
 
 
 def test_add_case_tag(requests_mock):
-    from ArgusManagedDefence import add_case_tag_command, set_argus_settings
+    from ArgusManagedDefence import add_case_tag_command
     from test_data import argus_case_data
 
-    method_url = f"/cases/v2/case/{caseID}/tags"
-    set_argus_settings("test", BASE_URL)
+    method_url = f"/cases/v2/case/{case_id}/tags"
 
     requests_mock.post(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_TAGS)
-    args = {"case_id": caseID, "key": "test_key", "value": "test_value"}
+    args = {"case_id": case_id, "key": "test_key", "value": "test_value"}
     result = add_case_tag_command(args)
     assert result.raw_response == argus_case_data.ARGUS_CASE_TAGS
 
