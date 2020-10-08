@@ -17,7 +17,7 @@ configuration:
   required: false
   type: 0
 - display: API Key
-  name: apikey
+  name: api_key
   required: true
   type: 4
 - defaultvalue: Low
@@ -43,11 +43,98 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: https://portal.mnemonic.no
+  display: API URL
+  hidden: false
+  name: api_url
+  required: true
+  type: 0
 description: MSSP
 display: ArgusManagedDefence
 name: ArgusManagedDefence
 script:
-  dockerimage: demisto/python3:3.8.5.11789
+  commands:
+  - arguments:
+    - default: false
+      description: Case ID to add tag to
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: Key of tag to add to case
+      isArray: false
+      name: key
+      required: true
+      secret: false
+    - default: false
+      description: Value of tag to add to case
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a key, value tag to an Argus case
+    execution: false
+    name: argus_add_case_tag
+  - arguments:
+    - default: false
+      description: 'Case ID '
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    deprecated: false
+    description: List tags attached to an Argus case
+    execution: false
+    name: argus_list_case_tags
+  - arguments:
+    - default: false
+      description: Case ID
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: The comment to attach
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    - default: false
+      description: ID of comment this comment will reply to
+      isArray: false
+      name: as_reply_to
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether this comment will be shown to the customer
+      isArray: false
+      name: internal
+      predefined:
+      - 'false'
+      - ' true'
+      required: false
+      secret: false
+    - default: false
+      description: Define the e-mail address this comment originates from
+      isArray: false
+      name: origin_email_address
+      required: false
+      secret: false
+    - default: false
+      description: ID of case attachement this comment is related to
+      isArray: false
+      name: associated_attachment_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Add comment to an Argus case
+    execution: false
+    name: argus_add_comment
+  dockerimage: demisto/argus-toolbelt:1.0.0.12012
   feed: false
   isfetch: true
   longRunning: false

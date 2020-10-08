@@ -1,3 +1,7 @@
+import requests
+import requests_mock
+import pytest
+
 BASE_URL = "https://api.test.com"
 caseID = 1337
 

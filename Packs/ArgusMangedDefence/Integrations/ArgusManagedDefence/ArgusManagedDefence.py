@@ -118,16 +118,34 @@ def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
     tag = {"key": key, "value": value}
     result = add_case_tag(caseID=case_id, tags=tag)
     # tags = {key: result['data'][0][key] for key in result['data'][0].keys() & {'key', 'value', 'addedTimestamp'}}
-    headers = ["key", "value", "addedTimestamp"]
+    headers = ["key", "value", "addedTime"]
     readable_output = tableToMarkdown(
-        f"#{case_id}: Tags", result["data"][0], headers=headers
+        f"#{case_id}: Tags", result["data"], headers=headers
     )
 
     return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def add_comment_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    case_id = args.get("case_id", None)
+    comment = args.get("comment", None)
+    as_reply_to = args.get("as_reply_to", None)
+    internal = args.get("internal", None)
+    origin_email_address = args.get("origin_email_address", None)
+    associated_attachment_id = args.get("associated_attachement_id", None)
+    if not case_id:
+        raise ValueError("case_id not specified")
+    if not comment:
+        raise ValueError("comment not specified")
+    result = add_comment(
+        caseID=case_id,
+        comment=comment,
+        asReplyTo=as_reply_to,
+        internal=internal,
+        originEmailAddress=origin_email_address,
+        associatedAttachmentID=associated_attachment_id
+    )
+    readable_output = "TODO find out how to depend on a script: html to markdown"
 
 
 def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
@@ -171,7 +189,15 @@ def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    case_id = args.get("case_id", None)
+    if not case_id:
+        raise ValueError("case_id not specified")
+    result = list_case_tags(caseID=case_id)
+    headers = ["key", "value", "addedTime"]
+    readable_output = tableToMarkdown(
+        f"{case_id}: Tags", result["data"], headers=headers
+    )
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
