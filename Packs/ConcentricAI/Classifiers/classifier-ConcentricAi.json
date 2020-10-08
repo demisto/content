@@ -1,0 +1,25 @@
+{
+ "description": "Incoming classifier of incidents into demisto",
+ "feed": false,
+ "id": "ConcentricAi",
+ "keyTypeMap": {
+  "high": "Cortex XDR Incident"
+ },
+ "name": "ConcentricAi",
+ "transformer": {
+  "complex": {
+   "accessor": "",
+   "filters": [
+
+   ],
+   "root": "risk",
+   "transformers": [
+
+   ]
+  },
+  "simple": ""
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

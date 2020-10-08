@@ -1,0 +1,92 @@
+id: ConcentricAI Demo Playbook
+version: -1
+fromversion: 6.0.0
+name: ConcentricAI Demo Playbook
+description: This playbook will show how to handle a risk incident and fetch all appropriate
+  file details with respect to it.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8b07a56d-2681-492d-8109-fe89ddcd70a4
+    type: start
+    task:
+      id: 8b07a56d-2681-492d-8109-fe89ddcd70a4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5a29c2af-6511-4acf-8e7a-f3c0eaa87859
+    type: regular
+    task:
+      id: 5a29c2af-6511-4acf-8e7a-f3c0eaa87859
+      version: -1
+      name: get-file-details
+      description: Get's file information
+      script: ConcentricAI|||get-file-details
+      type: regular
+      iscommand: true
+      brand: ConcentricAI
+    scriptarguments:
+      file-name:
+        simple: ${incident.filename}
+      path:
+        simple: ${incident.filepath}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 245,
+        "width": 380,
+        "x": 450,
+        "y": 170
+      }
+    }
+  }
+inputs:
+- key: File Name
+  value:
+    simple: ${incident.filename}
+  required: true
+  description: File Name to check
+- key: Path Name
+  value:
+    simple: ${incident.filepath}
+  required: true
+  description: The path of the file.
+outputs: []
+tests:
+- No tests (auto formatted)

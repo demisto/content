@@ -1349,6 +1349,10 @@
             "instance_names": "use_python_requests_handler"
         },
         {
+            "integrations": "ConcentricAI",
+            "playbookID": "ConcentricAI_Demo.yml"
+        },
+        {
             "integrations": "McAfee NSM",
             "playbookID": "McAfeeNSMTest",
             "timeout": 400,
