@@ -815,6 +815,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     default_test_timeout = conf.get('testTimeout', 30)
 
     tests = conf['tests']
+    print(f"Tests are {tests}")
     skipped_tests_conf = conf['skipped_tests']
     nightly_integrations = conf['nightly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
@@ -853,9 +854,9 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
     unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
     if is_private:
-        unmockable_tests.extend(mockable_tests)
+        unmockable_tests.append(mockable_tests)
         mockable_tests = []
-
+    print(f"Tests to run are: {unmockable_tests}")
     if is_nightly and is_memory_check:
         mem_lim, err = get_docker_limit()
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID,
