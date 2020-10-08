@@ -5,7 +5,8 @@ name: jira-v2
 display: Atlassian Jira v2
 fromversion: 5.0.0
 category: Case Management
-description: Use the Jira integration to manage issues and create Demisto incidents from projects.
+description: Use the Jira integration to manage issues and create Demisto incidents
+  from projects.
 configuration:
 - defaultvalue: 'false'
   display: Mirror incoming incidents
@@ -210,7 +211,8 @@ script:
     - name: upload
       description: The entry ID to upload.
     - name: attachmentName
-      description: The attachment name to be displayed in Jira (overrides original file name)
+      description: The attachment name to be displayed in Jira (overrides original
+        file name)
     description: Uploads a file attachment to an issue.
   - name: jira-issue-add-comment
     arguments:
@@ -227,8 +229,8 @@ script:
   - name: jira-issue-add-link
     arguments:
     - name: globalId
-      description: If a globalId is provided, and a remote issue link exists with that
-        globalId, the remote issue link is updated.
+      description: If a globalId is provided, and a remote issue link exists with
+        that globalId, the remote issue link is updated.
     - name: relationship
       description: 'The object relationship to issue, for example: "causes".'
     - name: url
@@ -245,7 +247,8 @@ script:
     - name: applicationType
       description: The application type of the linked remote application. E.g "com.atlassian.confluence".
     - name: applicationName
-      description: The application name of the linked remote application. E.g "My Confluence Instance".
+      description: The application name of the linked remote application. E.g "My
+        Confluence Instance".
     description: Creates (or updates) an issue link.
   - name: jira-edit-issue
     arguments:
@@ -253,7 +256,8 @@ script:
       required: true
       description: The ID of the issue to edit.
     - name: issueJson
-      description: 'The issue object (in JSON format). e.g, {"fields":{"customfield_10037": "field_value"}}'
+      description: 'The issue object (in JSON format). e.g, {"fields":{"customfield_10037":
+        "field_value"}}'
     - name: summary
       description: The summary of the issue.
     - name: description
@@ -335,3 +339,4 @@ script:
   runonce: false
 tests:
 - Jira-v2-Test
+defaultmapperin: classifier-mapper-incoming-JiraV2
