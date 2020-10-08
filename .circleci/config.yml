@@ -172,38 +172,28 @@ references:
       name: Test this shit
       when: on_success
       command: |
-        # Get in content
-        cd content 
-        
-            # Upload HelloWorld integration
-            demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure 
-        
-            # Download the integration
-            rm\
-                Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py \
-                Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml
-            demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure 
-        
-            # Format
-            yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -ud > ../format.log
-            # Validate and Lint
-            demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > ../validate.log
-            if [[ $? -ne 0 ]]
-            then
-                VALDIATE_CODE=1
-            fi
-            demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld/ > ../lint.log
-            if [[ $? -ne 0 ]]
-            then
-                LINT_CODE=1
-            fi
-        
-            # Remove all
-            ls -A1 | xargs rm -rf
-            cd ..
-        
-        # Remove content dir
-        rmdir content
+        # Upload HelloWorld integration
+        demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure 
+    
+        # Download the integration
+        rm\
+            Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py \
+            Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml
+        demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure 
+    
+        # Format
+        yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -ud > ../format.log
+        # Validate and Lint
+        demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > ../validate.log
+        if [[ $? -ne 0 ]]
+        then
+            VALDIATE_CODE=1
+        fi
+        demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld/ > ../lint.log
+        if [[ $? -ne 0 ]]
+        then
+            LINT_CODE=1
+        fi
         
         # Check codes
         if [[ $VALDIATE_CODE -ne 0 ]]
@@ -1098,11 +1088,6 @@ jobs:
             echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
             echo "export DEMISTO_BASE_URL=\"https://$(cat env_results.json | jq -r '.[0].InstanceDNS')\"" >> $BASH_ENV
             echo "Server URL: $DEMISTO_BASE_URL"
-      - run:
-          name: Clone content repo
-          shell: /bin/bash
-          when: on_success
-          command: git clone https://github.com/demisto/content.git > clone.log
       - run:
           name: Install SDK Master
           shell: /bin/bash
