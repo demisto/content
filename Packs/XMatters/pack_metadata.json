@@ -1,0 +1,17 @@
+{
+    "name": "xMatters",
+    "description": "An Integration with xMatters.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Travis DePuy",
+    "url": "https://github.com/xmtinkerer",
+    "email": "tdepuy@xmatters.com",
+    "created": "2020-10-06T22:06:34Z",
+    "categories": [
+        "Messaging"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}
