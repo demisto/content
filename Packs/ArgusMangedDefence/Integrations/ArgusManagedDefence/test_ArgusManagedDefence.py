@@ -59,7 +59,15 @@ def test_list_case_attachments(requests_mock):
 
 
 def test_list_case_tags(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import list_case_tags_command
+    from test_data import argus_case_data
+
+    method_url = f"/cases/v2/case/{case_id}/tags?limit=25"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_TAGS)
+    args = {"case_id": case_id}
+    result = list_case_tags_command(args)
+    assert result.raw_response == argus_case_data.ARGUS_CASE_TAGS
 
 
 def test_list_case_comments(requests_mock):
