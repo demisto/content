@@ -278,17 +278,17 @@ class TestChangedTestPlaybook:
         When:
             - running get_test_list_and_content_packs_to_install
         Then:
-            - Check that the toversion in the default (99.99.99)
+            - Check that the toversion is the default (99.99.99)
             - Check minimum version is 5.0.0
 
         """
-        test_path_integration = 'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/' \
+        test_integration_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/' \
                                 'test_fake_integration.yml'
         test_playbook_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/' \
                              'playbook-fake_test_playbook_to_version.yml'
         playbook_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_playbooks/test_fake_playbook.yml'
 
-        modified_files_list = [test_path_integration, playbook_path]
+        modified_files_list = [test_integration_path, playbook_path]
         modified_tests_list = [test_playbook_path]
         all_modified_files_paths = set(modified_files_list + modified_tests_list)
         from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths,
