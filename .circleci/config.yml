@@ -1228,7 +1228,7 @@ workflows:
       - Demisto SDK Nightly:
           context: sdk_nightly_env
       - Demisto SDK Nightly - Run against CortexXSOAR:
-          context: sdk_nightly_env
+          context: sdk_nightly_remote_env
 
   sdk_nightly_trigger:
     # will initiate when usign the trigger script.
@@ -1237,4 +1237,4 @@ workflows:
       - Demisto SDK Nightly:
           context: sdk_nightly_env
       - Demisto SDK Nightly - Run against CortexXSOAR:
-          context: sdk_nightly_env
+          context: sdk_nightly_remote_env
