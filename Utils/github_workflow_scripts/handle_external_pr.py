@@ -15,7 +15,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 org_print = print
 
 REVIEWERS = ['guyfreund', 'reutshal', 'barchen1']
-HACKATHON_BODY_MESSAGE = 'Hackathon Award Categories'
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
               'wizard @{selected_reviewer} will very shortly look over your proposed changes. '
 
@@ -135,23 +134,17 @@ def main():
         pr.edit(base=new_branch_name)
         print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
 
-    if HACKATHON_BODY_MESSAGE in pr.body:
-        # Hackathon participants do not need reviewers and are labled as Hackathon
-        hackathon_label = 'Hackathon'
-        pr.add_to_labels(hackathon_label)
-        print(f'{t.cyan}Added "Hackathon" label to the PR{t.normal}')
-    else:
-        # assign reviewers / request review from
-        reviewer_to_assign = determine_reviewer(REVIEWERS, content_repo)
-        pr.add_to_assignees(reviewer_to_assign)
-        pr.create_review_request(reviewers=[reviewer_to_assign])
-        print(f'{t.cyan}Assigned user "{reviewer_to_assign}" to the PR{t.normal}')
-        print(f'{t.cyan}Requested review from user "{reviewer_to_assign}"{t.normal}')
+    # assign reviewers / request review from
+    reviewer_to_assign = determine_reviewer(REVIEWERS, content_repo)
+    pr.add_to_assignees(reviewer_to_assign)
+    pr.create_review_request(reviewers=[reviewer_to_assign])
+    print(f'{t.cyan}Assigned user "{reviewer_to_assign}" to the PR{t.normal}')
+    print(f'{t.cyan}Requested review from user "{reviewer_to_assign}"{t.normal}')
 
-        # create welcome comment
-        body = WELCOME_MSG.format(selected_reviewer=reviewer_to_assign)
-        pr.create_issue_comment(body)
-        print(f'{t.cyan}Created welcome comment{t.normal}')
+    # create welcome comment
+    body = WELCOME_MSG.format(selected_reviewer=reviewer_to_assign)
+    pr.create_issue_comment(body)
+    print(f'{t.cyan}Created welcome comment{t.normal}')
 
 
 if __name__ == "__main__":

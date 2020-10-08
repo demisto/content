@@ -158,11 +158,7 @@ def build_slack_blocks(msg: str, pr: PullRequest) -> List[Dict]:
             'text': f'*<{pr.html_url}|{pr.title} #{pr.number}>*\n{pr_body}'
         }
     }
-    blocks.append(header)
-    blocks.append(divider)
-    blocks.append(context)
-    blocks.append(body)
-    blocks.append(divider)
+    blocks.extend([header, divider, context, body, divider])
     return blocks
 
 
@@ -216,7 +212,6 @@ def main():
 
         reviewers, _ = stale_pr.get_review_requests()
         requested_reviewers = [requested_reviewer.login for requested_reviewer in reviewers]
-        # reviewers_with_prefix = ' '.join(['@' + reviewer for reviewer in requested_reviewers])
         slack_handles = [
             GITHUB_TO_SLACK.get(reviewer, '') for reviewer in requested_reviewers if GITHUB_TO_SLACK.get(reviewer)
         ]
