@@ -137,12 +137,8 @@ Checks the reputation of the given domain name.
 | --- | --- | --- |
 | Domain.Name | String | The domain name. | 
 | Domain.DNS | String | IPs resolved by DNS.  | 
-| Domain.WHOIS.CreationDate | Date | Date the domain was created. The date format is: YYYYMMDDThhmmss.
-Where T denotes the start of the value
-for time, in UTC time. | 
-| Domain.WHOIS.UpdatedDate | Date | Date the domain was last updated. The date format is: YYYYMMDDThhmmss.
-Where T denotes the start of the value
-for time, in UTC time. | 
+| Domain.WHOIS.CreationDate | Date | Date the domain was created. The date format is: YYYYMMDDThhmmss. Where T denotes the start of the value for time, in UTC time. | 
+| Domain.WHOIS.UpdatedDate | Date | Date the domain was last updated. The date format is: YYYYMMDDThhmmss. Where T denotes the start of the value for time, in UTC time. | 
 | Domain.WHOIS.Registrant.Name | String | Name of the registrant. | 
 | Domain.WHOIS.Registrant.Email | String | Email address of the registrant. | 
 | Domain.WHOIS.Registrant.Phone | String | Phone number of the registrant. | 
@@ -150,8 +146,7 @@ for time, in UTC time. |
 | ThreatStream.Domain.Address | String | The domain name of the indicator. | 
 | ThreatStream.Domain.Country | String | Country associated with the indicator. | 
 | ThreatStream.Domain.Type | String | The indicator type. | 
-| ThreatStream.Domain.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.Domain.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 | ThreatStream.Domain.Severity | String | The indicator severity \("very-high", "high", "medium", "low"\). | 
 | ThreatStream.Domain.Confidence | String | Level of certainty that an observable is of the reported indicator type. Confidence score can range from 0-100, in increasing order of confidence. | 
 | ThreatStream.Domain.Status | String | Status assigned to the indicator. | 
@@ -247,8 +242,7 @@ Checks the reputation of the given MD5 hash of the file.
 | ThreatStream.File.Status | String | Status assigned to the indicator. | 
 | ThreatStream.File.Type | String | The indicator type. | 
 | ThreatStream.File.MD5 | String | The MD5 hash of the indicator. | 
-| ThreatStream.File.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.File.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 | ThreatStream.File.Source | String | The source of the indicator. | 
 
 
@@ -318,8 +312,7 @@ Checks the reputation of the given email address.
 | ThreatStream.EmailReputation.Type | String | The indicator type. | 
 | ThreatStream.EmailReputation.Email | String | The email address of the indicator. | 
 | ThreatStream.EmailReputation.Source | String | The source of the indicator. | 
-| ThreatStream.EmailReputation.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.EmailReputation.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 
 
 #### Command Example
@@ -379,10 +372,8 @@ Returns enrichment data for Domain or IP for availabe observables.
 | ThreatStream.PassiveDNS.Ip | String | The IP value. | 
 | ThreatStream.PassiveDNS.Rrtype | String | The Rrtype value. | 
 | ThreatStream.PassiveDNS.Source | String | The source value. | 
-| ThreatStream.PassiveDNS.FirstSeen | String | The first seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
-| ThreatStream.PassiveDNS.LastSeen | String | The last seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.PassiveDNS.FirstSeen | String | The first seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
+| ThreatStream.PassiveDNS.LastSeen | String | The last seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 
 
 #### Command Example
@@ -1245,8 +1236,7 @@ Return filtered indicators from ThreatStream. If a query is defined, it overides
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatStream.Indicators.IType | String | The indicator type. | 
-| ThreatStream.Indicators.Modified | String | Date and time when the indicator was last updated on the ThreatStream. Format: YYYYMMDDThhmmss, where T denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.Indicators.Modified | String | Date and time when the indicator was last updated on the ThreatStream. Format: YYYYMMDDThhmmss, where T denotes the start of the value for time, in UTC time. | 
 | ThreatStream.Indicators.Confidence | String | Level of certainty that an observable is of the reported indicator type. | 
 | ThreatStream.Indicators.Value | String | The indicator value. | 
 | ThreatStream.Indicators.Status | String | The indicator status. | 
@@ -1684,8 +1674,7 @@ Checks the reputation of the given URL.
 | DBotScore.Score | Number | The actual score. | 
 | URL.Data | String | The URL of the indicator. | 
 | URL.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
-| ThreatStream.URL.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.URL.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 | ThreatStream.URL.Confidence | String | Level of certainty that an observable is of the reported indicator type. Confidence score can range from 0-100, in increasing order of confidence. | 
 | ThreatStream.URL.Status | String | The status of the indicator. | 
 | ThreatStream.URL.Organization | String | Name of the business that owns the IP address associated with the indicator. | 
@@ -1729,9 +1718,9 @@ for time, in UTC time. |
 
 #### Human Readable Output
 
-##### URL reputation for: http://194.147.35.172/mikey.mpsl
+##### URL reputation for: `http://194.147.35.172/mikey.mpsl`
 
 | Address | Confidence | Source | Type | Status | Modified | Organization | Country | Severity |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| http://194.147.35.172/mikey.mpsl | 90 | H3X Tracker | url | active | 2019-06-24T10:10:05.890Z | LLC Baxet | RU | very-high |
+| `http://194.147.35.172/mikey.mpsl` | 90 | H3X Tracker | url | active | 2019-06-24T10:10:05.890Z | LLC Baxet | RU | very-high |
 
