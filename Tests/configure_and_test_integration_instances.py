@@ -1264,7 +1264,7 @@ def set_marketplace_url(servers, branch_name, ci_build_number):
 
 def main():
     build = Build(options_handler())
-    if build.is_nightly:
+    if build.is_private:
         for server in build.servers:
             client = demisto_client.configure(base_url=server.host, username=server.user_name,
                                               password=server.password, verify_ssl=False)
