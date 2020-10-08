@@ -173,20 +173,20 @@ references:
       when: on_success
       command: |
         # Upload HelloWorld integration
-        demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure 
+        demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure > artifacts/upload.log
     
         # Download the integration
-        demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
+        demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f > artifacts/download.log
     
         # Format
         yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -ud > artifacts/format.log
         # Validate and Lint
-        demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > artifacts/format.log
+        demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > artifacts/validate.log
         if [[ $? -ne 0 ]]
         then
             VALDIATE_CODE=1
         fi
-        demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld/ > artifacts/format.log
+        demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld/ > artifacts/lint.log
         if [[ $? -ne 0 ]]
         then
             LINT_CODE=1
