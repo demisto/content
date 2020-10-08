@@ -1,51 +1,28 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "Jira V2 mirror in classifier.",
-	"feed": false,
-	"fromServerVersion": "6.0.0",
-	"id": "classifier-mapper-incoming-JiraV2",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 2,
-	"mapping": {
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"dbotMirrorDirection": {
-					"complex": null,
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"complex": null,
-					"simple": "id"
-				},
-				"dbotMirrorInstance": {
-					"complex": null,
-					"simple": "mirror_instance"
-				}
-			}
-		}
-	},
-	"name": "classifier-mapper-incoming-JiraV2",
-	"nameRaw": "classifier-mapper-incoming-JiraV2",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+ "description": "Jira V2 mirror in classifier.",
+ "feed": false,
+ "id": "classifier-mapper-incoming-JiraV2",
+ "mapping": {
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "dbotMirrorDirection": {
+     "complex": null,
+     "simple": "mirror_direction"
+    },
+    "dbotMirrorId": {
+     "complex": null,
+     "simple": "id"
+    },
+    "dbotMirrorInstance": {
+     "complex": null,
+     "simple": "mirror_instance"
+    }
+   }
+  }
+ },
+ "name": "classifier-mapper-incoming-JiraV2",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
 }

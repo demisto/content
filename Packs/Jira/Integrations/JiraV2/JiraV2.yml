@@ -309,6 +309,7 @@ script:
       description: The ID or key of the issue.
     description: Deletes an issue in Jira.
   - name: jira-get-id-offset
+    description: Get id offset from begining.
     outputs:
     - contextPath: Ticket.idOffSet
       description: The ID offset.
@@ -333,7 +334,7 @@ script:
       will not update the current incident, it's here for debugging purposes.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.8892
+  dockerimage: demisto/oauthlib:1.0.0.11697
   isfetch: true
   isremotesyncin: true
   runonce: false
