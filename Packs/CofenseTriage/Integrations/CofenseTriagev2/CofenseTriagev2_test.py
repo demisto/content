@@ -355,6 +355,37 @@ class TestCofenseTriage:
             "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n" # noqa: 501
         )
 
+    @freeze_time("2000-10-31")
+    def test_search_inbox_reports_command_with_max_matches(self, requests_mock, triage_instance):
+        set_demisto_arg("subject", "aaa")
+        set_demisto_arg("url", "")
+        set_demisto_arg("file_hash", "")
+        set_demisto_arg("reporter", "reporter2")
+        set_demisto_arg("max_matches", 1)
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/inbox_reports?start_date=2000-10-24+00%3A00%3A00%2B00%3A00&page=0",  # noqa: 501
+            text=fixture_from_file("inbox_reports.json"),
+        )
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reporters?email=reporter2&page=0",
+            text=fixture_from_file("reporters_by_email_reporter2.json"),
+        )
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reporters/222",
+            text=fixture_from_file("reporters.json"),
+        )
+
+        CofenseTriagev2.search_inbox_reports_command(triage_instance)
+
+        demisto_results = CofenseTriagev2.demisto.results.call_args_list[0][0]
+        assert len(demisto_results) == 1
+        assert demisto_results[0]["HumanReadable"] == (
+            "### Reports:\n"
+            "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n" # noqa: 501
+            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+            "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n" # noqa: 501
+        )
+
     def test_get_attachment_command(self, mocker, requests_mock, triage_instance):
         set_demisto_arg("attachment_id", "5")
         set_demisto_arg("file_name", "my_great_file")

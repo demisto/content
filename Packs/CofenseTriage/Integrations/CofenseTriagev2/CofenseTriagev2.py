@@ -542,10 +542,12 @@ def search_inbox_reports_command(triage_instance) -> None:
         return
 
     try:
-        max_pages = int(demisto.getArg("max_matches") or 10) / 10  # TODO Triage's number of items per page
+        max_matches = int(demisto.getArg("max_matches")) or 10
     except ValueError:
         return_error("max_matches must be an integer if specified")
         return
+
+    max_pages = math.ceil(max_matches / 10)  # Triage's number of items per page, rounded up
 
     reports = TriageInboxReports(
         triage_instance,
@@ -563,7 +565,7 @@ def search_inbox_reports_command(triage_instance) -> None:
         return_outputs("No results found.", {}, {})
         return
 
-    reports_dict = [report.to_dict() for report in reports]
+    reports_dict = [report.to_dict() for report in reports][:max_matches]
     ec = {
         "Cofense.Report(val.ID && val.ID == obj.ID)": snake_to_camel_keys(reports_dict)
     }
