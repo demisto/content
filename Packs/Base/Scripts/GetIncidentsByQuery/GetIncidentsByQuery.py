@@ -171,9 +171,9 @@ def main():
         file_name = str(uuid.uuid4())
         output_format = d_args['outputFormat']
         if output_format == 'pickle':
-            data_encoded = pickle.dumps(incidents)
+            data_encoded = pickle.dumps(incidents, protocol=2)
         elif output_format == 'json':
-            data_encoded = json.dumps(incidents)
+            data_encoded = json.dumps(incidents)  # type: ignore
         else:
             raise Exception("Invalid output format: %s" % output_format)
 
