@@ -1204,7 +1204,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id_set: dict) -> Tuple[str, str]:
     """Computes the lowest from version of the modified files, the highest from version and the highest to version of
     the modified files.
-    In case that max_from_version is bigger than max to version - to version will be the the highest default.
+    In case that max_from_version is higher than max to version - to version will be the the highest default.
     Args:
         all_modified_files_paths: All modified files
         id_set: the content of the id.set_json
