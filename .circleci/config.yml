@@ -179,8 +179,11 @@ references:
         demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f > artifacts/download.log
     
         echo "Running format"
-        yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -nv -ud > artifacts/format.log
-
+        { # try
+            yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -nv -ud > artifacts/format.log
+        } || { # catch 
+          
+        }
         echo "Running validate"
         demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > artifacts/validate.log
         if [[ $? -ne 0 ]]
