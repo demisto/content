@@ -56,10 +56,10 @@ class Client(BaseClient):
             query=query
         )
 
-    def fetch_events(self, min_severity: str, events_limit: int) -> List[Dict[str, Any]]:
+    def fetch_events(self, min_severity: int, start_time: str, events_limit: int) -> List[Dict[str, Any]]:
         query = """
-            query ($pagination: Pagination) {
-                events(filter: { pagination: $pagination }) {
+            query ($pagination: Pagination, $fromDate:Date, $severities:[Int]) {
+                events(filter: { pagination: $pagination,fromDate: $fromDate, severities: $severities}) {
                     events {
                         eventId: id
                         description
@@ -85,11 +85,13 @@ class Client(BaseClient):
                 }
             }
         """
-
+        severities = [min_severity]
         variables = {
             "pagination": {
                 "limit": events_limit
-            }
+            },
+            "fromDate": start_time,
+            "severities": severities
         }
 
         res = self.graphql(
@@ -490,7 +492,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
 
     events = client.fetch_events(
         events_limit=events_limit,
-        # start_time=last_fetch,
+        start_time=last_fetch,
         min_severity=min_severity
     )
 
@@ -527,6 +529,7 @@ def fetch_incidents_command(client: Client, first_fetch_time: int, args: Dict[st
         arg_name='events_limit',
         required=False
     )
+    min_severity = int(args.get('min_severity', 2))
 
     if not events_limit or events_limit > MAX_EVENTS_TO_FETCH:
         events_limit = MAX_EVENTS_TO_FETCH
@@ -535,7 +538,7 @@ def fetch_incidents_command(client: Client, first_fetch_time: int, args: Dict[st
                                           last_run={},
                                           first_fetch_time=first_fetch_time,
                                           events_limit=events_limit,
-                                          min_severity='Low'
+                                          min_severity=min_severity
                                           )
 
     readable_output = tableToMarkdown(f'Cognni {len(incidents)} incidents', incidents)
