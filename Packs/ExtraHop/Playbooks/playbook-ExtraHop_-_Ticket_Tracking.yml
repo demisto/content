@@ -1,6 +1,6 @@
-id: ExtraHop - Ticket Tracking
+id: ExtraHop - Ticket Tracking v2
 version: -1
-name: ExtraHop - Ticket Tracking
+name: ExtraHop - Ticket Tracking v2
 description: Deprecated. Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
 starttaskid: "0"
 hidden: true
