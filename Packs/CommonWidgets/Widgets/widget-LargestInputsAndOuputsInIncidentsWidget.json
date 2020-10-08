@@ -2,7 +2,7 @@
  "id": "LargestInputsAndOuputsInIncidentsWidget",
  "version": -1,
  "modified": "2020-08-18T13:31:21.939387+03:00",
- "name": "Largest Inputs And Ouputs In Incidents",
+ "name": "Largest Inputs And Outputs In Incidents",
  "dataType": "scripts",
  "widgetType": "table",
  "query": "GetLargestInputsAndOuputsInIncidents",

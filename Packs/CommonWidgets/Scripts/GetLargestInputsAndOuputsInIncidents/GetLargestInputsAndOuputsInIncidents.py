@@ -19,6 +19,10 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
     inputs = []
     outputs = []
     if inputs_and_outputs:
+        # In case no inputs and outputs are found a getInvPlaybookMetaData will return a string.
+        # in that case we ignore the results and move on.
+        if isinstance(inputs_and_outputs, str):
+            return
         for task in inputs_and_outputs:
             if 'outputs' in task:
                 for output in task.get('outputs'):
