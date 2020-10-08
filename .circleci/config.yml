@@ -171,7 +171,7 @@ references:
     run:
       name: Test this shit
       when: on_success
-      command: |        
+      command: |
         # Get in content
         cd content 
         
@@ -1108,6 +1108,11 @@ jobs:
           shell: /bin/bash
           when: on_success
           command: pip3 install git+https://github.com/demisto/demisto-sdk.git > sdk_install.log
+      - run:
+        name: Unlock HelloWorld integration
+        shell: /bin/bash
+        when: on_success
+        command: python Tests/unlock_integrations.py HelloWorld
       - *test_this_shit
       - *store_artifacts
 
