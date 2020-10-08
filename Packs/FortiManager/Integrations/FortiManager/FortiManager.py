@@ -555,10 +555,13 @@ def install_policy_package_command(client, args):
                                                 'dev_rev_comment': args.get('dev_rev_comment'),
                                                 'adom': get_global_or_adom(client, args).replace('adom/', ''),
                                                 'pkg': args.get('package'),
-                                                'scope': args.get('scope').split(',')
+                                                'scope': [{
+                                                    "name": args.get('name'),
+                                                    "vdom": args.get('vdom')
+                                                }]
                                             })
-    return f"Installed a policy package {args.get('package')} in ADOM: {get_global_or_adom(client, args)} " \
-           f"task: {response}"
+    return f"Installed a policy package {args.get('package')} in ADOM: {get_global_or_adom(client, args)} on " \
+           f"Device {args.get('name')} on VDOM {args.get('vdom')}. task: {response}"
 
 
 ''' MAIN FUNCTION '''

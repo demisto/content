@@ -1762,7 +1762,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: disable
       description: Enable/disable negated destination address match.
       isArray: false
       name: dstaddr_negate
@@ -1792,7 +1791,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: disable
       description: Enable/disable negated source address match.
       isArray: false
       name: srcaddr_negate
@@ -1818,12 +1816,6 @@ script:
       isArray: false
       name: name
       required: true
-      secret: false
-    - default: false
-      description: The policy ID to create.
-      isArray: false
-      name: policyid
-      required: false
       secret: false
     deprecated: false
     description: Create a firewall policy.
@@ -3091,13 +3083,13 @@ script:
       description: The comment for the new ADOM revision.
       isArray: false
       name: adom_rev_comment
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name for the new ADOM revision.
       isArray: false
       name: adom_rev_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: The ADOM in which to install the policy package. Leave empty to
@@ -3107,13 +3099,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Indicates the date and time of the schedule. Enter in the following
-        format: YYYY-MM-DD hh:mm'
-      isArray: false
-      name: datetime
-      required: true
-      secret: false
-    - default: false
       description: The comment for the device configuration revision that will be
         generated during install.
       isArray: false
@@ -3121,17 +3106,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: Target device or device groups. If no target is provided in the
-        request, the installation will be scheduled for all package installation targets.
-      isArray: false
-      name: scope
-      required: false
-      secret: false
-    - default: false
       description: The policy package to install.
       isArray: false
       name: package
       required: true
+      secret: false
+    - default: false
+      description: The device name on which to install the package.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: vdom on which to install the package.
+      isArray: false
+      name: vdom
+      required: false
       secret: false
     deprecated: false
     description: Schedule a policy package installation.
