@@ -1,3 +1,3 @@
-## Hello World
-- This text is markdown
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
+## Concentric AI
+- This is a Plugin for ConcentricAI 
+- To configure the following Plugin , you need client_id, client_secret, domain and the url connectivity.
