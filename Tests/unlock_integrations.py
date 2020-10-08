@@ -2,7 +2,7 @@ import sys
 
 import demisto_client
 
-from .tools import update_server_configuration
+from Tests.tools import update_server_configuration
 
 if __name__ == "__main__":
     try:
