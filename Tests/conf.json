@@ -2788,11 +2788,13 @@
         {
             "integrations": "Code42",
             "playbookID": "Code42-Test",
+            "fromversion": "5.0.0",
             "timeout": 600
         },
         {
             "playbookID": "Code42 File Search Test",
-            "integrations": "Code42"
+            "integrations": "Code42",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "FetchIndicatorsFromFile-test",
@@ -3154,11 +3156,16 @@
         "Logzio - Test": "Issue 26729",
         "pyEWS_Test": "Issue 28339",
         "DuoAdmin API test playbook": "Issue 24937",
-        "GmailTest": "Issue 27057"
+        "GmailTest": "Issue 27057",
+        "playbook-SafeBreach-Test": "Issue 21205",
+        "IllusiveNetworks-Test": "Issue 29087",
+        "Code42-Test": "Issue 29093",
+        "SMB test": "Issue 26454"
     },
     "skipped_integrations": {
 
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Recorded Future v2": "Issue 29090",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
         "Infoblox": "Issue 25651",
@@ -3243,7 +3250,6 @@
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
         "PaloAltoNetworks_PrismaCloudCompute": "Issue 27112",
-        "Code42": "Instance not set up yet",
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "Ivanti Heat": "Issue 26259",
@@ -3266,9 +3272,6 @@
 
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
-        "SafeBreach v2": "it is a partner integration, no instance",
-        "IllusiveNetworks": "supported by partner",
-        "Recorded Future v2": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
 
