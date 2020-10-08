@@ -272,48 +272,30 @@ class TestChangedTestPlaybook:
     def test_get_from_and_to_version_from_modified_files(self):
         """
         Given:
-            - Integration with fromversion 6.0.
-            - Playbook with toversion 5.9.9
-            - test playbook with fromversion 5.0.
-            - two_before_ga is '5.0.0'
-            - one_before_ga is '5.1.0'
-            - ga is '5.5.0'
+            - Integration path with fromversion 6.0.
+            - Playbook path with toversion 5.9.9
+            - test playbook path with fromversion 5.0.
         When:
             - running get_test_list_and_content_packs_to_install
-            - running create_filter_envs_file
         Then:
-            - Create test list with fake_test_playbook
             - Check that the toversion in the default (99.99.99)
-            - Check minimum version is 5.5.0
+            - Check minimum version is 5.0.0
 
         """
-        two_before_ga = '5.0.0'
-        one_before_ga = '5.5.0'
-        ga = '6.0.0'
         test_path_integration = 'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/' \
                                 'test_fake_integration.yml'
         test_playbook_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/' \
                              'playbook-fake_test_playbook_to_version.yml'
         playbook_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_playbooks/test_fake_playbook.yml'
-        modified_files_list, modified_tests_list, changed_common, _, sample_tests, modified_metadata_list, _, _ = \
-            create_get_modified_files_ret(modified_files_list=[test_path_integration, playbook_path],
-                                          modified_tests_list=[test_playbook_path])
 
-        all_modified_files_paths = set(modified_files_list + modified_tests_list + changed_common + sample_tests)
+        modified_files_list = [test_path_integration, playbook_path]
+        modified_tests_list = [test_playbook_path]
+        all_modified_files_paths = set(modified_files_list + modified_tests_list)
         from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths,
                                                                               MOCK_ID_SET)
 
-        create_filter_envs_file(from_version, to_version, two_before_ga, one_before_ga, ga)
-        with open("./Tests/filter_envs.json", "r") as filter_envs_file:
-            filter_envs = json.load(filter_envs_file)
-
         assert '5.0.0' in from_version
         assert '99.99.99' in to_version
-        assert filter_envs.get('Demisto PreGA') is True
-        assert filter_envs.get('Demisto Marketplace') is True
-        assert filter_envs.get('Demisto 6.0') is True
-        assert filter_envs.get('Demisto one before GA') is True
-        assert filter_envs.get('Demisto GA') is True
 
     def test_changed_unrunnable_test__playbook_fromvesion_2(self, mocker):
         # future_playbook_1 is fromversion 99.99.99 in conf file
