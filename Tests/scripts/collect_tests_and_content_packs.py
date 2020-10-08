@@ -18,7 +18,14 @@ from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
-coloredlogs.install(level=logging.DEBUG, fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s')
+coloredlogs.install(level=logging.DEBUG,
+                    fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s',
+                    level_styles={
+                        'critical': {'bold': True, 'color': 'red'},
+                        'debug': {'color': 'cyan'},
+                        'error': {'color': 'red'},
+                        'info': {},
+                        'warning': {'color': 'yellow'}})
 
 
 class TestConf(object):
@@ -1195,7 +1202,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
 
 def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id_set: dict) -> Tuple[str, str]:
-    """Computes the lowest from version of the modified files and the highest to version of the modified files
+    """Computes the lowest from version of the modified files, the highest from version and the highest to version of
+    the modified files.
+    In case that max_from_version is higher than max to version - to version will be the the highest default.
     Args:
         all_modified_files_paths: All modified files
         id_set: the content of the id.set_json
@@ -1215,7 +1224,7 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
                     to_version = artifact_details.get('toversion')
                     if from_version:
                         min_from_version = min(min_from_version, LooseVersion(from_version))
-                        max_from_version = max(min_from_version, LooseVersion(from_version))
+                        max_from_version = max(max_from_version, LooseVersion(from_version))
                     if to_version:
                         max_to_version = max(max_to_version, LooseVersion(to_version))
     if max_to_version.vstring == '0.0.0' or max_to_version < max_from_version:
@@ -1241,7 +1250,6 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
     before GA is two before GA (4.5)
     """
     envs_to_test = {
-        'Server Master': True,
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
         'Demisto one before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
