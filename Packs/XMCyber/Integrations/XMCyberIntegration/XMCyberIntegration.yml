@@ -2257,6 +2257,20 @@ script:
     - contextPath: XMCyber.AttackPath.pathComplexity
       description: ''
       type: Number
+
+  - name: xmcyber-risk-score-trend
+    description: Get current and previous global risk score
+    outputs:
+      - contextPath: XMCyber.RiskScore.grade
+        description: 'Current global risk score grade'
+        type: String
+      - contextPath: XMCyber.RiskScore.score
+        description: 'Current global risk score number'
+        type: Number
+      - contextPath: XMCyber.RiskScore.trend
+        description: 'Trend from previous week'
+        type: Number
+
   dockerimage: demisto/python3:3.8.5.11789
   isfetch: false
   longRunning: false

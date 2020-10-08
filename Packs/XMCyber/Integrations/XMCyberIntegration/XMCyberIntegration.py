@@ -1,6 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+# import demistomock as demisto
+# from CommonServerPython import *
+# from CommonServerUserPython import *
 
 import json
 import urllib3
@@ -24,6 +24,13 @@ CRITICAL_ASSET_LABEL = 'Demisto Critical Asset'
 
 class Client(BaseClient):
     """Client class to interact with XM Cyber API"""
+
+    def _get(self, url_suffix, params):
+        return self._http_request(
+                    method='GET',
+                    url_suffix=url_suffix,
+                    params=params
+                )
 
     def get_version(self) -> Dict[str, Any]:
         """Get version
@@ -159,7 +166,57 @@ class Client(BaseClient):
             page += 1
         return entities
 
+    def get_risk_score(self, time_id, resolution):
+        params = {
+            'timeId': time_id,
+            'resolution': resolution
+        }
+        return self._get('/systemReport/riskScoreV2', params)
+
+
+class XM:
+    client = None
+
+    def __init__(self, client: Client):
+        self.client = client
+
+    def risk_score(self, time_id, resolution):
+        risk_score_response = self.client.get_risk_score(time_id, resolution)
+
+        risk_score_data = risk_score_response["data"]
+        risk_score_stats = risk_score_data["stats"]
+
+        current_grade = risk_score_stats["grade"]
+        current_score = risk_score_stats["score"]
+        trend = risk_score_stats["trend"]
+
+        return {
+            "trend": trend,
+            "current_grade": current_grade,
+            "current_score": current_score
+        }
+
 ''' HELPER FUNCTIONS '''
+
+def create_client():
+    api_key = demisto.params().get('apikey')
+
+    base_url = urljoin(demisto.params()['url'], '/api')
+
+    verify_certificate = not demisto.params().get('insecure', False)
+
+    proxy = demisto.params().get('proxy', False)
+
+    headers = {
+        'X-Api-Key': api_key,
+        'Content-Type': 'application/json; charset=utf-8'
+    }
+
+    return Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            headers=headers,
+            proxy=proxy)
 
 
 def escape_ip(ip):
@@ -542,7 +599,19 @@ def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=readable_output
     )
 
-def fetch_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+def risk_score_trend_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    timeId = 'timeAgo_days_7'
+    resolution = 1
+    risk_score = xm.risk_score(timeId, resolution)
+
+    return CommandResults(
+        outputs_prefix='XMCyber.RiskScore',
+        outputs_key_field='score',
+        outputs=risk_score
+    )
+
+def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     demisto.info('Running fetch incidents')
     demisto.debug('@@@@@@@@@@@@@@@@@@@@')
     outputs = [ { 'entity_id': 'markTest' } ]
@@ -551,6 +620,9 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='entity_id',
         outputs=outputs
     )
+
+def test_module_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    return test_module(xm.client)
 
 ''' MAIN FUNCTION '''
 
@@ -562,65 +634,59 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get('apikey')
-
-    base_url = urljoin(demisto.params()['url'], '/api')
-
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    proxy = demisto.params().get('proxy', False)
-
     # INTEGRATION DEVELOPER TIP
     # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
     # etc. to print information in the XSOAR server log. You can set the log
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
+
+    command = demisto.command()
+    args = demisto.args()
     demisto.info(f'Command running: {demisto.command()}')
     try:
-        headers = {
-            'X-Api-Key': api_key,
-            'Content-Type': 'application/json; charset=utf-8'
-        }
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
-
-        demisto.debug("Command: " + demisto.command())
+        client = create_client()
+        xm = XM(client)
         
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+        # commands dict
+        # key - command key
+        # value - command execution function that get two params:
+        #         1) XM object
+        #         2) args dict
+        #         return value - CommandResults
+        commandsDict = {
+            "fetch-incidents": fetch_incidents_command,
+            "xmcyber-risk-score-trend": risk_score_trend_command,
+            "test-module": test_module_command,  # This is the call made when pressing the integration Test button.
+        }
 
-        elif demisto.command() == 'xmcyber-attack-complexity-to-ip':
-            return_results(attack_complexity_to_ip_command(client, demisto.args()))
+        if command in commandsDict:
+            return_results(commandsDict[command](xm, args))
+        else:
+            if demisto.command() == 'xmcyber-attack-complexity-to-ip':
+                return_results(attack_complexity_to_ip_command(client, demisto.args()))
 
-        elif demisto.command() == 'xmcyber-asset-attack-path-list':
-            return_results(asset_attack_path_list_command(client, demisto.args()))
+            elif demisto.command() == 'xmcyber-asset-attack-path-list':
+                return_results(asset_attack_path_list_command(client, demisto.args()))
 
-        elif demisto.command() == 'xmcyber-techniques-list':
-            return_results(techniques_list_command(client, demisto.args()))
+            elif demisto.command() == 'xmcyber-techniques-list':
+                return_results(techniques_list_command(client, demisto.args()))
 
-        elif demisto.command() == 'xmcyber-breachpoint-update':
-            return_results(breachpoint_update_command(client, demisto.args()))
+            elif demisto.command() == 'xmcyber-breachpoint-update':
+                return_results(breachpoint_update_command(client, demisto.args()))
 
-        elif demisto.command() == 'xmcyber-critical-asset-add':
-            return_results(critical_asset_add_command(client, demisto.args()))
+            elif demisto.command() == 'xmcyber-critical-asset-add':
+                return_results(critical_asset_add_command(client, demisto.args()))
 
-        elif demisto.command() == 'xmcyber-attack-paths-to-entity':
-            return_results(attack_paths_to_entity_command(client, demisto.args()))
+            elif demisto.command() == 'xmcyber-attack-paths-to-entity':
+                return_results(attack_paths_to_entity_command(client, demisto.args()))
 
-        elif demisto.command() == 'xmcyber-attack-paths-from-entity':
-            return_results(attack_paths_from_entity_command(client, demisto.args()))
+            elif demisto.command() == 'xmcyber-attack-paths-from-entity':
+                return_results(attack_paths_from_entity_command(client, demisto.args()))
 
-        elif demisto.command() == 'xmcyber-entity-get':
-            return_results(entity_get_command(client, demisto.args()))
-
-        elif demisto.command() == 'fetch-incidents':
-            return results(fetch_incidents(client, demisto.args()))
-
+            elif demisto.command() == 'xmcyber-entity-get':
+                return_results(entity_get_command(client, demisto.args()))
+            else:
+                raise Exception("Unsupported command: " + command)
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
