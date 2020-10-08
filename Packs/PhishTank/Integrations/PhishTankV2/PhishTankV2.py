@@ -52,17 +52,24 @@ class Client(BaseClient):
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
     """
-    try:
-        data = reload(client)
-        if len(data.keys()) == 0:
-            raise DemistoException("Error - could not fetch PhishTankV2 database, "
-                                   "API returned an empty response")
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
+    data = reload(client)
+    if len(data.keys()) == 0:
+        return_error("Error - could not fetch PhishTankV2 database, "
+                     "API returned an empty response")
     return 'ok'
+
+
+def context_not_loaded_yet(context: dict):
+    is_context_not_loaded = not context
+    if is_context_not_loaded:
+        return True
+    return len(context["list"]) == 0
+
+
+def is_context_outdated(client: Client, context: dict):
+    current_time = datetime.now()
+    fetch_interval_seconds = timedelta(hours=float(client.fetch_interval_hours))
+    return context["timestamp"] < date_to_timestamp(current_time - fetch_interval_seconds)
 
 
 def is_reload_needed(client: Client, context: dict) -> bool:
@@ -77,13 +84,7 @@ def is_reload_needed(client: Client, context: dict) -> bool:
     Returns: True if DB can be loaded now. i.e DB was not loaded in the last fetch_interval hours.
             False otherwise.
     """
-    if not context or len(context["list"]) == 0 or not context["timestamp"]:
-        # in case context was not loaded yet, the context dictionary will be empty
-        # and therefore loaded is needed
-        return True
-    current_time = datetime.now()
-    fetch_interval_seconds = timedelta(hours=float(client.fetch_interval_hours))
-    return context["timestamp"] < date_to_timestamp(current_time - fetch_interval_seconds)
+    return context_not_loaded_yet(context) or is_context_outdated(client, context)
 
 
 def get_url_data(client: Client, url: str):
