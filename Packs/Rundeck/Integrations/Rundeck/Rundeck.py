@@ -253,6 +253,20 @@ class Client(BaseClient):
             params=request_params,
         )
 
+    def job_execution_output(self, execution_id):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/execution/{execution_id}/output/state',
+            params=self.params,
+        )
+
+    def job_execution_about(self, execution_id):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/execution/{execution_id}/abort',
+            params=self.params,
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -490,17 +504,71 @@ def job_execution_query_command(client: Client, args: dict):
     query_entries: list = createContext(
         result, keyTransform=underscoreToCamelCase
     )
-    headers = [key.replace("_", " ") for key in [*result[0].keys()]]
+    if isinstance(result, list):
+        headers = [key.replace("_", " ") for key in [*result[0].keys()]]
+    elif isinstance(result, dict):
+        headers = [key.replace("_", " ") for key in [*result.keys()]]
 
-    readable_output = tableToMarkdown('Webhooks List:', result, headers=headers, headerTransform=pascalToSpace)
+    readable_output = tableToMarkdown('Job Execution Query:', result, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Rundeck.Webhooks',
+        outputs_prefix='Rundeck.Executions',
         outputs=query_entries,
         outputs_key_field='id'
     )
 
 
+def job_execution_output_command(client: Client, args: dict):
+    """
+    This function gets metadata regarding workflow state
+    :param client: demisto client object
+    :param args: command's arguments
+    :return: CommandRusult object
+    """
+    execution_id: Optional[int] = convert_str_to_int(args.get('execution_id'), 'execution_id')
+    result = client.job_execution_output(execution_id)
+
+    query_entries: list = createContext(
+        result, keyTransform=underscoreToCamelCase
+    )
+    if isinstance(result, dict):
+        headers = [key.replace("_", " ") for key in [*result.keys()]]
+    elif isinstance(result, list):
+        headers = [key.replace("_", " ") for key in [*result[0].keys()]]
+
+    readable_output = tableToMarkdown('Job Execution Output:', result, headers=headers, headerTransform=pascalToSpace)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Rundeck.Executions',
+        outputs=query_entries,
+        outputs_key_field='id'
+    )
+
+
+def job_execution_abort_command(client: Client, args: dict):
+    """
+    This function abort an active execution
+    :param client: demisto client object
+    :param args: command's arguments
+    :return: CommandRusult object
+    """
+    execution_id: Optional[int] = convert_str_to_int(args.get('execution_id'), 'execution_id')
+    result = client.job_execution_about(execution_id)
+    if not isinstance(result, dict):
+        raise DemistoException(f'Got unexpected response: {result}')
+
+    query_entries: list = createContext(
+        result, keyTransform=underscoreToCamelCase
+    )
+
+    headers = [key.replace("_", " ") for key in [*result.keys()]]
+    readable_output = tableToMarkdown('Job Execution Abort:', result, headers=headers, headerTransform=pascalToSpace)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Rundeck.Aborted',
+        outputs=query_entries,
+        outputs_key_field='id'
+    )
 def test_module(client: Client) -> str:
     # INTEGRATION DEVELOPER TIP
     # Client class should raise the exceptions, but if the test fails
@@ -588,6 +656,15 @@ def main() -> None:
             return_results(result)
         elif demisto.command() == 'rundeck-job-executions-query':
             result = job_execution_query_command(client, args)
+            return_results(result)
+        elif demisto.command() == 'rundeck-job-execution-output':
+            result = job_execution_output_command(client, args)
+            return_results(result)
+        elif demisto.command() == 'rundeck-job-execution-abort':
+            result = job_execution_abort_command(client, args)
+            return_results(result)
+        elif demisto.command() == 'rundeck-adhoc-command-run':
+            result = job_execution_abort_command(client, args)
             return_results(result)
     # Log exceptions and return errors
     except Exception as e:
