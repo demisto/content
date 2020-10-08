@@ -1,5 +1,5 @@
 PhishTank is a free community site where anyone can submit, verify, track and share phishing data.
-This integration was integrated and tested with version xx of PhishTankV2
+This integration was integrated and tested with version 1.0.1 of PhishTank
 ## Configure PhishTankV2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

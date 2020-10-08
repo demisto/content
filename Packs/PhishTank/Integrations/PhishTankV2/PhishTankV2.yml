@@ -1,8 +1,14 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: PhishTank v2
+  id: PhishTank V2
   version: -1
 configuration:
+- defaultvalue: '1'
+  display: Database refresh interval (hours)
+  hidden: false
+  name: fetchIntervalHours
+  required: false
+  type: 0
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -11,16 +17,10 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: '1'
-  display: Database refresh interval (hours)
-  hidden: false
-  name: fetchIntervalHours
-  required: false
-  type: 0
 description: PhishTank is a free community site where anyone can submit, verify, track
   and share phishing data.
 display: PhishTank v2
-name: PhishTank v2
+name: PhishTank V2
 script:
   commands:
   - arguments:
@@ -65,7 +65,7 @@ script:
     description: Show PhishTank database status
     execution: false
     name: phishtank-status
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false
   longRunning: false
