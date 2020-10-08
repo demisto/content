@@ -1,15 +1,15 @@
-import os
 import re
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
-from slack import WebClient
+from typing import Any, Dict, List, Tuple
 
 from blessings import Terminal
-from github.MainClass import Github
 from github.Issue import Issue
+from github.MainClass import Github
 from github.PullRequest import PullRequest
 from github.TimelineEvent import TimelineEvent
+from slack import WebClient
 
+from utils import get_env_var, timestamped_print
 
 BOT_NAME = 'content-bot'
 STALE_TIME = 5  # 5 days
@@ -60,42 +60,8 @@ SUGGEST_CLOSE_MSG = 'These reminders don\'t seem to be working and the issue is 
                     'consider whether this PR is still relevant or should be closed.'
 STALE_MSG = 'This PR is starting to get a little stale.'
 
-# override print so we have a timestamp with each print
-org_print = print
-
-
-def timestamped_print(*args, **kwargs):
-    org_print(datetime.now().strftime('%H:%M:%S.%f'), *args, **kwargs)
-
 
 print = timestamped_print
-
-
-class EnvVariableError(Exception):
-    def __init__(self, env_var_name: str):
-        super().__init__(f'{env_var_name} env variable not set or empty')
-
-
-def get_env_var(env_var_name: str, default_val: Optional[str] = None) -> str:
-    '''Thin wrapper around 'os.getenv'
-
-    Raises:
-        EnvVariableError: If the environment variable is not set or empty and no default value was passed.
-
-    Args:
-        env_var_name (str): The environment variable to fetch
-        default_val (Optional[str], optional): The value to return should the environment variable be unset
-            or empty. Defaults to None.
-
-    Returns:
-        str: The value of the environment variable
-    '''
-    env_var_val = os.getenv(env_var_name)
-    if not env_var_val:
-        if default_val is not None:
-            return default_val
-        raise EnvVariableError(env_var_name)
-    return env_var_val
 
 
 def determine_slack_msg(last_event: TimelineEvent) -> str:

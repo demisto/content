@@ -1,56 +1,21 @@
 #!/usr/bin/env python3
 
 import json
-import os
-from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 import urllib3
 from blessings import Terminal
 from github import Github
 from github.Repository import Repository
 
+from utils import get_env_var, timestamped_print
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-# override print so we have a timestamp with each print
-org_print = print
+print = timestamped_print
 
 REVIEWERS = ['guyfreund', 'reutshal', 'barchen1']
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
               'wizard @{selected_reviewer} will very shortly look over your proposed changes. '
-
-
-def timestamped_print(*args, **kwargs):
-    org_print(datetime.now().strftime("%H:%M:%S.%f"), *args, **kwargs)
-
-
-print = timestamped_print
-
-
-class EnvVariableError(Exception):
-    def __init__(self, env_var_name: str):
-        super().__init__(f'{env_var_name} env variable not set or empty')
-
-
-def get_env_var(env_var_name: str, default_val: Optional[str] = None) -> str:
-    """Thin wrapper around 'os.getenv'
-
-    Raises:
-        EnvVariableError: If the environment variable is not set or empty and no default value was passed.
-
-    Args:
-        env_var_name (str): The environment variable to fetch
-        default_val (Optional[str], optional): The value to return should the environment variable be unset
-            or empty. Defaults to None.
-
-    Returns:
-        str: The value of the environment variable
-    """
-    env_var_val = os.getenv(env_var_name)
-    if not env_var_val:
-        if default_val is not None:
-            return default_val
-        raise EnvVariableError(env_var_name)
-    return env_var_val
 
 
 def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
