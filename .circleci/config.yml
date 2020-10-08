@@ -1097,7 +1097,7 @@ jobs:
           name: Unlock HelloWorld integration
           shell: /bin/bash
           when: on_success
-          command: python Tests/unlock_integrations.py HelloWorld
+          command: python3 Tests/unlock_integrations.py HelloWorld
       - *test_this_shit
       - *store_artifacts
 
