@@ -31,13 +31,21 @@ def parse_investigations_to_table(investigations, is_table_result):
         full_size = investigations[investigation].get('leafSize').split(' ')
         db_name = investigations[investigation].get('Date')
         size = float(full_size[0])
-        if db_name.isdigit() and size >= 1.0 and full_size[1] == 'MB':
-            inv_id = investigation.split('-')[1]
+        if size >= 1.0 and full_size[1] == 'MB':
+            if db_name.isdigit():
+                inv_id = investigation.split('-')[1]
+                inv_link = f"[{inv_id}]({os.path.join(server_url, '#', 'incident', inv_id)})"
+                date = db_name[:2] + "-" + db_name[2:]
+            else:
+                inv_id = "-".join(investigation.split('-')[1:])
+                inv_link = f"[playground]({os.path.join(server_url, '#', 'WarRoom', 'playground')})"
+                date = ""
+            inv_link = inv_id if is_table_result else inv_link
             data.append({
-                "IncidentID": inv_id if is_table_result else f"[{inv_id}]({os.path.join(server_url, '#', 'incident', inv_id)})",
+                "IncidentID": inv_link,
                 "Size(MB)": int(size) if size == int(size) else size,
                 "AmountOfEntries": investigations[investigation].get('keyN'),
-                "Date": db_name[:2] + "-" + db_name[2:]
+                "Date": date
             })
 
     widget_table['data'] = sorted(data, key=itemgetter('Size(MB)'), reverse=True)  # type: ignore
