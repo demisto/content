@@ -1081,10 +1081,13 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
                                                      placeholders_map)
         ints_to_configure_params_set = set_integration_params(integrations_to_configure, build.secret_conf['integrations'],
                                                               instance_names_conf, placeholders_map)
-        print('integrations_to_configure: ' + integrations_to_configure)
+
+        print('########################')
+        print(integrations_to_configure)
         print(type(integrations_to_configure))
         print(ints_to_configure_params_set)
         print(type(ints_to_configure_params_set))
+
         if not new_ints_params_set:
             prints_manager.add_print_job(
                 'failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)), print_error, 0)
