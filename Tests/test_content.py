@@ -49,6 +49,7 @@ CIRCLE_BUILD_NUM = os.environ.get('CIRCLE_BUILD_NUM')
 WORKFLOW_ID = os.environ.get('CIRCLE_WORKFLOW_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
 SLACK_MEM_CHANNEL_ID = 'CM55V7J8K'
+PROXY_LOG_FILE_NAME = 'proxy_metrics.csv'
 
 
 def options_handler():
@@ -366,9 +367,12 @@ def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy
                              server_url, build_name, prints_manager, thread_index=thread_index, is_mock_run=True)
     proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
     if succeed:
+        proxy.successful_rerecord_count += 1
         proxy.clean_mock_file(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         proxy.move_mock_file_to_repo(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
-
+    else:
+        proxy.failed_rerecord_count += 1
+        proxy.failed_rerecord_tests.append(playbook_id)
     proxy.set_repo_folder()
     return succeed
 
@@ -388,6 +392,7 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
         # use results
         proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
         if status == PB_Status.COMPLETED:
+            proxy.successful_tests_count += 1
             succeed_message = 'PASS: {} succeed'.format(test_message)
             prints_manager.add_print_job(succeed_message, print_color, thread_index, LOG_COLORS.GREEN)
             succeed_playbooks.append(playbook_id)
@@ -410,7 +415,7 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
             end_mock_message = f'------ Test {test_message} end ------\n'
             prints_manager.add_print_job(end_mock_message, print, thread_index, include_timestamp=True)
             return
-
+        proxy.failed_tests_count += 1
         mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
         prints_manager.add_print_job(mock_failed_message, print, thread_index)
         rerecord = True
@@ -921,6 +926,36 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
             comment = 'The following integrations are skipped and critical for the test:\n {}'. \
                 format('\n- '.join(playbook_skipped_integration))
             add_pr_comment(comment)
+        # Sending proxy metrics to GCP
+        try:
+            storage_client = storage.Client()
+            now = datetime.datetime.now().replace(microsecond=0).isoformat()
+            # each log line will be comprised of the following metrics:
+            # - Date
+            # - Count of successful tests
+            # - Count of failed tests
+            # - Count of successful rerecords
+            # - Count of failed rerecords
+            # - IDs of the playbooks that were rerecorded successfully
+            # - Ids of the playbooks that have failed rerecording
+            new_proxy_line = f'{now},' \
+                             f'{proxy.successful_tests_count},' \
+                             f'{proxy.failed_tests_count},' \
+                             f'{proxy.successful_rerecord_count},' \
+                             f'{proxy.failed_rerecord_count},' \
+                             f'{";".join(proxy.rerecorded_tests)},' \
+                             f'{";".join(proxy.failed_rerecord_tests)}\n'
+            bucket = storage_client.bucket(BUCKET_NAME)
+            # Google storage objects are immutable and there is no way to append to them.
+            # The workaround is to create a new temp file and then compose the log file with the new created file
+            # see here for more info https://cloud.google.com/storage/docs/json_api/v1/objects/compose
+            new_file_blob = bucket.blob(f'{LOCKS_PATH}/{WORKFLOW_ID}.txt')
+            new_file_blob.upload_from_string(new_proxy_line)
+            current_file_blob = bucket.blob(f'{LOCKS_PATH}/{PROXY_LOG_FILE_NAME}')
+            current_file_blob.compose([current_file_blob, new_file_blob])
+            new_file_blob.delete()
+        except Exception:
+            prints_manager.add_print_job("Failed to save proxy metrics", print, thread_index)
 
 
 def update_round_set_and_sleep_if_round_completed(executed_in_current_round: set,

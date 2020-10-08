@@ -1,6 +1,7 @@
+from GetIncidentsByQuery import build_incidents_query, get_incidents, parse_relative_time, main, \
+    preprocess_incidents_fields_list, PYTHON_MAGIC
+
 from CommonServerPython import *
-from GetIncidentsByQuery import build_incidents_query, get_incidents, parse_relative_time, main,\
-    preprocess_incidents_fields_list
 
 incident1 = {
     'id': 1,
@@ -19,6 +20,10 @@ incident1 = {
 incident2 = dict(incident1)
 incident2['id'] = 2
 
+incident_with_magic = dict(incident1)
+incident_with_magic['id'] = 3
+incident_with_magic['name'] = PYTHON_MAGIC
+
 
 def get_args():
     args = {}
@@ -28,7 +33,8 @@ def get_args():
     args['toDate'] = '3 days ago'
     args['limit'] = '10'
     args['includeContext'] = 'false'
-    args['outputFormat'] = 'pickle'
+    args['outputFormat'] = 'json'
+    args['pageSize'] = '10'
     return args
 
 
@@ -56,10 +62,10 @@ def test_get_incidents(mocker):
         return [{'Type': entryTypes['note'], 'Contents': {'data': []}}]
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=validate_args)
-    get_incidents(query, "created", size, "3 days ago")
-    get_incidents(query, "created", size, "3 months ago")
-    get_incidents(query, "created", size, "3 weeks ago")
-    get_incidents(query, "created", size, "2020-02-16T17:45:53.179489")
+    get_incidents(query, "created", size, "3 days ago", None, False)
+    get_incidents(query, "created", size, "3 months ago", None, False)
+    get_incidents(query, "created", size, "3 weeks ago", None, False)
+    get_incidents(query, "created", size, "2020-02-16T17:45:53.179489", None, False)
 
     def validate_args_without_from(command, args):
         assert args.get('from') is None
@@ -67,7 +73,7 @@ def test_get_incidents(mocker):
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=validate_args_without_from)
 
-    get_incidents(query, "modified", size, "3 weeks ago")
+    get_incidents(query, "modified", size, "3 weeks ago", None, False)
 
 
 def test_parse_relative_time():
@@ -93,11 +99,34 @@ def test_parse_relative_time():
     assert abs((t2 - t1)).total_seconds() < threshold
 
 
+GET_INCIDENTS_COUNTER = 0
+
+
+def execute_command_get_incidents(command, args):
+    global GET_INCIDENTS_COUNTER
+    if GET_INCIDENTS_COUNTER % 2 == 0:
+        res = [{'Type': entryTypes['note'], 'Contents': {'data': [incident1, incident2]}}]
+    else:
+        res = [{'Type': entryTypes['note'], 'Contents': {'data': None}}]
+    GET_INCIDENTS_COUNTER += 1
+    return res
+
+
+def execute_command_get_incidents_with_magic(command, args):
+    global GET_INCIDENTS_COUNTER
+    if GET_INCIDENTS_COUNTER % 2 == 0:
+        res = [{'Type': entryTypes['note'], 'Contents': {'data': [incident1, incident_with_magic]}}]
+    else:
+        res = [{'Type': entryTypes['note'], 'Contents': {'data': None}}]
+    GET_INCIDENTS_COUNTER += 1
+    return res
+
+
 def test_main(mocker):
-    args = get_args()
+    args = dict(get_args())
     mocker.patch.object(demisto, 'args', return_value=args)
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{'Type': entryTypes['note'],
-                                                                  'Contents': {'data': [incident1, incident2]}}])
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command_get_incidents)
+
     entry = main()
     assert "Fetched 2 incidents successfully" in entry['HumanReadable']
     assert 'GetIncidentsByQuery' in entry['EntryContext']
@@ -112,10 +141,20 @@ def test_main(mocker):
     args['populateFields'] = 'testField,status'
     args['NonEmptyFields'] = 'severity'
     entry = main()
-    assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity'])
+    assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity', 'id', 'context'])
     args.pop('fromDate')
     entry = main()
-    assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity'])
+    assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity', 'id', 'context'])
+
+
+def test_skip_python_magic(mocker):
+    args = dict(get_args())
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command_get_incidents_with_magic)
+
+    entry = main()
+    assert entry['Contents'][0]['id'] == 1
+    assert len(entry['Contents']) == 1
 
 
 def test_preprocess_incidents_fields_list():
