@@ -725,12 +725,10 @@ def load_env_results_json():
         return json.load(json_file)
 
 
-def get_server_numeric_version(ami_env, is_local_run=False, env_json=None):
+def get_server_numeric_version(ami_env, is_local_run=False):
     """
     Gets the current server version
     Arguments:
-        env_json: (list)
-            Environment details.
         ami_env: (str)
             AMI version name.
         is_local_run: (bool)
@@ -744,6 +742,7 @@ def get_server_numeric_version(ami_env, is_local_run=False, env_json=None):
         print_color(f'Local run, assuming server version is {default_version}', LOG_COLORS.GREEN)
         return default_version
 
+    env_json = load_env_results_json()
     if not env_json:
         print_warning(f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
         return default_version
@@ -770,9 +769,10 @@ def get_server_numeric_version(ami_env, is_local_run=False, env_json=None):
     return server_numeric_version
 
 
-def get_instances_ips_and_names(tests_settings, env_json):
+def get_instances_ips_and_names(tests_settings):
     if tests_settings.server:
         return [tests_settings.server]
+    env_json = load_env_results_json()
     instances_ips = [(env.get('Role'), env.get('InstanceDNS')) for env in env_json]
     return instances_ips
 
@@ -1005,10 +1005,9 @@ def manage_tests(tests_settings):
         tests_settings (TestsSettings): An object containing all the relevant data regarding how the tests should be ran
 
     """
-    env_json = load_env_results_json()
     tests_settings.serverNumericVersion = get_server_numeric_version(tests_settings.serverVersion,
-                                                                     tests_settings.is_local_run, env_json)
-    instances_ips = get_instances_ips_and_names(tests_settings, env_json)
+                                                                     tests_settings.is_local_run)
+    instances_ips = get_instances_ips_and_names(tests_settings)
     is_nightly = tests_settings.nightly
     number_of_instances = len(instances_ips)
     prints_manager = ParallelPrintsManager(number_of_instances)
