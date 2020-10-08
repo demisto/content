@@ -11,7 +11,9 @@ configuration:
   name: credentials
   required: false
   type: 9
-- defaultvalue: incident
+- additionalinfo: 'The ticket_type can be: incident, problem, change_request, sc_request,
+    sc_task or sc_req_item.'
+  defaultvalue: incident
   display: Default ticket type for running ticket commands and fetching incidents
   name: ticket_type
   required: false
@@ -62,9 +64,9 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-- additionalinfo: "Choose the direction to mirror the incident: Incoming (from ServiceNow\
-    \ to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to\
-    \ XSOAR and ServiceNow)."
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow
+    to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to
+    XSOAR and ServiceNow).'
   defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
@@ -2339,13 +2341,10 @@ script:
   isfetch: true
   longRunning: false
   longRunningPort: false
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - servicenow_test_v2
+fromversion: 5.0.0

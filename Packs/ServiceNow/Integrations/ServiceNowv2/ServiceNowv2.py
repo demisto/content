@@ -586,18 +586,20 @@ class Client(BaseClient):
         """
         return self.send_request('attachment', 'GET', params={'sysparm_query': f'table_sys_id={ticket_id}'})
 
-    def get_ticket_attachment_entries(self, ticket_id: str) -> list:
+    def get_ticket_attachment_entries(self, ticket_id: str, get_timestamp: bool = False) -> list:
         """Get ticket attachments, including file attachments
         by sending a GET request and using the get_ticket_attachments class function.
 
         Args:
             ticket_id: ticket id
+            get_timestamp: Tuple of file entries and timestamps.
 
         Returns:
             Array of attachments entries.
         """
         entries = []
         links = []
+        file_entries = []
         attachments_res = self.get_ticket_attachments(ticket_id)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
@@ -608,11 +610,17 @@ class Client(BaseClient):
         for link in links:
             file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
                                     proxies=self._proxies)
+
             if file_res is not None:
-                file_ = fileResult(link[1], file_res.content)
-                file_.update({'sys_created_on': link[2]})
-                entries.append(file_)
-        return entries
+                entries.append(fileResult(link[1], file_res.content))
+
+                entry = (fileResult(link[1], file_res.content), link[2])
+                file_entries.append(entry)
+
+        if get_timestamp:
+            return file_entries
+        else:
+            return entries
 
     def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str = None) -> dict:
         """Get a ticket by sending a GET request.
@@ -1929,7 +1937,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
     demisto.debug(f'ticket_last_update is {ticket_last_update}')
 
-    if last_update > ticket_last_update:  # type: ignore
+    if last_update > ticket_last_update:
         demisto.debug('Nothing new in the ticket')
         ticket = {}
 
@@ -1938,11 +1946,11 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
     # get latest comments and files
     entries = []
-    file_entries = client.get_ticket_attachment_entries(ticket_id)
+    file_entries = client.get_ticket_attachment_entries(ticket_id, get_timestamp=True)
     if file_entries:
-        for file_ in file_entries:
+        for file_, create_time in file_entries:
             entry_time = arg_to_timestamp(
-                arg=file_.get('sys_created_on'),
+                arg=create_time,
                 arg_name='sys_created_on',
                 required=False
             )
