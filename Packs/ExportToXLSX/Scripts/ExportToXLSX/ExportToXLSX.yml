@@ -6,24 +6,19 @@ args:
   required: true
   secret: false
 - default: false
-  description: The data to export. accepts a context key of a dictionary or a list
-    of dictionaries for a single sheet file (${data}), comma separated keys for a
-    multi-sheet file (${data1},${data2}).
+  description: 'The data to export. Accepts a context key of a dictionary or a list of dictionaries for a single sheet file (${data}). Separate multiple sheet files using a comma ",". For example, if you are exporting multiple sheet files, the argument would be: ${data1},${data2}.'
   isArray: true
   name: data
   required: true
   secret: false
 - default: false
-  description: The sheet name, comma separated sheet names if multiple sheets are
-    required (sheet1,sheet2).
+  description: The sheet name. Separate multiple sheet names using a comma ",", for example, sheet1,sheet2.
   isArray: true
   name: sheet_name
   required: true
   secret: false
 - default: false
-  description: 'Comma separated list of headers to hold the sheet headers in order.
-    if multiple sheets are being used, a ";" should separate each sheet headers list.
-    For example: "header1,header2;header3,header4.'
+  description: 'A comma-separated list of headers. The order that you pass the headers determines how they display in the exported sheet(s). Separated multiple sheets using a semicolon. For example, if you are exporting two sheets that includes two headers each, the argument would be: "header1,header2;header3,header4".'
   isArray: false
   name: headers
   required: false
@@ -31,7 +26,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'true'
-  description: Bold table headers
+  description: Whether table headers should be bold. If this argument is set to "true", table headers are bold. Default is "true".
   isArray: false
   name: bold
   predefined:
@@ -42,7 +37,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'true'
-  description: Add border to table cells
+  description: Whether borders should be added to table cells. If this argument is set to "true", borders are added to table cells. Default is "true".
   isArray: false
   name: border
   predefined:
@@ -50,12 +45,12 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Export context data to an xlsx file.
+comment: Exports context data to a Microsoft Excel Open XML Spreadsheet (XLSX) file.
 commonfields:
   id: ExportToXLSX
   version: -1
 enabled: true
-name: ExportToXLSX
+name: ExportToXLSX1
 script: '-'
 subtype: python3
 system: false
