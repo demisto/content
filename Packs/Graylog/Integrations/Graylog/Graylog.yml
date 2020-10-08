@@ -4,7 +4,7 @@ commonfields:
 name: Graylog
 display: Graylog
 category: Analytics & SIEM
-description: Integration with Graylog
+description: Integration with Graylog to search for logs and events
 configuration:
 - display: Server URL (e.g. https://serverurl:9000)
   name: url
@@ -21,6 +21,23 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: The query that is used to fetch events as incidents (lucene syntax)
+  name: fetch_query
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
   required: false
 script:
   script: ''
@@ -110,11 +127,13 @@ script:
       predefined:
       - asc
       - desc
-      description: Sorting direction
+      description: Ascending or Descending
     - name: per_page
       description: how many per page (integer)
     - name: timerange
-      description: timerange to use
+      default: true
+      description: Relative timerange to search in seconds
+      defaultValue: "300"
     - name: sort_by
       description: how to sort
     outputs:
@@ -122,7 +141,50 @@ script:
       description: Result of Events Search
       type: String
     description: Events overview and search
+  - name: graylog-search-absolute
+    arguments:
+    - name: query
+      required: true
+      description: Query in lucene syntax
+    - name: from
+      required: true
+      description: Search for messages using an absolute timerange, specified as from/to
+        with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd
+        HH:mm:ss.
+    - name: to
+      required: true
+      description: Search for messages using an absolute timerange, specified as from/to
+        with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd
+        HH:mm:ss.
+    - name: limit
+      default: true
+      description: Maximum number of messages to return.
+      defaultValue: "20"
+    - name: offset
+      description: Offset
+    - name: filter
+      description: Filter
+    - name: fields
+      description: Comma separated list of fields to return
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sorting (field:asc / field:desc)
+    - name: decorate
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Run decorators on search result
+    outputs:
+    - contextPath: Graylog.SearchAbsolute
+      description: Search results of Absolute search
+      type: String
+    description: Search with absolute times
   dockerimage: demisto/python3:3.8.5.11789
+  isfetch: true
   runonce: false
   subtype: python3
 fromversion: 5.0.0

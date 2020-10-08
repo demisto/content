@@ -4,4 +4,5 @@
 !graylog-cluster-processing-status
 !graylog-indexer-cluster-health
 !graylog-search query=<query here>
+!graylog-search-absolute query=<query here> from=<from time> to=<to time>
 !graylog-events-search query=<query here>

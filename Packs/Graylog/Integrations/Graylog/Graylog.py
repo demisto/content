@@ -3,6 +3,9 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
+from datetime import datetime
+
+import dateparser
 import requests
 
 # Disable insecure warnings
@@ -23,7 +26,52 @@ def test_module(client):
     if result:
         return 'ok'
     else:
-        return 'Test failed because ......'
+        return 'Test failed: ' + str(result)
+
+
+def create_incident_from_log(log):
+    occurred = log['timestamp']
+    keys = log.keys()
+    labels = []
+    for key in keys:
+        labels.append({'type': key, 'value': str(log[key])})
+        formatted_description = 'Graylog Incident'
+    return {
+        'name': formatted_description,
+        'labels': labels,
+        'rawJSON': json.dumps(log),
+        'occurred': occurred
+    }
+
+
+def form_incindents(logs):
+    listofincidents = []
+    for item in logs:
+        listofincidents.append(create_incident_from_log(item['message']))
+    return listofincidents
+
+
+def fetch_incidents(client):
+    timefrom = dateparser.parse(demisto.params().get('fetch_time')).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]
+    timefrom += 'Z'
+    incidentquery = demisto.params().get('fetch_query')
+    last_run = demisto.getLastRun()
+    if last_run and 'start_time' in last_run:
+        start_time = last_run.get('start_time')
+        start_time += 'Z'
+    else:
+        start_time = timefrom
+    end_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]
+    end_time += 'Z'
+    parameters = {'query': incidentquery,
+                  'from': start_time,
+                  'to': end_time}
+    results = client._http_request('GET', '/search/universal/absolute', params=parameters)
+    if 'total_results' in results and results['total_results'] > 0:
+        demisto.setLastRun({'start_time': datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]})
+        demisto.incidents(form_incindents(results['messages']))
+    else:
+        demisto.incidents([])
 
 
 def main():
@@ -53,6 +101,8 @@ def main():
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents(client)
         elif demisto.command() == 'graylog-cluster-status':
             results_return('ClusterStatus', client._http_request('GET', 'cluster/'))
         elif demisto.command() == 'graylog-cluster-node-jvm':
@@ -73,6 +123,17 @@ def main():
                           'sort': demisto.args().get('sort'),
                           'decorate': demisto.args().get('decorate')}
             results_return('Search', client._http_request('GET', '/search/universal/relative', params=parameters))
+        elif demisto.command() == 'graylog-search-absolute':
+            parameters = {'query': demisto.args().get('query'),
+                          'from': demisto.args().get('from'),
+                          'to': demisto.args().get('to'),
+                          'limit': demisto.args().get('limit'),
+                          'offset': demisto.args().get('offset'),
+                          'filter': demisto.args().get('filter'),
+                          'fields': demisto.args().get('fields'),
+                          'sort': demisto.args().get('sort'),
+                          'decorate': demisto.args().get('decorate')}
+            results_return('SearchAbsolute', client._http_request('GET', '/search/universal/absolute', params=parameters))
         elif demisto.command() == 'graylog-events-search':
             jsonparameterswithvalue = {}
             jsonparameters = {'query': demisto.args().get('query'),
@@ -80,7 +141,7 @@ def main():
                               'page': demisto.args().get('page'),
                               'sort_direction': demisto.args().get('sort_direction'),
                               'per_page': demisto.args().get('per_page'),
-                              'timerange': demisto.args().get('timerange'),
+                              'timerange': {'type': 'relative', 'range': demisto.args().get('timerange')},
                               'sort_by': demisto.args().get('sort_by')}
             # API does not like None as the key value so getting rid of those.
             for item in jsonparameters.keys():
