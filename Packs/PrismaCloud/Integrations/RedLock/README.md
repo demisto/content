@@ -624,3 +624,30 @@ There is no context output for this command.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 123456789 | Acct_AWS | true | aws | productCodes: <br/>vpcId: vpc-00000<br/>cpuOptions: {"threadsPerCore": 1, "coreCount": 1}<br/>instanceId: i-00000000<br/>enaSupport: true<br/>imageId: ami-02354e95b39ca8dec<br/>licenses: <br/>keyName: nericksendemo<br/>securityGroups: {u'groupName': u'launch-wizard-1', u'groupId': u'sg-0000000000'}<br/>clientToken: <br/>subnetId: subnet-23452452<br/>amiLaunchIndex: 0<br/>instanceType: t2.micro<br/>networkInterfaces: {u'status': u'in-use', u'macAddress': u'ne:ne:ne:ne:ne', u'sourceDestCheck': True, u'vpcId': u'vpc-00000', u'description': u'', u'privateDnsName': u'ip-x.x.x.x.ec2.internal', u'networkInterfaceId': u'eni-243587263486234', u'privateIpAddresses': [{u'privateDnsName': u'ip-x.x.x.x.ec2.internal', u'privateIpAddress': u'x.x.x.x', u'primary': True, u'association': {u'publicIp': u'x.x.x.x', u'publicDnsName': u'something.compute-1.amazonaws.com', u'ipOwnerId': u'amazon'}}], u'ipv6Addresses': [], u'interfaceType': u'interface', u'attachment': {u'status': u'attached', u'deviceIndex': 0, u'deleteOnTermination': True, u'attachmentId': u'eni-something', u'attachTime': u'2020-08-31T17:54:52.000Z'}, u'groups': [{u'groupName': u'launch-wizard-1', u'groupId': u'sg-0000000000'}], u'subnetId': u'subnet-23452452', u'ownerId': u'2345456789', u'privateIpAddress': u'x.x.x.x', u'association': {u'publicIp': u'x.x.x.x', u'publicDnsName': u'something.compute-1.amazonaws.com', u'ipOwnerId': u'amazon'}}<br/>monitoring: {"state": "disabled"}<br/>capacityReservationSpecification: {"capacityReservationPreference": "open"}<br/>stateTransitionReason: <br/>publicDnsName: something.compute-1.amazonaws.com<br/>state: {"code": 16, "name": "running"}<br/>blockDeviceMappings: {u'deviceName': u'/dev/xvda', u'ebs': {u'status': u'attached', u'deleteOnTermination': True, u'volumeId': u'vol-0fdab9cf9f02e2da7', u'attachTime': u'2020-08-31T17:54:53.000Z'}}<br/>publicIpAddress: x.x.x.x<br/>privateIpAddress: x.x.x.x<br/>virtualizationType: hvm<br/>elasticGpuAssociations: <br/>tags: {u'value': u'phimm', u'key': u'phimm'}<br/>statusEvents: <br/>hibernationOptions: {"configured": false}<br/>metadataOptions: {"state": "applied", "httpPutResponseHopLimit": 1, "httpTokens": "optional", "httpEndpoint": "enabled"}<br/>elasticInferenceAcceleratorAssociations: <br/>sourceDestCheck: true<br/>placement: {"groupName": "", "tenancy": "default", "availabilityZone": "us-east-1e"}<br/>privateDnsName: ip-x.x.x.x.ec2.internal<br/>hypervisor: xen<br/>ebsOptimized: false<br/>launchTime: 2020-10-06T20:10:34.000Z<br/>architecture: x86_64<br/>rootDeviceType: ebs<br/>rootDeviceName: /dev/xvda | false | false | false | false | false | false | i-00000000 | 1602015837449 | i-00000000 | us-east-1 | AWS Virginia | Instance | rrn::instance:us-somewhere-1:12345678 | Amazon EC2 | 6ba5518b94cab50199dd7ec554fd6f1e908d8c56 |
 
+
+### redlock-remediate-alerts
+***
+Remediate alerts in Prisma Cloud
+
+
+#### Base Command
+
+`redlock-remediate-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert-id | The alert id to remediate. You can retrieve alerts using the redlock-search-alerts command | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!redlock-remediate-alerts alert-id=P-370468```
+
+#### Context Example
+```
+{}
+```
