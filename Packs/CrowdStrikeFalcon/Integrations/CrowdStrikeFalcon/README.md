@@ -48,7 +48,7 @@ Searches for devices that match the query.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.Device.ID | String | The ID of the device. | 
+| <span>CrowdStrike.Device.ID</span> | String | The ID of the device. | 
 | CrowdStrike.Device.LocalIP | String | The local IP address of the device. | 
 | CrowdStrike.Device.ExternalIP | String | The external IP address of the device. | 
 | CrowdStrike.Device.Hostname | String | The host name of the device. | 
@@ -132,7 +132,7 @@ Searches for and fetches the behavior that matches the query.
 | CrowdStrike.Behavior.SensorID | String | The sensor ID related to the behavior. | 
 | CrowdStrike.Behavior.ParentProcessID | String | The ID of the parent process. | 
 | CrowdStrike.Behavior.ProcessID | String | The process ID of the behavior. | 
-| CrowdStrike.Behavior.ID | String | The ID of the behavior. | 
+| <span>CrowdStrike.Behavior.ID</span> | String | The ID of the behavior. | 
 
  
 
@@ -217,11 +217,11 @@ or by providing the IDs of the detections.
 | CrowdStrike.Detection.Behavior.SensorID | String | The sensor ID related to the behavior. | 
 | CrowdStrike.Detection.Behavior.ParentProcessID | String | The ID of the parent process. | 
 | CrowdStrike.Detection.Behavior.ProcessID | String | The process ID of the behavior. | 
-| CrowdStrike.Detection.Behavior.ID | String | The ID of the behavior. | 
+| <span>CrowdStrike.Detection.Behavior.ID</span> | String | The ID of the behavior. | 
 | CrowdStrike.Detection.System | String | The system name of the detection. | 
 | CrowdStrike.Detection.CustomerID | String | The ID of the customer \(CID\). | 
 | CrowdStrike.Detection.MachineDomain | String | The name of the domain of the detection machine. | 
-| CrowdStrike.Detection.ID | String | The detection ID. | 
+| <span>CrowdStrike.Detection.ID</span> | String | The detection ID. | 
 | CrowdStrike.Detection.ProcessStartTime | Date | The start time of the process that generated the detection. | 
 
  
@@ -358,7 +358,7 @@ There is no context output for this command.
 
 * * * * *
 
-Contains or lifts containment for a specified host. When contained, a
+Contains containment for a specified host. When contained, a
 host can only communicate with the CrowdStrike cloud and any IPs
 specified in your containment policy.
 
@@ -393,7 +393,7 @@ to normal.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | The host agent ID (AID) of the host you want to contain. Get an agent ID from a detection | Required | 
+| ids | The host agent ID (AID) of the host to contain. Get an agent ID from a detection | Required | 
 
  
 
@@ -488,7 +488,7 @@ The script was uploaded successfully.
 
 ### 9. cs-falcon-upload-file
 ---
-Uploads a file to the CrowdStrike cloud (can be used for the RTR `put` command).
+Uploads a file to the CrowdStrike cloud. (Can be used for the RTR `put` command.)
 
 #### Base Command
 `cs-falcon-upload-file`
@@ -507,7 +507,7 @@ The file was uploaded successfully.
 
 ### 10. cs-falcon-delete-file
 ---
-Deletes a file based on the ID given. Can delete only one file at a time.
+Deletes a file based on the provided ID. Can delete only one file at a time.
 
 #### Base Command
 `cs-falcon-delete-file`
@@ -516,7 +516,7 @@ Deletes a file based on the ID given. Can delete only one file at a time.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The ID of the file to delete. (The ID of the file can be retrieved by running the 'cs-falcon-list-files' command). | Required | 
+| file_id | The ID of the file to delete. (The ID of the file can be retrieved by running the 'cs-falcon-list-files' command.). | Required | 
 
 
 #### Command Example
@@ -544,18 +544,18 @@ Returns files based on the IDs given. These are used for the RTR `put` command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.File.ID | String | The ID of the file. | 
+| <span>CrowdStrike.File.ID</span> | String | The ID of the file. | 
 | CrowdStrike.File.CreatedBy | String | The email address of the user who created the file. | 
 | CrowdStrike.File.CreatedTime | Date | The date and time the file was created. | 
 | CrowdStrike.File.Description | String | The description of the file. | 
 | CrowdStrike.File.Type | String | The type of the file. For example, script. | 
 | CrowdStrike.File.ModifiedBy | String | The email address of the user who modified the file. | 
 | CrowdStrike.File.ModifiedTime | Date | The date and time the file was modified. | 
-| CrowdStrike.File.Name | String | The full name of the file. | 
+| <span>CrowdStrike.File.Name</span> | String | The full name of the file. | 
 | CrowdStrike.File.Permission | String | The permission type of the file. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins | 
 | CrowdStrike.File.SHA256 | String | The SHA-256 hash of the file. | 
 | File.Type | String | The file type. | 
-| File.Name | String | The full name of the file. | 
+| <span>File.Name</span> | String | The full name of the file. | 
 | File.SHA256 | String | The SHA-256 hash of the file. | 
 | File.Size | Number | The size of the file in bytes. | 
 
@@ -599,18 +599,18 @@ Returns Returns a list of put-file ID's that are available for the user in the `
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.File.ID | String | The ID of the file. | 
+| <span>CrowdStrike.File.ID</span> | String | The ID of the file. | 
 | CrowdStrike.File.CreatedBy | String | The email address of the user who created the file. | 
 | CrowdStrike.File.CreatedTime | Date | The date and time the file was created. | 
 | CrowdStrike.File.Description | String | The description of the file. | 
 | CrowdStrike.File.Type | String | The type of the file. For example, script. | 
 | CrowdStrike.File.ModifiedBy | String | The email address of the user who modified the file. | 
 | CrowdStrike.File.ModifiedTime | Date | The date and time the file was modified. | 
-| CrowdStrike.File.Name | String | The full name of the file. | 
+| <span>CrowdStrike.File.Name</span> | String | The full name of the file. | 
 | CrowdStrike.File.Permission | String | The permission type of the file. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins. | 
 | CrowdStrike.File.SHA256 | String | The SHA-256 hash of the file. | 
 | File.Type | String | The file type. | 
-| File.Name | String | The full name of the file. | 
+| <span>File.Name</span> | String | The full name of the file. | 
 | File.SHA256 | String | The SHA-256 hash of the file. | 
 | File.Size | Number | The size of the file in bytes. | 
 
@@ -661,13 +661,13 @@ Return custom scripts based on the ID. Used for the RTR `runscript` command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.Script.ID | String | The ID of the script. | 
+| <span>CrowdStrike.Script.ID</span> | String | The ID of the script. | 
 | CrowdStrike.Script.CreatedBy | String | The email address of the user who created the script. | 
 | CrowdStrike.Script.CreatedTime | Date | The date and time the script was created. | 
 | CrowdStrike.Script.Description | String | The description of the script. | 
 | CrowdStrike.Script.ModifiedBy | String | The email address of the user who modified the script. | 
 | CrowdStrike.Script.ModifiedTime | Date | The date and time the script was modified. | 
-| CrowdStrike.Script.Name | String | The script name. | 
+| <span>CrowdStrike.Script.Name</span> | String | The script name. | 
 | CrowdStrike.Script.Permission | String | Permission type of the script. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins. | 
 | CrowdStrike.Script.SHA256 | String | The SHA-256 hash of the script file. | 
 | CrowdStrike.Script.RunAttemptCount | Number | The number of times the script attempted to run. | 
@@ -737,13 +737,13 @@ Returns a list of custom script IDs that are available for the user in the `runs
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.Script.ID | String | The ID of the script. | 
+| <span>CrowdStrike.Script.ID</span> | String | The ID of the script. | 
 | CrowdStrike.Script.CreatedBy | String | The email address of the user who created the script. | 
 | CrowdStrike.Script.CreatedTime | Date | The date and time the script was created. | 
 | CrowdStrike.Script.Description | String | The description of the script. | 
 | CrowdStrike.Script.ModifiedBy | String | The email address of the user who modified the script. | 
 | CrowdStrike.Script.ModifiedTime | Date | The date and time the script was modified. | 
-| CrowdStrike.Script.Name | String | The script name. | 
+| <span>CrowdStrike.Script.Name</span> | String | The script name. | 
 | CrowdStrike.Script.Permission | String | Permission type of the script. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins. | 
 | CrowdStrike.Script.SHA256 | String | The SHA-256 hash of the script file. | 
 | CrowdStrike.Script.RunAttemptCount | Number | The number of times the script attempted to run. | 
@@ -916,15 +916,14 @@ Retrieves the status of the batch get command which you requested at `cs-falcon-
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.File.ID | string | The ID of the file. | 
+| <span>CrowdStrike.File.ID</span> | string | The ID of the file. | 
 | CrowdStrike.File.TaskID | string | The ID of the command that is running. | 
 | CrowdStrike.File.CreatedAt | date | The date the file was created. | 
 | CrowdStrike.File.DeletedAt | date | The date the file was deleted. | 
 | CrowdStrike.File.UpdatedAt | date | The date the file was last updated. | 
-| CrowdStrike.File.Name | string | The full name of the file. | 
+| <span>CrowdStrike.File.Name</span> | string | The full name of the file. | 
 | CrowdStrike.File.SHA256 | string | The SHA256 hash of the file. | 
-| CrowdStrike.File.Size | number | The size of the file in bytes. | 
-| File.Name | string | The full name of the file. | 
+| CrowdStrike.File.Size | number | The size of the file in bytes. | /span> | string | The full name of the file. | 
 | File.Size | number | The size of the file in bytes. | 
 | File.SHA256 | string | The SHA256 hash of the file. | 
 
@@ -1075,14 +1074,14 @@ Get a list of files for the specified RTR session on a host.
 | CrowdStrike.Command.HostID | string | The ID of the host for which the command was running. | 
 | CrowdStrike.Command.TaskID | string | The ID of the command request that was accepted. | 
 | CrowdStrike.Command.SessionID | string | The ID of the session of the host. | 
-| CrowdStrike.File.ID | string | The ID of the file. | 
+| <span>CrowdStrike.File.ID</span> | string | The ID of the file. | 
 | CrowdStrike.File.CreatedAt | date | The date the file was created. | 
 | CrowdStrike.File.DeletedAt | date | The date the file was deleted. | 
 | CrowdStrike.File.UpdatedAt | date | The date the file was last updated. | 
-| CrowdStrike.File.Name | string | The full name of the file. | 
+|<span>CrowdStrike.File.Name</span> | string | The full name of the file. | 
 | CrowdStrike.File.SHA256 | string | The SHA256 hash of the file. | 
 | CrowdStrike.File.Size | number | The size of the file in bytes. | 
-| File.Name | string | The full name of the file. | 
+| <span>File.Name</span> | string | The full name of the file. | 
 | File.Size | number | The size of the file in bytes. | 
 | File.SHA256 | string | The SHA256 hash of the file. | 
 
@@ -1152,14 +1151,14 @@ Refresh a session timeout on a single host.
 | CrowdStrike.Command.HostID | string | The ID of the host for which the command was running. | 
 | CrowdStrike.Command.TaskID | string | The ID of the command request which has been accepted. | 
 | CrowdStrike.Command.SessionID | string | The ID of the session of the host. | 
-| CrowdStrike.File.ID | string | The ID of the file. | 
+| <span>CrowdStrike.File.ID</span> | string | The ID of the file. | 
 | CrowdStrike.File.CreatedAt | date | The creation date of the file. | 
 | CrowdStrike.File.DeletedAt | date | The deletion date of the file. | 
 | CrowdStrike.File.UpdatedAt | date | The last updated date of the file. | 
-| CrowdStrike.File.Name | string | The full file name. | 
+| <span>CrowdStrike.File.Name</span> | string | The full file name. | 
 | CrowdStrike.File.SHA256 | string | The SHA\-256 hash of the file. | 
 | CrowdStrike.File.Size | number | The size of the file in bytes. | 
-| File.Name | string | The full file name. | 
+| <span>File.Name</span> | string | The full file name. | 
 | File.Size | number | The size of the file in bytes. | 
 | File.SHA256 | string | The SHA\-256 hash of the file. | 
 
@@ -1204,7 +1203,7 @@ Returns a list of your uploaded IOCs that match the search criteria
 | --- | --- | --- |
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
+| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator \(type:value\). | 
 | CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
 | CrowdStrike.IOC.Source | string | The source of the IOC. | 
 | CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
@@ -1268,7 +1267,7 @@ Get the full definition of one or more indicators that you are watching
 | --- | --- | --- |
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
+| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator \(type:value\). | 
 | CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
 | CrowdStrike.IOC.Source | string | The source of the IOC. | 
 | CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
@@ -1338,7 +1337,7 @@ Uploads an indicator for CrowdStrike to monitor.
 | --- | --- | --- |
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
+| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator \(type:value\). | 
 | CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
 | CrowdStrike.IOC.Source | string | The source of the IOC. | 
 | CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
@@ -1408,7 +1407,7 @@ Updates an indicator for CrowdStrike to monitor.
 | --- | --- | --- |
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
+| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator \(type:value\). | 
 | CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
 | CrowdStrike.IOC.Source | string | The source of the IOC. | 
 | CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
@@ -1501,7 +1500,7 @@ Number of hosts that observed the given IOC.
 | --- | --- | --- |
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
+| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator \(type:value\). | 
 | CrowdStrike.IOC.DeviceCount | number | The number of devices the IOC ran on. | 
 
 
@@ -1549,8 +1548,8 @@ Get processes associated with a given IOC.
 | --- | --- | --- |
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
-| CrowdStrike.IOC.Process.ID | number | The processes IDs associated with the given IOC. | 
+| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator \(type:value\). | 
+| <span>CrowdStrike.IOC.Process.ID</span> | number | The processes IDs associated with the given IOC. | 
 | CrowdStrike.IOC.Process.DeviceID | number | The device the process ran on. | 
 
 
@@ -1976,7 +1975,7 @@ Lists incident summaries.
 | CrowdStrike.Incidents.end | Date | The recorded time of the latest incident. | 
 | CrowdStrike.Incidents.state | String | The state of the incident. | 
 | CrowdStrike.Incidents.status | Number | The status of the incident. | 
-| CrowdStrike.Incidents.name | String | The name of the incident. | 
+|<span>CrowdStrike.Incidents.name</span> | String | The name of the incident. | 
 | CrowdStrike.Incidents.description | String | The description of the incident. | 
 | CrowdStrike.Incidents.tags | String | The tags of the incident. | 
 | CrowdStrike.Incidents.fine_score | Number | The incident score. | 
