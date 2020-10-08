@@ -1948,16 +1948,18 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     entries = []
     file_entries = client.get_ticket_attachment_entries(ticket_id, get_timestamp=True)
     if file_entries:
-        for file_, create_time in file_entries:
+        for file, create_time in file_entries:
             entry_time = arg_to_timestamp(
                 arg=create_time,
                 arg_name='sys_created_on',
                 required=False
             )
             if last_update > entry_time:
+                demisto.debug(f'Ticket last update: {str(last_update)}')
+                demisto.debug(f'The file {file} has been skipped. The entry was created on {entry_time}')
                 continue
             else:
-                entries.append(file_)
+                entries.append(file)
 
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
