@@ -167,9 +167,9 @@ references:
             ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
         fi
   
-  test_this_shit: &test_this_shit
+  test_download_upload: &test_download_upload
     run:
-      name: Test this shit
+      name: Test Download and Upload commands
       when: on_success
       command: |
         echo "Running upload"
@@ -182,7 +182,7 @@ references:
         { # try
             yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -nv -ud > artifacts/format.log
         } || { # catch 
-            echo "Format exit status: $?"
+            echo "Format exit status: $?"  # DO NOT DELETE THIS LINE. format sometimes will exit with the odd exist statuses.
         }
         echo "Running validate"
         demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > artifacts/validate.log
@@ -268,11 +268,6 @@ references:
     run:
       name: Destroy Instances
       command: |
-        if [ -n "${DEMISTO_SDK_NIGHTLY}" ]
-          then
-            echo "Skipping - not running in demisto-sdk nightly"
-            exit 0
-        fi
         if [ -n "${CONTRIB_BRANCH}" ]
           then
             echo "Skipping - not running in contribution instance"
@@ -1101,7 +1096,8 @@ jobs:
           shell: /bin/bash
           when: on_success
           command: python3 Tests/unlock_integrations.py HelloWorld
-      - *test_this_shit
+      - *test_download_upload
+      - *destroy_instances
       - *store_artifacts
 
 workflows:
