@@ -114,12 +114,12 @@ class Server:
 
 class Build:
     # START CHANGE ON LOCAL RUN #
-    content_path = '{}/project'.format(os.getenv('HOME'))
+    content_path = '{}'.format(os.getenv('CONTENT'))
     test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
-    key_file_path = 'Use in case of running with non local server'
-    run_environment = Running.CIRCLECI_RUN
+    key_file_path = 'Use in case of running with non local server'  # ssh key
+    run_environment = Running.WITH_LOCAL_SERVER  # WITH_OTHER_SERVER
     env_results_path = './env_results.json'
-    DEFAULT_SERVER_VERSION = '99.99.98'
+    DEFAULT_SERVER_VERSION = '99.99.98'  # change to server version
     #  END CHANGE ON LOCAL RUN  #
 
     def __init__(self, options):
@@ -960,14 +960,16 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, i
         # START CHANGE ON LOCAL RUN #
         return [
             {
-                "playbookID": "Docker Hardening Test",
-                "fromversion": "5.0.0"
+                "integrations": "Feodo Tracker IP Blocklist Feed",
+                "instance_names": "feodo_tracker_ip_currently__active",
+                "playbookID": "playbook-feodotrackeripblock_test",
+                "fromversion": "5.5.0"
             },
             {
-                "integrations": "SplunkPy",
-                "playbookID": "SplunkPy-Test-V2",
-                "memory_threshold": 500,
-                "instance_names": "use_default_handler"
+                "integrations": "Feodo Tracker IP Blocklist Feed",
+                "instance_names": "feodo_tracker_ip_30_days",
+                "playbookID": "playbook-feodotrackeripblock_test",
+                "fromversion": "5.5.0"
             }
         ]
         #  END CHANGE ON LOCAL RUN  #
@@ -1001,7 +1003,7 @@ def get_pack_ids_to_install():
     else:
         # START CHANGE ON LOCAL RUN #
         return [
-            'SplunkPy'
+            'FeedFeodoTracker'
         ]
         #  END CHANGE ON LOCAL RUN  #
 
@@ -1082,18 +1084,12 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         ints_to_configure_params_set = set_integration_params(integrations_to_configure, build.secret_conf['integrations'],
                                                               instance_names_conf, placeholders_map)
 
-        print('########################')
-        print(integrations_to_configure)
-        print(type(integrations_to_configure))
-        print(ints_to_configure_params_set)
-        print(type(ints_to_configure_params_set))
-
         if not new_ints_params_set:
             prints_manager.add_print_job(
                 'failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)), print_error, 0)
         if not ints_to_configure_params_set:
             prints_manager.add_print_job(
-                'failed setting parameters for integrations "{}"'.format('\n'.join(integrations_to_configure)),
+                'failed setting parameters for integrations\n"{}"'.format(integrations_to_configure),
                 print_error, 0)
         if not (new_ints_params_set and ints_to_configure_params_set):
             continue
