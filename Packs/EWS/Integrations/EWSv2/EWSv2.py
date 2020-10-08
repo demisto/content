@@ -2125,7 +2125,14 @@ def sub_main():
 
             error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
                 if AUTH_METHOD_STR.lower() == 'ntlm' else ''
-        if "Status code: 503" in debug_log:
+
+        if "SSL: CERTIFICATE_VERIFY_FAILED" in debug_log:
+            # same status code (503) but different error.
+            error_message_simple = "Got timeout from the server. " \
+                                   "Cerificate is not trusted - This is usually as a result of a proxy that is doing " \
+                                   "SSL termination. Please check your proxy configuration."
+
+        elif "Status code: 503" in debug_log:
             error_message_simple = "Got timeout from the server. " \
                                    "Probably the server is not reachable with the current settings. " \
                                    "Check proxy parameter. If you are using server URL - change to server IP address. "
