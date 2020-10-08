@@ -3035,7 +3035,7 @@
         {
             "integrations": "WootCloud",
             "playbookID": "TestWootCloudPlaybook"
-        },  
+        },
         {
             "integrations": "Ivanti Heat",
             "playbookID": "Ivanti Heat - Test"
@@ -3155,7 +3155,6 @@
         "Cherwell - test": "Issue 26780",
         "Logzio - Test": "Issue 26729",
         "pyEWS_Test": "Issue 28339",
-        "DuoAdmin API test playbook": "Issue 24937",
         "GmailTest": "Issue 27057",
         "playbook-SafeBreach-Test": "Issue 21205",
         "IllusiveNetworks-Test": "Issue 29087",
