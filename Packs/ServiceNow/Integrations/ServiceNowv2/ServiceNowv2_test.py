@@ -482,7 +482,6 @@ def test_get_remote_data(mocker):
     args = {'id': 'sys_id', 'lastUpdate': 0}
     params = {}
     mocker.patch.object(client, 'get', return_value=RESPONSE_TICKET_MIRROR)
-    mocker.patch.object(client, 'get_ticket_attachments', return_value=RESPONSE_GET_ATTACHMENT)
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=RESPONSE_MIRROR_FILE_ENTRY)
     mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
     mocker.patch.object(client, 'get', return_value=RESPONSE_ASSIGNMENT_GROUP)

@@ -2994,7 +2994,7 @@ MIRROR_COMMENTS_RESPONSE = {'result': [{
 
 RESPONSE_MIRROR_FILE_ENTRY = [
     {'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'test.txt',
-     'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'}]
+     'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3', 'sys_created_on': '2020-10-07 17:12:47'}]
 
 RESPONSE_ASSIGNMENT_GROUP = {'result': {'parent': '', 'manager':
     {'link': 'https://dev59633.service-now.com/api/now/table/sys_user/b6b364e253131300e321ddeeff7b121b',
