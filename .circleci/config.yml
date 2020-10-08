@@ -182,14 +182,14 @@ references:
         demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure 
     
         # Format
-        yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -ud > ../format.log
+        yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -ud > "${ARTIFACTS_DIR}/format.log"
         # Validate and Lint
-        demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > ../validate.log
+        demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > "${ARTIFACTS_DIR}/validate.log"
         if [[ $? -ne 0 ]]
         then
             VALDIATE_CODE=1
         fi
-        demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld/ > ../lint.log
+        demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld/ > "${ARTIFACTS_DIR}/lint.log"
         if [[ $? -ne 0 ]]
         then
             LINT_CODE=1
