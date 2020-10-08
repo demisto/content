@@ -420,6 +420,7 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
     for integration in integrations:
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
+        print(integration_params)
 
         if integration_params:
             matched_integration_params = integration_params[0]
@@ -430,6 +431,7 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
             if len(integration_params) != 1:
                 found_matching_instance = False
                 for item in integration_params:
+                    print(item)
                     if item.get('instance_name', 'Not Found') in instance_names:
                         matched_integration_params = item
                         found_matching_instance = True
