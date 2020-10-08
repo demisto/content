@@ -1,0 +1,543 @@
+id: Mirror ServiceNow Ticket
+version: -1
+name: Mirror ServiceNow Ticket
+description: |-
+  Mirror ServiceNow Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with ServiceNow.
+  It enables you to manage ServiceNow tickets in Cortex xSOAR while data is continuously synced between ServiceNow and Cortex xSOAR, including ServiceNow schema, fields, comments, work notes, and attachments.
+
+  To enable OOTB mirroring, use the ServiceNow Create ticket  - common mappers for incoming and outgoing mirroring.
+
+  FieldPolling - You can the FieldPolling value to true if you only want to be informed when the ticket is resolved or closed. If FieldPolling is set to true, the FieldPolling Playbook will poll for the state(ServiceNow State field) of the ServiceNow ticket until it marks as either resolved or closed.
+
+  In Addition to the playbook, we recommend that you use the included layout for ServiceNow Ticket, which helps visualize ServiceNow ticket information in Cortex xSOAR.
+  You can add the new layout as a tab to existing layouts using the Edit Layout page.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2571d85f-7978-4100-8277-612a215d5641
+    type: start
+    task:
+      id: 2571d85f-7978-4100-8277-612a215d5641
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a2a74d31-2eba-46b1-824e-e4a7374161de
+    type: regular
+    task:
+      id: a2a74d31-2eba-46b1-824e-e4a7374161de
+      version: -1
+      name: Set Mirroring fields
+      description: Change the properties of an incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      addLabels: {}
+      addcctoemail: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      appendMultiSelect: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attorneygeneralnotification: {}
+      blockedaction: {}
+      breachconfirmation: {}
+      bugtraq: {}
+      caller: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      cloudservice: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      consumerreportingagenciesnotification: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      createddatefailedincidents: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotMirrorDirection:
+        complex:
+          root: inputs.MirrorDirection
+      dbotMirrorId:
+        complex:
+          root: inputs.IncidentID
+      dbotMirrorInstance:
+        complex:
+          root: inputs.MirrorInstanceName
+      dbotMirrorTags:
+        complex:
+          root: inputs.MirrorCommentTags
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicehash: {}
+      devicename: {}
+      dpoemailaddress: {}
+      dponotification: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      escalation: {}
+      eventid: {}
+      eventtype: {}
+      externaladdresses: {}
+      failedincidentscreateddate: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstname: {}
+      firstseen: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      id: {}
+      individualsnotification: {}
+      infectedhosts: {}
+      integrationscategories: {}
+      integrationsfailedcategories: {}
+      integrationstestgrid: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      likelyimpact: {}
+      logsource: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      managementnotification: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
+      mobiledevicemodel: {}
+      moshe: {}
+      name: {}
+      numberofentriesiderrors: {}
+      numberoffailedincidents: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      otherpiidatabreached: {}
+      owner: {}
+      parentprocessid: {}
+      pcapencryptionkey: {}
+      pcapendtime: {}
+      pcapfile: {}
+      pcapfilename: {}
+      pcapfilesize: {}
+      pcapflows: {}
+      pcapnumberofpackets: {}
+      pcapnumberofstreams: {}
+      pcapstarttime: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      piidatatype: {}
+      playbooknameswithfailedtasks: {}
+      playbooksfailedcommands: {}
+      playbookswithfailedtasks: {}
+      playbooktaskserrors: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      protocol: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
+      servicenowassignedto: {}
+      servicenowassignmentgroup: {}
+      servicenowcaller:
+        complex:
+          root: ServiceNow.User
+          accessor: Name
+      servicenowcallerid: {}
+      servicenowcategory: {}
+      servicenowclosedby: {}
+      servicenowcloseddate: {}
+      servicenowdescription: {}
+      servicenowduedate: {}
+      servicenowescalation: {}
+      servicenowimpact: {}
+      servicenownotify: {}
+      servicenowopeneddate: {}
+      servicenowpriority: {}
+      servicenowresolutioncode: {}
+      servicenowresolutionnotes: {}
+      servicenowresolvedtime: {}
+      servicenowseverity: {}
+      servicenowstate: {}
+      servicenowticketnumber: {}
+      servicenowurgency: {}
+      servicetest: {}
+      severity: {}
+      signature: {}
+      similarincident: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      state: {}
+      statecisonotification: {}
+      statewherethebreachtookplace: {}
+      subcategory: {}
+      subtype: {}
+      systems: {}
+      telephoneno: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      totalfailedinstances: {}
+      totalgoodinstances: {}
+      totalinstances: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      unassignedincidents: {}
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f7d7e9e0-b53a-4df8-8186-f8d80e29bccb
+    type: title
+    task:
+      id: f7d7e9e0-b53a-4df8-8186-f8d80e29bccb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: ff07c610-a09e-494f-8f4b-7d1be8dde6e3
+    type: condition
+    task:
+      id: ff07c610-a09e-494f-8f4b-7d1be8dde6e3
+      version: -1
+      name: Is FieldPolling set to true?
+      description: Conditional task to verify if FieldPolliung value = true.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: 'inputs.FieldPolling '
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: ec51b390-bada-4e6d-8096-e471879d7575
+    type: playbook
+    task:
+      id: ec51b390-bada-4e6d-8096-e471879d7575
+      version: -1
+      name: Field Polling - Generic
+      playbookName: Field Polling - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      field:
+        simple: servicenowstate
+      frequency:
+        complex:
+          root: inputs.FieldPollingInterval
+      timeout:
+        complex:
+          root: inputs.FieldPollingTimeout
+      value:
+        simple: ^6|^7
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_8_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 805,
+        "width": 380,
+        "x": 450,
+        "y": 400
+      }
+    }
+  }
+inputs:
+- key: IncidentID
+  value: {}
+  required: false
+  description: ServiceNow Incident ID to mirror.
+  playbookInputQuery:
+- key: MirrorInstanceName
+  value: {}
+  required: false
+  description: Set the mirror instance name to enable mirroring with ServiceNow.
+  playbookInputQuery:
+- key: MirrorDirection
+  value:
+    simple: Both
+  required: false
+  description: "Set the mirror direction, should be one of the following: \n1. In\n2. Out\n3.
+    Both"
+  playbookInputQuery:
+- key: MirrorCommentTags
+  value:
+    simple: comments,work_notes,ForServiceNow
+  required: false
+  description: Set tags for mirror comments and files to ServiceNow
+  playbookInputQuery:
+- key: 'FieldPolling '
+  value: {}
+  required: false
+  description: |
+    Set the value to true or false to determine if the FieldPolling sub-playbook will be executed in the context of a parent playbook.
+    This is useful in cases when it is needed to wait for the ServiceNow ticket to be resolved in order to continue the parent playbook.
+  playbookInputQuery:
+- key: FieldPollingInterval
+  value: {}
+  required: false
+  description: |-
+    Set interval time for the polling to run
+    (In minutes)
+  playbookInputQuery:
+- key: FieldPollingTimeout
+  value: {}
+  required: false
+  description: |2-
+
+    Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
+    (In minutes)
+  playbookInputQuery:
+outputs: []
+tests:
+- Create ServiceNow Ticket and Mirror Test
+fromversion: 6.0.0
