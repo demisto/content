@@ -65,14 +65,14 @@ print = timestamped_print
 
 
 def determine_slack_msg(last_event: TimelineEvent) -> str:
-    '''Determine which slack message to send depending on the age of the last event (which is a commit)
+    """Determine which slack message to send depending on the age of the last event (which is a commit)
 
     Args:
         last_event (TimelineEvent): Commit event
 
     Returns:
         str: The message to use in the slack message to the reviewers of the given PR
-    '''
+    """
     created = last_event.created_at
 
     stale_delta = timedelta(STALE_TIME)
@@ -128,6 +128,83 @@ def build_slack_blocks(msg: str, pr: PullRequest) -> List[Dict]:
     return blocks
 
 
+def nudge_appropriate_party(t: Terminal, client: WebClient, stale_pr: PullRequest, f_timeline: List[Any]):
+    """Use the last event to determine who needs a reminder and ping
+
+    Args:
+        t (Terminal): blessings Terminal for color output to stdout
+        client (WebClient): Slack client to message reviewers when necessary
+        stale_pr (PullRequest): The stale PR to evaluate
+        f_timeline (List[Any]): A filtered list of event data for the PR
+    """
+    pr_opener = stale_pr.user.login
+    if pr_opener == 'xsoar-bot':
+        # in case we got contribution pr which was opened by xsoar-bot, we set the contributor to be the pr opener
+        contributor = re.search(r"(?<=Description)\s{1,2}@([^']+)", stale_pr.body)
+        if contributor:
+            pr_opener = contributor.group(1)
+    last_event = f_timeline[-1]
+
+    reviewers, _ = stale_pr.get_review_requests()
+    requested_reviewers = [requested_reviewer.login for requested_reviewer in reviewers]
+    slack_handles = [
+        GITHUB_TO_SLACK.get(reviewer, '') for reviewer in requested_reviewers if GITHUB_TO_SLACK.get(reviewer)
+    ]
+    if last_event.event.casefold() == 'committed'.casefold():
+        msg = determine_slack_msg(last_event)
+        if msg:
+            # send slack message to right people
+            print(f'{t.cyan}Sending slack message reminders for PR #{stale_pr.number}{t.normal}')
+            for slack_handle in slack_handles:
+                response = client.users_lookupByEmail(email=slack_handle)
+                user_id = response.get('user', {}).get('id', '')
+                if msg == LOTR_NUDGE_MSG:
+                    msg = msg.format(reviewer=SLACK_TO_GITHUB.get(slack_handle))
+                blocks_message = build_slack_blocks(msg, stale_pr)
+                client.chat_postMessage(channel=user_id, blocks=blocks_message)
+    elif last_event.event.casefold() == 'reviewed'.casefold():
+        if stale_pr.get_reviews()[-1].state.casefold() != 'approved'.casefold():
+            print(f'{t.cyan}Nudging PR opener "{pr_opener}"{t.normal}')
+            msg = f'@{pr_opener} {NUDGE_AUTHOR_MSG}'
+            stale_pr.create_issue_comment(msg)
+    elif last_event.event.casefold() == 'commented'.casefold():
+        commenter = last_event.actor.login
+        if commenter == BOT_NAME and last_event.body.contains(f'@{pr_opener} are there'):
+            print(f'{t.cyan}Already nudged "{pr_opener}" - skipping nudge{t.normal}')
+            # Bot already commented on the PR Nudging the author - do nothing
+            return
+        elif commenter != pr_opener:
+            # The last comment wasn't made by the PR opener (and is probably one of the requested reviewers) assume
+            # that the PR opener needs a nudge
+            print(f'{t.cyan}Nudging "{pr_opener}" since he wasn\'t the last commenter{t.normal}')
+            nudge_author = f' @{pr_opener} are there any changes you wanted to make since @{commenter}\'s last ' \
+                f'comment? '
+            msg = STALE_MSG + nudge_author
+            stale_pr.create_issue_comment(msg)
+        else:
+            # Else assume the person who opened the PR is waiting on the response of one of the reviewers
+            reviewers_to_ping = ' '.join(
+                ['@' + reviewer for reviewer in requested_reviewers if reviewer != commenter]
+            )
+            nudge_reviewer = f' {reviewers_to_ping} what\'s new ' \
+                             f'since @{commenter}\'s last comment?\n{stale_pr.html_url} '
+            reviewer_nudge_msg = STALE_MSG + nudge_reviewer
+
+            if last_event.body == reviewer_nudge_msg:
+                msg = reviewer_nudge_msg
+            else:
+                msg = SUGGEST_CLOSE_MSG
+
+            print(f'{t.cyan}Nudging the pr - {reviewers_to_ping} - reviewers over slack {t.normal}')
+
+            # Send Slack message To requested reviewers
+            for slack_handle in slack_handles:
+                response = client.users_lookupByEmail(email=slack_handle)
+                user_id = response.get('user', {}).get('id', '')
+                blocks_message = build_slack_blocks(msg, stale_pr)
+                client.chat_postMessage(channel=user_id, blocks=blocks_message)
+
+
 def main():
     """Notifies and nudges the appropriate users for stale external PRs
 
@@ -168,72 +245,7 @@ def main():
     client = WebClient(token=get_env_var('SLACK_API_TOKEN'))
 
     for stale_pr, f_timeline in stale_prs:
-        pr_opener = stale_pr.user.login
-        if pr_opener == 'xsoar-bot':
-            # in case we got contribution pr which was opened by xsoar-bot, we set the contributor to be the pr opener
-            contributor = re.search(r"(?<=Description)\s{1,2}@([^']+)", stale_pr.body)
-            if contributor:
-                pr_opener = contributor.group(1)
-        last_event = f_timeline[-1]
-
-        reviewers, _ = stale_pr.get_review_requests()
-        requested_reviewers = [requested_reviewer.login for requested_reviewer in reviewers]
-        slack_handles = [
-            GITHUB_TO_SLACK.get(reviewer, '') for reviewer in requested_reviewers if GITHUB_TO_SLACK.get(reviewer)
-        ]
-        if last_event.event.casefold() == 'committed'.casefold():
-            msg = determine_slack_msg(last_event)
-            if msg:
-                # send slack message to right people
-                print(f'{t.cyan}Sending slack message reminders for PR #{stale_pr.number}{t.normal}')
-                for slack_handle in slack_handles:
-                    response = client.users_lookupByEmail(email=slack_handle)
-                    user_id = response.get('user', {}).get('id', '')
-                    if msg == LOTR_NUDGE_MSG:
-                        msg = msg.format(reviewer=SLACK_TO_GITHUB.get(slack_handle))
-                    blocks_message = build_slack_blocks(msg, stale_pr)
-                    client.chat_postMessage(channel=user_id, blocks=blocks_message)
-        elif last_event.event.casefold() == 'reviewed'.casefold():
-            if stale_pr.get_reviews()[-1].state.casefold() != 'approved'.casefold():
-                print(f'{t.cyan}Nudging PR opener "{pr_opener}"{t.normal}')
-                msg = f'@{pr_opener} {NUDGE_AUTHOR_MSG}'
-                stale_pr.create_issue_comment(msg)
-        elif last_event.event.casefold() == 'commented'.casefold():
-            commenter = last_event.actor.login
-            if commenter == BOT_NAME and last_event.body.contains(f'@{pr_opener} are there'):
-                print(f'{t.cyan}Already nudged "{pr_opener}" - skipping nudge{t.normal}')
-                # Bot already commented on the PR Nudging the author - do nothing
-                continue
-            elif commenter != pr_opener:
-                # The last comment wasn't made by the PR opener (and is probably one of the requested reviewers) assume
-                # that the PR opener needs a nudge
-                print(f'{t.cyan}Nudging "{pr_opener}" since he wasn\'t the last commenter{t.normal}')
-                nudge_author = f' @{pr_opener} are there any changes you wanted to make since @{commenter}\'s last ' \
-                    f'comment? '
-                msg = STALE_MSG + nudge_author
-                stale_pr.create_issue_comment(msg)
-            else:
-                # Else assume the person who opened the PR is waiting on the response of one of the reviewers
-                reviewers_to_ping = ' '.join(
-                    ['@' + reviewer for reviewer in requested_reviewers if reviewer != commenter]
-                )
-                nudge_reviewer = f' {reviewers_to_ping} what\'s new ' \
-                                 f'since @{commenter}\'s last comment?\n{stale_pr.html_url} '
-                reviewer_nudge_msg = STALE_MSG + nudge_reviewer
-
-                if last_event.body == reviewer_nudge_msg:
-                    msg = reviewer_nudge_msg
-                else:
-                    msg = SUGGEST_CLOSE_MSG
-
-                print(f'{t.cyan}Nudging the pr - {reviewers_to_ping} - reviewers over slack {t.normal}')
-
-                # Send Slack message To requested reviewers
-                for slack_handle in slack_handles:
-                    response = client.users_lookupByEmail(email=slack_handle)
-                    user_id = response.get('user', {}).get('id', '')
-                    blocks_message = build_slack_blocks(msg, stale_pr)
-                    client.chat_postMessage(channel=user_id, blocks=blocks_message)
+        nudge_appropriate_party(t, client, stale_pr, f_timeline)
 
 
 if __name__ == '__main__':
