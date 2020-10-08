@@ -209,6 +209,12 @@ references:
           demisto-sdk lint -p 8 -g --prev-ver $FEATURE_BRANCH -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --no-xsoar-linter
         fi
 
+  infrastructure_testing: &infrastructure_testing
+    run:
+      name: Infrastructure testing
+      when: always
+      command: |
+        python3 -m pytest ./Utils/tests/old_content_branch_test.py -v
 
   create_id_set: &create_id_set
     run:
@@ -295,6 +301,7 @@ jobs:
       - checkout
 #      - *restore_cache
       - *prepare_environment
+      - *infrastructure_testing
       - save_cache:
           paths:
             - venv

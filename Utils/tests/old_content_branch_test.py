@@ -6,7 +6,7 @@ JSON_SHOULD_STAY = 'Packs/CommonReports/Reports/report-MTTRbyIncidentType2Quar.j
 YML_SHOULD_STAY = 'Packs/ThinkstCanary/Integrations/ThinkstCanary/ThinkstCanary.yml'
 JSON_SHOULD_DELETE = 'Utils/tests/test_data_old_content/json_should_delete.json'
 YML_SHOULD_DELETE = 'Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml'
-TEMP_TPB = 'Utils/tests/test_data_old_content/temp_test_playbook.yml'
+TEST_TPB = 'Utils/tests/test_data_old_content/temp_test_playbook.yml'
 
 
 def test_handle_json__should_stay():
@@ -88,6 +88,6 @@ def test_edit_playbooks_directory():
     - Tpb should be updated with a new toversion field
     """
     edit_playbooks_directory(TEST_VERSION, 'Utils/tests/test_data_old_content')
-    with open(TEMP_TPB, 'r') as yml_file:
+    with open(TEST_TPB, 'r') as yml_file:
         yml_content = ryaml.load(yml_file)
     assert yml_content['toversion'] == '4.1.9'
