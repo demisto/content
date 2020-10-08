@@ -269,6 +269,34 @@ class TestChangedTestPlaybook:
         assert filter_envs.get('Demisto one before GA') is False
         assert filter_envs.get('Demisto GA') is False
 
+    def test_get_from_and_to_version_from_modified_files(self):
+        """
+        Given:
+            - Integration path with fromversion 6.0.
+            - Playbook path with toversion 5.9.9
+            - test playbook path with fromversion 5.0.
+        When:
+            - running get_test_list_and_content_packs_to_install
+        Then:
+            - Check that the toversion is the default (99.99.99)
+            - Check minimum version is 5.0.0
+
+        """
+        test_integration_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/' \
+                                'test_fake_integration.yml'
+        test_playbook_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/' \
+                             'playbook-fake_test_playbook_to_version.yml'
+        playbook_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_playbooks/test_fake_playbook.yml'
+
+        modified_files_list = [test_integration_path, playbook_path]
+        modified_tests_list = [test_playbook_path]
+        all_modified_files_paths = set(modified_files_list + modified_tests_list)
+        from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths,
+                                                                              MOCK_ID_SET)
+
+        assert '5.0.0' in from_version
+        assert '99.99.99' in to_version
+
     def test_changed_unrunnable_test__playbook_fromvesion_2(self, mocker):
         # future_playbook_1 is fromversion 99.99.99 in conf file
         test_id = 'future_test_playbook_1'
