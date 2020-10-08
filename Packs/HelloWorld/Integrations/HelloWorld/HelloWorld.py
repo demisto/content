@@ -275,7 +275,7 @@ class Client(BaseClient):
     """
 
     def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
-        """Gets the IP reputation using the '/ip' API endpoint
+        """Gets the IP reputation using the '/ip' API endpointfsafsaf
 
         :type ip: ``str``
         :param ip: IP address to get the reputation for
