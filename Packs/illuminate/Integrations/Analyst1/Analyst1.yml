@@ -606,4 +606,4 @@ script:
   subtype: python3
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Analyst1 Integration Demonstration - Test

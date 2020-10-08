@@ -10,8 +10,7 @@ description: Deprecated. This integration utilizes AnalystPlatform's illuminate 
   more.
 deprecated: true
 tests:
-  - No Tests
-  - Deprecated
+  - No Tests - Deprecated
 configuration:
 - display: illuminate API Credentials (username/password)
   name: credentials
