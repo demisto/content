@@ -176,10 +176,7 @@ references:
         demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure 
     
         # Download the integration
-        rm\
-            Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py \
-            Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml
-        demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure 
+        demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
     
         # Format
         yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -ud > artifacts/format.log
