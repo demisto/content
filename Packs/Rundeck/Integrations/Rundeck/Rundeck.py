@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-VERSION = 18
+VERSION = 24
 
 ''' CLIENT CLASS '''
 
@@ -127,7 +127,7 @@ class Client(BaseClient):
         This function retry running a failed execution.
         :param arg_string: execution arguments for the selected job: -opt1 value1 -opt2 value2
         :param job_id: id of the job you want to execute
-        :param log_level: specifying the loglevel to use: 'DEBUG','VERBOSE','INFO','WARN','ERROR'
+        :param log_level: specifying the log level to use: 'DEBUG','VERBOSE','INFO','WARN','ERROR'
         :param as_user: identifying the user who ran the job
         :param failed_nodes: can either ben true or false. true for run all nodes and true for running only failed nodes
         :param execution_id: for specified what execution to rerun
@@ -152,6 +152,105 @@ class Client(BaseClient):
             url_suffix=f'/job/{job_id}/retry/{execution_id}',
             params=self.params,
             data=str(request_body)
+        )
+
+    def job_execution_query(self, status_filter: str, aborted_by_filter: str, user_filter: str, recent_filter: str,
+                            older_filter: str, begin: str, end: str, adhoc: str, job_id_list_filter: list,
+                            exclude_job_id_list_filter: list, job_list_filter: list, exclude_job_list_filter: list,
+                            group_path: str, group_path_exact: str, exclude_group_path: str,
+                            exclude_group_path_exact: str, job_filter: str, exclude_job_filter: str,
+                            job_exact_filter: str, exclude_job_exact_filter: str, execution_type_filter: str,
+                            max_paging: Optional[int], offset: Optional[int], project_name: str):
+        """
+        This function returns previous and active executions
+        :param status_filter: execution status, can be either: "running", succeeded", "failed" or "aborted"
+        :param aborted_by_filter: Username who aborted an execution
+        :param user_filter: Username who started the execution
+        :param recent_filter: for specify when the execution has occur. the format is 'XY' when 'X' is a number and 'Y'
+        can be: h - hour, d - day, w - week, m - month, y - year
+        :param older_filter: return executions that completed before the specified relative period of time. works with
+        the same format as 'recent_filter'
+        :param begin: Specify exact date for earliest execution completion time
+        :param end: Specify exact date for latest execution completion time
+        :param adhoc: can be true or false. true for include Adhoc executions
+        :param job_id_list_filter: specify a Job IDs to filter by
+        :param exclude_job_id_list_filter: specify a Job IDs to exclude
+        :param job_list_filter: specify a full Job group/name to include.
+        :param exclude_job_list_filter: specify a full Job group/name to exclude
+        :param group_path: specify a group or partial group to include all jobs within that group path.
+        :param group_path_exact: like 'group_path' but you need to specify an exact group path to match
+        :param exclude_group_path specify a group or partial group path to exclude all jobs within that group path
+        :param exclude_group_path_exact: specify a group or partial group path to exclude jobs within that group path
+        :param job_filter: provide here a job name to query
+        :param exclude_job_filter: provide here a job name to exclude
+        :param job_exact_filter: provide here an exact job name to match
+        :param exclude_job_exact_filter: specify an exact job name to exclude
+        :param execution_type_filter: specify the execution type, can be: 'scheduled', 'user' or 'user-scheduled'
+        :param max_paging: maximum number of results to get from the api
+        :param offset: offset for first result to include
+        :param project_name: the project name that you want to get its execution
+        :return: api response
+        """
+
+        request_params: Dict[str, Any] = {}
+
+        if status_filter:
+            request_params['statusFilter'] = status_filter
+        if aborted_by_filter:
+            request_params['abortedbyFilter'] = aborted_by_filter
+        if user_filter:
+            request_params['userFilter'] = user_filter
+        if recent_filter:
+            request_params['recentFilter'] = recent_filter
+        if older_filter:
+            request_params['olderFilter'] = older_filter
+        if begin:
+            request_params['begin'] = begin
+        if end:
+            request_params['end'] = end
+        if adhoc:
+            request_params['adhoc'] = adhoc
+        if job_id_list_filter:
+            request_params['jobIdListFilter'] = job_id_list_filter
+        if exclude_job_id_list_filter:
+            request_params['excludeJobIdListFilter'] = exclude_job_id_list_filter
+        if job_list_filter:
+            request_params['jobListFilter'] = job_list_filter
+        if exclude_job_list_filter:
+            request_params['excludeJobListFilter'] = exclude_job_list_filter
+        if group_path:
+            request_params['groupPath'] = group_path
+        if group_path_exact:
+            request_params['groupPathExact'] = group_path_exact
+        if exclude_group_path:
+            request_params['excludeGroupPath'] = exclude_group_path
+        if exclude_group_path_exact:
+            request_params['excludeGroupPathExact'] = exclude_group_path_exact
+        if job_filter:
+            request_params['jobFilter'] = job_filter
+        if exclude_job_filter:
+            request_params['excludeJobFilter'] = exclude_job_filter
+        if job_exact_filter:
+            request_params['jobExactFilter'] = job_exact_filter
+        if exclude_job_exact_filter:
+            request_params['excludeJobExactFilter'] = exclude_job_exact_filter
+        if execution_type_filter:
+            request_params['executionTypeFilter'] = execution_type_filter
+        if max_paging:
+            request_params['max'] = max_paging
+        if offset:
+            request_params['offset'] = offset
+        if project_name:
+            project_name_to_pass = project_name
+        else:
+            project_name_to_pass = self.project_name
+
+        request_params.update(self.params)
+
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/project/{project_name_to_pass}/executions',
+            params=request_params,
         )
 
 
@@ -189,6 +288,14 @@ def attribute_pairs_to_dict(attrs_str: Optional[str], delim_char: str = ","):
         attrs.update({match.group(1): match.group(2)})
 
     return attrs
+
+
+def convert_str_to_int(val_to_convert: Optional[str], param_name: str) -> Optional[int]:
+    if val_to_convert:
+        try:
+            return int(val_to_convert)
+        except ValueError:
+            raise DemistoException(f'\'{param_name}\' most be a number.')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -335,6 +442,65 @@ def webhooks_list_command(client: Client):
     )
 
 
+def job_execution_query_command(client: Client, args: dict):
+    """
+    This function returns a list of all existing executions.
+    :param client: Demisto client
+    :param args: command's arguments
+    :return: CommandResults object
+    """
+    status_filter: str = args.get('status_filter', '')  # TODO: add a list options: "running", succeeded", "failed" or "aborted"
+    aborted_by_filter: str = args.get('aborted_by_filter', '')
+    user_filter: str = args.get('user_filter', '')
+    recent_filter: str = args.get('recent_filter', '')
+    older_filter: str = args.get('older_filter', '')
+    begin: str = args.get('begin', '')
+    end: str = args.get('end', '')
+    adhoc: str = args.get('adhoc', '')  # TODO: add list options: true or false
+    job_id_list_filter: list = argToList(args.get('job_id_list_filter', []))
+    exclude_job_id_list_filter: list = argToList(args.get('exclude_job_id_list_filter', []))
+    job_list_filter: list = argToList(args.get('job_list_filter', []))
+    exclude_job_list_filter: list = argToList(args.get('exclude_job_list_filter', []))
+    group_path: str = args.get('group_path', '')
+    group_path_exact: str = args.get('group_path_exact', '')
+    exclude_group_path_exact: str = args.get('exclude_group_path_exact', '')
+    job_filter: str = args.get('job_filter', '')
+    exclude_job_filter: str = args.get('exclude_job_filter', '')
+    job_exact_filter: str = args.get('job_exact_filter', '')
+    exclude_job_exact_filter: str = args.get('exclude_job_exact_filter', '')
+    execution_type_filter: str = args.get('execution_type_filter', '')  #￿￿￿ TODO: add list options: scheduled, user, user-scheduled
+    max_paging: Optional[int] = convert_str_to_int(args.get('max_paging'), 'max')
+    offset: Optional[int] = convert_str_to_int(args.get('offset'), 'offset')
+    project_name: str = args.get('project_name', '')
+    exclude_group_path: str = args.get('exclude_group_path', '')
+
+    result = client.job_execution_query(status_filter, aborted_by_filter, user_filter, recent_filter, older_filter,
+                                        begin, end, adhoc, job_id_list_filter, exclude_job_id_list_filter,
+                                        job_list_filter, exclude_job_list_filter,
+                                        group_path, group_path_exact, exclude_group_path,
+                                        exclude_group_path_exact, job_filter, exclude_job_filter,
+                                        job_exact_filter, exclude_job_exact_filter, execution_type_filter,
+                                        max_paging, offset, project_name)
+
+    if isinstance(result, dict):
+        result = result.get('executions')
+        if not result:
+            return "No results were found"
+
+    query_entries: list = createContext(
+        result, keyTransform=underscoreToCamelCase
+    )
+    headers = [key.replace("_", " ") for key in [*result[0].keys()]]
+
+    readable_output = tableToMarkdown('Webhooks List:', result, headers=headers, headerTransform=pascalToSpace)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Rundeck.Webhooks',
+        outputs=query_entries,
+        outputs_key_field='id'
+    )
+
+
 def test_module(client: Client) -> str:
     # INTEGRATION DEVELOPER TIP
     # Client class should raise the exceptions, but if the test fails
@@ -419,6 +585,9 @@ def main() -> None:
             return_results(result)
         elif demisto.command() == 'rundeck-job-retry':
             result = job_retry_command(client, args)
+            return_results(result)
+        elif demisto.command() == 'rundeck-job-executions-query':
+            result = job_execution_query_command(client, args)
             return_results(result)
     # Log exceptions and return errors
     except Exception as e:
