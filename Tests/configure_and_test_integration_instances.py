@@ -1075,15 +1075,16 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         prints_manager.add_print_job('{}\n'.format(integrations_msg), print_warning, 0)
 
         integrations_to_configure = modified_integrations[:]
-        print('Integration to configure: \n')
-        print(integrations_to_configure)
         integrations_to_configure.extend(unchanged_integrations)
-        print(integrations_to_configure)
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
         new_ints_params_set = set_integration_params(new_integrations, build.secret_conf['integrations'], instance_names_conf,
                                                      placeholders_map)
         ints_to_configure_params_set = set_integration_params(integrations_to_configure, build.secret_conf['integrations'],
                                                               instance_names_conf, placeholders_map)
+        print('integrations_to_configure: ' + integrations_to_configure)
+        print(type(integrations_to_configure))
+        print(ints_to_configure_params_set)
+        print(type(ints_to_configure_params_set))
         if not new_ints_params_set:
             prints_manager.add_print_job(
                 'failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)), print_error, 0)
