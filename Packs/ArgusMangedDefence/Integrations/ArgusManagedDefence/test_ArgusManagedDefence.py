@@ -15,7 +15,15 @@ def test_add_case_tag(requests_mock):
 
 
 def test_add_comment(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import add_comment_command
+    from test_data import argus_case_data
+
+    method_url = f"/cases/v2/case/{case_id}/comments"
+
+    requests_mock.post(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_COMMENT)
+    args = {"case_id": case_id, "comment": "test_comment"}
+    result = add_comment_command(args)
+    assert result.raw_response == argus_case_data.ARGUS_CASE_COMMENT
 
 
 def test_advanced_case_search(requests_mock):
@@ -62,7 +70,7 @@ def test_list_case_tags(requests_mock):
     from ArgusManagedDefence import list_case_tags_command
     from test_data import argus_case_data
 
-    method_url = f"/cases/v2/case/{case_id}/tags?limit=25"
+    method_url = f"/cases/v2/case/{case_id}/tags"
 
     requests_mock.get(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_TAGS)
     args = {"case_id": case_id}
@@ -71,7 +79,15 @@ def test_list_case_tags(requests_mock):
 
 
 def test_list_case_comments(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import list_case_comments_command
+    from test_data import argus_case_data
+
+    method_url = f"/cases/v2/case/{case_id}/comments"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_COMMENTS_LIST)
+    args = {"case_id": case_id}
+    result = list_case_comments_command(args)
+    assert result.raw_response == argus_case_data.ARGUS_CASE_COMMENTS_LIST
 
 
 def test_remove_case_tag_by_key_value(requests_mock):
@@ -108,3 +124,4 @@ def test_fetch_observations_for_domain(requests_mock):
 
 def test_fetch_observations_for_i_p(requests_mock):
     raise NotImplementedError
+

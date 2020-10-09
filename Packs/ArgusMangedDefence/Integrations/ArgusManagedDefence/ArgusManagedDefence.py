@@ -139,13 +139,92 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
         asReplyTo=as_reply_to,
         internal=internal,
         originEmailAddress=origin_email_address,
-        associatedAttachmentID=associated_attachment_id
+        associatedAttachmentID=associated_attachment_id,
     )
-    readable_output = "TODO find out how to depend on a script: html to markdown"
+    readable_output = f"# #{case_id}: Added comment\n"
+    readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['addedTime']}*\n"
+    readable_output += f"{result['data']['comment']}"
+
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    start_timestamp = args.get("start_timestamp", None)
+    end_timestamp = args.get("end_timestamp", None)
+    limit = args.get("limit", None)
+    offset = args.get("offset", None)
+    include_deleted = args.get("include_deleted", None)
+    sub_criteria = args.get("sub_criteria", None)
+    exclude = args.get("exclude", None)
+    required = args.get("required", None)
+    customer_id = args.get("customer_id", None)
+    case_id = args.get("case_id", None)
+    customer = args.get("customer", None)
+    case_type = args.get("type", None)
+    service = args.get("service", None)
+    category = args.get("category", None)
+    status = args.get("status", None)
+    priority = args.get("priority", None)
+    asset_id = args.get("asset_id", None)
+    tag = args.get("tag", None)
+    workflow = args.get("workflow", None)
+    field = args.get("field", None)
+    keywords = args.get("keywords", None)
+    time_field_strategy = args.get("time_field_strategy", None)
+    time_match_strategy = args.get("time_match_strategy", None)
+    keyword_field_strategy = args.get("keyword_field_strategy", None)
+    keyword_match_strategy = args.get("keyword_match_strategy", None)
+    user = args.get("user", None)
+    user_field_strategy = args.get("user_field_strategy", None)
+    user_assigned = args.get("user_assigned", None)
+    tech_assigned = args.get("tech_assigned", None)
+    include_workflows = args.get("include_workflows", None)
+    include_description = args.get("include_description", None)
+    access_mode = args.get("access_mode", None)
+    explicit_access = args.get("explicit_access", None)
+    sort_by = args.get("sort_by", None)
+    include_flags = args.get("include_flags", None)
+    exclude_flags = args.get("exclude_flags", None)
+
+    result = advanced_case_search(
+        startTimestamp=start_timestamp,
+        endTimestamp=end_timestamp,
+        limit=limit,
+        offset=offset,
+        includeDeleted=include_deleted,
+        subCriteria=sub_criteria,
+        exclude=exclude,
+        required=required,
+        customerID=customer_id,
+        caseID=case_id,
+        customer=customer,
+        type=case_type,
+        service=service,
+        category=category,
+        status=status,
+        priority=priority,
+        assetID=asset_id,
+        tag=tag,
+        workflow=workflow,
+        field=field,
+        keywords=keywords,
+        timeFieldStrategy=time_field_strategy,
+        timeMatchStrategy=time_match_strategy,
+        keywordFieldStrategy=keyword_field_strategy,
+        keywordMatchStrategy=keyword_match_strategy,
+        user=user,
+        userFieldStrategy=user_field_strategy,
+        userAssigned=user_assigned,
+        techAssigned=tech_assigned,
+        includeWorkflows=include_workflows,
+        includeDescription=include_description,
+        accessMode=access_mode,
+        explicitAccess=explicit_access,
+        sortBy=sort_by,
+        includeFlags=include_flags,
+        excludeFlags=exclude_flags,
+    )
+    return CommandResults(readable_output=tableToMarkdown("Result", result["data"]), outputs=result)
 
 
 def close_case_command(args: Dict[str, Any]) -> CommandResults:
@@ -186,18 +265,43 @@ def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
 
 def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", None)
+    limit = args.get("limit", None)
+    offset = args.get("offset", None)
     if not case_id:
         raise ValueError("case_id not specified")
-    result = list_case_tags(caseID=case_id)
+    result = list_case_tags(caseID=case_id, limit=limit, offset=offset)
     headers = ["key", "value", "addedTime"]
     readable_output = tableToMarkdown(
-        f"{case_id}: Tags", result["data"], headers=headers
+        f"#{case_id}: Tags", result["data"], headers=headers
     )
     return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    case_id = args.get("case_id", None)
+    before_comment = args.get("before_comment", None)
+    after_comment = args.get("after_comment", None)
+    offset = args.get("offset", None)
+    limit = args.get("limit", None)
+    sort_by = args.get("sort_by", None)
+    if not case_id:
+        raise ValueError("case_id not specified")
+    if sort_by:
+        sort_by = ["addedTimestamp"] if sort_by == "ascending" else ["-addedTimestamp"]
+    result = list_case_comments(
+        caseID=case_id,
+        beforeComment=before_comment,
+        afterComment=after_comment,
+        offset=offset,
+        limit=limit,
+        sortBy=sort_by,
+    )
+    readable_output = f"# #{case_id}: Comments\n"
+    for comment in result["data"]:
+        readable_output += f"#### *{comment['addedByUser']['userName']} - {comment['addedTime']}*\n"
+        readable_output += f"{comment['comment']}\n\n"
+
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def remove_case_tag_by_key_value_command(args: Dict[str, Any]) -> CommandResults:

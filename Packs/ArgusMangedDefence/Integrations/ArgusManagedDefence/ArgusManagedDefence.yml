@@ -43,7 +43,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: https://portal.mnemonic.no
+- defaultvalue: https://api.mnemonic.no
   display: API URL
   hidden: false
   name: api_url
@@ -84,6 +84,18 @@ script:
       name: case_id
       required: true
       secret: false
+    - default: false
+      description: Limit the amount of fetched tags. (Default 25)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Skip a number of results
+      isArray: false
+      name: offset
+      required: false
+      secret: false
     deprecated: false
     description: List tags attached to an Argus case
     execution: false
@@ -109,13 +121,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'false'
+      defaultValue: 'False'
       description: Whether this comment will be shown to the customer
       isArray: false
       name: internal
       predefined:
       - 'false'
-      - ' true'
+      - 'true'
       required: false
       secret: false
     - default: false
@@ -134,7 +146,324 @@ script:
     description: Add comment to an Argus case
     execution: false
     name: argus_add_comment
-  dockerimage: demisto/argus-toolbelt:1.0.0.12012
+  - arguments:
+    - default: false
+      description: Case ID of Argus case
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: Limit to comments before this comment ID (in sort order)
+      isArray: false
+      name: before_comment
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Skip a number of results (default 0)
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of returned results (default 25)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Sort ordering. Default is ascending
+      isArray: false
+      name: sort_by
+      predefined:
+      - ascending
+      - descending
+      required: false
+      secret: false
+    - default: false
+      description: Limit to comments after this comment ID (in sort order)
+      isArray: false
+      name: after_comment
+      required: false
+      secret: false
+    deprecated: false
+    description: List the comments of an Argus case
+    execution: false
+    name: argus_list_case_comments
+  - arguments:
+    - default: false
+      description: Start timestamp
+      isArray: false
+      name: start_timestamp
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: End timestamp
+      isArray: false
+      name: end_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: Set this value to set max number of results. By default, no restriction
+        on result set size.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'Set this value to skip the first (offset) objects. By default,
+        return result from first object. '
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Set to true to include deleted objects. By default, exclude deleted
+        objects.
+      isArray: false
+      name: include_deleted
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Set additional criterias which are applied using a logical OR.
+      isArray: true
+      name: sub_criteria
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Only relevant for subcriteria. If set to true, objects matching
+        this subcriteria object will be excluded. '
+      isArray: false
+      name: exclude
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Only relevant for subcriteria. If set to true, objects matching
+        this subcriteria are required (AND-ed together with parent criteria). '
+      isArray: false
+      name: required
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: 'Restrict search to data belonging to specified customers. '
+      isArray: true
+      name: customer_id
+      required: false
+      secret: false
+    - default: false
+      description: 'Restrict search to specific cases (by ID). '
+      isArray: true
+      name: case_id
+      required: false
+      secret: false
+    - default: false
+      description: 'Restrict search to specific customers (by ID or shortname). '
+      isArray: true
+      name: customer
+      required: false
+      secret: false
+    - default: false
+      description: Restrict search to entries of one of these types.
+      isArray: true
+      name: case_type
+      required: false
+      secret: false
+    - default: false
+      description: 'Restrict search to entries of one of these services (by service
+        shortname or ID). '
+      isArray: true
+      name: service
+      required: false
+      secret: false
+    - default: false
+      description: Restrict search to entries of one of these categories (by category
+        shortname or ID).
+      isArray: true
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: 'Restrict search to entries of one of these statuses. '
+      isArray: true
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: Restrict search to entries with given priorties.
+      isArray: true
+      name: priority
+      required: false
+      secret: false
+    - default: false
+      description: Restrict search to cases associated with specified assets (hosts,
+        services or processes).
+      isArray: true
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: 'Restrict search to entries matching the given tag criteria. '
+      isArray: true
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: 'Restrict search to entries matching the given workflow criteria. '
+      isArray: true
+      name: workflow
+      required: false
+      secret: false
+    - default: false
+      description: 'Restrict search to entries matching the given field criteria. '
+      isArray: true
+      name: field
+      required: false
+      secret: false
+    - default: false
+      description: Search for keywords.
+      isArray: true
+      name: keywords
+      required: false
+      secret: false
+    - default: false
+      description: 'Defines which timestamps will be included in the search (default
+        all). '
+      isArray: true
+      name: time_field_strategy
+      required: false
+      secret: false
+    - default: false
+      description: Defines how strict to match against different timestamps (all/any)
+        using start and end timestamp (default any).
+      isArray: false
+      name: time_match_strategy
+      required: false
+      secret: false
+    - default: false
+      description: 'Defines which fields will be searched by keywords (default all
+        supported fields). '
+      isArray: true
+      name: keyword_field_strategy
+      required: false
+      secret: false
+    - default: false
+      description: 'Defines the MatchStrategy for keywords (default match all keywords). '
+      isArray: false
+      name: keyword_match_strategy
+      required: false
+      secret: false
+    - default: false
+      description: 'Restrict search to cases associated with these users or user groups
+        (by ID or shortname). '
+      isArray: true
+      name: user
+      required: false
+      secret: false
+    - default: false
+      description: 'Defines which user fields will be searched (default match all
+        user fields). '
+      isArray: true
+      name: user_field_strategy
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If set, limit search to cases where assignedUser field is set/unset.
+      isArray: false
+      name: user_assigned
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If set, limit search to cases where assignedTech field is set/unset.
+      isArray: false
+      name: tech_assigned
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 'If true, include list of workflows in result. Default is false
+        (not present). '
+      isArray: false
+      name: include_workflows
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: 'If false, omit description from response. Default is true (description
+        is present). '
+      isArray: false
+      name: include_description
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: If set, only match cases which is set to one of these access modes.
+      isArray: true
+      name: access_mode
+      required: false
+      secret: false
+    - default: false
+      description: If set, only match cases which have explicit access grants matching
+        the specified criteria.
+      isArray: true
+      name: explicit_access
+      required: false
+      secret: false
+    - default: false
+      description: List of properties to sort by (prefix with "-" to sort descending).
+      isArray: true
+      name: sort_by
+      required: false
+      secret: false
+    - default: false
+      description: 'Only include objects which have includeFlags set. '
+      isArray: true
+      name: include_flags
+      required: false
+      secret: false
+    - default: false
+      description: 'Exclude objects which have excludeFlags set. '
+      isArray: true
+      name: exclude_flags
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns cases matching the defined case search criteria
+    execution: false
+    name: argus_advanced_case_search
+  dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true
   longRunning: false
