@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 import requests
 import json
 import urllib3
@@ -280,7 +281,156 @@ def write_status_context_data(status_path, message, status, count):
     demisto.setIntegrationContext(existing_data)
 
 
+def get_servicenow_device_query(args):
+
+    device_list = args.get("devices")
+    deviceids = [device['deviceid'] for device in device_list]
+
+    query = "mac_addressIN" + ",".join(deviceids)
+
+    return CommandResults(
+        readable_output="Service Table Device Query is %s" % (query),
+        outputs_prefix='PaloAltoIoTIntegrationBase.Query',
+        outputs=query
+    )
+
+
+"""
+the return example:
+{
+    insert: [
+        {
+            fields: "key1=value1;key2=value2;key3=value3;...",
+            custom_fields: "key1=value4;key2=value5;key3=value6;..."
+        },
+        {
+            fields: "key1=value1;key2=value2;key3=value3;...",
+            custom_fields: "key1=value4;key2=value5;key3=value6;..."
+        },
+        ...
+    ],
+
+    update: [
+        {
+            sys_id: 'sys_id_1',
+            fields: "key1=value1;key2=value2;key3=value3;...",
+            custom_fields: "key1=value4;key2=value5;key3=value6;..."
+
+        },
+        {
+            sys_id: 'sys_id_2'
+            fields: "key1=value1;key2=value2;key3=value3;...",
+            custom_fields: "key1=value4;key2=value5;key3=value6;..."
+        }
+        ...
+    ]
+
+}
+"""
+
+
+def get_servicenow_upsert_devices(args):
+
+    sn_id_deviceids = args.get("sn_id_deviceids")
+    device_list = args.get("devices")
+    ids_map = {}
+    if sn_id_deviceids:
+        for i in range(len(sn_id_deviceids)):
+            ids = sn_id_deviceids[i]
+            sn_id = ids["ID"]
+            deviceid = ids["mac_address"]
+            ids_map[deviceid] = sn_id
+
+    update_list = []
+    insert_list = []
+    for i in range(len(device_list)):
+        device = device_list[i]
+        deviceid = device["deviceid"]
+        instance = convert_device_to_servicenow_format(device)
+        if (not ids_map) | (deviceid not in ids_map):
+            insert_list.append(instance)
+        else:
+            sn_id = ids_map[deviceid]
+            instance["sys_id"] = sn_id
+            update_list.append(instance)
+
+    result = {}
+    result["insert"] = insert_list
+    result["update"] = update_list
+
+    return CommandResults(
+        readable_output="Service Table Device Upserting List",
+        outputs_prefix='PaloAltoIoTIntegrationBase.UpsertDevices',
+        outputs=result
+    )
+
+
+"""
+return example:
+[
+    {
+        fields: "key1=value1;key2=value2;key3=value3;...",
+        custom_fields: value4;key2=value5;key3=value6;...
+    },
+    {
+        fields: "key1=value1;key2=value2;key3=value3;...",
+        custom_fields: value4;key2=value5;key3=value6;...
+    },
+    ...
+]
+"""
+
+
+def convert_device_to_servicenow_format(device):
+    device_fields_mapping = {
+        "hostname": "name",
+        "ip_address": "ip_address",
+        "deviceid": "mac_address"
+    }
+    device_custome_fields_mapping = {
+        "category": "u_category",
+        "profile": "u_profile",
+        "display_tags": "u_iot_tag",
+        "vendor": "u_iot_vendor",
+        "model": "u_iot_model",
+        "os_group": "u_iot_os",
+        "SSID": "u_iot_ssid",
+        "site_name": "u_iot_site",
+        "vlan": "u_iot_vlan",
+        "wire_or_wireless": "u_iot_wired_wireless",
+        "os_support": "u_os_support"
+    }
+    instance = {}
+    fields = ''
+    custom_fields = ''
+
+    for field in device_fields_mapping:
+        sn_name = device_fields_mapping[field]
+        value = ''
+        if field in device:
+            if device[field] != None:
+                value = str(device[field])
+        else:
+            value = ' '
+        fields += (sn_name + "=" + value + ";")
+    instance["fields"] = fields
+
+    for field in device_custome_fields_mapping:
+        sn_name = device_custome_fields_mapping[field]
+        value = ''
+        if field in device:
+            if device[field] != None:
+                value = str(device[field])
+        else:
+            value = ' '
+        custom_fields += (sn_name + "=" + value + ";")
+
+    instance["custom_fields"] = custom_fields
+    return instance
+
+
 def run_api_command(api_type, delay=-1):
+
     if api_type not in api_type_map:
         return_error("Invalid API type")
 
@@ -398,7 +548,7 @@ def main() -> None:
             results = run_api_command("Alerts", -1)
             return_results(results)
         elif demisto.command() == 'get-incremental-device-inventory':
-            results = run_api_command("Devices", 15)
+            results = run_api_command("Devices", 5)
             return_results(results)
         elif demisto.command() == 'get-incremental-alerts':
             results = run_api_command("Alerts", 15)
@@ -417,6 +567,12 @@ def main() -> None:
             return_results(results)
         elif demisto.command() == 'report-status-to-iot-cloud':
             results = send_return_status()
+            return_results(results)
+        elif demisto.command() == 'get-servicenow-device-query':
+            results = get_servicenow_device_query(demisto.args())
+            return_results(results)
+        elif demisto.command() == 'get-servicenow-upsert-devices':
+            results = get_servicenow_upsert_devices(demisto.args())
             return_results(results)
 
     # Log exceptions and return errors

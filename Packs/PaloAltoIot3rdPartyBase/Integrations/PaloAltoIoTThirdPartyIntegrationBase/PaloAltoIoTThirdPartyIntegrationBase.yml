@@ -131,7 +131,31 @@ script:
     outputs:
     - contextPath: PaloAltoIoTIntegrationBase.Vulnerabilities
       description: list of vulnerability maps
-  dockerimage: demisto/python3:3.8.5.11789
+  - arguments:
+    - description: a list of devices
+      isArray: true
+      name: devices
+    description: Gets a list of device query of service now
+    name: get-servicenow-device-query
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.Query
+      description: mac_addressIN[list of deviceid]
+      type: string
+  - arguments:
+    - description: incremental devices list
+      isArray: true
+      name: devices
+      required: true
+    - description: list of service now Id and corresponding deviceid
+      isArray: true
+      name: sn_id_deviceids
+    description: Gets service now upsert devices
+    name: get-servicenow-upsert-devices
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.UpsertDevices
+      description: Return an object contains two list. The first list is inserted
+        devices, the second is updated devices
+  dockerimage: demisto/python3:3.8.6.12176
   longRunning: true
   runonce: false
   script: ''
