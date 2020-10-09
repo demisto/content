@@ -3164,6 +3164,7 @@
     "skipped_integrations": {
 
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "ZeroFox": "Issue 29284",
         "Recorded Future v2": "Issue 29090",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
