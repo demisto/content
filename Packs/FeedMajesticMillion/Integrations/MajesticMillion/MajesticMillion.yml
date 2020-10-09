@@ -33,6 +33,12 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- defaultvalue: 100000
+  additionalinfo: Can be any number between 1 and 1000000.
+  display: Number of top domains to fetch from the feed.
+  name: limit
+  required: false
+  type: 0
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
     fetched from the feed
   display: Traffic Light Protocol Color
@@ -44,7 +50,7 @@ configuration:
   - WHITE
   required: false
   type: 15
-- defaultvalue: indicatorType
+- defaultvalue: suddenDeath
   display: ''
   name: feedExpirationPolicy
   options:

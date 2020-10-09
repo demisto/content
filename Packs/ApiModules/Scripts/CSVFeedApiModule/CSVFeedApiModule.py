@@ -250,7 +250,7 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
     return fields_mapping
 
 
-def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, **kwargs):
+def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, limit: int = 0, **kwargs):
     iterator = client.build_iterator(**kwargs)
     indicators = []
     config = client.feed_url_to_config or {}
@@ -280,6 +280,9 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                         indicator['fields']['trafficlightprotocol'] = client.tlp_color
 
                     indicators.append(indicator)
+
+    if limit:
+        indicators = indicators[:limit]
     return indicators
 
 
@@ -318,7 +321,8 @@ def feed_main(feed_name, params=None, prefix=''):
             indicators = fetch_indicators_command(
                 client,
                 params.get('indicator_type'),
-                params.get('auto_detect_type')
+                params.get('auto_detect_type'),
+                params.get('limit'),
             )
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
