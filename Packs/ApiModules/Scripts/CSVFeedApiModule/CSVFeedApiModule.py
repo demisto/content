@@ -65,7 +65,7 @@ class Client(BaseClient):
         """
         self.tags: List[str] = argToList(feedTags)
         self.tlp_color = tlp_color
-        self.value_field=value_field
+        self.value_field = value_field
         if not credentials:
             credentials = {}
 
