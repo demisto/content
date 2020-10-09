@@ -2,6 +2,7 @@ id: Analyst1 Integration Test
 version: -1
 name: Analyst1 Integration Test
 description: Analyst1 Integration testplaybook
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":

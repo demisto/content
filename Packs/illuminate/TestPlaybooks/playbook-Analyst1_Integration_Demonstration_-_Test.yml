@@ -1,6 +1,7 @@
 id: Analyst1 Integration Demonstration - Test
 version: -1
 name: Analyst1 Integration Demonstration - Test
+fromversion: 5.0.0
 starttaskid: '0'
 tasks:
   '0':
@@ -329,4 +330,3 @@ view: |-
 inputs: []
 outputs: []
 description: ''
-fromversion: 1.8.7
