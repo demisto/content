@@ -1,4 +1,4 @@
 
 #### Playbooks
 ##### QRadar - Get offense correlations v2
-- Maintenance and stability enhancements
+- Added support for the Qradar V2 integration.
