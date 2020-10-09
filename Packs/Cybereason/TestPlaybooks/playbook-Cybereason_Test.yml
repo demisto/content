@@ -1,14 +1,15 @@
 id: Cybereason Test
-version: -1
+version: 14
+vcShouldKeepItemLegacyProdMachine: false
 name: Cybereason Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1c31af4c-e99f-4180-80ac-7315f9f7e76e
+    taskid: 49c7106f-21e0-45af-8f26-bcb28132fd71
     type: start
     task:
-      id: 1c31af4c-e99f-4180-80ac-7315f9f7e76e
+      id: 49c7106f-21e0-45af-8f26-bcb28132fd71
       version: -1
       name: ""
       iscommand: false
@@ -27,16 +28,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 934242bc-8659-4451-8b31-b66e97c8e704
+    taskid: 8bb987ab-ee97-4bcb-82a9-a7ad9e2a2f84
     type: regular
     task:
-      id: 934242bc-8659-4451-8b31-b66e97c8e704
+      id: 8bb987ab-ee97-4bcb-82a9-a7ad9e2a2f84
       version: -1
       name: cybereason-is-probe-connected
-      description: Checks if the machine is currently connected to the Cybereason
-        server
+      description: Checks if the machine is currently connected to the Cybereason server
       script: Cybereason|||cybereason-is-probe-connected
       type: regular
       iscommand: true
@@ -46,7 +48,7 @@ tasks:
       - "2"
     scriptarguments:
       machine:
-        simple: EC2AMAZ-5MAN2HC
+        simple: marketing
     separatecontext: false
     view: |-
       {
@@ -58,12 +60,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 33b2e52b-e683-4588-851f-7b32707b0c67
-    type: regular
+    taskid: 00196429-becc-4a39-8431-044c6e7bceec
+    type: condition
     task:
-      id: 33b2e52b-e683-4588-851f-7b32707b0c67
+      id: 00196429-becc-4a39-8431-044c6e7bceec
       version: -1
       name: VerifyContext
       description: |-
@@ -72,20 +76,24 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "3"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: isConnected,Name
-      path:
-        simple: Cybereason.Machine
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: Cybereason.Machine.isConnected
+            iscontext: true
+          right:
+            value:
+              simple: true, false
     view: |-
       {
         "position": {
@@ -96,12 +104,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 61df3be3-2a56-44e6-8d03-5a167910aab4
+    taskid: dc9e83ca-8118-45c8-8b7f-4d1390f706da
     type: regular
     task:
-      id: 61df3be3-2a56-44e6-8d03-5a167910aab4
+      id: dc9e83ca-8118-45c8-8b7f-4d1390f706da
       version: -1
       name: cybereason-query-connections
       description: Searches for connections.
@@ -129,12 +139,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 6a4f26ee-d00a-4f81-8404-d1af20ece8ef
-    type: regular
+    taskid: 50ff229a-56e4-46b9-8225-5995f761622d
+    type: condition
     task:
-      id: 6a4f26ee-d00a-4f81-8404-d1af20ece8ef
+      id: 50ff229a-56e4-46b9-8225-5995f761622d
       version: -1
       name: VerifyContext
       description: |-
@@ -143,20 +155,21 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "5"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Name,Direction,ServerAddress,OwnerMachine,OwnerProcess,ServerPort
-      path:
-        simple: Connection
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Connection
+            iscontext: true
     view: |-
       {
         "position": {
@@ -167,12 +180,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 2b22cece-4eed-4012-83f9-8f695a545137
+    taskid: 8d17af47-e99e-4aec-8206-45f7d77cae2f
     type: regular
     task:
-      id: 2b22cece-4eed-4012-83f9-8f695a545137
+      id: 8d17af47-e99e-4aec-8206-45f7d77cae2f
       version: -1
       name: cybereason-query-processes
       description: Searches for processes with various filters.
@@ -205,12 +220,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 19f190cc-144d-442f-834c-f626274265ac
-    type: regular
+    taskid: 6bf9e778-e955-4792-8cd7-e23b093cb911
+    type: condition
     task:
-      id: 19f190cc-144d-442f-834c-f626274265ac
+      id: 6bf9e778-e955-4792-8cd7-e23b093cb911
       version: -1
       name: VerifyContext
       description: |-
@@ -219,20 +236,21 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "11"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Name,CreationTime,OwnerMachine,User
-      path:
-        simple: Process
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Process
+            iscontext: true
     view: |-
       {
         "position": {
@@ -243,12 +261,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: c34e6d72-f982-4ffd-8169-bf7e2dbc82a3
+    taskid: 687fbddc-f33c-48c5-83e8-aef8b5932f01
     type: title
     task:
-      id: c34e6d72-f982-4ffd-8169-bf7e2dbc82a3
+      id: 687fbddc-f33c-48c5-83e8-aef8b5932f01
       version: -1
       name: Success!
       type: title
@@ -265,12 +285,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 4d518bb9-d706-477c-86b8-7cf67b653d64
+    taskid: f752bb76-4135-48dd-8e7a-a6a1c28a5559
     type: regular
     task:
-      id: 4d518bb9-d706-477c-86b8-7cf67b653d64
+      id: f752bb76-4135-48dd-8e7a-a6a1c28a5559
       version: -1
       name: cybereason-query-malops
       description: Returns a list of all Malops and details on the Malops.
@@ -301,12 +323,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: c0e7200f-23b2-40a0-85a7-50447dd5ef73
+    taskid: 8b6eb2af-1ee2-4c77-866a-7a0a1553ca74
     type: regular
     task:
-      id: c0e7200f-23b2-40a0-85a7-50447dd5ef73
+      id: 8b6eb2af-1ee2-4c77-866a-7a0a1553ca74
       version: -1
       name: cybereason-malop-processes
       description: Returns a list of malops
@@ -318,8 +342,9 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      machineName: {}
       malopGuids:
-        simple: ${Cybereason.Malops.GUID}
+        simple: 11.-1411563942095027781
     separatecontext: false
     view: |-
       {
@@ -331,12 +356,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: dd92f8c2-bbea-4e71-8d36-6fac8399c57d
-    type: regular
+    taskid: 83ce5974-218e-4da9-8faa-1849bd4d8a64
+    type: condition
     task:
-      id: dd92f8c2-bbea-4e71-8d36-6fac8399c57d
+      id: 83ce5974-218e-4da9-8faa-1849bd4d8a64
       version: -1
       name: VerifyContext
       description: |-
@@ -345,20 +372,21 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "12"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Name,User,CreationTime,OwnerMachine
-      path:
-        simple: Process
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: Process
+            iscontext: true
     view: |-
       {
         "position": {
@@ -369,12 +397,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: ed84fd17-cdf0-45e1-89ea-22e6d7465ded
+    taskid: d42bf80b-c470-42bd-8583-ae8728239842
     type: regular
     task:
-      id: ed84fd17-cdf0-45e1-89ea-22e6d7465ded
+      id: d42bf80b-c470-42bd-8583-ae8728239842
       version: -1
       name: DeleteContext - Process
       description: Delete field from context
@@ -401,12 +431,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: dae944a4-1a95-4c87-8dfc-85cd3f85ceb5
+    taskid: 855f08fb-328e-45aa-882c-861d5e04f7d1
     type: regular
     task:
-      id: dae944a4-1a95-4c87-8dfc-85cd3f85ceb5
+      id: 855f08fb-328e-45aa-882c-861d5e04f7d1
       version: -1
       name: Malops fetch test
       scriptName: FetchFromInstance
@@ -449,12 +481,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: f1f4b17f-9632-442d-8924-2531f5eba4e5
+    taskid: ca0d12d6-f047-4d89-8215-028439adb061
     type: regular
     task:
-      id: f1f4b17f-9632-442d-8924-2531f5eba4e5
+      id: ca0d12d6-f047-4d89-8215-028439adb061
       version: -1
       name: Query File
       description: Query files as part of investigation
@@ -467,7 +501,7 @@ tasks:
       - "14"
     scriptarguments:
       file_hash:
-        simple: b5962945811f8d275a3a69334dbc81e8
+        simple: 605560ca0624aabf9f53675257b9be21
     separatecontext: false
     view: |-
       {
@@ -479,12 +513,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 2241dc93-920e-416a-86d0-3fff5ff6e33b
+    taskid: 2e905b2c-af88-40fe-8877-8cbeb5bf4fe5
     type: condition
     task:
-      id: 2241dc93-920e-416a-86d0-3fff5ff6e33b
+      id: 2e905b2c-af88-40fe-8877-8cbeb5bf4fe5
       version: -1
       name: Verify Query File Outputs
       type: condition
@@ -497,41 +533,20 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: Cybereason.File.MD5
-            iscontext: true
-          right:
-            value:
-              simple: b5962945811f8d275a3a69334dbc81e8
-      - - operator: isEqualString
-          left:
-            value:
-              simple: File.MD5
-            iscontext: true
-          right:
-            value:
-              simple: b5962945811f8d275a3a69334dbc81e8
-      - - operator: isExists
-          left:
-            value:
-              simple: Cybereason.File.SHA1
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Cybereason.File.Name
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Cybereason.File.Machine
             iscontext: true
       - - operator: isExists
           left:
             value:
               simple: Cybereason.File.Malicious
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.File.SHA1
             iscontext: true
     view: |-
       {
@@ -543,12 +558,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: 63f82e7f-5e09-4449-89df-67e464fccad3
+    taskid: 65b71f7a-0f4c-4730-82e0-2972812f11ff
     type: regular
     task:
-      id: 63f82e7f-5e09-4449-89df-67e464fccad3
+      id: 65b71f7a-0f4c-4730-82e0-2972812f11ff
       version: -1
       name: Query Domain
       script: '|||cybereason-query-domain'
@@ -572,12 +589,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: c9c278f2-0067-44dc-8202-3b63d488639a
+    taskid: 006a06da-17b8-4fae-8cb9-1483f71756d1
     type: condition
     task:
-      id: c9c278f2-0067-44dc-8202-3b63d488639a
+      id: 006a06da-17b8-4fae-8cb9-1483f71756d1
       version: -1
       name: Verify Query Domain Outputs
       type: condition
@@ -590,36 +609,15 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: Cybereason.Domain.Name
             iscontext: true
-          right:
-            value:
-              simple: analytics.twitter.com
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: Domain.Name
-            iscontext: true
-          right:
-            value:
-              simple: analytics.twitter.com
-      - - operator: isExists
-          left:
-            value:
-              simple: Cybereason.Domain.Malicious
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Cybereason.Domain.IsInternalDomain
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Cybereason.Domain.Reputation
             iscontext: true
     view: |-
       {
@@ -631,12 +629,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 4e95f874-df25-460d-8da1-2265eec5304a
+    taskid: 298ec2bf-0c8e-4da1-82c9-8758b3ea33e2
     type: regular
     task:
-      id: 4e95f874-df25-460d-8da1-2265eec5304a
+      id: 298ec2bf-0c8e-4da1-82c9-8758b3ea33e2
       version: -1
       name: Query User
       script: '|||cybereason-query-user'
@@ -648,7 +648,7 @@ tasks:
       - "18"
     scriptarguments:
       username:
-        simple: ec2amaz-5man2hc\network service
+        simple: marketing\safebreach
     separatecontext: false
     view: |-
       {
@@ -660,12 +660,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 8e94eb16-d4ff-4a72-82be-48badaeeeb6a
+    taskid: 817cf635-9200-4fd9-8ac6-281e1eaaa09c
     type: condition
     task:
-      id: 8e94eb16-d4ff-4a72-82be-48badaeeeb6a
+      id: 817cf635-9200-4fd9-8ac6-281e1eaaa09c
       version: -1
       name: Verify Query User Outputs
       type: condition
@@ -678,28 +680,10 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Cybereason.User.Username
-            iscontext: true
-          right:
-            value:
-              simple: ec2amaz-5man2hc\network service
       - - operator: isExists
           left:
             value:
               simple: Cybereason.User.Domain
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Cybereason.User.LastMachineLoggedInTo
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Cybereason.User.LocalSystem
             iscontext: true
     view: |-
       {
@@ -711,6 +695,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -725,3 +711,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

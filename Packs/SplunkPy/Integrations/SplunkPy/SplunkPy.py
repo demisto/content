@@ -27,6 +27,7 @@ PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
 REPLACE_FLAG = params.get('replaceKeys', False)
 FETCH_TIME = demisto.params().get('fetch_time')
+PROXIES = handle_proxy()
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
 
@@ -558,10 +559,17 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
+    parsed_fields = None
+    if fields:
+        try:
+            parsed_fields = json.loads(fields)
+        except Exception:
+            parsed_fields = {'fields': fields}
+
     args = assign_params(
         event=event,
         host=host,
-        fields={'fields': fields} if fields else None,
+        fields=parsed_fields,
         index=index,
         sourcetype=source_type,
         source=source,
@@ -669,15 +677,25 @@ def splunk_parse_raw_command():
 
 
 def test_module(service):
-    if demisto.params().get('isFetch'):
+    params = demisto.params()
+    if params.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count': 1, 'earliest_time': time}
-        searchquery_oneshot = demisto.params()['fetchQuery']
+        searchquery_oneshot = params['fetchQuery']
         try:
             service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
         except HTTPError as error:
             return_error(str(error))
+    if params.get('hec_url'):
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        try:
+            requests.get(params.get('hec_url') + '/services/collector/health', headers=headers,
+                         verify=VERIFY_CERTIFICATE)
+        except Exception as e:
+            return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
 
 def replace_keys(data):
@@ -717,7 +735,7 @@ def kv_store_collection_config(service):
 
 def kv_store_collection_add_entries(service):
     args = demisto.args()
-    kv_store_data = args['kv_store_data']
+    kv_store_data = args.get('kv_store_data', '').encode('utf-8')
     kv_store_collection_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
     service.kvstore[kv_store_collection_name].data.insert(kv_store_data)
@@ -867,6 +885,75 @@ def get_store_data(service):
         yield store.data.query(**query)
 
 
+def create_mapping_dict(total_parsed_results, type_field):
+    """
+    Create a {'field_name': 'fields_properties'} dict to be used as mapping schemas.
+    Args:
+        total_parsed_results: list. the results from the splunk search query
+        type_field: str. the field that represents the type of the event or alert.
+
+    Returns:
+
+    """
+    types_map = {}
+    for result in total_parsed_results:
+        raw_json = json.loads(result.get('rawJSON', "{}"))
+        event_type_name = raw_json.get(type_field, '')
+        if event_type_name:
+            types_map[event_type_name] = raw_json
+
+    return types_map
+
+
+def get_mapping_fields_command(service):
+    # Create the query to get unique objects
+    # The logic is identical to the 'fetch_incidents' command
+    type_field = demisto.params().get('type_field', 'source')
+    total_parsed_results = []
+    search_offset = demisto.getLastRun().get('offset', 0)
+
+    current_time_for_fetch = datetime.utcnow()
+    dem_params = demisto.params()
+    if demisto.get(dem_params, 'timezone'):
+        timezone = dem_params['timezone']
+        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
+
+    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+    if demisto.get(dem_params, 'useSplunkTime'):
+        now = get_current_splunk_time(service)
+        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+        current_time_for_fetch = current_time_in_splunk
+
+    fetch_time_in_minutes = parse_time_to_minutes()
+    start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+    last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+
+    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
+    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
+
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
+                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+
+    searchquery_oneshot = dem_params['fetchQuery']
+
+    if demisto.get(dem_params, 'extractFields'):
+        extractFields = dem_params['extractFields']
+        extra_raw_arr = extractFields.split(',')
+        for field in extra_raw_arr:
+            field_trimmed = field.strip()
+            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
+
+    searchquery_oneshot = searchquery_oneshot + ' | dedup ' + type_field
+    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+    reader = results.ResultsReader(oneshotsearch_results)
+    for item in reader:
+        inc = notable_to_incident(item)
+        total_parsed_results.append(inc)
+
+    types_map = create_mapping_dict(total_parsed_results, type_field)
+    demisto.results(types_map)
+
+
 def main():
     if demisto.command() == 'splunk-parse-raw':
         splunk_parse_raw_command()
@@ -947,6 +1034,8 @@ def main():
             kv_store_collection_data_delete(service)
         elif demisto.command() == 'splunk-kv-store-collection-delete-entry':
             kv_store_collection_delete_entry(service)
+    if demisto.command() == 'get-mapping-fields':
+        get_mapping_fields_command(service)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

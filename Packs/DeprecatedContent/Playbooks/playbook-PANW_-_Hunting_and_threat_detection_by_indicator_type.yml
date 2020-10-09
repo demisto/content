@@ -1,10 +1,11 @@
 id: PANW - Hunting and threat detection by indicator type
 version: -1
 name: PANW - Hunting and threat detection by indicator type
-fromversion: 4.5.0
+fromversion: 5.0.0
 description: |-
   Deprecated. Use the "PANW - Hunting and threat detection by indicator type V2" playbook instead.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -964,8 +965,7 @@ tasks:
       id: 1ddc064b-ee10-4dc8-8c9e-dbae661b9464
       version: -1
       name: Search for the hash in Cortex Threat logs
-      description: The command searches the Cortex panw.threat table, which is the
-        threat logs table for PAN-OS/Panorama.
+      description: The command searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
       script: '|||cortex-query-threat-logs'
       type: regular
       iscommand: true
@@ -3323,9 +3323,7 @@ tasks:
       id: 0032ebec-4df5-4623-8832-02cc511a16b6
       version: -1
       name: PAN-OS Query Logs For Indicators
-      description: 'Query PAN-OS Logs of different types in one playbook: traffic, threat,
-        url, data-filtering and wildfire. The playbook accepts inputs such as IP.
-        hash, url.'
+      description: 'Query PAN-OS Logs of different types in one playbook: traffic, threat, url, data-filtering and wildfire. The playbook accepts inputs such as IP. hash, url.'
       playbookName: PAN-OS Query Logs For Indicators
       type: playbook
       iscommand: false

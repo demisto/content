@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
-from M2Crypto import BIO, SMIME, X509
+from M2Crypto import BIO, SMIME, X509, m2
 from typing import Dict
 from tempfile import NamedTemporaryFile
 
@@ -114,11 +114,22 @@ def verify(client: Client, args: Dict):
     st = X509.X509_Store()
     st.load_info(client.public_key_file)
     client.smime.set_x509_store(st)
+    try:
+        p7, data = SMIME.smime_load_pkcs7(signed_message['path'])
+        v = client.smime.verify(p7, data, flags=SMIME.PKCS7_NOVERIFY)
+        human_readable = f'The signature verified\n\n{v}'
 
-    p7, data = SMIME.smime_load_pkcs7(signed_message['path'])
-    v = client.smime.verify(p7, data, flags=SMIME.PKCS7_NOVERIFY)
+    except SMIME.SMIME_Error as e:
 
-    human_readable = f'The signature verified\n\n{v}'
+        if str(e) == 'no content type':  # If no content type; see if we can process as DER format
+            with open(signed_message['path'], "rb") as message_file:
+                p7data = message_file.read()
+            p7bio = BIO.MemoryBuffer(p7data)
+            p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
+            v = client.smime.verify(p7, flags=SMIME.PKCS7_NOVERIFY)
+            return_results(fileResult('unwrapped-' + signed_message.get('name'), v))
+            human_readable = 'The signature verified\n\n'
+
     return human_readable, {}
 
 
@@ -136,10 +147,20 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
         encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
 
     client.smime.load_key(client.private_key_file, client.public_key_file)
+    try:
+        p7, data = SMIME.smime_load_pkcs7(encrypt_message['path'])
 
-    p7, data = SMIME.smime_load_pkcs7(encrypt_message['path'])
+        out = client.smime.decrypt(p7).decode('utf-8')
 
-    out = client.smime.decrypt(p7).decode('utf-8')
+    except SMIME.SMIME_Error as e:
+
+        if str(e) == 'no content type':  # If no content type; see if we can process as DER format
+            with open(encrypt_message['path'], "rb") as message_file:
+                p7data = message_file.read()
+            p7bio = BIO.MemoryBuffer(p7data)
+            p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
+            out = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY).decode('utf-8')
+
     entry_context = {
         'SMIME.Decrypted': {
             'Message': out

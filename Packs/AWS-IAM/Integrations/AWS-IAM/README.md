@@ -6,7 +6,7 @@
 <li><em>IAMReadOnlyAccess</em></li>
 </ul>
 <h2>Prerequisites</h2>
-<p>It is important that you familiarize yourself with and complete all steps detailed in the <a href="https://support.demisto.com/hc/en-us/articles/360005686854">Amazon AWS Integrations Configuration Guide</a>.</p>
+<p>It is important that you familiarize yourself with and complete all steps detailed in the <a href="https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication">AWS Integrations - Authentication</a>.</p>
 <h2>Configure the AWS IAM Integration on Demisto</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>

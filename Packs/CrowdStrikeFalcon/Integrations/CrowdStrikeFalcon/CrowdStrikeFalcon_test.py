@@ -1,7 +1,8 @@
 import pytest
 import os
+import json
 import demistomock as demisto
-from CommonServerPython import outputPaths, entryTypes
+from CommonServerPython import outputPaths, entryTypes, DemistoException
 
 RETURN_ERROR_TARGET = 'CrowdStrikeFalcon.return_error'
 SERVER_URL = 'https://4.4.4.4'
@@ -14,7 +15,9 @@ def get_access_token(requests_mock, mocker):
         'params',
         return_value={
             'url': SERVER_URL,
-            'proxy': True
+            'proxy': True,
+            'incidents_per_fetch': 2,
+            'fetch_incidents_or_detections': ['Detections', 'Incidents']
         }
     )
     requests_mock.post(
@@ -24,6 +27,84 @@ def get_access_token(requests_mock, mocker):
         },
         status_code=200
     )
+
+
+response_incident = {"incident_id": "inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd",
+                     "cid": "24ab288b109b411aba970e570d1ddf58",
+                     "host_ids": [
+                         "afb5d1512a00480f53e9ad91dc3e4b55"
+                     ],
+                     "hosts": [
+                         {"device_id": "afb5d1512a00480f53e9ad91dc3e4b55",
+                          "cid": "24ab288b109b411aba970e570d1ddf58",
+                          "agent_load_flags": "0",
+                          "agent_local_time": "2020-05-06T23:36:34.594Z",
+                          "agent_version": "5.28.10902.0",
+                          "bios_manufacturer": "Apple Inc.",
+                          "bios_version": "1037.100.359.0.0 (iBridge: 17.16.14263.0.0,0)",
+                          "config_id_base": "65994753",
+                          "config_id_build": "10902",
+                          "config_id_platform": "4",
+                          "external_ip": "1.1.1.1",
+                          "hostname": "SFO-M-Y81WHJ",
+                          "first_seen": "2019-05-10T17:20:39Z",
+                          "last_seen": "2020-05-17T16:59:42Z",
+                          "local_ip": "1.1.1.1",
+                          "mac_address": "86-89-ad-65-d0-30",
+                          "major_version": "18",
+                          "minor_version": "7",
+                          "os_version": "Mojave (10.14)",
+                          "platform_id": "1",
+                          "platform_name": "Mac",
+                          "product_type_desc": "Workstation",
+                          "status": "normal",
+                          "system_manufacturer": "Apple Inc.",
+                          "system_product_name": "MacBookPro15,1",
+                          "modified_timestamp": "2020-05-17T16:59:56Z"}
+                     ],
+                     "created": "2020-05-17T17:30:38Z",
+                     "start": "2020-05-17T17:30:38Z",
+                     "end": "2020-05-17T17:30:38Z",
+                     "state": "closed",
+                     "status": 20,
+                     "name": "Incident on SFO-M-Y81WHJ at 2020-05-17T17:30:38Z",
+                     "description": "Objectives in this incident: Keep Access. Techniques: External Remote Services. "
+                                    "Involved hosts and end users: SFO-M-Y81WHJ.",
+                     "tags": [
+                         "Objective/Keep Access"
+                     ],
+                     "fine_score": 38}
+
+
+incident_context = {'name': 'Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd',
+                    'occurred': '2020-05-17T16:59:56Z',
+                    'rawJSON':
+                        '{"incident_id": "inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd", '
+                        '"cid": "24ab288b109b411aba970e570d1ddf58", "host_ids": ["afb5d1512a00480f53e9ad91dc3e4b55"], '
+                        '"hosts": [{"device_id": "afb5d1512a00480f53e9ad91dc3e4b55", '
+                        '"cid": "24ab288b109b411aba970e570d1ddf58", "agent_load_flags": "0", '
+                        '"agent_local_time": "2020-05-06T23:36:34.594Z", "agent_version": "5.28.10902.0", '
+                        '"bios_manufacturer": "Apple Inc.", '
+                        '"bios_version": "1037.100.359.0.0 (iBridge: 17.16.14263.0.0,0)", '
+                        '"config_id_base": "65994753", "config_id_build": "10902", "config_id_platform": "4", '
+                        '"external_ip": "1.1.1.1", "hostname": "SFO-M-Y81WHJ", '
+                        '"first_seen": "2019-05-10T17:20:39Z", "last_seen": "2020-05-17T16:59:42Z", '
+                        '"local_ip": "1.1.1.1", "mac_address": "86-89-ad-65-d0-30", "major_version": "18", '
+                        '"minor_version": "7", "os_version": "Mojave (10.14)", "platform_id": "1", '
+                        '"platform_name": "Mac", "product_type_desc": "Workstation", "status": "normal", '
+                        '"system_manufacturer": "Apple Inc.", "system_product_name": "MacBookPro15,1", '
+                        '"modified_timestamp": "2020-05-17T16:59:56Z"}], "created": "2020-05-17T17:30:38Z", '
+                        '"start": "2020-05-17T17:30:38Z", "end": "2020-05-17T17:30:38Z", "state": "closed", '
+                        '"status": 20, "name": "Incident on SFO-M-Y81WHJ at 2020-05-17T17:30:38Z", '
+                        '"description": "Objectives in this incident: Keep Access. '
+                        'Techniques: External Remote Services. Involved hosts and end users: SFO-M-Y81WHJ.", '
+                        '"tags": ["Objective/Keep Access"], "fine_score": 38}'}
+
+
+def test_incident_to_incident_context():
+    from CrowdStrikeFalcon import incident_to_incident_context
+    res = incident_to_incident_context(response_incident)
+    assert res == incident_context
 
 
 def test_timestamp_length_equalization():
@@ -2083,3 +2164,537 @@ def test_refresh_session(requests_mock, mocker):
     results = refresh_session_command()
 
     assert results['HumanReadable'] == f"CrowdStrike Session Refreshed: {session_id}"
+
+
+class TestFetch:
+    """ Test the logic of the fetch
+
+    """
+    @pytest.fixture()
+    def set_up_mocks(self, requests_mock, mocker):
+        """ Sets up the mocks for the fetch.
+        """
+        mocker.patch.object(demisto, 'setLastRun')
+        requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
+                           json={'resources': [{'detection_id': 'ldt:1',
+                                                'created_timestamp': '2020-09-04T09:16:11Z',
+                                                'max_severity_displayname': 'Low'},
+                                               {'detection_id': 'ldt:2',
+                                                'created_timestamp': '2020-09-04T09:20:11Z',
+                                                'max_severity_displayname': 'Low'}]})
+        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1', json={})
+
+    def test_old_fetch_to_new_fetch(self, set_up_mocks, mocker):
+        """
+        Tests the change of logic done in fetch. Validates that it's done smoothly
+        Given:
+            Old getLastRun which holds `first_behavior_time` and `last_detection_id`
+        When:
+            2 results are returned (which equals the FETCH_LIMIT)
+        Then:
+            The `first_behavior_time` doesn't change and an `offset` of 2 is added.
+
+        """
+        from CrowdStrikeFalcon import fetch_incidents
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
+                                                                 'last_detection_id': 1234})
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:10Z',
+                                                          'detection_offset': 2}
+
+    def test_new_fetch_with_offset(self, set_up_mocks, mocker):
+        """
+        Tests the correct flow of fetch
+        Given:
+            `getLastRun` which holds only `first_behavior_time`
+        When:
+            2 results are returned (which equals the FETCH_LIMIT)
+        Then:
+            The `first_behavior_time` doesn't change and an `offset` of 2 is added.
+        """
+
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z'})
+        from CrowdStrikeFalcon import fetch_incidents
+
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:10Z',
+                                                          'detection_offset': 2}
+
+    def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
+        """
+        Tests the correct flow of fetch
+        Given:
+            `getLastRun` which holds  `first_behavior_time` and `offset`
+        When:
+            1 result is returned (which is less than the FETCH_LIMIT)
+        Then:
+            The `first_behavior_time` changes and no `offset` is added.
+        """
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time':
+                                                                 '2020-09-04T09:16:10Z', 'detection_offset': 2})
+        # Override post to have 1 results so FETCH_LIMIT won't be reached
+        requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
+                           json={'resources': [{'detection_id': 'ldt:1',
+                                                'created_timestamp': '2020-09-04T09:16:11Z',
+                                                'max_severity_displayname': 'Low'}]})
+        from CrowdStrikeFalcon import fetch_incidents
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:11Z'}
+
+
+class TestIncidentFetch:
+    """ Test the logic of the fetch
+
+    """
+    @pytest.fixture()
+    def set_up_mocks(self, requests_mock, mocker):
+        """ Sets up the mocks for the fetch.
+        """
+        mocker.patch.object(demisto, 'setLastRun')
+        requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
+                           json={})
+        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
+                           json={'resources': [{'incident_id': 'ldt:1',
+                                                'hosts': [{'modified_timestamp': '2020-09-04T09:16:11Z'}]},
+                                               {'incident_id': 'ldt:2',
+                                                'hosts': [{'modified_timestamp': '2020-09-04T09:20:11Z'}]}]})
+
+    def test_old_fetch_to_new_fetch(self, set_up_mocks, mocker):
+        from CrowdStrikeFalcon import fetch_incidents
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z',
+                                                                 'last_incident_id': 1234})
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[1][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
+                                                          'incident_offset': 2}
+
+    def test_new_fetch_with_offset(self, set_up_mocks, mocker):
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z'})
+        from CrowdStrikeFalcon import fetch_incidents
+
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[1][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
+                                                          'incident_offset': 2}
+
+    def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z',
+                                                                 'incident_offset': 2})
+        # Override post to have 1 results so FETCH_LIMIT won't be reached
+        requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
+                           json={'resources': [{'incident_id': 'ldt:1',
+                                                'hosts': [{'modified_timestamp': '2020-09-04T09:16:11Z'}]}]})
+        from CrowdStrikeFalcon import fetch_incidents
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[1][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:11Z'}
+
+
+def get_fetch_data():
+    with open('./test_data/test_data.json', 'r') as f:
+        return json.loads(f.read())
+
+
+test_data = get_fetch_data()
+
+
+def test_get_indicator_device_id(requests_mock):
+    from CrowdStrikeFalcon import get_indicator_device_id
+    requests_mock.get("https://4.4.4.4/indicators/queries/devices/v1",
+                      json=test_data['response_for_get_indicator_device_id'])
+    res = get_indicator_device_id()
+    assert res.outputs == test_data['context_output_for_get_indicator_device_id']
+    assert res.outputs_prefix == 'CrowdStrike.DeviceID'
+    assert res.outputs_key_field == 'DeviceID'
+
+
+def test_validate_response():
+    from CrowdStrikeFalcon import validate_response
+    true_res = validate_response({"resources": "1234"})
+    false_res = validate_response({"error": "404"})
+    assert true_res
+    assert not false_res
+
+
+def test_build_error_message():
+    from CrowdStrikeFalcon import build_error_message
+
+    res_error_data = build_error_message({'meta': 1234})
+    assert res_error_data == 'Error: error code: None, error_message: something got wrong, please try again.'
+
+    res_error_data_with_specific_error = build_error_message({'errors': [{"code": 1234, "message": "hi"}]})
+    assert res_error_data_with_specific_error == 'Error: error code: 1234, error_message: hi.'
+
+
+def test_search_iocs_command_does_not_exist(requests_mock):
+    """
+    Test cs-falcon-search-iocs when no ioc is found
+
+    Given:
+     - There is no ioc in the system
+    When:
+     - Searching for iocs using cs-falcon-search-iocs command
+    Then:
+     - Return a human readable result with appropriate message
+     - Do not populate the entry context
+    """
+    from CrowdStrikeFalcon import search_iocs_command
+    response = {'resources': []}
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/queries/iocs/v1',
+        json=response,
+        status_code=200
+    )
+    results = search_iocs_command()
+    assert results["HumanReadable"] == 'Could not find any Indicators of Compromise.'
+    assert results["EntryContext"] is None
+
+
+def test_search_iocs_command_exists(requests_mock):
+    """
+    Test cs-falcon-search-iocs when an ioc is found
+
+    Given:
+     - There is a single md5 ioc in the system
+    When:
+     - Searching for iocs using cs-falcon-search-iocs command
+    Then:
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+    """
+    from CrowdStrikeFalcon import search_iocs_command
+    id_response = {'resources': ['md5:testmd5'], 'errors': []}
+    ioc_response = {
+        'resources': [{
+            'type': 'md5',
+            'value': 'testmd5',
+            'policy': 'detect',
+            'share_level': 'red',
+            'description': 'Eicar file',
+            'created_timestamp': '2020-10-01T09:09:04Z',
+            'modified_timestamp': '2020-10-01T09:09:04Z'
+        }]
+    }
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/queries/iocs/v1',
+        json=id_response,
+        status_code=200
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/entities/iocs/v1',
+        json=ioc_response,
+        status_code=200
+    )
+    results = search_iocs_command()
+    assert '| 2020-10-01T09:09:04Z | Eicar file | md5:testmd5 |' in results["HumanReadable"]
+    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+
+
+def test_search_iocs_command_error(requests_mock, mocker):
+    """
+    Test cs-falcon-search-iocs when encountering an error
+
+    Given:
+     - Call to API is bound to fail with 404
+    When:
+     - Searching for iocs using cs-falcon-search-iocs command
+    Then:
+     - Display an appropriate error via return_error
+    """
+    from CrowdStrikeFalcon import search_iocs_command
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/queries/iocs/v1',
+        json={},
+        status_code=404
+    )
+    mocker.patch.object(demisto, 'results')
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    search_iocs_command()
+    assert return_error_mock.call_args.args[0] == 'Error in API call to CrowdStrike Falcon: code: 404 - reason: None'
+
+
+def test_get_ioc_command_does_not_exist(requests_mock):
+    """
+    Test cs-falcon-get-ioc when no ioc is found
+
+    Given:
+     - There is no ioc in the system
+    When:
+     - Searching for iocs using cs-falcon-get-ioc command
+     - The server returns an error
+    Then:
+     - Raise the error back from the server
+    """
+    from CrowdStrikeFalcon import get_ioc_command
+    response = {'resources': [], 'errors': [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]}
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/entities/iocs/v1',
+        json=response,
+        status_code=200
+    )
+    with pytest.raises(DemistoException) as excinfo:
+        get_ioc_command(ioc_type='md5', value='testmd5')
+    assert [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}] == excinfo.value.args[0]
+
+
+def test_get_ioc_command_exists(requests_mock):
+    """
+    Test cs-falcon-get-ioc when an ioc is found
+
+    Given:
+     - There is a single md5 ioc in the system
+    When:
+     - Looking for iocs using cs-falcon-get-iocs command
+    Then:
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+    """
+    from CrowdStrikeFalcon import get_ioc_command
+    ioc_response = {
+        'resources': [{
+            'type': 'md5',
+            'value': 'testmd5',
+            'policy': 'detect',
+            'share_level': 'red',
+            'description': 'Eicar file',
+            'created_timestamp': '2020-10-01T09:09:04Z',
+            'modified_timestamp': '2020-10-01T09:09:04Z'
+        }]
+    }
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/entities/iocs/v1',
+        json=ioc_response,
+        status_code=200
+    )
+    results = get_ioc_command(ioc_type='md5', value='testmd5')
+    assert '| 2020-10-01T09:09:04Z | Eicar file | md5:testmd5 |' in results["HumanReadable"]
+    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+
+
+def test_upload_ioc_command_fail(requests_mock, mocker):
+    """
+    Test cs-falcon-upload-ioc where it fails to create the ioc
+
+    Given:
+     - The user tries to create an IOC
+    When:
+     - The server fails to create an IOC
+    Then:
+     - Display error message to user
+    """
+    from CrowdStrikeFalcon import upload_ioc_command
+    upload_response = {'resources': []}
+    get_response = {'resources': [], 'errors': [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]}
+    requests_mock.post(
+        f'{SERVER_URL}/indicators/entities/iocs/v1',
+        json=upload_response,
+        status_code=200
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/entities/iocs/v1',
+        json=get_response,
+        status_code=200
+    )
+    with pytest.raises(DemistoException) as excinfo:
+        upload_ioc_command(ioc_type='md5', value='testmd5')
+    assert "Failed to create IOC. Please try again." == excinfo.value.args[0]
+
+
+def test_upload_ioc_command_successful(requests_mock):
+    """
+    Test cs-falcon-upload-ioc when an upload is successful
+
+    Given:
+     - The user tries to create an IOC
+    When:
+     - The server creates an IOC
+    Then:
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+    """
+    from CrowdStrikeFalcon import upload_ioc_command
+    upload_response = {'resources': []}
+    ioc_response = {
+        'resources': [{
+            'type': 'md5',
+            'value': 'testmd5',
+            'policy': 'detect',
+            'share_level': 'red',
+            'description': 'Eicar file',
+            'created_timestamp': '2020-10-01T09:09:04Z',
+            'modified_timestamp': '2020-10-01T09:09:04Z'
+        }]
+    }
+    requests_mock.post(
+        f'{SERVER_URL}/indicators/entities/iocs/v1',
+        json=upload_response,
+        status_code=200
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/entities/iocs/v1',
+        json=ioc_response,
+        status_code=200
+    )
+    results = upload_ioc_command(ioc_type='md5', value='testmd5')
+    assert '| 2020-10-01T09:09:04Z | Eicar file | md5:testmd5 |' in results["HumanReadable"]
+    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+
+
+def test_get_ioc_device_count_command_does_not_exist(requests_mock, mocker):
+    """
+    Test cs-falcon-device-count-ioc with an unsuccessful query (doesn't exist)
+
+    Given
+     - There is no device with a process that ran md5:testmd5
+    When
+     - The user is running cs-falcon-device-count-ioc with md5:testmd5
+    Then
+     - Raise an error
+    """
+    from CrowdStrikeFalcon import get_ioc_device_count_command
+    expected_error = [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]
+    response = {'resources': [], 'errors': expected_error}
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/aggregates/devices-count/v1',
+        json=response,
+        status_code=404,
+        reason='Not found'
+    )
+    mocker.patch(RETURN_ERROR_TARGET)
+    with pytest.raises(DemistoException) as excinfo:
+        get_ioc_device_count_command(ioc_type='md5', value='testmd5')
+    assert expected_error == excinfo.value.args[0]
+
+
+def test_get_ioc_device_count_command_exists(requests_mock):
+    """
+    Test cs-falcon-device-count-ioc with a successful query
+
+    Given
+     - There is a device with a process that ran md5:testmd5
+    When
+     - The user is running cs-falcon-device-count-ioc with md5:testmd5
+    Then
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+    """
+    from CrowdStrikeFalcon import get_ioc_device_count_command
+    response = {'resources': [{'id': 'md5:testmd5', 'type': 'md5', 'value': 'testmd5', 'device_count': 1}]}
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/aggregates/devices-count/v1',
+        json=response,
+        status_code=200,
+    )
+    result = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
+    assert 'Indicator of Compromise **md5:testmd5** device count: **1**' == result['HumanReadable']
+    assert 'md5:testmd5' == result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)'][0]['ID']
+
+
+def test_get_process_details_command_not_exists(requests_mock, mocker):
+    """
+    Test cs-falcon-process-details with an unsuccessful query (doesn't exist)
+
+    Given
+     - There is no device with a process `pid:fake:process`
+    When
+     - The user is running cs-falcon-process-details with pid:fake:process
+    Then
+     - Raise an error
+    """
+    from CrowdStrikeFalcon import get_process_details_command
+    expected_error = [{'code': 404, 'message': 'pid:fake:process'}]
+    response = {'resources': [], 'errors': expected_error}
+    requests_mock.get(
+        f'{SERVER_URL}/processes/entities/processes/v1',
+        json=response,
+        status_code=200,
+    )
+    mocker.patch(RETURN_ERROR_TARGET)
+    with pytest.raises(DemistoException) as excinfo:
+        get_process_details_command(ids='pid:fake:process')
+    assert expected_error == excinfo.value.args[0]
+
+
+def test_get_process_details_command_exists(requests_mock):
+    """
+    Test cs-falcon-process-details with a successful query
+
+    Given
+     - There is a device with a process `pid:fake:process`
+    When
+     - The user is running cs-falcon-process-details with pid:fake:process
+    Then
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+     """
+    from CrowdStrikeFalcon import get_process_details_command
+    resources = {
+        'device_id': 'process',
+        'command_line': 'command_line',
+        'start_timestamp': '2020-10-01T09:05:51Z',
+        'start_timestamp_raw': '132460167512852140',
+        'stop_timestamp': '2020-10-02T06:43:45Z',
+        'stop_timestamp_raw': '132460946259334768'
+    }
+    response = {'resources': [resources]}
+    requests_mock.get(
+        f'{SERVER_URL}/processes/entities/processes/v1',
+        json=response,
+        status_code=200,
+    )
+    result = get_process_details_command(ids='pid:fake:process')
+    assert '| command_line | process | 2020-10-01T09:05:51Z | 132460167512852140 |' in result['HumanReadable']
+    assert resources == result['EntryContext']['CrowdStrike.Process(val.process_id === obj.process_id)'][0]
+
+
+def test_get_proccesses_ran_on_command_exists(requests_mock):
+    """
+    Test cs-falcon-processes-ran-on with a successful query
+
+    Given
+     - There is a device with a process `pid:fake:process`
+    When
+     - The user is running cs-falcon-processes-ran-on with pid:fake:process
+    Then
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+     """
+    from CrowdStrikeFalcon import get_proccesses_ran_on_command
+    response = {'resources': ['pid:fake:process']}
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/queries/processes/v1',
+        json=response,
+        status_code=200,
+    )
+    result = get_proccesses_ran_on_command(ioc_type='test', value='mock', device_id='123')
+    assert '### Processes with custom IOC test:mock on device 123.' in result['HumanReadable']
+    assert '| pid:fake:process |' in result['HumanReadable']
+
+    expected_proc_result = {'DeviceID': '123', 'ID': ['pid:fake:process']}
+    actual_proc_result = result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)']['Process']
+    assert expected_proc_result == actual_proc_result
+
+
+def test_get_proccesses_ran_on_command_not_exists(requests_mock):
+    """
+    Test cs-falcon-processes-ran-on with an unsuccessful query
+
+    Given
+     - There is no device with a process `pid:fake:process`
+    When
+     - The user is running cs-falcon-processes-ran-on with pid:fake:process
+    Then
+     - Raise an error
+     """
+    from CrowdStrikeFalcon import get_proccesses_ran_on_command
+    expected_error = [{'code': 404, 'message': 'pid:fake:process - Resource Not Found'}]
+    response = {'resources': [], 'errors': expected_error}
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/queries/processes/v1',
+        json=response,
+        status_code=200,
+    )
+    with pytest.raises(DemistoException) as excinfo:
+        get_proccesses_ran_on_command(ioc_type='test', value='mock', device_id='123')
+    assert expected_error == excinfo.value.args[0]
