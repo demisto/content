@@ -1,0 +1,14 @@
+{
+    "name": "AppID_PAC",
+    "description": "This project was created to increase visibility into a network beyond the Palo Alto Networks provided AppID's, reduce the attack-surface and greatly reduce the amount of time it takes to research and create custom AppID's; most of which, would normally be a manual process. Additionally, it also provides an easy way to write custom app-id's using machine-learning based on traffic patterns of unknown applications and querying threat logs for ssl & web-browsing traversing Palo Alto NGFW's. All of the initial research has been automated and presented to XSOAR in the form of an incident. Once the playbook associated with the incident is completed, the new custom AppID is then pushed to the NGFW/Panorama. URL-Based AppID learning takes a threat log feed and displays the top-10 urls with ssl or web-browsing as the application and creates an incident with the relevant data to be selected and pushed to the NGFW or panorama. The AppID engine to discover payloads/URL's was created with a previous project. We used XSOAR to provide a mechanism to view the results from the discovery process and complete the process of creating custom AppID's on the NGFW/Panorama.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Robert Lemm and Todd Walker",
+    "url": "",
+    "email": "",
+    "created": "2020-10-09T15:28:58Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

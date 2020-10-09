@@ -1,0 +1,16 @@
+commonfields:
+  id: BuildWebAppID
+  version: -1
+dockerimage: jinja
+enabled: true
+name: BuildWebAppID
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

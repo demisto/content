@@ -1,0 +1,22 @@
+{
+ "autorun": false,
+ "color": "#DBDBDB",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "App-ID Payload Result",
+ "layout": "0b6bdd05-caf8-4035-80c4-020ed30cbf4e",
+ "locked": false,
+ "name": "App-ID Payload Result",
+ "playbookId": "0be8c783-78e7-43ec-89ea-2bfa19592e3b",
+ "readonly": false,
+ "reputationCalc": 1,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

@@ -1,0 +1,486 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Select App-ID URL Results, Push to Firewall and Close Incident
+inputs: []
+name: Select App-ID URL Results, Push to Firewall and Close Incident
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: adb452fa-49ea-4f57-89d3-eebb75d57f89
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: adb452fa-49ea-4f57-89d3-eebb75d57f89
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      "No":
+      - "13"
+      "Yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: aef681c4-b5b3-4b16-8d9c-ccca68123244
+      iscommand: false
+      name: Push AppID for ${incident.website}
+      type: condition
+      version: -1
+    taskid: aef681c4-b5b3-4b16-8d9c-ccca68123244
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 802f51e0-97e3-4b28-8c06-7061aaf1f38a
+      iscommand: false
+      name: Clear Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 802f51e0-97e3-4b28-8c06-7061aaf1f38a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      category: {}
+      cmd: {}
+      command: {}
+      dst: {}
+      element:
+        simple: ${appidxml}
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: config
+      using:
+        simple: VM700
+      where: {}
+      xpath:
+        simple: ${appidxpath}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Run any command supported in the API.
+      id: e1c43a8a-635c-4819-8b29-19e79e55801a
+      iscommand: true
+      name: Push Change
+      script: Panorama|||panorama
+      type: regular
+      version: -1
+    taskid: e1c43a8a-635c-4819-8b29-19e79e55801a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 780
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      using:
+        simple: VM700
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Commits a configuration to Palo Alto Firewall or Panorama, but
+        does not validate if the commit was successful. Committing to Panorama does
+        not push the configuration to the Firewalls. To push the configuration, run
+        the panorama-push-to-device-group command.
+      id: 55d68682-7cb6-4608-8df3-3913f2368558
+      iscommand: true
+      name: Commit Changes
+      script: Panorama|||panorama-commit
+      type: regular
+      version: -1
+    taskid: 55d68682-7cb6-4608-8df3-3913f2368558
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 930
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c0136d4f-0a73-4404-8b9f-16782c0f51a1
+      iscommand: false
+      name: BuildWebAppID
+      script: 185a55a0-116e-48a6-8592-48455467c175
+      type: regular
+      version: -1
+    taskid: c0136d4f-0a73-4404-8b9f-16782c0f51a1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 640
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eaecbc95-8441-410e-8c25-2d8cbf46d8ee
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: eaecbc95-8441-410e-8c25-2d8cbf46d8ee
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1040
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      job_id:
+        simple: ${Panorama.Commit.JobID}
+      using:
+        simple: VM700
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Returns commit status for a configuration.
+      id: 1a875bf6-a9c3-43e0-84aa-fb440f6d8ea2
+      iscommand: true
+      name: panorama-commit-status
+      script: Panorama|||panorama-commit-status
+      type: regular
+      version: -1
+    taskid: 1a875bf6-a9c3-43e0-84aa-fb440f6d8ea2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 1260
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: using
+      AdditionalPollingCommandArgValues:
+        simple: VM700
+      Ids:
+        complex:
+          accessor: JobID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Panorama.Commit.Status
+              operator: isEqualString
+              right:
+                value:
+                  simple: Pending
+          root: Panorama.Commit
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: panorama-commit-status
+      Timeout:
+        simple: "60"
+      dt:
+        simple: Panorama.Commit(val.Status != 'Completed' && val.Status != 'Failed').JobID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 3cd3d666-bcba-4ffe-8c5a-34ac58e443a9
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 3cd3d666-bcba-4ffe-8c5a-34ac58e443a9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 1095
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: AppID Created for ${incident.website}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingconfirmationstatus: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 655e77ab-87a8-4454-8c3f-1467e4bf6551
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 655e77ab-87a8-4454-8c3f-1467e4bf6551
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1260
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.Commit.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: Completed
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 01ab6e97-0859-459d-8170-3752bd13b7cd
+      iscommand: false
+      name: Was Commit Successful
+      type: condition
+      version: -1
+    taskid: 01ab6e97-0859-459d-8170-3752bd13b7cd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 1430
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Admin declined AppID for ${incident.website}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingconfirmationstatus: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: ac09e09b-8ebc-405b-86ec-ff00cd30f543
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: ac09e09b-8ebc-405b-86ec-ff00cd30f543
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 800
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1475,
+        "width": 980,
+        "x": 120,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 6.0.0

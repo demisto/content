@@ -1,0 +1,22 @@
+{
+ "autorun": false,
+ "color": "#CFD8DC",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "App-ID URL Result",
+ "layout": "f30c2391-4446-41ce-8cfe-73df61815f1b",
+ "locked": false,
+ "name": "App-ID URL Result",
+ "playbookId": "376d92ce-068a-4c74-8332-b9b78d065540",
+ "readonly": false,
+ "reputationCalc": 1,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

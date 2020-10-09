@@ -1,0 +1,40 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "App-ID Payload Result"
+ ],
+ "caseInsensitive": true,
+ "cliName": "appidcharacteristics",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_appidcharacteristics",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "App-ID Characteristics",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "selectValues": [
+  "evasive-behavior",
+  "consume-big-bandwidth",
+  "used-by-malware",
+  "able-to-transfer-file",
+  "has-known-vulnerability",
+  "tunnel-other-application",
+  "tunnel-applications",
+  "prone-to-misuse",
+  "pervasive-use"
+ ],
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "multiSelect",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}
