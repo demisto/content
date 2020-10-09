@@ -1,7 +1,7 @@
 id: Cofense Triage Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Cofense Triage Test_copy
+name: Cofense Triage Test
 starttaskid: "0"
 tasks:
   "0":
