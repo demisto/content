@@ -12,10 +12,10 @@ def main():
                                'PrevGlobalRank', 'PrevTldRank', 'PrevRefSubNets', 'PrevRefIPs'],
                 'indicator_type': FeedIndicatorType.Domain,
                 'mapping': {
-                    'doamin_name': 'Domain',
-                    'domain_referring_subnets': 'RefSubNets',  # create this field
-                    'domain_referring_ips': 'RefIPs',  # create this field
-                    'idn_domain': 'IDN_Domain',  # create this field
+                    'domainname': 'Domain',
+                    'domainreferringsubnets': 'RefSubNets',
+                    'domainreferringips': 'RefIPs',
+                    'idndomain': 'IDN_Domain',
                 }
             }
         }
