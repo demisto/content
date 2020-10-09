@@ -25,7 +25,7 @@ def main():
         params['url'] = MAJESTIC_MILLION_URL
         params['ignore_regex'] = r'^GlobalRank'  # ignore the first line
         params['delimiter'] = ','
-        params['limit'] = int(params['limit'])
+        params['limit'] = int(params.get('limit', 100000))
         if params['limit'] > 1000000:
             params['limit'] = 1000000
 
