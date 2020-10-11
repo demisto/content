@@ -7,6 +7,7 @@ category: Data Enrichment & Threat Intelligence
 description: CrowdStrike Threat intelligence service integration helps organizations defend themselves against adversary activity by investigating incidents, and accelerating alert triage and response.
 configuration:
 - display: Client ID
+  displaypassword: Client Secret
   name: credentials
   required: true
   type: 9
@@ -29,7 +30,7 @@ configuration:
   type: 8
   required: false
 script:
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.12176
   type: python
   subtype: python3
   script: '-'
