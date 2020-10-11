@@ -25,7 +25,7 @@ def main():
         demisto.results({'total': len(list_table), 'data': list_table})
 
     else:
-        data = {"total": 1, "data": [{"Brand": "N\\A", "Instance": "N\\A", "Category": "N\\A", "Information": "N\\A"}]}
+        data = {"total": 1, "data": [{"Brand": "N\A", "Instance": "N\A", "Category": "N\A", "Information": "N\A"}]}
         demisto.results(data)
 
 
