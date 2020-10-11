@@ -430,7 +430,7 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
             if len(integration_params) != 1:
                 found_matching_instance = False
                 for item in integration_params:
-                    if item.get('instance_name', 'Not Found') in instance_names:
+                    if item.get('instance_names', 'Not Found') in instance_names:
                         matched_integration_params = item
                         found_matching_instance = True
 
