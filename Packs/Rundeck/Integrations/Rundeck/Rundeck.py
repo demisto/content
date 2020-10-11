@@ -267,6 +267,98 @@ class Client(BaseClient):
             params=self.params,
         )
 
+    def adhoc_run(self, project_name: str, exec_command: str, node_thread_count: str, node_keepgoing: str, as_user: str,
+                  node_filter: str):
+        """
+        This function executes shell commands in nodes.
+        :param project_name: project to run the command on
+        :param exec_command: the shell command that you want to run
+        :param node_thread_count: threadcount to use
+        :param node_keepgoing: 'true' for continue executing on other nodes after a failure. false otherwise
+        :param as_user: specifies a username identifying the user who ran the command
+        :param node_filter: node filter to add
+        :return: api response
+        """
+        request_params: Dict[str, Any] = {}
+
+        if exec_command:
+            request_params['exec'] = exec_command
+        if node_thread_count:
+            request_params['nodeThreadcount'] = node_thread_count
+        if node_keepgoing:
+            request_params['nodeKeepgoing'] = node_keepgoing
+        if as_user:
+            request_params['asUser'] = as_user
+        if node_filter:
+            request_params['filter'] = node_filter
+
+        request_params.update(self.params)
+
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/project/{project_name}/run/command',
+            params=request_params,
+        )
+
+    def adhoc_script_run_from_url(self, project_name: str, script_url: str, node_thread_count: str, node_keepgoing: str,
+                                  as_user: str, node_filter: str, script_interpreter: str, interpreter_args_quoted: str,
+                                  file_extension: str, arg_string: str):
+        """
+        This function runs a script downloaded from a URL
+        :param project_name: project to run the command on
+        :param script_url: a URL pointing to a script file
+        :param node_thread_count: threadcount to use
+        :param node_keepgoing: 'true' for continue executing on other nodes after a failure. false otherwise
+        :param as_user: specifies a username identifying the user who ran the command
+        :param node_filter: node filter to add
+        :param script_interpreter: a command to use to run the script
+        :param interpreter_args_quoted: if true, the script file and arguments will be quoted as the last argument to
+        the scriptInterpreter. false otherwise
+        :param file_extension: extension of of the script file
+        :param arg_string: arguments to pass to the script when executed.
+        :return: api response
+        """
+        request_params: Dict[str, Any] = {}
+
+        if script_url:
+            request_params['scriptURL'] = script_url
+        if node_thread_count:
+            request_params['nodeThreadcount'] = node_thread_count
+        if node_keepgoing:
+            request_params['nodeKeepgoing'] = node_keepgoing
+        if as_user:
+            request_params['asUser'] = as_user
+        if node_filter:
+            request_params['filter'] = node_filter
+        if script_interpreter:
+            request_params['scriptInterpreter'] = script_interpreter
+        if interpreter_args_quoted:
+            request_params['interpreterArgsQuoted'] = interpreter_args_quoted
+        if file_extension:
+            request_params['fileExtension'] = file_extension
+        if arg_string:
+            request_params['argString'] = arg_string
+
+        request_params.update(self.params)
+
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/project/{project_name}/run/url',
+            params=request_params,
+        )
+
+    def webhook_event_send(self, auth_token: str):
+        """
+        This function posts data to the webhook endpoint
+        :param auth_token: data that you want to post
+        :return: api response
+        """
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/webhook/{auth_token}',
+            params=self.params,
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -569,25 +661,114 @@ def job_execution_abort_command(client: Client, args: dict):
         outputs=query_entries,
         outputs_key_field='id'
     )
+
+
+def adhoc_run_command(client: Client, args: dict):
+    project_name: str = args.get('project_name', '')
+    exec_command: str = args.get('exec', '')
+    node_thread_count: str = args.get('node_thread_count', '')
+    node_keepgoing: str = args.get('node_keepgoing', '')  # TODO: add list option true\false
+    as_user: str = args.get('as_user')
+    node_filter: str = args.get('node_filter', '')
+
+    result = client.adhoc_run(project_name, exec_command, node_thread_count, node_keepgoing, as_user, node_filter)
+    # if not isinstance(result, dict):
+        # raise DemistoException(f'Got unexpected response: {result}')
+
+    query_entries: list = createContext(
+        result, keyTransform=underscoreToCamelCase
+    )
+
+    headers = [key.replace("_", " ") for key in [*result.keys()]]
+    readable_output = tableToMarkdown('Adhoc Run:', result, headers=headers, headerTransform=pascalToSpace)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Rundeck.Execution',
+        outputs=query_entries,
+        outputs_key_field='id'
+    )
+
+
+def adhoc_script_run_command(client: Client, args: dict):
+    project_name: str = args.get('project_name', '')
+    exec_command: str = args.get('exec', '')
+    node_thread_count: str = args.get('node_thread_count', '')
+    node_keepgoing: str = args.get('node_keepgoing', '')  # TODO: add list option true\false
+    as_user: str = args.get('as_user')
+    script_interpreter: str = args.get('script_interpreter', '')
+    interpreter_args_quoted: str = args.get('interpreter_args_quoted', '')  # TODO: add list option true\false
+    file_extension: str = args.get('file_extension', '')
+    node_filter: str = args.get('node_filter', '')
+
+    result = client.adhoc_script_run(project_name, exec_command, node_thread_count, node_keepgoing, as_user, node_filter
+                                     , script_interpreter, interpreter_args_quoted, file_extension)
+    # if not isinstance(result, dict):
+    # raise DemistoException(f'Got unexpected response: {result}')
+
+    query_entries: list = createContext(
+        result, keyTransform=underscoreToCamelCase
+    )
+
+    headers = [key.replace("_", " ") for key in [*result.keys()]]
+    readable_output = tableToMarkdown('Adhoc Run Script:', result, headers=headers, headerTransform=pascalToSpace)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Rundeck.ScriptExecution',
+        outputs=query_entries,
+        outputs_key_field='id'
+    )
+
+
+def adhoc_script_run_from_url_command(client: Client, args: dict):
+    project_name: str = args.get('project_name', '')
+    script_url: str = args.get('script_url', '')
+    node_thread_count: str = args.get('node_thread_count', '')
+    node_keepgoing: str = args.get('node_keepgoing', '')  # TODO: add list option true\false
+    as_user: str = args.get('as_user')
+    script_interpreter: str = args.get('script_interpreter', '')
+    interpreter_args_quoted: str = args.get('interpreter_args_quoted', '')  # TODO: add list option true\false
+    file_extension: str = args.get('file_extension', '')
+    node_filter: str = args.get('node_filter', '')
+    arg_string: str = args.get('arg_string', '')
+
+    result = client.adhoc_script_run_from_url(project_name, script_url, node_thread_count, node_keepgoing, as_user,
+                                              node_filter, script_interpreter, interpreter_args_quoted, file_extension,
+                                              arg_string)
+    # if not isinstance(result, dict):
+    # raise DemistoException(f'Got unexpected response: {result}')
+
+    query_entries: list = createContext(
+        result, keyTransform=underscoreToCamelCase
+    )
+
+    headers = [key.replace("_", " ") for key in [*result.keys()]]
+    readable_output = tableToMarkdown('Adhoc Run Script From Url:', result, headers=headers, headerTransform=pascalToSpace)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Rundeck.ScriptExecutionFromUrl',
+        outputs=query_entries,
+        outputs_key_field='id'
+    )
+
+
+def webhook_event_send_command(client: Client, args: dict):
+    auth_token = args.get('auth_token', '')
+
+    result = client.webhook_event_send(auth_token)
+
+    return result
+
+
 def test_module(client: Client) -> str:
-    # INTEGRATION DEVELOPER TIP
-    # Client class should raise the exceptions, but if the test fails
-    # the exception text is printed to the Cortex XSOAR UI.
-    # If you have some specific errors you want to capture (i.e. auth failure)
-    # you should catch the exception here and return a string with a more
-    # readable output (for example return 'Authentication Error, API Key
-    # invalid').
-    # Cortex XSOAR will print everything you return different than 'ok' as
-    # an error
-    # try:
-    #     client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None, severity=None)
-    # except DemistoException as e:
-    #     if 'Forbidden' in str(e):
-    #         return 'Authorization Error: make sure API Key is correctly set'
-    #     else:
-    #         raise e
-    # return 'ok'
-    pass
+    try:
+        client.get_project_list()
+    except DemistoException as e:
+        if 'unauthorized' in str(e):
+            return 'Authorization Error: make sure your token is correctly set'
+        else:
+            raise e
+    else:
+        return 'ok'
 
 
 ''' MAIN FUNCTION '''
@@ -664,8 +845,18 @@ def main() -> None:
             result = job_execution_abort_command(client, args)
             return_results(result)
         elif demisto.command() == 'rundeck-adhoc-command-run':
-            result = job_execution_abort_command(client, args)
+            result = adhoc_run_command(client, args)
             return_results(result)
+        elif demisto.command() == 'rundeck-adhoc-script-run':
+            result = adhoc_script_run_command(client, args)
+            return_results(result)
+        elif demisto.command() == 'rundeck-adhoc-script-run-from-url':
+            result = adhoc_script_run_from_url_command(client, args)
+            return_results(result)
+        elif demisto.command() == 'rundeck-webhook-event-send':
+            result = webhook_event_send_command(client, args)
+            return_results(result)
+
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
