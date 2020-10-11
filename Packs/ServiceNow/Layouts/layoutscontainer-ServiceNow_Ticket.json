@@ -584,7 +584,7 @@
       "minW": 1,
       "moved": false,
       "name": "ServiceNow Ticket Status",
-      "query": "SErviceNowIncidentStatus",
+      "query": "ServiceNowIncidentStatus",
       "queryType": "script",
       "static": false,
       "type": "dynamic",
