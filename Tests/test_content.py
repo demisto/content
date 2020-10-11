@@ -443,6 +443,7 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
     client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
+        print(f"Not ami or not integrations or has unmockable")
         prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index, include_timestamp=True)
         run_test_logic(conf_json_test_details, tests_queue, tests_settings, client, failed_playbooks, integrations,
                        playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
@@ -611,6 +612,9 @@ def extract_filtered_tests(is_nightly):
         filtered_tests = [line.strip('\n') for line in filtered_tests]
         is_filter_configured = bool(filtered_tests)
         run_all = RUN_ALL_TESTS_FORMAT in filtered_tests
+        print(f"Filtered Tests are: {filtered_tests}\n")
+        print(f"Is filter configured: {is_filter_configured}\n")
+        print(f"Is run all: {run_all}\n")
 
     return filtered_tests, is_filter_configured, run_all
 
@@ -655,8 +659,10 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
 
     test_skipped_integration, integrations, is_nightly_integration = collect_integrations(
         integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
+    print(f"Test skipped integration is {test_skipped_integration}")
 
     if playbook_id in filtered_tests:
+        print(f"Playbook ID {playbook_id} is not in filtered tests.")
         playbook_skipped_integration.update(test_skipped_integration)
 
     skip_nightly_test = (nightly_test or is_nightly_integration) and not is_nightly
@@ -671,8 +677,10 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
         return
 
     if not run_all_tests:
+        print(f"Not run all tests.")
         # Skip filtered test
         if is_filter_configured and playbook_id not in filtered_tests:
+            print("Filter configured and playbook id is not in filtered tests.")
             return
 
     # Skip bad test
@@ -703,6 +711,7 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
     are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf,
                                             playbook_id, prints_manager, placeholders_map, thread_index=thread_index)
     if not are_params_set:
+        print(f"Params are not set")
         failed_playbooks.append(playbook_id)
         return
 
@@ -715,7 +724,7 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
         stdout, stderr = get_docker_processes_data()
         text = stdout if not stderr else stderr
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
-
+    print(f"Running a test")
     run_test(t, tests_queue, tests_settings, demisto_user, demisto_pass, proxy, failed_playbooks,
              integrations, unmockable_integrations, playbook_id, succeed_playbooks, test_message,
              test_options, slack, circle_ci, build_number, server, build_name, prints_manager,
@@ -826,6 +835,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests(tests_settings.nightly)
     if is_filter_configured and not run_all_tests:
         is_nightly = True
+        print(f"Got here - line 838")
 
     if not tests or len(tests) == 0:
         prints_manager.add_print_job('no integrations are configured for test', print, thread_index)
