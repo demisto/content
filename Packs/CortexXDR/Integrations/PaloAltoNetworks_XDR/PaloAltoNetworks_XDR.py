@@ -1731,7 +1731,7 @@ def sort_all_list_incident_fields(incident_data):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
 
     if incident_data.get('alerts', []):
-        incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key="name")
+        incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
         reformat_sublist_fields(incident_data['alerts'])
 
     if incident_data.get('file_artifacts', []):
