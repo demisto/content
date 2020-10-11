@@ -733,6 +733,12 @@ script:
       name: to
       required: false
       secret: false
+    - default: false
+      description: An id for the specific policy to fetch.
+      isArray: false
+      name: policy_id
+      required: false
+      secret: false
     deprecated: false
     description: List specific firewall policies from a policy package
     execution: false
@@ -1739,7 +1745,7 @@ script:
       - accept
       - ipsec
       - ssl-vpn
-      required: false
+      required: true
       secret: false
     - default: false
       description: A comment
@@ -1748,6 +1754,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: all
       description: 'Destination address name. Note: dstaddr6 or dstaddr must be set.'
       isArray: false
       name: dstaddr
@@ -1771,12 +1778,14 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: any
       description: Destination interface name.
       isArray: false
       name: dstintf
       required: false
       secret: false
     - default: false
+      defaultValue: all
       description: 'Source address name. Note: srcaddr or srcaddr6 must be set.'
       isArray: false
       name: srcaddr
@@ -1800,6 +1809,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: any
       description: Source interface name.
       isArray: false
       name: srcintf
@@ -1817,6 +1827,45 @@ script:
       name: name
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: utm
+      description: Enable or disable logging. Log all sessions or security profile
+        sessions.
+      isArray: false
+      name: logtraffic
+      predefined:
+      - enable
+      - disable
+      - all
+      - utm
+      required: true
+      secret: false
+    - default: false
+      defaultValue: always
+      description: Schedule name.
+      isArray: false
+      name: schedule
+      required: true
+      secret: false
+    - default: false
+      defaultValue: ALL
+      description: Service and service group names.
+      isArray: false
+      name: service
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: enable
+      description: Enable or disable this policy.
+      isArray: false
+      name: status
+      predefined:
+      - enable
+      - disable
+      required: true
+      secret: false
     deprecated: false
     description: Create a firewall policy.
     execution: false
@@ -1830,7 +1879,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The package from which to create the policy.
+      description: The package from which to update the policy.
       isArray: false
       name: package
       required: true
@@ -1841,10 +1890,10 @@ script:
       isArray: false
       name: action
       predefined:
-      - deny
-      - accept
-      - ipsec
-      - ssl-vpn
+        - deny
+        - accept
+        - ipsec
+        - ssl-vpn
       required: false
       secret: false
     - default: false
@@ -1854,6 +1903,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: all
       description: 'Destination address name. Note: dstaddr6 or dstaddr must be set.'
       isArray: false
       name: dstaddr
@@ -1868,22 +1918,23 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: disable
       description: Enable/disable negated destination address match.
       isArray: false
       name: dstaddr_negate
       predefined:
-      - disable
-      - enable
+        - disable
+        - enable
       required: false
       secret: false
     - default: false
+      defaultValue: any
       description: Destination interface name.
       isArray: false
       name: dstintf
       required: false
       secret: false
     - default: false
+      defaultValue: all
       description: 'Source address name. Note: srcaddr or srcaddr6 must be set.'
       isArray: false
       name: srcaddr
@@ -1898,16 +1949,16 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: disable
       description: Enable/disable negated source address match.
       isArray: false
       name: srcaddr_negate
       predefined:
-      - disable
-      - enable
+        - disable
+        - enable
       required: false
       secret: false
     - default: false
+      defaultValue: any
       description: Source interface name.
       isArray: false
       name: srcintf
@@ -1920,13 +1971,58 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the policy to update
+      description: The name of the policy to update.
       isArray: false
       name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: utm
+      description: Enable or disable logging. Log all sessions or security profile
+        sessions.
+      isArray: false
+      name: logtraffic
+      predefined:
+        - enable
+        - disable
+        - all
+        - utm
+      required: false
+      secret: false
+    - default: false
+      defaultValue: always
+      description: Schedule name.
+      isArray: false
+      name: schedule
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ALL
+      description: Service and service group names.
+      isArray: false
+      name: service
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: enable
+      description: Enable or disable this policy.
+      isArray: false
+      name: status
+      predefined:
+        - enable
+        - disable
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the policy to update.
+      isArray: false
+      name: policyid
       required: true
       secret: false
     deprecated: false
-    description: Create a firewall policy.
+    description: Update a firewall policy.
     execution: false
     name: fortimanager-firewall-policy-update
   - arguments:
@@ -3144,85 +3240,85 @@ script:
     name: fortimanager-policy-package-install-status
     outputs:
     - contextPath: FortiManager.Installation.adom
-      description: 'The ADOM on which the installation occurred.'
+      description: The ADOM on which the installation occurred.
       type: Number
     - contextPath: FortiManager.Installation.end_tm
-      description: 'The installation task end time.'
+      description: The installation task end time.
       type: Number
     - contextPath: FortiManager.Installation.flags
-      description: 'The installation_task_flags'
+      description: The installation_task_flags
       type: Number
     - contextPath: FortiManager.Installation.id
-      description: 'The installation task ID.'
+      description: The installation task ID.
       type: Number
     - contextPath: FortiManager.Installation.line.detail
-      description: 'The installation status details.'
+      description: The installation status details.
       type: String
     - contextPath: FortiManager.Installation.line.end_tm
-      description: 'The installation task end time.'
+      description: The installation task end time.
       type: Number
     - contextPath: FortiManager.Installation.line.err
-      description: 'The installation error.'
+      description: The installation error.
       type: Number
     - contextPath: FortiManager.Installation.line.history
-      description: 'Installation task historical details.'
+      description: Installation task historical details.
       type: String
     - contextPath: FortiManager.Installation.line.ip
-      description: 'The installation IP.'
+      description: The installation IP.
       type: String
     - contextPath: FortiManager.Installation.line.name
-      description: 'The installation name.'
+      description: The installation name.
       type: String
     - contextPath: FortiManager.Installation.line.oid
-      description: 'The installation task oid.'
+      description: The installation task oid.
       type: Number
     - contextPath: FortiManager.Installation.line.percent
-      description: 'The installation task completion percent.'
+      description: The installation task completion percent.
       type: Number
     - contextPath: FortiManager.Installation.line.start_tm
-      description: 'The installation task start time.'
+      description: The installation task start time.
       type: Number
     - contextPath: FortiManager.Installation.line.state
-      description: 'The installation task state.'
+      description: The installation task state.
       type: String
     - contextPath: FortiManager.Installation.line.vdom
-      description: 'The VDOM on which the installation occurred.'
+      description: The VDOM on which the installation occurred.
       type: String
     - contextPath: FortiManager.Installation.num_done
-      description: 'The number of done tasks.'
+      description: The number of done tasks.
       type: Number
     - contextPath: FortiManager.Installation.num_err
-      description: 'The number of errors found.'
+      description: The number of errors found.
       type: Number
     - contextPath: FortiManager.Installation.num_lines
-      description: 'The number of installation data lines.'
+      description: The number of installation data lines.
       type: Number
     - contextPath: FortiManager.Installation.num_warn
-      description: 'The number of warnings found.'
+      description: The number of warnings found.
       type: Number
     - contextPath: FortiManager.Installation.percent
-      description: 'The installation task completion percent.'
+      description: The installation task completion percent.
       type: Number
     - contextPath: FortiManager.Installation.pid
-      description: 'The installation task PID.'
+      description: The installation task PID.
       type: Number
     - contextPath: FortiManager.Installation.src
-      description: 'The installation task source'
+      description: The installation task source
       type: String
     - contextPath: FortiManager.Installation.start_tm
-      description: 'The installation task start time.'
+      description: The installation task start time.
       type: Number
     - contextPath: FortiManager.Installation.state
-      description: 'The installation task state.'
+      description: The installation task state.
       type: String
     - contextPath: FortiManager.Installation.title
-      description: 'The installation task title.'
+      description: The installation task title.
       type: String
     - contextPath: FortiManager.Installation.tot_percent
-      description: 'The installation task completion percent.'
+      description: The installation task completion percent.
       type: Number
     - contextPath: FortiManager.Installation.user
-      description: 'The installation task user.'
+      description: The installation task user.
       type: String
   dockerimage: demisto/python3:3.8.6.12176
   feed: false

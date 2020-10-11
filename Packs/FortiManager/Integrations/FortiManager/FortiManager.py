@@ -133,6 +133,11 @@ def get_range_for_list_command(args: Dict):
         return None
 
 
+def split_param(args, name, default_val='', check_if_exists=False):
+    if not check_if_exists or (check_if_exists and args.get(name)):
+        args[name] = args.get(name, default_val).split(',')
+
+
 def list_adom_devices_command(client, args):
     devices_data = client.fortimanager_api_call("get", f"/dvmdb/{get_global_or_adom(client, args)}/device"
                                                        f"{get_specific_entity(args.get('device'))}")
@@ -278,10 +283,11 @@ def list_policy_packages_command(client, args):
 def list_policies_command(client, args):
     policies = client.fortimanager_api_call("get", f"/pm/config/"
                                                    f"{get_global_or_adom(client, args)}"
-                                                   f"/pkg/{args.get('package')}/firewall/policy",
+                                                   f"/pkg/{args.get('package')}/firewall/policy"
+                                                   f"{get_specific_entity(args.get('policy_id'))}",
                                             range_info=get_range_for_list_command(args))
 
-    headers = ['name', 'srcintf', 'dstintf', 'srcaddr', 'dstaddr', 'service', 'users']
+    headers = ['policyid', 'name', 'srcintf', 'dstintf', 'srcaddr', 'dstaddr', 'schedule', 'service', 'users', 'action']
 
     return CommandResults(
         outputs_prefix='FortiManager.PolicyPackage.Policy',
@@ -402,13 +408,28 @@ def create_policy_command(client, args):
             field_and_value = additional_param.split('=')
             args[field_and_value[0]] = field_and_value[1]
 
+    json_data = setup_request_data(args, ['adom', 'package', 'additional_params'])
+    split_param(json_data, 'dstaddr', 'all', check_if_exists=True)
+    split_param(json_data, 'dstaddr6', 'all', check_if_exists=True)
+    split_param(json_data, 'dstintf', 'any')
+    split_param(json_data, 'schedule', 'always')
+    split_param(json_data, 'service', 'ALL')
+    split_param(json_data, 'srcaddr', 'all', check_if_exists=True)
+    split_param(json_data, 'srcaddr6', 'all', check_if_exists=True)
+    split_param(json_data, 'srcintf', 'any')
+
+    if not (json_data.get('dstaddr') or json_data.get('dstaddr6')):
+        raise DemistoException("Please enter 'dstaddr' or 'dstaddr6' command arguments")
+
+    if not (json_data.get('srcaddr') or json_data.get('srcaddr6')):
+        raise DemistoException("Please enter 'srcaddr' or 'srcaddr6' command arguments")
+
     policies = client.fortimanager_api_call("add", f"/pm/config/"
                                                    f"{get_global_or_adom(client, args)}"
                                                    f"/pkg/{args.get('package')}/firewall/policy",
-                                            data_in_list=setup_request_data(args,
-                                                                            ['adom', 'package', 'additional_params']))
+                                            json_data=json_data)
 
-    return f"Created policy with ID {policies.get('id')}"
+    return f"Created policy with ID {policies.get('policyid')}"
 
 
 def create_custom_service_command(client, args):
@@ -427,17 +448,27 @@ def update_custom_service_command(client, args):
 
 
 def update_policy_command(client, args):
-    for additional_param in args.get('additional_params').split(','):
-        field_and_value = additional_param.split('=')
-        args[field_and_value[0]] = field_and_value[1]
+    if args.get('additional_params'):
+        for additional_param in args.get('additional_params').split(','):
+            field_and_value = additional_param.split('=')
+            args[field_and_value[0]] = field_and_value[1]
+
+    data = setup_request_data(args, ['adom', 'package', 'additional_params'])
+    split_param(data, 'dstaddr', 'all', check_if_exists=True)
+    split_param(data, 'dstaddr6', 'all', check_if_exists=True)
+    split_param(data, 'dstintf', 'any', check_if_exists=True)
+    split_param(data, 'schedule', 'always', check_if_exists=True)
+    split_param(data, 'service', 'ALL', check_if_exists=True)
+    split_param(data, 'srcaddr', 'all', check_if_exists=True)
+    split_param(data, 'srcaddr6', 'all', check_if_exists=True)
+    split_param(data, 'srcintf', 'any', check_if_exists=True)
 
     policies = client.fortimanager_api_call("update", f"/pm/config/"
                                                       f"{get_global_or_adom(client, args)}"
                                                       f"/pkg/{args.get('package')}/firewall/policy",
-                                            data_in_list=setup_request_data(args,
-                                                                            ['adom', 'package', 'additional_params']))
+                                            data_in_list=data)
 
-    return f"Created policy with ID {policies.get('id')}"
+    return f"Updated policy with ID {policies.get('id')}"
 
 
 def delete_address_command(client, args):
@@ -465,7 +496,7 @@ def delete_policy_package_command(client, args):
 
 def delete_policy_command(client, args):
     client.fortimanager_api_call("delete", f"/pm/config/{get_global_or_adom(client, args)}/pkg/"
-                                           f"{args.get('package')}/firewall/policy{args.get('policy')}")
+                                           f"{args.get('package')}/firewall/policy/{args.get('policy')}")
     return f"Deleted Policy {args.get('policy')}"
 
 
@@ -480,7 +511,7 @@ def move_policy_command(client, args):
                                          f"/pkg/{args.get('package')}/firewall/policy/{args.get('policy')}",
                                  other_params=setup_request_data(args, ['adom', 'package', 'policy']))
 
-    return f"Created policy with ID {args.get('policy')}"
+    return f"Moved policy with ID {args.get('policy')} {args.get('option')} {args.get('target')}"
 
 
 def list_dynamic_interface_command(client, args):
