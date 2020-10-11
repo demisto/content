@@ -9,7 +9,7 @@ if [[ $CIRCLE_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]];
 
 elif [ "${CHECK_BACKWARD}" = "true" ] ;
   then
-     demisto-sdk validate -g --post-commit --prev-ver "upstream/64cac0b349187b861c4c717951a634de52caba03"
+     demisto-sdk validate -g --post-commit
 
   else
      demisto-sdk validate -g --post-commit --no-backward-comp

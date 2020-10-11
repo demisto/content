@@ -48,7 +48,7 @@ references:
     environment:
       CONTENT_VERSION: "20.10.0"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "64cac0b349187b861c4c717951a634de52caba03" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "upstream/64cac0b349187b861c4c717951a634de52caba03" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
