@@ -7,6 +7,7 @@ import urllib3
 import dateparser
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
+import ntpath
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -291,12 +292,16 @@ class Client(BaseClient):
             request_params['asUser'] = as_user
         if node_filter:
             request_params['filter'] = node_filter
+        if project_name:
+            project_name_to_pass = project_name
+        else:
+            project_name_to_pass = self.project_name
 
         request_params.update(self.params)
 
         return self._http_request(
             method='GET',
-            url_suffix=f'/project/{project_name}/run/command',
+            url_suffix=f'/project/{project_name_to_pass}/run/command',
             params=request_params,
         )
 
@@ -320,8 +325,6 @@ class Client(BaseClient):
         """
         request_params: Dict[str, Any] = {}
 
-        if script_url:
-            request_params['scriptURL'] = script_url
         if node_thread_count:
             request_params['nodeThreadcount'] = node_thread_count
         if node_keepgoing:
@@ -338,12 +341,18 @@ class Client(BaseClient):
             request_params['fileExtension'] = file_extension
         if arg_string:
             request_params['argString'] = arg_string
+        if project_name:
+            project_name_to_pass = project_name
+        else:
+            project_name_to_pass = self.project_name
 
         request_params.update(self.params)
+        self._headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
         return self._http_request(
-            method='GET',
-            url_suffix=f'/project/{project_name}/run/url',
+            method='POST',
+            data={'scriptURL': script_url},
+            url_suffix=f'/project/{project_name_to_pass}/run/url',
             params=request_params,
         )
 
@@ -358,6 +367,51 @@ class Client(BaseClient):
             url_suffix=f'/webhook/{auth_token}',
             params=self.params,
         )
+
+    def adhoc_script_run(self, project_name: str, arg_string: str, node_thread_count: str, node_keepgoing: str, as_user: str, node_filter: str
+                                     ,script_interpreter: str, interpreter_args_quoted: str, file_extension: str, entry_id: str):
+
+        request_params: Dict[str, any] = {}
+        if arg_string:
+            request_params['argString'] = arg_string
+        if node_thread_count:
+            request_params['nodeThreadcount'] = node_thread_count
+        if node_keepgoing:
+            request_params['nodeKeepgoing'] = node_keepgoing
+        if as_user:
+            request_params['asUser'] = as_user
+        if script_interpreter:
+            request_params['scriptInterpreter'] = script_interpreter
+        if interpreter_args_quoted:
+            request_params['interpreterArgsQuoted'] = interpreter_args_quoted
+        if file_extension:
+            request_params['fileExtension'] = file_extension
+        if node_filter:
+            request_params['filter'] = node_filter
+        if project_name:
+            project_name_to_pass = project_name
+        else:
+            project_name_to_pass = self.project_name
+
+        file_path = demisto.getFilePath(entry_id).get("path", None)
+        if not file_path:
+            raise DemistoException(
+                f"Could not find file path to the next entry id: {entry_id}. \n"
+                f"Please provide another one."
+            )
+        else:
+            file_name = ntpath.basename(file_path)
+
+        request_params.update(self.params)
+        del self._headers['Content-Type']
+        with open(file_path, "rb") as file:
+            self._headers.update({'Content-Disposition': f'form-data; name="file"; filename="{file_name}"'})
+            return self._http_request(
+                method="POST",
+                files={'scriptFile': file},
+                url_suffix=f'/project/{project_name_to_pass}/run/script',
+                params=request_params
+            )
 
 
 ''' HELPER FUNCTIONS '''
@@ -691,7 +745,7 @@ def adhoc_run_command(client: Client, args: dict):
 
 def adhoc_script_run_command(client: Client, args: dict):
     project_name: str = args.get('project_name', '')
-    exec_command: str = args.get('exec', '')
+    arg_string: str = args.get('arg_string', '')
     node_thread_count: str = args.get('node_thread_count', '')
     node_keepgoing: str = args.get('node_keepgoing', '')  # TODO: add list option true\false
     as_user: str = args.get('as_user')
@@ -699,9 +753,10 @@ def adhoc_script_run_command(client: Client, args: dict):
     interpreter_args_quoted: str = args.get('interpreter_args_quoted', '')  # TODO: add list option true\false
     file_extension: str = args.get('file_extension', '')
     node_filter: str = args.get('node_filter', '')
+    entry_id: str = args.get('entry_id', '')
 
-    result = client.adhoc_script_run(project_name, exec_command, node_thread_count, node_keepgoing, as_user, node_filter
-                                     , script_interpreter, interpreter_args_quoted, file_extension)
+    result = client.adhoc_script_run(project_name, arg_string, node_thread_count, node_keepgoing, as_user, node_filter
+                                     , script_interpreter, interpreter_args_quoted, file_extension, entry_id)
     # if not isinstance(result, dict):
     # raise DemistoException(f'Got unexpected response: {result}')
 
@@ -755,8 +810,19 @@ def webhook_event_send_command(client: Client, args: dict):
     auth_token = args.get('auth_token', '')
 
     result = client.webhook_event_send(auth_token)
+    query_entries: list = createContext(
+        result, keyTransform=underscoreToCamelCase
+    )
 
-    return result
+    headers = [key.replace("_", " ") for key in [*result.keys()]]
+    readable_output = tableToMarkdown('Adhoc Run Script From Url:', result, headers=headers,
+                                      headerTransform=pascalToSpace)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Rundeck.ScriptExecutionFromUrl',
+        outputs=query_entries,
+        outputs_key_field='id'
+    )
 
 
 def test_module(client: Client) -> str:
