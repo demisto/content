@@ -732,13 +732,42 @@ def sandbox_report(md5, details):
     return response
 
 
+def login_command():
+    auth = login()
+    jsession_id = auth[:auth.index(';')]
+    readable_output = '### Created Zscaler Session\nSession ID: {}'.format(jsession_id)
+    return CommandResults(
+        outputs_prefix='Zscaler.SessionID',
+        outputs=jsession_id,
+        readable_output=readable_output,
+        raw_response=auth)
+
+
+def logout_command():
+    logout()
+    return "API session logged out of Zscaler successfully."
+
+
+def activate_command():
+    activate_changes()
+    return "Changes have been activated successfully."
+
+
 ''' EXECUTION CODE '''
 
 
 def main():
-    auth = login()
-    jsession_id = auth[:auth.index(';')]
-    DEFAULT_HEADERS['cookie'] = jsession_id
+    params = demisto.params()
+    args = demisto.args()
+    auto_login = params.get('auto_login')
+    if args.get('session_id'):
+        DEFAULT_HEADERS['cookie'] = args['session_id']
+    elif auto_login or demisto.command() in ('test-module', 'zscaler-login'):
+        auth = login()
+        DEFAULT_HEADERS['cookie'] = auth[:auth.index(';')]
+    else:
+        return_error("Error: session_id is missing. When not using Auto Login, you must provide a session_id. "
+                     "Please run zscaler-login to get a valid session id or turn Auto Login on.")
 
     LOG('command is %s' % (demisto.command(),))
     try:
@@ -782,14 +811,22 @@ def main():
             demisto.results(get_whitelist_command())
         elif demisto.command() == 'zscaler-sandbox-report':
             demisto.results(sandbox_report_command())
+        elif demisto.command() == 'zscaler-login':
+            return_results(login_command())
+        elif demisto.command() == 'zscaler-logout':
+            return_results(logout_command())
+        elif demisto.command() == 'zscaler-activate-changes':
+            return_results(activate_command())
     except Exception as e:
         LOG(str(e))
         LOG.print_log()
         raise
     finally:
         try:
-            activate_changes()
-            logout()
+            if params.get('auto_activate'):
+                activate_changes()
+            if auto_login:
+                logout()
         except Exception as err:
             demisto.info("Zscaler error: " + str(err))
 
