@@ -142,7 +142,7 @@
         },
         "illuminate": {
             "mandatory": false,
-            "display_name": "illuminate"
+            "display_name": "Analyst1"
         },
         "MicrosoftGraphMail": {
             "mandatory": false,
@@ -295,10 +295,6 @@
         "CrowdStrikeFalconX": {
             "mandatory": false,
             "display_name": "CrowdStrike Falcon X"
-        },
-        "Analyst1": {
-            "mandatory": false,
-            "display_name": "Analyst1"
         }
     }
 }

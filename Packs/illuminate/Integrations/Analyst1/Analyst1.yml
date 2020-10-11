@@ -607,3 +607,4 @@ script:
 fromversion: 5.0.0
 tests:
 - Analyst1 Integration Demonstration - Test
+- Analyst1 Integration Test

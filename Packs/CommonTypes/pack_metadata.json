@@ -190,7 +190,7 @@
         },
         "illuminate": {
             "mandatory": false,
-            "display_name": "illuminate"
+            "display_name": "Analyst1"
         },
         "isight": {
             "mandatory": false,
@@ -307,10 +307,6 @@
         "McAfee-TIE": {
             "mandatory": false,
             "display_name": "McAfee Threat Intelligence Exchange"
-        },
-        "Analyst1": {
-            "mandatory": false,
-            "display_name": "Analyst1"
         }
     },
     "displayedImages": [
