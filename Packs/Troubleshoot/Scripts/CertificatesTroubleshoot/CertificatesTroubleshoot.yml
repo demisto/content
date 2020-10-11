@@ -271,7 +271,7 @@ outputs:
   description: The common name of the authority that issued the endpoint SSL certificate.
   type: String
 - contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.JurisdictionLocalityName
-  description: The jurisdiction locality of the authority that issued the endpoint SSL certificate..
+  description: The jurisdiction locality of the authority that issued the endpoint SSL certificate.
   type: String
 - contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.StreetAddress
   description: The street address of the authority that issued the endpoint SSL certificate.
