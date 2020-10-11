@@ -10,6 +10,10 @@ from CommonServerUserPython import *
 
 
 def get_investigations(raw_output, investigations):
+    # in case getDBStatistics fails to fetch information it will return a message like so:
+    # `Failed getting DB stats with filter [102020], minBytes [1000000]` - in this case there are no incidents to report
+    if isinstance(raw_output, str):
+        return
     for db in raw_output:
         buckets = db.get('buckets')
         for entry in buckets.keys():
@@ -29,10 +33,11 @@ def parse_investigations_to_table(investigations):
                 "IncidentID": investigation.split('-')[1],
                 "Size": investigations[investigation].get('leafSize'),
                 "AmountOfEntries": investigations[investigation].get('keyN'),
-                "Date": db_name[:2] + "-" + db_name[2:]
+                "Date": db_name[:2] + "-" + db_name[2:],
+                "SizeNumber": float(size[0])
             })
 
-    widget_table['data'] = sorted(data, key=itemgetter('Size'), reverse=True)  # type: ignore
+    widget_table['data'] = sorted(data, key=itemgetter('SizeNumber'), reverse=True)  # type: ignore
 
     return widget_table
 

@@ -1,6 +1,6 @@
 id: PAN-OS EDL Setup v3 Test
 version: -1
-fromversion: 4.0.0
+fromversion: 5.0.0
 name: PAN-OS EDL Setup v3 Test
 starttaskid: '0'
 tasks:
@@ -48,9 +48,7 @@ tasks:
       id: 35acf283-96be-4f82-835a-d139a35f3736
       version: -1
       name: PAN-OS EDL Setup v3
-      description: "Configures an external dynamic list in PAN-OS.\nIn the event that\
-        \ the file exists on the web server, it will sync it to demisto. Then it will\
-        \ create an EDL object and a matching rule."
+      description: "Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule."
       playbookName: PAN-OS EDL Setup v3
       type: playbook
       iscommand: false
@@ -119,9 +117,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 525,\n      \"width\": 380,\n      \"x\": 480,\n      \"y\": -395\n\
-  \    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 525,\n      \"width\": 380,\n      \"x\": 480,\n      \"y\": -395\n    }\n  }\n}"
 inputs:
 - key: list-name
   value:

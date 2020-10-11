@@ -35,7 +35,7 @@ configuration:
   type: 8
   required: false
 - display: Incident type
-  name: incidentType  
+  name: incidentType
   type: 13
   required: false
 - display: Validate ceritifacte
@@ -43,14 +43,13 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Rule Name, If fetch incident is checked, this field is mandatory and will
-    be used to get DAM alerts only triggered by this rule
+- display: Rule Name, If fetch incident is checked, this field is mandatory and will be used to get DAM alerts only triggered by this rule
   name: ruleName
   defaultvalue: ""
   type: 0
   required: false
 script:
-  script: |-
+  script: >-
     var mdAlertFields={
       'Execution Time':'executionTime',
       'Rule':'rules.rule.name',
@@ -60,6 +59,7 @@ script:
       'Command Type':'cmdType'
     };
 
+
     var fixUrl = function(base) {
         res = base;
         if (base && base[base.length - 1] != '/') {
@@ -67,6 +67,7 @@ script:
         }
         return res;
     };
+
 
     var sendRequest = function(url, service, param) {
 
@@ -101,7 +102,9 @@ script:
         return JSON.parse(x2j(res.Body));
     };
 
+
     var finalUrl = fixUrl(params.url) + 'xmlapi.svc?';
+
 
     var calculateNewLastRun = function(alerts) {
         var res = '';
@@ -122,6 +125,7 @@ script:
         }
         return res;
     };
+
 
     var alertToIncident = function(alert) {
         labels = [];
@@ -163,6 +167,7 @@ script:
           rawJSON: JSON.stringify(alert)
         };
     };
+
     var alertsToIncident = function(alerts) {
         var incidents = [];
         for (i = 0; i < alerts.length; i++){
@@ -170,6 +175,7 @@ script:
         }
         return incidents;
     };
+
     function alertsToMd(alerts) {
         var md="";
         if (Array.isArray(alerts)) {
@@ -181,6 +187,7 @@ script:
         }
         return md;
     }
+
     function mdTableHead() {
         var head='|';
         var line='|';
@@ -190,6 +197,7 @@ script:
         }
         return head+'\n'+line+'\n';
     }
+
     function mdTableData(alert) {
         var data='|';
         for (var key in mdAlertFields) {
@@ -197,6 +205,7 @@ script:
         }
         return data + '\n';
     }
+
     function alertToMd(alert) {
         var md ='';
         md +="### DAM Alert ID " + alert.id + "\n";
@@ -218,6 +227,7 @@ script:
         return md;
     }
 
+
     function resolve(obj,path) {
         if (Array.isArray(obj)) {
             var ret = [];
@@ -236,6 +246,7 @@ script:
             }
         }
     }
+
 
     var fetchIncidents = function() {
         var count = params.batchSize || 100;
@@ -271,7 +282,9 @@ script:
         return incidents;
     };
 
+
     // The command input arg holds the command sent from the user.
+
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
@@ -336,8 +349,7 @@ script:
     - contentPath: rules
       contextPath: rules
       description: DAM rules.
-    description: Gets a DAM alert from McAfee Database Activity Monitoring by alert
-      ID.
+    description: Gets a DAM alert from McAfee Database Activity Monitoring by alert ID.
   - name: dam-get-latest-by-rule
     arguments:
     - name: ruleName
@@ -347,8 +359,7 @@ script:
     - name: count
       description: Number of alerts to retrieve. The default is 10.
     - name: timeBack
-      description: Filter DAM alerts and import alerts that where created only in
-        the last X minutes. The default is the last 10 minutes.
+      description: Filter DAM alerts and import alerts that where created only in the last X minutes. The default is the last 10 minutes.
     outputs:
     - contentPath: id
       contextPath: AlertId
@@ -375,4 +386,5 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

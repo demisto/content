@@ -1821,6 +1821,32 @@ script:
       name: device-group
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the EDL. Required when refreshing an EDL object which
+        is configured on Panorama.
+      isArray: false
+      name: edl_type
+      predefined:
+      - ip
+      - url
+      - domain
+      required: false
+      secret: false
+    - default: false
+      description: The location of the EDL. Required when refreshing an EDL object
+        which is configured on Panorama.
+      isArray: false
+      name: location
+      required: false
+      secret: false
+    - default: false
+      description: The Vsys of the EDL. Required when refreshing an EDL object which
+        is configured on Panorama.
+      isArray: false
+      name: vsys
+      required: false
+      secret: false
     deprecated: false
     description: Refreshes the specified external dynamic list.
     execution: false
@@ -2449,6 +2475,18 @@ script:
       description: Password for Panorama, needed for the 'dlp-pcap' PCAP type only.
       isArray: false
       name: password
+      required: false
+      secret: false
+    - default: false
+      description: The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation.
+      isArray: false
+      name: deviceName
+      required: false
+      secret: false
+    - default: false
+      description: The Session ID of the PCAP. For further information, see the Panorama XML API Documentation.
+      isArray: false
+      name: sessionID
       required: false
       secret: false
     deprecated: false
@@ -4332,7 +4370,7 @@ script:
     description: Creates a WildFire analysis best practice profile.
     execution: false
     name: panorama-create-wildfire-best-practice-profile
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.5.11789
   feed: false
   isfetch: false
   longRunning: false
@@ -4344,4 +4382,4 @@ script:
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
-fromversion: 3.0.0
+fromversion: 5.0.0
