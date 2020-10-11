@@ -1,43 +1,43 @@
-commonfields:
-  id: Alexa Rank Indicator_copy
-  version: -1
-vcShouldKeepItemLegacyProdMachine: false
-name: Alexa Rank Indicator_copy
-display: Alexa Rank Indicator_copy
 category: Data Enrichment & Threat Intelligence
-description: Alexa provides website ranking information that can be useful in determining
-  if the domain in question has a strong web presence.
+commonfields:
+  id: Alexa Rank Indicator
+  version: -1
 configuration:
-- display: Sensitivity threshold for configuring which domains are suspicious versus
-    trusted.
+- defaultvalue: '2000000'
+  display: Sensitivity threshold for configuring which domains are suspicious versus trusted.
   name: threshold
-  defaultvalue: "2000000"
-  type: 0
   required: true
-- display: 'Alexa rank - top X domains to be considered trusted. '
+  type: 0
+- display: Alexa rank - top domains to be considered trusted.
   name: benign
   defaultvalue: "1000"
   type: 0
   required: true
-  additionalinfo: 'These domains will be given a DbotScore of "good". '
+  additionalinfo: These domains will be given a DbotScore of good.
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
+description: Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence.
+display: Alexa Rank Indicator
+name: Alexa Rank Indicator
 script:
-  script: ''
-  type: python
   commands:
-  - name: domain
-    arguments:
-    - name: domain
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Domain to search.
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Provides an Alexa ranking of the Domain in question.
+    execution: false
+    name: domain
     outputs:
     - contextPath: Domain.Name
       description: The Domain being checked
@@ -66,7 +66,11 @@ script:
     - contextPath: Alexa.Domain.Rank
       description: Alexa rank as determined by Amazon
       type: string
-    description: Provides an Alexa ranking of the Domain in question.
+  isfetch: false
   runonce: false
+  script: ''
+  type: python
   subtype: python2
-sourcemoduleid: Alexa Rank Indicator
+tests:
+- Alexa Test Playbook
+fromversion: 5.0.0
