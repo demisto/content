@@ -57,3 +57,18 @@ def test_get_largest_inputs_and_outputs():
     assert len(res) == 2
     assert largest_input in res
     assert largest_output in res
+
+
+def test_get_largest_inputs_and_outputs__on_fail():
+    """
+    Given:
+        a failure message from getInvPlaybookMetaData command
+    When:
+        Running get_largest_inputs_and_outputs.
+    Then:
+        the result is an empty list
+    """
+    from GetLargestInputsAndOuputsInIncidents import get_largest_inputs_and_outputs
+    res = []
+    get_largest_inputs_and_outputs('No data', res, 1)
+    assert len(res) == 0
