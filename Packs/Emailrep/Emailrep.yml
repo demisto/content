@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Emailrep
+  id: EmailRep
   version: -1
 configuration:
 - defaultvalue: https://soar.monstersofhack.com
@@ -77,8 +77,8 @@ configuration:
   required: false
   type: 8
 description: This is the Hello World integration for getting started.
-display: Emailrep
-name: Emailrep
+display: EmailRep
+name: EmailRep
 script:
   commands:
   - arguments:
