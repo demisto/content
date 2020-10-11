@@ -1,11 +1,13 @@
 This automation exports all custom certificate-related information from the Python Docker container and decode it using RFC. In addition, it will get the certificate located in the specified endpoint.
 
 ## Notes
+
 ---
 
-After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/configure-python-docker-integrations-to-trust-custom-certificates) to update your custom certificate in `Demisto Server`/ `Demisto Engine`, validate the configuration applied using this script.
+After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/configure-python-docker-integrations-to-trust-custom-certificates) to update your custom certificate in `Cortex XSOAR Server`/ `Cortex XSOAR Engine`, validate the configuration applied using this script.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -14,6 +16,7 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 | Tags | Utility |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +25,7 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 | port | The endpoint port. Default is 443. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -121,9 +125,11 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 | TroubleShoot.Endpoint.SSL/TLS.Identifier | The endpoint SSL identifier. | String |
 
 #### Command Example
+
 ```CertificatesTroubleshoot endpoint=test.compute.amazonaws.com port=5443```
 
 #### Context Example
+
 ```
 {
     "TroubleShoot": {
