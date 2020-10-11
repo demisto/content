@@ -560,8 +560,31 @@ def install_policy_package_command(client, args):
                                                     "vdom": args.get('vdom')
                                                 }]
                                             })
-    return f"Installed a policy package {args.get('package')} in ADOM: {get_global_or_adom(client, args)} on " \
-           f"Device {args.get('name')} on VDOM {args.get('vdom')}. task: {response}"
+    formatted_response = {'id': response.get('task')}
+    return CommandResults(
+        outputs_prefix='FortiManager.Installation',
+        outputs_key_field='id',
+        outputs=formatted_response,
+        readable_output=f"Installed a policy package {args.get('package')} in ADOM: {get_global_or_adom(client, args)} "
+                        f"on Device {args.get('name')} on VDOM {args.get('vdom')}.\nTask ID: {response.get('task')}",
+        raw_response=response
+    )
+
+
+def install_policy_package_status_command(client, args):
+    task_data = client.fortimanager_api_call('get', f"/task/task/{args.get('task_id')}")
+
+    headers = ['id', 'title', 'adom', 'percent', 'line']
+
+    return CommandResults(
+        outputs_prefix='FortiManager.Installation',
+        outputs_key_field='id',
+        outputs=task_data,
+        readable_output=tableToMarkdown(f"Installation Task {args.get('task_id')} Status",
+                                        task_data, removeNull=True, headerTransform=string_to_table_header,
+                                        headers=headers),
+        raw_response=task_data
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -696,6 +719,9 @@ def main() -> None:
 
         elif demisto.command() == 'fortimanager-policy-package-install':
             return_results(install_policy_package_command(client, demisto.args()))
+
+        elif demisto.command() == 'fortimanager-policy-package-install-status':
+            return_results(install_policy_package_status_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception:

@@ -3127,6 +3127,103 @@ script:
     description: Schedule a policy package installation.
     execution: false
     name: fortimanager-policy-package-install
+    outputs:
+    - contextPath: FortiManager.Installation
+      description: The installation task ID.
+      type: Number
+  - arguments:
+    - default: false
+      description: The installation task ID.
+      isArray: false
+      name: task_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get installation status.
+    execution: false
+    name: fortimanager-policy-package-install-status
+    outputs:
+    - contextPath: FortiManager.Installation.adom
+      description: 'The ADOM on which the installation occurred.'
+      type: Number
+    - contextPath: FortiManager.Installation.end_tm
+      description: 'The installation task end time.'
+      type: Number
+    - contextPath: FortiManager.Installation.flags
+      description: 'The installation_task_flags'
+      type: Number
+    - contextPath: FortiManager.Installation.id
+      description: 'The installation task ID.'
+      type: Number
+    - contextPath: FortiManager.Installation.line.detail
+      description: 'The installation status details.'
+      type: String
+    - contextPath: FortiManager.Installation.line.end_tm
+      description: 'The installation task end time.'
+      type: Number
+    - contextPath: FortiManager.Installation.line.err
+      description: 'The installation error.'
+      type: Number
+    - contextPath: FortiManager.Installation.line.history
+      description: 'Installation task historical details.'
+      type: String
+    - contextPath: FortiManager.Installation.line.ip
+      description: 'The installation IP.'
+      type: String
+    - contextPath: FortiManager.Installation.line.name
+      description: 'The installation name.'
+      type: String
+    - contextPath: FortiManager.Installation.line.oid
+      description: 'The installation task oid.'
+      type: Number
+    - contextPath: FortiManager.Installation.line.percent
+      description: 'The installation task completion percent.'
+      type: Number
+    - contextPath: FortiManager.Installation.line.start_tm
+      description: 'The installation task start time.'
+      type: Number
+    - contextPath: FortiManager.Installation.line.state
+      description: 'The installation task state.'
+      type: String
+    - contextPath: FortiManager.Installation.line.vdom
+      description: 'The VDOM on which the installation occurred.'
+      type: String
+    - contextPath: FortiManager.Installation.num_done
+      description: 'The number of done tasks.'
+      type: Number
+    - contextPath: FortiManager.Installation.num_err
+      description: 'The number of errors found.'
+      type: Number
+    - contextPath: FortiManager.Installation.num_lines
+      description: 'The number of installation data lines.'
+      type: Number
+    - contextPath: FortiManager.Installation.num_warn
+      description: 'The number of warnings found.'
+      type: Number
+    - contextPath: FortiManager.Installation.percent
+      description: 'The installation task completion percent.'
+      type: Number
+    - contextPath: FortiManager.Installation.pid
+      description: 'The installation task PID.'
+      type: Number
+    - contextPath: FortiManager.Installation.src
+      description: 'The installation task source'
+      type: String
+    - contextPath: FortiManager.Installation.start_tm
+      description: 'The installation task start time.'
+      type: Number
+    - contextPath: FortiManager.Installation.state
+      description: 'The installation task state.'
+      type: String
+    - contextPath: FortiManager.Installation.title
+      description: 'The installation task title.'
+      type: String
+    - contextPath: FortiManager.Installation.tot_percent
+      description: 'The installation task completion percent.'
+      type: Number
+    - contextPath: FortiManager.Installation.user
+      description: 'The installation task user.'
+      type: String
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false
