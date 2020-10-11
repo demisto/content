@@ -84,7 +84,8 @@ script:
       - contextPath: EntityIpAddress
         description: 'IP Address of Entity'
         type: String
-  - name: xmcyber-asset-attack-path-list
+  
+        - name: xmcyber-asset-attack-path-list
     description: Get Paths to the Critical Assets
     arguments:
     - name: time_id
@@ -511,7 +512,8 @@ script:
     - contextPath: XMCyber.AttackPath.pathComplexity
       description: ''
       type: Number
-  - name: xmcyber-techniques-list
+  
+    - name: xmcyber-techniques-list
     description: Get Techniques
     arguments:
     - name: time_id
@@ -539,6 +541,7 @@ script:
     - contextPath: XMCyber.Technique.complexityLevel
       description: ''
       type: String
+  
   - name: xmcyber-breachpoint-update
     description: Update Breachpoints
     arguments:
@@ -967,7 +970,8 @@ script:
     - contextPath: XMCyber.Entity.attackComplexity.count.level
       description: ''
       type: String
-  - name: xmcyber-critical-asset-add
+  
+    - name: xmcyber-critical-asset-add
     description: Add Critical Asset
     arguments:
     - name: ip
@@ -1395,7 +1399,8 @@ script:
     - contextPath: XMCyber.Entity.attackComplexity.count.level
       description: ''
       type: String
-  - name: xmcyber-attack-paths-to-entity
+
+    - name: xmcyber-attack-paths-to-entity
     description: Get Paths to Entity
     arguments:
     - name: ip
