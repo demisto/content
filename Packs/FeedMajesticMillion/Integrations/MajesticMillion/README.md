@@ -1,5 +1,9 @@
 Majestic Million
 
+## Troubleshooting
+Ingesting a Million indicators might cause performance issues.
+The suggested default value is 100k. Upon encountering performance issues, please consider lowing the limit. 
+
 ## Configure Majestic Million on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
