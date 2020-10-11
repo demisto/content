@@ -1,6 +1,7 @@
 commonfields:
   id: Graylog
   version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: Graylog
 display: Graylog
 category: Analytics & SIEM
@@ -187,6 +188,3 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-fromversion: 5.0.0
-tests:
-- No tests (auto formatted)

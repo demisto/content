@@ -68,7 +68,7 @@ def fetch_incidents(client):
                   'to': end_time}
     results = client._http_request('GET', '/search/universal/absolute', params=parameters)
     if 'total_results' in results and results['total_results'] > 0:
-        demisto.setLastRun({'start_time': datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]})
+        demisto.setLastRun({'start_time': end_time})
         demisto.incidents(form_incindents(results['messages']))
     else:
         demisto.incidents([])
@@ -143,11 +143,8 @@ def main():
                               'per_page': demisto.args().get('per_page'),
                               'timerange': {'type': 'relative', 'range': demisto.args().get('timerange')},
                               'sort_by': demisto.args().get('sort_by')}
-            # API does not like None as the key value so getting rid of those.
-            for item in jsonparameters.keys():
-                if jsonparameters[item]:
-                    jsonparameterswithvalue.update({item: jsonparameters[item]})
-            results_return('EventsSearch', client._http_request('POST', '/events/search', json_data=jsonparameterswithvalue))
+            jsonparameters = remove_empty_elements(jsonparameters)
+            results_return('EventsSearch', client._http_request('POST', '/events/search', json_data=jsonparameters))
 
     # Log exceptions
     except Exception as e:
