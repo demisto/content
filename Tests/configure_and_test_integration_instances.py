@@ -387,6 +387,7 @@ def change_placeholders_to_values(placeholders_map, config_item):
     item_as_string = json.dumps(config_item)
     for key, value in placeholders_map.items():
         item_as_string = item_as_string.replace(key, str(value))
+        print(json.loads(item_as_string))
     return json.loads(item_as_string)
 
 
@@ -423,6 +424,7 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
 
         if integration_params:
             matched_integration_params = integration_params[0]
+            print(matched_integration_params)
             # if there are more than one integration params, it means that there are configuration
             # values in our secret conf for multiple instances of the given integration and now we
             # need to match the configuration values to the proper instance as specified in the
@@ -430,7 +432,10 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
             if len(integration_params) != 1:
                 found_matching_instance = False
                 for item in integration_params:
-                    if item.get('instance_names', 'Not Found') in instance_names:
+                    print(item)
+                    if item.get('instance_name', 'Not Found') in instance_names:
+                        print('#### This is the instance name')
+                        print(item.get('instance_name'))
                         matched_integration_params = item
                         found_matching_instance = True
 
