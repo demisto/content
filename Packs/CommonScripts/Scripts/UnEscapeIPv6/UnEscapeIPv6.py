@@ -1,8 +1,8 @@
 import demistomock as demisto
 
 
-beginning_characters_list = ['(', '[', ' ', '-', '\'', '"', '.', ',', '`']
-ending_characters_list = [')', ']', ' ', '-', '\'', '"', '.', ',', '`']
+BEGINNING_CHARACTERS_LIST = ['(', '[', ' ', '-', '\'', '"', '.', ',', '`']
+ENDING_CHARACTERS_LIST = [')', ']', ' ', '-', '\'', '"', '.', ',', '`']
 
 
 def clearing_the_address_from_unrelated_characters(ipv6_address: str) -> str:
@@ -15,10 +15,10 @@ def clearing_the_address_from_unrelated_characters(ipv6_address: str) -> str:
     :rtype: ``str``
     """
 
-    if ipv6_address[0] in beginning_characters_list:
+    if ipv6_address[0] in BEGINNING_CHARACTERS_LIST:
         ipv6_address = ipv6_address[1:]
 
-    if ipv6_address[-1] in ending_characters_list:
+    if ipv6_address[-1] in ENDING_CHARACTERS_LIST:
         ipv6_address = ipv6_address[:-1]
 
     return ipv6_address
