@@ -471,6 +471,7 @@ def edit_issue_command(issue_id, headers=None, status=None, **_):
     jira_req('PUT', url, json.dumps(issue))
     if status:
         edit_status(issue_id, status)
+
     return get_issue(issue_id, headers, is_update=True)
 
 
@@ -729,7 +730,8 @@ def main():
             create_issue_command()
 
         elif demisto.command() == 'jira-edit-issue':
-            edit_issue_command(**snakify(demisto.args()))
+            human_readable, outputs, raw_response = edit_issue_command(**snakify(demisto.args()))
+            return_outputs(human_readable, outputs, raw_response)
 
         elif demisto.command() == 'jira-get-comments':
             get_comments_command(**snakify(demisto.args()))
