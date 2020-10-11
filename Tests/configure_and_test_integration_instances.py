@@ -1025,7 +1025,7 @@ def install_nightly_pack(build, prints_manager):
     nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs)
     create_nightly_test_pack()
     nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs,
-                          pack_path=f'{Build.test_pack_target}/test_pack.zip')
+                          pack_path=f'/home/runner/work/content-private/content-private/content/test_pack.zip')
 
     prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0, include_timestamp=True)
     prints_manager.execute_thread_prints(0)
@@ -1223,9 +1223,9 @@ def test_pack_metadata():
 
 
 def test_pack_zip(content_path, target):
-    with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
+    with zipfile.ZipFile(f'/home/runner/work/content-private/content-private/content/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
-        for test_path, test in test_files(content_path):
+        for test_path, test in test_files('/home/runner/work/content-private/content-private/content'):
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
