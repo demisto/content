@@ -851,11 +851,15 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     disable_all_integrations(xsoar_client, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
-    mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
-    unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
     if is_private:
-        unmockable_tests.append(mockable_tests)
+        private_test_names = mockable_tests_names.append(unmockable_tests_names)
+        private_tests = get_test_records_of_given_test_names(tests_settings, private_test_names)
         mockable_tests = []
+        unmockable_tests = private_tests
+    else:
+        mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
+        unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
+
     print(f"Tests to run are: {unmockable_tests}")
     if is_nightly and is_memory_check:
         mem_lim, err = get_docker_limit()
@@ -891,14 +895,14 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
         prints_manager.add_print_job("\nRunning mock-disabled tests", print, thread_index)
         executed_in_current_round, unmockable_tests_queue = initialize_queue_and_executed_tests_set(unmockable_tests)
-        print(str(unmockable_tests_queue))
         while not unmockable_tests_queue.empty():
             t = unmockable_tests_queue.get()
-            # executed_in_current_round = update_round_set_and_sleep_if_round_completed(executed_in_current_round,
-            #                                                                           prints_manager,
-            #                                                                           t,
-            #                                                                           thread_index,
-            #                                                                           unmockable_tests_queue)
+            executed_in_current_round = update_round_set_and_sleep_if_round_completed(executed_in_current_round,
+                                                                                      prints_manager,
+                                                                                      t,
+                                                                                      thread_index,
+                                                                                      unmockable_tests_queue)
+            print(f"T is: {t}")
             run_test_scenario(unmockable_tests_queue, tests_settings, t, proxy, default_test_timeout,
                               skipped_tests_conf, nightly_integrations, skipped_integrations_conf, skipped_integration,
                               is_nightly, run_all_tests, is_filter_configured, filtered_tests, skipped_tests,
@@ -975,7 +979,6 @@ def initialize_queue_and_executed_tests_set(tests):
     already_executed_test_playbooks = set()
     for t in tests:
         tests_queue.put(t)
-    print(tests_queue.__str__())
     return already_executed_test_playbooks, tests_queue
 
 

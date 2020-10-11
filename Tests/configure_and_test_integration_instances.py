@@ -1264,43 +1264,13 @@ def set_marketplace_url(servers, branch_name, ci_build_number):
 
 def main():
     build = Build(options_handler())
-    if build.is_private:
-        for server in build.servers:
-            client = demisto_client.configure(base_url=server.host, username=server.user_name,
-                                              password=server.password, verify_ssl=False)
-
-            test_data = '/home/runner/work/content-private/content-private/content/artifacts' \
-                        '/content_test.zip'
-
-            test_data_file_path = os.path.abspath(test_data)
-            test_files = {'file': test_data_file_path}
-
-            message = 'Making "POST" request to server {} - to install test content {}'.format(
-                server.host, test_data_file_path)
-            print(message)
-
-            try:
-                header_params = {
-                    'Content-Type': 'multipart/form-data'
-                }
-                response_data, status_code, _ = client.api_client.call_api(
-                    resource_path='/content/bundle',
-                    method='POST',
-                    header_params=header_params, files=test_files)
-                if 200 <= status_code < 300:
-                    print('Surprised Pikachu face here...')
-                else:
-                    result_object = ast.literal_eval(response_data)
-                    message = result_object.get('message', '')
-                    print(message)
-            except Exception as e:
-                print(f"Failed to upload test data.{e.body}")
-
     prints_manager = ParallelPrintsManager(1)
 
     configure_servers_and_restart(build, prints_manager)
     installed_content_packs_successfully = False
-
+    if build.is_private:
+        install_nightly_pack(build, prints_manager)
+        installed_content_packs_successfully = True
     if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
         if build.is_nightly:
             install_nightly_pack(build, prints_manager)
