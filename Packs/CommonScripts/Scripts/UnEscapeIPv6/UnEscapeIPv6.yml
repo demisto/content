@@ -1,0 +1,24 @@
+args:
+- default: false
+  description: The address with the characters that surround it.
+  isArray: false
+  name: input
+  required: true
+  secret: false
+comment: Extracts IPv6 addresses from specific characters.
+commonfields:
+  id: UnEscapeIPv6
+  version: -1
+enabled: false
+name: UnEscapeIPv6
+script: '-'
+subtype: python3
+system: false
+tags:
+- indicator-format
+timeout: '0'
+type: python
+dockerimage: demisto/tld:1.0.0.7040
+runas: DBotWeakRole
+runonce: false
+fromversion: 5.0.0
