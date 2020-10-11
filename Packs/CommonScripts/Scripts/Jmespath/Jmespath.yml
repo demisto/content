@@ -19,7 +19,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/jmespath:1.0.0.10459
+dockerimage: demisto/jmespath:1.0.0.10854
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
