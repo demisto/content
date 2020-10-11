@@ -13,10 +13,6 @@ pytest-xdist = "*"
 pytest-datadir-ng = "*"
 freezegun = "*"
 pytest-json = "*"
-gql = "*"
-
-[packages]
-gql = "*"
 
 [requires]
 python_version = "3.7"
