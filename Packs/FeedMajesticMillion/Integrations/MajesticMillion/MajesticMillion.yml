@@ -90,11 +90,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 'true'
-  display: Fetch indicators
-  name: feed
-  type: 8
-  required: false
 description: Free search and download of the top million websites.
 display: Majestic Million Feed
 name: Majestic Million
