@@ -1,0 +1,10 @@
+{
+    "status": "ok",
+    "result": {
+        "type": "role",
+        "iden": "5552ab297f9f0bfa2f62bfc4ddd12f73",
+        "name": "new_role",
+        "rules": [],
+        "authgates": {}
+    }
+}
