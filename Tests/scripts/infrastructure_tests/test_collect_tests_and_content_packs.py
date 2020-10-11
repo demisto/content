@@ -19,6 +19,22 @@ with open('Tests/scripts/infrastructure_tests/tests_data/mock_conf.json', 'r') a
 class TestUtils(object):
     __test__ = False
 
+    class PackIgnoreManager:
+        def __init__(self, test_file_name=None):
+            self.test_file_name = test_file_name
+            self.pack_ignore_path = os.path.join('Tests/scripts/infrastructure_tests/tests_data/fake_pack/.pack-ignore')
+            with open(self.pack_ignore_path, 'r') as f:
+                self.previous_pack_ignore_contents = f.read()
+
+        def __enter__(self):
+            if self.test_file_name:
+                with open(self.pack_ignore_path, 'w') as f:
+                    f.write(f'[file:{self.test_file_name}]\nignore=auto-test')
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            with open(self.pack_ignore_path, 'w') as f:
+                f.write(self.previous_pack_ignore_contents)
+
     @staticmethod
     def save_yaml(path, data):
         ryaml = YAML()
@@ -862,10 +878,77 @@ def test_modified_integration_content_pack_is_collected(mocker):
         )
 
         assert content_packs == {"Base", "DeveloperTools", pack_name}
+        assert filtered_tests == {test_name}
         assert not collect_tests_and_content_packs._FAILED
     finally:
         TestUtils.delete_files([
-            fake_integration["path"]
+            fake_integration["path"],
+            fake_test_playbook["path"]
+        ])
+
+        collect_tests_and_content_packs._FAILED = False
+
+
+def test_pack_ignore_test_is_skipped(mocker):
+    """
+    Given
+    - Modified integration named GreatIntegration which is in pack named GreatPack.
+    - Test playbook that is skipped in .pack-ignore
+
+    When
+    - Collecting content packs to install and tests.
+
+    Then
+    - Ensure test playbook is not collected
+    - Ensure the content pack GreatPack is collected.
+    - Ensure the collection runs successfully.
+    """
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
+
+    pack_name = "GreatPack"
+    integration_name = "GreatIntegration"
+    test_name = "GreatTest"
+    fake_integration = TestUtils.create_integration(
+        name=integration_name, with_commands=["great-command"], pack=pack_name
+    )
+    fake_test_playbook = TestUtils.create_test_playbook(name=test_name, with_scripts=["FetchFromInstance"])
+
+    pack_ignore_mgr = TestUtils.PackIgnoreManager(os.path.basename(fake_test_playbook['path']))
+
+    try:
+        mocker.patch.object(os.path, 'join', return_value=fake_test_playbook['path'])
+        mocker.patch.object(demisto_sdk_tools, 'get_pack_ignore_file_path', return_value=pack_ignore_mgr.pack_ignore_path)
+        TestUtils.mock_get_modified_files(mocker, modified_files_list=[fake_integration['path']])
+        fake_id_set = TestUtils.create_id_set(
+            with_integration=fake_integration["id_set"],
+            with_test_playbook=fake_test_playbook["id_set"]
+        )
+
+        fake_conf = TestUtils.create_tests_conf(
+            with_test_configuration={
+                "integrations": integration_name,
+                "playbookID": test_name
+            }
+        )
+
+        # add test playbook to ignore list and clean afterward
+        with pack_ignore_mgr:
+            filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
+                files_string="",
+                branch_name="dummy-branch",
+                minimum_server_version=TWO_BEFORE_GA_VERSION,
+                conf=fake_conf,
+                id_set=fake_id_set
+            )
+
+            assert content_packs == {"Base", "DeveloperTools", pack_name}
+            assert not filtered_tests
+            assert not collect_tests_and_content_packs._FAILED
+    finally:
+        TestUtils.delete_files([
+            fake_integration["path"],
+            fake_test_playbook["path"]
         ])
 
         collect_tests_and_content_packs._FAILED = False
