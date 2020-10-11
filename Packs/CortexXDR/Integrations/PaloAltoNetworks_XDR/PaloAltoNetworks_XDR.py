@@ -1701,18 +1701,17 @@ def sort_by_key(list_to_sort, main_key, fallback_key):
     if len(list_to_sort) == len(sorted_list):
         return sorted_list
 
-    list_elements_without_main_key = [element for element in list_to_sort if not element.get(main_key)]
-    list_elements_with_fallback_key = [element for element in list_elements_without_main_key
-                                       if element.get(fallback_key)]
-    sorted_list.extend(sorted(list_elements_with_fallback_key, key=itemgetter(fallback_key)))
+    list_elements_with_fallback_without_main = [element for element in list_to_sort
+                                                if element.get(fallback_key) and not element.get(main_key)]
+    sorted_list.extend(sorted(list_elements_with_fallback_without_main, key=itemgetter(fallback_key)))
 
     if len(sorted_list) == len(list_to_sort):
         return sorted_list
 
-    list_elements_without_fallback_key = [element for element in list_elements_without_main_key
-                                          if not element.get(fallback_key)]
+    list_elements_without_fallback_and_main = [element for element in list_to_sort
+                                               if not element.get(fallback_key) and not element.get(main_key)]
 
-    sorted_list.extend(list_elements_without_fallback_key)
+    sorted_list.extend(list_elements_without_fallback_and_main)
     return sorted_list
 
 
@@ -1976,7 +1975,7 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
 
         sort_all_list_incident_fields(incident_data)
 
-        incident_data['mirror_direction'] = MIRROR_DIRECTION[demisto.params().get('mirror_direction')]
+        incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
         incident_data['mirror_instance'] = demisto.integrationInstance()
 
         description = raw_incident.get('description')
