@@ -249,7 +249,7 @@ import traceback
 from typing import Any, Dict, List, Optional
 
 # Disable insecure warnings
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import DBotScoreType
+#from CommonServerPython import DBotScoreType
 
 urllib3.disable_warnings()
 
@@ -429,7 +429,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='EmailRep.Email',
+        outputs_prefix='EmailRep.EmailScore',
         outputs_key_field='email',
         outputs=email_data_list,
         indicators=email_standard_list
@@ -470,7 +470,7 @@ def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandRes
         email_data = client.get_email_address_reputation(email)
         email_data_list.append(email_data)
 
-    readable_output = tableToMarkdown('Email List', ip_data_list)
+    readable_output = tableToMarkdown('Email List', email_data_list)
 
     return CommandResults(
         readable_output=readable_output,
