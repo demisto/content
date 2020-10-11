@@ -45,6 +45,8 @@ def http_request(method, url_suffix, params={}, data=None):
                 f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}] \n'
                 f'Error details: [{errors}]'
             )
+        except ValueError as value_error:
+            raise value_error
         except Exception:
             raise ValueError(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}]')
     try:
