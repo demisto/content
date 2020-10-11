@@ -1,3 +1,4 @@
+import os
 import shutil
 import dateparser
 from typing import List, Tuple, Dict, Callable, Any, Union
@@ -2065,10 +2066,11 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
             # Mirroring files as entries
             if entry.get('type') == 3:
                 path_res = demisto.getFilePath(entry.get('id'))
-                full_file_name = path_res.get('name').split('.')
-                file_name = full_file_name[0]
-                file_extension = full_file_name[1]
-                client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar.' + file_extension,
+                full_file_name = path_res.get('name')
+                file_name, file_extension = os.path.splitext(full_file_name)
+                if not file_extension:
+                    file_extension = ''
+                client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
                                    ticket_type)
             else:
                 # Mirroring comment and work notes as entries
