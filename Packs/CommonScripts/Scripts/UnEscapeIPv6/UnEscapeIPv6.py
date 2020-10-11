@@ -1,9 +1,4 @@
 import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-from typing import Dict, Any, Tuple
-import traceback
 
 
 beginning_characters_list = ['(', '[', ' ', '-', '\'', '"', '.', ',', '`']
