@@ -114,10 +114,10 @@ class Server:
 
 class Build:
     # START CHANGE ON LOCAL RUN #
-    content_path = '{}'.format(os.getenv('CONTENT'))
+    content_path = '{}/project'.format(os.getenv('HOME'))
     test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
     key_file_path = 'Use in case of running with non local server'  # ssh key
-    run_environment = Running.WITH_LOCAL_SERVER  # WITH_OTHER_SERVER
+    run_environment = Running.CIRCLECI_RUN  # WITH_OTHER_SERVER
     env_results_path = './env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'  # change to server version
     #  END CHANGE ON LOCAL RUN  #
