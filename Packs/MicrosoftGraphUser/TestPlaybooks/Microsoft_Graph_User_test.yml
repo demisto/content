@@ -305,12 +305,12 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 5ace3b5a-c0b2-4221-8611-90a4ac358ed9
+    taskid: a4b11f40-4123-459b-886a-55217154347e
     type: title
     task:
-      id: 5ace3b5a-c0b2-4221-8611-90a4ac358ed9
+      id: a4b11f40-4123-459b-886a-55217154347e
       version: -1
-      name: Error!
+      name: Done!
       type: title
       iscommand: false
       brand: ""
@@ -318,8 +318,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 4220
+          "x": 480,
+          "y": 4240
         }
       }
     note: false
@@ -645,7 +645,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+      - "32"
       success:
       - "23"
     separatecontext: false
@@ -812,7 +812,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+      - "33"
       success:
       - "14"
     separatecontext: false
@@ -834,30 +834,6 @@ tasks:
         "position": {
           "x": 470,
           "y": 3345
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "29":
-    id: "29"
-    taskid: ac88b353-1556-4a9a-80c9-72ac0b8107ba
-    type: title
-    task:
-      id: ac88b353-1556-4a9a-80c9-72ac0b8107ba
-      version: -1
-      name: Done!
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 4220
         }
       }
     note: false
@@ -912,7 +888,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+      - "9"
     scriptarguments:
       user:
         simple: ${GeneratedUUID}-4@${inputs.baseurl}
@@ -929,14 +905,72 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "32":
+    id: "32"
+    taskid: 30662b82-ac8a-4b7c-80a6-9a2d48c78601
+    type: regular
+    task:
+      id: 30662b82-ac8a-4b7c-80a6-9a2d48c78601
+      version: -1
+      name: Failed to assign and retrieve manager
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Could not correctly retrieve the assigned manager.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 4fcc93de-4c33-41c6-886d-8a9099819e0f
+    type: regular
+    task:
+      id: 4fcc93de-4c33-41c6-886d-8a9099819e0f
+      version: -1
+      name: Failed to retrieve the direct reports
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Could not correctly retrieve the direct reports.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -115,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4235,
-        "width": 920,
-        "x": -60,
+        "height": 4255,
+        "width": 980,
+        "x": -120,
         "y": 50
       }
     }
