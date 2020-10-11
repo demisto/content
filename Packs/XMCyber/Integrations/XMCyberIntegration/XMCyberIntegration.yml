@@ -85,7 +85,7 @@ script:
         description: 'IP Address of Entity'
         type: String
   
-        - name: xmcyber-asset-attack-path-list
+    - name: xmcyber-asset-attack-path-list
     description: Get Paths to the Critical Assets
     arguments:
     - name: time_id
