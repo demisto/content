@@ -815,7 +815,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     default_test_timeout = conf.get('testTimeout', 30)
 
     tests = conf['tests']
-    print(f"Tests are {tests}")
+    # print(f"Tests are {tests}")
     skipped_tests_conf = conf['skipped_tests']
     nightly_integrations = conf['nightly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
@@ -852,7 +852,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     disable_all_integrations(xsoar_client, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
     if is_private:
-        private_test_names = mockable_tests_names.append(unmockable_tests_names)
+        private_test_names = mockable_tests_names.union(unmockable_tests_names)
+        print(f"Private test names are: {private_test_names}")
         private_tests = get_test_records_of_given_test_names(tests_settings, private_test_names)
         mockable_tests = []
         unmockable_tests = private_tests

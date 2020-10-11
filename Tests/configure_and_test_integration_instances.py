@@ -1022,7 +1022,7 @@ def nightly_install_packs(build, threads_print_manager, install_method=install_a
 
 def install_nightly_pack(build, prints_manager):
     threads_print_manager = ParallelPrintsManager(len(build.servers))
-    nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs)
+    # nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs)
     create_nightly_test_pack()
     nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs,
                           pack_path=f'/home/runner/work/content-private/content-private/content/test_pack.zip')
