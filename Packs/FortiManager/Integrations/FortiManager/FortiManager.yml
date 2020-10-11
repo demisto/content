@@ -25,7 +25,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the Hello World integration for getting started.
+description: FortiManager is a single console central management system that manages
+  Fortinet Devices.
 display: FortiManager
 name: FortiManager
 script:
@@ -1888,10 +1889,10 @@ script:
       isArray: false
       name: action
       predefined:
-        - deny
-        - accept
-        - ipsec
-        - ssl-vpn
+      - deny
+      - accept
+      - ipsec
+      - ssl-vpn
       required: false
       secret: false
     - default: false
@@ -1919,8 +1920,8 @@ script:
       isArray: false
       name: dstaddr_negate
       predefined:
-        - disable
-        - enable
+      - disable
+      - enable
       required: false
       secret: false
     - default: false
@@ -1948,8 +1949,8 @@ script:
       isArray: false
       name: srcaddr_negate
       predefined:
-        - disable
-        - enable
+      - disable
+      - enable
       required: false
       secret: false
     - default: false
@@ -1977,10 +1978,10 @@ script:
       isArray: false
       name: logtraffic
       predefined:
-        - enable
-        - disable
-        - all
-        - utm
+      - enable
+      - disable
+      - all
+      - utm
       required: false
       secret: false
     - default: false
@@ -2001,8 +2002,8 @@ script:
       isArray: false
       name: status
       predefined:
-        - enable
-        - disable
+      - enable
+      - disable
       required: true
       secret: false
     - default: false
