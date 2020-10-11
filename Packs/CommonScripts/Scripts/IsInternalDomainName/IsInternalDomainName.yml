@@ -1,18 +1,18 @@
 args:
 - default: false
-  description: The domain name that the sub domain should be in
+  description: The name of the domain.  
   isArray: false
   name: domain_name
   required: true
   secret: false
 - auto: PREDEFINED
   default: true
-  description: A comma-separated list of domains to check.
+  description: A comma-separated list of subdomains.
   isArray: true
   name: domain_to_check
   required: true
   secret: false
-comment: Check if a Domain or sub domain is in a domain
+comment: Checks if a subdomain is located in the specified domain.
 commonfields:
   id: IsInternalDomainName
   version: -1
@@ -20,13 +20,13 @@ enabled: false
 name: IsInternalDomainName
 outputs:
 - contextPath: IsInternalDomain.DomainToTest
-  description: The domain that was checked
+  description: The subdomain that was checked to verify if it is part of the domain.
   type: String
 - contextPath: IsInternalDomain.IsInternal
-  description: "True if sub domain is part of a domain. \nFalse otherwise"
-  type: String
+  description: True, if the subdomain is part of the specified domain. Otherwise, false.
+  type: Boolean
 - contextPath: IsInternalDomain.DomainToCompare
-  description: The domain that sub domain is compare to
+  description: The name of the domain that was used to check the subdomain.
   type: String
 script: '-'
 subtype: python3
