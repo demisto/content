@@ -598,7 +598,8 @@
         {
             "playbookID": "Create ServiceNow Ticket and State Polling Test",
             "integrations": "ServiceNow v2",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 500
         },
         {
             "integrations": "ExtraHop v2",
