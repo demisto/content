@@ -469,5 +469,3 @@ view: |-
   }
 inputs: []
 outputs: []
-tests:
-- illuminate Integration Demonstration - Test
