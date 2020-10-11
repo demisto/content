@@ -1954,7 +1954,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 arg_name='sys_created_on',
                 required=False
             )
-            if last_update > entry_time:
+            if last_update > entry_time and file.get('File'):
                 demisto.debug(f'Ticket last update: {str(last_update)}')
                 demisto.debug(f'The file {file} has been skipped. The entry was created on {entry_time}')
                 continue
