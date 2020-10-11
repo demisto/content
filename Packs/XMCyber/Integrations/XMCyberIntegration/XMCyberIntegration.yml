@@ -1826,7 +1826,8 @@ script:
     - contextPath: XMCyber.AttackPath.pathComplexity
       description: ''
       type: Number
-  - name: xmcyber-attack-paths-from-entity
+  
+      - name: xmcyber-attack-paths-from-entity
     description: Get Paths to Entity
     arguments:
     - name: ip
@@ -2262,6 +2263,19 @@ script:
     description: Get current and previous global risk score
     outputs:
       - contextPath: XMCyber.RiskScore.grade
+        description: 'Current global risk score grade'
+        type: String
+      - contextPath: XMCyber.RiskScore.score
+        description: 'Current global risk score number'
+        type: Number
+      - contextPath: XMCyber.RiskScore.trend
+        description: 'Trend from previous week'
+        type: Number
+
+  - name: xmcyber-assets
+    description: Get assets list
+    outputs:
+      - contextPath: XMCyber.Assets.entityId
         description: 'Current global risk score grade'
         type: String
       - contextPath: XMCyber.RiskScore.score

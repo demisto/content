@@ -7,6 +7,7 @@ import urllib3
 import dateparser
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
+import enum
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -15,9 +16,10 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 BREACHPOINT_LABEL = 'Demisto Breachpoint'
 CRITICAL_ASSET_LABEL = 'Demisto Critical Asset'
+DEFAULT_TIME_ID = 'timeAgo_days_7'
+TOP_ENTITIES = 5
 
 ''' CLIENT CLASS '''
 
@@ -25,71 +27,67 @@ CRITICAL_ASSET_LABEL = 'Demisto Critical Asset'
 class Client(BaseClient):
     """Client class to interact with XM Cyber API"""
 
-    def _get(self, url_suffix, params):
-        return self._http_request(
-                    method='GET',
-                    url_suffix=url_suffix,
-                    params=params
-                )
-
-    def get_version(self) -> Dict[str, Any]:
-        """Get version
-
-        :return: dict containing the version
-        :rtype: ``Dict[str, Any]``
-        """
-
+    def get(self, url_suffix, params = None):
         return self._http_request(
             method='GET',
-            url_suffix='/version'
+            url_suffix=url_suffix,
+            params=params
         )
-
-    def get_entity_report(self, entity_id: str, time_id: str):
+    
+    def post(self, url_suffix, params = None):
         return self._http_request(
-            method='GET',
-            url_suffix='/systemReport/entity',
-            params={
+            method='POST',
+            url_suffix=url_suffix,
+            data=json.dumps(params)
+        )
+    
+    def _paginated(self, method, url_suffix, params, page_size, max_pages, log):
+        page, total_pages = 1, 1
+        data = []
+        params["pageSize"] = page_size
+        while page <= total_pages and page <= max_pages:
+            if log:
+                writeLog(f'in {url_suffix} while loop {page} {total_pages}')
+            
+            params["page"] = page
+            res = None
+            if method == 'GET':
+                res = self.get(url_suffix, params)
+            else:
+                res = self.post(url_suffix, params)
+            
+            data.extend(res['data'])
+            total_pages = res['paging']['totalPages']
+            page += 1
+
+        return data
+
+    def get_paginated(self, url_suffix, params = {}, page_size = 100, max_pages = 100, log = True):
+        return self._paginated("GET", url_suffix, params, page_size, max_pages, log)
+    
+    def post_paginated(self, url_suffix, params = {}, page_size = 100, max_pages = 100, log = True):
+        return self._paginated("POST", url_suffix, params, page_size, max_pages, log)
+
+    # TODO - remove all this functions
+    def get_entity_report(self, entity_id: str, time_id: str):
+        return self.get('/systemReport/entity', {
                 'entityId': entity_id,
                 'timeId': time_id
-            }
-        )
+            })
 
     def get_inbound_paths(self, entity_id: str, time_id):
         # /api/systemReport/entity/inbound
-        return self._http_request(
-            method='GET',
-            url_suffix='/systemReport/entity/inbound',
-            params={
+        return self.get('/systemReport/entity/inbound', {
                 'entityId': entity_id,
                 'timeId': time_id
-            }
-        )
+            })
 
     def get_outbound_paths(self, entity_id: str, time_id):
         # /api/systemReport/entity/outbound
-        return self._http_request(
-            method='GET',
-            url_suffix='/systemReport/entity/outbound',
-            params={
+        return self.get('/systemReport/entity/outbound', {
                 'entityId': entity_id,
                 'timeId': time_id
-            }
-        )
-
-    def get_critical_assets(self, time_id):
-        page = 1
-        total_pages = 1
-        critical_assets = []
-        while page <= total_pages:
-            demisto.info(f'in while loop {page} {total_pages}')
-            res = self._http_request(
-                method='GET',
-                url_suffix=f'/systemReport/entities?time_id={time_id}&page={page}&pageSize=200&filter=%7B"asset"%3A%20true%7D',
-            )
-            critical_assets.extend(res['data'])
-            total_pages = res['paging']['totalPages']
-            page += 1
-        return critical_assets
+            })
 
     def get_top_techniques(self, time_id):
         page = 1
@@ -144,35 +142,13 @@ class Client(BaseClient):
             page += 1
         return entities
 
-    def assets_at_risk(self, entity_id):
-        demisto.info(f'assets_at_risk {entity_id}')
-        page = 1
-        total_pages = 1
-        entities = []
-        while page <= total_pages:
-            res = self._http_request(
-                method='GET',
-                url_suffix='/systemReport/assetsAtRiskByEntity',
-                params={
-                    'page': page,
-                    'pageSize': 200,
-                    'sort': 'attackComplexity',
-                    'entityId': entity_id,
-                    'timeId': 'timeAgo_days_7'
-                }
-            )
-            entities.extend(res['data'])
-            total_pages = res['paging']['totalPages']
-            page += 1
-        return entities
 
-    def get_risk_score(self, time_id, resolution):
-        params = {
-            'timeId': time_id,
-            'resolution': resolution
-        }
-        return self._get('/systemReport/riskScoreV2', params)
-
+class URLS:
+    Version = '/version'
+    Entities = '/systemReport/entities'
+    Risk_Score = '/systemReport/riskScoreV2'
+    Top_Assets_At_Risk = '/systemReport/topAssetsAtRiskV2'
+    Top_Choke_Points = '/systemReport/topChokePointsV2'
 
 class XM:
     client = None
@@ -180,23 +156,78 @@ class XM:
     def __init__(self, client: Client):
         self.client = client
 
+
+    def get_version(self):
+        return self.client.get(URLS.Version)
+    
+    
+    # The function return risk score data for the given timeId
+    # return dict:
+    #   trend - trend from previous time id
+    #   current_grade - current risk score grade (A-F)
+    #   current_score - current risk score (0-100)
+    
     def risk_score(self, time_id, resolution):
-        risk_score_response = self.client.get_risk_score(time_id, resolution)
+        risk_score_response = self.client.get(URLS.Risk_Score, {
+            'timeId': time_id,
+            'resolution': resolution
+        })
 
-        risk_score_data = risk_score_response["data"]
-        risk_score_stats = risk_score_data["stats"]
-
-        current_grade = risk_score_stats["grade"]
-        current_score = risk_score_stats["score"]
-        trend = risk_score_stats["trend"]
+        risk_score_stats = risk_score_response["data"]["stats"]
 
         return {
-            "trend": trend,
-            "current_grade": current_grade,
-            "current_score": current_score
+            "trend": risk_score_stats["trend"],
+            "current_grade": risk_score_stats["grade"],
+            "current_score": risk_score_stats["score"]
         }
+    
+    # This general function return data regarding the entities at a specific timeId
+    # Params:
+    #   only_assets - return only assets
+    # return:
+    #   list of entities
+    def get_entities(self, time_id, only_assets):
+        filterObj = {}
+        if only_assets:
+            filterObj['asset'] = True
+
+        query = {
+            'timeId': time_id,
+            'filter': filterObj
+        }
+        return self.client.post_paginated(URLS.Entities, query)
+
+    
+    def _top_entities(self, url, time_id, amount_of_results):
+        response = self.client.get(url, {
+            'timeId': time_id,
+            'amountOfResults': amount_of_results
+        })
+
+        return response["data"]["entities"]
+
+    
+    def top_assets_at_risk(self, time_id, amount_of_results = TOP_ENTITIES):
+        return self._top_entities(URLS.Top_Assets_At_Risk, time_id, amount_of_results)
+
+    
+    def top_choke_points(self, time_id, amount_of_results = TOP_ENTITIES):
+        return self._top_entities(URLS.Top_Choke_Points, time_id, amount_of_results)
 
 ''' HELPER FUNCTIONS '''
+
+class LogLevel(enum.Enum):
+    Debug = 0,
+    Info = 1,
+    Error = 2,
+
+
+def writeLog(msg, logLevel = LogLevel.Info):
+    if logLevel == LogLevel.Debug:
+        demisto.debug(msg)
+    elif logLevel == LogLevel.Info or logLevel == LogLevel.Error:
+        demisto.info(msg)
+
 
 def create_client():
     api_key = demisto.params().get('apikey')
@@ -369,38 +400,6 @@ def raw_path_to_incident_path(path: Any) -> Any:
     raise NotImplemented()
 
 ''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-    try:
-        version = client.get_version()
-        system_version = version['system']
-        s_version = system_version.split('.')
-        major = int(s_version[0])
-        minor = int(s_version[1])
-        if major < 1 or (major == 1 and minor < 37):
-            return f'Instance version not compatible. {system_version} (found) < 1.37 (required).'
-
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    except Exception as e:
-        return f'Verification Error: could not load XM Cyber version.\n{e}'
-    return 'ok'
 
 
 def asset_attack_path_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -611,6 +610,7 @@ def risk_score_trend_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
         outputs=risk_score
     )
 
+
 def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     demisto.info('Running fetch incidents')
     demisto.debug('@@@@@@@@@@@@@@@@@@@@')
@@ -621,8 +621,72 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
         outputs=outputs
     )
 
+
 def test_module_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    return test_module(xm.client)
+    """Tests API connectivity and authentication'
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type client: ``Client``
+    :param Client: HelloWorld client to use
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+    try:
+        version = xm.get_version()
+        system_version = version['system']
+        s_version = system_version.split('.')
+        major = int(s_version[0])
+        minor = int(s_version[1])
+        if major < 1 or (major == 1 and minor < 37):
+            return f'Instance version not compatible. {system_version} (found) < 1.37 (required).'
+
+    except DemistoException as e:
+        if 'Forbidden' in str(e):
+            return 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
+    except Exception as e:
+        return f'Verification Error: could not load XM Cyber version.\n{e}'
+    return 'ok'
+
+
+def get_assets_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    outputs = xm.get_entities(DEFAULT_TIME_ID, True)
+    return CommandResults(
+        outputs_prefix='XMCyber.RiskScore',
+        outputs_key_field='id',
+        outputs=outputs
+    )
+
+
+def top_assets_at_risk_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    outputs = xm.top_assets_at_risk(DEFAULT_TIME_ID)
+    return CommandResults(
+        outputs_prefix='XMCyber.TopAssetsAtRisk',
+        outputs_key_field='id',
+        outputs=outputs
+    )
+
+
+def top_choke_points_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    outputs = xm.top_choke_points(DEFAULT_TIME_ID)
+    return CommandResults(
+        outputs_prefix='XMCyber.TopChokePoints',
+        outputs_key_field='id',
+        outputs=outputs
+    )
+
+
+def get_version_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    return CommandResults(
+        outputs_prefix='XMCyber.Version',
+        outputs_key_field='system',
+        outputs=xm.get_version()
+    )
 
 ''' MAIN FUNCTION '''
 
@@ -654,9 +718,15 @@ def main() -> None:
         #         2) args dict
         #         return value - CommandResults
         commandsDict = {
-            "fetch-incidents": fetch_incidents_command,
-            "xmcyber-risk-score-trend": risk_score_trend_command,
             "test-module": test_module_command,  # This is the call made when pressing the integration Test button.
+            "fetch-incidents": fetch_incidents_command,
+            # Command list
+            # xmcyber-command-name: function_command
+            "xmcyber-get-version": get_version_command,
+            "xmcyber-risk-score-trend": risk_score_trend_command,
+            "xmcyber-assets": get_assets_command,
+            "xmcyber-top-assets-at-risk": top_assets_at_risk_command,
+            "xmcyber-top-choke-points": top_choke_points_command,
         }
 
         if command in commandsDict:
