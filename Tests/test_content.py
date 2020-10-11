@@ -852,7 +852,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     disable_all_integrations(xsoar_client, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
     if is_private:
-        private_test_names = mockable_tests_names.union(unmockable_tests_names)
+        private_test_names = mockable_tests_names + unmockable_tests_names
         print(f"Private test names are: {private_test_names}")
         private_tests = get_test_records_of_given_test_names(tests_settings, private_test_names)
         mockable_tests = []
