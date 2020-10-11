@@ -178,7 +178,7 @@ outputs:
   description: The serial number of the holder of the endpoint SSL certificate.
   type: String
 - contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.StateOrProvinceName
-  description: The state or province of the holder of the endpoint SSL certificate..
+  description: The state or province of the holder of the endpoint SSL certificate.
   type: String
 - contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.DomainComponent
   description: The DNS domain name of the holder of the endpoint SSL certificate.
