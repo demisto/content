@@ -9,12 +9,12 @@ def main():
     with open('./env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
 
-    id_to_ip = {env["InstanceID"]: env["InstanceDNS"] for env in env_results}
+    id_to_ip = [env["InstanceDNS"] for env in env_results]
 
     print("Waiting 60 Seconds for SSH to start\n")
     sleep(60)
     threads_list = []
-    for instance_ip in id_to_ip.values():
+    for instance_ip in id_to_ip:
         t = Thread(target=run_command,
                    args=("./Tests/scripts/copy_content_data.sh {}".format(instance_ip), ),
                    kwargs={'is_silenced': False})
