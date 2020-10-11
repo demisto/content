@@ -10,6 +10,30 @@
 	"closeForm": false,
 	"columns": [
 		{
+			"displayName": "MITRE ATT&CK TACTIC",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "mitretacticidandname",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "MITRE ATT&CK TECHNIQUE",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "mitretechniqueidandname",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
 			"displayName": "Alert Id",
 			"fieldCalcScript": "",
 			"isDefault": true,
