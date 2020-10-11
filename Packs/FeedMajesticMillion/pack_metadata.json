@@ -1,6 +1,6 @@
 {
     "name": "Majestic Million Feed",
-    "description": "TODO",
+    "description": "Free search and download of the top million websites.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
