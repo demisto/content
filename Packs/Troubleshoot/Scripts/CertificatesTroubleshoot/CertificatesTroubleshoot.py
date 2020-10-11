@@ -192,7 +192,7 @@ def main():
                     'SSL/TLS': docker_container_details(),
                 },
                 'Endpoint': {
-                    'SSL/TLS': endpoint_certificate(demisto.getArg('endpoint'), demisto.getArg("prot") or "443"),
+                    'SSL/TLS': endpoint_certificate(demisto.getArg('endpoint'), demisto.getArg("port") or "443"),
                 }
             }
         }
