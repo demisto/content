@@ -1202,7 +1202,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
 
 def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id_set: dict) -> Tuple[str, str]:
-    """Computes the lowest from version of the modified files and the highest to version of the modified files
+    """Computes the lowest from version of the modified files, the highest from version and the highest to version of
+    the modified files.
+    In case that max_from_version is higher than max to version - to version will be the the highest default.
     Args:
         all_modified_files_paths: All modified files
         id_set: the content of the id.set_json
@@ -1213,6 +1215,7 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
     """
     max_to_version = LooseVersion('0.0.0')
     min_from_version = LooseVersion('99.99.99')
+    max_from_version = LooseVersion('0.0.0')
     for artifacts in id_set.values():
         for artifact_dict in artifacts:
             for artifact_details in artifact_dict.values():
@@ -1221,14 +1224,16 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
                     to_version = artifact_details.get('toversion')
                     if from_version:
                         min_from_version = min(min_from_version, LooseVersion(from_version))
+                        max_from_version = max(max_from_version, LooseVersion(from_version))
                     if to_version:
                         max_to_version = max(max_to_version, LooseVersion(to_version))
-    if max_to_version.vstring == '0.0.0':
+    if max_to_version.vstring == '0.0.0' or max_to_version < max_from_version:
         max_to_version = LooseVersion('99.99.99')
     if min_from_version.vstring == '99.99.99':
         min_from_version = LooseVersion('0.0.0')
     logging.debug(f'modified files are {all_modified_files_paths}')
     logging.debug(f'lowest from version found is {min_from_version}')
+    logging.debug(f'highest from version found is {max_from_version}')
     logging.debug(f'highest to version found is {max_to_version}')
     return min_from_version.vstring, max_to_version.vstring
 
