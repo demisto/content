@@ -1827,7 +1827,7 @@ script:
       description: ''
       type: Number
   
-      - name: xmcyber-attack-paths-from-entity
+    - name: xmcyber-attack-paths-from-entity
     description: Get Paths to Entity
     arguments:
     - name: ip
