@@ -1,7 +1,7 @@
-id: Cofense Triage Test
+id: Cofense Triage v2 Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Cofense Triage Test
+name: Cofense Triage v2 Test
 starttaskid: "0"
 tasks:
   "0":
@@ -346,4 +346,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0,
-sourceplaybookid: Cofense Triage Test
+sourceplaybookid: Cofense Triage Test v2
