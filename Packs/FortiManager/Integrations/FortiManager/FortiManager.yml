@@ -1628,7 +1628,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the new Policy Package.
+      description: The name of the Policy Package to update.
       isArray: false
       name: name
       required: true
@@ -1641,11 +1641,10 @@ script:
       predefined:
       - pkg
       - folder
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: disable
       description: Whether to use central NAT
       isArray: false
       name: central_nat
@@ -1656,7 +1655,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: disable
       description: Whether to enable consolidate firewall mode
       isArray: false
       name: consolidated_firewall_mode
@@ -1667,7 +1665,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: disable
       description: Whether to enable firewall policy implicit log
       isArray: false
       name: fwpolicy_implicit_log
@@ -1678,7 +1675,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: disable
       description: Whether to enable firewall policy 6 implicit log
       isArray: false
       name: fwpolicy6_implicit_log
@@ -1689,7 +1685,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: proxy
       description: Whether to enable inspection mode.
       isArray: false
       name: inspection_mode
@@ -1700,7 +1695,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: profile-based
       description: Whether to enable NGFW mode
       isArray: false
       name: ngfw_mode
@@ -1863,6 +1857,12 @@ script:
       - enable
       - disable
       required: true
+      secret: false
+    - default: false
+      description: The ID of the policy to create. Leave empty to use system default.
+      isArray: false
+      name: policyid
+      required: false
       secret: false
     deprecated: false
     description: Create a firewall policy.
@@ -3212,7 +3212,7 @@ script:
     deprecated: false
     description: Schedule a policy package installation.
     execution: false
-    name: fortimanager-policy-package-install
+    name: fortimanager-firewall-policy-package-install
     outputs:
     - contextPath: FortiManager.Installation
       description: The installation task ID.
@@ -3227,7 +3227,7 @@ script:
     deprecated: false
     description: Get installation status.
     execution: false
-    name: fortimanager-policy-package-install-status
+    name: fortimanager-firewall-policy-package-install-status
     outputs:
     - contextPath: FortiManager.Installation.adom
       description: The ADOM on which the installation occurred.

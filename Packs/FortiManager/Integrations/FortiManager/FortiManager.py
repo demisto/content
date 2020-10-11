@@ -748,10 +748,10 @@ def main() -> None:
         elif demisto.command() == 'fortimanager-dynamic-address-mapping-delete':
             return_results(delete_dynamic_address_mapping_command(client, demisto.args()))
 
-        elif demisto.command() == 'fortimanager-policy-package-install':
+        elif demisto.command() == 'fortimanager-firewall-policy-package-install':
             return_results(install_policy_package_command(client, demisto.args()))
 
-        elif demisto.command() == 'fortimanager-policy-package-install-status':
+        elif demisto.command() == 'fortimanager-firewall-policy-package-install-status':
             return_results(install_policy_package_status_command(client, demisto.args()))
 
     # Log exceptions and return errors
