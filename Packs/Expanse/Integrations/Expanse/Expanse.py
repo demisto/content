@@ -314,8 +314,8 @@ def get_domain_context(data):
     """
     return {
         "Name": data['domain'],
-        "DNS": ((data['details'] or {}).get('recentIps')
-                if is_not_empty_value((data['details'] or {}).get('recentIps'))
+        "DNS": ((data.get('details') or {}).get('recentIps')
+                if is_not_empty_value((data.get('details') or {}).get('recentIps'))
                 else None),
         "CreationDate": data['whois'][0]['creationDate'],
         "DomainStatus": data['dnsResolutionStatus'],
@@ -371,8 +371,8 @@ def get_expanse_domain_context(data):
     """
     c = {
         "Name": data['domain'],
-        "DNS": ((data['details'] or {}).get('recentIps')
-                if is_not_empty_value(((data['details'] or {}).get('recentIps')))
+        "DNS": ((data.get('details') or {}).get('recentIps')
+                if is_not_empty_value(((data.get('details') or {}).get('recentIps')))
                 else None),
         "CreationDate": data['whois'][0].get('creationDate'),
         "DomainStatus": data.get('dnsResolutionStatus'),
@@ -467,8 +467,8 @@ def get_expanse_domain_context(data):
         "Tenant": data['tenant'].get('name') if is_not_empty_value(data['tenant'].get('name')) else None,
         "BusinessUnits": [],
         "DNSSEC": data['whois'][0].get('dnssec') if is_not_empty_value(data['whois'][0].get('dnssec')) else None,
-        "RecentIPs": ((data['details'] or {}).get('recentIps')
-                      if is_not_empty_value(((data['details'] or {}).get('recentIps')))
+        "RecentIPs": ((data.get('details') or {}).get('recentIps')
+                      if is_not_empty_value(((data.get('details') or {}).get('recentIps')))
                       else None),
         "CloudResources": ((data['details'] or {}).get('cloudResources')
                            if is_not_empty_value(((data['details'] or {}).get('cloudResources')))
