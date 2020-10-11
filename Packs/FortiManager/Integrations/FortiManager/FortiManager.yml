@@ -1754,7 +1754,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: all
       description: 'Destination address name. Note: dstaddr6 or dstaddr must be set.'
       isArray: false
       name: dstaddr
@@ -1785,7 +1784,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: all
       description: 'Source address name. Note: srcaddr or srcaddr6 must be set.'
       isArray: false
       name: srcaddr
@@ -1903,7 +1901,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: all
       description: 'Destination address name. Note: dstaddr6 or dstaddr must be set.'
       isArray: false
       name: dstaddr
@@ -1927,14 +1924,12 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: any
       description: Destination interface name.
       isArray: false
       name: dstintf
       required: false
       secret: false
     - default: false
-      defaultValue: all
       description: 'Source address name. Note: srcaddr or srcaddr6 must be set.'
       isArray: false
       name: srcaddr
@@ -1958,7 +1953,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: any
       description: Source interface name.
       isArray: false
       name: srcintf
@@ -1978,7 +1972,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: utm
       description: Enable or disable logging. Log all sessions or security profile
         sessions.
       isArray: false
@@ -1991,14 +1984,12 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: always
       description: Schedule name.
       isArray: false
       name: schedule
       required: false
       secret: false
     - default: false
-      defaultValue: ALL
       description: Service and service group names.
       isArray: false
       name: service
@@ -2006,7 +1997,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: enable
       description: Enable or disable this policy.
       isArray: false
       name: status
