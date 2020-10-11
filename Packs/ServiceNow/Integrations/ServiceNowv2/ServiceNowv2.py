@@ -598,29 +598,25 @@ class Client(BaseClient):
             Array of attachments entries.
         """
         entries = []
-        links = []
-        file_entries = []
+        links = []  # type: List[Tuple[str, str]]
         attachments_res = self.get_ticket_attachments(ticket_id)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
             links = [(attachment.get('download_link', ''), attachment.get('file_name', ''),
-                      attachment.get('sys_created_on'))
-                     for attachment in attachments]
+                      attachment.get('sys_created_on')) for attachment in attachments]
 
         for link in links:
             file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
                                     proxies=self._proxies)
 
             if file_res is not None:
-                entries.append(fileResult(link[1], file_res.content))
+                entry = (fileResult(link[1], file_res.content),  link[2])
+                if get_timestamp:
+                    entries.append(entry)
+                else:
+                    entries.append(fileResult(link[1], file_res.content))
 
-                entry = (fileResult(link[1], file_res.content), link[2])
-                file_entries.append(entry)
-
-        if get_timestamp:
-            return file_entries
-        else:
-            return entries
+        return entries
 
     def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str = None) -> dict:
         """Get a ticket by sending a GET request.
@@ -1954,11 +1950,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 arg_name='sys_created_on',
                 required=False
             )
-            if last_update > entry_time and file.get('File'):
-                demisto.debug(f'Ticket last update: {str(last_update)}')
-                demisto.debug(f'The file {file} has been skipped. The entry was created on {entry_time}')
-                continue
-            else:
+            if '_mirrored_from_xsoar' not in file.get('File') and last_update < entry_time:
                 entries.append(file)
 
     sys_param_limit = args.get('limit', client.sys_param_limit)
@@ -1980,20 +1972,18 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             required=False
         )
         demisto.debug(f'entry_time is {entry_time}')
-
-        if last_update > entry_time:  # type: ignore
-            continue
-
-        comments_context = {'comments_and_work_notes': note.get('value')}
-        entries.append({
-            'Type': note.get('type'),
-            'Category': note.get('category'),
-            'Contents': note.get('value'),
-            'ContentsFormat': note.get('format'),
-            'Tags': note.get('tags'),
-            'Note': True,
-            'EntryContext': comments_context
-        })
+        if 'Mirrored from Cortex XSOAR' not in note.get('value'):
+            if entry_time > last_update:
+                comments_context = {'comments_and_work_notes': note.get('value')}
+                entries.append({
+                    'Type': note.get('type'),
+                    'Category': note.get('category'),
+                    'Contents': note.get('value'),
+                    'ContentsFormat': note.get('format'),
+                    'Tags': note.get('tags'),
+                    'Note': True,
+                    'EntryContext': comments_context
+                })
     # Parse user dict to email
     assigned_to = ticket.get('assigned_to', {})
     caller = ticket.get('caller_id', {})
@@ -2075,8 +2065,11 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
             # Mirroring files as entries
             if entry.get('type') == 3:
                 path_res = demisto.getFilePath(entry.get('id'))
-                file_name = path_res.get('name')
-                client.upload_file(ticket_id, entry.get('id'), file_name, ticket_type)
+                full_file_name = path_res.get('name').split('.')
+                file_name = full_file_name[0]
+                file_extension = full_file_name[1]
+                client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar.' + file_extension,
+                                   ticket_type)
             else:
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
@@ -2086,7 +2079,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 elif params.get('comment_tag') in tags:
                     key = 'comments'
                 user = entry.get('user', 'dbot')
-                text = f"({user}): {str(entry.get('contents', ''))}"
+                text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
                 client.add_comment(ticket_id, ticket_type, key, text)
 
     return ticket_id
