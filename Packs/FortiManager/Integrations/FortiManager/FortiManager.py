@@ -133,8 +133,8 @@ def get_range_for_list_command(args: Dict):
         return None
 
 
-def split_param(args, name, default_val='', check_if_exists=False):
-    if not check_if_exists or (check_if_exists and args.get(name)):
+def split_param(args, name, default_val='', skip_if_none=False):
+    if not skip_if_none or (skip_if_none and args.get(name)):
         args[name] = args.get(name, default_val).split(',')
 
 
@@ -409,13 +409,13 @@ def create_policy_command(client, args):
             args[field_and_value[0]] = field_and_value[1]
 
     json_data = setup_request_data(args, ['adom', 'package', 'additional_params'])
-    split_param(json_data, 'dstaddr', 'all', check_if_exists=True)
-    split_param(json_data, 'dstaddr6', 'all', check_if_exists=True)
+    split_param(json_data, 'dstaddr', 'all', skip_if_none=True)
+    split_param(json_data, 'dstaddr6', 'all', skip_if_none=True)
     split_param(json_data, 'dstintf', 'any')
     split_param(json_data, 'schedule', 'always')
     split_param(json_data, 'service', 'ALL')
-    split_param(json_data, 'srcaddr', 'all', check_if_exists=True)
-    split_param(json_data, 'srcaddr6', 'all', check_if_exists=True)
+    split_param(json_data, 'srcaddr', 'all', skip_if_none=True)
+    split_param(json_data, 'srcaddr6', 'all', skip_if_none=True)
     split_param(json_data, 'srcintf', 'any')
 
     if not (json_data.get('dstaddr') or json_data.get('dstaddr6')):
@@ -454,14 +454,14 @@ def update_policy_command(client, args):
             args[field_and_value[0]] = field_and_value[1]
 
     data = setup_request_data(args, ['adom', 'package', 'additional_params'])
-    split_param(data, 'dstaddr', 'all', check_if_exists=True)
-    split_param(data, 'dstaddr6', 'all', check_if_exists=True)
-    split_param(data, 'dstintf', 'any', check_if_exists=True)
-    split_param(data, 'schedule', 'always', check_if_exists=True)
-    split_param(data, 'service', 'ALL', check_if_exists=True)
-    split_param(data, 'srcaddr', 'all', check_if_exists=True)
-    split_param(data, 'srcaddr6', 'all', check_if_exists=True)
-    split_param(data, 'srcintf', 'any', check_if_exists=True)
+    split_param(data, 'dstaddr', 'all', skip_if_none=True)
+    split_param(data, 'dstaddr6', 'all', skip_if_none=True)
+    split_param(data, 'dstintf', 'any', skip_if_none=True)
+    split_param(data, 'schedule', 'always', skip_if_none=True)
+    split_param(data, 'service', 'ALL', skip_if_none=True)
+    split_param(data, 'srcaddr', 'all', skip_if_none=True)
+    split_param(data, 'srcaddr6', 'all', skip_if_none=True)
+    split_param(data, 'srcintf', 'any', skip_if_none=True)
 
     policies = client.fortimanager_api_call("update", f"/pm/config/"
                                                       f"{get_global_or_adom(client, args)}"
