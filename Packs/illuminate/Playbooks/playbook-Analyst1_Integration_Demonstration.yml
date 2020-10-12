@@ -15,7 +15,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -44,7 +43,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -77,7 +75,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       HTTP Request:
       - "7"
@@ -229,7 +226,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Analyst1
-      description: ''
     scriptarguments:
       domain:
         simple: ${incident.labels.Indicator}
@@ -258,7 +254,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Analyst1
-      description: ''
     scriptarguments:
       email:
         simple: ${incident.labels.Indicator}
@@ -287,7 +282,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Analyst1
-      description: ''
     scriptarguments:
       url:
         simple: ${incident.labels.Indicator}
@@ -316,7 +310,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Analyst1
-      description: ''
     scriptarguments:
       file:
         simple: ${incident.labels.Indicator}
@@ -345,7 +338,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Analyst1
-      description: ''
     scriptarguments:
       http-request:
         simple: ${incident.labels.Indicator}
@@ -374,7 +366,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     scriptarguments:
       ip:
         simple: ${incident.labels.Indicator}
@@ -403,7 +394,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Analyst1
-      description: ''
     scriptarguments:
       mutex:
         simple: ${incident.labels.Indicator}
@@ -432,7 +422,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Analyst1
-      description: ''
     scriptarguments:
       string:
         simple: ${incident.labels.Indicator}
@@ -461,7 +450,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Analyst1
-      description: ''
     scriptarguments:
       ip:
         simple: ${incident.labels.Indicator}
