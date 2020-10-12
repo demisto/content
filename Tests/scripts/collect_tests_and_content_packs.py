@@ -14,6 +14,7 @@ import logging
 from distutils.version import LooseVersion
 from copy import deepcopy
 from typing import Dict, Tuple
+from Tests.tools import is_pack_certified
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
@@ -352,10 +353,17 @@ def collect_tests_and_content_packs(
     integration_to_command, _ = get_integration_commands(integration_ids, integration_set)
 
     for test_playbook in test_playbooks_set:
+
         detected_usage = False
         test_playbook_id = list(test_playbook.keys())[0]
         test_playbook_data = list(test_playbook.values())[0]
         test_playbook_name = test_playbook_data.get('name')
+        test_playbook_pack_name = test_playbook_data.get('pack')
+
+        # We don't want to test playbooks from Non-certified partners.
+        if not is_pack_certified(test_playbook_pack_name):
+            continue
+
         for script in test_playbook_data.get('implementing_scripts', []):
             if script in script_ids:
                 detected_usage = True

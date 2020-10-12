@@ -1,6 +1,11 @@
+import os
 import ast
+import json
 import demisto_client
 from demisto_sdk.commands.common.tools import print_error
+import demisto_sdk.commands.common.tools as sdk_tools
+from demisto_sdk.commands.common.constants import PACKS_PACK_META_FILE_NAME, PACK_METADATA_SUPPORT, \
+    PACK_METADATA_CERTIFICATION
 
 
 def update_server_configuration(client, server_configuration, error_msg):
@@ -40,3 +45,35 @@ def update_server_configuration(client, server_configuration, error_msg):
         msg = f'{error_msg} {status_code}\n{message}'
         print_error(msg)
     return response_data, status_code
+
+
+def get_pack_metadata(file_path):
+    """
+    Args:
+        file_path: The Pack metadata file path
+
+    Returns:
+        The file content.
+    """
+    with open(file_path) as pack_metadata:
+        return json.load(pack_metadata)
+
+
+def is_pack_certified(pack_name):
+    """
+        Checks whether the pack is certified or not (Supported by xsoar/certified partner).
+        Tests are not being collected for uncertified packs.
+    Args:
+        pack_name: The pack name
+
+    Returns:
+        True if the pack is certified, False otherwise.
+
+    """
+    pack_path = sdk_tools.pack_name_to_path(pack_name)
+    pack_metadata_path = os.path.join(pack_path, PACKS_PACK_META_FILE_NAME)
+    if not os.path.isfile(pack_metadata_path):
+        return False
+    pack_metadata = get_pack_metadata(pack_metadata_path)
+    return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() == "xsoar" or pack_metadata.get(
+        PACK_METADATA_CERTIFICATION, '').lower() == "certified"

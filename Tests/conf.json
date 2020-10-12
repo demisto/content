@@ -2893,11 +2893,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "Logz.io",
-            "playbookID": "Logzio - Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
         },
@@ -3156,7 +3151,6 @@
         "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
-        "Logzio - Test": "Issue 26729",
         "pyEWS_Test": "Issue 28339",
         "GmailTest": "Issue 27057",
         "playbook-SafeBreach-Test": "Issue 21205",
