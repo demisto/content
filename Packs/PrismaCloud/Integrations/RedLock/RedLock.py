@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import copy
 import requests
 
 from CommonServerPython import *
@@ -411,7 +412,7 @@ def get_rql_response():
 
     items = response["data"]["items"]
 
-    human_readable = items
+    human_readable = copy.deepcopy(items)
 
     for item in human_readable:
         del item["data"]

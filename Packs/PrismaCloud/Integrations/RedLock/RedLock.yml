@@ -66,7 +66,7 @@ script:
       required: true
       default: false
       isArray: false
-      description: "the RQL query to run. Example RQL queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples"
+      description: "the RQL query to run. Example RQL queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1."
     outputs:
     - contextPath: Redlock.RQL.cloudType
       description: The cloud type
