@@ -1,10 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
 import urllib3
-
+from cloakensdk import utility
 from cloakensdk.client import SyncClient
 from cloakensdk.resources import Url
-from cloakensdk import utility
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -30,6 +29,9 @@ def get_client():
 if demisto.command() == 'test-module':
     # This is the call made when pressing the integration test button.
     client = get_client()
+    demisto.results('ok')
+
+if demisto.command() == 'cloaken-show-add-to-existing':
     demisto.results('ok')
 
 if demisto.command() == 'cloaken-unshorten-url':
