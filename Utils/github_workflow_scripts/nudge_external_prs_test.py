@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import json
 
 
@@ -82,3 +83,67 @@ class TestUsernameToEmail:
         gh = MockGithub()
         email = username_to_email(gh, 'FakeUser2')  # type: ignore
         assert email == ''
+
+
+class MockTimelineEvent:
+    def __init__(self, dt: datetime):
+        self.__setattr__('created_at', dt)
+
+
+class TestDetermineSlackMsg:
+    def test_oldest_slack_message(self):
+        '''
+        Scenario: Determine which message will be sent to requested reviewers (over slack)
+
+        Given
+        - The last commit event of the PR
+
+        When
+        - The last commit event was created 15 days ago
+
+        Then
+        - Ensure the "SUGGEST_CLOSE_MSG" is chosen
+        '''
+        from nudge_external_prs import determine_slack_msg, SUGGEST_CLOSE_MSG
+        created_at = datetime.utcnow() - timedelta(15)
+        mock_commit_event = MockTimelineEvent(created_at)
+        selected_msg = determine_slack_msg(mock_commit_event)  # type: ignore
+        assert selected_msg == SUGGEST_CLOSE_MSG
+
+    def test_older_slack_message(self):
+        '''
+        Scenario: Determine which message will be sent to requested reviewers (over slack)
+
+        Given
+        - The last commit event of the PR
+
+        When
+        - The last commit event was created 10 days ago
+
+        Then
+        - Ensure the "LOTR_NUDGE_MSG" is chosen
+        '''
+        from nudge_external_prs import determine_slack_msg, LOTR_NUDGE_MSG
+        created_at = datetime.utcnow() - timedelta(10)
+        mock_commit_event = MockTimelineEvent(created_at)
+        selected_msg = determine_slack_msg(mock_commit_event)  # type: ignore
+        assert selected_msg == LOTR_NUDGE_MSG
+
+    def test_old_slack_message(self):
+        '''
+        Scenario: Determine which message will be sent to requested reviewers (over slack)
+
+        Given
+        - The last commit event of the PR
+
+        When
+        - The last commit event was created 5 days ago
+
+        Then
+        - Ensure the "NEEDS_REVIEW_MSG" is chosen
+        '''
+        from nudge_external_prs import determine_slack_msg, NEEDS_REVIEW_MSG
+        created_at = datetime.utcnow() - timedelta(5)
+        mock_commit_event = MockTimelineEvent(created_at)
+        selected_msg = determine_slack_msg(mock_commit_event)  # type: ignore
+        assert selected_msg == NEEDS_REVIEW_MSG
