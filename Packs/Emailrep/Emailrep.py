@@ -191,9 +191,15 @@ def report_email_address_command(client: Client, args: Dict[str, Any]) -> Comman
     for tag in tags:
         if tag not in ACCEPTED_TAGS:
             raise ValueError(f'Tag \'{tag}\' not in accepted tag list: {ACCEPTED_TAGS}')
+
     description = args.get('description')
-    timestamp = int(args.get('description'))
-    expires = int(args.get('expires'))
+    timestamp = args.get('timestamp')
+    if timestamp is not None:
+        timestamp = int(args.get('timestamp'))
+
+    expires = args.get('expires')
+    if expires is not None:
+        expires = int(args.get('expires'))
 
     result = client.post_email_address_report(email_address, tags, description, timestamp, expires)
 
