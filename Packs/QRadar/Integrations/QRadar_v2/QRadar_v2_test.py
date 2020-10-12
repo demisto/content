@@ -22,7 +22,7 @@ from QRadar_v2 import (
     try_create_search_with_retry,
     try_poll_offense_events_with_retry,
     enrich_offense_result,
-    enrich_single_offense_res_with_source_and_destination_address
+    get_asset_ips_and_enrich_offense_addresses
 )
 
 with open("TestData/commands_outputs.json", "r") as f:
@@ -347,7 +347,7 @@ def test_enrich_offense_result(mocker):
     assert 'name' in response[0]['rules'][0]
 
 
-def test_enrich_single_offense_res_with_source_and_destination_address__no_enrich():
+def test_get_asset_ips_and_enrich_offense_addresses__no_enrich():
     """
     Run offense ips enrichment with skip_enrichment=True
 
@@ -363,13 +363,13 @@ def test_enrich_single_offense_res_with_source_and_destination_address__no_enric
     src_adrs = {254: '8.8.8.8'}
     dst_adrs = {4: '1.2.3.4'}
     expected = {'8.8.8.8', '1.2.3.4'}
-    actual = enrich_single_offense_res_with_source_and_destination_address(
+    actual = get_asset_ips_and_enrich_offense_addresses(
         offense, src_adrs, dst_adrs, skip_enrichment=True)
     assert offense == RAW_RESPONSES["qradar-update-offense"]
     assert expected == actual
 
 
-def test_enrich_single_offense_res_with_source_and_destination_address__with_enrich():
+def test_get_asset_ips_and_enrich_offense_addresses__with_enrich():
     """
     Run offense ips enrichment with skip_enrichment=False
 
@@ -385,12 +385,69 @@ def test_enrich_single_offense_res_with_source_and_destination_address__with_enr
     src_adrs = {254: '8.8.8.8', 5: '1.2.3.5'}
     dst_adrs = {4: '1.2.3.4'}
     expected_assets = {'8.8.8.8', '1.2.3.4'}
-    actual = enrich_single_offense_res_with_source_and_destination_address(
+    actual = get_asset_ips_and_enrich_offense_addresses(
         offense, src_adrs, dst_adrs, skip_enrichment=False)
     assert offense != RAW_RESPONSES["qradar-update-offense"]
     assert offense['source_address_ids'] == [src_adrs[254]]
     assert offense['local_destination_address_ids'] == [dst_adrs[4]]
     assert expected_assets == actual
+
+
+def test_get_assets_for_offense__empty():
+    """Check get assets for offense returns an empty list when no value is given
+
+    Given:
+    - No assets_ips
+    When:
+    - Calling get_assets_for_offense
+    Then:
+    - Return an empty list
+    """
+    from QRadar_v2 import get_assets_for_offense
+    client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
+    assert [] == get_assets_for_offense(client, [])
+
+
+def test_get_assets_for_offense__happy(requests_mock, mocker):
+    """Check get assets for offense returns the expected assets
+
+    Given:
+    - 1 item in assets_ips
+    When:
+    - Calling get_assets_for_offense
+    Then:
+    - Return the asset correlating to assets_ips
+    - The asset properties are flatten
+    - The interfaces are simplified
+    - The assets match the mapping fields
+    """
+    from QRadar_v2 import get_assets_for_offense, get_mapping_fields
+    client = QRadarClient("https://example.com", {}, {"identifier": "*", "password": "*"})
+    requests_mock.get(
+        'https://example.com/api/asset_model/assets',
+        json=RAW_RESPONSES['qradar-get-asset-by-id']
+    )
+    mocker.patch.object(QRadarClient, 'get_custom_fields', return_value=[])
+    mapping_fields = get_mapping_fields(client)
+
+    res = get_assets_for_offense(client, ['8.8.8.8'])
+    res_interfaces = res[0]['interfaces'][0]
+
+    assert res[0]['id'] == 1928
+
+    # flatten properties check
+    assert res[0]['Unified Name'] == 'ec2-44-234-115-112.us-west-2.compute.amazonaws.com'
+
+    # simplify interfaces check
+    assert len(res_interfaces) == 3
+    assert res_interfaces['mac_address'] == 'Unknown NIC'
+    assert res_interfaces['id'] == 1915
+    assert res_interfaces['ip_addresses'] == [{'type': 'IPV4', 'value': '8.8.8.8'}]
+
+    # assets match the mapping fields
+    mapping_fields_interfaces = mapping_fields['Assets']['assets']['interfaces']
+    assert set(res_interfaces.keys()).issubset(mapping_fields_interfaces.keys())
+    assert res_interfaces['ip_addresses'][0].keys() == mapping_fields_interfaces['ip_addresses'].keys()
 
 
 def test_get_mapping_fields(mocker):
