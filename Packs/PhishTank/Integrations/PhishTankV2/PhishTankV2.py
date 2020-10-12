@@ -53,7 +53,8 @@ def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
     """
     data = reload(client)
-    if len(data.keys()) == 0:
+    response_was_empty = len(data.keys()) == 0
+    if response_was_empty:
         return_error("Error - could not fetch PhishTankV2 database, "
                      "API returned an empty response")
     return 'ok'
@@ -93,10 +94,12 @@ def get_url_data(client: Client, url: str):
     current_data_url = None
     if is_reload_needed(client, integration_context):
         data = reload(client)
-        if url in data:
+        data_contains_url = url in data
+        if data_contains_url:
             current_data_url = data[url]
     else:
-        if url in integration_context["list"]:
+        url_was_reloaded = url in integration_context["list"]
+        if url_was_reloaded:
             current_data_url = integration_context["list"][url]
     return current_data_url, url
 
@@ -121,7 +124,8 @@ def create_verified_markdown(url_data, url):
 def url_command(client: Client, url: str):
     url_data, url = get_url_data(client, url)
     markdown = "### PhishTankV2 Database - URL Query \n"
-    if url_data and "verified" in url_data.keys():
+    url_data_is_valid = url_data and "verified" in url_data.keys()
+    if url_data_is_valid:
         dbot = create_dbot(url_data, url)
         output = Common.URL(url, dbot).to_context()
         markdown += create_verified_markdown(url_data, url)
@@ -133,19 +137,38 @@ def url_command(client: Client, url: str):
 
 
 def phishtank_reload_command(client: Client):
-    data = reload(client)
+    """
+    Requests a csv file from PhishTank.
+    Sets the response in IntegrationContext.
+    Args:
+        client:  Client to use in the PhisTankV2 integration.
+
+    Returns: CommandResults:
+            - readable_output (str): number of urls that reloaded during that reload.
+
+    """
+    parsed_response = reload(client)  # gets a parsed response
     current_date = date_to_timestamp(datetime.now(), DATE_FORMAT)
-    context = {"list": data, "timestamp": current_date}
+    context = {"list": parsed_response, "timestamp": current_date}
     demisto.setIntegrationContext(context)
     output = 'PhishTankV2 Database reloaded \n'
-    output += f'Total **{len(data.keys())}** URLs loaded.\n'
+    output += f'Total **{len(parsed_response.keys())}** URLs loaded.\n'
     return CommandResults(readable_output=output)
 
 
 def phishtank_status_command():
+    """
+    Checks in IntegrationContext if data was reloaded so far or not.
+    note : IntegrationContext updated in each reload command.
+
+    Returns: CommandResults:
+        - readable_output (str) : contains the number of urls that were reloaded in the last reload and the date
+                                of the last reload.
+    """
     data = demisto.getIntegrationContext()
     status = "PhishTankV2 Database Status\n"
-    if not data or len(data["list"]) == 0:
+    data_was_not_reloaded_yet = data == dict()
+    if data_was_not_reloaded_yet:
         status += "Database not loaded.\n"
     else:
         last_load = datetime.utcfromtimestamp(data["timestamp"] / 1000.0).strftime("%a %b %d %Y %H:%M:%S (UTC)")
@@ -156,37 +179,31 @@ def phishtank_status_command():
 
 def reload(client: Client) -> dict:
     """
-    This function is responsible for parsing an API response and saving all relevant
-    information into a dictionary
+    This function is responsible for:
+     1. request a csv file from PhishTank API (calling to client.get_http_request)
+     2. parsing an API response and saving all relevant information into a dictionary
 
     Args:
         client:
         (Client) : client to use in the PhisTankV2 integration.
 
     Returns:
-        dictionary of http response. Each url is a key and his values are:
+        dictionary of parsed http response. Each url is a key and his values are:
             "id,submission_time,verified,verification_time,online,target"
     """
     response = client.get_http_request(RELOAD_DATA_URL_SUFFIX)
-    if not response:
+    response_is_empty = not response
+    if response_is_empty:
         return dict()
     response = response.splitlines()
     parsed_response = {}
     columns = response[0].strip().split(",")  # get csv headers
     for index, line in list(enumerate(response))[1:]:
         line = line.split(",")
-        current_line_length = len(line)
-        if current_line_length < RESPONSE_LINE_LENGTH:
-            next_line = response[index + 1].strip().split(",")
-            if len(next_line) >= RESPONSE_LINE_LENGTH:
-                # in case current line does not contain all details and following line is not the rest of this line
-                # there is a specific line in the response csv that is broken into 2 following lines.
-                # if this condition is True, the following line is NOT the rest of current line, so coninu
-                continue
-            else:
-                # handle case of line that was cut into 2 following lines
-                # here the first part of the line concat with the last part
-                line = line + next_line
+        line = parse_response_line(line, index, response)
+        invalid_parsed_line = line is None
+        if invalid_parsed_line:
+            continue
         url = remove_last_slash(line[columns.index("url")])
         if url:
             parsed_response[url] = {
@@ -198,6 +215,35 @@ def reload(client: Client) -> dict:
                 "target": line[columns.index("target")].strip(),
             }
     return parsed_response
+
+
+def parse_response_line(current_line, index, response):
+    """
+    This function checks if current line is a valid line.
+    note: there is a specific line in PhishTank csv response that is broken into 2 following lines. In this case,
+            those 2 lines are concatenate into one complete line.
+    Args:
+        current_line (str): current response's line to be parsed
+        index (int) : current line's index
+        response (list) : list of PhishTank csv response
+
+    Returns: line (str): the parsed line
+
+    """
+    current_line_length = len(current_line)
+    # RESPONSE_LINE_LENGTH is the number of valid columns in csv
+    line_length_invalid = current_line_length < RESPONSE_LINE_LENGTH
+    if line_length_invalid:
+        next_line = response[index + 1].strip().split(",")
+        current_line_has_missing_columns = len(next_line) >= RESPONSE_LINE_LENGTH
+        if current_line_has_missing_columns:
+            # this next_line is not the second part of current_line.
+            # i.e current_line is not valid  - because next_line is not the continuation of current line
+            return None
+        else:
+            # this is the second part of broken line. i.e current_line + next_line should have been one complete line
+            return current_line + next_line
+    return current_line
 
 
 def remove_last_slash(url: str) -> str:

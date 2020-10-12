@@ -136,7 +136,6 @@ def test_reload(mocker, url, status_code, data, expected_result):
 CONTEXT_LIST = [
     (
         {
-            'list': {}, 'timestamp': None
         }, "PhishTankV2 Database Status\nDatabase not loaded.\n"
     ),
     (
