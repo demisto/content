@@ -147,6 +147,15 @@ def search_pack(client, prints_manager, pack_display_name, thread_index, lock):
             result_object = ast.literal_eval(response_data)
             search_results = result_object.get('packs', [])
             pack_data = get_pack_data_from_results(search_results, pack_display_name)
+
+            print_msg = f'\n\n\n\n\n\n###################################################\n' \
+                        f'{pack_data}\n' \
+                        f'{pack_display_name}\n' \
+                        f'{search_results}\n' \
+                        f'\n###################################################\n\n\n\n\n\n'
+            prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.RED)
+            prints_manager.execute_thread_prints(thread_index)
+
             if pack_data:
                 print_msg = 'Found pack {} in bucket!\n'.format(pack_display_name)
                 prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.GREEN)
