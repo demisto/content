@@ -941,12 +941,16 @@ def restart_server_legacy(server):
 def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, is_private=False):
     if Build.run_environment == Running.CIRCLECI_RUN:
         filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
+        tests_for_iteration = []
         if run_all_tests:
             # skip test button testing
             skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(RUN_ALL_TESTS_FORMAT)
             prints_manager.add_print_job(skipped_instance_test_message, print_warning, 0)
-            tests_for_iteration = []
+
         elif filter_configured and filtered_tests:
+            print(filtered_tests)
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print([test for test in tests if test.get('playbookID', '') in filtered_tests])
             tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
             print('From get tests command')
             print(tests_for_iteration)
@@ -1073,7 +1077,6 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         print('##################')
         print('instance names:')
         print(instance_names_conf)
-        print(test)
         if not isinstance(instance_names_conf, list):
             instance_names_conf = [instance_names_conf]
 
