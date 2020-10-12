@@ -73,7 +73,6 @@ MOCK_MAIL_NO_LABELS = {
     u'id': u'<id>'
 }
 
-
 EXPECTED_GMAIL_CONTEXT = {
     'To': u'<some_mail>',
     'Body': u'',
@@ -164,3 +163,30 @@ def test_parse_privileges():
     privileges = [{'serviceId': '', 'privilegeName': 'name_no_id'}, {'serviceId': '', 'privilegeName': ''},
                   {'serviceId': 'id', 'privilegeName': 'name'}]
     assert sorted(parse_privileges(privileges)) == sorted([{'ServiceID': 'id', 'Name': 'name'}, {'Name': 'name_no_id'}])
+
+
+def test_dict_keys_snake_to_camelcase():
+    from Gmail import dict_keys_snake_to_camelcase
+    dictionary = {
+        'user_name': 'user1',
+        'user_id': '2'
+    }
+    assert dict_keys_snake_to_camelcase(dictionary) == {'userName': 'user1', 'userId': '2'}
+
+
+def test_prepare_vacation_settings():
+    from Gmail import prepare_vacation_settings
+    args = {
+        'vacation': 'enableAutoReply',
+        'subject': 'responseSubject',
+        'message': 'responseBodyPlainText',
+        'start_time': '1602268200000',
+        'end_time': '1602268200000',
+        'contacts_only': 'restrictToContacts',
+        'domain_only': 'restrictToDomain'
+    }
+    assert prepare_vacation_settings(args) == {'responseSubject': 'responseSubject',
+                                               'responseBodyPlainText': 'responseBodyPlainText',
+                                               'restrictToContacts': 'restrictToContacts',
+                                               'enableAutoReply': 'enableAutoReply', 'startTime': 1602268200000,
+                                               'endTime': 1602268200000, 'restrictToDomain': 'restrictToDomain'}

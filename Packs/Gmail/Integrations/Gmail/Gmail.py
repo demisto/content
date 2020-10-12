@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import re
 import json
@@ -32,7 +33,19 @@ GAPPS_ID = None
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
 PROXY = demisto.params().get('proxy')
 DISABLE_SSL = demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('fetch_time', '1 days')
+FETCH_TIME = demisto.params().get('first_fetch', '1 days')
+MAX_FETCH = demisto.params().get('max_fetch', '50')
+SEND_AS_SMTP_FIELDS = ['host', 'port', 'username', 'password', 'securitymode']
+FIELD_MAPPING_VACATION_SETTINGS = {
+    'vacation': 'enableAutoReply',
+    'subject': 'responseSubject',
+    'message': 'responseBodyPlainText',
+    'start_time': 'startTime',
+    'end_time': 'endTime',
+    'contacts_only': 'restrictToContacts',
+    'domain_only': 'restrictToDomain'
+}
+DATE_FORMAT = '%Y-%m-%d'  # sample - 2020-08-23
 
 ''' HELPER FUNCTIONS '''
 
@@ -43,13 +56,13 @@ class TextExtractHtmlParser(HTMLParser):
         self._texts = []  # type: list
         self._ignore = False
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag, attrs):  # noqa: F841
         if tag in ('p', 'br') and not self._ignore:  # ignore
             self._texts.append('\n')
         elif tag in ('script', 'style'):
             self._ignore = True
 
-    def handle_startendtag(self, tag, attrs):  # ignore
+    def handle_startendtag(self, tag, attrs):  # noqa: F841
         if tag in ('br', 'tr') and not self._ignore:
             self._texts.append('\n')
 
@@ -218,7 +231,7 @@ def create_base_time(internal_date_timestamp, header_date):
 
 def get_email_context(email_data, mailbox):
     context_headers = email_data.get('payload', {}).get('headers', [])
-    context_headers = [{'Name': v['name'], 'Value':v['value']}
+    context_headers = [{'Name': v['name'], 'Value': v['value']}
                        for v in context_headers]
     headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
     body = demisto.get(email_data, 'payload.body.data')
@@ -231,7 +244,8 @@ def get_email_context(email_data, mailbox):
         # in case no internalDate field exists will revert to extracting the date from the email payload itself
         # Note: this should not happen in any command other than other than gmail-move-mail which doesn't return the
         # email payload nor internalDate
-        demisto.info("No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
+        demisto.info(
+            "No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
         base_time = str(headers.get('date', ''))
 
     context_gmail = {
@@ -298,7 +312,7 @@ def get_email_context(email_data, mailbox):
     return context_gmail, headers, context_email
 
 
-TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
+TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')  # NOSONAR
 
 
 def move_to_gmt(t):
@@ -505,7 +519,8 @@ def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subject):
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, gmail_context, headers, removeNull=True),
-        'EntryContext': {'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': gmail_context}
+        'EntryContext': {
+            'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': gmail_context}
     }
 
 
@@ -610,6 +625,73 @@ def role_to_entry(title, role):
     }
 
 
+def dict_keys_snake_to_camelcase(dictionary):
+    """
+    Converts all dictionary keys from snake case (dict_key) to lower camel case(dictKey).
+    :param dictionary: Dictionary which may contain keys in snake_case
+    :return: Dictionary with snake_case keys converted to lowerCamelCase
+    """
+    underscore_pattern = re.compile(r'_([a-z])')
+    return {underscore_pattern.sub(lambda i: i.group(1).upper(), key.lower()): value for (key, value) in
+            dictionary.items()}
+
+
+def get_bool_from_on_off(on_off):
+    """
+    Convert on/off string to boolean value or return the string as is, if it is not on/off.
+
+    :param on_off: on/off string.
+    :return: boolean or string if input is not on/off.
+    """
+    if on_off.lower() == 'on':
+        return True
+    elif on_off.lower() == 'off':
+        return False
+    else:
+        return on_off
+
+
+def get_millis_from_date(date, arg_name):
+    """
+    Convert a date string into epoch milliseconds or return epoch milliseconds as int.
+
+    :param date: Date string in expected format.
+    :param arg_name: field_name for setting proper error message.
+    :return: Epoch milliseconds.
+    """
+    try:
+        return date_to_timestamp(date, DATE_FORMAT)
+    except ValueError:
+        try:
+            return int(date)
+        except ValueError:
+            raise ValueError('{} argument is not in expected format.'.format(arg_name))
+
+
+def prepare_vacation_settings(args):
+    """
+    Prepare vacation_settings dict from arguments.
+
+    :param args: vacation update command arguments.
+    :return: vacation_settings dict as expected by the vacation update api.
+    """
+    vacation_settings = {FIELD_MAPPING_VACATION_SETTINGS[key]: value for (key, value) in args.items() if
+                         key in FIELD_MAPPING_VACATION_SETTINGS.keys()}
+
+    if 'startTime' in vacation_settings:
+        vacation_settings['startTime'] = get_millis_from_date(vacation_settings['startTime'], 'start_time')
+
+    if 'endTime' in vacation_settings:
+        vacation_settings['endTime'] = get_millis_from_date(vacation_settings['endTime'], 'end_time')
+
+    vacation_settings['enableAutoReply'] = get_bool_from_on_off(vacation_settings.get('enableAutoReply', ''))
+
+    if args.get('message_type', '') == 'HTML':
+        vacation_settings['responseBodyHtml'] = vacation_settings.pop('responseBodyPlainText', '')
+
+    return vacation_settings
+
+
 ''' FUNCTIONS '''
 
 
@@ -686,7 +768,7 @@ def hide_user_command():
     hide_value = args.get('visible-globally')
     result = hide_user(user_key, hide_value)
 
-    return users_to_entry('User {}:'.format(user_key,), [result])
+    return users_to_entry('User {}:'.format(user_key, ), [result])
 
 
 def hide_user(user_key, hide_value):
@@ -835,7 +917,7 @@ def create_user(primary_email, first_name, family_name, password):
         'name': {
             'givenName': first_name,
             'familyName': family_name,
-            'fullName': '%s %s' % (first_name, family_name, ),
+            'fullName': '%s %s' % (first_name, family_name,),
         },
         'password': password
     }
@@ -1026,7 +1108,7 @@ def search_command(mailbox=None):
 
     if max_results > 500:
         raise ValueError(
-            'maxResults must be lower than 500, got %s' % (max_results, ))
+            'maxResults must be lower than 500, got %s' % (max_results,))
 
     mails, q = search(user_id, subject, _from, to, before, after, filename, _in, query,
                       fields, label_ids, max_results, page_token, include_spam_trash, has_attachments)
@@ -1048,9 +1130,9 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'in': _in,
         'has': 'attachment' if has_attachments else ''
     }
-    q = ' '.join('%s:%s ' % (name, value, )
+    q = ' '.join('%s:%s ' % (name, value,)
                  for name, value in query_values.iteritems() if value != '')
-    q = ('%s %s' % (q, query, )).strip()
+    q = ('%s %s' % (q, query,)).strip()
 
     command_args = {
         'userId': user_id,
@@ -1420,7 +1502,7 @@ def randomword(length):
     Generate a random string of given length
     """
     letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(length))
+    return ''.join(random.choice(letters) for i in range(length))  # NOSONAR
 
 
 def header(s):
@@ -1499,7 +1581,8 @@ def handle_html(htmlBody):
     cleanBody = ''
     lastIndex = 0
     for i, m in enumerate(
-            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
+            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody,  # NOSONAR
+                        re.I)):
         maintype, subtype = m.group(2).split('/', 1)
         att = {
             'maintype': maintype,
@@ -1757,6 +1840,152 @@ def send_mail_command():
     return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
 
 
+def forwarding_address_add_command():
+    """
+    Creates a forwarding address.
+    """
+
+    args = demisto.args()
+    forwarding_email = args.get('forwarding_email', '')
+    user_id = args.get('user_id', '')
+    request_body = {'forwardingEmail': forwarding_email}
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.sharing'],
+        delegated_user=user_id)
+    result = service.users().settings().forwardingAddresses().create(userId='me', body=request_body).execute()
+    readable_output = "Added forwarding address {0} for {1} with status {2}.".format(forwarding_email, user_id,
+                                                                                     result.get('verificationStatus',
+                                                                                                ''))
+    context = dict(result)
+    context['userId'] = user_id
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': readable_output,
+        'EntryContext': {
+            'Gmail.ForwardingAddress((val.forwardingEmail && val.forwardingEmail '
+            '== obj.forwardingEmail) && (val.userId && val.userId == obj.userId))': context,
+        }
+    }
+
+
+def send_as_add_command():
+    """
+    Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP
+    service to validate the configuration before creating the alias. If ownership verification is required for the
+    alias, a message will be sent to the email address and the resource's verification status will be set to pending;
+    otherwise, the resource will be created with verification status set to accepted. If a signature is provided,
+    Gmail will sanitize the HTML before saving it with the alias.
+
+    This method is only available to service account clients that have been delegated domain-wide authority.
+    """
+    args = demisto.args()
+    user_id = args.pop('user_id', '')
+
+    smtp_msa_object = {key.replace('smtp_', ''): value for (key, value) in args.items() if
+                       key.startswith('smtp_')}
+
+    args = {key: value for (key, value) in args.items() if not key.startswith('smtp_')}
+
+    send_as_settings = dict_keys_snake_to_camelcase(args)
+
+    if smtp_msa_object:
+        if any(field not in smtp_msa_object.keys() for field in SEND_AS_SMTP_FIELDS):
+            raise ValueError('SMTP configuration missing. Please provide all the SMTP field values.')
+        smtp_msa_object['securityMode'] = smtp_msa_object.pop('securitymode', '')
+        send_as_settings['smtpMsa'] = smtp_msa_object
+
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.sharing'],
+        delegated_user=user_id)
+    result = service.users().settings().sendAs().create(userId='me', body=send_as_settings).execute()
+    context = result.copy()
+    context['userId'] = user_id
+
+    for (key, value) in context.pop('smtpMsa', {}).items():
+        context['smtpMsa' + (key[0].upper() + key[1:])] = value
+
+    hr_fields = ['sendAsEmail', 'displayName', 'replyToAddress', 'isPrimary', 'treatAsAlias']
+
+    readable_output = tableToMarkdown(
+        'A custom "{}" send-as alias created for "{}".'.format(result.get('sendAsEmail', ''), user_id),
+        context, headerTransform=pascalToSpace, removeNull=True,
+        headers=hr_fields)
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': readable_output,
+        'EntryContext': {
+            'Gmail.SendAs((val.sendAsEmail && val.sendAsEmail '
+            '== obj.sendAsEmail) && (val.userId && val.userId == obj.userId))': context,
+        }
+    }
+
+
+def vacation_update_command():
+    """
+    Enables or disables vacation/away messages for the users. It helps to set away/vacation message subject and text.
+
+    :param client: client object used to get response from api
+    :param args: command arguments
+    :return: CommandResults which returns detailed results to war room and sets the context data.
+    :raises DemistoException: if message argument is not provided and vacation setting is set to on.
+    """
+    args = demisto.args()
+    user_id = args.get('user_id', 'me')
+    if 'message' not in args and 'message_entry_id' in args:
+        # attempt to read response body from file (war room entity)
+        file_entry = demisto.getFilePath(args.get('message_entry_id'))
+        with open(file_entry['path'], 'r') as f:
+            args['message'] = str(f.read())
+
+    if args.get('vacation',
+                '') == 'On' and 'message' not in args and 'message_entry_id' not in args and 'subject' not in args:
+        raise DemistoException('Auto reply message missing. Please provide message/message_entry_id/'
+                               'subject while the vacation argument is set to "On".')
+
+    vacation_settings = prepare_vacation_settings(args)
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.basic'],
+        delegated_user=user_id)
+    result = service.users().settings(). \
+        updateVacation(userId='me', body=vacation_settings).execute()
+    context = result.copy()
+    context['userId'] = user_id  # type: ignore
+
+    hr_output_fields = ["Subject", "BodyPlainText", "BodyHtml", "restrictToContacts", "restrictToDomain",
+                        "enableAutoReply", "startTime", "endTime"]
+
+    hr_output = {(key.replace('response', '') if key.startswith('response') else key): value for (key, value) in
+                 context.items()}
+
+    readable_output = tableToMarkdown('Vacation settings updated for user id - {}.'.format(user_id),
+                                      hr_output, headerTransform=pascalToSpace,
+                                      removeNull=True, headers=hr_output_fields)
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': readable_output,
+        'EntryContext': {
+            'Gmail.Vacation(val.userId && val.userId == obj.userId)': context,
+        }
+    }
+
+
 '''FETCH INCIDENTS'''
 
 
@@ -1782,14 +2011,14 @@ def fetch_incidents():
 
     query += last_fetch.strftime(' after:%Y/%m/%d')
     LOG('GMAIL: fetch parameters:\nuser: %s\nquery=%s\nfetch time: %s' %
-        (user_key, query, last_fetch, ))
+        (user_key, query, last_fetch,))
 
     result = service.users().messages().list(
-        userId=user_key, maxResults=100, q=query).execute()
+        userId=user_key, maxResults=MAX_FETCH, q=query).execute()
 
     incidents = []
     # so far, so good
-    LOG('GMAIL: possible new incidents are %s' % (result, ))
+    LOG('GMAIL: possible new incidents are %s' % (result,))
     for msg in result.get('messages', []):
         msg_result = service.users().messages().get(
             id=msg['id'], userId=user_key).execute()
@@ -1805,6 +2034,8 @@ def fetch_incidents():
             incidents.append(incident)
 
     demisto.info('extract {} incidents'.format(len(incidents)))
+    if params.get('isFetch'):
+        return None
     demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z'})
     return incidents
 
@@ -1842,13 +2073,19 @@ def main():
         'gmail-delegate-user-mailbox': delegate_user_mailbox_command,
         'gmail-remove-delegated-mailbox': remove_delegate_user_mailbox_command,
         'send-mail': send_mail_command,
-        'gmail-get-role': get_role_command
+        'gmail-get-role': get_role_command,
+        'gmail-forwarding-address-add': forwarding_address_add_command,
+        'gmail-send-as-add': send_as_add_command,
+        'gmail-vacation-update': vacation_update_command
     }
     command = demisto.command()
-    LOG('GMAIL: command is %s' % (command, ))
+    LOG('GMAIL: command is %s' % (command,))
     try:
         if command == 'test-module':
-            list_users(ADMIN_EMAIL.split('@')[1])
+            if demisto.params().get('isFetch', False):
+                fetch_incidents()
+            else:
+                list_users(ADMIN_EMAIL.split('@')[1])
             demisto.results('ok')
             sys.exit(0)
 

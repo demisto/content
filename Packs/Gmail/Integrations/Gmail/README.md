@@ -327,6 +327,16 @@
           <li>
             <a href="#h_426da8de-404c-432d-9080-b476cf896g9a" target="_self">Get details of a specific role: gmail-get-role</a>
           </li>
+           <li>
+            <a href="#gmail-forwarding-address-add" target="_self">Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority: gmail-forwarding-address-add</a>
+           </li>
+            <li>
+             <a href="#gmail-send-as-add" target="_self">Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
+                    This command is only available to service account clients that have been delegated domain-wide authority: gmail-send-as-add</a>
+            </li>
+            <li>
+              <a href="#gmail-vacation-update" target="_self">Enables or disables vacation/away messages for users. It helps to set away/vacation message subject and text: gmail-vacation-update</a>
+            </li>
 </ol>
 <h3 id="h_b0254633-137e-4270-a589-a3b35fdd5bdb">1. Delete a user</h3>
 <hr>
@@ -5365,3 +5375,500 @@
     </tr>
   </tbody>
 </table>
+
+<h3 id="gmail-forwarding-address-add">28. gmail-forwarding-address-add</h3>
+<hr>
+<p>Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority.</p>
+<h5>Base Command</h5>
+<p>
+  <code>gmail-forwarding-address-add</code>
+</p>
+
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>forwarding_email</td>
+      <td>An email address to which messages can be forwarded.</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>user_id</td>
+      <td>User's email address.</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Gmail.ForwardingAddress.forwardingEmail</td>
+      <td>String</td>
+      <td>An email address to which messages can be forwarded.</td>
+    </tr>
+    <tr>
+      <td>Gmail.ForwardingAddress.userId</td>
+      <td>String</td>
+      <td>User's email address.</td>
+    </tr>
+    <tr>
+      <td>Gmail.ForwardingAddress.verificationStatus</td>
+      <td>String</td>
+      <td>Indicates whether this address has been verified and is usable for forwarding.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!gmail-forwarding-address-add forwarding_email="user2@domain.io" user_id="user1@domain.io"</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "Gmail.ForwardingAddress": {
+        "forwardingEmail": "user2@domain.io",
+        "userId": "user1@domain.io",
+        "verificationStatus": "accepted"
+    }
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<p>
+Added forwarding address user2@domain.io for user1@domain.io with status accepted.
+</p>
+</p>
+
+<h3 id="gmail-send-as-add">29. gmail-send-as-add</h3>
+<hr>
+<p>Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
+
+This command is only available to service account clients that have been delegated domain-wide authority.</p>
+<h5>Base Command</h5>
+<p>
+  <code>gmail-send-as-add</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>user_id</td>
+      <td>User's email address.</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>send_as_email</td>
+      <td>The email address that appears in the "From:" header for mail sent using this alias.</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>display_name</td>
+      <td>A name that appears in the "From:" header for mail sent using this alias. For custom "from" addresses, when this is empty, Gmail will populate the "From:" header with the name that is used for the primary address associated with the account. If the admin has disabled the ability for users to update their name format, requests to update this field for the primary login will silently fail.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>signature</td>
+      <td>An optional HTML signature that is included in messages composed with this alias in the Gmail web UI.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>reply_to_address</td>
+      <td>An optional email address that is included in a "Reply-To:" header for mail sent using this alias. If this is empty, Gmail will not generate a "Reply-To:" header.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>is_default</td>
+      <td>Whether this address is selected as the default "From:" address in situations such as composing a new message or sending a vacation auto-reply. Every Gmail account has exactly one default send-as address, so the only legal value that clients may write to this field is true. Changing this from false to true for an address will result in this field becoming false for the other previous default address.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>treat_as_alias</td>
+      <td>Whether Gmail should treat this address as an alias for the user's primary email address. This setting only applies to custom "from" aliases.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>smtp_host</td>
+      <td>The hostname of the SMTP service. Required for smtp configuration.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>smtp_port</td>
+      <td>The port of the SMTP service. Required for smtp configuration.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>smtp_username</td>
+      <td>The username that will be used for authentication with the SMTP service. This is a write-only field that can be specified in requests to create or update SendAs settings.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>smtp_password</td>
+      <td>The password that will be used for authentication with the SMTP service. This is a write-only field that can be specified in requests to create or update SendAs settings.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>smtp_securitymode</td>
+      <td>The protocol that will be used to secure communication with the SMTP service. Required for smtp configuration.
+
+Available Options:<br>
+SECURITY_MODE_UNSPECIFIED - Unspecified security mode.<br>
+
+NONE - Communication with the remote SMTP service is unsecured. Requires port 25.<br>
+
+SSL - Communication with the remote SMTP service is secured using SSL.<br>
+
+STARTTLS - Communication with the remote SMTP service is secured using STARTTLS.</td>
+      <td>Optional</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Gmail.SendAs.userId</td>
+      <td>String</td>
+      <td>User's email address.</td>
+    </tr>
+    <tr>
+      <td>Gmail.SendAs.sendAsEmail</td>
+      <td>String</td>
+      <td>The updated send-as alias.</td>
+    </tr>
+    <tr>
+      <td>Gmail.SendAs.signature</td>
+      <td>String</td>
+      <td>An optional HTML signature that is included in messages composed with this alias in the Gmail web UI.</td>
+    </tr>
+    <tr>
+      <td>Gmail.SendAs.isPrimary</td>
+      <td>Boolean</td>
+      <td>Whether this address is the primary address used to login to the account.</td>
+    </tr>
+    <tr>
+      <td>Gmail.SendAs.isDefault</td>
+      <td>Boolean</td>
+      <td>Whether this address is selected as the default "From:" address in situations.</td>
+    </tr>
+    <tr>
+      <td>Gmail.SendAs.treatAsAlias</td>
+      <td>Boolean</td>
+      <td>Whether Gmail should treat this address as an alias for the user's primary email address.</td>
+    </tr>
+    <tr>
+      <td>Gmail.SendAs.smtpMsaHost</td>
+      <td>String</td>
+      <td>The hostname of the SMTP service.</td>
+    </tr>
+    <tr>
+      <td>Gmail.SendAs.smtpMsaPort</td>
+      <td>String</td>
+      <td>The port of the SMTP service.</td>
+    </tr>
+    <tr>
+      <td>Gmail.SendAs.smtpMsaSecurityMode</td>
+      <td>String</td>
+      <td>The protocol that will be used to secure communication with the SMTP service.</td>
+    </tr>
+    <tr>
+      <td>Gmail.SendAs.verificationStatus</td>
+      <td>String</td>
+      <td>Indicates whether this address has been verified for use as a send-as alias.</td>
+    </tr>
+    <tr>
+      <td>Gmail.SendAs.replyToAddress</td>
+      <td>String</td>
+      <td>A name that appears in the "From:" header for mail sent using this alias.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!gmail-send-as-add send_as_email=user2@domain.io user_id=user1@domain.io</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "Gmail.SendAs": {
+        "displayName": "",
+        "isDefault": false,
+        "replyToAddress": "",
+        "sendAsEmail": "user2@domain.io",
+        "signature": "",
+        "treatAsAlias": false,
+        "userId": "user1@domain.io",
+        "verificationStatus": "accepted"
+    }
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>A custom "user2@domain.io" send-as alias created for "user1@domain.io".</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Send As Email</strong></th>
+      <th><strong>Treat As Alias</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> user2@domain.io </td>
+      <td> false </td>
+    </tr>
+  </tbody>
+</table>
+
+</p>
+
+<h3 id="gmail-vacation-update">30. gmail-vacation-update</h3>
+<hr>
+<p>Enables or disables vacation/away messages for users. It helps to set away/vacation message subject and text.</p>
+<h5>Base Command</h5>
+<p>
+  <code>gmail-vacation-update</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>user_id</td>
+      <td>User's email address. </td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>vacation</td>
+      <td>Enable or disable vacation responder for the given user.</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>subject</td>
+      <td>Sets the away/vacation subject for the given user. Mandatory, if vacation mode is On and message is not provided.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>message</td>
+      <td>Sets the away/vacation message for the given user. Mandatory, if vacation mode is On and message is not provided. Message has higher precedence than message_entry_id when both arguments are provided.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>message_entry_id</td>
+      <td>Sets the away/vacation message by passing a War room entryID of the file for the given user.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>start_time</td>
+      <td>Sets a start date for the vacation message to be enabled for the given user. Valid format- YYYY-MM-DD or Epoch time in milliseconds.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>end_time</td>
+      <td>Sets an end date for the vacation message to be enabled for the given user. Valid format- YYYY-MM-DD or Epoch time in milliseconds.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>contacts_only</td>
+      <td>Allows to send away/vacation messages to users in contact list when set to True.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>domain_only</td>
+      <td>Prevent sending away/vacation messages to recipients who are outside of the user's domain when set to True.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>message_type</td>
+      <td>Sets message response body type to text or HTML.</td>
+      <td>Optional</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Gmail.Vacation.userId</td>
+      <td>String</td>
+      <td>User's email address.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Vacation.enableAutoReply</td>
+      <td>Boolean</td>
+      <td>Flag that controls whether Gmail automatically replies to messages.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Vacation.responseSubject</td>
+      <td>String</td>
+      <td>Text to prepend to the subject line in vacation responses.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Vacation.responseBodyPlainText</td>
+      <td>String</td>
+      <td>Response body in plain text format.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Vacation.responseBodyHtml</td>
+      <td>String</td>
+      <td>Response body in HTML format.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Vacation.restrictToContacts</td>
+      <td>Boolean</td>
+      <td>Flag that determines whether responses are sent to recipients who are not in the user's list of contacts.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Vacation.restrictToDomain</td>
+      <td>Boolean</td>
+      <td>Flag that determines whether responses are sent to recipients who are outside of the user's domain.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Vacation.startTime</td>
+      <td>Number</td>
+      <td>Start time for sending auto-replies.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Vacation.endTime</td>
+      <td>Number</td>
+      <td>End time for sending auto-replies.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!gmail-vacation-update user_id=user@domain.io vacation=On domain_only=True subject="Regarding vacation on" message="test vacation on" start_time=2020-09-29 end_time=2020-10-05</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "Gmail.Vacation": {
+        "enableAutoReply": true,
+        "endTime": "1601856000000",
+        "responseBodyPlainText": "test vacation on",
+        "responseSubject": "Regarding vacation on",
+        "restrictToContacts": false,
+        "restrictToDomain": true,
+        "startTime": "1601337600000",
+        "userId": "user@domain.io"
+    }
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>Vacation settings updated for user id - user@domain.io.</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Subject</strong></th>
+      <th><strong>Body Plain Text</strong></th>
+      <th><strong>Restrict To Contacts</strong></th>
+      <th><strong>Restrict To Domain</strong></th>
+      <th><strong>Enable Auto Reply</strong></th>
+      <th><strong>Start Time</strong></th>
+      <th><strong>End Time</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> Regarding vacation on </td>
+      <td> test vacation on </td>
+      <td> false </td>
+      <td> true </td>
+      <td> true </td>
+      <td> 1601337600000 </td>
+      <td> 1601856000000 </td>
+    </tr>
+  </tbody>
+</table>
+</p>
