@@ -131,7 +131,7 @@ def get_report_triage(client: Client, **args) -> CommandResults:
     return results
 
 
-def get_kernel_monitor(client: Client, **args) -> fileResult:
+def get_kernel_monitor(client: Client, **args) -> dict:
     sample_id = args.get("sample_id")
     task_id = args.get("task_id")
 
@@ -145,7 +145,7 @@ def get_kernel_monitor(client: Client, **args) -> fileResult:
     return results
 
 
-def get_pcap(client: Client, **args) -> fileResult:
+def get_pcap(client: Client, **args) -> dict:
     sample_id = args.get("sample_id")
     task_id = args.get("task_id")
 
@@ -318,9 +318,9 @@ def update_profile(client: Client, **args) -> CommandResults:
     for arg in args:
         if arg in ["name", "tags", "timeout"]:
             if arg == "timeout":
-                data[arg] = int(args.get(arg))
+                data[arg] = int(args.get(arg, 60))
             else:
-                data[arg] = args.get(arg)
+                data[arg] = args.get(arg, None)
 
     r = client._http_request("PUT", f"profiles/{profileID}", data=json.dumps(data))
 
