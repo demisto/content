@@ -60,14 +60,36 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def context_not_loaded_yet(context: dict):
-    is_context_not_loaded = not context
-    if is_context_not_loaded:
+def was_phishtank_data_ever_reloaded(context: dict):
+    """
+    Checking if PhishTank data was ever reloaded by checking IntegrationContext. (IntegrationContext set during
+    the reload command).
+
+    Args:
+        context (dict) : IntegrationContext that is empty / contains PhishTank data.
+
+    Returns: True if context contains PhishTank data (from a previous reload). False otherwise.
+
+    """
+    was_phishtank_data_reloaded = context != dict()
+    if was_phishtank_data_reloaded:
         return True
-    return len(context["list"]) == 0
+    return False
 
 
-def is_context_outdated(client: Client, context: dict):
+def is_phishtank_data_outdated(client: Client, context: dict):
+    """
+    Checks if last last reload was in the last fetch_interval_hours or not.
+
+    Args:
+        client: Client to use in the PhisTankV2 integration.
+        context (dict):  IntegrationContext contains PhishTank data.
+
+    Returns:
+        True if last reload was much than fetch_interval_hours ago.
+        False otherwise.
+
+    """
     current_time = datetime.now()
     fetch_interval_seconds = timedelta(hours=float(client.fetch_interval_hours))
     return context["timestamp"] < date_to_timestamp(current_time - fetch_interval_seconds)
@@ -85,7 +107,7 @@ def is_reload_needed(client: Client, context: dict) -> bool:
     Returns: True if DB can be loaded now. i.e DB was not loaded in the last fetch_interval hours.
             False otherwise.
     """
-    return context_not_loaded_yet(context) or is_context_outdated(client, context)
+    return not was_phishtank_data_ever_reloaded(context) or is_phishtank_data_outdated(client, context)
 
 
 def get_url_data(client: Client, url: str):
@@ -104,7 +126,7 @@ def get_url_data(client: Client, url: str):
     return current_data_url, url
 
 
-def create_dbot(url_data, url):
+def url_data_to_dbot_score(url_data, url):
     if url_data["verified"] == "yes":
         dbot_score = 3
     else:
@@ -126,7 +148,7 @@ def url_command(client: Client, url: str):
     markdown = "### PhishTankV2 Database - URL Query \n"
     url_data_is_valid = url_data and "verified" in url_data.keys()
     if url_data_is_valid:
-        dbot = create_dbot(url_data, url)
+        dbot = url_data_to_dbot_score(url_data, url)
         output = Common.URL(url, dbot).to_context()
         markdown += create_verified_markdown(url_data, url)
     else:
@@ -291,10 +313,6 @@ def main() -> None:
 
         elif demisto.command() == 'phishtank-status':
             return_results(phishtank_status_command())
-
-        elif demisto.command() is None:
-            raise NotImplementedError(
-                'Command "{}" is not implemented.'.format(command))
 
     # Log exceptions and return errors
     except Exception as e:

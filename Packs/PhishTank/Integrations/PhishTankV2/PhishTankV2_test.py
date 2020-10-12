@@ -47,7 +47,6 @@ def test_remove_last_slash(url, output):
 
 @pytest.mark.parametrize('client,data,output', [
     (Client(False, False, "2"), {}, True),
-    (Client(False, False, "2"), {"list": {}}, True),
     (Client(False, False, "1"),
      {"list": {"id": 200}, "timestamp": 1601542800000}, False),
     (Client(False, False, "2"),
