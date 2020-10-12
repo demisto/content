@@ -21,6 +21,7 @@
             "integrations": "Majestic Million",
             "playbookID": "Majestic Million Test Playbook",
             "fromversion": "5.5.0",
+            "memory_threshold": 250,
             "timeout": 500
         },
         {
