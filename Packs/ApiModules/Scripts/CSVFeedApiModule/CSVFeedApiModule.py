@@ -280,9 +280,10 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                         indicator['fields']['trafficlightprotocol'] = client.tlp_color
 
                     indicators.append(indicator)
+                    # exit the loop if we have more indicators than the limit
+                    if limit and len(indicator) >= limit:
+                        return indicators
 
-    if limit:
-        indicators = indicators[:limit]
     return indicators
 
 
