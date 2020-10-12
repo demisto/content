@@ -281,7 +281,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
 
                     indicators.append(indicator)
                     # exit the loop if we have more indicators than the limit
-                    if limit and len(indicator) >= limit:
+                    if limit and len(indicators) >= limit:
                         return indicators
 
     return indicators
@@ -296,7 +296,7 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
     except ValueError:
         raise ValueError('The limit argument must be a number.')
     auto_detect = demisto.params().get('auto_detect_type')
-    indicators_list = fetch_indicators_command(client, itype, auto_detect)
+    indicators_list = fetch_indicators_command(client, itype, auto_detect, limit)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
     return hr, {}, indicators_list
