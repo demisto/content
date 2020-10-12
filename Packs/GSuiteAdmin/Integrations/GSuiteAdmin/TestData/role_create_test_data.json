@@ -1,0 +1,20 @@
+{
+  "args": {
+    "customer_id": "my_customer",
+    "role_name": "role_22345",
+    "role_privileges": "PRIVILEGE_NAME:service_id",
+    "role_description": "some description"
+  },
+  "response": {
+    "kind": "admin#directory#role",
+    "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/JL5ppEimKvC4Ue7Bfhb0qv7Ahqw\"",
+    "roleId": "13801188331880469",
+    "roleName": "role_22345",
+    "rolePrivileges": [
+      {
+        "privilegeName": "PRIVILEGE_NAME",
+        "serviceId": "service_id"
+      }
+    ]
+  }
+}
