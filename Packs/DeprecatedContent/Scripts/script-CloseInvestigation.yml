@@ -2,14 +2,17 @@ commonfields:
   id: CloseInvestigation
   version: -1
 name: CloseInvestigation
-script: |-
+script: >-
   var dArgs = {};
+
   if (args.reason) {
       dArgs.closeReason = args.reason;
   }
+
   if (args.notes) {
       dArgs.closeNotes = args.notes;
   }
+
   return executeCommand('closeInvestigation', dArgs);
 type: javascript
 tags:
@@ -27,3 +30,4 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 deprecated: true
+fromversion: 5.0.0

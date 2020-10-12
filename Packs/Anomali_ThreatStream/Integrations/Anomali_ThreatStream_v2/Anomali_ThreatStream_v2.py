@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+
 ''' IMPORTS '''
 
 import json
@@ -86,7 +87,7 @@ THREAT_MODEL_MAPPING = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None, headers=None, files=None):
+def http_request(method, url_suffix, params=None, data=None, headers=None, files=None, json=None, text_response=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
     """
@@ -98,6 +99,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, files
         data=data,
         headers=headers,
         files=files,
+        json=json
     )
     # Handle error responses gracefully
     if res.status_code in {401}:
@@ -113,6 +115,8 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, files
     elif res.status_code not in {200, 201, 202}:
         return_error(F"Error in API call to ThreatStream {res.status_code} - {res.text}")
 
+    if text_response:
+        return res.text
     return res.json()
 
 
@@ -570,49 +574,42 @@ def get_passive_dns(value, type="ip", limit=50):
 
 
 def import_ioc_with_approval(import_type, import_value, confidence="50", classification="Private",
-                             threat_type="exploit", severity="low", ip_mapping=False, domain_mapping=False,
-                             url_mapping=False, email_mapping=False, md5_mapping=False):
+                             threat_type="exploit", severity="low", ip_mapping=None, domain_mapping=None,
+                             url_mapping=None, email_mapping=None, md5_mapping=None):
     """
         Imports indicators data to ThreatStream.
         The data can be imported using one of three import_types: data-text (plain-text),
         file-id of uploaded file to war room or URL.
     """
-    ip_mapping = demisto.args().get('ip_mapping', 'no') == 'yes'
-    domain_mapping = demisto.args().get('domain_mapping', 'no') == 'yes'
-    url_mapping = demisto.args().get('url_mapping', 'no') == 'yes'
-    email_mapping = demisto.args().get('email_mapping', 'no') == 'yes'
-    md5_mapping = demisto.args().get('md5_mapping', 'no') == 'yes'
-
     files = None
     uploaded_file = None
-    data = {
-        'confidence': confidence,
-        'classification': classification,
-        'ip_mapping': ip_mapping,
-        'domain_mapping': domain_mapping,
-        'url_mapping': url_mapping,
-        'email_mapping': email_mapping,
-        'md5_mapping': md5_mapping,
-        'threat_type': threat_type,
-        'severity': severity
-    }
+    data = assign_params(
+        classification=classification,
+        confidence=int(confidence),
+        ip_mapping=ip_mapping,
+        domain_mapping=domain_mapping,
+        url_mapping=url_mapping,
+        email_mapping=email_mapping,
+        md5_mapping=md5_mapping,
+        threat_type=threat_type,
+        severity=severity,
+    )
 
     if import_type == 'file-id':
         try:
             # import_value will be entry id of uploaded file to war room
             file_info = demisto.getFilePath(import_value)
         except Exception:
-            return_error(F"Entry {import_value} does not contain a file.")
+            raise DemistoException(f"Entry {import_value} does not contain a file.")
 
         uploaded_file = open(file_info['path'], 'rb')
         files = {'file': (file_info['name'], uploaded_file)}
-        params = build_params()
+    elif import_type == 'url':
+        data['url'] = import_value
     else:
-        if import_value == 'url':
-            params = build_params(url=import_value)
-        else:
-            params = build_params(datatext=import_value)
+        data['datatext'] = import_value
 
+    params = build_params()
     # in case import_type is not file-id, http_requests will receive None as files
     res = http_request("POST", "v1/intelligence/import/", params=params, data=data, files=files)
     # closing the opened file if exist
@@ -625,6 +622,44 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
         return_outputs(F"The data was imported successfully. The ID of imported job is: {imported_id}", ec, res)
     else:
         return_outputs("The data was not imported. Check if valid arguments were passed", None)
+
+
+def import_ioc_without_approval(file_id, classification, confidence=None, allow_unresolved=None,
+                                source_confidence_weight=None, expiration_ts=None, severity=None,
+                                tags=None, trustedcircles=None):
+    """
+        Imports indicators data to ThreatStream.
+        file_id of uploaded file to war room or URL. Other fields are
+    """
+    if allow_unresolved:
+        allow_unresolved = allow_unresolved == 'yes'
+    if tags:
+        tags = argToList(tags)
+    if trustedcircles:
+        trustedcircles = argToList(trustedcircles)
+    try:
+        # entry id of uploaded file to war room
+        file_info = demisto.getFilePath(file_id)
+        with open(file_info['path'], 'rb') as uploaded_file:
+            ioc_to_import = json.load(uploaded_file)
+    except json.JSONDecodeError:
+        raise DemistoException(F"Entry {file_id} does not contain a valid json file.")
+    except Exception:
+        raise DemistoException(F"Entry {file_id} does not contain a file.")
+    ioc_to_import.update({'meta': assign_params(
+        classification=classification,
+        confidence=confidence,
+        allow_unresolved=allow_unresolved,
+        source_confidence_weight=source_confidence_weight,
+        expiration_ts=expiration_ts,
+        severity=severity,
+        tags=tags,
+        trustedcircles=trustedcircles
+    )})
+
+    params = build_params()
+    res = http_request("PATCH", "v1/intelligence/", params=params, json=ioc_to_import, text_response=True)
+    return_outputs("The data was imported successfully.", {}, res)
 
 
 def get_model_list(model, limit="50"):
@@ -897,6 +932,8 @@ def main():
             get_passive_dns(**args)
         elif command == 'threatstream-import-indicator-with-approval':
             import_ioc_with_approval(**args)
+        elif command == 'threatstream-import-indicator-without-approval':
+            import_ioc_without_approval(**args)
         elif command == 'threatstream-get-model-list':
             get_model_list(**args)
         elif command == 'threatstream-get-model-description':
@@ -930,5 +967,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("builtins", "__builtin__", "__main__"):
     main()

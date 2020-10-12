@@ -1,7 +1,7 @@
 id: dedup_incidents_-_ml
 version: -1
 name: DeDup incidents - ML
-fromversion: "3.5.0"
+fromversion: "5.0.0"
 description: Deprecated. Check for duplicate incidents for the current incident, and close it if any duplicate has been found by machine-learning  find duplicates automation.
 hidden: true
 starttaskid: "0"
@@ -120,8 +120,7 @@ tasks:
       brand: ""
     scriptarguments:
       value:
-        simple: Found ${duplicateCandidate.rawId} as duplicate candidate, but didn't
-          closed automatically (below threshold)
+        simple: Found ${duplicateCandidate.rawId} as duplicate candidate, but didn't closed automatically (below threshold)
     separatecontext: false
     view: |-
       {
@@ -188,8 +187,7 @@ tasks:
       id: 7cc3505f-3571-414c-88bd-a60c8a0e3919
       version: -1
       name: Is duplicate score above threshold?
-      description: Check if the candidate for duplicate incident score is above the
-        threshold.
+      description: Check if the candidate for duplicate incident score is above the threshold.
       type: condition
       iscommand: false
       brand: ""
@@ -240,8 +238,7 @@ inputs:
   value:
     simple: "0.75"
   required: true
-  description: Candidate with score above this threshold will close the investigation
-    automatically, and mark as duplicate to the current incident.
+  description: Candidate with score above this threshold will close the investigation automatically, and mark as duplicate to the current incident.
 outputs:
 - contextPath: foundDuplicates
   description: found any duplicate incident?
@@ -250,4 +247,4 @@ outputs:
   description: the duplicate top candidate
   type: unknown
 tests:
-  - No Test
+- No Test

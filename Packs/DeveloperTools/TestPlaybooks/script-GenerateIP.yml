@@ -2,9 +2,11 @@ commonfields:
   id: GenerateIP
   version: -1
 name: GenerateIP
-script: |-
+script: >-
   import random
+
   ip = ".".join(str(random.randint(0, 255)) for _ in range(4))
+
   demisto.results({
       'Type': entryTypes['note'],
       'Contents': ip,
@@ -24,3 +26,4 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0
