@@ -1,0 +1,44 @@
+commonfields:
+  id: UnEscapeIndicatorIPv6
+  version: -1
+name: UnEscapeIndicatorIPv6
+script: >-
+
+  var BEGINNING_CHARACTERS_LIST = ['(', '[', ' ', '-', '\'', '"', '.', ',', '`'];
+  var ENDING_CHARACTERS_LIST = [')', ']', ' ', '-', '\'', '"', '.', ',', '`'];
+
+  var ipv6_address = args.input;
+
+  first_letter = ipv6_address.charAt(0);
+
+  if (BEGINNING_CHARACTERS_LIST.includes(first_letter)) {
+    ipv6_address = ipv6_address.slice(1);
+  }
+
+  last_letter = ipv6_address.charAt(ipv6_address.length-1);
+
+  if (ENDING_CHARACTERS_LIST.includes(first_letter)) {
+    ipv6_address = ipv6_address.slice(0, -1);
+  }
+
+  return ipv6_address;
+
+
+Packs/DeveloperTools/TestPlaybooks/script-FormattingPerformance:
+  yml:type: javascript
+tags:
+- indicator-format
+comment: Extracts IPv6 addresses from specific characters.
+enabled: false
+args:
+- default: false
+  description: The address with the characters that surround it.
+  isArray: false
+  name: input
+  required: true
+  secret: false
+scripttarget: 0
+runas: DBotWeakRole
+runonce: false
+fromversion: 5.0.0
+
