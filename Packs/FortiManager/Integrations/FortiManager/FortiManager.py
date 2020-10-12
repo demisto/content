@@ -533,51 +533,6 @@ def list_dynamic_interface_command(client, args):
     )
 
 
-def list_dynamic_address_mapping_command(client, args):
-    dynamic_mapping = client.fortimanager_api_call("get", f"/pm/config/{get_global_or_adom(client, args)}"
-                                                          f"/obj/firewall/address"
-                                                          f"/{args.get('address')}/dynamic_mapping"
-                                                          f"{get_specific_entity(args.get('dynamic_mapping'))}",
-                                                   range_info=get_range_for_list_command(args))
-
-    headers = ['name', 'type', 'subnet', 'start-ip', 'end-ip', 'fqdn', 'wildcard', 'country', 'wildcard-fqdn']
-
-    return CommandResults(
-        outputs_prefix='FortiManager.Address.DynamicMapping',
-        outputs_key_field='obj-id',
-        outputs=dynamic_mapping,
-        readable_output=tableToMarkdown(f"Address {args.get('dynamic_mapping')} Dynamic Mapping",
-                                        dynamic_mapping, removeNull=True, headerTransform=string_to_table_header,
-                                        headers=headers),
-        raw_response=dynamic_mapping,
-    )
-
-
-def create_dynamic_address_mapping_command(client, args):
-    client.fortimanager_api_call("add", f"/pm/config/{get_global_or_adom(client, args)}"
-                                        f"/obj/firewall/address/{args.get('address')}/dynamic_mapping",
-                                 data_in_list=setup_request_data(args, ['adom', 'address']))
-
-    return f"Created new dynamic mapping in address {args.get('address')}"
-
-
-def update_dynamic_address_mapping_command(client, args):
-    client.fortimanager_api_call("update", f"/pm/config/{get_global_or_adom(client, args)}"
-                                           f"/obj/firewall/address/{args.get('address')}/dynamic_mapping",
-                                 data_in_list=setup_request_data(args, ['adom', 'address']))
-
-    return f"Updated dynamic mapping in address {args.get('address')}"
-
-
-def delete_dynamic_address_mapping_command(client, args):
-    client.fortimanager_api_call("update", f"/pm/config/{get_global_or_adom(client, args)}"
-                                           f"/obj/firewall/address/{args.get('address')}/dynamic_mapping/"
-                                           f"{args.get('dynamic_mapping')}",
-                                 data_in_list=setup_request_data(args, ['adom', 'address']))
-
-    return f"Deleted dynamic mapping {args.get('dynamic_mapping')} in address {args.get('address')}"
-
-
 def install_policy_package_command(client, args):
     response = client.fortimanager_api_call('exec', "/securityconsole/install/package",
                                             json_data={
@@ -735,18 +690,6 @@ def main() -> None:
 
         elif demisto.command() == 'fortimanager-dynamic-interface-list':
             return_results(list_dynamic_interface_command(client, demisto.args()))
-
-        elif demisto.command() == 'fortimanager-dynamic-address-mappings-list':
-            return_results(list_dynamic_address_mapping_command(client, demisto.args()))
-
-        elif demisto.command() == 'fortimanager-dynamic-address-mappings-create':
-            return_results(create_dynamic_address_mapping_command(client, demisto.args()))
-
-        elif demisto.command() == 'fortimanager-dynamic-address-mappings-update':
-            return_results(update_dynamic_address_mapping_command(client, demisto.args()))
-
-        elif demisto.command() == 'fortimanager-dynamic-address-mapping-delete':
-            return_results(delete_dynamic_address_mapping_command(client, demisto.args()))
 
         elif demisto.command() == 'fortimanager-firewall-policy-package-install':
             return_results(install_policy_package_command(client, demisto.args()))
