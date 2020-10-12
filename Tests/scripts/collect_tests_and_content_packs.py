@@ -960,19 +960,28 @@ def get_test_from_conf(branch_name, conf=deepcopy(CONF)):
 
     conf_tests = conf.get_tests()
     for t in conf_tests:
+        print(t)
         playbook_id = t['playbookID']
         integrations_conf = t.get('integrations', [])
+        print(integrations_conf)
+        instance_names = t.get('instance_names', [])
+        print(instance_names)
+        print(changed)
         if playbook_id in changed:
             tests.add(playbook_id)
             continue
-
+        print(tests)
         if not isinstance(integrations_conf, list):
             integrations_conf = [integrations_conf]
 
+        if not isinstance(instance_names, list):
+            instance_names = [instance_names]
+
         for integration in integrations_conf:
+            print(integration)
             if integration in changed:
                 tests.add(playbook_id)
-
+    print(tests)
     if not tests:
         tests.add('changed skip section')
 

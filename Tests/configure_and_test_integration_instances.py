@@ -948,9 +948,6 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, i
             prints_manager.add_print_job(skipped_instance_test_message, print_warning, 0)
 
         elif filter_configured and filtered_tests:
-            print(filtered_tests)
-            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-            print([test for test in tests if test.get('playbookID', '') in filtered_tests])
             tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
             print('From get tests command')
             print(tests_for_iteration)
@@ -1061,8 +1058,6 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
     brand_new_integrations = []
     testing_client = build.servers[0].client
     for test in tests_for_iteration:
-        print('configure server instance')
-        print(tests_for_iteration)
         integrations = get_integrations_for_test(test, build.skipped_integrations_conf)
 
         integrations_names = [i.get('name') for i in integrations]
@@ -1297,8 +1292,6 @@ def main():
 
     tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly,
                                     build.is_private)
-    print('TESTS FOR ITERATION #####')
-    print(tests_for_iteration)
     new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
     all_module_instances, brand_new_integrations = \
         configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
