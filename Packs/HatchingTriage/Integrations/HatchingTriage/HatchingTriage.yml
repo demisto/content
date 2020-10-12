@@ -338,7 +338,7 @@ script:
       isArray: false
       name: name
       description: Name of the API key to delete
-      required: false
+      required: true
       secret: false
     deprecated: false
     execution: false

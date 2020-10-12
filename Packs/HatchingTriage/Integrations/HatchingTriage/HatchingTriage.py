@@ -281,7 +281,7 @@ def get_apikey(client: Client, **args) -> CommandResults:
 
 def delete_apikey(client: Client, **args) -> CommandResults:
     userID = args.get('userID')
-    apiKeyName = args.get('apiKeyName', 'Created from XSOAR')
+    apiKeyName = args.get('apiKeyName')
 
     r = client._http_request('DELETE', f'users/{userID}/apikeys/{apiKeyName}')
 
@@ -291,6 +291,7 @@ def delete_apikey(client: Client, **args) -> CommandResults:
         outputs = r,
         readable_output = f'API key {apiKeyName} was successfully deleted'
     )
+
     return results
 
 
