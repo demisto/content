@@ -305,11 +305,8 @@ def flatten_event_file_items(event: Dict[str, Any]):
         "name": item.get('name'),
         "eventType": item.get('type'),
         "description": event.get('description'),
-        # "insights"
-        # "information"
+        "date": event.get('date'),
         "severity": event.get('severity'),
-        # "created"
-        # "status"
         "sourceApplication": event.get('sourceApplication')
     }, event['items']))
 
