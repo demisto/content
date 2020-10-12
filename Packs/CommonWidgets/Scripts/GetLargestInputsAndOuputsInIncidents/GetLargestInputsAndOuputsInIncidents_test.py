@@ -24,20 +24,20 @@ inputs_and_outputs = [
 
 
 largest_input = {
-    'IncidentID': 1,
-    'TaskID': '10',
+    'IncidentID': '[1](https://test-address:8443/#/incident/1)',
+    'TaskID': '[10](https://test-address:8443/#/WorkPlan/1/10)',
     'TaskName': 'Extract indicators from incident again',
     'Name': 'text',
-    'Size': 11.44,
+    'Size(MB)': 11.44,
     'InputOrOutput': 'Input'
 }
 
 largest_output = {
-    'IncidentID': 1,
-    'TaskID': '200',
+    'IncidentID': '[1](https://test-address:8443/#/incident/1)',
+    'TaskID': '[200](https://test-address:8443/#/WorkPlan/1/200)',
     'TaskName': 'Malware Investigation 2',
     'Name': 'IP',
-    'Size': 200.692,
+    'Size(MB)': 200.692,
     'InputOrOutput': 'Output'
 }
 
@@ -53,7 +53,7 @@ def test_get_largest_inputs_and_outputs():
     """
     from GetLargestInputsAndOuputsInIncidents import get_largest_inputs_and_outputs
     res = []
-    get_largest_inputs_and_outputs(inputs_and_outputs, res, 1)
+    get_largest_inputs_and_outputs(inputs_and_outputs, res, '1')
     assert len(res) == 2
     assert largest_input in res
     assert largest_output in res
@@ -70,5 +70,5 @@ def test_get_largest_inputs_and_outputs__on_fail():
     """
     from GetLargestInputsAndOuputsInIncidents import get_largest_inputs_and_outputs
     res = []
-    get_largest_inputs_and_outputs('No data', res, 1)
+    get_largest_inputs_and_outputs('No data', res, '1')
     assert len(res) == 0
