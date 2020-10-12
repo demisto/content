@@ -43,7 +43,7 @@ def read_file(input_data, input_type):
         if not res:
             return_error("Entry {} not found".format(input_data))
         file_path = res['path']
-        if input_type.startswith('csv') or input_type.startswith('json'):
+        if input_type.startswith('json'):
             with open(file_path, 'r') as f:
                 file_content = f.read()
     if input_type.startswith('csv'):
