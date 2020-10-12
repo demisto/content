@@ -1331,9 +1331,6 @@ def search_ip_command(ip):
         ip = Common.IP(
             ip=ip_address,
             dbot_score=dbot_score,
-            firstseenbysource=autofocus_ip_output.get('FirstSeen'),
-            lastseenbysource=autofocus_ip_output.get('LastSeen'),
-            tags=autofocus_ip_output.get('Tags'),
         )
 
         # create human readable markdown for ip
@@ -1403,9 +1400,6 @@ def search_domain_command(args):
             admin_name=indicator.get('whoisAdminName'),
             registrar_name=indicator.get('whoisRegistrar'),
             registrant_name=indicator.get('whoisRegistrant'),
-            firstseenbysource=indicator.get('FirstSeen'),
-            lastseenbysource=indicator.get('LastSeen'),
-            tags=indicator.get('Tags'),
         )
 
         # create human readable markdown for ip
@@ -1469,9 +1463,6 @@ def search_url_command(url):
         url = Common.URL(
             url=url_name,
             dbot_score=dbot_score,
-            firstseenbysource=indicator.get('FirstSeen'),
-            lastseenbysource=indicator.get('LastSeen'),
-            tags=indicator.get('Tags'),
         )
 
         tags = autofocus_url_output.get('Tags')
@@ -1533,9 +1524,6 @@ def search_file_command(file):
         file = Common.File(
             sha256=sha256,
             dbot_score=dbot_score,
-            firstseenbysource=indicator.get('FirstSeen'),
-            lastseenbysource=indicator.get('LastSeen'),
-            tags=indicator.get('Tags'),
         )
 
         tags = autofocus_file_output.get('Tags')
