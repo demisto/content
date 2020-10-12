@@ -391,7 +391,7 @@ def change_placeholders_to_values(placeholders_map, config_item):
     return json.loads(item_as_string)
 
 
-def set_integration_params(integrations, secret_params, instance_name, placeholders_map):
+def set_integration_params(integrations, secret_params, instance_names, placeholders_map):
     """
     For each integration object, fill in the parameter values needed to configure an instance from
     the secret_params taken from our secret configuration file. Because there may be a number of
@@ -409,7 +409,7 @@ def set_integration_params(integrations, secret_params, instance_name, placehold
         secret_params: (list of dicts)
             List of secret configuration values for all of our integrations (as well as specific
             instances of said integrations).
-        instance_name: (list)
+        instance_names: (list)
             The names of particular instances of an integration to use the secret_params of as the
             configuration values.
         placeholders_map: (dict)
@@ -421,26 +421,16 @@ def set_integration_params(integrations, secret_params, instance_name, placehold
     for integration in integrations:
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
-        print('#### Intergration PARAMS')
-        print(integration_params)
-        print(integration_params[0])
         if integration_params:
             matched_integration_params = integration_params[0]
-            print(matched_integration_params)
             # if there are more than one integration params, it means that there are configuration
             # values in our secret conf for multiple instances of the given integration and now we
             # need to match the configuration values to the proper instance as specified in the
             # 'instance_names' list argument
             if len(integration_params) != 1:
-                print('This is the instance name:')
-                print(instance_name)
                 found_matching_instance = False
                 for item in integration_params:
-                    print('### Found the following items: \n')
-                    print(item)
-                    if item.get('instance_name', 'Not Found') in instance_name:
-                        print('#### This is the instance name')
-                        print(item.get('instance_name'))
+                    if item.get('instance_name', 'Not Found') in instance_names:
                         matched_integration_params = item
                         found_matching_instance = True
 
@@ -1077,6 +1067,10 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         )
 
         instance_names_conf = test.get('instance_names', [])
+        print('##################')
+        print('instance names:')
+        print(instance_names_conf)
+        print(test)
         if not isinstance(instance_names_conf, list):
             instance_names_conf = [instance_names_conf]
 
