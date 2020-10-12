@@ -706,7 +706,7 @@ def update_user_iam(default_base_dn, default_page_size, args, iam):
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
 
         if not user_exists and args.get('create-if-not-exists') == "true":
-            create_user_iam(iam)
+            create_user_iam(default_base_dn, default_page_size, iam)
 
         elif user_exists:
             dn = user_dn(sam_account_name, default_base_dn)
@@ -999,7 +999,7 @@ def enable_user_iam(default_base_dn, default_page_size, group, args, iam):
     user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
 
     if not user_exists and args.get('create-if-not-exists') == "true":
-        create_user_iam(iam)
+        create_user_iam(default_base_dn, default_page_size, iam)
         return
 
     dn = user_dn(sam_account_name, default_base_dn)
@@ -1202,24 +1202,6 @@ def delete_group():
     }
     demisto.results(demisto_entry)
 
-
-def delete_group():
-    assert conn is not None
-    args = demisto.args()
-
-    dn = args.get('dn')
-
-    # delete group
-    success = conn.delete(dn)
-    if not success:
-        raise Exception("Failed to delete group")
-
-    demisto_entry = {
-        'ContentsFormat': formats['text'],
-        'Type': entryTypes['note'],
-        'Contents': "Deleted group with DN: {}".format(dn)
-    }
-    demisto.results(demisto_entry)
 
 '''
     TEST CONFIGURATION
