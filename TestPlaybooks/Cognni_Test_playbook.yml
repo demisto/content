@@ -1,0 +1,178 @@
+id: 02ea5cef-3169-4b17-8f4d-604b44e6348a
+version: -1
+name: Cognni Test playbook
+description: Cognni Test playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: aaa854f5-7efa-43ca-8941-1cc9e404b3ee
+    type: start
+    task:
+      id: aaa854f5-7efa-43ca-8941-1cc9e404b3ee
+      version: -1
+      name: ""
+      description: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "1"
+      - "4"
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: f160b8e1-20e9-48ee-8b8f-a1e9dab1be84
+    type: regular
+    task:
+      id: f160b8e1-20e9-48ee-8b8f-a1e9dab1be84
+      version: -1
+      name: cognni-fetch-incidents
+      description: Fetch incidents
+      script: Cognni|||cognni-fetch-incidents
+      type: regular
+      iscommand: true
+      brand: Cognni
+    scriptarguments:
+      from_date: {}
+      min_severity: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 14fbd17d-00a0-451a-8870-712bd20729dd
+    type: regular
+    task:
+      id: 14fbd17d-00a0-451a-8870-712bd20729dd
+      version: -1
+      name: cognni-fetch-insights
+      description: Fetch insights
+      script: Cognni|||cognni-fetch-insights
+      type: regular
+      iscommand: true
+      brand: Cognni
+    scriptarguments:
+      min_severity: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 71cfec1e-790a-4682-8a48-fbc043894edd
+    type: regular
+    task:
+      id: 71cfec1e-790a-4682-8a48-fbc043894edd
+      version: -1
+      name: cognni-get-event
+      description: Fetch a single event by ID
+      script: Cognni|||cognni-get-event
+      type: regular
+      iscommand: true
+      brand: Cognni
+    scriptarguments:
+      event_id:
+        simple: ${inputs.event_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b15baea8-c07e-4f1d-892c-d4119f77133b
+    type: regular
+    task:
+      id: b15baea8-c07e-4f1d-892c-d4119f77133b
+      version: -1
+      name: cognni-get-insight
+      description: Fetch a single insight by ID
+      script: Cognni|||cognni-get-insight
+      type: regular
+      iscommand: true
+      brand: Cognni
+    scriptarguments:
+      insight_id:
+        simple: ${inputs.insight_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 295,
+        "width": 1740,
+        "x": -210,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: insight_id
+  value:
+    simple: 740b5296-6d62-41e5-b0d7-1a7d5081f9cb
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: event_id
+  value:
+    simple: 9ba7fb56-8ace-4b3d-a1e9-08c466668e57
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+fromversion: 5.0.0
