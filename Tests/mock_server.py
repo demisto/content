@@ -81,7 +81,7 @@ class AMIConnection:
 
     REMOTE_MACHINE_USER = 'ec2-user'
     REMOTE_HOME = '/home/{}/'.format(REMOTE_MACHINE_USER)
-    LOCAL_SCRIPTS_DIR = '/home/runner/work/content-private/content/Tests/scripts/'
+    LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
     CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
     UPLOAD_MOCKS_SCRIPT = 'upload_mocks.sh'
     MOCK_KEY_FILE = 'id_rsa_f5256ae5ac4b84fb60541482f1e96cf9'
@@ -154,7 +154,7 @@ class AMIConnection:
         self.run_script(self.UPLOAD_MOCKS_SCRIPT, build_name, build_number)
 
     def clone_mock_data(self):
-        remote_key_filepath = self.copy_file(os.path.join('/home/runner/.ssh/', self.MOCK_KEY_FILE))
+        remote_key_filepath = self.copy_file(os.path.join('/home/circleci/.ssh/', self.MOCK_KEY_FILE))
         self.run_script(self.CLONE_MOCKS_SCRIPT, remote_key_filepath)
 
 

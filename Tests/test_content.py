@@ -323,39 +323,69 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks, integrations, playbook_id,
                    succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url,
                    build_name, prints_manager, thread_index=0, is_mock_run=False):
-    # with acquire_test_lock(integrations,
-    #                        test_options.get('timeout'),
-    #                        prints_manager,
-    #                        thread_index,
-    #                        tests_settings) as lock:
-    #     if lock:
-    status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
-                                      is_mock_run, thread_index=thread_index)
-    # c.api_client.pool.close()
-    if status == PB_Status.COMPLETED:
-        prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
-                                     message_color=LOG_COLORS.GREEN)
-        succeed_playbooks.append(playbook_id)
+    if not tests_settings.is_private:
+        with acquire_test_lock(integrations,
+                               test_options.get('timeout'),
+                               prints_manager,
+                               thread_index,
+                               tests_settings) as lock:
+            if lock:
+                status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+                                                  is_mock_run, thread_index=thread_index)
+                # c.api_client.pool.close()
+                if status == PB_Status.COMPLETED:
+                    prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
+                                                 message_color=LOG_COLORS.GREEN)
+                    succeed_playbooks.append(playbook_id)
 
-    elif status == PB_Status.NOT_SUPPORTED_VERSION:
-        not_supported_version_message = 'PASS: {} skipped - not supported version'.format(test_message)
-        prints_manager.add_print_job(not_supported_version_message, print, thread_index)
-        succeed_playbooks.append(playbook_id)
+                elif status == PB_Status.NOT_SUPPORTED_VERSION:
+                    not_supported_version_message = 'PASS: {} skipped - not supported version'.format(test_message)
+                    prints_manager.add_print_job(not_supported_version_message, print, thread_index)
+                    succeed_playbooks.append(playbook_id)
 
+                else:
+                    error_message = 'Failed: {} failed'.format(test_message)
+                    prints_manager.add_print_job(error_message, print_error, thread_index)
+                    playbook_id_with_mock = playbook_id
+                    if not is_mock_run:
+                        playbook_id_with_mock += " (Mock Disabled)"
+                    failed_playbooks.append(playbook_id_with_mock)
+                    if not tests_settings.is_local_run:
+                        notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url, build_name)
+
+                succeed = status in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION)
+            else:
+                tests_queue.put(conf_json_test_details)
+                succeed = False
     else:
-        error_message = 'Failed: {} failed'.format(test_message)
-        prints_manager.add_print_job(error_message, print_error, thread_index)
-        playbook_id_with_mock = playbook_id
-        if not is_mock_run:
-            playbook_id_with_mock += " (Mock Disabled)"
-        failed_playbooks.append(playbook_id_with_mock)
-        if not tests_settings.is_local_run:
-            notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url, build_name)
+        status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager,
+                                          test_options,
+                                          is_mock_run, thread_index=thread_index)
+        # c.api_client.pool.close()
+        if status == PB_Status.COMPLETED:
+            prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color,
+                                         thread_index,
+                                         message_color=LOG_COLORS.GREEN)
+            succeed_playbooks.append(playbook_id)
 
-    succeed = status in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION)
-        # else:
-        #     tests_queue.put(conf_json_test_details)
-        #     succeed = False
+        elif status == PB_Status.NOT_SUPPORTED_VERSION:
+            not_supported_version_message = 'PASS: {} skipped - not supported version'.format(
+                test_message)
+            prints_manager.add_print_job(not_supported_version_message, print, thread_index)
+            succeed_playbooks.append(playbook_id)
+
+        else:
+            error_message = 'Failed: {} failed'.format(test_message)
+            prints_manager.add_print_job(error_message, print_error, thread_index)
+            playbook_id_with_mock = playbook_id
+            if not is_mock_run:
+                playbook_id_with_mock += " (Mock Disabled)"
+            failed_playbooks.append(playbook_id_with_mock)
+            if not tests_settings.is_local_run:
+                notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url,
+                                   build_name)
+
+        succeed = status in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION)
 
     return succeed
 
@@ -624,9 +654,6 @@ def extract_filtered_tests(is_nightly):
         filtered_tests = [line.strip('\n') for line in filtered_tests]
         is_filter_configured = bool(filtered_tests)
         run_all = RUN_ALL_TESTS_FORMAT in filtered_tests
-        print(f"Filtered Tests are: {filtered_tests}\n")
-        print(f"Is filter configured: {is_filter_configured}\n")
-        print(f"Is run all: {run_all}\n")
 
     return filtered_tests, is_filter_configured, run_all
 
@@ -671,10 +698,8 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
 
     test_skipped_integration, integrations, is_nightly_integration = collect_integrations(
         integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
-    print(f"Test skipped integration is {test_skipped_integration}")
 
     if playbook_id in filtered_tests:
-        print(f"Playbook ID {playbook_id} is not in filtered tests.")
         playbook_skipped_integration.update(test_skipped_integration)
 
     skip_nightly_test = (nightly_test or is_nightly_integration) and not is_nightly
@@ -689,10 +714,8 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
         return
 
     if not run_all_tests:
-        print(f"Not run all tests.")
         # Skip filtered test
         if is_filter_configured and playbook_id not in filtered_tests:
-            print("Filter configured and playbook id is not in filtered tests.")
             return
 
     # Skip bad test
@@ -723,7 +746,6 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
     are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf,
                                             playbook_id, prints_manager, placeholders_map, thread_index=thread_index)
     if not are_params_set:
-        print(f"Params are not set")
         failed_playbooks.append(playbook_id)
         return
 
@@ -736,7 +758,6 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
         stdout, stderr = get_docker_processes_data()
         text = stdout if not stderr else stderr
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
-    print(f"Running a test")
     run_test(t, tests_queue, tests_settings, demisto_user, demisto_pass, proxy, failed_playbooks,
              integrations, unmockable_integrations, playbook_id, succeed_playbooks, test_message,
              test_options, slack, circle_ci, build_number, server, build_name, prints_manager,
@@ -836,7 +857,6 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     default_test_timeout = conf.get('testTimeout', 30)
 
     tests = conf['tests']
-    # print(f"Tests are {tests}")
     skipped_tests_conf = conf['skipped_tests']
     nightly_integrations = conf['nightly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
@@ -847,7 +867,6 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests(tests_settings.nightly)
     if is_filter_configured and not run_all_tests:
         is_nightly = True
-        print(f"Got here - line 838")
 
     if not tests or len(tests) == 0:
         prints_manager.add_print_job('no integrations are configured for test', print, thread_index)
@@ -897,11 +916,11 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
             executed_in_current_round, mockable_tests_queue = initialize_queue_and_executed_tests_set(mockable_tests)
             while not mockable_tests_queue.empty():
                 t = mockable_tests_queue.get()
-                # executed_in_current_round = update_round_set_and_sleep_if_round_completed(executed_in_current_round,
-                #                                                                           prints_manager,
-                #                                                                           t,
-                #                                                                           thread_index,
-                #                                                                           mockable_tests_queue)
+                executed_in_current_round = update_round_set_and_sleep_if_round_completed(executed_in_current_round,
+                                                                                          prints_manager,
+                                                                                          t,
+                                                                                          thread_index,
+                                                                                          mockable_tests_queue)
                 run_test_scenario(mockable_tests_queue, tests_settings, t, proxy, default_test_timeout, skipped_tests_conf,
                                   nightly_integrations, skipped_integrations_conf, skipped_integration, is_nightly,
                                   run_all_tests, is_filter_configured, filtered_tests,
