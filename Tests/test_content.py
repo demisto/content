@@ -865,7 +865,6 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         ami.clone_mock_data()
         proxy = MITMProxy(server_ip)
 
-
     failed_playbooks = []
     succeed_playbooks = []
     skipped_tests = set([])
