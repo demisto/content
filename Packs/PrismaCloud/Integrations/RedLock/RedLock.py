@@ -400,7 +400,7 @@ def get_rql_response():
     rql = demisto.getArg('rql').encode("utf-8")
 
     limit = demisto.args().get('limit', '1')
-    rql += "; limit search records to {}".format(limit)
+    rql += " limit search records to {}".format(limit)
 
     payload = {"query": rql, "filter": {}}
 
@@ -409,7 +409,19 @@ def get_rql_response():
 
     response = req('POST', 'search/config', payload, None)
 
-    md = tableToMarkdown(name="RQL Output:", t=response["data"]["items"], headerTransform=pascalToSpace, removeNull=True)
+    items = response["data"]["items"]
+
+    human_readable = items
+
+    for item in human_readable:
+        del item["data"]
+        del item["allowDrillDown"]
+        del item["hasExtFindingRiskFactors"]
+        del item["hasExternalFinding"]
+        del item["hasExternalIntegration"]
+        del item["hasNetwork"]
+    
+    md = tableToMarkdown(name="RQL Output:", t=human_readable, headerTransform=pascalToSpace, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
