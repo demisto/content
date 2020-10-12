@@ -1,0 +1,5 @@
+!cognni-ping
+!cognni-get-event
+!cognni-get-insight
+!cognni-fetch-insight
+!cognni-fetch-incidents
