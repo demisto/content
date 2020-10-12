@@ -56,7 +56,7 @@ class Client(BaseClient):
             query=query
         )
 
-    def fetch_events(self, min_severity: int, start_time: str, events_limit: int) -> List[Dict[str, Any]]:
+    def fetch_events(self, min_severity: int, start_time: int, events_limit: int) -> List[Dict[str, Any]]:
         query = """
             query ($pagination: Pagination, $fromDate:Date, $severities:[Int]) {
                 events(filter: { pagination: $pagination,fromDate: $fromDate, severities: $severities}) {
@@ -85,7 +85,12 @@ class Client(BaseClient):
                 }
             }
         """
+        severity = min_severity + 1
         severities = [min_severity]
+
+        while severity <= 4:
+            severities.append(severity)
+            severity = severity + 1
         variables = {
             "pagination": {
                 "limit": events_limit
@@ -433,7 +438,7 @@ def ping_command(client: Client) -> CommandResults:
 def fetch_incidents(client: Client, last_run: Dict[str, int],
                     first_fetch_time: Optional[int],
                     events_limit: int,
-                    min_severity: str
+                    min_severity: int
                     ) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
@@ -472,27 +477,18 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
 
-    # Get the last fetch time, if exists
-    # last_run is a dict with a single key, called last_fetch
     last_fetch = last_run.get('last_fetch', None)
 
-    # Handle first fetch time
     if last_fetch is None:
-        # if missing, use what provided via first_fetch_time
         last_fetch = first_fetch_time
     else:
-        # otherwise use the stored last fetch
         last_fetch = int(last_fetch)
 
-    # for type checking, making sure that latest_created_time is int
     latest_created_time = cast(int, last_fetch)
-
-    # Get the CSV list of severities from min_severity
-    # severity = ','.join(COGNNI_SEVERITIES[COGNNI_SEVERITIES.index(min_severity):])
 
     events = client.fetch_events(
         events_limit=events_limit,
-        start_time=last_fetch,
+        start_time=timestamp_to_datestring(last_fetch),
         min_severity=min_severity
     )
 
@@ -518,7 +514,6 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
 
     incidents = convert_events_to_incidents(new_events)
 
-    # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
 

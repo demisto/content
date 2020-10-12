@@ -156,7 +156,7 @@ script:
     description: Fetch incidents
     execution: false
     name: cognni-fetch-incidents
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
   longRunning: false
