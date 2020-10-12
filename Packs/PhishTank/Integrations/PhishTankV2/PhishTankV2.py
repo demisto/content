@@ -254,8 +254,8 @@ def parse_response_line(current_line, index, response):
     """
     current_line_length = len(current_line)
     # RESPONSE_LINE_LENGTH is the number of valid columns in csv
-    line_length_invalid = current_line_length < RESPONSE_LINE_LENGTH
-    if line_length_invalid:
+    line_is_broken = current_line_length < RESPONSE_LINE_LENGTH
+    if line_is_broken:
         next_line = response[index + 1].strip().split(",")
         current_line_has_missing_columns = len(next_line) >= RESPONSE_LINE_LENGTH
         if current_line_has_missing_columns:
