@@ -649,7 +649,6 @@ def get_integrations_for_test(test, skipped_integrations_conf):
         {'name': integration, 'params': {}} for
         integration in integrations_conf if integration not in skipped_integrations_conf
     ]
-    print(integrations)
     return integrations
 
 
@@ -942,18 +941,16 @@ def restart_server_legacy(server):
 def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, is_private=False):
     if Build.run_environment == Running.CIRCLECI_RUN:
         filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
-        print('filtered tests:')
-        print(filtered_tests)
-        print('filter_configured')
-        print(filter_configured)
         if run_all_tests:
             # skip test button testing
             skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(RUN_ALL_TESTS_FORMAT)
             prints_manager.add_print_job(skipped_instance_test_message, print_warning, 0)
             tests_for_iteration = []
         elif filter_configured and filtered_tests:
-            print('im here!')
             tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
+            print(tests)
+            print('From get tests command')
+            print(tests_for_iteration)
         else:
             tests_for_iteration = tests
 
@@ -1061,6 +1058,8 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
     brand_new_integrations = []
     testing_client = build.servers[0].client
     for test in tests_for_iteration:
+        print('configure server instance')
+        print(tests_for_iteration)
         integrations = get_integrations_for_test(test, build.skipped_integrations_conf)
 
         integrations_names = [i.get('name') for i in integrations]
