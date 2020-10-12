@@ -6,7 +6,6 @@ import dateparser
 import traceback
 from typing import Any, Dict, List, Optional, Tuple, cast, Iterable
 
-# Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
@@ -188,10 +187,6 @@ def convert_to_demisto_severity(severity: str) -> int:
     :return: Cortex XSOAR Severity (1 to 4)
     :rtype: ``int``
     """
-
-    # In this case the mapping is straightforward, but more complex mappings
-    # might be required in your integration, so a dedicated function is
-    # recommended. This mapping should also be documented.
     return {
         'Low': 1,  # low severity
         'Medium': 2,  # medium severity
@@ -287,20 +282,14 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
         return None
 
     if isinstance(arg, str) and arg.isdigit():
-        # timestamp is a str containing digits - we just convert it to int
         return int(arg)
     if isinstance(arg, str):
-        # we use dateparser to handle strings either in ISO8601 format, or
-        # relative time stamps.
-        # For example: format 2019-10-23T00:00:00 or "3 days", etc
         date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
         if date is None:
-            # if d is None it means dateparser failed to parse it
             raise ValueError(f'Invalid date: {arg_name}')
 
         return int(date.timestamp())
     if isinstance(arg, (int, float)):
-        # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
 
@@ -332,8 +321,6 @@ def convert_file_event_to_incident(file_event: Dict[str, Any]):
         'occurred': file_event.get('date'),
         'rawJSON': json.dumps(file_event),
         'severity': convert_to_demisto_severity_int(file_event.get('severity', 1)),
-        # 'CustomFields': {  # Map specific XSOAR Custom Fields
-        # }
     }
 
 
@@ -380,15 +367,6 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    # INTEGRATION DEVELOPER TIP
-    # Client class should raise the exceptions, but if the test fails
-    # the exception text is printed to the Cortex XSOAR UI.
-    # If you have some specific errors you want to capture (i.e. auth failure)
-    # you should catch the exception here and return a string with a more
-    # readable output (for example return 'Authentication Error, API Key
-    # invalid').
-    # Cortex XSOAR will print everything you return different than 'ok' as
-    # an error
     try:
         client.ping()
     except DemistoException as e:
@@ -412,21 +390,8 @@ def ping_command(client: Client) -> CommandResults:
     :rtype: ``CommandResults``
     """
 
-    # Call the Client function and get the raw response
     result = client.ping()
-
-    # Create the human readable output.
-    # It will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    # More complex output can be formatted using ``tableToMarkDown()`` defined
-    # in ``CommonServerPython.py``
     readable_output = f'## ping: {result["ping"]}'
-
-    # More information about Context:
-    # https://xsoar.pan.dev/docs/integrations/context-and-outputs
-    # We return a ``CommandResults`` object, and we want to pass a custom
-    # markdown here, so the argument ``readable_output`` is explicit. If not
-    # passed, ``CommandResults``` will do a ``tableToMarkdown()`` do the data
-    # to generate the readable output.
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Cognni.ping',
@@ -568,9 +533,6 @@ def get_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         raise ValueError('event_id not specified')
 
     event = client.get_event(event_id=event_id)
-
-    # tableToMarkdown() is defined is CommonServerPython.py and is used very
-    # often to convert lists and dicts into a human readable format in markdown
     readable_output = tableToMarkdown(f'Cognni event {event_id}', event)
 
     return CommandResults(
@@ -645,29 +607,16 @@ def main() -> None:
     # get the service API url
     base_url = demisto.params()['url']
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
 
-    # How much time before the first fetch to retrieve incidents
     first_fetch_time = arg_to_timestamp(
         arg=demisto.params().get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
     )
-    # Using assert as a type guard (since first_fetch_time is always an int when required=True)
     assert isinstance(first_fetch_time, int)
 
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
-
-    # INTEGRATION DEVELOPER TIP
-    # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
-    # etc. to print information in the XSOAR server log. You can set the log
-    # level on the server configuration
-    # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -702,10 +651,8 @@ def main() -> None:
             return_results(fetch_incidents_command(client, first_fetch_time, demisto.args()))
 
         elif demisto.command() == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
             min_severity = demisto.params().get('min_severity', None)
 
-            # Convert the argument to an int using helper function or set to MAX_EVENTS_TO_FETCH
             max_fetch = arg_to_int(
                 arg=demisto.params().get('max_fetch'),
                 arg_name='max_fetch',
@@ -722,10 +669,7 @@ def main() -> None:
                 min_severity=min_severity
             )
 
-            # saves next_run for the time fetch-incidents is invoked
             demisto.setLastRun(next_run)
-            # fetch-incidents calls ``demisto.incidents()`` to provide the list
-            # of incidents to crate
             demisto.incidents(incidents)
 
         elif demisto.command() == 'cognni-get-event':
@@ -739,7 +683,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

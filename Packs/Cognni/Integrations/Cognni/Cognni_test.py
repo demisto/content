@@ -63,7 +63,7 @@ def test_fetch_incidents(requests_mock):
 
 
 def test_get_event_with_special_character(requests_mock):
-    """Tests the get event command when event id contains special chearcters
+    """Tests the get event command when event id contains special characters
     """
     from Cognni import Client, get_event_command
 
@@ -198,7 +198,7 @@ def test_fetch_incidents_command(requests_mock):
 
 
 def test_get_event(requests_mock):
-    """Tests the ping command
+    """Tests the get event command
     """
     from Cognni import Client, get_event_command
 
@@ -251,7 +251,7 @@ def test_get_event_with_unknown_id(requests_mock):
 
 
 def test_get_insight(requests_mock):
-    """Tests the ping command
+    """Tests the get insight command
     """
     from Cognni import Client, get_insight_command
 
@@ -303,7 +303,7 @@ def test_get_insight_with_unknown_id(requests_mock):
 
 
 def test_fetch_insights(requests_mock):
-    """Tests the ping command
+    """Tests the fetch-insight command
     """
     from Cognni import Client, fetch_insights_command
 
