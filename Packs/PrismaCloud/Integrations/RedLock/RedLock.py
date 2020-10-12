@@ -409,7 +409,7 @@ def get_rql_response():
 
     response = req('POST', 'search/config', payload, None)
 
-    md = tableToMarkdown("RQLoutput", response["data"]["items"])
+    md = tableToMarkdown(name="RQL Output:", t=response["data"]["items"], headerTransform=pascalToSpace, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],

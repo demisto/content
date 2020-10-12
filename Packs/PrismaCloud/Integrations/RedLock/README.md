@@ -435,7 +435,21 @@ Run RQL query on Prisma Cloud
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.RQL.cloudType | String | The cloud type | 
+| Redlock.RQL.data.nextPageToken | String | The next page token | 
+| Redlock.RQL.data.totalRows | Number | Total rows returned by the query | 
+| Redlock.RQL.description | String | The RQL description | 
+| Redlock.RQL.id | String | The Policy ID | 
+| Redlock.RQL.name | String | The name | 
+| Redlock.RQL.query | String | The RQL query | 
+| Redlock.RQL.saved | Number | Boolean for if saved | 
+| Redlock.RQL.searchType | String | The RQL search type | 
+| Redlock.RQL.timeRange.type | String | The timerange type | 
+| Redlock.RQL.timeRange.value.endTime | Date | The endtime of the time range | 
+| Redlock.RQL.timeRange.value.startTime | Date | The starttime of the time range | 
+
 
 #### Command Example
 ```!redlock-get-rql-response rql="config where api.name = 'aws-ec2-describe-instances' as X; config where api.name = 'aws-ec2-describe-security-groups' as Y; config where api.name = 'aws-ec2-describe-vpcs' as Z; filter 'not _Set.intersection($.X.vpcId,$.Y.vpcId) intersects (vpc-5b9a3c33,vpc-b8ba2dd0,vpc-b8ba2dd01)'; show X; limit search records to 1"```
@@ -639,15 +653,9 @@ Remediate alerts in Prisma Cloud
 | --- | --- | --- |
 | alert-id | The alert id to remediate. You can retrieve alerts using the redlock-search-alerts command | Required | 
 
-
-#### Context Output
-
-There is no context output for this command.
-
 #### Command Example
 ```!redlock-remediate-alerts alert-id=P-370468```
 
-#### Context Example
-```
-{}
-```
+#### Human Readable Output
+
+>Alert remediated successfully
