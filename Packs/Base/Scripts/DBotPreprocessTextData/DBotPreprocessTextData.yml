@@ -149,13 +149,13 @@ outputs:
   description: The output file format.
   type: String
 script: '-'
-subtype: python2
+subtype: python3
 system: false
 tags:
 - ml
 timeout: 120µs
 type: python
-dockerimage: demisto/dl:1.4
+dockerimage: demisto/ml:1.0.0.12379
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test
