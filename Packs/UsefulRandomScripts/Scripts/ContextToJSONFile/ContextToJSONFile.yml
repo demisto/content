@@ -1,0 +1,21 @@
+args:
+- defaultValue: file
+  description: 'Name of the File '
+  name: fileName
+comment: Exports Context for the current Incident to a JSON file
+commonfields:
+  id: ContextToJSONFile
+  version: -1
+dockerimage: demisto/python3:3.8.2.6981
+enabled: true
+name: ContextToJSONFile
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,22 @@
+args:
+- description: text string to strip emojis from
+  name: value
+  required: true
+comment: 'Removes Emoji''s from a text string, replacing them with a '''' '
+commonfields:
+  id: RemoveEmojisFromText
+  version: -1
+dockerimage: demisto/python3:3.8.5.10455
+enabled: true
+name: RemoveEmojisFromText
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

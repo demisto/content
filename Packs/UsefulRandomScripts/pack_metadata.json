@@ -1,0 +1,14 @@
+{
+    "name": "Useful Random Scripts",
+    "description": "Collection of scripts for random use cases.  \n\nAlso included an example playbook showing how to take images (screenshots, or rasterized emails) and include them in an email or a data collection task. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "beauchompers",
+    "url": "",
+    "email": "",
+    "created": "2020-10-12T18:22:55Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

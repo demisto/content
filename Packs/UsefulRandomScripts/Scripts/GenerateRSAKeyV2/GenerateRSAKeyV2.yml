@@ -1,0 +1,39 @@
+args:
+- auto: PREDEFINED
+  defaultValue: privatekey
+  description: Usage for the key to generate, privatekey for a private key for SAML
+    integration, or dev2prod for a keypair for setting up remote repos, or a public
+    certificate / key pair (self signed cert)
+  name: usage
+  predefined:
+  - privatekey
+  - ssh
+  - selfsignedcert
+- description: Optional passphrase for the private key for ssh or self signed certificate
+    use cases
+  name: passphrase
+- description: hostname for the selfsigned cert, defaults to 'xsoar' if not specified
+  name: hostname
+comment: |-
+  This automation will generate a random private key, an ssh key pair, of a self signed public cert and private key pair.
+
+  Only requirement is a docker container with the cryptography module, which our teams container has, or which you can create using this command, and make sure it's the docker container for the automation:
+
+  /docker_image_create crypto dependencies=cryptography
+commonfields:
+  id: GenerateRSAKeyV2
+  version: -1
+dockerimage: demisto/teams:1.0.0.6483
+enabled: true
+name: GenerateRSAKeyV2
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,27 @@
+args:
+- description: The file entry ID.
+  name: entryId
+  required: true
+comment: |
+  Encode a file as base64 and store it in context
+commonfields:
+  id: FileToBase64Context
+  version: -1
+dockerimage: demisto/python3:3.8.6.12176
+enabled: true
+name: FileToBase64Context
+outputs:
+- contextPath: Base64Files
+  description: List of Base64 encoded files
+  type: string
+runas: DBotWeakRole
+runonce: true
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

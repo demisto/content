@@ -1,0 +1,30 @@
+args:
+- description: entryID of image file. Supported files are 'png, jpeg, gif, bmp, svg,
+    tiff, webp'
+  name: entryId
+comment: |-
+  Takes an image file and converts it into base64 encoded HTML image. Can be displayed in the incident summary inside an HTML field.
+
+  **IMPORTANT**: When storing base64 file data inside an incident field, make sure the checkbox for 'make available for search' is UNCHECKED. Or else the amount of data could have significant impacts on disk usage.
+
+  Supported files are 'png, jpeg, gif, bmp, svg, tiff, webp'
+commonfields:
+  id: ImageFileToHTML
+  version: -1
+dockerimage: demisto/python3:3.8.6.12176
+enabled: true
+name: ImageFileToHTML
+outputs:
+- contextPath: ImageFileToHTML
+  description: HTML links with base 64 encoded image
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
