@@ -1022,10 +1022,10 @@ def nightly_install_packs(build, threads_print_manager, install_method=install_a
 
 def install_nightly_pack(build, prints_manager):
     threads_print_manager = ParallelPrintsManager(len(build.servers))
-    nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs)
-    create_nightly_test_pack(build.is_private)
+    # nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs)
+    create_nightly_test_pack()
     nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs,
-                          pack_path=f'{Build.test_pack_target}/test_pack.zip')
+                          pack_path=f'/home/runner/work/content-private/content-private/content/test_pack.zip')
 
     prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0, include_timestamp=True)
     prints_manager.execute_thread_prints(0)
@@ -1051,8 +1051,7 @@ def install_packs(build, prints_manager, pack_ids=None):
 def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations, prints_manager):
     all_module_instances = []
     brand_new_integrations = []
-    testing_client = demisto_client.configure(base_url=build.servers[0].host, username=build.username,
-                                              password=build.password, verify_ssl=False)
+    testing_client = build.servers[0].client
     for test in tests_for_iteration:
         integrations = get_integrations_for_test(test, build.skipped_integrations_conf)
 
@@ -1165,8 +1164,8 @@ def disable_instances(build: Build, all_module_instances, prints_manager):
     prints_manager.execute_thread_prints(0)
 
 
-def create_nightly_test_pack(is_private):
-    test_pack_zip(Build.content_path, Build.test_pack_target, is_private)
+def create_nightly_test_pack():
+    test_pack_zip(Build.content_path, Build.test_pack_target)
 
 
 def test_files(content_path):
@@ -1223,13 +1222,10 @@ def test_pack_metadata():
     return json.dumps(metadata, indent=4)
 
 
-def test_pack_zip(content_path, target, is_private):
-    if is_private:
-        target = '/home/runner/work/content-private/content-private/content/'
-        content_path = '/home/runner/work/content-private/content-private/content'
-    with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
+def test_pack_zip(content_path, target):
+    with zipfile.ZipFile(f'/home/runner/work/content-private/content-private/content/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
-        for test_path, test in test_files(content_path):
+        for test_path, test in test_files('/home/runner/work/content-private/content-private/content'):
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
@@ -1273,36 +1269,8 @@ def main():
     configure_servers_and_restart(build, prints_manager)
     installed_content_packs_successfully = False
     if build.is_private:
-        for server in build.servers:
-            client = demisto_client.configure(base_url=server.host, username=server.user_name,
-                                              password=server.password, verify_ssl=False)
-
-            test_data = '/home/runner/work/content-private/content-private/content/artifacts' \
-                        '/content_test.zip'
-
-            test_data_file_path = os.path.abspath(test_data)
-            test_files = {'file': test_data_file_path}
-
-            message = 'Making "POST" request to server {} - to install test content {}'.format(
-                server.host, test_data_file_path)
-            print(message)
-
-            try:
-                header_params = {
-                    'Content-Type': 'multipart/form-data'
-                }
-                response_data, status_code, _ = client.api_client.call_api(
-                    resource_path='/content/bundle',
-                    method='POST',
-                    header_params=header_params, files=test_files)
-                if 200 <= status_code < 300:
-                    print('Surprised Pikachu face here...')
-                else:
-                    result_object = ast.literal_eval(response_data)
-                    message = result_object.get('message', '')
-                    print(message)
-            except Exception as e:
-                print(f"Failed to upload test data.{e.body}")
+        install_nightly_pack(build, prints_manager)
+        installed_content_packs_successfully = True
     if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
         if build.is_nightly:
             install_nightly_pack(build, prints_manager)
