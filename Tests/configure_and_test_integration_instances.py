@@ -1023,7 +1023,7 @@ def nightly_install_packs(build, threads_print_manager, install_method=install_a
 def install_nightly_pack(build, prints_manager):
     threads_print_manager = ParallelPrintsManager(len(build.servers))
     nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs)
-    create_nightly_test_pack()
+    create_nightly_test_pack(build.is_private)
     nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs,
                           pack_path=f'{Build.test_pack_target}/test_pack.zip')
 
@@ -1165,8 +1165,8 @@ def disable_instances(build: Build, all_module_instances, prints_manager):
     prints_manager.execute_thread_prints(0)
 
 
-def create_nightly_test_pack():
-    test_pack_zip(Build.content_path, Build.test_pack_target)
+def create_nightly_test_pack(is_private):
+    test_pack_zip(Build.content_path, Build.test_pack_target, is_private)
 
 
 def test_files(content_path):
@@ -1223,10 +1223,13 @@ def test_pack_metadata():
     return json.dumps(metadata, indent=4)
 
 
-def test_pack_zip(content_path, target):
-    with zipfile.ZipFile(f'/home/runner/work/content-private/content-private/content/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
+def test_pack_zip(content_path, target, is_private):
+    if is_private:
+        target = '/home/runner/work/content-private/content-private/content/'
+        content_path = '/home/runner/work/content-private/content-private/content'
+    with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
-        for test_path, test in test_files('/home/runner/work/content-private/content-private/content'):
+        for test_path, test in test_files(content_path):
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
