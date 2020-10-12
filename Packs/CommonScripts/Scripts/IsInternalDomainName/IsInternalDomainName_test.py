@@ -4,23 +4,24 @@ import pytest
 
 @pytest.mark.parametrize('domain_name, domain_to_check,  expected_output', [
     # domain valid
-    ("paloaltonetworks.com",
-     ["paloaltonetworks.com", "apps.paloaltonetworks.com"],
-     [("paloaltonetworks.com", "paloaltonetworks.com", True),
-      ("apps.paloaltonetworks.com", "paloaltonetworks.com", True)]
+    (["paloaltonetworks.com", "paloaltonetworkss.coms"],
+     ["paloaltonetworks.com", "apps.paloaltonetworks.com", "a.paloaltonetworkss.coms"],
+     [("paloaltonetworks.com", ["paloaltonetworks.com", "paloaltonetworkss.coms"], True),
+      ("apps.paloaltonetworks.com", ["paloaltonetworks.com", "paloaltonetworkss.coms"], True),
+      ("a.paloaltonetworkss.coms", ["paloaltonetworks.com", "paloaltonetworkss.coms"], True)]
      ),
     # domain NOT valid
-    ("ppaloaltonetworks.com",
+    (["ppaloaltonetworks.com", "bla.com"],
      ["paloaltonetworks.com", "paloaltonetworkss.com", "apps.paloaltonetworks.com"],
-     [("paloaltonetworks.com", "ppaloaltonetworks.com", False),
-      ("paloaltonetworkss.com", "ppaloaltonetworks.com", False),
-      ("apps.paloaltonetworks.com", "ppaloaltonetworks.com", False)]
+     [("paloaltonetworks.com", ["ppaloaltonetworks.com", "bla.com"], False),
+      ("paloaltonetworkss.com", ["ppaloaltonetworks.com", "bla.com"], False),
+      ("apps.paloaltonetworks.com", ["ppaloaltonetworks.com", "bla.com"], False)]
      ),
-    ("paloaltonetworks.com",
+    (["paloaltonetworks.com"],
      ["paloaltonetworks.com", "paloaltonetworkss.com", "apps.paloaltonetworks.com"],
-     [("paloaltonetworks.com", "paloaltonetworks.com", True),
-      ("paloaltonetworkss.com", "paloaltonetworks.com", False),
-      ("apps.paloaltonetworks.com", "paloaltonetworks.com", True)]
+     [("paloaltonetworks.com", ["paloaltonetworks.com"], True),
+      ("paloaltonetworkss.com", ["paloaltonetworks.com"], False),
+      ("apps.paloaltonetworks.com", ["paloaltonetworks.com"], True)]
      ),
 ])
 def test_check_in_domain(domain_name, domain_to_check, expected_output):
