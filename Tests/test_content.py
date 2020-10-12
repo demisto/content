@@ -322,8 +322,8 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
     )
 
 
-def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks, integrations, playbook_id,
-                   succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url,
+def run_test_logic(conf_json_test_details, tests_queue, tests_settings, failed_playbooks, integrations, playbook_id,
+                   succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url, demisto_user, demisto_pass,
                    build_name, prints_manager, thread_index=0, is_mock_run=False):
     if not tests_settings.is_private:
         with acquire_test_lock(integrations,
@@ -332,6 +332,7 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, faile
                                thread_index,
                                tests_settings) as lock:
             if lock:
+                c = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
                 status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
                                                   is_mock_run, thread_index=thread_index)
                 # c.api_client.pool.close()
@@ -360,6 +361,8 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, faile
                 tests_queue.put(conf_json_test_details)
                 succeed = False
     else:
+        c = demisto_client.configure(base_url=server_url, username=demisto_user,
+                                     password=demisto_pass, verify_ssl=False)
         status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager,
                                           test_options,
                                           is_mock_run, thread_index=thread_index)
@@ -413,12 +416,14 @@ def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy
     return succeed
 
 
-def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks, integrations,
-             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url,
+def mock_run(conf_json_test_details, tests_queue, tests_settings, proxy, failed_playbooks, integrations,
+             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
+             server_url, demisto_user, demisto_pass,
              build_name, start_message, prints_manager, thread_index=0):
     rerecord = False
 
     if proxy.has_mock_file(playbook_id):
+        c = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
         start_mock_message = '{} (Mock: Playback)'.format(start_message)
         prints_manager.add_print_job(start_mock_message, print, thread_index, include_timestamp=True)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
@@ -481,9 +486,9 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
         prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index, include_timestamp=True)
-        run_test_logic(conf_json_test_details, tests_queue, tests_settings, client, failed_playbooks, integrations,
+        run_test_logic(conf_json_test_details, tests_queue, tests_settings, failed_playbooks, integrations,
                        playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                       server_url, build_name, prints_manager, thread_index=thread_index)
+                       server_url, demisto_user, demisto_pass, build_name, prints_manager, thread_index=thread_index)
         prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print, thread_index,
                                      include_timestamp=True)
 
@@ -491,20 +496,20 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
     if is_private:
         prints_manager.add_print_job(start_message + ' (Private Build Test)', print, thread_index,
                                      include_timestamp=True)
-        run_test_logic(conf_json_test_details, tests_queue, tests_settings, client,
+        run_test_logic(conf_json_test_details, tests_queue, tests_settings,
                        failed_playbooks, integrations,
                        playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
-                       build_number,
-                       server_url, build_name, prints_manager, thread_index=thread_index)
+                       build_number, server_url, demisto_user, demisto_pass, build_name, prints_manager,
+                       thread_index=thread_index)
         prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print,
                                      thread_index,
                                      include_timestamp=True)
 
         return
     if not is_private:
-        mock_run(conf_json_test_details, tests_queue, tests_settings, client, proxy, failed_playbooks, integrations,
+        mock_run(conf_json_test_details, tests_queue, tests_settings, proxy, failed_playbooks, integrations,
                  playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                 server_url, build_name, start_message, prints_manager, thread_index=thread_index)
+                 server_url, demisto_user, demisto_pass, build_name, start_message, prints_manager, thread_index=thread_index)
 
 
 def http_request(url, params_dict=None):

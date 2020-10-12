@@ -483,11 +483,12 @@ def __delete_integration_instance_if_determined_by_name(client, instance_name, p
 
 
 # return instance name if succeed, None otherwise
-def __create_integration_instance(client, integration_name, integration_instance_name,
+def __create_integration_instance(server, username, password, integration_name, integration_instance_name,
                                   integration_params, is_byoi, prints_manager, validate_test=True, thread_index=0):
 
     # get configuration config (used for later rest api
-    configuration = __get_integration_config(client, integration_name, prints_manager,
+    integration_conf_client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
+    configuration = __get_integration_config(integration_conf_client, integration_name, prints_manager,
                                              thread_index=thread_index)
     if not configuration:
         return None, 'No configuration', None
@@ -498,7 +499,7 @@ def __create_integration_instance(client, integration_name, integration_instance
 
     if 'integrationInstanceName' in integration_params:
         instance_name = integration_params['integrationInstanceName']
-        __delete_integration_instance_if_determined_by_name(client, instance_name, prints_manager, thread_index)
+        __delete_integration_instance_if_determined_by_name(integration_conf_client, instance_name, prints_manager, thread_index)
     else:
         instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'), str(uuid.uuid4()))
 
@@ -522,7 +523,7 @@ def __create_integration_instance(client, integration_name, integration_instance
     }
 
     # set server keys
-    __set_server_keys(client, prints_manager, integration_params, configuration['name'])
+    __set_server_keys(integration_conf_client, prints_manager, integration_params, configuration['name'])
 
     # set module params
     for param_conf in module_configuration:
@@ -547,7 +548,7 @@ def __create_integration_instance(client, integration_name, integration_instance
             param_conf['value'] = param_conf['defaultValue']
         module_instance['data'].append(param_conf)
     try:
-        res = demisto_client.generic_request_func(self=client, method='PUT',
+        res = demisto_client.generic_request_func(self=integration_conf_client, method='PUT',
                                                   path='/settings/integration',
                                                   body=module_instance)
     except ApiException as conn_err:
@@ -567,8 +568,9 @@ def __create_integration_instance(client, integration_name, integration_instance
     module_instance['id'] = integration_config['id']
 
     # test integration
+    refreshed_client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
     if validate_test:
-        test_succeed, failure_message = __test_integration_instance(client, module_instance, prints_manager,
+        test_succeed, failure_message = __test_integration_instance(refreshed_client, module_instance, prints_manager,
                                                                     thread_index=thread_index)
     else:
         print_warning(
@@ -577,7 +579,7 @@ def __create_integration_instance(client, integration_name, integration_instance
         test_succeed = True
 
     if not test_succeed:
-        __disable_integrations_instances(client, [module_instance], prints_manager, thread_index=thread_index)
+        __disable_integrations_instances(refreshed_client, [module_instance], prints_manager, thread_index=thread_index)
         return None, failure_message, None
 
     docker_image = Docker.get_integration_image(integration_config)

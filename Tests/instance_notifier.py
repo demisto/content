@@ -65,7 +65,7 @@ def test_instances(secret_conf_path, server, username, password):
 
         if has_integration:
             instance_id, failure_message, _ = __create_integration_instance(
-                c, integration_name, integration_instance_name, integration_params, is_byoi, prints_manager,
+                server, username, password, integration_name, integration_instance_name, integration_params, is_byoi, prints_manager,
                 validate_test=validate_test)
             if failure_message == 'No configuration':
                 prints_manager.add_print_job(
