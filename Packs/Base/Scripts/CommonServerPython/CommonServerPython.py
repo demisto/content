@@ -2168,7 +2168,7 @@ class Common(object):
         :param actor: The actor reference.
 
         :type tags: ``str``
-        :param tags: Tags of the file.K
+        :param tags: Tags of the file.
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
