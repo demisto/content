@@ -6,14 +6,14 @@ script: ''
 type: python
 tags:
 - enhancement
-comment: Enhancement script to enrich SSL information for Email, RiskIQSHA1 and RiskIQSerialNumber
+comment: Enhancement script to enrich SSL information for Email, File SHA-1 and RiskIQSerialNumber
   type of indicators.
 enabled: true
 args:
 - name: indicator_value
   required: true
   default: true
-  description: Email, RiskIQSHA1 and RiskIQSerialNumber indicator value that need
+  description: Email, File SHA-1 and RiskIQSerialNumber indicator value that need
     to enrich
 scripttarget: 0
 subtype: python3
