@@ -608,6 +608,8 @@ def extract_filtered_tests(is_nightly):
     with open(FILTER_CONF, 'r') as filter_file:
         filtered_tests = filter_file.readlines()
         filtered_tests = [line.strip('\n') for line in filtered_tests]
+        print('@@@@@@@@@@@@@###########')
+        print(filtered_tests)
         is_filter_configured = bool(filtered_tests)
         run_all = RUN_ALL_TESTS_FORMAT in filtered_tests
 
