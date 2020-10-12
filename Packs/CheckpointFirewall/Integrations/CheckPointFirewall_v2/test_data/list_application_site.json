@@ -1,0 +1,37 @@
+{
+  "objects": [
+    {
+      "uid": "1234",
+      "name": "application site 1",
+      "type": "application-site",
+      "domain": {
+        "uid": "9876",
+        "name": "APPI Data",
+        "domain-type": "data domain"
+      }
+    },
+    {
+      "uid": "5678",
+      "name": "application site 2",
+      "type": "application-site",
+      "domain": {
+        "uid": "9876",
+        "name": "APPI Data",
+        "domain-type": "data domain"
+      }
+    },
+    {
+      "uid": "9101",
+      "name": "application site 3",
+      "type": "application-site",
+      "domain": {
+        "uid": "9876",
+        "name": "SMC User",
+        "domain-type": "domain"
+      }
+    }
+  ],
+  "from": 1,
+  "to": 3,
+  "total": 7364
+}

@@ -492,7 +492,7 @@ class McAfeeESMClient(BaseClient):
         i = 0
         while not self.__generic_polling(search_id):
             i += 1
-            time.sleep(interval)
+            time.sleep(interval)  # pylint: disable=sleep-exists
             if i * interval == time_out:
                 raise DemistoException(f'Search: {search_id} time out.')
 
