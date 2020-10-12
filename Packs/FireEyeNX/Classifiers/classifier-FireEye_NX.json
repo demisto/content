@@ -3,7 +3,6 @@
  "type": "classification",
  "id": "FireEye NX",
  "description": "Classifies FireEye NX Incidents.",
- "defaultIncidentType": "",
  "keyTypeMap": {
   "FireEye NX Alert": "FireEye NX Alert",
   "FireEye NX IPS Event": "FireEye NX IPS Event"

@@ -31,7 +31,8 @@ configuration:
   type: 13
 - additionalinfo: The time range to consider for initial data fetch.(<number> <unit>,
     e.g. 1 hour, 2 hours, 6 hours, 12 hours, 48 hours). By default, it is set to 12
-    hours, if blank. The API supports up to 48 hours. More than 48 hours will produce an error.
+    hours, if blank. The API supports up to 48 hours. More than 48 hours will produce
+    an error.
   defaultvalue: 12 hours
   display: First fetch time interval
   hidden: false
@@ -279,8 +280,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the ID number of the alert to retrieve it.
-        To get Alert ID execute fireeye-nx-get-alerts command without specifying alert_id.
+      description: Specify the ID number of the alert to retrieve it. To get Alert
+        ID execute fireeye-nx-get-alerts command without specifying alert_id.
       isArray: false
       name: alert_id
       required: false
@@ -1167,16 +1168,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Specifies the start time of the search. This filter is used with the duration filter.
-                    If the start_time is specified but not the duration, the system defaults to duration=12_hours,
-                    starting at the specified start_time.\nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
+      description: "Specifies the start time of the search. This filter is used with\
+        \ the duration filter. If the start_time is specified but not the duration,\
+        \ the system defaults to duration=12_hours, starting at the specified start_time.\n\
+        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: "Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time.
-                    \nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
+      description: "Specifies the end time of the search. This filter is used with\
+        \ the duration filter. If the end_time is specified but not the duration,\
+        \ the system defaults to duration=12_hours, ending at the specified end_time.\
+        \ \nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
       isArray: false
       name: end_time
       required: false
