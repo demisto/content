@@ -52,8 +52,6 @@ def read_file(input_data, input_type):
     elif input_type.startswith('json'):
         return json.loads(file_content)
     elif input_type.startswith('pickle'):
-        # TODO: Add this to the docker image
-        install_fsspec()
         return pd.read_pickle(file_path, compression=None)
     else:
         return_error("Unsupported file type %s" % input_type)
@@ -112,7 +110,6 @@ def pre_process(data, source_text_field, target_text_field, remove_html_tags, pr
 
 
 def pre_process_nlp(text_data):
-    # TODO: move logic of WordTokenizerNLP here
     res = demisto.executeCommand('WordTokenizerNLP', {
         'value': json.dumps(text_data),
         'isValueJson': 'yes',
@@ -133,6 +130,7 @@ PRE_PROCESS_TYPES = {
     'nlp': pre_process_nlp,
 }
 
+
 def remove_short_text(data, text_field, target_text_field, remove_short_threshold):
     description = ""
     before_count = len(data)
@@ -140,7 +138,7 @@ def remove_short_text(data, text_field, target_text_field, remove_short_threshol
     after_count = len(data)
     dropped_count = before_count - after_count
     if dropped_count > 0:
-        description += "Dropped %d samples shorted then %d words" % (dropped_count, remove_short_threshold) + "\n"
+        description += "Dropped %d samples shorter than %d words" % (dropped_count, remove_short_threshold) + "\n"
     return data, description
 
 def get_tf_idf_similarity_arr(documents):
@@ -169,7 +167,7 @@ def remove_duplicate_by_indices(data, duplicate_indices):
 
 
 def whitelist_dict_fields(data, fields):
-    fields = [x.strip().lower() for x in fields]
+    fields = [x.strip() for x in fields] + [x.strip().lower() for x in fields]
     new_data = []
     for d in data:
         new_data.append({k: v for k, v in d.items() if k in fields})
@@ -227,7 +225,7 @@ def main():
     file_name = str(uuid.uuid4())
     output_format = demisto.args()['outputFormat']
     if output_format == 'pickle':
-        data_encoded = pickle.dumps(data)
+        data_encoded = pickle.dumps(data, protocol=2)
     elif output_format == 'json':
         data_encoded = json.dumps(data, default=str)
     else:
@@ -244,8 +242,8 @@ def main():
         }
     }
     return entry
-#
-#
+
+
 if __name__ in ['builtins', '__main__']:
     entry = main()
     demisto.results(entry)
