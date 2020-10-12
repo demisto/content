@@ -158,6 +158,7 @@ class DBotScoreType(object):
     DBotScoreType.DOMAIN
     DBotScoreType.URL
     DBotScoreType.CVE
+    DBotScoreType.EMAIL_ADDRESS
     :return: None
     :rtype: ``None``
     """
@@ -166,6 +167,7 @@ class DBotScoreType(object):
     DOMAIN = 'domain'
     URL = 'url'
     CVE = 'cve'
+    EMAIL_ADDRESS= 'email_address'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -180,7 +182,8 @@ class DBotScoreType(object):
             DBotScoreType.FILE,
             DBotScoreType.DOMAIN,
             DBotScoreType.URL,
-            DBotScoreType.CVE
+            DBotScoreType.CVE,
+            DBotScoreType.EMAIL_ADDRESS
         )
 
 
@@ -2590,6 +2593,40 @@ class Common(object):
             ret_value = {
                 Common.Endpoint.CONTEXT_PATH: endpoint_context
             }
+
+            return ret_value
+
+    class Email(Indicator):
+        """TODO: document
+        interface class
+        """
+        CONTEXT_PATH = 'Email(val.Address && val.Address == obj.Address)'
+
+        def __init__(self, email_address, dbot_score):
+            self.email_address = email_address
+
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            email_context = {
+                'Address': self.email_address
+            }
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                email_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.Email.CONTEXT_PATH: email_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
 
             return ret_value
 
