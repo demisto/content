@@ -127,9 +127,9 @@ def test_remove_short_text():
             'body': 'TestBody1 TestBody2',
         }
     ]
-    data, desc = remove_short_text(data, 'body', 'body', 2)
-    assert desc == "Dropped 1 samples shorted then 2 words\n"
-    assert len(data) == 1
+    filtered_data, desc = remove_short_text(data, 'body', 'body', 2)
+    assert len(data) - len(filtered_data) == 1
+    assert len(filtered_data) == 1
 
 
 def test_remove_dups():
