@@ -42,10 +42,14 @@ class Client(BaseClient):
             params=self.params
         )
 
-    def get_webhooks_list(self):
+    def get_webhooks_list(self, project_name):
+        if project_name:
+            project_name_to_pass = project_name
+        else:
+            project_name_to_pass = self.project_name
         return self._http_request(
             method='GET',
-            url_suffix=f'/project/{self.project_name}/webhooks',
+            url_suffix=f'/project/{self.project_name_to_pass}/webhooks',
             params=self.params
         )
 
@@ -176,7 +180,7 @@ class Client(BaseClient):
         :param adhoc: can be true or false. true for include Adhoc executions
         :param job_id_list_filter: specify a Job IDs to filter by
         :param exclude_job_id_list_filter: specify a Job IDs to exclude
-        :param job_list_filter: specify a full Job group/name to include.
+        :param job_list_filter: specify a full job group/name to include.
         :param exclude_job_list_filter: specify a full Job group/name to exclude
         :param group_path: specify a group or partial group to include all jobs within that group path.
         :param group_path_exact: like 'group_path' but you need to specify an exact group path to match
@@ -285,7 +289,7 @@ class Client(BaseClient):
         :param project_name: project to run the command on
         :param exec_command: the shell command that you want to run
         :param node_thread_count: threadcount to use
-        :param node_keepgoing: 'true' for continue executing on other nodes after a failure. false otherwise
+        :param node_keepgoing: 'true' for continue executing on other nodes after a failure. 'false' otherwise
         :param as_user: specifies a username identifying the user who ran the command
         :param node_filter: node filter to add
         :return: api response
@@ -325,11 +329,11 @@ class Client(BaseClient):
         :param node_thread_count: threadcount to use
         :param node_keepgoing: 'true' for continue executing on other nodes after a failure. false otherwise
         :param as_user: specifies a username identifying the user who ran the command
-        :param node_filter: node filter to add
+        :param node_filter: node filter string
         :param script_interpreter: a command to use to run the script
         :param interpreter_args_quoted: if true, the script file and arguments will be quoted as the last argument to
-        the scriptInterpreter. false otherwise
-        :param file_extension: extension of of the script file
+        the script_interpreter. false otherwise.
+        :param file_extension: extension of the script file
         :param arg_string: arguments to pass to the script when executed.
         :return: api response
         """
@@ -386,11 +390,12 @@ class Client(BaseClient):
         :param arg_string: arguments for the script when executed
         :param node_thread_count: threadcount to use
         :param node_keepgoing: 'true' for continue executing on other nodes after a failure. false otherwise
-        :param as_user: identifying the user who ran the job        :param node_filter:
+        :param as_user: identifying the user who ran the job
+        :param node_filter:
         :param script_interpreter: a command to use to run the script
         :param interpreter_args_quoted: if true, the script file and arguments will be quoted as the last argument to
         :param file_extension: extension of of the script file
-        :param entry_id: Demisto if for the uploaded script file you want to run
+        :param entry_id: Demisto id for the uploaded script file you want to run
         :return: api response
         """
 
@@ -440,7 +445,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def filter_results(results: Union[list, dict], fields_to_remove: list, remove_signs) -> List:
+def filter_results(results: Union[list, dict], fields_to_remove: list, remove_signs) -> Union[list, dict]:
     new_results = []
     if isinstance(results, dict):
         new_record = {}
@@ -615,13 +620,15 @@ def jobs_list_command(client: Client, args: dict):
     )
 
 
-def webhooks_list_command(client: Client):
+def webhooks_list_command(client: Client, args: dict):
     """
     This function returns a list of all existing webhooks.
     :param client: Demisto client
     :return: CommandResults object
     """
-    result = client.get_webhooks_list()
+    project_name: str = args.get('project_name', '')
+    result = client.get_webhooks_list(project_name)
+
     if not isinstance(result, list):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
@@ -681,16 +688,19 @@ def job_execution_query_command(client: Client, args: dict):
         if not result:
             return "No results were found"
 
+    filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
     if isinstance(result, list):
-        headers = [key.replace("_", " ") for key in [*result[0].keys()]]
+        headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
     elif isinstance(result, dict):
-        headers = [key.replace("_", " ") for key in [*result.keys()]]
+        headers = [key.replace("_", " ") for key in [*filtered_results.keys()]]
+    else:
+        raise DemistoException(f'Got unexpected results from the api: {result}')
 
-    readable_output = tableToMarkdown('Job Execution Query:', result, headers=headers, headerTransform=pascalToSpace)
+    readable_output = tableToMarkdown('Job Execution Query:', filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Rundeck.Executions',
-        outputs=result,
+        outputs_prefix='Rundeck.Query',
+        outputs=filtered_results,
         outputs_key_field='id'
     )
 
@@ -713,7 +723,7 @@ def job_execution_output_command(client: Client, args: dict):
     readable_output = tableToMarkdown('Job Execution Output:', result, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Rundeck.Executions',
+        outputs_prefix='Rundeck.ExecutionsOutput',
         outputs=result,
         outputs_key_field='id'
     )
@@ -731,12 +741,13 @@ def job_execution_abort_command(client: Client, args: dict):
     if not isinstance(result, dict):
         raise DemistoException(f'Got unexpected response: {result}')
 
-    headers = [key.replace("_", " ") for key in [*result.keys()]]
-    readable_output = tableToMarkdown('Job Execution Abort:', result, headers=headers, headerTransform=pascalToSpace)
+    filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
+    headers = [key.replace("_", " ") for key in [*filtered_results.keys()]]
+    readable_output = tableToMarkdown('Job Execution Abort:', filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.Aborted',
-        outputs=result,
+        outputs=filtered_results,
         outputs_key_field='id'
     )
 
@@ -753,12 +764,13 @@ def adhoc_run_command(client: Client, args: dict):
     # if not isinstance(result, dict):
         # raise DemistoException(f'Got unexpected response: {result}')
 
-    headers = [key.replace("_", " ") for key in [*result.keys()]]
-    readable_output = tableToMarkdown('Adhoc Run:', result, headers=headers, headerTransform=pascalToSpace)
+    filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
+    headers = [key.replace("_", " ") for key in [*filtered_results.keys()]]
+    readable_output = tableToMarkdown('Adhoc Run:', filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Rundeck.Execution',
-        outputs=result,
+        outputs_prefix='Rundeck.ExecuteCommand',
+        outputs=filtered_results,
         outputs_key_field='id'
     )
 
@@ -780,13 +792,14 @@ def adhoc_script_run_command(client: Client, args: dict):
     # if not isinstance(result, dict):
     # raise DemistoException(f'Got unexpected response: {result}')
 
-
-    headers = [key.replace("_", " ") for key in [*result.keys()]]
-    readable_output = tableToMarkdown('Adhoc Run Script:', result, headers=headers, headerTransform=pascalToSpace)
+    filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
+    headers = [key.replace("_", " ") for key in [*filtered_results.keys()]]
+    readable_output = tableToMarkdown('Adhoc Run Script:', filtered_results, headers=headers,
+                                      headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Rundeck.ScriptExecution',
-        outputs=result,
+        outputs_prefix='Rundeck.ExecuteScriptFile',
+        outputs=filtered_results,
         outputs_key_field='id'
     )
 
@@ -829,7 +842,7 @@ def webhook_event_send_command(client: Client, args: dict):
                                       headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Rundeck.ScriptExecutionFromUrl',
+        outputs_prefix='Rundeck.WebhookEvent',
         outputs=result,
         outputs_key_field='id'
     )
@@ -903,7 +916,7 @@ def main() -> None:
             result = jobs_list_command(client, args)
             return_results(result)
         elif demisto.command() == 'rundeck-webhooks-list':
-            result = webhooks_list_command(client)
+            result = webhooks_list_command(client, args)
             return_results(result)
         elif demisto.command() == 'rundeck-job-execute':
             result = execute_job_command(client, args)
