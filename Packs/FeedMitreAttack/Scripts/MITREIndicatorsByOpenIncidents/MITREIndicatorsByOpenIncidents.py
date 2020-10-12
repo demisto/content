@@ -1,7 +1,16 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-res = demisto.searchIndicators(query='type:"MITRE ATT&CK" and investigationsCount:>0')
+to_date = demisto.args().get('to', '')
+from_date = demisto.args().get('from', '')
+query = 'type:"MITRE ATT&CK" and investigationsCount:>0'
+
+if from_date:
+    query += f"timeline.date:>={from_date} "
+if to_date:
+    query += f"timeline.date:<={to_date}"
+
+res = demisto.searchIndicators(query=query)
 
 
 indicators = []
@@ -16,4 +25,5 @@ for ind in res['iocs']:
 
 temp = tableToMarkdown('MITRE ATT&CK techniques by open Incidents', indicators,
                        headers=['Value', 'Name', 'Phase Name', 'Description'])
+
 return_outputs(temp)
