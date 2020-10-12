@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import re
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Tuple
@@ -159,7 +161,7 @@ def nudge_appropriate_party(t: Terminal, gh: Github, client: WebClient, stale_pr
             print(f'{t.cyan}Sending slack message reminders for PR #{stale_pr.number}{t.normal}')
             for email_address in email_addresses:
                 response = client.users_lookupByEmail(email=email_address)
-                user_id = response.get('user', {}).get('id', '')
+                user_id = response.get('user', {}).get('id', '')  # type: ignore
                 if msg == LOTR_NUDGE_MSG:
                     msg = msg.format(reviewer=email_address_to_gh_user.get(email_address))
                 blocks_message = build_slack_blocks(msg, stale_pr)
@@ -202,7 +204,7 @@ def nudge_appropriate_party(t: Terminal, gh: Github, client: WebClient, stale_pr
             # Send Slack message To requested reviewers
             for email_address in email_addresses:
                 response = client.users_lookupByEmail(email=email_address)
-                user_id = response.get('user', {}).get('id', '')
+                user_id = response.get('user', {}).get('id', '')  # type: ignore
                 blocks_message = build_slack_blocks(msg, stale_pr)
                 client.chat_postMessage(channel=user_id, blocks=blocks_message)
 
