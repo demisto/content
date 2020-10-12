@@ -1,0 +1,9 @@
+!darktrace-get-breach pbid=95
+!darktrace-get-comments pbid=46
+!darktrace-acknowledge pbid=111
+!darktrace-unacknowledge pbid=111
+!darktrace-list-similar-devices did=1 max_results=2
+!darktrace-get-external-endpoint-details endpoint_type=hostname endpoint_value=cats.com additional_info=true devices=true score=true
+!darktrace-get-device-connection-info did=1 data_type=co
+!darktrace-get-device-identity-info query=osSensor
+!darktrace-get-entity-details query=did=1,count=10 offset=5
