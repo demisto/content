@@ -59,8 +59,8 @@ class Client(BaseClient):
         :param job_filter: specify a filter for a job Name, apply to any job name that contains this value
         :param job_exec_filter: specify an exact job name to match
         :param group_path_exact: specify an exact group path to match. if not specified, default is: "*".
-        :param scheduled_filter: return only scheduled or only not scheduled jobs
-        :param server_node_uuid_filter: return all jobs related to a selected server UUID. can either be "true" or "false".
+        :param scheduled_filter: return only scheduled or only not scheduled jobs. can either be "true" or "false
+        :param server_node_uuid_filter: return all jobs related to a selected server UUID".
         :return: api response.
         """
         request_params: Dict[str, Any] = {}
@@ -130,7 +130,7 @@ class Client(BaseClient):
         :param job_id: id of the job you want to execute
         :param log_level: specifying the log level to use: 'DEBUG','VERBOSE','INFO','WARN','ERROR'
         :param as_user: identifying the user who ran the job
-        :param failed_nodes: can either ben true or false. true for run all nodes and true for running only failed nodes
+        :param failed_nodes: can either ben true or false. true for run all nodes and false for running only failed nodes
         :param execution_id: for specified what execution to rerun
         :param options: add options for running a job
         :return: api response
@@ -255,13 +255,23 @@ class Client(BaseClient):
         )
 
     def job_execution_output(self, execution_id):
+        """
+        This function gets metadata regarding workflow state
+        :param execution_id: id to execute.
+        :return: api response
+        """
         return self._http_request(
             method='GET',
             url_suffix=f'/execution/{execution_id}/output/state',
             params=self.params,
         )
 
-    def job_execution_about(self, execution_id):
+    def job_execution_abort(self, execution_id):
+        """
+        This function aborts live executions
+        :param execution_id: id to abort execution
+        :return: api response
+        """
         return self._http_request(
             method='GET',
             url_suffix=f'/execution/{execution_id}/abort',
@@ -370,6 +380,19 @@ class Client(BaseClient):
 
     def adhoc_script_run(self, project_name: str, arg_string: str, node_thread_count: str, node_keepgoing: str, as_user: str, node_filter: str
                                      ,script_interpreter: str, interpreter_args_quoted: str, file_extension: str, entry_id: str):
+        """
+        This function runs a script from file
+        :param project_name: project to run the script file
+        :param arg_string: arguments for the script when executed
+        :param node_thread_count: threadcount to use
+        :param node_keepgoing: 'true' for continue executing on other nodes after a failure. false otherwise
+        :param as_user: identifying the user who ran the job        :param node_filter:
+        :param script_interpreter: a command to use to run the script
+        :param interpreter_args_quoted: if true, the script file and arguments will be quoted as the last argument to
+        :param file_extension: extension of of the script file
+        :param entry_id: Demisto if for the uploaded script file you want to run
+        :return: api response
+        """
 
         request_params: Dict[str, any] = {}
         if arg_string:
@@ -417,14 +440,33 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def filter_results(results: list, fields_to_remove: list) -> List:
+def filter_results(results: Union[list, dict], fields_to_remove: list, remove_signs) -> List:
     new_results = []
-    for record in results:
+    if isinstance(results, dict):
         new_record = {}
-        for key, value in record.items():
+        for key, value in results.items():
             if key not in fields_to_remove:
-                new_record[key] = value
-        new_results.append(new_record)
+                if isinstance(value, dict):
+                    value = filter_results(value, fields_to_remove, remove_signs)
+                for sign in remove_signs:
+                    if sign in key:
+                        new_record[key.replace(sign, '')] = value
+                    else:
+                        new_record[key] = value
+        return new_record
+    else:
+        for record in results:
+            new_record = {}
+            for key, value in record.items():
+                if key not in fields_to_remove:
+                    if isinstance(value, dict):
+                        value = filter_results(value, fields_to_remove, remove_signs)
+                    for sign in remove_signs:
+                        if sign in key:
+                            new_record[key.replace(sign, '')] = value
+                        else:
+                            new_record[key] = value
+            new_results.append(new_record)
     return new_results
 
 
@@ -476,7 +518,7 @@ def job_retry_command(client: Client, args: dict):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
     query_entries: list = createContext(
-        result, keyTransform=underscoreToCamelCase
+        result, keyTransform=string_to_context_key
     )
     headers = [key.replace("-", " ") for key in [*result.keys()]]
 
@@ -503,16 +545,15 @@ def execute_job_command(client: Client, args: dict):
     if not isinstance(result, dict):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
-    query_entries: list = createContext(
-        result, keyTransform=underscoreToCamelCase
-    )
-    headers = [key.replace("-", " ") for key in [*result.keys()]]
+    filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
 
-    readable_output = tableToMarkdown('Execute Job:', result, headers=headers, headerTransform=pascalToSpace)
+    headers = [key.replace("-", " ") for key in [*filtered_results.keys()]]
+
+    readable_output = tableToMarkdown('Execute Job:', filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.ExecutedJobs',
-        outputs=query_entries,
+        outputs=filtered_results,
         outputs_key_field='id'
     )
 
@@ -527,10 +568,8 @@ def project_list_command(client: Client):
     if not isinstance(result, list):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
-    filtered_results = filter_results(result, ['url'])
-    query_entries: list = createContext(
-        filtered_results, keyTransform=underscoreToCamelCase
-    )
+    filtered_results = filter_results(result, ['url'], ['-'])
+
     headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
 
     readable_output = tableToMarkdown('Projects List:', filtered_results, headers=headers,
@@ -538,7 +577,7 @@ def project_list_command(client: Client):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.Projects',
-        outputs=query_entries,
+        outputs=filtered_results,
         outputs_key_field='name'
     )
 
@@ -563,18 +602,16 @@ def jobs_list_command(client: Client, args: dict):
     if not isinstance(result, list):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
-    filtered_results = filter_results(result, ['href', 'permalink'])
-    query_entries: list = createContext(
-        filtered_results, keyTransform=underscoreToCamelCase
-    )
+    filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
+
     headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
 
     readable_output = tableToMarkdown('Jobs List:', filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.Jobs',
-        outputs=query_entries,
-        outputs_key_field='id'
+        outputs=filtered_results,
+        outputs_key_field='Id'
     )
 
 
@@ -588,16 +625,13 @@ def webhooks_list_command(client: Client):
     if not isinstance(result, list):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
-    query_entries: list = createContext(
-        result, keyTransform=underscoreToCamelCase
-    )
     headers = [key.replace("_", " ") for key in [*result[0].keys()]]
 
     readable_output = tableToMarkdown('Webhooks List:', result, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.Webhooks',
-        outputs=query_entries,
+        outputs=result,
         outputs_key_field='id'
     )
 
@@ -647,9 +681,6 @@ def job_execution_query_command(client: Client, args: dict):
         if not result:
             return "No results were found"
 
-    query_entries: list = createContext(
-        result, keyTransform=underscoreToCamelCase
-    )
     if isinstance(result, list):
         headers = [key.replace("_", " ") for key in [*result[0].keys()]]
     elif isinstance(result, dict):
@@ -659,7 +690,7 @@ def job_execution_query_command(client: Client, args: dict):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.Executions',
-        outputs=query_entries,
+        outputs=result,
         outputs_key_field='id'
     )
 
@@ -674,9 +705,6 @@ def job_execution_output_command(client: Client, args: dict):
     execution_id: Optional[int] = convert_str_to_int(args.get('execution_id'), 'execution_id')
     result = client.job_execution_output(execution_id)
 
-    query_entries: list = createContext(
-        result, keyTransform=underscoreToCamelCase
-    )
     if isinstance(result, dict):
         headers = [key.replace("_", " ") for key in [*result.keys()]]
     elif isinstance(result, list):
@@ -686,7 +714,7 @@ def job_execution_output_command(client: Client, args: dict):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.Executions',
-        outputs=query_entries,
+        outputs=result,
         outputs_key_field='id'
     )
 
@@ -699,20 +727,16 @@ def job_execution_abort_command(client: Client, args: dict):
     :return: CommandRusult object
     """
     execution_id: Optional[int] = convert_str_to_int(args.get('execution_id'), 'execution_id')
-    result = client.job_execution_about(execution_id)
+    result = client.job_execution_abort(execution_id)
     if not isinstance(result, dict):
         raise DemistoException(f'Got unexpected response: {result}')
-
-    query_entries: list = createContext(
-        result, keyTransform=underscoreToCamelCase
-    )
 
     headers = [key.replace("_", " ") for key in [*result.keys()]]
     readable_output = tableToMarkdown('Job Execution Abort:', result, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.Aborted',
-        outputs=query_entries,
+        outputs=result,
         outputs_key_field='id'
     )
 
@@ -729,16 +753,12 @@ def adhoc_run_command(client: Client, args: dict):
     # if not isinstance(result, dict):
         # raise DemistoException(f'Got unexpected response: {result}')
 
-    query_entries: list = createContext(
-        result, keyTransform=underscoreToCamelCase
-    )
-
     headers = [key.replace("_", " ") for key in [*result.keys()]]
     readable_output = tableToMarkdown('Adhoc Run:', result, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.Execution',
-        outputs=query_entries,
+        outputs=result,
         outputs_key_field='id'
     )
 
@@ -760,16 +780,13 @@ def adhoc_script_run_command(client: Client, args: dict):
     # if not isinstance(result, dict):
     # raise DemistoException(f'Got unexpected response: {result}')
 
-    query_entries: list = createContext(
-        result, keyTransform=underscoreToCamelCase
-    )
 
     headers = [key.replace("_", " ") for key in [*result.keys()]]
     readable_output = tableToMarkdown('Adhoc Run Script:', result, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.ScriptExecution',
-        outputs=query_entries,
+        outputs=result,
         outputs_key_field='id'
     )
 
@@ -792,16 +809,12 @@ def adhoc_script_run_from_url_command(client: Client, args: dict):
     # if not isinstance(result, dict):
     # raise DemistoException(f'Got unexpected response: {result}')
 
-    query_entries: list = createContext(
-        result, keyTransform=underscoreToCamelCase
-    )
-
     headers = [key.replace("_", " ") for key in [*result.keys()]]
     readable_output = tableToMarkdown('Adhoc Run Script From Url:', result, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.ScriptExecutionFromUrl',
-        outputs=query_entries,
+        outputs=result,
         outputs_key_field='id'
     )
 
@@ -810,9 +823,6 @@ def webhook_event_send_command(client: Client, args: dict):
     auth_token = args.get('auth_token', '')
 
     result = client.webhook_event_send(auth_token)
-    query_entries: list = createContext(
-        result, keyTransform=underscoreToCamelCase
-    )
 
     headers = [key.replace("_", " ") for key in [*result.keys()]]
     readable_output = tableToMarkdown('Adhoc Run Script From Url:', result, headers=headers,
@@ -820,7 +830,7 @@ def webhook_event_send_command(client: Client, args: dict):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.ScriptExecutionFromUrl',
-        outputs=query_entries,
+        outputs=result,
         outputs_key_field='id'
     )
 
