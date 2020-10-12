@@ -391,7 +391,7 @@ def change_placeholders_to_values(placeholders_map, config_item):
     return json.loads(item_as_string)
 
 
-def set_integration_params(integrations, secret_params, instance_names, placeholders_map):
+def set_integration_params(integrations, secret_params, instance_name, placeholders_map):
     """
     For each integration object, fill in the parameter values needed to configure an instance from
     the secret_params taken from our secret configuration file. Because there may be a number of
@@ -409,7 +409,7 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
         secret_params: (list of dicts)
             List of secret configuration values for all of our integrations (as well as specific
             instances of said integrations).
-        instance_names: (list)
+        instance_name: (list)
             The names of particular instances of an integration to use the secret_params of as the
             configuration values.
         placeholders_map: (dict)
@@ -432,13 +432,13 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
             # need to match the configuration values to the proper instance as specified in the
             # 'instance_names' list argument
             if len(integration_params) != 1:
-                print('This is the instance names:')
-                print(instance_names)
+                print('This is the instance name:')
+                print(instance_name)
                 found_matching_instance = False
                 for item in integration_params:
                     print('### Found the following items: \n')
                     print(item)
-                    if item.get('instance_name', 'Not Found') in instance_names:
+                    if item.get('instance_name', 'Not Found') in instance_name:
                         print('#### This is the instance name')
                         print(item.get('instance_name'))
                         matched_integration_params = item
