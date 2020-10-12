@@ -1,7 +1,6 @@
 commonfields:
   id: Graylog
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Graylog
 display: Graylog
 category: Analytics & SIEM
@@ -184,7 +183,10 @@ script:
       description: Search results of Absolute search
       type: String
     description: Search with absolute times
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.12176
   isfetch: true
   runonce: false
   subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

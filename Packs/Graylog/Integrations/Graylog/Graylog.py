@@ -135,7 +135,6 @@ def main():
                           'decorate': demisto.args().get('decorate')}
             results_return('SearchAbsolute', client._http_request('GET', '/search/universal/absolute', params=parameters))
         elif demisto.command() == 'graylog-events-search':
-            jsonparameterswithvalue = {}
             jsonparameters = {'query': demisto.args().get('query'),
                               'filter': demisto.args().get('filter'),
                               'page': demisto.args().get('page'),
