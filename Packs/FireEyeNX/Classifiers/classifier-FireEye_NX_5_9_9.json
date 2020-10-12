@@ -2,15 +2,107 @@
  "brandName": "FireEyeNX",
  "custom": true,
  "feed": false,
- "id": "31ff48e0-b13c-4b89-82a3-bb0aab8d55d1",
+ "id": "f6640354-41f5-4cf9-8c4f-5c8a9224de24",
  "isDefault": false,
  "keyTypeMap": {
-  "DOMAIN_MATCH": "FireEye NX Incident"
+  "FireEye NX Alert": "FireEye NX Alert",
+  "FireEye NX IPS Event": "FireEye NX IPS Event"
  },
  "mapping": {
-  "FireEye NX Incident": {
+  "FireEye NX Alert": {
    "dontMapEventToLabels": false,
    "internalMapping": {
+    "FireEye NX Alert Action": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "action",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Alert ID": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "id",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Alert Malware Name": {
+     "complex": {
+      "accessor": "malwareDetected.malware.name",
+      "filters": [
+
+      ],
+      "root": "explanation",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Alert SC Version": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "scVersion",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Alert Target IP": {
+     "complex": {
+      "accessor": "ip",
+      "filters": [
+
+      ],
+      "root": "dst",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Alert Target MAC Address": {
+     "complex": {
+      "accessor": "mac",
+      "filters": [
+
+      ],
+      "root": "dst",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Alert Target Port": {
+     "complex": {
+      "accessor": "port",
+      "filters": [
+
+      ],
+      "root": "dst",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
     "FireEye NX Alert Type": {
      "complex": {
       "accessor": "",
@@ -24,65 +116,65 @@
      },
      "simple": ""
     },
-    "FireEye NX ID": {
+    "FireEye NX Alert URL": {
      "complex": {
       "accessor": "",
       "filters": [
 
       ],
-      "root": "id",
+      "root": "alertUrl",
       "transformers": [
 
       ]
      },
      "simple": ""
     },
-    "FireEye NX SC Version": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-
-      ],
-      "root": "scVersion",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "FireEye NX Target MAC Address": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-
-      ],
-      "root": "DstMac",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "FireEye NX Time(UTC)": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-
-      ],
-      "root": "occurred",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "FireEye NX UUID": {
+    "FireEye NX Alert UUID": {
      "complex": {
       "accessor": "",
       "filters": [
 
       ],
       "root": "uuid",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Alert Victim IP": {
+     "complex": {
+      "accessor": "ip",
+      "filters": [
+
+      ],
+      "root": "src",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Alert Victim MAC Address": {
+     "complex": {
+      "accessor": "mac",
+      "filters": [
+
+      ],
+      "root": "src",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Alert Victim Port": {
+     "complex": {
+      "accessor": "port",
+      "filters": [
+
+      ],
+      "root": "src",
       "transformers": [
 
       ]
@@ -171,11 +263,133 @@
      "simple": ""
     }
    }
+  },
+  "FireEye NX IPS Event": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "FireEye NX Event Attacker IP": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "dstIp",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Event CVE ID": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "cveId",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Event Destination MAC Address": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "dstMac",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Event Destination Port": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "dstPort",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Event ID": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "eventId",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Event Rule": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "ruleName",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Event Source MAC Address": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "srcMac",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Event Victim IP": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "srcIp",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Event Victim Port": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "srcPort",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    }
+   }
   }
  },
  "transformer": {
   "complex": null,
-  "simple": "name"
+  "simple": "incidentType"
  },
  "version": -1,
  "fromVersion": "5.0.0",

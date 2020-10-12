@@ -1,6 +1,5 @@
 FireEye Network Security is an effective cyber threat protection solution that helps organizations minimize the risk of costly breaches by  accurately detecting and immediately stopping advanced, targeted and other evasive attacks hiding in Internet traffic.
-This integration is used to demonstrate the capabilities of a Cortex XSOAR integration and the common design patterns and is linked to the code.
-This integration was integrated and tested with version 2.0.0 of FireEyeNX APIs.
+
 ## Configure FireEyeNX on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -16,9 +15,9 @@ This integration was integrated and tested with version 2.0.0 of FireEyeNX APIs.
 | incidentType | Incident type | False |
 | first_fetch | First fetch time interval | False |
 | max_fetch | Fetch Limit | False |
-| fetch_type | Fetch Type | False |
+| fetch_type | Fetch Types | False |
 | fetch_mvx_correlated_events | Fetches MVX-correlated events only. | False |
-| malware_type | Malware Type | False |
+| malware_type | Alert Malware Type | False |
 | replace_alert_url | Use instance URL for all the fetched alerts URL. | False |
 | fetch_artifacts | Fetch artifacts for each alert. | False |
 | insecure | Trust any certificate \(not secure\) | False |
@@ -43,8 +42,8 @@ Search and Retrieve FireEye alerts based on several filters.
 | src_ip | The source IPv4 address related to the malware alert. | Optional | 
 | dst_ip | The destination IPv4 address related to the malware alert. | Optional | 
 | duration | Specifies the time interval to search. This filter is used with either the start_time or end_time filter. If duration, start time, and end time are not specified, the system defaults to duration=12_hours, end_time=current_time. If only duration is specified, the end_time defaults to the current_time.<br/><br/>Options: 1_hour, 2_hours, 6_hours, 12_hours, 24_hours, 48_hours<br/> | Optional | 
-| start_time | Specifies the start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.<br/>Format: <br/>YYYY-MM-DDTHH:mm:ss.sss-OH:om<br/>yyyy-MM-dd | Optional | 
-| end_time | Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time.<br/>Format: <br/>YYYY-MM-DDTHH:mm:ss.sss-OH:om<br/>yyyy-MM-dd | Optional | 
+| start_time | Specifies the start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00 | Optional | 
+| end_time | Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00 | Optional | 
 | file_name | The name of the malware file. | Optional | 
 | file_type | The malware file type. | Optional | 
 | info_level | Specifies the level of information to be returned.<br/><br/>Options: concise, normal, extended | Optional | 
@@ -505,8 +504,8 @@ Returns reports on selected alerts by specifying a time_frame value or a start_t
 | --- | --- | --- |
 | report_type | The type of report to be queried. | Required | 
 | type | The output format of the report. Accepted values are csv, pdf, or both depending upon report type. | Optional | 
-| start_time | Searches between two specified time frames. When specifying a start_time value, you must specify both a start_time and an end_ time value.<br/>Formats: <br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss.SSS[+/-]XX:XX | Optional | 
-| end_time | Searches between two specified time frames. When specifying an end_ time value, you must specify both a start_time and an end_time value.<br/>Formats: <br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss.SSS[+/-]XX:XX | Optional | 
+| start_time | Searches between two specified time frames. When specifying a start_time value, you must specify both a start_time and an end_ time value.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00 | Optional | 
+| end_time | Searches between two specified time frames. When specifying an end_ time value, you must specify both a start_time and an end_time value.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00 | Optional | 
 | time_frame | The timeframe in which reports are searched. | Optional | 
 | limit | This option is required only for IPS Top N reports. The limit option sets the maximum number (N) of items covered by each report. | Optional | 
 | interface | This option is required only for IPS reports. The interface option sets the Internet<br/>interface to one of the following values: A, B, C, D, AB, All | Optional | 
@@ -527,7 +526,7 @@ Returns reports on selected alerts by specifying a time_frame value or a start_t
 
 
 #### Command Example
-```!fireeye-nx-get-reports report_type="IPS Executive Summary Report" type=csv time_frame=between start_time=2020-01-29T23:59:59+13:00 end_time=2020-08-29T23:59:59+13:00```
+```!fireeye-nx-get-reports report_type="IPS Executive Summary Report" type=csv time_frame=between start_time=2020-01-29T23:59:59 end_time=2020-08-29T23:59:59```
 
 #### Context Example
 ```
@@ -556,8 +555,8 @@ Search and Retrieve FireEye events based on several filters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | duration | Specifies the time interval to search. This filter is used with the end_time filter. If The duration is not specified, the system defaults to duration=12_hours, end_time= current_time. | Optional | 
-| start_time | Specifies the start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.<br/>Formats:<br/>yyyy-MM-dd<br/>yyyy-MM-ddTHH:mm:ss.SSS[+/-]XX:XX | Optional | 
-| end_time | Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. <br/>Formats:<br/> yyyy-MM-dd<br/> yyyy-MM-ddTHH:mm:ss.SSS[+/-]XX:XX | Optional | 
+| start_time | Specifies the start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00 | Optional | 
+| end_time | Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. <br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00 | Optional | 
 | mvx_correlated_only | Specifies whether to include all IPS events or MVX-correlated events only. Default: false | Optional | 
 
 
@@ -589,7 +588,7 @@ Search and Retrieve FireEye events based on several filters.
 | FireEyeNX.Event.IncidentId | Number | The incident ID of the event on FireEye. | 
 
 #### Command Example
-```!fireeye-nx-get-events duration=48_hours end_time=2020-08-10T06:31:00.000+00:00```
+```!fireeye-nx-get-events duration=48_hours end_time=2020-08-10T06:31:00```
 
 #### Context Example
 ```

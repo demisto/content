@@ -60,7 +60,9 @@ MESSAGES: Dict[str, str] = {
     'REQUEST_TIMEOUT_VALIDATION': 'HTTP(S) Request timeout parameter must be a positive integer.',
     'REQUEST_TIMEOUT_EXCEED_ERROR': 'Value is too large for HTTP(S) Request Timeout.',
     'REQUEST_TIMEOUT': 'Request timed out. Check the configured HTTP(S) Request Timeout (in seconds) value.',
-    'FIRST_FETCH_ARG_VALIDATION': 'The First fetch time interval should be up to 48 hour as per API limitation.'
+    'FIRST_FETCH_ARG_VALIDATION': 'The First fetch time interval should be up to 48 hour as per API limitation.',
+    'INVALID_TIME_VALIDATION': 'The given value for {0} argument is invalid.',
+    'INVALID_FETCH_TYPE': 'The given value for Fetch Types is invalid. Expected Alerts or/and IPS Events '
 }
 
 URL_SUFFIX: Dict[str, str] = {
@@ -351,7 +353,7 @@ def get_incidents_for_alert(**kwargs) -> list:
         if kwargs['replace_alert_url']:
             replace_alert_url_key_domain_to_instance_url(resp.get('alert', []), kwargs['instance_url'])
 
-        count = 0
+        count = kwargs['fetch_count']
         for alert in resp.get('alert', []):
             # set incident
             context_alert = remove_empty_entities(alert)
@@ -407,8 +409,8 @@ def get_incidents_for_event(client: Client, start_time: int, fetch_limit: int, m
     resp = client.http_request(method="GET", url_suffix=URL_SUFFIX['GET_EVENTS'], params=params, headers=headers)
 
     total_records = len(resp.get('events', []))
+    count = 0
     if total_records > 0:
-        count = 0
         for event in resp.get('events', []):
             # set incident
             context_event = remove_empty_entities(event)
@@ -425,7 +427,22 @@ def get_incidents_for_event(client: Client, start_time: int, fetch_limit: int, m
             remove_nulls_from_dictionary(incident)
             incidents.append(incident)
             count += 1
-    return incidents
+    return incidents, count
+
+
+def validate_fetch_type(fetch_type):
+    """
+    Validate fetch type.
+
+    :param fetch_type: A list contain types which user want to fetch.
+    :return:
+    """
+    if type(fetch_type) == list:
+        if len(fetch_type) == 0:
+            raise ValueError(MESSAGES['INVALID_FETCH_TYPE'])
+
+        if not ('Alerts' in fetch_type) and not ('IPS Events' in fetch_type):
+            raise ValueError(MESSAGES['INVALID_FETCH_TYPE'])
 
 
 def validate_date_range(fetch_time: str):
@@ -647,7 +664,7 @@ def add_time_suffix_into_arguments(args: Dict[str, Any]):
         if date_time:
             args['start_time'] = str(date_time.strftime(API_SUPPORT_DATE_FORMAT))
         else:
-            args['start_time'] = start_time
+            raise ValueError(MESSAGES['INVALID_TIME_VALIDATION'].format('start_time'))
 
     if 'end_time' in arg_keys:
         end_time = args.get('end_time', '')
@@ -655,7 +672,7 @@ def add_time_suffix_into_arguments(args: Dict[str, Any]):
         if date_time:
             args['end_time'] = str(date_time.strftime(API_SUPPORT_DATE_FORMAT))
         else:
-            args['end_time'] = end_time
+            raise ValueError(MESSAGES['INVALID_TIME_VALIDATION'].format('end_time'))
 
 
 def get_events_params(args: Dict[str, Any]) -> Dict[str, Any]:
@@ -680,7 +697,7 @@ def get_events_params(args: Dict[str, Any]) -> Dict[str, Any]:
         if date_time:
             params['start_time'] = str(date_time.strftime(API_SUPPORT_DATE_FORMAT))
         else:
-            params['start_time'] = start_time
+            raise ValueError(MESSAGES['INVALID_TIME_VALIDATION'].format('start_time'))
 
     if 'end_time' in arg_keys:
         end_time = args.get('end_time', '')
@@ -688,7 +705,7 @@ def get_events_params(args: Dict[str, Any]) -> Dict[str, Any]:
         if date_time:
             params['end_time'] = str(date_time.strftime(API_SUPPORT_DATE_FORMAT))
         else:
-            params['end_time'] = end_time
+            raise ValueError(MESSAGES['INVALID_TIME_VALIDATION'].format('end_time'))
 
     if 'mvx_correlated_only' in arg_keys:
         mvx_correlated_only = args.get('mvx_correlated_only', '').lower()
@@ -865,6 +882,7 @@ def test_function(**kwargs) -> str:
 
         # validate start_time should be less then 48 hour as per API limitation
         validate_date_range(kwargs['first_fetch_time'])
+        validate_fetch_type(kwargs['fetch_type'])
 
         first_fetch = date_to_timestamp(start_time, date_format=DATE_FORMAT) / 1000
         fetch_incidents(client=kwargs['client'], last_run=demisto.getLastRun(), first_fetch=first_fetch,
@@ -1060,15 +1078,21 @@ def fetch_incidents(
 
     next_run = {'start_time': datetime.now(timezone.utc).timestamp()}
 
-    if kwargs['fetch_type'] == 'Events':
-        incidents = get_incidents_for_event(kwargs['client'], start_time,
-                                            kwargs['fetch_limit'], kwargs['mvx_correlated'])
-    else:
-        incidents = get_incidents_for_alert(client=kwargs['client'], malware_type=kwargs['malware_type'],
-                                            start_time=start_time, fetch_limit=kwargs['fetch_limit'],
-                                            replace_alert_url=kwargs['replace_alert_url'],
-                                            instance_url=kwargs['instance_url'], is_test=kwargs['is_test'],
-                                            fetch_artifacts=kwargs['fetch_artifacts'])
+    incidents = []
+    fetch_count = 0
+    if 'IPS Events' in kwargs['fetch_type']:
+        incidents, fetch_count = get_incidents_for_event(kwargs['client'], start_time,
+                                                         kwargs['fetch_limit'], kwargs['mvx_correlated'])
+
+    if 'Alerts' in kwargs['fetch_type'] and (fetch_count < kwargs['fetch_limit']):
+        incidents.extend(
+            get_incidents_for_alert(client=kwargs['client'], malware_type=kwargs['malware_type'],
+                                    start_time=start_time, fetch_limit=kwargs['fetch_limit'],
+                                    replace_alert_url=kwargs['replace_alert_url'],
+                                    instance_url=kwargs['instance_url'], is_test=kwargs['is_test'],
+                                    fetch_artifacts=kwargs['fetch_artifacts'], fetch_count=fetch_count)
+        )
+
     if kwargs['is_test']:
         return None, None
     return next_run, incidents
@@ -1139,6 +1163,9 @@ def main() -> None:
         url = demisto.params().get('url')
         username = demisto.params().get('credentials', {}).get('identifier')
         password = demisto.params().get('credentials', {}).get('password')
+        if password:
+            password = password.encode('utf-8')
+
         verify_certificate = not demisto.params().get('insecure', False)
         proxy = demisto.params().get('proxy', False)
         request_timeout = demisto.params().get('request_timeout')
@@ -1168,7 +1195,7 @@ def main() -> None:
 
             fetch_limit = demisto.params().get('max_fetch')
 
-            fetch_type = demisto.params().get('fetch_type', 'Alerts')
+            fetch_type = demisto.params().get('fetch_type')
 
             mvx_correlated = demisto.params().get('fetch_mvx_correlated_events', False)
 
@@ -1195,7 +1222,7 @@ def main() -> None:
             fetch_limit = get_fetch_limit(fetch_limit)
             demisto.debug(f"Fetch Limit {fetch_limit}")
 
-            fetch_type = demisto.params().get('fetch_type', 'Alerts')
+            fetch_type = demisto.params().get('fetch_type')
 
             mvx_correlated = demisto.params().get('fetch_mvx_correlated_events', False)
 
@@ -1205,6 +1232,7 @@ def main() -> None:
             # Validate start_time should be less then 48 hour as per API limitation
             validate_date_range(first_fetch_time)
 
+            validate_fetch_type(fetch_type)
             # Flag indicate to replace the 'alertUrl' domain to Integration URL or not.
             replace_alert_url = demisto.params().get('replace_alert_url', False)
 

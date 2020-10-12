@@ -616,7 +616,7 @@ def test_reports_command_missing_alert_argument():
         'duration': '1_hour',
         'end_time': '2020',
         'mvx_correlated_only': 'dummy',
-        'start_time': '--'
+        'start_time': '2020'
     }
 ])
 def test_events_command_invalid_bool_value(args):
@@ -753,7 +753,7 @@ def test_get_alerts_command_success(mock_request, replace_url, client):
         'src_ip': '0.0.0.0',
         'dst_ip': '0.0.0.0',
         'duration': '1_hour',
-        'start_time': '2017-06-21T16:30:00.000-07:11',
+        'start_time': '2017-06-21T16:30:00',
         'file_name': 'file_name',
         'file_type': 'file_type',
         'info_level': 'extended',
@@ -796,7 +796,7 @@ def test_get_alerts_command_no_record_failure(mock_request, client):
         'src_ip': '0.0.0.0',
         'dst_ip': '0.0.0.0',
         'duration': '1_hour',
-        'start_time': '2017-06-21T16:30:00.000-07:12',
+        'start_time': '2017-06-21T16:30:00',
         'file_name': 'file_name',
         'file_type': 'file_type',
         'info_level': 'concise',
@@ -822,7 +822,7 @@ def test_get_events_command_no_record_failure(mock_request, client):
     from FireEyeNX import get_events_command
     args = {
         'duration': '1_hour',
-        'end_time': '2017-06-21T16:30:00.000-07:14',
+        'end_time': '2017-06-21T16:30:00',
         'mvx_correlated_only': 'true'
     }
 
@@ -937,15 +937,6 @@ def test_add_time_suffix_into_arguments(client):
     actual_output = {'end_time': '2020-05-20T00:00:00.000-00:00',
                      'start_time': '2020-05-20T00:00:00.000-00:00'}
     assert actual_output == args
-
-    args = {'end_time': 'test',
-            'start_time': 'test'}
-
-    expected_args = {'end_time': 'test',
-                     'start_time': 'test'}
-    add_time_suffix_into_arguments(args)
-
-    assert args == expected_args
 
 
 def test_replace_alert_url_key_domain_to_instance_url():
@@ -1086,7 +1077,7 @@ def test_fetch_incidents_for_event_success(mock_api_token, mock_request, client)
         last_run=mock_last_run,
         first_fetch=dummy_first_fetch,
         fetch_limit=mock_fetch_limit,
-        fetch_type='Events',
+        fetch_type='IPS Events',
         mvx_correlated=True,
         replace_alert_url=True,
         instance_url='',

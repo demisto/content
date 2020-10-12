@@ -31,8 +31,7 @@ configuration:
   type: 13
 - additionalinfo: The time range to consider for initial data fetch.(<number> <unit>,
     e.g. 1 hour, 2 hours, 6 hours, 12 hours, 48 hours). By default, it is set to 12
-    hours, if blank. The API supports up to 48 hours. More than 48 hours will produce
-    an error.
+    hours, if blank. The API supports up to 48 hours. More than 48 hours will produce an error.
   defaultvalue: 12 hours
   display: First fetch time interval
   hidden: false
@@ -47,16 +46,15 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: Fetches Alerts or Events.
-  defaultvalue: Alerts
-  display: Fetch Type
+- additionalinfo: Fetches Alerts or/and IPS Events.
+  display: Fetch Types
   hidden: false
   name: fetch_type
   options:
   - Alerts
-  - Events
+  - IPS Events
   required: false
-  type: 15
+  type: 16
 - additionalinfo: Fetches MVX-correlated events only. Works only for Events in Fetch
     Type.
   display: Fetches MVX-correlated events only.
@@ -64,8 +62,8 @@ configuration:
   name: fetch_mvx_correlated_events
   required: false
   type: 8
-- additionalinfo: The type of malware object to fetch.
-  display: Malware Type
+- additionalinfo: The type of malware object to fetch alerts.
+  display: Alert Malware Type
   hidden: false
   name: malware_type
   options:
@@ -101,8 +99,7 @@ configuration:
 description: FireEye Network Security is an effective cyber threat protection solution
   that helps organizations minimize the risk of costly breaches by  accurately detecting
   and immediately stopping advanced, targeted and other evasive attacks hiding in
-  Internet traffic. This integration is used to demonstrate the capabilities of a
-  Cortex XSOAR integration and the common design patterns and is linked to the code.
+  Internet traffic.
 display: FireEye NX
 name: FireEyeNX
 script:
@@ -166,7 +163,7 @@ script:
     - default: false
       description: "Searches between two specified time frames. When specifying a\
         \ start_time value, you must specify both a start_time and an end_ time value.\n\
-        Formats: \nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss.SSS[+/-]XX:XX"
+        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
       isArray: false
       name: start_time
       required: false
@@ -174,7 +171,7 @@ script:
     - default: false
       description: "Searches between two specified time frames. When specifying an\
         \ end_ time value, you must specify both a start_time and an end_time value.\n\
-        Formats: \nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss.SSS[+/-]XX:XX"
+        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
       isArray: false
       name: end_time
       required: false
@@ -282,8 +279,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the ID number of the alert to retrieve it. To get Alert
-        ID execute fireeye-nx-get-alerts command without specifying alert_id.
+      description: Specify the ID number of the alert to retrieve it.
+        To get Alert ID execute fireeye-nx-get-alerts command without specifying alert_id.
       isArray: false
       name: alert_id
       required: false
@@ -321,7 +318,7 @@ script:
       description: "Specifies the start time of the search. This filter is used with\
         \ the duration filter. If the start_time is specified but not the duration,\
         \ the system defaults to duration=12_hours, starting at the specified start_time.\n\
-        Format: \nYYYY-MM-DDTHH:mm:ss.sss-OH:om\nyyyy-MM-dd"
+        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
       isArray: false
       name: start_time
       required: false
@@ -330,7 +327,7 @@ script:
       description: "Specifies the end time of the search. This filter is used with\
         \ the duration filter. If the end_time is specified but not the duration,\
         \ the system defaults to duration=12_hours, ending at the specified end_time.\n\
-        Format: \nYYYY-MM-DDTHH:mm:ss.sss-OH:om\nyyyy-MM-dd"
+        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
       isArray: false
       name: end_time
       required: false
@@ -1170,19 +1167,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Specifies the start time of the search. This filter is used with\
-        \ the duration filter. If the start_time is specified but not the duration,\
-        \ the system defaults to duration=12_hours, starting at the specified start_time.\n\
-        Formats:\nyyyy-MM-dd\nyyyy-MM-ddTHH:mm:ss.SSS[+/-]XX:XX"
+      description: "Specifies the start time of the search. This filter is used with the duration filter.
+                    If the start_time is specified but not the duration, the system defaults to duration=12_hours,
+                    starting at the specified start_time.\nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: "Specifies the end time of the search. This filter is used with\
-        \ the duration filter. If the end_time is specified but not the duration,\
-        \ the system defaults to duration=12_hours, ending at the specified end_time.\
-        \ \nFormats:\n yyyy-MM-dd\n yyyy-MM-ddTHH:mm:ss.SSS[+/-]XX:XX"
+      description: "Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time.
+                    \nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
       isArray: false
       name: end_time
       required: false
@@ -1269,7 +1263,7 @@ script:
     - contextPath: FireEyeNX.Event.IncidentId
       description: The incident ID of the event on FireEye.
       type: Number
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
   longRunning: false
