@@ -1,16 +1,16 @@
 Use the Genian NAC integration to block IP addresses using the assign tag.
-  
-Genian NAC network sensing technology powered by Device Platform Intelligence (DPI) discovers and pre
 
-With the result of comprehensive network visibility, Genian NAC can ensure compliance from all connec
+Genian NAC network sensing technology powered by Device Platform Intelligence (DPI) discovers and presents all detected devices’ business contextual and risk-related information along with their technical information without disturbing existing network infrastructure. The resulting intelligence enhances visibility and allows operators to detect and respond to any non-compliant or compromised devices in real time.
+
+With the result of comprehensive network visibility, Genian NAC can ensure compliance from all connected devices by leveraging Virtual In-Line Packet Inspection which operates at Layer 2. This technology has complete control over endpoint device traffic over TCP and UDP by eliminating the need for complex configurations and network changes.
 
 ## Genian NAC Module Requirements
 
-Before you can use this integration in Demisto, you need to enable certain modules in your Genian NAC
+Before you can use this integration in Demisto, you need to enable certain modules in your Genian NAC environment.
 
 #### Genian NAC Web Console
 
-1. This is the network address of the Genian NAC Enterprise or standalone Appliance. (The host on whi
+1. This is the network address of the Genian NAC Enterprise or standalone Appliance. (The host on which the the Genian NAC is hosted.) For example, if the Genian NAC is hosted at the IP address *192.168.100.100*, then you enter *https://192.168.10.100:8443/mc2*
 
 #### Enforcement Mode
 
@@ -27,7 +27,7 @@ Before you can use this integration in Demisto, you need to enable certain modul
 
 #### Create Enforcement Policy
 
-1. Reference the Enforcement Policy section in the [Genian NAC Docs](https://docs.genians.com/release
+1. Reference the Enforcement Policy section in the [Genian NAC Docs](https://docs.genians.com/release/en/controlling/understanding-policy.html#enforcement-policy)
 
 
 ## Configuration Parameters
@@ -61,7 +61,7 @@ Before you can use this integration in Demisto, you need to enable certain modul
 
 ## Commands
 
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. Afte
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Post IP address to a tag: geniannac-assign-ip-tag](#Post-IP-address-to-a-tag)
 2. [Delete IP address from a tag: geniannac-unassign-ip-tag](#Delete-IP-address-from-a-tag)
@@ -78,14 +78,14 @@ Assigns a tag to the Node specified.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP Address (e.g. 192.168.100.87) | Required |
+| ip | IP Address (e.g. 192.168.100.87) | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| geniannac.tag.nodeId | string | nodeid of IP |
-| geniannac.tag.Name | string | Tag name |
+| geniannac.tag.nodeId | string | nodeid of IP | 
+| geniannac.tag.Name | string | Tag name | 
 
 #### Raw Output
 
@@ -112,15 +112,16 @@ Removes the tag(s) from the Node specified.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP Address (e.g. 192.168.100.87) | Required |
+| ip | IP Address (e.g. 192.168.100.87) | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| geniannac.tag.nodeId | string | nodeid of IP |
-| geniannac.tag.Name | string | Tag name |
+| geniannac.tag.nodeId | string | nodeid of IP | 
+| geniannac.tag.Name | string | Tag name | 
 
 #### Raw Output
 
 ```[]```
+

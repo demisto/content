@@ -45,7 +45,7 @@ def http_request(method, url, body=None):
             verify=USE_SSL,
         )
         if result.status_code < 200 or result.status_code >= 300:
-            raise Exception("Error in Genian NAC Integration API Call. Code: {0}".format(str(result.s
+            raise Exception("Error in Genian NAC Integration API Call. Code: {0}".format(str(result.status_code)))
 
         json_result = result.json()
 
