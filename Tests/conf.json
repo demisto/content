@@ -3163,7 +3163,8 @@
         "Code42-Test": "Issue 29093",
         "SMB test": "Issue 26454",
         "TestCofenseFeed": "Issue 29198",
-        "PAN-OS Query Logs For Indicators Test": "Issue 28753"
+        "PAN-OS Query Logs For Indicators Test": "Issue 28753",
+        "Indeni_test": "Non-certified partner pack, this should be skipped for now"
     },
     "skipped_integrations": {
         
