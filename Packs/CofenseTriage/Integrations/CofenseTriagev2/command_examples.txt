@@ -1,6 +1,7 @@
 !cofense-get-report-by-id report_id="5760"
 !cofense-get-attachment attachment_id="13311"
 !cofense-search-reports reported_at="7 days" created_at="7 days" max_matches="1"
+!cofense-search-inbox-reports reported_at="7 days" created_at="7 days" max_matches="1"
 !cofense-get-reporter reporter_id="1"
 !cofense-get-report-png-by-id report_id="5760" set_white_bg="True"
 !cofense-get-threat-indicators type="URL" level="Malicious" start_date="2020-05-28"
