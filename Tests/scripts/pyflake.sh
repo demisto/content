@@ -3,6 +3,20 @@
 echo "Starting flake8 run"
 errors=0
 
+DO_DEACTIVATE=""
+DO_ACTIVATE=""
+if [[ -n "${VIRTUAL_ENV}" && "${VIRTUAL_ENV}" != "${PWD}/venv" && -e "${VIRTUAL_ENV}/bin/activate" ]] && command -v deactivate >/dev/null 2>&1; then
+    # we are in a vritual env. Deactivate and store the previous VIRTUAL_ENV
+    echo "Deactivating current virtual env: $VIRTUAL_ENV"
+    DO_ACTIVATE="${VIRTUAL_ENV}"
+    deactivate
+fi
+if [ -e "./venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
+    echo "Activating Demisto Content virtual env..."
+    source ./venv/bin/activate
+    DO_DEACTIVATE=1
+fi
+
 flake8_out=$(python -m flake8 $* 2>&1)
 if [[ $? -ne 0 ]]
   then
@@ -19,6 +33,15 @@ if [[ $? -ne 0 ]]
         echo "*** Please fix the errors according to the python version you are using"
       fi
     done
+fi
+
+if [ -n "$DO_DEACTIVATE" ]; then
+    echo "Deactivating Demisto Content virtual env..."
+    deactivate
+fi
+if [ -n "$DO_ACTIVATE" ]; then
+    echo "Activating back previous virtual env: $DO_ACTIVATE"
+    source "${DO_ACTIVATE}/bin/activate"
 fi
 
 if [[ $errors -ne 0 ]]; then   
