@@ -63,7 +63,7 @@ def options_handler():
     parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
-    parser.add_argument('-p', '--private', help='Is the build private.',type=str2bool, required=False, default=False)
+    parser.add_argument('-p', '--private', help='Is the build private.', type=str2bool, required=False, default=False)
     parser.add_argument('-sa', '--service_account', help="Path to GCS service account.", required=False)
     parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
     parser.add_argument('-m', '--memCheck', type=str2bool,
@@ -466,9 +466,10 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
     prints_manager.add_print_job(test_end_message, print, thread_index, include_timestamp=True)
 
 
-def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, demisto_pass, proxy, failed_playbooks,
-             integrations, unmockable_integrations, playbook_id, succeed_playbooks, test_message, test_options,
-             slack, circle_ci, build_number, server_url, build_name, prints_manager, is_ami=True, thread_index=0, is_private=False):
+def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, demisto_pass, proxy,
+             failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
+             prints_manager, is_ami=True, thread_index=0, is_private=False):
     start_message = f'------ Test {test_message} start ------'
     client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
 
@@ -1217,7 +1218,8 @@ def acquire_test_lock(integrations_details: list,
         prints_manager.execute_thread_prints(thread_index)
 
 
-def safe_unlock_integrations(prints_manager: ParallelPrintsManager, integrations_details: list, thread_index: int, test_settings: TestsSettings):
+def safe_unlock_integrations(prints_manager: ParallelPrintsManager, integrations_details: list,
+                             thread_index: int, test_settings: TestsSettings):
     """
     This integration safely unlocks the test's integrations.
     If an unexpected error occurs - this method will log it's details and other tests execution will continue
@@ -1225,6 +1227,7 @@ def safe_unlock_integrations(prints_manager: ParallelPrintsManager, integrations
         prints_manager: ParallelPrintsManager object
         integrations_details: Details of the currently executed test
         thread_index: The index of the thread that executes the unlocking
+        test_settings: The test_settings object.
     """
     try:
         # executing the test could take a while, re-instancing the storage client
