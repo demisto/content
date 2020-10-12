@@ -573,7 +573,7 @@ script:
     name: zscaler-login
     outputs:
     - contextPath: Zscaler.SessionID
-      description: Session ID result to be used with other Zscaler commands as session_id
+      description: Session ID result to be used with other Zscaler commands in session_id argument.
         argument.
       type: String
   - arguments:
@@ -594,7 +594,7 @@ script:
       name: session_id
       required: true
       secret: false
-    description: Activate the changes executed by other Zscaler commands.
+    description: Activate the changes executed by other Zscaler commands in this session.
     execution: false
     name: zscaler-activate-changes
   feed: false

@@ -39,6 +39,9 @@
 <li><a href="#h_654309151761534745757240">Return a list of categories: zscaler-get-categories</a></li>
 <li><a href="#h_298989072761537086943237">Return the default blacklist: zscaler-get-blacklist</a></li>
 <li><a href="#h_8266012961761537086952350">Return the default whitelist: zscaler-get-whitelist</a></li>
+<li><a href="#h_3459890727615370869432377">Login: zscaler-login</a></li>
+<li><a href="#h_3459890727615370869432378">Logout of a session: zscaler-logout</a></li>
+<li><a href="#h_3459890727615370869432379">Activate changes done in session: zscaler-activate-changes</a></li>
 <li>Get a report for an MD5 hash: zscaler-sandbox-report</li>
 </ol>
 <hr>
@@ -52,6 +55,10 @@
 <tr>
 <td style="width: 327px;"><strong>Path</strong></td>
 <td style="width: 453px;"><strong>Description</strong></td>
+</tr>
+<tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
 </tr>
 <tr>
 <td style="width: 327px;">url</td>
@@ -128,6 +135,10 @@
 <td style="width: 453px;"><strong>Description</strong></td>
 </tr>
 <tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+</tr>
+<tr>
 <td style="width: 327px;">ip</td>
 <td style="width: 453px;">IP to return information for</td>
 </tr>
@@ -202,6 +213,10 @@
 <td style="width: 453px;"><strong>Description</strong></td>
 </tr>
 <tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+</tr>
+<tr>
 <td style="width: 327px;">url</td>
 <td style="width: 453px;">Comma-separated list of URLs to add to the whitelist</td>
 </tr>
@@ -227,6 +242,10 @@ malware.net
 <tr>
 <td style="width: 327px;"><strong>Path</strong></td>
 <td style="width: 453px;"><strong>Description</strong></td>
+</tr>
+<tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
 </tr>
 <tr>
 <td style="width: 327px;">url</td>
@@ -256,6 +275,10 @@ malware.net
 <td style="width: 536px;"><strong>Description</strong></td>
 </tr>
 <tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+</tr>
+<tr>
 <td style="width: 244px;">ip</td>
 <td style="width: 536px;">Comma-separated list of IP addresses to add to the whitelist</td>
 </tr>
@@ -281,6 +304,10 @@ malware.net
 <tr>
 <td style="width: 235px;"><strong>Path</strong></td>
 <td style="width: 545px;"><strong>Description</strong></td>
+</tr>
+<tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
 </tr>
 <tr>
 <td style="width: 235px;">ip</td>
@@ -310,6 +337,10 @@ malware.net
 <td style="width: 545px;"><strong>Description</strong></td>
 </tr>
 <tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+</tr>
+<tr>
 <td style="width: 235px;">url</td>
 <td style="width: 545px;">Comma-separated list of URLs to remove from the whitelist</td>
 </tr>
@@ -335,6 +366,10 @@ malware.net
 <tr>
 <td style="width: 235px;"><strong>Path</strong></td>
 <td style="width: 545px;"><strong>Description</strong></td>
+</tr>
+<tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
 </tr>
 <tr>
 <td style="width: 235px;">url</td>
@@ -364,6 +399,10 @@ malware.net
 <td style="width: 545px;"><strong>Description</strong></td>
 </tr>
 <tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+</tr>
+<tr>
 <td style="width: 235px;">url</td>
 <td style="width: 545px;">Comma-separated list of IP addresses to remove from the whitelist</td>
 </tr>
@@ -389,6 +428,10 @@ malware.net
 <tr>
 <td style="width: 235px;"><strong>Path</strong></td>
 <td style="width: 545px;"><strong>Description</strong></td>
+</tr>
+<tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
 </tr>
 <tr>
 <td style="width: 235px;">url</td>
@@ -420,6 +463,10 @@ malware.net
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+</tr>
 <tr>
 <td style="width: 153.8px;">category-id</td>
 <td style="width: 414.2px;">Category ID to add the URL to, for example RADIO_STATIONS</td>
@@ -507,6 +554,10 @@ malware.net
 </thead>
 <tbody>
 <tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+</tr>
+<tr>
 <td style="width: 161.8px;">category-id</td>
 <td style="width: 406.2px;">Category ID to add IP to, for example RADIO_STATIONS</td>
 <td style="width: 71px;">Required</td>
@@ -592,6 +643,11 @@ malware.net
 </thead>
 <tbody>
 <tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
 <td style="width: 145.6px;">category-id</td>
 <td style="width: 422.4px;">Category ID to remove URL from, for example RADIO_STATIONS</td>
 <td style="width: 71px;">Required</td>
@@ -675,6 +731,11 @@ malware.net
 </thead>
 <tbody>
 <tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
 <td style="width: 133.2px;">category-id</td>
 <td style="width: 434.8px;">Category ID to remove IP from, for example RADIO_STATIONS</td>
 <td style="width: 71px;">Required</td>
@@ -749,7 +810,22 @@ malware.net
 <h5>Base Command</h5>
 <p><code>zscaler-get-categories</code></p>
 <h5>Input</h5>
-<p>There is no input for t his command.</p>
+<table style="width: 750px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 133.2px;"><strong>Argument Name</strong></th>
+<th style="width: 434.8px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Optional</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+<td style="width: 71px;">Required</td>
+</tr>
+</tbody>
+</table>
 <h5>Context Output</h5>
 <table style="width: 750px;" border="2" cellpadding="6">
 <thead>
@@ -849,6 +925,22 @@ malware.net
 <h5>Base Command</h5>
 <p><code>zscaler-get-blacklist</code></p>
 <h5>Input</h5>
+<table style="width: 750px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 133.2px;"><strong>Argument Name</strong></th>
+<th style="width: 434.8px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+</tbody>
+</table>
 <h5>Context Output</h5>
 <table style="width: 750px;" border="2" cellpadding="6">
 <thead>
@@ -941,6 +1033,11 @@ malware.net
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+<td style="width: 71px;">Required</td>
+</tr>
 <tr>
 <td style="width: 137px;">md5</td>
 <td style="width: 430px;">MD5 hash of a file.</td>
@@ -1072,3 +1169,66 @@ malware.net
 <h2>Screenshots</h2>
 <p><a href="https://user-images.githubusercontent.com/44546251/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/44546251/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png" alt="image"></a></p>
 <p><a href="https://user-images.githubusercontent.com/44546251/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/44546251/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png" alt="image"></a></p>
+<h3 id="h_3459890727615370869432377">19. Login</h3>
+<hr>
+<p>Manually create a Zscaler login session. This command can be used in unison with other commands to manually control the login and logout process, rather than using the the automatic login/logout.</p>
+<h5>Base Command</h5>
+<p><code>zscaler-login</code></p>
+<h5>Context Output</h5>
+<table style="width: 750px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th><strong>Path</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Zscaler.SessionID</td>
+<td>string</td>
+<td>Session ID result to be used with other Zscaler commands in session_id argument.</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Command Example</h5>
+<p><code>!zscaler-login</code></p>
+<h5>Human Readable Output</h5>
+<h4>Created Zscaler Session</h4>
+<p>Session ID: JSESSIONID=MOCKID</p>
+<h3 id="h_3459890727615370869432378">20. Logout of a session</h3>
+<hr>
+<p>Log out of a Zscaler session.</p>
+<h5>Base Command</h5>
+<p><code>zscaler-logout</code></p>
+<h5>Input</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 137px;"><strong>Argument Name</strong></th>
+<th style="width: 430px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 235px;">session_id</td>
+<td style="width: 545px;">Session ID result from zscaler-login command.</td>
+<td style="width: 71px;">Required</td>
+</tr>
+</tbody>
+</table>
+<h5>Command Example</h5>
+<p><code>!zscaler-logout session_id=mock_session_id</code></p>
+<h5>Human Readable Output</h5>
+<p>API session logged out of Zscaler successfully.</p>
+<h3 id="h_3459890727615370869432379">21. Activate changes </h3>
+<hr>
+<p>Activate the changes executed by other Zscaler commands in this session.</p>
+<h5>Base Command</h5>
+<p><code>zscaler-activate-changes</code></p>
+<h5>Command Example</h5>
+<p><code>!zscaler-activate-changes</code></p>
+<h5>Human Readable Output</h5>
+<p>Changes have been activated successfully.</p>
