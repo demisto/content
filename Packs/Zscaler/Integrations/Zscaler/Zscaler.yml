@@ -489,6 +489,13 @@ script:
     description: Returns Zscaler default blacklist
     execution: false
     name: zscaler-get-blacklist
+    arguments:
+    - default: false
+      description: Session ID result from zscaler-login command.
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     outputs:
     - contextPath: Zscaler.Blacklist
       description: Zscaler blacklist

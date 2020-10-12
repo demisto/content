@@ -339,10 +339,9 @@ def url_lookup(args):
     multiple = args.get('multiple', 'true').lower() == 'true'
     response = lookup_request(url, multiple)
     raw_res = json.loads(response.content)
-    ec = {
-        outputPaths['url']: [],
-        'DBotScore': []
-    }
+    ec = dict()  # type: Dict[str, List]
+    ec[outputPaths['url']] = []
+    ec['DBotScore'] = []
     pre_table_data = []
     for data in raw_res:
         suspicious_categories = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
