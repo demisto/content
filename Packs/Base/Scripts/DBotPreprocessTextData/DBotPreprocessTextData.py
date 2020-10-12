@@ -85,10 +85,7 @@ def remove_line_breaks(text):
 
 
 def hash_word(word, seed):
-    hash = seed
-    for x in word:
-        hash = ((hash << 5) + hash) + ord(x)
-    return str(hash & 0xFFFFFFFF)
+    return str(hash_djb2(word, seed))
 
 
 def pre_process(data, source_text_field, target_text_field, remove_html_tags, pre_process_type, hash_seed):
