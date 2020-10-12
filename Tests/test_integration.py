@@ -820,7 +820,7 @@ def configure_proxy_unsecure(integration_params):
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return playbook status
-def test_integration(client, server_url, integrations, playbook_id, prints_manager, options=None, is_mock_run=False,
+def test_integration(client, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager, options=None, is_mock_run=False,
                      thread_index=0):
     options = options if options is not None else {}
     # create integrations instances
@@ -840,7 +840,7 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         if is_mock_run:
             configure_proxy_unsecure(integration_params)
 
-        module_instance, failure_message, docker_image = __create_integration_instance(client, integration_name,
+        module_instance, failure_message, docker_image = __create_integration_instance(server_url, demisto_user, demisto_pass, integration_name,
                                                                                        integration_instance_name,
                                                                                        integration_params,
                                                                                        is_byoi, prints_manager,

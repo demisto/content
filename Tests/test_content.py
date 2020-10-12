@@ -428,7 +428,7 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, proxy, failed_
         prints_manager.add_print_job(start_mock_message, print, thread_index, include_timestamp=True)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
-        status, _ = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+        status, _ = test_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager, test_options,
                                      is_mock_run=True, thread_index=thread_index)
         # use results
         proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
