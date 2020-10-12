@@ -5,7 +5,7 @@
 !synapse-storm-query query="inet:ipv4=1.2.3.5" limit=1
 !synapse-list-users
 !synapse-list-roles
-!synapse-create-user username="xsoartest" password="secret"
-!synapse-create-role role="xsoartestrole"
+!synapse-create-user username="xsoardemo" password="secret"
+!synapse-create-role role="xsoar-role-demo"
 !synapse-grant-user-role user="a2bfead4c16b0354af2a92aa05588fc9" role="bcf176a4cbe240ae1dcf9fbebdffa680"
 !synapse-query-model query="file:bytes"

@@ -52,10 +52,42 @@ Returns IP information and reputation.
 
 
 #### Command Example
-``` ```
+```!ip ip="1.2.3.4"```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "1.2.3.4",
+        "Score": 3,
+        "Type": "ip",
+        "Vendor": "Synapse"
+    },
+    "IP": {
+        "Address": "1.2.3.4",
+        "Malicious": {
+            "Description": "Synapse returned reputation tag: mal",
+            "Vendor": "Synapse"
+        }
+    },
+    "Synapse": {
+        "IP": {
+            "ip": "1.2.3.4",
+            "tags": [
+                "mal",
+                "test"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### IP List
+>|ip|tags|
+>|---|---|
+>| 1.2.3.4 | mal,<br/>test |
 
 
 ### url
@@ -89,10 +121,35 @@ Returns URL information and reputation.
 
 
 #### Command Example
-``` ```
+```!url url="https://google.com"```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "https://google.com",
+        "Score": 0,
+        "Type": "url",
+        "Vendor": "Synapse"
+    },
+    "Synapse": {
+        "URL": {
+            "tags": [],
+            "url": "https://google.com"
+        }
+    },
+    "URL": {
+        "Data": "https://google.com"
+    }
+}
+```
 
 #### Human Readable Output
 
+>### URL List
+>|tags|url|
+>|---|---|
+>|  | https://google.com |
 
 
 ### domain
@@ -126,10 +183,41 @@ Returns Domain information and reputation.
 
 
 #### Command Example
-``` ```
+```!domain domain="foobar.com"```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "foobar.com",
+        "Score": 3,
+        "Type": "domain",
+        "Vendor": "Synapse"
+    },
+    "Domain": {
+        "Malicious": {
+            "Description": "Synapse returned reputation tag: mal",
+            "Vendor": "Synapse"
+        },
+        "Name": "foobar.com"
+    },
+    "Synapse": {
+        "Domain": {
+            "domain": "foobar.com",
+            "tags": [
+                "mal"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Domain List
+>|domain|tags|
+>|---|---|
+>| foobar.com | mal |
 
 
 ### file
@@ -170,10 +258,49 @@ Returns File information and reputation.
 
 
 #### Command Example
-``` ```
+```!file file="9e0c442ee3157d3f3aa2be30a1d24d81"```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "9e0c442ee3157d3f3aa2be30a1d24d81",
+        "Score": 3,
+        "Type": "file",
+        "Vendor": "Synapse"
+    },
+    "File": {
+        "MD5": "9e0c442ee3157d3f3aa2be30a1d24d81",
+        "Malicious": {
+            "Description": "Synapse returned reputation tag: mal",
+            "Vendor": "Synapse"
+        },
+        "SHA1": "e7b03ed4dbdfb79477c49942d5796d3dfc78ac7e",
+        "SHA256": "290f64a315850c5bccc907f79cbeabd79345719df738ee5d02dc3447d04675b3",
+        "SHA512": "53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b"
+    },
+    "Synapse": {
+        "File": {
+            "MD5": "9e0c442ee3157d3f3aa2be30a1d24d81",
+            "SHA1": "e7b03ed4dbdfb79477c49942d5796d3dfc78ac7e",
+            "SHA256": "290f64a315850c5bccc907f79cbeabd79345719df738ee5d02dc3447d04675b3",
+            "SHA512": "53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b",
+            "hash": "9e0c442ee3157d3f3aa2be30a1d24d81",
+            "query": "file:bytes:md5=9e0c442ee3157d3f3aa2be30a1d24d81",
+            "tags": [
+                "mal"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### File List
+>|MD5|SHA1|SHA256|SHA512|hash|query|tags|
+>|---|---|---|---|---|---|---|
+>| 9e0c442ee3157d3f3aa2be30a1d24d81 | e7b03ed4dbdfb79477c49942d5796d3dfc78ac7e | 290f64a315850c5bccc907f79cbeabd79345719df738ee5d02dc3447d04675b3 | 53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b | 9e0c442ee3157d3f3aa2be30a1d24d81 | file:bytes:md5=9e0c442ee3157d3f3aa2be30a1d24d81 | mal |
 
 
 ### synapse-storm-query
@@ -203,10 +330,35 @@ Execute a Synapse Storm query.
 
 
 #### Command Example
-``` ```
+```!synapse-storm-query query="inet:ipv4=1.2.3.5" limit=1```
+
+#### Context Example
+```json
+{
+    "Synapse": {
+        "Nodes": {
+            "created": "2020/09/12 10:07:17 EDT",
+            "form": "inet:ipv4",
+            "tags": [
+                "test.foo",
+                "test.testing"
+            ],
+            "valu": "1.2.3.5"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Synapse Query Results: `inet:ipv4=1.2.3.5`
+>|form|valu|created|tags|
+>|---|---|---|---|
+>| inet:ipv4 | 1.2.3.5 | 2020/09/12 10:07:17 EDT | test.foo,<br/>test.testing |
+>### Synapse Node Properties
+>|.created|type|
+>|---|---|
+>| 1599919637048 | unicast |
 
 
 ### synapse-list-users
@@ -234,10 +386,55 @@ There are no input arguments for this command.
 
 
 #### Command Example
-``` ```
+```!synapse-list-users```
+
+#### Context Example
+```json
+{
+    "Synapse": {
+        "Users": [
+            {
+                "Admin": true,
+                "Email": null,
+                "Iden": "9e4fe25a281f3f65aff2fa192d54c705",
+                "Name": "root",
+                "Roles": [],
+                "Rules": []
+            },
+            {
+                "Admin": false,
+                "Email": null,
+                "Iden": "a2bfead4c16b0354af2a92aa05588fc9",
+                "Name": "testuser",
+                "Roles": [
+                    "xsoar-role",
+                    "all"
+                ],
+                "Rules": []
+            },
+            {
+                "Admin": false,
+                "Email": null,
+                "Iden": "eec037c730f0976a1b742b9f9773a52e",
+                "Name": "xsoartesting",
+                "Roles": [
+                    "all"
+                ],
+                "Rules": []
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Synapse Users
+>|Name|Email|Admin|Rules|Roles|
+>|---|---|---|---|---|
+>| root |  | true |  |  |
+>| testuser |  | false |  | xsoar-role,<br/>all |
+>| xsoartesting |  | false |  | all |
 
 
 ### synapse-list-roles
@@ -262,10 +459,41 @@ There are no input arguments for this command.
 
 
 #### Command Example
-``` ```
+```!synapse-list-roles```
+
+#### Context Example
+```json
+{
+    "Synapse": {
+        "Roles": [
+            {
+                "Iden": "bcf176a4cbe240ae1dcf9fbebdffa680",
+                "Name": "xsoar-role",
+                "Rules": []
+            },
+            {
+                "Iden": "c486fa9eb8d50a8c35a60687f12dc4c9",
+                "Name": "all",
+                "Rules": []
+            },
+            {
+                "Iden": "e7e6ee238bc5bceeff96d10f100142ae",
+                "Name": "xsoartestingrole",
+                "Rules": []
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Synapse Roles
+>|Name|Iden|Rules|
+>|---|---|---|
+>| xsoar-role | bcf176a4cbe240ae1dcf9fbebdffa680 |  |
+>| all | c486fa9eb8d50a8c35a60687f12dc4c9 |  |
+>| xsoartestingrole | e7e6ee238bc5bceeff96d10f100142ae |  |
 
 
 ### synapse-create-user
@@ -297,10 +525,32 @@ Create a new Synapse user.
 
 
 #### Command Example
-``` ```
+```!synapse-create-user username="xsoardemo" password="secret"```
+
+#### Context Example
+```json
+{
+    "Synapse": {
+        "Users": {
+            "Admin": false,
+            "Email": null,
+            "Iden": "f1ac5126df0e7407a0804fc6bd41534d",
+            "Name": "xsoardemo",
+            "Roles": [
+                "all"
+            ],
+            "Rules": []
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Synapse New User
+>|Name|Email|Admin|Rules|Roles|
+>|---|---|---|---|---|
+>| xsoardemo |  | false |  | all |
 
 
 ### synapse-create-role
@@ -328,10 +578,27 @@ Create a new Synapse role.
 
 
 #### Command Example
-``` ```
+```!synapse-create-role role="xsoar-role-demo"```
+
+#### Context Example
+```json
+{
+    "Synapse": {
+        "Roles": {
+            "Iden": "029019964000fef6ccd2be428f496423",
+            "Name": "xsoar-role-demo",
+            "Rules": []
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Synapse New Role
+>|Name|Iden|Rules|
+>|---|---|---|
+>| xsoar-role-demo | 029019964000fef6ccd2be428f496423 |  |
 
 
 ### synapse-grant-user-role
@@ -363,10 +630,33 @@ Grants a user access to role based perrmissions.
 
 
 #### Command Example
-``` ```
+```!synapse-grant-user-role user="a2bfead4c16b0354af2a92aa05588fc9" role="bcf176a4cbe240ae1dcf9fbebdffa680"```
+
+#### Context Example
+```json
+{
+    "Synapse": {
+        "Users": {
+            "Admin": false,
+            "Email": null,
+            "Iden": "a2bfead4c16b0354af2a92aa05588fc9",
+            "Name": "testuser",
+            "Roles": [
+                "xsoar-role",
+                "all"
+            ],
+            "Rules": []
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Synapse New User Role
+>|Name|Email|Admin|Rules|Roles|
+>|---|---|---|---|---|
+>| testuser |  | false |  | xsoar-role,<br/>all |
 
 
 ### synapse-query-model
@@ -397,8 +687,50 @@ Query the Synapse data model and return details for given type or form (i.e. "in
 
 
 #### Command Example
-``` ```
+```!synapse-query-model query="file:bytes"```
+
+#### Context Example
+```json
+{
+    "Synapse": {
+        "Model": {
+            "Doc": "The file bytes type with SHA256 based primary property.",
+            "Example": "N/A",
+            "Form": "file:bytes",
+            "Properties": {
+                ".created": "The time the node was created in the cortex.",
+                ".seen": "The time interval for first/last observation of the node.",
+                "md5": "The md5 hash of the file.",
+                "mime": "The \"best\" mime type name for the file.",
+                "mime:pe:compiled": "The compile time of the file according to the PE header.",
+                "mime:pe:exports:libname": "The export library name according to the PE.",
+                "mime:pe:exports:time": "The export time of the file according to the PE.",
+                "mime:pe:imphash": "The PE import hash of the file as calculated by pefile; https://github.com/erocarrera/pefile .",
+                "mime:pe:pdbpath": "The PDB string according to the PE.",
+                "mime:pe:richhdr": "The sha256 hash of the rich header bytes.",
+                "mime:pe:size": "The size of the executable file according to the PE file header.",
+                "mime:x509:cn": "The Common Name (CN) attribute of the x509 Subject.",
+                "name": "The best known base name for the file.",
+                "sha1": "The sha1 hash of the file.",
+                "sha256": "The sha256 hash of the file.",
+                "sha512": "The sha512 hash of the file.",
+                "size": "The file size in bytes."
+            },
+            "Type": "file:bytes",
+            "Valu": "file:bytes"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Synapse Model Type
+>|Type|Doc|Example|
+>|---|---|---|
+>| file:bytes | The file bytes type with SHA256 based primary property. | N/A |
+>### Synapse `file:bytes` Form Properties
+>|.seen|.created|size|md5|sha1|sha256|sha512|name|mime|mime:x509:cn|mime:pe:size|mime:pe:imphash|mime:pe:compiled|mime:pe:pdbpath|mime:pe:exports:time|mime:pe:exports:libname|mime:pe:richhdr|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| The time interval for first/last observation of the node. | The time the node was created in the cortex. | The file size in bytes. | The md5 hash of the file. | The sha1 hash of the file. | The sha256 hash of the file. | The sha512 hash of the file. | The best known base name for the file. | The "best" mime type name for the file. | The Common Name (CN) attribute of the x509 Subject. | The size of the executable file according to the PE file header. | The PE import hash of the file as calculated by pefile; https://github.com/erocarrera/pefile . | The compile time of the file according to the PE header. | The PDB string according to the PE. | The export time of the file according to the PE. | The export library name according to the PE. | The sha256 hash of the rich header bytes. |
 
