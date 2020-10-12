@@ -24,15 +24,14 @@ def query_samples(client, **args) -> CommandResults:
     r = client._http_request('GET', 'samples', params=params)
 
     results = CommandResults(
-        outputs_prefix = 'Triage.samples',
-        outputs_key_field = 'data',
-        outputs = r['data']
+        outputs_prefix='Triage.samples',
+        outputs_key_field='data',
+        outputs=r['data']
     )
     return results
 
 
 def submit_sample(client: Client, **args) -> CommandResults:
-
     data = {
         'kind': args.get('kind'),
         'profile': args.get('profiles', [])
@@ -52,12 +51,13 @@ def submit_sample(client: Client, **args) -> CommandResults:
 
             r = client._http_request('POST', 'samples', json_data=data, files=files)
     else:
-        return_error(f'Type of sample needs to be selected, either "file" or "url", the selected type was: {data["kind"]}')
+        return_error(
+            f'Type of sample needs to be selected, either "file" or "url", the selected type was: {data["kind"]}')
 
     results = CommandResults(
-        outputs_prefix = 'Triage.submissions',
-        outputs_key_field = 'data',
-        outputs = r
+        outputs_prefix='Triage.submissions',
+        outputs_key_field='data',
+        outputs=r
     )
     return results
 
@@ -67,9 +67,9 @@ def get_sample(client: Client, **args) -> CommandResults:
     r = client._http_request('GET', f'samples/{sample_id}')
 
     results = CommandResults(
-        outputs_prefix = 'Triage.samples',
-        outputs_key_field = 'data',
-        outputs = r
+        outputs_prefix='Triage.samples',
+        outputs_key_field='data',
+        outputs=r
     )
     return results
 
@@ -79,15 +79,15 @@ def get_sample_summary(client: Client, **args) -> CommandResults:
     r = client._http_request('GET', f'samples/{sample_id}/summary')
 
     results = CommandResults(
-        outputs_prefix = 'Triage.sample.summaries',
-        outputs_key_field = 'data',
-        outputs = r
+        outputs_prefix='Triage.sample.summaries',
+        outputs_key_field='data',
+        outputs=r
     )
     return results
 
 
 def delete_sample(client: Client, **args) -> str:
-    sample_id=args.get('sample_id')
+    sample_id = args.get('sample_id')
     client._http_request('DELETE', f'samples/{sample_id}')
 
     return f'Sample {sample_id} successfully deleted'
@@ -116,14 +116,14 @@ def get_static_report(client: Client, **args) -> CommandResults:
     '''
     Get's the static analysis report from a given sample
     '''
-    sample_id=args.get('sample_id')
+    sample_id = args.get('sample_id')
 
     r = client._http_request('GET', f'samples/{sample_id}/reports/static')
 
     results = CommandResults(
-        outputs_prefix = 'Triage.sample.reports.static',
-        outputs_key_field = 'data',
-        outputs = r
+        outputs_prefix='Triage.sample.reports.static',
+        outputs_key_field='data',
+        outputs=r
     )
 
     return results
@@ -133,23 +133,23 @@ def get_report_triage(client: Client, **args) -> CommandResults:
     '''
     Outputs a score, should map to a DBot score
     '''
-    sample_id=args.get('sample_id')
-    task_id=args.get('task_id')
+    sample_id = args.get('sample_id')
+    task_id = args.get('task_id')
 
     r = client._http_request('GET', f'samples/{sample_id}/{task_id}/report_triage.json')
 
     results = CommandResults(
-        outputs_prefix = 'Triage.sample.reports.triage',
-        outputs_key_field = 'data',
-        outputs = r
+        outputs_prefix='Triage.sample.reports.triage',
+        outputs_key_field='data',
+        outputs=r
     )
 
     return results
 
 
 def get_kernel_monitor(client: Client, **args) -> fileResult:
-    sample_id=args.get('sample_id')
-    task_id=args.get('task_id')
+    sample_id = args.get('sample_id')
+    task_id = args.get('task_id')
 
     r = client._http_request('GET', f'samples/{sample_id}/{task_id}/logs/onemon.json', resp_type='text')
 
@@ -173,16 +173,16 @@ def get_pcap(client: Client, **args) -> fileResult:
 
 
 def get_dumped_files(client: Client, **args) -> CommandResults:
-    sample_id=args.get('sample_id')
-    task_id=args.get('task_id')
-    file_name=args.get('file_name')
+    sample_id = args.get('sample_id')
+    task_id = args.get('task_id')
+    file_name = args.get('file_name')
 
     r = client._http_request('GET', f'samples/{sample_id}/{task_id}/files/{file_name}')
 
     results = CommandResults(
-        outputs_prefix = 'Triage.sample.file_dump',
-        outputs_key_field = 'data',
-        outputs = r
+        outputs_prefix='Triage.sample.file_dump',
+        outputs_key_field='data',
+        outputs=r
     )
 
     return results
@@ -201,13 +201,12 @@ def get_users(client: Client, **args) -> CommandResults:
         r = r['data']
 
     results = CommandResults(
-        outputs_prefix = 'Triage.users',
-        outputs_key_field = 'data',
-        outputs = r
+        outputs_prefix='Triage.users',
+        outputs_key_field='data',
+        outputs=r
     )
 
     return results
-
 
 
 def create_user(client: Client, **args) -> CommandResults:
@@ -224,9 +223,9 @@ def create_user(client: Client, **args) -> CommandResults:
     r = client._http_request('POST', 'users', data=data)
 
     results = CommandResults(
-        outputs_prefix = 'Triage.users',
-        outputs_key_field = 'data',
-        outputs = r
+        outputs_prefix='Triage.users',
+        outputs_key_field='data',
+        outputs=r
     )
 
     return results
@@ -238,10 +237,10 @@ def delete_user(client: Client, **args) -> CommandResults:
     r = client._http_request('DELETE', f'users/{userID}')
 
     results = CommandResults(
-        outputs_prefix = 'Triage.users',
-        outputs_key_field = 'data',
-        outputs = r,
-        readable_output = 'User successfully deleted'
+        outputs_prefix='Triage.users',
+        outputs_key_field='data',
+        outputs=r,
+        readable_output='User successfully deleted'
     )
 
     return results
@@ -258,9 +257,9 @@ def create_apikey(client: Client, **args) -> CommandResults:
     r = client._http_request('POST', f'users/{userID}/apikeys', data=data)
 
     results = CommandResults(
-        outputs_prefix = 'Triage.apikey',
-        outputs_key_field = 'data',
-        outputs = r
+        outputs_prefix='Triage.apikey',
+        outputs_key_field='data',
+        outputs=r
     )
 
     return results
@@ -271,9 +270,9 @@ def get_apikey(client: Client, **args) -> CommandResults:
     r = client._http_request('GET', f'users/{userID}/apikeys')
 
     results = CommandResults(
-        outputs_prefix = 'Triage.apikey',
-        outputs_key_field = 'data',
-        outputs = r
+        outputs_prefix='Triage.apikey',
+        outputs_key_field='data',
+        outputs=r
     )
 
     return results
@@ -286,10 +285,10 @@ def delete_apikey(client: Client, **args) -> CommandResults:
     r = client._http_request('DELETE', f'users/{userID}/apikeys/{apiKeyName}')
 
     results = CommandResults(
-        outputs_prefix = 'Triage.apikey',
-        outputs_key_field = 'data',
-        outputs = r,
-        readable_output = f'API key {apiKeyName} was successfully deleted'
+        outputs_prefix='Triage.apikey',
+        outputs_key_field='data',
+        outputs=r,
+        readable_output=f'API key {apiKeyName} was successfully deleted'
     )
 
     return results
@@ -309,16 +308,15 @@ def get_profile(client: Client, **args) -> CommandResults:
         r = r['data']
 
     results = CommandResults(
-        outputs_prefix = 'Triage.profiles',
-        outputs_key_field = 'data',
-        outputs = r
+        outputs_prefix='Triage.profiles',
+        outputs_key_field='data',
+        outputs=r
     )
 
     return results
 
 
 def create_profile(client: Client, **args) -> CommandResults:
-
     data = json.dumps({
         "name": args.get('name'),
         "tags": argToList(args.get('tags')),
@@ -330,9 +328,9 @@ def create_profile(client: Client, **args) -> CommandResults:
     r = client._http_request('POST', f'profiles', data=data)
 
     results = CommandResults(
-        outputs_prefix = 'Triage.profiles',
-        outputs_key_field = 'data',
-        outputs = r
+        outputs_prefix='Triage.profiles',
+        outputs_key_field='data',
+        outputs=r
     )
 
     return results
@@ -353,10 +351,10 @@ def update_profile(client: Client, **args) -> CommandResults:
     r = client._http_request('PUT', f'profiles/{profileID}', data=json.dumps(data))
 
     results = CommandResults(
-        outputs_prefix = 'Triage.profiles',
-        outputs_key_field = 'data',
-        outputs = r,
-        readable_output = 'Profile updated successfully'
+        outputs_prefix='Triage.profiles',
+        outputs_key_field='data',
+        outputs=r,
+        readable_output='Profile updated successfully'
     )
     return results
 
@@ -367,10 +365,10 @@ def delete_profile(client: Client, **args) -> CommandResults:
     r = client._http_request('DELETE', f'profiles/{profileID}')
 
     results = CommandResults(
-        outputs_prefix = 'Triage.profiles',
-        outputs_key_field = 'data',
-        outputs = r,
-        readable_output = 'Profile successfully deleted'
+        outputs_prefix='Triage.profiles',
+        outputs_key_field='data',
+        outputs=r,
+        readable_output='Profile successfully deleted'
     )
     return results
 
@@ -380,7 +378,7 @@ def main():
     args = demisto.args()
     client = Client(
         params.get('base_url'),
-        verify = params.get('Verify SSL'),
+        verify=params.get('Verify SSL'),
         headers={'Authorization': f'Bearer {params.get("API Key")}'}
     )
 
@@ -416,5 +414,5 @@ def main():
         return_error(f'Command {command} is not available in this integration')
 
 
-if __name__ in ['__main__','__builtin__','builtins']:
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
