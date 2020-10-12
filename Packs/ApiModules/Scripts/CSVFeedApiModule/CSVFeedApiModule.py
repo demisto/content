@@ -237,10 +237,13 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
         if not raw_json.get(field):  # type: ignore
             continue
 
-        try:
-            field_value = re.match(regex_extractor, raw_json[field]).group(1)  # type: ignore
-        except Exception:
+        if not regex_extractor:  # do not run the regex match only if a regex_extractor does not exist
             field_value = raw_json[field]  # type: ignore
+        else:
+            try:
+                field_value = re.match(regex_extractor, raw_json[field]).group(1)  # type: ignore
+            except Exception:
+                field_value = raw_json[field]  # type: ignore
 
         fields_mapping[key] = formatter_string.format(field_value) if formatter_string else field_value
 
