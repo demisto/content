@@ -58,7 +58,6 @@ def fetch_incidents(client):
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
         start_time = last_run.get('start_time')
-        start_time += 'Z'
     else:
         start_time = timefrom
     end_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]
