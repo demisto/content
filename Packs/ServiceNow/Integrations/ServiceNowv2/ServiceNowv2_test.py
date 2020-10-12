@@ -15,7 +15,8 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_QUERY_TABLE_SYS_PARAMS, RESPONSE_ADD_TAG, RESPONSE_QUERY_ITEMS, RESPONSE_ITEM_DETAILS, \
     RESPONSE_CREATE_ITEM_ORDER, RESPONSE_DOCUMENT_ROUTE, RESPONSE_FETCH, RESPONSE_FETCH_ATTACHMENTS_FILE, \
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, \
-    RESPONSE_MIRROR_FILE_ENTRY, RESPONSE_ASSIGNMENT_GROUP
+    RESPONSE_MIRROR_FILE_ENTRY, RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, \
+    MIRROR_COMMENTS_RESPONSE_FROM_XSOAR
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, \
@@ -520,3 +521,33 @@ def test_get_remote_data_no_attachment(mocker):
     res = get_remote_data_command(client, args, params)
     assert res[1]['Contents'] == 'This is a comment'
     assert len(res) == 2
+
+
+def test_get_remote_data_no_entries(mocker):
+    """
+    Given:
+        -  ServiceNow client
+        -  arguments: id and LastUpdate(set to lower then the modification time).
+        -  ServiceNow ticket
+    When
+        - running get_remote_data_command.
+    Then
+        - The checked entries was not returned.
+    """
+
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 0}
+    params = {}
+    mocker.patch.object(client, 'get', return_value=RESPONSE_TICKET_MIRROR)
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR)
+    mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
+    mocker.patch.object(client, 'get', return_value=RESPONSE_ASSIGNMENT_GROUP)
+
+    res = get_remote_data_command(client, args, params)
+
+    assert 'This is a comment\n\n Mirrored from Cortex XSOAR' not in res
+    assert 'test_mirrored_from_xsoar.txt' not in res

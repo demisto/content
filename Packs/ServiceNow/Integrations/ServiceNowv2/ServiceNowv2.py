@@ -576,46 +576,43 @@ class Client(BaseClient):
 
         return dic_template
 
-    def get_ticket_attachments(self, ticket_id: str) -> dict:
+    def get_ticket_attachments(self, ticket_id: str, sys_created_on='') -> dict:
         """Get ticket attachments by sending a GET request.
 
         Args:
             ticket_id: ticket id
+            sys_created_on: string, when the attachment was created
 
         Returns:
             Response from API.
         """
-        return self.send_request('attachment', 'GET', params={'sysparm_query': f'table_sys_id={ticket_id}'})
+        return self.send_request('attachment', 'GET', params={
+            'sysparm_query': f'table_sys_id={ticket_id}^sys_created_on>{sys_created_on}'})
 
-    def get_ticket_attachment_entries(self, ticket_id: str, get_timestamp: bool = False) -> list:
+    def get_ticket_attachment_entries(self, ticket_id: str, sys_created_on='') -> list:
         """Get ticket attachments, including file attachments
         by sending a GET request and using the get_ticket_attachments class function.
 
         Args:
             ticket_id: ticket id
-            get_timestamp: Tuple of file entries and timestamps.
+            sys_created_on: string, when the attachment was created
 
         Returns:
             Array of attachments entries.
         """
         entries = []
-        links = []  # type: List[Tuple[str, str, str]]
-        attachments_res = self.get_ticket_attachments(ticket_id)
+        links = []  # type: List[Tuple[str, str]]
+        attachments_res = self.get_ticket_attachments(ticket_id, sys_created_on)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
-            links = [(attachment.get('download_link', ''), attachment.get('file_name', ''),
-                      attachment.get('sys_created_on')) for attachment in attachments]
+            links = [(attachment.get('download_link', ''), attachment.get('file_name', ''))
+                     for attachment in attachments]
 
         for link in links:
             file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
                                     proxies=self._proxies)
-
             if file_res is not None:
-                entry = (fileResult(link[1], file_res.content), link[2])
-                if get_timestamp:
-                    entries.append(entry)
-                else:
-                    entries.append(fileResult(link[1], file_res.content))
+                entries.append(fileResult(link[1], file_res.content))
 
         return entries
 
@@ -1943,21 +1940,17 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
     # get latest comments and files
     entries = []
-    file_entries = client.get_ticket_attachment_entries(ticket_id, get_timestamp=True)
+    file_entries = client.get_ticket_attachment_entries(ticket_id, datetime.fromtimestamp(last_update))
     if file_entries:
-        for file, create_time in file_entries:
-            entry_time = arg_to_timestamp(
-                arg=create_time,
-                arg_name='sys_created_on',
-                required=False
-            )
-            if '_mirrored_from_xsoar' not in file.get('File') and last_update < entry_time:
+        for file in file_entries:
+            if '_mirrored_from_xsoar' not in file.get('File'):
                 entries.append(file)
 
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
 
-    sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
+    sys_param_query = f'element_id={ticket_id}^sys_created_on>' \
+        f'{datetime.fromtimestamp(last_update)}^element=comments^ORelement=work_notes'
 
     comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
     demisto.debug(f'Comments result is {comments_result}')
