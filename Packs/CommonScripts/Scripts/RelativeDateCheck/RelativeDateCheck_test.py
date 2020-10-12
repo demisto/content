@@ -15,7 +15,8 @@ def test_date_match(mocker):
 
     demisto.results.assert_called_with(True)
 
-def test_date_match_nonISO(mocker):
+
+def test_date_match_non_iso(mocker):
     # Try other date formats
     args_value = {
         "left": "2020-10-12",
