@@ -1051,7 +1051,7 @@ def install_packs(build, prints_manager, pack_ids=None):
 def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations, prints_manager):
     all_module_instances = []
     brand_new_integrations = []
-    testing_client = demisto_client.configure(base_url=build.servers[0], username=build.username,
+    testing_client = demisto_client.configure(base_url=build.servers[0].host, username=build.username,
                                               password=build.password, verify_ssl=False)
     for test in tests_for_iteration:
         integrations = get_integrations_for_test(test, build.skipped_integrations_conf)
