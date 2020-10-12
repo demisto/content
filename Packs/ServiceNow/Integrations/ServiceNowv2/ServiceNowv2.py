@@ -1960,24 +1960,17 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         return [ticket] + entries
 
     for note in comments_result.get('result', []):
-        entry_time = arg_to_timestamp(
-            arg=note.get('sys_created_on'),
-            arg_name='sys_created_on',
-            required=False
-        )
-        demisto.debug(f'entry_time is {entry_time}')
         if 'Mirrored from Cortex XSOAR' not in note.get('value'):
-            if entry_time > last_update:
-                comments_context = {'comments_and_work_notes': note.get('value')}
-                entries.append({
-                    'Type': note.get('type'),
-                    'Category': note.get('category'),
-                    'Contents': note.get('value'),
-                    'ContentsFormat': note.get('format'),
-                    'Tags': note.get('tags'),
-                    'Note': True,
-                    'EntryContext': comments_context
-                })
+            comments_context = {'comments_and_work_notes': note.get('value')}
+            entries.append({
+                'Type': note.get('type'),
+                'Category': note.get('category'),
+                'Contents': note.get('value'),
+                'ContentsFormat': note.get('format'),
+                'Tags': note.get('tags'),
+                'Note': True,
+                'EntryContext': comments_context
+            })
     # Parse user dict to email
     assigned_to = ticket.get('assigned_to', {})
     caller = ticket.get('caller_id', {})
