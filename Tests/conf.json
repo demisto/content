@@ -141,7 +141,8 @@
         {
             "integrations": "IllusiveNetworks",
             "playbookID": "IllusiveNetworks-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 500
         },
         {
             "integrations": "JSON Feed",
@@ -3159,7 +3160,6 @@
         "pyEWS_Test": "Issue 28339",
         "GmailTest": "Issue 27057",
         "playbook-SafeBreach-Test": "Issue 21205",
-        "IllusiveNetworks-Test": "Issue 29087",
         "Code42-Test": "Issue 29093",
         "SMB test": "Issue 26454",
         "TestCofenseFeed": "Issue 29198",
