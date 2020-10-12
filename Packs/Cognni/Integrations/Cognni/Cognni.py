@@ -175,14 +175,14 @@ class Client(BaseClient):
 
 
 def convert_to_demisto_severity(severity: str) -> int:
-    """Maps HelloWorld severity to Cortex XSOAR severity
+    """Maps Cognni severity to Cortex XSOAR severity
 
-    Converts the HelloWorld alert severity level ('Low', 'Medium',
+    Converts the Cognni alert severity level ('Low', 'Medium',
     'High', 'Critical') to Cortex XSOAR incident severity (1 to 4)
     for mapping.
 
     :type severity: ``str``
-    :param severity: severity as returned from the HelloWorld API (str)
+    :param severity: severity as returned from the Cognni API (str)
 
     :return: Cortex XSOAR Severity (1 to 4)
     :rtype: ``int``
@@ -196,14 +196,14 @@ def convert_to_demisto_severity(severity: str) -> int:
 
 
 def convert_to_demisto_severity_int(severity: int) -> int:
-    """Maps HelloWorld severity to Cortex XSOAR severity
+    """Maps Cognni severity to Cortex XSOAR severity
 
-    Converts the HelloWorld alert severity level ('Low', 'Medium',
+    Converts the Cognni alert severity level ('Low', 'Medium',
     'High', 'Critical') to Cortex XSOAR incident severity (1 to 4)
     for mapping.
 
     :type severity: ``str``
-    :param severity: severity as returned from the HelloWorld API (str)
+    :param severity: severity as returned from the Cognni API (str)
 
     :return: Cortex XSOAR Severity (1 to 4)
     :rtype: ``int``
