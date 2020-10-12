@@ -121,7 +121,7 @@ def get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock)
         lock.release()
 
 
-def search_pack(client, prints_manager, pack_display_name, thread_index, lock):
+def search_pack(client, prints_manager, pack_display_name, pack_id, thread_index, lock):
     """ Make a pack search request.
 
     Args:
@@ -139,7 +139,7 @@ def search_pack(client, prints_manager, pack_display_name, thread_index, lock):
         response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                             path='/contentpacks/marketplace/search',
                                                                             method='POST',
-                                                                            body={"packsQuery": pack_display_name},
+                                                                            body={"packsQuery": pack_id},
                                                                             accept='application/json',
                                                                             _request_timeout=None)
 
@@ -149,9 +149,9 @@ def search_pack(client, prints_manager, pack_display_name, thread_index, lock):
             pack_data = get_pack_data_from_results(search_results, pack_display_name)
 
             print_msg = f'\n\n\n\n\n\n###################################################\n' \
-                        f'{pack_data}\n' \
                         f'{pack_display_name}\n' \
-                        f'{search_results}\n' \
+                        f'response_data:\n{response_data}\n' \
+                        f'result_object:\n{result_object}\n' \
                         f'\n###################################################\n\n\n\n\n\n'
             prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.RED)
             prints_manager.execute_thread_prints(thread_index)
@@ -293,7 +293,7 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
     if pack_id not in packs_to_install:
         pack_display_name = get_pack_display_name(pack_id)
         if pack_display_name:
-            pack_data = search_pack(client, prints_manager, pack_display_name, thread_index, lock)
+            pack_data = search_pack(client, prints_manager, pack_display_name, pack_id, thread_index, lock)
         if pack_data is None:
             pack_data = {
                 'id': pack_id,
