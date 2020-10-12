@@ -1,12 +1,12 @@
 args:
 - default: false
-  description: The end date for seaarching indicators.
+  description: The end date for searching indicators.
   isArray: false
   name: to
   required: false
   secret: false
 - default: false
-  description: The start date for seaarching indicators.
+  description: The start date for searching indicators.
   isArray: false
   name: from
   required: false
