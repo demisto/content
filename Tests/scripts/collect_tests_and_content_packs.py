@@ -362,6 +362,8 @@ def collect_tests_and_content_packs(
 
         # We don't want to test playbooks from Non-certified partners.
         if not is_pack_certified(test_playbook_pack_name):
+            logging.warning(f'Found test playbook {test_playbook_id} which belongs to a Non-certified pack, '
+                            f'hence it will not be tested')
             continue
 
         for script in test_playbook_data.get('implementing_scripts', []):
