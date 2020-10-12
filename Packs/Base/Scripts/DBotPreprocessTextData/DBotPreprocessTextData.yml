@@ -159,7 +159,7 @@ subtype: python3
 system: false
 tags:
 - ml
-#timeout: 120µs
+timeout: 120µs
 type: python
 dockerimage: demisto/ml:1.0.0.12379
 runonce: true
