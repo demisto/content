@@ -7,7 +7,6 @@ from CommonServerUserPython import *
 import pickle
 import uuid
 from html.parser import HTMLParser
-from io import BytesIO, StringIO
 import pandas as pd
 DBOT_TEXT_FIELD = 'dbot_text'
 DBOT_PROCESSED_TEXT_FIELD = 'dbot_processed_text'
@@ -95,6 +94,7 @@ def hash_word(word, seed):
         hash = ((hash << 5) + hash) + ord(x)
     return str(hash & 0xFFFFFFFF)
 
+
 def pre_process(data, source_text_field, target_text_field, remove_html_tags, pre_process_type, hash_seed):
     tokenized_text_data = [x[source_text_field] for x in data]
     if remove_html_tags:
@@ -125,6 +125,7 @@ def pre_process_nlp(text_data):
     tokenized_text_data = map(lambda x: x.get('tokenizedText'), processed_text_data)
     return tokenized_text_data
 
+
 PRE_PROCESS_TYPES = {
     'none': lambda x: x,
     'nlp': pre_process_nlp,
@@ -134,12 +135,13 @@ PRE_PROCESS_TYPES = {
 def remove_short_text(data, text_field, target_text_field, remove_short_threshold):
     description = ""
     before_count = len(data)
-    data = [x for x in data if len(x[text_field].split(" ")) > remove_short_threshold and len(x[target_text_field])>0]
+    data = [x for x in data if len(x[text_field].split(" ")) > remove_short_threshold and len(x[target_text_field]) > 0]
     after_count = len(data)
     dropped_count = before_count - after_count
     if dropped_count > 0:
         description += "Dropped %d samples shorter than %d words" % (dropped_count, remove_short_threshold) + "\n"
     return data, description
+
 
 def get_tf_idf_similarity_arr(documents):
     tfidf = TfidfVectorizer(stop_words="english", min_df=1).fit_transform(documents)
@@ -247,4 +249,3 @@ def main():
 if __name__ in ['builtins', '__main__']:
     entry = main()
     demisto.results(entry)
-
