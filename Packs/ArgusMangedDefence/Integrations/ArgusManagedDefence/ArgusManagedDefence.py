@@ -149,86 +149,64 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
-    start_timestamp = args.get("start_timestamp", None)
-    end_timestamp = args.get("end_timestamp", None)
-    limit = args.get("limit", None)
-    offset = args.get("offset", None)
-    include_deleted = args.get("include_deleted", None)
-    sub_criteria = args.get("sub_criteria", None)
-    exclude = args.get("exclude", None)
-    required = args.get("required", None)
-    customer_id = args.get("customer_id", None)
-    case_id = args.get("case_id", None)
-    customer = args.get("customer", None)
-    case_type = args.get("type", None)
-    service = args.get("service", None)
-    category = args.get("category", None)
-    status = args.get("status", None)
-    priority = args.get("priority", None)
-    asset_id = args.get("asset_id", None)
-    tag = args.get("tag", None)
-    workflow = args.get("workflow", None)
-    field = args.get("field", None)
-    keywords = args.get("keywords", None)
-    time_field_strategy = args.get("time_field_strategy", None)
-    time_match_strategy = args.get("time_match_strategy", None)
-    keyword_field_strategy = args.get("keyword_field_strategy", None)
-    keyword_match_strategy = args.get("keyword_match_strategy", None)
-    user = args.get("user", None)
-    user_field_strategy = args.get("user_field_strategy", None)
-    user_assigned = args.get("user_assigned", None)
-    tech_assigned = args.get("tech_assigned", None)
-    include_workflows = args.get("include_workflows", None)
-    include_description = args.get("include_description", None)
-    access_mode = args.get("access_mode", None)
-    explicit_access = args.get("explicit_access", None)
-    sort_by = args.get("sort_by", None)
-    include_flags = args.get("include_flags", None)
-    exclude_flags = args.get("exclude_flags", None)
-
     result = advanced_case_search(
-        startTimestamp=start_timestamp,
-        endTimestamp=end_timestamp,
-        limit=limit,
-        offset=offset,
-        includeDeleted=include_deleted,
-        subCriteria=sub_criteria,
-        exclude=exclude,
-        required=required,
-        customerID=customer_id,
-        caseID=case_id,
-        customer=customer,
-        type=case_type,
-        service=service,
-        category=category,
-        status=status,
-        priority=priority,
-        assetID=asset_id,
-        tag=tag,
-        workflow=workflow,
-        field=field,
-        keywords=keywords,
-        timeFieldStrategy=time_field_strategy,
-        timeMatchStrategy=time_match_strategy,
-        keywordFieldStrategy=keyword_field_strategy,
-        keywordMatchStrategy=keyword_match_strategy,
-        user=user,
-        userFieldStrategy=user_field_strategy,
-        userAssigned=user_assigned,
-        techAssigned=tech_assigned,
-        includeWorkflows=include_workflows,
-        includeDescription=include_description,
-        accessMode=access_mode,
-        explicitAccess=explicit_access,
-        sortBy=sort_by,
-        includeFlags=include_flags,
-        excludeFlags=exclude_flags,
+        startTimestamp=args.get("start_timestamp", None),
+        endTimestamp=args.get("end_timestamp", None),
+        limit=args.get("limit", None),
+        offset=args.get("offset", None),
+        includeDeleted=args.get("include_deleted", None),
+        subCriteria=args.get("sub_criteria", None),
+        exclude=args.get("exclude", None),
+        required=args.get("required", None),
+        customerID=args.get("customer_id", None),
+        caseID=args.get("case_id", None),
+        customer=args.get("customer", None),
+        type=args.get("type", None),
+        service=args.get("service", None),
+        category=args.get("category", None),
+        status=args.get("status", None),
+        priority=args.get("priority", None),
+        assetID=args.get("asset_id", None),
+        tag=args.get("tag", None),
+        workflow=args.get("workflow", None),
+        field=args.get("field", None),
+        keywords=args.get("keywords", None),
+        timeFieldStrategy=args.get("time_field_strategy", None),
+        timeMatchStrategy=args.get("time_match_strategy", None),
+        keywordFieldStrategy=args.get("keyword_field_strategy", None),
+        keywordMatchStrategy=args.get("keyword_match_strategy", None),
+        user=args.get("user", None),
+        userFieldStrategy=args.get("user_field_strategy", None),
+        userAssigned=args.get("user_assigned", None),
+        techAssigned=args.get("tech_assigned", None),
+        includeWorkflows=args.get("include_workflows", None),
+        includeDescription=args.get("include_description", None),
+        accessMode=args.get("access_mode", None),
+        explicitAccess=args.get("explicit_access", None),
+        sortBy=args.get("sort_by", None),
+        includeFlags=args.get("include_flags", None),
+        excludeFlags=args.get("exclude_flags", None),
     )
-    return CommandResults(readable_output=tableToMarkdown("Result", result["data"]), outputs=result)
+    readable_output = f"Advanced Case Search: {result['count']} result(s)\n"
+    readable_output += tableToMarkdown(
+        "Output not suitable for playground", result["data"]
+    )
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def close_case_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    case_id = args.get("case_id", None)
+    if not case_id:
+        raise ValueError("case_id not specified")
+    result = close_case(
+        caseID=case_id,
+        comment=args.get("comment", None),
+    )
+    readable_output = f"# #{case_id}: close case\n"
+    readable_output += (
+        f"_Status: {result['data']['status']}, at: {result['data']['closedTime']}_"
+    )
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def create_case_command(args: Dict[str, Any]) -> CommandResults:
@@ -298,7 +276,9 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
     )
     readable_output = f"# #{case_id}: Comments\n"
     for comment in result["data"]:
-        readable_output += f"#### *{comment['addedByUser']['userName']} - {comment['addedTime']}*\n"
+        readable_output += (
+            f"#### *{comment['addedByUser']['userName']} - {comment['addedTime']}*\n"
+        )
         readable_output += f"{comment['comment']}\n\n"
 
     return CommandResults(readable_output=readable_output, outputs=result)
