@@ -178,7 +178,7 @@ def get_users(client: Client, **args) -> CommandResults:
     if args.get("userID"):
         url_suffix = f'users/{args.get("userID")}'
     else:
-        url_suffix = f"users"
+        url_suffix = "users"
 
     r = client._http_request("GET", url_suffix)
 
@@ -276,7 +276,7 @@ def get_profile(client: Client, **args) -> CommandResults:
     if profileID:
         url_suffix = f"profiles/{profileID}"
     else:
-        url_suffix = f"profiles"
+        url_suffix = "profiles"
 
     r = client._http_request("GET", url_suffix)
 
@@ -301,7 +301,7 @@ def create_profile(client: Client, **args) -> CommandResults:
         }
     )
 
-    r = client._http_request("POST", f"profiles", data=data)
+    r = client._http_request("POST", "profiles", data=data)
 
     results = CommandResults(
         outputs_prefix="Triage.profiles", outputs_key_field="data", outputs=r
