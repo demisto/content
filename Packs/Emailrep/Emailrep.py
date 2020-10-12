@@ -249,7 +249,7 @@ import traceback
 from typing import Any, Dict, List, Optional
 
 # Disable insecure warnings
-#from CommonServerPython import DBotScoreType
+from CommonServerPython import DBotScoreType
 
 urllib3.disable_warnings()
 
@@ -257,32 +257,19 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 
-#DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 ACCEPTED_TAGS = ['account_takeover', 'bec', 'brand_impersonation', 'browser_exploit', 'credential_phishing',
                  'generic_phishing', 'malware', 'scam', 'spam', 'spoofed', 'task_request', 'threat_actor']
+APP_NAME = 'Cortex-XSOAR'
+INTEGRATION_NAME = 'EmailRep'
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
-    """
+    """Client class to interact with the EmailRep service API"""
 
     def get_email_address_reputation(self, email: str) -> Dict[str, Any]:
-        """Gets the IP reputation using the '/{email}' API endpoint
-
-        :type email: ``str``
-        :param ip: email address to get the reputation for
-
-        :return: dict containing the email reputation as returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
+        """Get email reputation using the '/{email}' API endpoint"""
 
         return self._http_request(
             method='GET',
@@ -291,14 +278,7 @@ class Client(BaseClient):
 
     def post_email_address_report(self, email: str, tags: List[str], description: Optional[str],
                                   timestamp: Optional[int], expires: Optional[int]) -> Dict[str, Any]:
-        """Gets the IP reputation using the '/{email}' API endpoint
-
-        :type email: ``str``
-        :param ip: email address to get the reputation for
-
-        :return: dict containing the email reputation as returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
+        """Report email reputation using the '/report' API endpoint"""
         request_params: Dict[str, Any] = {}
         request_params['email'] = email
         request_params['tags'] = tags
@@ -359,28 +339,12 @@ def test_module(client: Client, first_fetch_time: int) -> str:
 
 
 def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """TODO: rewrite this
-    ip command: Returns IP reputation for a list of IPs
+    """Get email address reputation from EmailRep and calculate DBotScore.
 
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
-
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['ip']`` is a list of IPs or a single IP
-        ``args['threshold']`` threshold to determine whether an IP is malicious
-
-    :type default_threshold: ``int``
-    :param default_threshold:
-        default threshold to determine whether an IP is malicious
-        if threshold is not specified in the XSOAR arguments
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains IPs
-
-    :rtype: ``CommandResults``
+    DBot score:
+    Good: Suspicious = false
+    Malicious: Suspicious = true + (malicious_activity_recent = true or credentials_leaked_recent = true)
+    Suspicious: Suspicious = true and not malicious
     """
 
     emails = argToList(args.get('email_address'))
@@ -388,20 +352,19 @@ def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         raise ValueError('Email(s) not specified')
 
     email_data_list: List[Dict[str, Any]] = []
-    email_standard_list: List[Common.EMAIL] = []
+    email_score_list: List[Dict[str, Any]] = []
     for email in emails:
         email_data = client.get_email_address_reputation(email)
         email_data_list.append(email_data)
 
         score = Common.DBotScore.NONE
-        description = 'EmailRep returned'
+        description = f'{INTEGRATION_NAME} returned'
         suspicious = email_data.get('suspicious')
-        # might cause problems.
-        malicious_activity_recent = email_data.get('malicious_activity_recent')
-        credentials_leaked_recent = email_data.get('credentials_leaked_recent')
+        malicious_activity_recent = email_data.get('details.malicious_activity_recent')
+        credentials_leaked_recent = email_data.get('details.credentials_leaked_recent')
         if not suspicious:
             score = Common.DBotScore.GOOD
-            description += ' not suspicious'
+            description = None
         elif malicious_activity_recent or credentials_leaked_recent:
             if malicious_activity_recent:
                 description += ' malicious_activity_recent '
@@ -410,56 +373,36 @@ def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             score = Common.DBotScore.BAD
         else:
             score = Common.DBotScore.SUSPICIOUS
+            description = None
 
         dbot_score = Common.DBotScore(
-            indicator=ip,
-            indicator_type=DBotScoreType.EMAIL,
-            integration_name='EmailRep',
+            indicator=email,
+            indicator_type=DBotScoreType.EMAIL_ADDRESS,
+            integration_name=INTEGRATION_NAME,
             score=score,
             malicious_description=description
         )
 
-        email_context = Common.EMAIL(
-            emailaddress=email,
+        email_context = Common.Email(
+            email_address=email,
             dbot_score=dbot_score
         )
-        email_standard_list.append(email_context)
+
+        email_score_list.append(email_context)
 
     readable_output = tableToMarkdown('Email List', email_data_list)
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='EmailRep.EmailScore',
+        outputs_prefix=f'{INTEGRATION_NAME}.EmailScore',
         outputs_key_field='email',
         outputs=email_data_list,
-        indicators=email_standard_list
+        indicators=email_score_list
     )
 
 
 def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """TODO: rewrite this.
-    ip command: Returns IP reputation for a list of IPs
-
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
-
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['ip']`` is a list of IPs or a single IP
-        ``args['threshold']`` threshold to determine whether an IP is malicious
-
-    :type default_threshold: ``int``
-    :param default_threshold:
-        default threshold to determine whether an IP is malicious
-        if threshold is not specified in the XSOAR arguments
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains IPs
-
-    :rtype: ``CommandResults``
-    """
+    """Get email address reputation from EmailRep"""
 
     emails = argToList(args.get('email_address'))
     if len(emails) == 0:
@@ -474,21 +417,13 @@ def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='EmailRep.Email',
+        outputs_prefix=f'{INTEGRATION_NAME}.Email',
         outputs_key_field='email',
         outputs=email_data_list
     )
 
 def report_email_address_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Report email address to EmailRep
-
-    Args:
-        client:
-        args:
-
-    Returns:
-
-    """
+    """Report email address to EmailRep"""
 
     email_address = args.get('email_address')
     if email_address == '':
@@ -498,19 +433,18 @@ def report_email_address_command(client: Client, args: Dict[str, Any]) -> Comman
         raise ValueError('Tag(s) not specified')
     for tag in tags:
         if tag not in ACCEPTED_TAGS:
-            raise ValueError(f'Tag \'{tag}\' not in accepted tag list')
+            raise ValueError(f'Tag \'{tag}\' not in accepted tag list: {ACCEPTED_TAGS}')
     description = args.get('description')
     timestamp = int(args.get('description'))
     expires = int(args.get('expires'))
 
     result = client.post_email_address_report(email_address, tags, description, timestamp, expires)
 
-    # Not sure about this. Need to read Common
     readable_output = tableToMarkdown('Email Report Response', result)
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='EmailRep.Report',
+        outputs_prefix=f'{INTEGRATION_NAME}.Report',
         outputs_key_field='status',
         outputs=result
     )
@@ -520,37 +454,20 @@ def report_email_address_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
+    """main function, parses params and runs command functions"""
 
     api_key = demisto.params().get('apikey')
 
     # get the service API url
-    #base_url = urljoin(demisto.params()['url'], '/api/v1')
     base_url = demisto.params()['url']
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
-
-    # INTEGRATION DEVELOPER TIP
-    # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
-    # etc. to print information in the XSOAR server log. You can set the log
-    # level on the server configuration
-    # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         headers = {
-            'Authorization': f'Bearer {api_key}'
+            'Key': f'{api_key}',
+            'User-Agent': APP_NAME
         }
         client = Client(
             base_url=base_url,
