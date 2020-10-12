@@ -948,7 +948,6 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, i
             tests_for_iteration = []
         elif filter_configured and filtered_tests:
             tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
-            print(tests)
             print('From get tests command')
             print(tests_for_iteration)
         else:
