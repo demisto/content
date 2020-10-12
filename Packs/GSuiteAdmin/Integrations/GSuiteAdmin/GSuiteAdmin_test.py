@@ -4,7 +4,7 @@ import pytest
 import demistomock as demisto
 from GSuiteAdmin import DemistoException, MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES
 
-with open('TestData/service_account_json.txt') as f:
+with open('test_data/service_account_json.txt') as f:
     TEST_JSON = f.read()
 MOCKER_HTTP_METHOD = 'GSuiteApiModule.GSuiteClient.http_request'
 
@@ -231,11 +231,11 @@ def test_user_create_command(gsuite_client, mocker):
     - Ensure CommandResult entry should be as expected.
     """
     from GSuiteAdmin import user_create_command
-    with open('TestData/user_create_args.json', 'r') as file:
+    with open('test_data/user_create_args.json', 'r') as file:
         args = json.load(file)
-    with open('TestData/user_create_response.json') as file:
+    with open('test_data/user_create_response.json') as file:
         api_response = json.load(file)
-    with open('TestData/user_create_entry_context.json') as file:
+    with open('test_data/user_create_entry_context.json') as file:
         expected_entry_context = json.load(file)
     mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
     command_result = user_create_command(gsuite_client, args)
@@ -262,7 +262,7 @@ def test_user_alias_add_command_success(mocker_http_request, gsuite_client):
     """
     from GSuiteAdmin import user_alias_add_command
 
-    with open('TestData/user_alias_add.json', encoding='utf-8') as data:
+    with open('test_data/user_alias_add.json', encoding='utf-8') as data:
         expected_res = json.load(data)
     mocker_http_request.return_value = expected_res['Contents']
 
@@ -316,7 +316,7 @@ def test_group_create_command_success(mocker_http_request, gsuite_client):
     """
     from GSuiteAdmin import group_create_command
 
-    with open('TestData/group_create_test_data.json', encoding='utf-8') as data:
+    with open('test_data/group_create_test_data.json', encoding='utf-8') as data:
         test_data = json.load(data)
     response = test_data.get('response_data', {})
     mocker_http_request.return_value = response
@@ -422,9 +422,9 @@ def test_role_assignment_list(gsuite_client, mocker):
         'customer_id': 'cfdge',
         'max_results': '1'
     }
-    with open('TestData/role_assignment_list_response.json') as file:
+    with open('test_data/role_assignment_list_response.json') as file:
         api_response = json.load(file)
-    with open('TestData/role_assignment_list_entry_context.json') as file:
+    with open('test_data/role_assignment_list_entry_context.json') as file:
         expected_entry_context = json.load(file)
     mocker.patch(MOCKER_HTTP_METHOD, side_effect=[api_response, {}])
 
@@ -457,9 +457,9 @@ def test_role_assignment_create(gsuite_client, mocker):
         'role_id': 'role1',
         'assigned_to': '1234'
     }
-    with open('TestData/role_assignment_create_response.json') as file:
+    with open('test_data/role_assignment_create_response.json') as file:
         api_response = json.load(file)
-    with open('TestData/role_assignment_create_entry_context.json') as file:
+    with open('test_data/role_assignment_create_entry_context.json') as file:
         expected_entry_context = json.load(file)
     mocker.patch(MOCKER_HTTP_METHOD, return_value=api_response)
     command_result = role_assignment_create_command(gsuite_client, arguments)
@@ -487,7 +487,7 @@ def test_role_create_command_success(mocker_http_request, gsuite_client):
     """
     from GSuiteAdmin import role_create_command
 
-    with open('TestData/role_create_test_data.json', encoding='utf-8') as data:
+    with open('test_data/role_create_test_data.json', encoding='utf-8') as data:
         test_data = json.load(data)
     response_data = test_data['response']
     mocker_http_request.return_value = response_data
@@ -583,9 +583,9 @@ def test_datatransfer_list(gsuite_client, mocker):
     """
     from GSuiteAdmin import datatransfer_list_command
 
-    with open('TestData/datatransfer_list_response.json') as file:
+    with open('test_data/datatransfer_list_response.json') as file:
         api_response = json.load(file)
-    with open('TestData/datatransfer_list_entry_context.json') as file:
+    with open('test_data/datatransfer_list_entry_context.json') as file:
         expected_entry_context = json.load(file)
     mocker.patch(MOCKER_HTTP_METHOD, side_effect=[api_response, {}])
 
@@ -618,9 +618,9 @@ def test_custom_user_schema_create(gsuite_client, mocker):
         'schema_display_name': 'n2',
         'field_raw_json': '{"fields": []}'
     }
-    with open('TestData/custom_user_schema_response.json') as file:
+    with open('test_data/custom_user_schema_response.json') as file:
         api_response = json.load(file)
-    with open('TestData/custom_user_schema_create_entry_context.json') as file:
+    with open('test_data/custom_user_schema_create_entry_context.json') as file:
         expected_entry_context = json.load(file)
     mocker.patch(MOCKER_HTTP_METHOD, return_value=api_response)
     command_result = custom_user_schema_create_command(gsuite_client, arguments)
@@ -671,9 +671,9 @@ def test_custom_user_schema_update(gsuite_client, mocker):
         'schema_display_name': 'n1',
         'field_raw_json': '{"fields": []}'
     }
-    with open('TestData/custom_user_schema_response.json') as file:
+    with open('test_data/custom_user_schema_response.json') as file:
         api_response = json.load(file)
-    with open('TestData/custom_user_schema_update_entry_context.json') as file:
+    with open('test_data/custom_user_schema_update_entry_context.json') as file:
         expected_entry_context = json.load(file)
     mocker.patch(MOCKER_HTTP_METHOD, return_value=api_response)
     command_result = custom_user_schema_update_command(gsuite_client, arguments)
@@ -724,7 +724,7 @@ def test_datatransfer_request_create_command_success(mocker_http_request, gsuite
     """
     from GSuiteAdmin import datatransfer_request_create_command
 
-    with open('TestData/data_transfer_request_create_test_data.json') as data:
+    with open('test_data/data_transfer_request_create_test_data.json') as data:
         test_data = json.load(data)
     response_data = test_data['output']
     mocker_http_request.return_value = response_data
@@ -788,7 +788,7 @@ def test_prepare_datatransfer_payload_from_arguments():
     Then:
     - Ensure method returns valid request_payload
     """
-    with open('TestData/data_transfer_request_create_test_data.json', encoding='utf-8') as data:
+    with open('test_data/data_transfer_request_create_test_data.json', encoding='utf-8') as data:
         test_data = json.load(data)
 
     args = test_data['args']
