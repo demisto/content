@@ -1017,7 +1017,7 @@ jobs:
             ./Tests/scripts/slack_notifier.sh 'sdk_faild_steps' ./env_results.json
           when: always
 
-  Demisto SDK Nightly - Run against CortexXSOAR:
+  Demisto SDK Nightly - Run against Cortex XSOAR:
     <<: *container_config
     resource_class: medium
     <<: *environment
@@ -1053,11 +1053,11 @@ jobs:
           when: on_success
           command: python3 Tests/unlock_integrations.py HelloWorld
       - run:
-          name: Upload integration to CortexXSOAR
+          name: Upload integration to Cortex XSOAR
           when: on_success
-          command: demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure >
+          command: demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
       - run:
-          name: Download integration from CortexXSOAR
+          name: Download integration from Cortex XSOAR
           when: on_success
           command: demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
       - run:
@@ -1065,18 +1065,19 @@ jobs:
           when: on_success
           command: |
             { # try
-            yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -nv -ud
+            yes | demisto-sdk format -i Packs/HelloWorld/ -nv -ud
             } || { # catch 
-                echo "Last known exit status: $?"  # DO NOT DELETE THIS LINE. format sometimes will exit with the odd exist statuses.
+                # TODO: remove it after fixing format command
+                echo "format exit status: $?"  # DO NOT DELETE THIS LINE. format sometimes will exit with the odd exist statuses.
             }
       - run:
           name: Run validate
           when: on_success
-          command: demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/
+          command: demisto-sdk validate -i Packs/HelloWorld/
       - run:
           name: Run lint
           when: on_success
-          command: demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld/
+          command: demisto-sdk lint -i Packs/HelloWorld/
       - *destroy_instances
       - *store_artifacts
 
@@ -1211,14 +1212,14 @@ workflows:
     jobs:
       - Demisto SDK Nightly:
           context: sdk_nightly_env
-      - Demisto SDK Nightly - Run against CortexXSOAR:
+      - Demisto SDK Nightly - Run against Cortex XSOAR:
           context: sdk_nightly_env
 
   sdk_nightly_trigger:
-    # will initiate when usign the trigger script.
+    # will initiate when using the trigger script.
     when: << pipeline.parameters.demisto_sdk_nightly>>
     jobs:
       - Demisto SDK Nightly:
           context: sdk_nightly_env
-      - Demisto SDK Nightly - Run against CortexXSOAR:
+      - Demisto SDK Nightly - Run against Cortex XSOAR:
           context: sdk_nightly_env
