@@ -29,12 +29,8 @@ def check_sub_domains_in_domain(domains_to_compare: list, sub_domains_to_check: 
     markdown = []
     headers = ["DomainToTest", "DomainToCompare", "IsInternal"]
     for sub_domain in sub_domains_to_check:
-        is_in_domain = False
-        for main_domain in domains_to_compare:
-            if main_domain in sub_domain:
-                # in case sub domain is in at least one of the given main domains
-                is_in_domain = True
-                break
+        # in case sub domain is in at least one of the given main domains
+        is_in_domain = any(main_domain in sub_domain for main_domain in domains_to_compare)
         context_entry.append({
             'DomainToTest': sub_domain,
             'DomainToCompare': domains_to_compare,
@@ -48,14 +44,18 @@ def check_sub_domains_in_domain(domains_to_compare: list, sub_domains_to_check: 
     return CommandResults(outputs={'IsInternalDomain': context_entry}, readable_output=table)
 
 
+def validate_args(domains_to_compare, sub_domains_to_check):
+    if len(domains_to_compare) == 0:
+        return_error("Error: please specify at least one possible main domain to compare with.")
+    elif len(sub_domains_to_check) == 0:
+        return_error("Error: please specify at least one possible sub domain to check.")
+
+
 def main():
     args = demisto.args()
     domains_to_compare = argToList(args.get('domains_to_compare'))
-    if len(domains_to_compare) == 0:
-        return_error("Error: please specify at least one possible main domain to compare with.")
     sub_domains_to_check = argToList(args.get('domain_to_check'))
-    if len(sub_domains_to_check) == 0:
-        return_error("Error: please specify at least one possible sub domain to check.")
+    validate_args(domains_to_compare, sub_domains_to_check)
     return_results(check_sub_domains_in_domain(domains_to_compare, sub_domains_to_check))
 
 
