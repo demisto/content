@@ -599,7 +599,7 @@ class Client(BaseClient):
             Array of attachments entries.
         """
         entries = []
-        links = []  # type: List[Tuple[str, str]]
+        links = []  # type: List[Tuple[str, str, str]]
         attachments_res = self.get_ticket_attachments(ticket_id)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
@@ -611,7 +611,7 @@ class Client(BaseClient):
                                     proxies=self._proxies)
 
             if file_res is not None:
-                entry = (fileResult(link[1], file_res.content),  link[2])
+                entry = (fileResult(link[1], file_res.content), link[2])
                 if get_timestamp:
                     entries.append(entry)
                 else:
