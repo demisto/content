@@ -169,53 +169,7 @@ references:
           else
             ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
         fi
-  
-  test_download_upload: &test_download_upload
-    run:
-      name: Test Download and Upload commands
-      when: on_success
-      command: |
-        echo "Running upload"
-        demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure > artifacts/upload.log
 
-        echo "Running download"
-        demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f > artifacts/download.log
-    
-        echo "Running format"
-        { # try
-            yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -nv -ud > artifacts/format.log
-        } || { # catch 
-            echo "Format exit status: $?"  # DO NOT DELETE THIS LINE. format sometimes will exit with the odd exist statuses.
-        }
-        echo "Running validate"
-        demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > artifacts/validate.log
-        if [[ $? -ne 0 ]]
-        then
-            VALDIATE_CODE=1
-        fi
-
-        echo "Running lint"
-        demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld/ > artifacts/lint.log
-        if [[ $? -ne 0 ]]
-        then
-            LINT_CODE=1
-        fi
-        
-        # Check codes
-        if [[ $VALDIATE_CODE -ne 0 ]]
-        then
-            echo "Validate command failed"
-            exit 1
-        fi
-        
-        if [[ $LINT_CODE -ne 0 ]]
-        then
-            echo "Lint command failed"
-            exit 1
-          fi
-        echo "All tests has been passed"
-
-      
   create_instance: &create_instance
     run:
       name: Create Instance
@@ -1085,7 +1039,6 @@ jobs:
           name: Set Environment Variables
           when: on_success
           command: |
-            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
             echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
             echo "export DEMISTO_BASE_URL=\"https://$(cat env_results.json | jq -r '.[0].InstanceDNS')\"" >> $BASH_ENV
             echo "Server URL: $DEMISTO_BASE_URL"
@@ -1099,7 +1052,31 @@ jobs:
           shell: /bin/bash
           when: on_success
           command: python3 Tests/unlock_integrations.py HelloWorld
-      - *test_download_upload
+      - run:
+          name: Upload integration to CortexXSOAR
+          when: on_success
+          command: demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure > ${CIRCLE_ARTIFACTS}/upload.log
+      - run:
+          name: Download integration from CortexXSOAR
+          when: on_success
+          command: demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f > ${CIRCLE_ARTIFACTS}/download.log
+      - run:
+          name: Format the integration
+          when: on_success
+          command: |
+            { # try
+            yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -nv -ud > ${CIRCLE_ARTIFACTS}/format.log
+            } || { # catch 
+                echo "Last known exit status: $?"  # DO NOT DELETE THIS LINE. format sometimes will exit with the odd exist statuses.
+            }
+      - run:
+          name: Run validate
+          when: on_success
+          command: demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > ${CIRCLE_ARTIFACTS}/validate.log
+      - run:
+          name: Run lint
+          when: on_success
+          command: demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld/ > ${CIRCLE_ARTIFACTS}/lint.log
       - *destroy_instances
       - *store_artifacts
 
