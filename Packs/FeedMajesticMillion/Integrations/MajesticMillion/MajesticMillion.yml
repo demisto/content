@@ -98,7 +98,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return. The default value is 50.
+      description: The maximum number of results to return. The default value is 50
       isArray: false
       name: limit
       required: false
