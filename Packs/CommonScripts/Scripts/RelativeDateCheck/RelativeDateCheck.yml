@@ -1,0 +1,33 @@
+args:
+- default: false
+  description: Date value to check - Can be any non-timezone aware time format. ex.
+    "2020-01-01T00:00:00"
+  isArray: false
+  name: left
+  required: true
+  secret: false
+- default: false
+  description: Relative time ex. "6 months ago"
+  isArray: false
+  name: right
+  required: true
+  secret: false
+comment: Evaluates to True if the left value is sooner than the right date.
+commonfields:
+  id: cdc4afc7-7bad-4ef8-8508-1db11fb97fe8
+  version: -1
+enabled: true
+name: RelativeDateCheck
+script: '-'
+subtype: python3
+system: false
+tags:
+- date
+- filter
+- Condition
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.2.6981
+runas: DBotWeakRole
+runonce: false
+pswd: ''
