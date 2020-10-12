@@ -421,7 +421,7 @@ def get_rql_response():
         del item["hasExternalFinding"]
         del item["hasExternalIntegration"]
         del item["hasNetwork"]
-    
+
     md = tableToMarkdown(name="RQL Output:", t=human_readable, headerTransform=pascalToSpace, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
