@@ -1046,7 +1046,7 @@ jobs:
           name: Install SDK Master
           shell: /bin/bash
           when: on_success
-          command: pip3 install git+https://github.com/demisto/demisto-sdk.git > sdk_install.log
+          command: pip3 install git+https://github.com/demisto/demisto-sdk.git
       - run:
           name: Unlock HelloWorld integration
           shell: /bin/bash
@@ -1055,28 +1055,28 @@ jobs:
       - run:
           name: Upload integration to CortexXSOAR
           when: on_success
-          command: demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure > ${CIRCLE_ARTIFACTS}/upload.log
+          command: demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure >
       - run:
           name: Download integration from CortexXSOAR
           when: on_success
-          command: demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f > ${CIRCLE_ARTIFACTS}/download.log
+          command: demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
       - run:
           name: Format the integration
           when: on_success
           command: |
             { # try
-            yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -nv -ud > ${CIRCLE_ARTIFACTS}/format.log
+            yes | demisto-sdk format -i Packs/HelloWorld/Integrations/HelloWorld -nv -ud
             } || { # catch 
                 echo "Last known exit status: $?"  # DO NOT DELETE THIS LINE. format sometimes will exit with the odd exist statuses.
             }
       - run:
           name: Run validate
           when: on_success
-          command: demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/ > ${CIRCLE_ARTIFACTS}/validate.log
+          command: demisto-sdk validate -i Packs/HelloWorld/Integrations/HelloWorld/
       - run:
           name: Run lint
           when: on_success
-          command: demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld/ > ${CIRCLE_ARTIFACTS}/lint.log
+          command: demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld/
       - *destroy_instances
       - *store_artifacts
 
