@@ -8,6 +8,7 @@ from CommonServerUserPython import *
 import pickle
 import uuid
 from html.parser import HTMLParser
+from html import unescape
 import pandas as pd
 DBOT_TEXT_FIELD = 'dbot_text'
 DBOT_PROCESSED_TEXT_FIELD = 'dbot_processed_text'
@@ -24,7 +25,7 @@ html_parser = HTMLParser()
 
 
 def read_file(input_data, input_type):
-    data = []  # type: List[Dict[str,str]]
+    data = []  # type: ignore
     if not input_data:
         return data
     if input_type.endswith("string"):
@@ -76,7 +77,7 @@ def clean_html(text):
     cleaned = text
     for pattern in HTML_PATTERNS:
         cleaned = pattern.sub(" ", cleaned)
-    return html_parser.unescape(cleaned).strip()
+    return unescape(cleaned).strip()
 
 
 def remove_line_breaks(text):
@@ -223,7 +224,7 @@ def main():
     if output_format == 'pickle':
         data_encoded = pickle.dumps(data, protocol=2)
     elif output_format == 'json':
-        data_encoded = json.dumps(data, default=str)
+        data_encoded = json.dumps(data, default=str)  # type: ignore
     else:
         return_error("Invalid output format: %s" % output_format)
     entry = fileResult(file_name, data_encoded)
