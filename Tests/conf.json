@@ -142,7 +142,7 @@
             "integrations": "IllusiveNetworks",
             "playbookID": "IllusiveNetworks-Test",
             "fromversion": "5.0.0",
-            "timeout": 5000
+            "timeout": 500
         },
         {
             "integrations": "JSON Feed",
