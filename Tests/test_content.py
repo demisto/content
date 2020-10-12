@@ -443,7 +443,6 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
     client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
-        print(f"Not ami or not integrations or has unmockable")
         prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index, include_timestamp=True)
         run_test_logic(conf_json_test_details, tests_queue, tests_settings, client, failed_playbooks, integrations,
                        playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
@@ -876,7 +875,6 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     prints_manager.execute_thread_prints(thread_index)
     if is_private:
         private_test_names = mockable_tests_names + unmockable_tests_names
-        print(f"Private test names are: {private_test_names}")
         private_tests = get_test_records_of_given_test_names(tests_settings, private_test_names)
         mockable_tests = []
         unmockable_tests = private_tests
@@ -884,7 +882,6 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
         unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
 
-    print(f"Tests to run are: {unmockable_tests}")
     if is_nightly and is_memory_check:
         mem_lim, err = get_docker_limit()
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID,
@@ -926,7 +923,6 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                                                                                       t,
                                                                                       thread_index,
                                                                                       unmockable_tests_queue)
-            print(f"T is: {t}")
             run_test_scenario(unmockable_tests_queue, tests_settings, t, proxy, default_test_timeout,
                               skipped_tests_conf, nightly_integrations, skipped_integrations_conf, skipped_integration,
                               is_nightly, run_all_tests, is_filter_configured, filtered_tests, skipped_tests,
