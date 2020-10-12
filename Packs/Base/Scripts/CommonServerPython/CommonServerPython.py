@@ -2166,7 +2166,7 @@ class Common(object):
 
         :type actor: ``str``
         :param actor: The actor reference.
-s
+
          :type tags: ``str``
         :param tags: Tags of the file.
 
