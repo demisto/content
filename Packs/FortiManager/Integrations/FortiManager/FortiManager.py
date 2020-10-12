@@ -600,8 +600,20 @@ def main() -> None:
         )
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            list_adom_devices_command(client, {})
+            try:
+                list_adom_devices_command(client, {})
+            except DemistoException as e:
+                if 'No permission for the resource' in str(e):
+                    return_error("Unable to connect to the FortiManager Server - please check the "
+                                 "entered credentials and ADOM.")
+
+                if 'Invalid url' in str(e):
+                    return_error("Unable to connect to the default ADOM - please check the "
+                                 "entered credentials and ADOM.")
+
+                else:
+                    raise
+
             return_results("ok")
 
         elif demisto.command() == 'fortimanager-devices-list':

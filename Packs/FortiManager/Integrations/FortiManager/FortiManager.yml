@@ -8,6 +8,7 @@ configuration:
   required: true
   type: 0
 - hidden: false
+  display: Username
   name: creds
   required: true
   type: 9
@@ -1043,7 +1044,7 @@ script:
     description: Delete a service group
     execution: false
     name: fortimanager-service-group-delete
- - arguments:
+  - arguments:
     - default: false
       description: The ADOM from which to fetch the custom servicse. Leave empty to
         use the instance ADOM.

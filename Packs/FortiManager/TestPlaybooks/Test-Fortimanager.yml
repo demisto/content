@@ -52,6 +52,8 @@ tasks:
       - "7"
       - "8"
       - "5"
+      - "53"
+      - "54"
     scriptarguments:
       all:
         simple: "yes"
@@ -1978,14 +1980,709 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "53":
+    id: "53"
+    taskid: 73dd2094-c40a-49c4-8404-96456f4abcff
+    type: title
+    task:
+      id: 73dd2094-c40a-49c4-8404-96456f4abcff
+      version: -1
+      name: Policy Package
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: a7935c31-e6e1-46e9-8bc7-39cbd72cc366
+    type: title
+    task:
+      id: a7935c31-e6e1-46e9-8bc7-39cbd72cc366
+      version: -1
+      name: Policy
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: bff1e313-6279-4f43-8f4b-947ea1b67056
+    type: regular
+    task:
+      id: bff1e313-6279-4f43-8f4b-947ea1b67056
+      version: -1
+      name: fortimanager-firewall-policy-package-list
+      description: List ADOM policy packages
+      script: FortiManager|||fortimanager-firewall-policy-package-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      adom: {}
+      from: {}
+      policy_package: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 8242cdbd-81a0-4aaf-880a-3f9e87606a2b
+    type: condition
+    task:
+      id: 8242cdbd-81a0-4aaf-880a-3f9e87606a2b
+      version: -1
+      name: Check policy package list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiManager.PolicyPackage.name
+            iscontext: true
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: FortiManager.PolicyPackage.name
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_package
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 6914d3c6-174f-443d-8bc9-4b3de2d6f4fe
+    type: regular
+    task:
+      id: 6914d3c6-174f-443d-8bc9-4b3de2d6f4fe
+      version: -1
+      name: fortimanager-firewall-policy-package-create
+      description: Create a new firewall policy package.
+      script: FortiManager|||fortimanager-firewall-policy-package-create
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      adom: {}
+      central_nat:
+        simple: disable
+      consolidated_firewall_mode: {}
+      fwpolicy_implicit_log: {}
+      fwpolicy6_implicit_log: {}
+      inspection_mode: {}
+      name:
+        simple: my_temp_package
+      ngfw_mode: {}
+      ssl_ssh_profile: {}
+      type:
+        simple: pkg
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: cc02e260-9647-43b2-8d13-68765cbc6158
+    type: regular
+    task:
+      id: cc02e260-9647-43b2-8d13-68765cbc6158
+      version: -1
+      name: fortimanager-firewall-policy-package-list
+      description: List ADOM policy packages
+      script: FortiManager|||fortimanager-firewall-policy-package-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      adom: {}
+      from: {}
+      policy_package:
+        simple: my_temp_package
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: c492fca1-e6e4-473f-8adb-2a7912555e64
+    type: condition
+    task:
+      id: c492fca1-e6e4-473f-8adb-2a7912555e64
+      version: -1
+      name: Check policy package creation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FortiManager.PolicyPackage.name
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_package
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 6f82ced7-2d6e-400c-8cb4-67f1002d60a6
+    type: regular
+    task:
+      id: 6f82ced7-2d6e-400c-8cb4-67f1002d60a6
+      version: -1
+      name: fortimanager-firewall-policy-package-update
+      description: Create a new firewall policy package.
+      script: FortiManager|||fortimanager-firewall-policy-package-update
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      adom: {}
+      central_nat:
+        simple: enable
+      consolidated_firewall_mode: {}
+      fwpolicy_implicit_log: {}
+      fwpolicy6_implicit_log: {}
+      inspection_mode: {}
+      name:
+        simple: my_temp_package
+      ngfw_mode: {}
+      ssl_ssh_profile: {}
+      type:
+        simple: pkg
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: 744bfa15-ca09-47a6-8a12-3d1e96e1f97f
+    type: regular
+    task:
+      id: 744bfa15-ca09-47a6-8a12-3d1e96e1f97f
+      version: -1
+      name: fortimanager-firewall-policy-list
+      description: List specific firewall policies from a policy package
+      script: FortiManager|||fortimanager-firewall-policy-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      adom: {}
+      from: {}
+      package:
+        simple: FG600E-LAB_test1
+      policy_id: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: f71cf539-f80f-432e-8bec-0e789befd11f
+    type: condition
+    task:
+      id: f71cf539-f80f-432e-8bec-0e789befd11f
+      version: -1
+      name: Check policy list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiManager.PolicyPackage.Policy.policyid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: 03d8c518-ae4c-4981-80d5-169e2dd10575
+    type: regular
+    task:
+      id: 03d8c518-ae4c-4981-80d5-169e2dd10575
+      version: -1
+      name: fortimanager-firewall-policy-create
+      description: Create a firewall policy.
+      script: FortiManager|||fortimanager-firewall-policy-create
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      action:
+        simple: accept
+      additional_params: {}
+      adom: {}
+      comments: {}
+      dstaddr:
+        simple: all
+      dstaddr_negate: {}
+      dstaddr6: {}
+      dstintf: {}
+      logtraffic: {}
+      name:
+        simple: my_temp_policy
+      package:
+        simple: my_temp_package
+      policyid:
+        simple: "10"
+      schedule: {}
+      service: {}
+      srcaddr:
+        simple: all
+      srcaddr_negate: {}
+      srcaddr6: {}
+      srcintf: {}
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: c665b67a-8f18-4058-8216-6fb1889312ea
+    type: regular
+    task:
+      id: c665b67a-8f18-4058-8216-6fb1889312ea
+      version: -1
+      name: fortimanager-firewall-policy-list
+      description: List specific firewall policies from a policy package
+      script: FortiManager|||fortimanager-firewall-policy-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      adom: {}
+      from: {}
+      package:
+        simple: my_temp_package
+      policy_id:
+        simple: "10"
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 2145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: ea22cb80-8f85-44d3-8f54-1022b3ea0c53
+    type: condition
+    task:
+      id: ea22cb80-8f85-44d3-8f54-1022b3ea0c53
+      version: -1
+      name: Check policy creation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FortiManager.PolicyPackage.Policy.policyid
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: e5151979-27af-4de1-8ca3-703a5cd351e8
+    type: regular
+    task:
+      id: e5151979-27af-4de1-8ca3-703a5cd351e8
+      version: -1
+      name: fortimanager-firewall-policy-update
+      description: Update a firewall policy.
+      script: FortiManager|||fortimanager-firewall-policy-update
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      action: {}
+      additional_params: {}
+      adom: {}
+      comments: {}
+      dstaddr: {}
+      dstaddr_negate: {}
+      dstaddr6: {}
+      dstintf: {}
+      logtraffic: {}
+      name: {}
+      package:
+        simple: my_temp_package
+      policyid:
+        simple: "10"
+      schedule: {}
+      service:
+        simple: AH
+      srcaddr: {}
+      srcaddr_negate: {}
+      srcaddr6: {}
+      srcintf: {}
+      status:
+        simple: disable
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 2505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 8ed70f1d-62e8-463b-80df-c5fad64a64de
+    type: regular
+    task:
+      id: 8ed70f1d-62e8-463b-80df-c5fad64a64de
+      version: -1
+      name: fortimanager-firewall-policy-list
+      description: List specific firewall policies from a policy package
+      script: FortiManager|||fortimanager-firewall-policy-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      adom: {}
+      from: {}
+      package:
+        simple: my_temp_package
+      policy_id:
+        simple: "10"
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: aaf97632-4b91-4791-8291-7bd5b1f2a8f7
+    type: condition
+    task:
+      id: aaf97632-4b91-4791-8291-7bd5b1f2a8f7
+      version: -1
+      name: Check policy update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FortiManager.PolicyPackage.Policy
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FortiManager.PolicyPackage.Policy.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: my_temp_policy
+                accessor: service
+            iscontext: true
+          right:
+            value:
+              simple: AH
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: eb085284-3630-4a66-8a8e-705643807058
+    type: regular
+    task:
+      id: eb085284-3630-4a66-8a8e-705643807058
+      version: -1
+      name: fortimanager-firewall-policy-delete
+      description: Delete a firewall policy.
+      script: FortiManager|||fortimanager-firewall-policy-delete
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      adom: {}
+      package:
+        simple: my_temp_package
+      policy:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 5c5cdbbb-d2c9-487b-853b-53d6cd7585b2
+    type: regular
+    task:
+      id: 5c5cdbbb-d2c9-487b-853b-53d6cd7585b2
+      version: -1
+      name: fortimanager-firewall-policy-package-delete
+      description: Delete a firewall policy package.
+      script: FortiManager|||fortimanager-firewall-policy-package-delete
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    scriptarguments:
+      adom: {}
+      pkg_path:
+        simple: my_temp_package
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 3230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3095,
-        "width": 3380,
-        "x": -530,
+        "height": 3275,
+        "width": 4240,
+        "x": -1390,
         "y": 50
       }
     }
