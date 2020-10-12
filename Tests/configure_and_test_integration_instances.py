@@ -1291,6 +1291,8 @@ def main():
 
     tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly,
                                     build.is_private)
+    print('TESTS FOR ITERATION #####')
+    print(tests_for_iteration)
     new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
     all_module_instances, brand_new_integrations = \
         configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
