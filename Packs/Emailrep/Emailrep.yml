@@ -38,52 +38,98 @@ script:
     name: emailrep-email-reputation-get
     outputs:
     - contextPath: EmailRep.Email.email
-      description: email address queried
+      description: ''
       type: String
     - contextPath: EmailRep.Email.reputation
-      description: high/medium/low/none
+      description: ''
       type: String
     - contextPath: EmailRep.Email.suspicious
-      description: whether the email address should be treated as suspicious or risky
+      description: ''
       type: Boolean
     - contextPath: EmailRep.Email.references
-      description: total number of positive and negative sources of reputation. note
-        that these may not all be direct references to the email address, but can
-        include reputation sources for the domain or other related information
+      description: ''
       type: Number
     - contextPath: EmailRep.Email.details.blacklisted
-      description: the email is believed to be malicious or spammy
+      description: ''
       type: Boolean
     - contextPath: EmailRep.Email.details.malicious_activity
-      description: the email has exhibited malicious behavior (e.g. phishing or fraud)
+      description: ''
       type: Boolean
     - contextPath: EmailRep.Email.details.malicious_activity_recent
-      description: malicious behavior in the last 90 days (e.g. in the case of temporal
-        account takeovers)
+      description: ''
       type: Boolean
     - contextPath: EmailRep.Email.details.credentials_leaked
-      description: credentials were leaked at some point in time (e.g. a data breach,
-        pastebin, dark web, etc.)
+      description: ''
       type: Boolean
     - contextPath: EmailRep.Email.details.credentials_leaked_recent
-      description: credentials were leaked in the last 90 days
+      description: ''
       type: Boolean
     - contextPath: EmailRep.Email.details.data_breach
-      description: the email was in a data breach at some point in time
+      description: ''
       type: Boolean
     - contextPath: EmailRep.Email.details.first_seen
-      description: the first date the email was observed in a breach, credential leak,
-        or exhibiting malicious or spammy behavior (‘never’ if never seen)
+      description: ''
+      type: Date
+    - contextPath: EmailRep.Email.details.last_seen
+      description: ''
+      type: Date
+    - contextPath: EmailRep.Email.details.domain_exists
+      description: ''
+      type: Boolean
+    - contextPath: EmailRep.Email.details.domain_reputation
+      description: ''
       type: String
-  dockerimage: demisto/python3:3.8.3.9324
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
-  script: '-'
-  subtype: python3
-  type: python
+    - contextPath: EmailRep.Email.details.new_domain
+      description: ''
+      type: Boolean
+    - contextPath: EmailRep.Email.details.days_since_domain_creation
+      description: ''
+      type: Number
+    - contextPath: EmailRep.Email.details.suspicious_tld
+      description: ''
+      type: Boolean
+    - contextPath: EmailRep.Email.details.spam
+      description: ''
+      type: Boolean
+    - contextPath: EmailRep.Email.details.free_provider
+      description: ''
+      type: Boolean
+    - contextPath: EmailRep.Email.details.disposable
+      description: ''
+      type: Boolean
+    - contextPath: EmailRep.Email.details.deliverable
+      description: ''
+      type: Boolean
+    - contextPath: EmailRep.Email.details.accept_all
+      description: ''
+      type: Boolean
+    - contextPath: EmailRep.Email.details.valid_mx
+      description: ''
+      type: Boolean
+    - contextPath: EmailRep.Email.details.primary_mx
+      description: ''
+      type: String
+    - contextPath: EmailRep.Email.details.spoofable
+      description: ''
+      type: Boolean
+    - contextPath: EmailRep.Email.details.spf_strict
+      description: ''
+      type: Boolean
+    - contextPath: EmailRep.Email.details.dmarc_enforced
+      description: ''
+      type: Boolean
+    - contextPath: EmailRep.Email.details.profiles
+      description: ''
+      type: String
+      dockerimage: demisto/python3:3.8.3.9324
+      feed: false
+      isfetch: false
+      longRunning: false
+      longRunningPort: false
+      runonce: false
+      script: '-'
+      subtype: python3
+      type: python
 defaultmapperin: HelloWorld-mapper
 defaultclassifier: HelloWorld
 fromversion: 5.0.0
