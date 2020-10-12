@@ -338,9 +338,13 @@ def url_lookup(args):
     url = args.get('url', '')
     multiple = args.get('multiple', 'true').lower() == 'true'
     response = lookup_request(url, multiple)
-    hr = json.loads(response.content)
-    if hr:
-        data = hr[0]
+    raw_res = json.loads(response.content)
+    ec = {
+        outputPaths['url']: [],
+        'DBotScore': []
+    }
+    pre_table_data = []
+    for data in raw_res:
         suspicious_categories = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
         ioc_context = {'Address': data['url'], 'Data': data['url']}
         score = 1
@@ -366,24 +370,24 @@ def url_lookup(args):
             }
             data['ip'] = data.pop('url')
         ioc_context = createContext(data=ioc_context, removeNull=True)
-        ec = {
-            outputPaths['url']: ioc_context,
-            'DBotScore': [
-                {
-                    "Indicator": url,
-                    "Score": score,
-                    "Type": "url",
-                    "Vendor": "Zscaler"
-                }
-            ]
-        }
+        ec[outputPaths['url']].append(ioc_context)
+        ec['DBotScore'].append(
+            {
+                "Indicator": data.get('url') or data.get('ip'),
+                "Score": score,
+                "Type": "url",
+                "Vendor": "Zscaler"
+            }
+        )
+        pre_table_data.append(data)
+    if ec[outputPaths['url']] or ec['DBotScore']:
         title = 'Zscaler URL Lookup'
         entry = {
             'Type': entryTypes['note'],
-            'Contents': hr,
+            'Contents': raw_res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, data, removeNull=True),
+            'HumanReadable': tableToMarkdown(title, pre_table_data, removeNull=True),
             'EntryContext': ec
         }
     else:
@@ -450,7 +454,7 @@ def ip_lookup(ip):
 def lookup_request(ioc, multiple=True):
     cmd_url = '/urlLookup'
     if multiple:
-        ioc_list = ioc.split(',')
+        ioc_list = argToList(ioc)
     else:
         ioc_list = [ioc]
     ioc_list = [url.replace('https://', '').replace('http://', '') for url in ioc_list]
@@ -592,7 +596,7 @@ def category_remove_ip(category_id, ip):
             found_category = True
             break
     if found_category:
-        ip_list = ip.split(',')
+        ip_list = argToList(ip)
         updated_ips = [ip for ip in category_data['urls'] if ip not in ip_list]  # noqa
         if updated_ips == category_data['urls']:
             return return_error('Could not find given IP in the category.')
@@ -735,6 +739,7 @@ def sandbox_report(md5, details):
 def login_command():
     auth = login()
     jsession_id = auth[:auth.index(';')]
+    DEFAULT_HEADERS['cookie'] = jsession_id
     readable_output = '### Created Zscaler Session\nSession ID: {}'.format(jsession_id)
     return CommandResults(
         outputs_prefix='Zscaler.SessionID',
@@ -832,5 +837,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

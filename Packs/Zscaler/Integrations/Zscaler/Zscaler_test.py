@@ -180,3 +180,21 @@ def test_url_multiple_arg(url, multiple, expected_data):
     request_data = m.last_request.json()
     assert len(request_data) == len(expected_data)
     assert request_data == expected_data
+
+
+def test_login(mocker):
+    """Scenario: test login command
+
+    Given:
+     - User has authorization to login
+    When:
+     - User wishes to login using login command
+    Then:
+     - Result is as expected
+    """
+    import Zscaler
+    mocker.patch.object(Zscaler, 'login', return_value="JSESSIONID=MOCK_ID; Path=/; Secure; HttpOnly")
+    res = Zscaler.login_command().to_context()
+    with open('test_data/results/login.json', 'r') as ex_f:
+        expected_result = json.load(ex_f)
+        assert expected_result == res

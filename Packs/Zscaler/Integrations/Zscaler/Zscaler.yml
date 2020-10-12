@@ -55,7 +55,7 @@ script:
       secret: false
     - default: true
       description: 'URL to be blacklisted. Should be comma separated (i.e. snapchat.com,tinder.com) '
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -72,7 +72,7 @@ script:
       secret: false
     - default: true
       description: URL to search for
-      isArray: false
+      isArray: true
       name: url
       required: false
       secret: false
@@ -137,7 +137,7 @@ script:
       description: IP address to search for
       isArray: false
       name: ip
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Look up the categorization of the given set of IP addresses, e.g.,
@@ -184,7 +184,7 @@ script:
     - default: true
       description: 'URL to be  removed from blacklist. Should be comma separated (i.e.
         snapchat.com,tinder.com) '
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -201,7 +201,7 @@ script:
       secret: false
     - default: true
       description: 'URL to be whitelisted. Should be comma separated (i.e. snapchat.com,tinder.com) '
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -219,7 +219,7 @@ script:
     - default: true
       description: 'URL to be  removed from whitelist. Should be comma separated (i.e.
         snapchat.com,tinder.com) '
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -237,7 +237,7 @@ script:
     - default: true
       description: 'IP address to be  removed from whitelist. Should be comma separated
         (i.e. 8.8.8.8,1.2.3.4) '
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -255,7 +255,7 @@ script:
     - default: true
       description: 'IP address to be whitelisted. Should be comma separated (i.e.
         8.8.8.8,1.2.3.4) '
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -273,7 +273,7 @@ script:
     - default: true
       description: 'IP address to be  removed from blacklist. Should be comma separated
         (i.e. 8.8.8.8,1.2.3.4) '
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -291,7 +291,7 @@ script:
     - default: true
       description: 'IP address to be blacklisted. Should be comma separated (i.e.
         8.8.8.8,1.2.3.4) '
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -389,7 +389,7 @@ script:
       secret: false
     - default: false
       description: URL address to remove. Comma separated values supported, e.g. pandora.com,spotify.com
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -426,7 +426,7 @@ script:
       secret: false
     - default: false
       description: IP address to remove. Comma separated values supported, e.g. 1.2.3.4,8.8.8.8
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -580,7 +580,13 @@ script:
     description: Log out of a Zscaler session.
     execution: false
     name: zscaler-logout
-  - deprecated: false
+  - arguments:
+    - default: true
+      description: Session ID result from zscaler-login command.
+      isArray: false
+      name: session_id
+      required: true
+      secret: false
     description: Activate the changes executed by other Zscaler commands.
     execution: false
     name: zscaler-activate-changes
