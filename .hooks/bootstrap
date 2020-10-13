@@ -35,6 +35,10 @@ if [ "$1" == "-u" -o "$1" == "--update" ]; then
         echo "Updating python 3 dependencies ..."
         venv/bin/pip3 install -r dev-requirements-py3.txt
     fi
+    if [ -d "node_modules" ]; then
+        echo "Updating node modules"
+        npm install
+    fi
     echo "Done updating dependencies"
     exit 0
 fi
@@ -130,3 +134,18 @@ else
     fi
 fi
 
+echo "======================="
+
+if [ -n "$NO_NPM" ]; then
+    echo "Skipping npm node modules setup as environment varialbe NO_NPM is set"
+else
+    if ! command -v npm >/dev/null 2>&1; then
+        echo "Skipping npm node modules as 'npm' command was not found!!"
+        echo "node and npm are optional but recommended. We use node for validating README files."
+        echo "You can install node and npm on your machine."
+        echo "and then run: 'npm install'"
+    else
+        echo "Running: npm install ..."
+        npm install
+    fi
+fi
