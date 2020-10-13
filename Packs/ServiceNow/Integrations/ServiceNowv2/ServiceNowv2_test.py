@@ -529,6 +529,7 @@ def test_get_remote_data_no_entries(mocker):
         -  ServiceNow client
         -  arguments: id and LastUpdate(set to lower then the modification time).
         -  ServiceNow ticket
+        -  File and comment entries sent from XSOAR.
     When
         - running get_remote_data_command.
     Then
