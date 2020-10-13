@@ -39,5 +39,7 @@ args:
 scripttarget: 0
 runas: DBotWeakRole
 runonce: false
+tests:
+- No Test
 fromversion: 5.0.0
 
