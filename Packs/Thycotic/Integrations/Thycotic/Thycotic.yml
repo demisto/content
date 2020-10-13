@@ -3,8 +3,8 @@ commonfields:
   id: Thycotic
   version: -1
 configuration:
-- defaultvalue: https://connmanagerss.thycotic.net/SecretServer
-  display: Server URL (e.g. https://example.net)
+- defaultvalue: 
+  display: Server URL
   name: url
   required: true
   type: 0
@@ -73,7 +73,7 @@ script:
     - contextPath: secret_username
       description: Username from secret
       type: String
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false
   longRunning: false
@@ -82,3 +82,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

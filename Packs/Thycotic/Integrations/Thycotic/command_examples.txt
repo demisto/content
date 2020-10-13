@@ -1,0 +1,3 @@
+!thycotic-authenticate-token
+!thycotic-secret-username-get secret_id=10366
+!thycotic-secret-password-get secret_id=10366
