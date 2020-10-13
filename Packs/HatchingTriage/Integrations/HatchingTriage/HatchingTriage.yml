@@ -2,7 +2,7 @@ category: Forensics & Malware Analysis
 commonfields:
   id: Hatching Triage
   version: -1
-  fromversion: 5.5.0
+fromversion: 5.5.0
 configuration:
 - additionalinfo: Private url is https://private.tria.ge/api/v0/
   defaultvalue: https://api.tria.ge/v0/
@@ -652,7 +652,7 @@ script:
     execution: false
     name: triage-delete-profile
     description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false
   longRunning: false
@@ -661,4 +661,3 @@ script:
   script: '-'
   subtype: python3
   type: python
-sourcemoduleid: Hatchling Triage

@@ -2964,6 +2964,11 @@
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "Hatching Triage - Detonate File",
+            "integrations": "Hatching Triage",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3138,6 +3143,7 @@
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
+        "Hatching Triage": "Community contribution",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
