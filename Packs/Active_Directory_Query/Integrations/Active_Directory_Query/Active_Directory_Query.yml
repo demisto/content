@@ -629,12 +629,6 @@ script:
         required: false
         secret: false
         description: ""
-      - default: false
-        isArray: false
-        name: group-cn
-        required: false
-        secret: false
-        description: ""
     deprecated: false
     description: Enables a user.
     execution: false
@@ -681,12 +675,6 @@ script:
         isArray: false
         name: user-profile
         required: true
-        secret: false
-        description: ""
-      - default: false
-        isArray: false
-        name: group-cn
-        required: false
         secret: false
         description: ""
     deprecated: false
