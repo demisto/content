@@ -15,7 +15,7 @@ comment: |
 commonfields:
   id: LinkIncidentsButton
   version: -1
-dockerimage: demisto/python3:3.8.5.10845
+dockerimage: demisto/python3:3.8.6.12176
 enabled: true
 name: LinkIncidentsButton
 runas: DBotWeakRole
