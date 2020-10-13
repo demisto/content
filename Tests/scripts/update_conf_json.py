@@ -111,11 +111,11 @@ def run():
     existing_test_playbooks = load_test_data_from_conf_json()
 
     for pack_name in os.listdir(PACKS_DIR):
-        # if pack_name in SKIPPED_PACKS:
-        #     continue
-        #
-        # if not is_pack_certified(pack_name):
-        #     continue
+        if pack_name in SKIPPED_PACKS:
+            continue
+
+        if not is_pack_certified(pack_name):
+            continue
         pack_integrations = []
         pack_test_playbooks = []
         pack_path = sdk_tools.pack_name_to_path(pack_name)
