@@ -184,34 +184,34 @@ script:
     execution: false
     name: triage-get-sample-summary
     outputs:
-      - contextPath: Triage.sample.summaries.completed
+      - contextPath: Triage.sample-summaries.completed
         description: Date the sample analysis was completed
         type: Date
-      - contextPath: Triage.sample.summaries.created
+      - contextPath: Triage.sample-summaries.created
         description: Date the analysis report was created
         type: Date
-      - contextPath: Triage.sample.summaries.custom
+      - contextPath: Triage.sample-summaries.custom
         description: ''
         type: String
-      - contextPath: Triage.sample.summaries.owner
+      - contextPath: Triage.sample-summaries.owner
         description: ''
         type: String
-      - contextPath: Triage.sample.summaries.sample
+      - contextPath: Triage.sample-summaries.sample
         description: Unique identifier of the sample
         type: String
-      - contextPath: Triage.sample.summaries.score
+      - contextPath: Triage.sample-summaries.score
         description: Score of the sample on a scale of 0 to 10
         type: Number
-      - contextPath: Triage.sample.summaries.sha256
+      - contextPath: Triage.sample-summaries.sha256
         description: SHA256 of the sample
         type: String
-      - contextPath: Triage.sample.summaries.status
+      - contextPath: Triage.sample-summaries.status
         description: Status of the analysis
         type: String
-      - contextPath: Triage.sample.summaries.target
+      - contextPath: Triage.sample-summaries.target
         description: Target for analysis
         type: String
-      - contextPath: Triage.sample.summaries.tasks
+      - contextPath: Triage.sample-summaries.tasks
         description: Tasks performed in the analysis
         type: String
   - arguments:

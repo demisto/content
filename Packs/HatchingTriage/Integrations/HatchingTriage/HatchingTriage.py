@@ -10,7 +10,17 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    client._http_request("GET", "users")
+
+    if 'http://' not in client._base_url and 'https://' not in client._base_url:
+        return "Provide a valid URL for the base_url"
+
+    r = client._http_request("GET", "users", resp_type="response", ok_codes=(200,401,404))
+
+    if r.status_code == 404:
+        return "Page not found, possibly wrong base_url"
+    if r.status_code == 401:
+        return "Bad API Key"
+
 
     return "ok"
 
@@ -65,7 +75,7 @@ def get_sample_summary(client: Client, **args) -> CommandResults:
     r = client._http_request("GET", f"samples/{sample_id}/summary")
 
     results = CommandResults(
-        outputs_prefix="Triage.sample.summaries", outputs_key_field="data", outputs=r
+        outputs_prefix="Triage.sample-summaries", outputs_key_field="data", outputs=r
     )
     return results
 
@@ -187,7 +197,7 @@ def get_users(client: Client, **args) -> CommandResults:
         r = r["data"]
 
     results = CommandResults(
-        outputs_prefix="Triage.users", outputs_key_field="data", outputs=r
+        outputs_prefix="Triage.users", outputs_key_field="id", outputs=r
     )
 
     return results
@@ -274,7 +284,7 @@ def get_profile(client: Client, **args) -> CommandResults:
         r = r["data"]
 
     results = CommandResults(
-        outputs_prefix="Triage.profiles", outputs_key_field="data", outputs=r
+        outputs_prefix="Triage.profiles", outputs_key_field="id", outputs=r
     )
 
     return results
