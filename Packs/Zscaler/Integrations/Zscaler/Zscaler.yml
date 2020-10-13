@@ -15,12 +15,11 @@ configuration:
   name: key
   required: true
   type: 4
-- additionalinfo: When enabled the integration will login and logout with each command
-    execution. If disabled, the user will be required to use zscaler-login and zscaler-logout.
+- additionalinfo: When enabled the integration will logout with each command execution.
   defaultvalue: 'true'
-  display: Auto Login/Logout
+  display: Auto Logout
   hidden: false
-  name: auto_login
+  name: auto_logout
   required: false
   type: 8
 - additionalinfo: When enabled the integration will activate the command changes after
@@ -47,12 +46,6 @@ name: Zscaler
 script:
   commands:
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: true
       description: 'URL to be blacklisted. Should be comma separated (i.e. snapchat.com,tinder.com) '
       isArray: true
@@ -64,12 +57,6 @@ script:
     execution: true
     name: zscaler-blacklist-url
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: true
       description: URL to search for
       isArray: true
@@ -127,12 +114,6 @@ script:
       description: The actual score.
       type: number
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: true
       description: IP address to search for
       isArray: false
@@ -175,12 +156,6 @@ script:
       description: The actual score.
       type: number
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: true
       description: 'URL to be  removed from blacklist. Should be comma separated (i.e.
         snapchat.com,tinder.com) '
@@ -193,12 +168,6 @@ script:
     execution: true
     name: zscaler-undo-blacklist-url
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: true
       description: 'URL to be whitelisted. Should be comma separated (i.e. snapchat.com,tinder.com) '
       isArray: true
@@ -210,12 +179,6 @@ script:
     execution: true
     name: zscaler-whitelist-url
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: true
       description: 'URL to be  removed from whitelist. Should be comma separated (i.e.
         snapchat.com,tinder.com) '
@@ -228,12 +191,6 @@ script:
     execution: true
     name: zscaler-undo-whitelist-url
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: true
       description: 'IP address to be  removed from whitelist. Should be comma separated
         (i.e. 8.8.8.8,1.2.3.4) '
@@ -246,12 +203,6 @@ script:
     execution: true
     name: zscaler-undo-whitelist-ip
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: true
       description: 'IP address to be whitelisted. Should be comma separated (i.e.
         8.8.8.8,1.2.3.4) '
@@ -264,12 +215,6 @@ script:
     execution: true
     name: zscaler-whitelist-ip
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: true
       description: 'IP address to be  removed from blacklist. Should be comma separated
         (i.e. 8.8.8.8,1.2.3.4) '
@@ -282,12 +227,6 @@ script:
     execution: false
     name: zscaler-undo-blacklist-ip
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: true
       description: 'IP address to be blacklisted. Should be comma separated (i.e.
         8.8.8.8,1.2.3.4) '
@@ -300,12 +239,6 @@ script:
     execution: true
     name: zscaler-blacklist-ip
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: false
       description: Category ID to add URL to, e.g. RADIO_STATIONS (Could be retreived
         by running the command zscaler-get-categories)
@@ -338,12 +271,6 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
-    - default: false
       description: Category ID to add URL to, e.g. RADIO_STATIONS (Could be retreived
         by running the command zscaler-get-categories)
       isArray: false
@@ -374,12 +301,6 @@ script:
       description: List of category URL addresses
       type: string
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: false
       description: Category ID to remove URL from, e.g. RADIO_STATIONS (Could be retreived
         by running the command zscaler-get-categories)
@@ -412,12 +333,6 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
-    - default: false
       description: Category ID to remove IP from, e.g. RADIO_STATIONS (Could be retreived
         by running the command zscaler-get-categories)
       isArray: false
@@ -448,12 +363,6 @@ script:
       description: List of category URL addresses
       type: string
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
@@ -489,13 +398,6 @@ script:
     description: Returns Zscaler default blacklist
     execution: false
     name: zscaler-get-blacklist
-    arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     outputs:
     - contextPath: Zscaler.Blacklist
       description: Zscaler blacklist
@@ -509,12 +411,6 @@ script:
       description: Zsclaer whitelist
       type: string
   - arguments:
-    - default: false
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
     - default: false
       description: MD5 hash of a file
       isArray: false
@@ -566,35 +462,14 @@ script:
       description: The actual score
       type: number
   - deprecated: false
-    description: Manually create a Zscaler login session. This command can be used
-      in unison with other commands to manually control the login and logout process,
-      rather than using the the automatic login/logout.
+    description: Manually create a Zscaler login session. This command will also try to logout of the previous session.
     execution: false
     name: zscaler-login
-    outputs:
-    - contextPath: Zscaler.SessionID
-      description: Session ID result to be used with other Zscaler commands in session_id argument.
-        argument.
-      type: String
-  - arguments:
-    - default: true
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Log out of a Zscaler session.
+  - deprecated: false
+    description: Log out of the current Zscaler session.
     execution: false
     name: zscaler-logout
-  - arguments:
-    - default: true
-      description: Session ID result from zscaler-login command.
-      isArray: false
-      name: session_id
-      required: false
-      secret: false
-    description: Activate the changes executed by other Zscaler commands in this session.
+  - description: Activate the changes executed by other Zscaler commands in this session.
     execution: false
     name: zscaler-activate-changes
   feed: false
