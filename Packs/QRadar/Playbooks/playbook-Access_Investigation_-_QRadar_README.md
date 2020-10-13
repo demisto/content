@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Access Investigation - QRadar](Insert the link to your image here)
+![Access Investigation - QRadar](https://raw.githubusercontent.com/demisto/content/33e98bf473f174ef010069b34f16aaac0ab55504/Packs/QRadar/doc_files/Access_Investigation_-_QRadar.png)
