@@ -53,7 +53,7 @@ def main():
 
 
 def get_template():
-    template = '''
+    template = ''' 
 {%- for app in apps %}
 <application>
   <entry name="{{ app.custom_app_name }}">
