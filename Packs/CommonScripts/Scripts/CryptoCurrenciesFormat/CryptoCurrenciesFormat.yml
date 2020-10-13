@@ -1,17 +1,17 @@
 args:
 - default: false
-  description: The Bitcoin address to verify.
+  description: The crypto address to verify.
   isArray: true
   name: input
   required: true
   secret: false
-comment: Verifies that a Bitcoin address is valid and only returns the address if
+comment: Verifies that a crypto address is valid and only returns the address if
   it is valid.
 commonfields:
-  id: BitcoinAddressFormat
+  id: CryptoCurrenciesFormat
   version: -1
 enabled: true
-name: BitcoinAddressFormat
+name: CryptoCurrenciesFormat
 script: '-'
 subtype: python3
 system: false
