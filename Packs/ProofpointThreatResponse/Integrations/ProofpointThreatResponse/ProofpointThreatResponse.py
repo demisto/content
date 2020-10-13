@@ -42,7 +42,7 @@ def get_list_command():
     ''' Retrieves all indicators of a the given list ID in Threat Response '''
     list_id = demisto.args().get('list-id')
     list_items = get_list(list_id)
-
+    demisto.debug('Pass get_list_command')
     demisto.results({'list': list_items})
 
 
@@ -84,7 +84,7 @@ def add_to_list_command():
     for indicator in indicators:
         add_to_list(list_id, indicator, comment, expiration)
         message += '{} added successfully to {}\n'.format(indicator, list_id)
-
+    demisto.debug('Pass add_to_list_command')
     demisto.results(message)
 
 
@@ -98,7 +98,7 @@ def block_ip_command():
     for ip in ips:
         add_to_list(list_id, ip, None, expiration)
         message += '{} added successfully to block_ip list\n'.format(ip)
-
+    demisto.debug('Pass block_ip_command')
     demisto.results(message)
 
 
@@ -112,7 +112,7 @@ def block_domain_command():
     for domain in domains:
         add_to_list(list_id, domain, None, expiration)
         message += '{} added successfully to block_domain list\n'.format(domain)
-
+    demisto.debug('Pass block_domain_command')
     demisto.results(message)
 
 
@@ -126,7 +126,7 @@ def block_url_command():
     for url in urls:
         add_to_list(list_id, url, None, expiration)
         message += '{} added successfully to block_url list\n'.format(url)
-
+    demisto.debug('Pass block_url_command')
     demisto.results(message)
 
 
@@ -140,7 +140,7 @@ def block_hash_command():
     for h in hashes:
         add_to_list(list_id, h, None, expiration)
         message += '{} added successfully to block_hash list\n'.format(h)
-
+    demisto.debug('Pass block_hash_command')
     demisto.results(message)
 
 
@@ -160,6 +160,7 @@ def search_indicator_command():
     list_id = demisto.args().get('list-id')
     indicator_filter = demisto.args().get('filter')
     found = search_indicators(list_id, indicator_filter)
+    demisto.debug('Pass search_indicator_command')
 
     demisto.results({'indicators': found})
 
@@ -187,6 +188,7 @@ def delete_indicator_command():
     list_id = demisto.args().get('list-id')
     indicator = demisto.args().get('indicator')
     delete_indicator(list_id, indicator)
+    demisto.debug('Pass delete_indicator_command')
 
     demisto.results('{} deleted successfully from list {}'.format(list_id, indicator))
 
@@ -322,7 +324,7 @@ def list_incidents_command():
     incidents_list = incidents_list[:limit]
     human_readable = create_incidents_human_readable('List Incidents Results:', incidents_list)
     context = create_incidents_context(incidents_list)
-
+    demisto.debug('Pass list_incidents_command')
     return_outputs(human_readable, {'ProofPointTRAP.Incident(val.id === obj.id)': context}, incidents_list)
 
 
@@ -348,7 +350,7 @@ def get_incident_command():
     incident_data = incident_data.json()
     human_readable = create_incidents_human_readable('Incident Results:', [incident_data])
     context = create_incidents_context([incident_data])
-
+    demisto.debug('Pass get_incident_command')
     return_outputs(human_readable, {'ProofPointTRAP.Incident(val.id === obj.id)': context}, incident_data)
 
 
@@ -470,7 +472,15 @@ def get_incidents_batch_by_time_request(params):
         'created_before': created_before.isoformat().split('.')[0] + 'Z'
     }
 
+    flag_fetch_done = False
     while created_before < current_time:
+        # Check that the requested interval is not too short
+        time_left = current_time - created_before
+        time_left_sec = time_left.total_seconds()
+        if time_left_sec <= 60:
+            created_before = current_time
+            flag_fetch_done = True
+
         incidents_list.extend(get_incidents_request(request_params))
 
         # advancing fetch time one day forward
@@ -481,9 +491,10 @@ def get_incidents_batch_by_time_request(params):
         request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
 
-    # fetching the last batch
-    request_params['created_before'] = current_time.isoformat().split('.')[0] + 'Z'
-    incidents_list.extend(get_incidents_request(request_params))
+    if not flag_fetch_done:
+        # fetching the last batch
+        request_params['created_before'] = current_time.isoformat().split('.')[0] + 'Z'
+        incidents_list.extend(get_incidents_request(request_params))
 
     return incidents_list
 
@@ -508,7 +519,9 @@ def fetch_incidents_command():
         }
 
         state_parsed_fetch = datetime.strptime(last_fetch[state], TIME_FORMAT)
+        demisto.debug(f"Pass The state parsed fetch: {state_parsed_fetch}")
         incidents_list = get_incidents_batch_by_time_request(request_params)
+        demisto.debug(f"Pass The distribution of calls to batches")
         filtered_incidents_list = filter_incidents(incidents_list)
         for incident in filtered_incidents_list:
             incident_creation_time = datetime.strptime(incident['created_at'], TIME_FORMAT)
@@ -585,7 +598,7 @@ def add_comment_to_incident_command():
 
     incident_data = incident_data.json()
     human_readable = create_add_comment_human_readable(incident_data)
-
+    demisto.debug('Pass add_comment_to_incident_command')
     return_outputs(human_readable,
                    {'ProofPointTRAP.IncidentComment(val.incident_id === obj.incident_id)': incident_data},
                    incident_data)
@@ -618,7 +631,7 @@ def add_user_to_incident_command():
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
         return_error('Add comment to incident command failed. URL: {}, '
                      'StatusCode: {}'.format(fullurl, incident_data.status_code))
-
+    demisto.debug('Pass add_user_to_incident_command')
     return_outputs('The user was added successfully to incident {}'.format(incident_id), {}, {})
 
 
@@ -673,7 +686,7 @@ def ingest_alert_command():
     if alert_data.status_code < 200 or alert_data.status_code >= 300:
         return_error('Failed to ingest the alert into TRAP. URL: {}, '
                      'StatusCode: {}'.format(fullurl, alert_data.status_code))
-
+    demisto.debug('Pass ingest_alert_command')
     return_outputs('The alert was successfully ingested to TRAP', {}, {})
 
 
