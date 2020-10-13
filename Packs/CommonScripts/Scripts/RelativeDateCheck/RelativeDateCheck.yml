@@ -14,7 +14,7 @@ args:
   secret: false
 comment: Evaluates to True if the left value is sooner than the right date.
 commonfields:
-  id: cdc4afc7-7bad-4ef8-8508-1db11fb97fe8
+  id: RelativeDateCheck
   version: -1
 enabled: true
 name: RelativeDateCheck
@@ -27,6 +27,9 @@ tags:
 - Condition
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.2.6981
+dockerimage: demisto/python3:3.8.6.12176
 runas: DBotWeakRole
 runonce: false
+fromversion: 5.0.0
+tests:
+- No tests (unit test)
