@@ -19,24 +19,25 @@ def main():
     app['sub_category'] = 'encrypted-tunnel'
     app['technology'] = 'browser-based'
     app['risk'] = '4'
-    app['protocols'] = [{'protocol_selected': 'tcp', 'port_number': 'dynamic'}]
+    app['protocols'] = [{'protocol_selected': 'tcp', 'port_number': 'dynamic'}]  # type: ignore
     sig_ssl = {}
 
-    app['signatures'] = []
+    app['signatures'] = []  # type: ignore
     app['custom_app_name'] = app_name
     sig_ssl['signature_name'] = 'ssl'
     sig_ssl['selected_string'] = app_sig.replace(".", "\.")
     sig_ssl['context'] = 'ssl-req-client-hello'
     sig_ssl['scope'] = 'session'
-    app['signatures'].append(sig_ssl)
+    app['signatures'].append(sig_ssl)  # type: ignore
 
     sig_http = {}
     sig_http['signature_name'] = 'http'
     sig_http['selected_string'] = app_sig.replace(".", "\.")
     sig_http['context'] = 'http-req-host-header'
     sig_http['scope'] = 'session'
-    app['signatures'].append(sig_http)
-    app['flags'] = ['used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application']
+    app['signatures'].append(sig_http)  # type: ignore
+    app['flags'] = ['used-by-malware', 'able-to-transfer-file',  # type: ignore
+                    'has-known-vulnerability', 'tunnel-other-application']  # type: ignore
 
     apps.append(app)
 
