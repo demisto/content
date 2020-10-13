@@ -15,6 +15,9 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
+# Minimum supported version is: 1.38
+MIN_MAJOR_VERSION = 1
+MIN_MINOR_VERSION = 38
 
 BREACHPOINT_LABEL = 'Demisto Breachpoint'
 CRITICAL_ASSET_LABEL = 'Demisto Critical Asset'
@@ -688,6 +691,20 @@ def get_version_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
         outputs=xm.get_version()
     )
 
+
+def is_xm_version_supported_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    version = xm.get_version()
+    system_version = version["system"]
+    system_version_splitted = system_version.split('.')
+    major = int(system_version_splitted[0])
+    minor = int(system_version_splitted[1])
+    result = { 'valid': major >= (MIN_MAJOR_VERSION + 1) or minor >= MIN_MINOR_VERSION }
+    return CommandResults(
+        outputs_prefix='XMCyber.IsVersion',
+        outputs_key_field="valid",
+        outputs=result
+    )
+
 ''' MAIN FUNCTION '''
 
 
@@ -727,6 +744,7 @@ def main() -> None:
             "xmcyber-assets": get_assets_command,
             "xmcyber-top-assets-at-risk": top_assets_at_risk_command,
             "xmcyber-top-choke-points": top_choke_points_command,
+            "xmcyber-is-version-supported": is_xm_version_supported_command
         }
 
         if command in commandsDict:
