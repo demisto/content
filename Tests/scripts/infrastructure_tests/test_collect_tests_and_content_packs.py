@@ -513,7 +513,7 @@ TWO_BEFORE_GA_VERSION = '4.5.0'
 def get_mock_test_list(minimum_server_version=TWO_BEFORE_GA_VERSION, get_modified_files_ret=None, mocker=None,
                        git_diff_ret=''):
     branch_name = 'BranchA'
-    mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+    mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_xsoar_supported',
                  return_value=True
                  )
     if get_modified_files_ret is not None:
@@ -560,7 +560,7 @@ def test_skipped_integration_should_not_be_tested(mocker):
     fake_id_set = TestUtils.create_id_set()
 
     # Returning true for the certification check of all packs
-    mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+    mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_xsoar_supported',
                  return_value=True
                  )
 
@@ -617,7 +617,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
         )
 
         # Returning true for the certification check of all packs
-        mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+        mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_xsoar_supported',
                      return_value=True
                      )
 
@@ -744,7 +744,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
         )
 
         # Returning true for the certification check of all packs
-        mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+        mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_xsoar_supported',
                      return_value=True
                      )
 
@@ -824,7 +824,7 @@ class TestExtractMatchingObjectFromIdSet:
             )
 
             # Returning true for the certification check of all packs
-            mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+            mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_xsoar_supported',
                          return_value=True
                          )
 
@@ -894,7 +894,7 @@ def test_modified_integration_content_pack_is_collected(mocker):
         )
 
         # Returning true for the certification check of all packs
-        mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+        mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_xsoar_supported',
                      return_value=True
                      )
 
@@ -962,7 +962,7 @@ def test_pack_ignore_test_is_skipped(mocker):
             }
         )
         # Returning true for the certification check of all packs
-        mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+        mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_xsoar_supported',
                      return_value=True
                      )
 
