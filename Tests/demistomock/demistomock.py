@@ -998,11 +998,10 @@ def getLicenseID():
 
 
 def mapObject(obj, mapper, mapper_type):
-    """￿Mapping on object using a chosen mapper
+    """Mapping an object using chosen mapper
 
     Returns:
-      dict: The obj after mapping
+      dict: the obj after mapping
 
     """
     return {}
-
