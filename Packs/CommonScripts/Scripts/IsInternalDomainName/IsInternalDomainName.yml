@@ -1,20 +1,20 @@
 args:
 - auto: PREDEFINED
   default: true
-  description: A comma-separated list of main - domains.
+  description: A comma-separated list of main domains. The subdomains will be compared to this list of main domains. For example, google.com.
   isArray: true
   name: domains_to_compare
   required: true
   secret: false
 - auto: PREDEFINED
   default: true
-  description: A comma-separated list of subdomains.
+  description: A comma-separated list of subdomains. These subdomains will be compared to the list of main domains.
   isArray: true
   name: domain_to_check
   required: true
   secret: false
-comment: Checks if a subdomain is located in at least one of the given domains to
-  compare with.
+comment: This script accepts multiple values for both arguments and will iterate through each of the domains to check if the specified subdomains are located in at least one of the specified main domains. If the tested subdomain is in one of the main domains, the result will be true.
+For example, if the domain_to_check values are apps.paloaltonetworks.com and apps.paloaltonetworks.bla and the domains_to_compare values are paloaltonetworks.com and demisto.com, the result for apps.paloaltonetworks.com will be true since it is a part of the paloaltonetworks.com domain. The result for apps.paloaltonetworks.bla will be false since it is not a part of the paloaltonetworks.com or demisto.com domain.
 commonfields:
   id: IsInternalDomainName
   version: -1
@@ -22,7 +22,7 @@ enabled: false
 name: IsInternalDomainName
 outputs:
 - contextPath: IsInternalDomain.DomainToTest
-  description: The subdomain that was checked to verify if it is part of the specified
+  description: The subdomain that was checked to see if it is part of the specified
     domains.
   type: String
 - contextPath: IsInternalDomain.IsInternal
@@ -30,7 +30,7 @@ outputs:
     false.
   type: Boolean
 - contextPath: IsInternalDomain.DomainToCompare
-  description: The names of the domains that were used to check the subdomain.
+  description: The names of the main domains that were used to compare the subdomains to.
   type: String
 script: '-'
 subtype: python3
