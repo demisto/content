@@ -3,8 +3,7 @@ commonfields:
   id: Rundeck
   version: -1
 configuration:
-- defaultvalue: https://soar.monstersofhack.com
-  display: Server URL (e.g. https://soar.monstersofhack.com)
+- display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
   required: true
   type: 0
@@ -224,17 +223,12 @@ script:
       name: arg_string
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: Id of the execution you want to retry execute.
       isArray: false
       name: execution_id
       predefined:
-      - DEBUG
-      - VERBOSE
-      - INFO
-      - WARN
-      - ERROR
+      - ''
       required: true
       secret: false
     - auto: PREDEFINED
@@ -505,73 +499,73 @@ script:
     execution: false
     name: rundeck-job-executions-query
     outputs:
-    - contextPath: Rundeck.Query.paging.count
+    - contextPath: Rundeck.ExecutionsQuery.paging.count
       description: Number of results
       type: Number
-    - contextPath: Rundeck.Query.paging.total
+    - contextPath: Rundeck.ExecutionsQuery.paging.total
       description: Number of total executions
       type: Number
-    - contextPath: Rundeck.Query.paging.offset
+    - contextPath: Rundeck.ExecutionsQuery.paging.offset
       description: 'Number of offset for first result to include. '
       type: Number
-    - contextPath: Rundeck.Query.paging.max
+    - contextPath: Rundeck.ExecutionsQuery.paging.max
       description: Maximum number of results to retun
       type: Number
-    - contextPath: Rundeck.Query.executions.id
+    - contextPath: Rundeck.ExecutionsQuery.executions.id
       description: Id of the execution
       type: Number
-    - contextPath: Rundeck.Query.executions.status
+    - contextPath: Rundeck.ExecutionsQuery.executions.status
       description: Status of the execution
       type: String
-    - contextPath: Rundeck.Query.executions.project
+    - contextPath: Rundeck.ExecutionsQuery.executions.project
       description: The project name of the execution.
       type: String
-    - contextPath: Rundeck.Query.executions.executionType
+    - contextPath: Rundeck.ExecutionsQuery.executions.executionType
       description: Type of the execution
       type: String
-    - contextPath: Rundeck.Query.executions.user
+    - contextPath: Rundeck.ExecutionsQuery.executions.user
       description: Username of the person executing the job
       type: String
-    - contextPath: Rundeck.Query.executions.datestarted.unixtime
+    - contextPath: Rundeck.ExecutionsQuery.executions.datestarted.unixtime
       description: Date of the job execution in unix time.
       type: Number
-    - contextPath: Rundeck.Query.executions.datestarted.date
+    - contextPath: Rundeck.ExecutionsQuery.executions.datestarted.date
       description: Date of the job execution.
       type: Date
-    - contextPath: Rundeck.Query.executions.dateended.unixtime
+    - contextPath: Rundeck.ExecutionsQuery.executions.dateended.unixtime
       description: Date of the end of job execution in unix time.
       type: Unknown
-    - contextPath: Rundeck.Query.executions.dateend.time
+    - contextPath: Rundeck.ExecutionsQuery.executions.dateend.time
       description: Date of the end of job execution.
       type: Date
-    - contextPath: Rundeck.Query.executions.job.id
+    - contextPath: Rundeck.ExecutionsQuery.executions.job.id
       description: Id of the executed job.
       type: String
-    - contextPath: Rundeck.Query.executions.job.averageDuration
+    - contextPath: Rundeck.ExecutionsQuery.executions.job.averageDuration
       description: Average time for the job's execution
       type: Number
-    - contextPath: Rundeck.Query.executions.job.name
+    - contextPath: Rundeck.ExecutionsQuery.executions.job.name
       description: Name of the job
       type: String
-    - contextPath: Rundeck.Query.executions.job.group
+    - contextPath: Rundeck.ExecutionsQuery.executions.job.group
       description: The job's group.
       type: String
-    - contextPath: Rundeck.Query.executions.job.project
+    - contextPath: Rundeck.ExecutionsQuery.executions.job.project
       description: The project name of the executed job.
       type: String
-    - contextPath: Rundeck.Query.executions.job.description
+    - contextPath: Rundeck.ExecutionsQuery.executions.job.description
       description: Description of the job.
       type: String
-    - contextPath: Rundeck.Query.executions.job.options
+    - contextPath: Rundeck.ExecutionsQuery.executions.job.options
       description: Options for the job's execution.
       type: String
-    - contextPath: Rundeck.Query.executions.description
+    - contextPath: Rundeck.ExecutionsQuery.executions.description
       description: Description of the execution.
       type: String
-    - contextPath: Rundeck.Query.executions.argstring
+    - contextPath: Rundeck.ExecutionsQuery.executions.argstring
       description: Arguments for the job's execution.
       type: String
-    - contextPath: Rundeck.Query.executions.failedNodes
+    - contextPath: Rundeck.ExecutionsQuery.executions.failedNodes
       description: List of failed nodes
       type: String
   - arguments:

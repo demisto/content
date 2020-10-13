@@ -1,0 +1,6 @@
+!rundeck-projects-list
+!rundeck-jobs-list scheduled_filter=false id_list={first_id},{second_id}
+!rundeck-job-execute job_id={job_id} arg_string="-arg1 value1" as_user=galb log_level=ERROR
+!rundeck-job-execution-abort execution_id=65
+!rundeck-job-retry execution_id=122 job_id={job_id}
+!rundeck-job-executions-query adhoc=false max_paging=3 project_name=Demisto user_filter=galb status_filter=failed

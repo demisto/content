@@ -1,10 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
-import json
 import urllib3
-import dateparser
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 import ntpath
@@ -519,19 +516,18 @@ def job_retry_command(client: Client, args: dict):
 
     converted_options: dict = attribute_pairs_to_dict(options)
     result = client.retry_job(job_id, arg_string, log_level, as_user, failed_nodes, execution_id, converted_options)
+
     if not isinstance(result, dict):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
-    query_entries: list = createContext(
-        result, keyTransform=string_to_context_key
-    )
-    headers = [key.replace("-", " ") for key in [*result.keys()]]
+    filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
+    headers = [key.replace("-", " ") for key in [*filtered_results.keys()]]
 
-    readable_output = tableToMarkdown('Execute Job:', result, headers=headers, headerTransform=pascalToSpace)
+    readable_output = tableToMarkdown('Execute Job:', filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.ExecutedJobs',
-        outputs=query_entries,
+        outputs=filtered_results,
         outputs_key_field='id'
     )
 
@@ -616,7 +612,7 @@ def jobs_list_command(client: Client, args: dict):
         readable_output=readable_output,
         outputs_prefix='Rundeck.Jobs',
         outputs=filtered_results,
-        outputs_key_field='Id'
+        outputs_key_field='id'
     )
 
 
@@ -699,7 +695,7 @@ def job_execution_query_command(client: Client, args: dict):
     readable_output = tableToMarkdown('Job Execution Query:', filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Rundeck.Query',
+        outputs_prefix='Rundeck.ExecutionsQuery',
         outputs=filtered_results,
         outputs_key_field='id'
     )
