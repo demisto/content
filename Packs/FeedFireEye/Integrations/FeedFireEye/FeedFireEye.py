@@ -333,6 +333,7 @@ class Client(BaseClient):
         Returns:
             str. Authentication token.
         """
+        demisto.debug('Requested new Token')
         response = self._http_request(
             method='POST',
             url_suffix='token',
@@ -340,6 +341,7 @@ class Client(BaseClient):
             auth=HTTPBasicAuth(self.public_key, self.private_key),
             timeout=self._polling_timeout
         )
+        demisto.debug('Received new Token')
 
         auth_token = response.get('access_token')
         expires_in = response.get('expires_in')
@@ -396,9 +398,11 @@ class Client(BaseClient):
         else:
             query_url = f'/collections/indicators/objects?length={min(limit, 1000)}'
 
+        round_count = 0
         while True:
             headers['Authorization'] = f'Bearer {self.get_access_token()}'
 
+            demisto.debug(f'Fetching indicators round {round_count}')
             response = self._http_request(
                 method='GET',
                 url_suffix=query_url,
@@ -406,6 +410,8 @@ class Client(BaseClient):
                 timeout=self._polling_timeout,
                 resp_type='response'
             )
+            demisto.debug(f'Finished fetching indicators round {round_count}')
+            round_count += 1
 
             if response.status_code == 204:
                 demisto.info(f'{INTEGRATION_NAME} info - '
@@ -457,9 +463,11 @@ class Client(BaseClient):
         else:
             query_url = f'/collections/reports/objects?length={limit}'
 
+        round_count = 0
         while True:
             headers['Authorization'] = f'Bearer {self.get_access_token()}'
 
+            demisto.debug(f'Fetching reports round {round_count}')
             response = self._http_request(
                 method='GET',
                 url_suffix=query_url,
@@ -467,6 +475,8 @@ class Client(BaseClient):
                 timeout=self._polling_timeout,
                 resp_type='response'
             )
+            demisto.debug(f'Finished fetching reports round {round_count}')
+            round_count += 1
 
             if response.status_code != 200:
                 return_error(f'{INTEGRATION_NAME} reports fetching - '
@@ -623,8 +633,12 @@ def main():
         elif command == 'fetch-indicators':
             indicators, _ = fetch_indicators_command(client)
 
+            total_fetched = 0
+            demisto.debug('Starting CreateIndicators part')
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
+                total_fetched += len(single_batch)
+                demisto.debug(f'{total_fetched} indicators created so far.')
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
