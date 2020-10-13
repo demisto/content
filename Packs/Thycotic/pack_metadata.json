@@ -1,0 +1,17 @@
+{
+    "name": "Thycotic",
+    "description": "Secure privileges for service, application, root,",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "",
+    "url": "",
+    "email": "",
+    "created": "2020-10-08T09:23:47Z",
+    "categories": [
+        "Authentication"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}
