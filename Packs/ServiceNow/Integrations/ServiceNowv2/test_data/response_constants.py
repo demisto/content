@@ -2993,7 +2993,7 @@ MIRROR_COMMENTS_RESPONSE = {'result': [{
     'sys_created_by': 'admin', 'element': 'comments'}]}
 
 RESPONSE_MIRROR_FILE_ENTRY = [
-    {'Contents': '', 'ContentsFormat': 'text', 'type': 3, 'File': 'test.txt',
+    {'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'test.txt',
      'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'}]
 
 RESPONSE_ASSIGNMENT_GROUP = {'result': {'parent': '', 'manager':
