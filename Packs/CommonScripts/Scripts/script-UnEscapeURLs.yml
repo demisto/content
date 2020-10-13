@@ -15,7 +15,7 @@ script: >-
           }
           var url_params = null;
           if (url_params_section !== null) {
-              url_params = url_params_section.split("&");
+              url_params = url_params_section.split("&");g
           }
           var encoded_url = null;
           if (url_params !== null) {
