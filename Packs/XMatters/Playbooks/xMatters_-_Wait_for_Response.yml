@@ -1,6 +1,6 @@
-id: deeb234b-0c7e-4f09-83fb-e2e10fb8f608
-version: 17
-vcShouldKeepItemLegacyProdMachine: false
+id: xMatters - Wait for Response
+fromversion: 5.0.0
+version: -1
 name: xMatters - Wait for Response
 description: Trigger an xMatters workflow to notify a user for a response.
 starttaskid: "0"
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -107,3 +108,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- xMatters-Test

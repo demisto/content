@@ -1,5 +1,5 @@
 This is an integration for using xMatters.
-This integration was integrated and tested with version xx of xMatters
+This integration was integrated and tested with version 1 of xMatters
 ## Configure xMatters on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
