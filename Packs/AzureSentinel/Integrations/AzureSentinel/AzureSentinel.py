@@ -405,28 +405,54 @@ def incident_add_comment_command(client, args):
 
 def get_entity_by_id_command(client, args):
     entity_id = args.get('entity_id')
-    expansion_id = "98b974fd-cc64-48b8-9bd0-3a209f5b944b"
-    url_suffix = f'entities/{entity_id}/expand'
-    data = {
-        "expansionId": expansion_id
-    }
+    expend = args.get('expend')
 
-    result = client.http_request('POST', url_suffix, is_get_entity_cmd=True, data=data)
+    if expend == 'false':
+        url_suffix = f'entities/{entity_id}'
 
-    readable_output = tableToMarkdown(f'Entity {entity_id} details',
-                                      result['value']['entities'],
-                                      removeNull=True,
-                                      headerTransform=pascalToSpace)
+        result = client.http_request('GET', url_suffix, is_get_entity_cmd=True)
 
-    outputs = {
-        'AzureSentinel.Entity(val.ID === obj.ID)': result['value']['entities']
-    }
+        flattened_result = flatten_entity_attributes(result)
 
-    return (
-        readable_output,
-        outputs,
-        result
-    )
+        readable_output = tableToMarkdown(f'Entity {entity_id} details',
+                                          flattened_result,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace)
+
+        outputs = {
+            'AzureSentinel.Entity(val.ID === obj.ID)': flattened_result
+        }
+
+        return (
+            readable_output,
+            outputs,
+            result
+        )
+    else:
+        expansion_id = "98b974fd-cc64-48b8-9bd0-3a209f5b944b"
+        url_suffix = f'entities/{entity_id}/expand'
+        data = {
+            "expansionId": expansion_id
+        }
+
+        result = client.http_request('POST', url_suffix, is_get_entity_cmd=True, data=data)
+
+        result_value = result.get('value', {})
+        result_entities = result_value.get('entities', [])
+        readable_output = tableToMarkdown(f'Entity {entity_id} details',
+                                          result_entities,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace)
+
+        outputs = {
+            'AzureSentinel.Entity(val.id === obj.id)': result_entities
+        }
+
+        return (
+            readable_output,
+            outputs,
+            result
+        )
 
 
 def list_entity_relations_command(client, args):
