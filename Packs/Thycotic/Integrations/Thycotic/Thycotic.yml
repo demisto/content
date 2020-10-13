@@ -1,0 +1,84 @@
+category: Endpoint
+commonfields:
+  id: Thycotic
+  version: -1
+configuration:
+- defaultvalue: https://connmanagerss.thycotic.net/SecretServer
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+description: |-
+  Secure privileges for service, application, root,
+  and administrator accounts across your enterprise
+display: Thycotic
+name: Thycotic
+script:
+  commands:
+  - deprecated: false
+    description: View access token for session
+    execution: false
+    name: thycotic-authenticate-token
+    outputs:
+    - contextPath: token
+      description: Access token
+      type: String
+  - arguments:
+    - default: false
+      description: ID secret
+      isArray: false
+      name: secret_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve password from secret
+    execution: false
+    name: thycotic-secret-password-get
+    outputs:
+    - contextPath: secret_password
+      description: Password
+      type: String
+  - arguments:
+    - default: false
+      description: ID secret
+      isArray: false
+      name: secret_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieved username from secret
+    execution: false
+    name: thycotic-secret-username-get
+    outputs:
+    - contextPath: secret_username
+      description: Username from secret
+      type: String
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

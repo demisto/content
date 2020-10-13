@@ -1,14 +1,14 @@
 {
     "name": "Thycotic",
-    "description": "Secure privileges for service, application, root,",
+    "description": "Integration Thycotic Secret Server",
     "support": "partner",
-    "currentVersion": "1.0.0",
-    "author": "",
+    "currentVersion": "1.0.1",
+    "author": "Thycotic, Inc",
     "url": "",
     "email": "",
-    "created": "2020-10-08T09:23:47Z",
+    "created": "2020-10-09T14:49:56Z",
     "categories": [
-        "Authentication"
+        "Endpoint"
     ],
     "tags": [],
     "useCases": [],
