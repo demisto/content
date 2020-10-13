@@ -4578,6 +4578,7 @@ class IAMCommandHelper:
     """
 
     def __init__(self, incoming_mapper, outgoing_mapper, user_profile):
+        # type: (str, str, Any) -> None
         self.brand = demisto.callingContext['context']['IntegrationBrand']
         self.instance_name = demisto.callingContext['context']['IntegrationInstance']
         self.command = demisto.command().split('-')[0]
