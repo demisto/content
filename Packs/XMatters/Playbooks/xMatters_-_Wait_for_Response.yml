@@ -1,7 +1,7 @@
-id: xm-test
-fromversion: 5.0.0
-version: -1
-name: xm-test
+id: deeb234b-0c7e-4f09-83fb-e2e10fb8f608
+version: 17
+vcShouldKeepItemLegacyProdMachine: false
+name: xMatters - Wait for Response
 description: Trigger an xMatters workflow to notify a user for a response.
 starttaskid: "0"
 tasks:
@@ -15,7 +15,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -60,7 +59,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
+          "x": 450,
           "y": 230
         }
       }
@@ -100,7 +99,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 455,
-        "width": 400,
+        "width": 380,
         "x": 450,
         "y": 50
       }
@@ -108,5 +107,3 @@ view: |-
   }
 inputs: []
 outputs: []
-tests:
-- xMatters-Test
