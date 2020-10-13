@@ -59,7 +59,7 @@ def get_pack_metadata(file_path):
         return json.load(pack_metadata)
 
 
-def is_pack_certified(pack_name):
+def is_pack_xsoar_supported(pack_name):
     """
         Checks whether the pack is certified or not (Supported by xsoar/certified partner).
         Tests are not being collected for uncertified packs.
@@ -75,5 +75,4 @@ def is_pack_certified(pack_name):
     if not os.path.isfile(pack_metadata_path):
         return False
     pack_metadata = get_pack_metadata(pack_metadata_path)
-    return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() == "xsoar" or pack_metadata.get(
-        PACK_METADATA_CERTIFICATION, '').lower() == "certified"
+    return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() == "xsoar"

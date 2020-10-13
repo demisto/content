@@ -18,37 +18,6 @@ SKIPPED_PACKS = [
 ]
 
 
-# def get_pack_metadata(file_path):
-#     """
-#     Args:
-#         file_path: The Pack metadata file path
-#
-#     Returns:
-#         The file content.
-#     """
-#     with open(file_path) as pack_metadata:
-#         return json.load(pack_metadata)
-
-
-# def is_pack_certified(pack_path):
-#     """
-#         Checks whether the pack is certified or not (Supported by xsoar/certified partner).
-#         Tests are not being collected for uncertified packs.
-#     Args:
-#         pack_path: The pack path
-#
-#     Returns:
-#         True if the pack is certified, False otherwise.
-#
-#     """
-#     pack_metadata_path = os.path.join(pack_path, PACKS_PACK_META_FILE_NAME)
-#     if not os.path.isfile(pack_metadata_path):
-#         return False
-#     pack_metadata = get_pack_metadata(pack_metadata_path)
-#     return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() == "xsoar" or\
-#         pack_metadata.get(PACK_METADATA_CERTIFICATION, '').lower() == "certified"
-
-
 def get_integration_data(file_path):
     with open(file_path) as data_file:
         yaml_file = yaml.safe_load(data_file)
@@ -114,8 +83,6 @@ def run():
         if pack_name in SKIPPED_PACKS:
             continue
 
-        # if not is_pack_certified(pack_name):
-        #     continue
         pack_integrations = []
         pack_test_playbooks = []
         pack_path = sdk_tools.pack_name_to_path(pack_name)

@@ -14,7 +14,7 @@ import logging
 from distutils.version import LooseVersion
 from copy import deepcopy
 from typing import Dict, Tuple
-from Tests.tools import is_pack_certified
+from Tests.tools import is_pack_xsoar_supported
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
@@ -361,10 +361,10 @@ def collect_tests_and_content_packs(
         test_playbook_pack_name = test_playbook_data.get('pack')
 
         # We don't want to test playbooks from Non-certified partners.
-        if not is_pack_certified(test_playbook_pack_name):
+        if not is_pack_xsoar_supported(test_playbook_pack_name):
             logging.info(
-                'Found test playbook {} which belongs to a Non-certified pack, hence it will not be tested'.format(
-                    test_playbook_id))
+                'The test playbook {} belongs to a is not XSOAR supported pack, hence it will not be tested'.format(
+                    test_playbook_name))
             continue
 
         for script in test_playbook_data.get('implementing_scripts', []):
@@ -1140,9 +1140,11 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
      modified_metadata_list, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
+
     all_modified_files_paths = set(
         modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
     ).union(modified_metadata_list)
+
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
 
     create_filter_envs_file(from_version, to_version)
@@ -1168,6 +1170,12 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     for file_path in modified_tests_list:
         test = tools.collect_ids(file_path)
+        pack_name = tools.get_pack_name(file_path)
+        if not is_pack_xsoar_supported(pack_name):
+            logging.info(
+                'The test playbook {} belongs to a is not XSOAR supported pack, hence it will not be tested'.format(
+                    test))
+            continue
         if test not in tests:
             tests.add(test)
 
