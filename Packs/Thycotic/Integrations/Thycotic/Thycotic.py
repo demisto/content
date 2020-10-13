@@ -54,20 +54,6 @@ class Client(BaseClient):
         url_suffix = "/api/v1/secrets/" + secret_id + "/fields/username"
         return self._http_request("GET", url_suffix)
 
-#    def list_incidents(self):
-#        return [
-#            {
-#                'incident_id': 1,
-#                'description': 'Thycotic incident 1',
-#                'created_time': datetime.utcnow().strftime(DATE_FORMAT)
-#            },
-#            {
-#                'incident_id': 2,
-#                'description': 'Thycotic incident 2',
-#                'created_time': datetime.utcnow().strftime(DATE_FORMAT)
-#            }
-#        ]
-
 
 def test_module(client: Client,) -> str:
     if client._token == '':
@@ -112,36 +98,6 @@ def secret_username_get_command(client, secret_id: str = ''):
     )
 
 
-# def fetch_incidents(client, last_run, first_fetch_time):
-#    last_fetch = last_run.get('last_fetch')
-#
-#   # Handle first time fetch
-#    if last_fetch is None:
-#        last_fetch, _ = dateparser.parse(first_fetch_time)
-#    else:
-#        last_fetch = dateparser.parse(last_fetch)
-#
-#    latest_created_time = last_fetch
-#    incidents = []
-#    items = client.list_incidents()
-#    for item in items:
-#        incident_created_time = dateparser.parse(item['created_time'])
-#        incident = {
-#            'name': item['description'],
-#            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-#            'rawJSON': json.dumps(item)
-#        }
-#
-#        incidents.append(incident)
-#
-#        # Update last run and add incident if the incident is newer than last fetch
-#        if incident_created_time > latest_created_time:
-#            latest_created_time = incident_created_time
-#
-#    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
-#    return next_run, incidents
-
-
 def main():
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
@@ -149,14 +105,7 @@ def main():
     # get the service API url
     url = demisto.params()['url']
 
-#    verify_certificate = not demisto.params().get('insecure', False)
-
-    # How much time before the first fetch to retrieve incidents
-#    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
     max_fetch = demisto.params()['max_fetch']
-
-#    proxy = demisto.params().get('proxy', False)
-
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(server_url=url, username=username, password=password, max_fetch=int(max_fetch))
@@ -175,17 +124,6 @@ def main():
             result = test_module(client)
             demisto.results(result)
 
-#         elif demisto.command() == 'fetch-incidents':
-#            # Set and define the fetch incidents command to run after activated via integration settings.
-#            next_run, incidents = fetch_incidents(
-#                client=client,
-#                last_run=demisto.getLastRun(),
-#                first_fetch_time=first_fetch_time)
-#
-#            demisto.setLastRun(next_run)
-#            demisto.incidents(incidents)
-
-    # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
