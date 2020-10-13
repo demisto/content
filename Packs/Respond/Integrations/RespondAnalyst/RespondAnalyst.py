@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *
 import json
 from datetime import datetime, timedelta
 import dateparser
@@ -37,6 +38,7 @@ def convert_datetime_to_epoch(the_time=0):
 
 def convert_datetime_to_epoch_millis(the_time=0):
     return convert_epoch_to_milli(convert_datetime_to_epoch(the_time=the_time))
+
 
 def arg_to_timestamp(arg, arg_name: str, required: bool = False):
     if arg is None:
@@ -521,7 +523,7 @@ def get_incident_command(rest_client, args):
     incident_id = int(args['incident_id'])
 
     raw_incident = \
-    rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
+        rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
     return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
 
 
@@ -531,7 +533,7 @@ def get_remote_data_command(client, args):
     try:
         incident_data = get_incident_command(client, args)
         incident_data['id'] = incident_data.get('incidentId')
-        demisto.debug(f"Respond incident {remote_args.remote_incident_id}\n"  
+        demisto.debug(f"Respond incident {remote_args.remote_incident_id}\n"
                       f"modified time: {int(incident_data.get('modification_time'))}\n"
                       f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
 
@@ -540,17 +542,18 @@ def get_remote_data_command(client, args):
         #  we should change this to check against that field before trying to update. For now,
         #  assume every field needs to be updated
 
-        #todo do we need to add feedback entries or are they already there as null
+        # todo do we need to add feedback entries or are they already there as null
         #  for the case when an incident was closed in respond but initially was open
 
         return GetRemoteDataResponse(
             mirrored_object=incident_data,
-            entries=None # for now, but this is where we would add close incident fields
+            entries=None  # for now, but this is where we would add close incident fields
         )
 
     except Exception as e:
-        demisto.debug(f'Error in Respond incoming mirror for incident {remote_args.remote_incident_id} \n'
-                      f'Error message: {str(e)}')
+        demisto.debug(
+            f'Error in Respond incoming mirror for incident {remote_args.remote_incident_id} \n'
+            f'Error message: {str(e)}')
 
 
 def fetch_incidents(rest_client, last_run=dict()):
