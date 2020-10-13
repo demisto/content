@@ -4570,3 +4570,79 @@ class TableOrListWidget(BaseWidget):
             'total': len(self.data),
             'data': self.data
         })
+
+
+class IAMCommandHelper:
+    """
+        A class for IAM integration commands.
+    """
+
+    def __init__(self, incoming_mapper, outgoing_mapper, user_profile):
+        self.brand = demisto.callingContext['context']['IntegrationBrand']
+        self.instance_name = demisto.callingContext['context']['IntegrationInstance']
+        self.command = demisto.command().split('-')[0]
+        self.mapping_type = 'User Profile'
+        self.outputs = {}
+        self.entry_context = {}
+        self.readable_output = ''
+        self.incoming_mapper = incoming_mapper
+        self.outgoing_mapper = outgoing_mapper
+        self.user_profile = user_profile
+
+    def return_outputs(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
+                       error_message=None, details=None):
+        self.create_outputs(success, active, iden, username, email, error_code, error_message, details)
+        self.create_readable_output()
+        return_outputs(readable_output=self.readable_output, outputs=self.entry_context, raw_response=details)
+
+    def create_outputs(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
+                       error_message=None, details=None):
+        self.outputs = {
+            'brand': self.brand,
+            'instanceName': self.instance_name,
+            'action': self.command,
+            'success': success,
+            'active': active,
+            'id': iden,
+            'username': username,
+            'email': email,
+            'errorCode': error_code,
+            'errorMessage': error_message,
+            'details': details
+        }
+
+        self.entry_context = {
+            'IAM.UserProfile(val.email && val.email == obj.email)': self.user_profile,
+            'IAM.Vendor(val.instanceName && val.instanceName == self.instanceName &&'
+            ' val.email && val.email == obj.email)': self.outputs
+        }
+
+    def create_readable_output(self):
+        title = self.command.title() + ' User Results ({})'.format(self.brand)
+        self.readable_output = tableToMarkdown(
+            name=title,
+            t=self.outputs,
+            headers=["brand", "instanceName", "success", "active", "id", "username",
+                     "email", "errorCode", "errorMessage", "details"],
+            removeNull=True
+        )
+
+    def map_user_profile_to_app_data(self):
+        if not self.user_profile:
+            return_error('You must provide user-profile argument.')
+        elif not isinstance(self.user_profile, dict):
+            try:
+                self.user_profile = json.loads(self.user_profile)
+            except Exception:
+                return_error('The provided user-profile is not a valid json.')
+        app_data = demisto.mapObject(self.user_profile, self.outgoing_mapper, self.mapping_type)
+        return app_data
+
+    def map_app_data_to_user_profile(self, app_data):
+        if not app_data:
+            return {}
+        user_profile = demisto.mapObject(app_data, self.incoming_mapper, self.mapping_type)
+        return user_profile
+
+    def set_command_name(self, command):
+        self.command = command
