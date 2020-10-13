@@ -576,7 +576,7 @@ class Client(BaseClient):
 
         return dic_template
 
-    def get_ticket_attachments(self, ticket_id: str, sys_created_on='') -> dict:
+    def get_ticket_attachments(self, ticket_id: str, sys_created_on=None) -> dict:
         """Get ticket attachments by sending a GET request.
 
         Args:
@@ -589,7 +589,7 @@ class Client(BaseClient):
         return self.send_request('attachment', 'GET', params={
             'sysparm_query': f'table_sys_id={ticket_id}^sys_created_on>{sys_created_on}'})
 
-    def get_ticket_attachment_entries(self, ticket_id: str, sys_created_on='') -> list:
+    def get_ticket_attachment_entries(self, ticket_id: str, sys_created_on=None) -> list:
         """Get ticket attachments, including file attachments
         by sending a GET request and using the get_ticket_attachments class function.
 
