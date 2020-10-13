@@ -237,7 +237,7 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
         if not raw_json.get(field):  # type: ignore
             continue
 
-        if not regex_extractor:  # do not run the regex match only if a regex_extractor does not exist
+        if not regex_extractor:
             field_value = raw_json[field]  # type: ignore
         else:
             try:

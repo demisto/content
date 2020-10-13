@@ -1,6 +1,6 @@
 {
     "name": "Majestic Million Feed",
-    "description": "Free search and download of the top million websites.",
+    "description": "Use the Majestic Million pack to ingest the top known websites as 'good' indicators.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
