@@ -41,15 +41,15 @@ def http_request(method, url_suffix, params={}, data=None):
             errors = ''
             for error in res.json().get('errors'):
                 errors = '\n' + errors + error.get('detail')
-            raise ValueError(
+            raise Exception(
                 f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}] \n'
                 f'Error details: [{errors}]'
             )
-        except Exception:
-            raise ValueError(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}]')
+        except Exception as error:
+            raise error
     try:
         return res.json()
-    except ValueError:
+    except Exception:
         return None
 
 
