@@ -1,0 +1,62 @@
+category: Network Security
+commonfields:
+  id: Cisco Umbrella
+  version: -1
+configuration:
+- display: Organization ID
+  name: orgId
+  required: true
+  type: 0
+- display: API Key
+  name: apiKey
+  required: true
+  type: 4
+- display: API Secret
+  name: apiSecret
+  required: false
+  type: 4
+description: Adds domains to Umbrella block list
+display: Cisco Umbrella
+name: Cisco Umbrella
+script:
+  commands:
+  - arguments:
+    - description: Organization ID
+      name: orgId
+    description: Get's all destination lists in organization
+    name: umbrella-get-destination-lists
+    outputs:
+    - contextPath: Umbrella.DestinationLists
+      type: Unknown
+  - arguments:
+    - description: Optional organization ID. If not provided, will use the one provided
+        in the integration configuration
+      name: orgId
+    - description: Destination list ID
+      name: destId
+      required: true
+    - description: 'List of domains to add to destination list (Format: domain1.com,domain2.com)'
+      isArray: true
+      name: domains
+      required: true
+    - description: Note on what the domain is or why it is being added
+      name: comment
+    description: Adds domains to given destination list
+    name: umbrella-add-domain
+  - arguments:
+    - description: Optional orgId, by default uses the one set in the instance configuration
+      name: orgId
+    - description: Destination list ID to get domains from. Use umbrella-get-destination-lists
+        to get the list ID
+      name: destId
+      required: true
+    description: Get's the domains listed in a destination list
+    name: umbrella-get-destination-domains
+  dockerimage: demisto/python3:3.7.5.4583
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
