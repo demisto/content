@@ -31,7 +31,7 @@ def query_samples(client, **args) -> CommandResults:
     r = client._http_request("GET", "samples", params=params)
 
     results = CommandResults(
-        outputs_prefix="Triage.samples", outputs_key_field="data", outputs=r["data"]
+        outputs_prefix="Triage.samples", outputs_key_field="id", outputs=r["data"]
     )
     return results
 
@@ -55,7 +55,7 @@ def submit_sample(client: Client, **args) -> CommandResults:
         )
 
     results = CommandResults(
-        outputs_prefix="Triage.submissions", outputs_key_field="data", outputs=r
+        outputs_prefix="Triage.submissions", outputs_key_field="id", outputs=r
     )
     return results
 
@@ -65,7 +65,7 @@ def get_sample(client: Client, **args) -> CommandResults:
     r = client._http_request("GET", f"samples/{sample_id}")
 
     results = CommandResults(
-        outputs_prefix="Triage.samples", outputs_key_field="data", outputs=r
+        outputs_prefix="Triage.samples", outputs_key_field="id", outputs=r
     )
     return results
 
@@ -75,7 +75,7 @@ def get_sample_summary(client: Client, **args) -> CommandResults:
     r = client._http_request("GET", f"samples/{sample_id}/summary")
 
     results = CommandResults(
-        outputs_prefix="Triage.sample-summaries", outputs_key_field="data", outputs=r
+        outputs_prefix="Triage.sample-summaries", outputs_key_field="sample", outputs=r
     )
     return results
 
@@ -116,7 +116,7 @@ def get_static_report(client: Client, **args) -> CommandResults:
 
     results = CommandResults(
         outputs_prefix="Triage.sample.reports.static",
-        outputs_key_field="data",
+        outputs_key_field="sample.sample",
         outputs=r,
     )
 
@@ -134,7 +134,7 @@ def get_report_triage(client: Client, **args) -> CommandResults:
 
     results = CommandResults(
         outputs_prefix="Triage.sample.reports.triage",
-        outputs_key_field="data",
+        outputs_key_field="sample.id",
         outputs=r,
     )
 
@@ -217,7 +217,7 @@ def create_user(client: Client, **args) -> CommandResults:
     r = client._http_request("POST", "users", data=data)
 
     results = CommandResults(
-        outputs_prefix="Triage.users", outputs_key_field="data", outputs=r
+        outputs_prefix="Triage.users", outputs_key_field="id", outputs=r
     )
 
     return results
@@ -242,7 +242,7 @@ def create_apikey(client: Client, **args) -> CommandResults:
     r = client._http_request("POST", f"users/{userID}/apikeys", data=data)
 
     results = CommandResults(
-        outputs_prefix="Triage.apikey", outputs_key_field="data", outputs=r
+        outputs_prefix="Triage.apikey", outputs_key_field="key", outputs=r
     )
 
     return results
@@ -253,7 +253,7 @@ def get_apikey(client: Client, **args) -> CommandResults:
     r = client._http_request("GET", f"users/{userID}/apikeys")
 
     results = CommandResults(
-        outputs_prefix="Triage.apikey", outputs_key_field="data", outputs=r.get("data")
+        outputs_prefix="Triage.apikey", outputs_key_field="key", outputs=r.get("data")
     )
 
     return results
@@ -304,7 +304,7 @@ def create_profile(client: Client, **args) -> CommandResults:
     r = client._http_request("POST", "profiles", data=data)
 
     results = CommandResults(
-        outputs_prefix="Triage.profiles", outputs_key_field="data", outputs=r
+        outputs_prefix="Triage.profiles", outputs_key_field="id", outputs=r
     )
 
     return results
@@ -323,14 +323,10 @@ def update_profile(client: Client, **args) -> CommandResults:
         if arg == "timeout":
             data[arg] = args.get(arg, None)
 
-    r = client._http_request("PUT", f"profiles/{profileID}", data=json.dumps(data))
+    client._http_request("PUT", f"profiles/{profileID}", data=json.dumps(data))
 
-    results = CommandResults(
-        outputs_prefix="Triage.profiles",
-        outputs_key_field="data",
-        outputs=r,
-        readable_output="Profile updated successfully",
-    )
+    results = "Profile updated successfully"
+
     return results
 
 
