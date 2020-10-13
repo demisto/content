@@ -2,7 +2,7 @@ category: Forensics & Malware Analysis
 commonfields:
   id: Hatching Triage
   version: -1
-  fromversion: 5.5.0
+fromversion: 5.5.0
 configuration:
 - additionalinfo: Private url is https://private.tria.ge/api/v0/
   defaultvalue: https://api.tria.ge/v0/
@@ -661,4 +661,3 @@ script:
   script: '-'
   subtype: python3
   type: python
-sourcemoduleid: Hatchling Triage

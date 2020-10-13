@@ -306,13 +306,12 @@ def update_profile(client: Client, **args) -> CommandResults:
     data = {}
 
     for arg in args:
-        if arg in ["name", "tags", "timeout"]:
-            if arg == "timeout":
-                data[arg] = int(args.get(arg, 60))
-            elif arg == "tags":
-                data[arg] = argToList(args.get(arg))
-            else:
-                data[arg] = args.get(arg, None)
+        if arg == "timeout":
+            data[arg] = int(args.get(arg, 60))
+        if arg == "tags":
+            data[arg] = argToList(args.get(arg))
+        if arg == "timeout":
+            data[arg] = args.get(arg, None)
 
     r = client._http_request("PUT", f"profiles/{profileID}", data=json.dumps(data))
 
@@ -371,7 +370,7 @@ def main():
 
     command = demisto.command()
     if command in commands:
-        return_results(commands[command](client, **args))
+        return_results(commands[command](client, **args))   # type: ignore
     else:
         return_error(f"Command {command} is not available in this integration")
 
