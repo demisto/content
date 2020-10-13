@@ -11,9 +11,6 @@ class Client(BaseClient):
 
 def test_module(client: Client) -> str:
 
-    if "http://" not in client._base_url and "https://" not in client._base_url:
-        return "Provide a valid URL for the base_url"
-
     r = client._http_request(
         "GET", "users", resp_type="response", ok_codes=(200, 401, 404)
     )
