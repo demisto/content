@@ -15,14 +15,6 @@ configuration:
   name: key
   required: true
   type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - additionalinfo: When enabled the integration will login and logout with each command
     execution. If disabled, the user will be required to use zscaler-login and zscaler-logout.
   defaultvalue: 'true'
@@ -38,6 +30,14 @@ configuration:
   display: Auto Activate Changes
   hidden: false
   name: auto_activate
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
   required: false
   type: 8
 description: Zscaler is a cloud security solution built for performance and flexible
@@ -592,7 +592,7 @@ script:
       description: Session ID result from zscaler-login command.
       isArray: false
       name: session_id
-      required: true
+      required: false
       secret: false
     description: Activate the changes executed by other Zscaler commands in this session.
     execution: false

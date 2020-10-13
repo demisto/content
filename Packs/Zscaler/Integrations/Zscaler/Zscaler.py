@@ -38,6 +38,20 @@ ERROR_CODES_DICT = {
     500: 'Unexpected error',
     503: 'Service is temporarily unavailable'
 }
+AUTO_ACTIVATE_CHANGES_COMMANDS = (
+    'zscaler-blacklist-url',
+    'zscaler-undo-blacklist-url',
+    'zscaler-whitelist-url',
+    'zscaler-undo-whitelist-url',
+    'zscaler-blacklist-ip',
+    'zscaler-undo-blacklist-ip',
+    'zscaler-whitelist-ip',
+    'zscaler-undo-whitelist-ip',
+    'zscaler-category-add-url',
+    'zscaler-category-add-ip',
+    'zscaler-category-remove-url',
+    'zscaler-category-remove-ip'
+)
 
 ''' HANDLE PROXY '''
 if not PROXY:
@@ -115,12 +129,12 @@ def login():
 
 def activate_changes():
     cmd_url = '/status/activate'
-    http_request('POST', cmd_url, None, DEFAULT_HEADERS)
+    return http_request('POST', cmd_url, None, DEFAULT_HEADERS)
 
 
 def logout():
     cmd_url = '/authenticatedSession'
-    http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
+    return http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
 
 
 def blacklist_url(url):
@@ -738,7 +752,6 @@ def sandbox_report(md5, details):
 def login_command():
     auth = login()
     jsession_id = auth[:auth.index(';')]
-    DEFAULT_HEADERS['cookie'] = jsession_id
     readable_output = '### Created Zscaler Session\nSession ID: {}'.format(jsession_id)
     return CommandResults(
         outputs_prefix='Zscaler.SessionID',
@@ -748,13 +761,19 @@ def login_command():
 
 
 def logout_command():
-    logout()
-    return "API session logged out of Zscaler successfully."
+    raw_res = logout().json()
+    return CommandResults(
+        readable_output="API session logged out of Zscaler successfully.",
+        raw_response=raw_res
+    )
 
 
 def activate_command():
-    activate_changes()
-    return "Changes have been activated successfully."
+    raw_res = activate_changes().json()
+    return CommandResults(
+        readable_output="Changes have been activated successfully.",
+        raw_response=raw_res
+    )
 
 
 ''' EXECUTION CODE '''
@@ -827,7 +846,8 @@ def main():
         raise
     finally:
         try:
-            if params.get('auto_activate'):
+            # activate changes only when required
+            if params.get('auto_activate') and demisto.command() in AUTO_ACTIVATE_CHANGES_COMMANDS:
                 activate_changes()
             if auto_login:
                 logout()
