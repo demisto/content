@@ -53,8 +53,8 @@ def validate_args(domains_to_compare, sub_domains_to_check):
 
 def main():
     args = demisto.args()
-    domains_to_compare = argToList(args.get('domains_to_compare'))
-    sub_domains_to_check = argToList(args.get('domain_to_check'))
+    domains_to_compare = argToList(args.get('main_domains'))
+    sub_domains_to_check = argToList(args.get('possible_sub_domains_to_test'))
     validate_args(domains_to_compare, sub_domains_to_check)
     return_results(check_sub_domains_in_domain(domains_to_compare, sub_domains_to_check))
 
