@@ -1940,7 +1940,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
     # get latest comments and files
     entries = []
-    file_entries = client.get_ticket_attachment_entries(ticket_id, datetime.fromtimestamp(last_update))
+    file_entries = client.get_ticket_attachment_entries(ticket_id, datetime.fromtimestamp(last_update))  # type: ignore
     if file_entries:
         for file in file_entries:
             if '_mirrored_from_xsoar' not in file.get('File'):

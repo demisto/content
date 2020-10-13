@@ -558,9 +558,11 @@ def upload_file_request(*args):
     assert 'test_mirrored_from_xsoar.txt' == args[2]
     return {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test.txt'}
 
+
 def add_comment_request(*args):
     assert '(dbot): This is a comment\n\n Mirrored from Cortex XSOAR' == args[3]
     return {'id': "1234", 'comment': "This is a comment"}
+
 
 def test_upload_entries_update_remote_system_command(mocker):
     """
