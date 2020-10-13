@@ -6,8 +6,10 @@ import demistomock as demisto
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+BASE_URL = 'https://localhost:6078'
+
 params = {
-    'base_url': 'https://localhost:6078',
+    'base_url': BASE_URL,
     'username': 'qa-user@respond-software.com',
     'password': 'password',
     'insecure': True
@@ -30,7 +32,7 @@ def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_m
     get_full_incidents_response = []
 
     client = RestClient(
-        base_url='https://localhost:6078',
+        base_url=BASE_URL,
         auth=('un', 'pw'),
         verify=False
     )
@@ -39,8 +41,9 @@ def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_m
         'Tenant 1': {'time': 1593044883}
     }
 
+
     requests_mock.get(
-        'https://localhost:6078/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
     mocker.patch.object(client, 'construct_and_send_get_incident_ids_query', return_value=get_ids_response)
@@ -96,13 +99,13 @@ def test_get_incident_command(mocker, requests_mock):
     expected_result = load_test_data('test_data/get_incident_response.json')
 
     client = RestClient(
-        base_url='https://localhost:6078',
+        base_url=BASE_URL,
         auth=('un', 'pw'),
         verify=False
     )
 
     requests_mock.get(
-        'https://localhost:6078/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
     mocker.patch.object(client, 'construct_and_send_full_incidents_query', return_value=full_incidents_response)
@@ -132,7 +135,7 @@ def test_fetch_incidents_no_new(mocker, requests_mock):
     }
 
     requests_mock.get(
-        'https://localhost:6078/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
     mocker.patch.object(client, 'construct_and_send_get_incident_ids_query', return_value=get_ids_response)
@@ -158,7 +161,7 @@ def test_fetch_incidents(mocker, requests_mock):
     )
 
     requests_mock.get(
-        'https://localhost:6078/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1'}
     )
     mocker.patch.object(client, 'construct_and_send_get_incident_ids_query', return_value=get_ids_response)
@@ -185,16 +188,17 @@ def test_remove_user(mocker, requests_mock):
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(rest_client, 'construct_and_send_remove_user_from_incident_mutation',
                         return_value=remove_user_response)
+    requests_mock.post
     requests_mock.get(
-        'https://localhost:6078/api/v0/users',
+        f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
     )
     requests_mock.get(
-        'https://localhost:6078/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1'}
     )
     requests_mock.get(
-        'https://localhost:6078/session/activeUser',
+        f'{BASE_URL}/session/activeUser',
         json={'userId': 'qa1-user-id', 'currentTenant': 'dev1', 'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
@@ -224,15 +228,15 @@ def test_assign_user(mocker, requests_mock):
                         return_value=assign_user_response)
 
     requests_mock.get(
-        'https://localhost:6078/api/v0/users',
+        f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
     )
     requests_mock.get(
-        'https://localhost:6078/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1'}
     )
     requests_mock.get(
-        'https://localhost:6078/session/activeUser',
+        f'{BASE_URL}/session/activeUser',
         json={'userId': 'qa1-user-id', 'currentTenant': 'dev1', 'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
@@ -272,15 +276,15 @@ def test_close_incident(mocker, requests_mock):
     mocker.patch.object(rest_client, 'construct_and_send_full_incidents_query',
                         return_value=single_full_incident_response)
     requests_mock.get(
-        'https://localhost:6078/api/v0/users',
+        f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
     )
     requests_mock.get(
-        'https://localhost:6078/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1'}
     )
     requests_mock.get(
-        'https://localhost:6078/session/activeUser',
+        f'{BASE_URL}/session/activeUser',
         json={'userId': 'qa1-user-id', 'currentTenant': 'dev1', 'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
@@ -325,15 +329,15 @@ def test_assign_user_raise_exception(mocker, requests_mock):
     get_all_users_response = load_test_data('test_data/users.json')
     mocker.patch.object(rest_client, 'construct_and_send_add_user_to_incident_mutation', return_value=Exception)
     requests_mock.get(
-        'https://localhost:6078/api/v0/users',
+        f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
     )
     requests_mock.get(
-        'https://localhost:6078/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1'}
     )
     requests_mock.get(
-        'https://localhost:6078/session/activeUser',
+        f'{BASE_URL}/session/activeUser',
         json={'userId': 'qa1-user-id', 'currentTenant': 'dev1', 'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
@@ -361,15 +365,15 @@ def test_remove_user_raises_exception(mocker, requests_mock):
     get_all_users_response = load_test_data('test_data/users.json')
     mocker.patch.object(rest_client, 'construct_and_send_remove_user_from_incident_mutation', return_value=Exception)
     requests_mock.get(
-        'https://localhost:6078/api/v0/users',
+        f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
     )
     requests_mock.get(
-        'https://localhost:6078/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1'}
     )
     requests_mock.get(
-        'https://localhost:6078/session/activeUser',
+        f'{BASE_URL}/session/activeUser',
         json={'userId': 'qa1-user-id', 'currentTenant': 'dev1', 'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
@@ -401,15 +405,15 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
     mocker.patch.object(rest_client, 'construct_and_send_close_incident_mutation', return_value=Exception)
     mocker.patch.object(rest_client, 'construct_and_send_full_incidents_query', return_value=Exception)
     requests_mock.get(
-        'https://localhost:6078/api/v0/users',
+        f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
     )
     requests_mock.get(
-        'https://localhost:6078/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1'}
     )
     requests_mock.get(
-        'https://localhost:6078/session/activeUser',
+        f'{BASE_URL}/session/activeUser',
         json={'userId': 'qa1-user-id', 'currentTenant': 'dev1', 'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
