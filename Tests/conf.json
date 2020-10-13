@@ -3227,6 +3227,7 @@
         "CheckPointFirewall_v2": "Issue 18643",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
+        "VxStream": "23795",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
         "Anomali ThreatStream v2": "Issue 19182",
