@@ -1,0 +1,33 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "App-ID Payload Result"
+ ],
+ "caseInsensitive": true,
+ "cliName": "appidsignaturescope",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_appidsignaturescope",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "App-ID Signature Scope",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "selectValues": [
+  "protocol-data-unit",
+  "session"
+ ],
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

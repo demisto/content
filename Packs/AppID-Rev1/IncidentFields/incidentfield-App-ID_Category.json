@@ -1,0 +1,36 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "App-ID Payload Result"
+ ],
+ "caseInsensitive": true,
+ "cliName": "appidcategory",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_appidcategory",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "App-ID Category",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "selectValues": [
+  "business-systems",
+  "collaboration",
+  "general-internet",
+  "media",
+  "networking"
+ ],
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

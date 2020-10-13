@@ -1,0 +1,29 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "App-ID Payload Result"
+ ],
+ "caseInsensitive": true,
+ "cliName": "hexpercentage6",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_hexpercentage6",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "hex_percentage6",
+ "neverSetAsRequired": false,
+ "ownerOnly": true,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "number",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

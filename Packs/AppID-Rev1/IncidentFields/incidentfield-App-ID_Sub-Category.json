@@ -1,0 +1,33 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "App-ID Payload Result"
+ ],
+ "caseInsensitive": true,
+ "cliName": "appidsubcategory",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "fieldCalcScript": "eb0053ee-8fd8-4995-8afe-f875915166a5",
+ "group": 0,
+ "hidden": false,
+ "id": "incident_appidsubcategory",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "App-ID Sub-Category",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "selectValues": [
+  ""
+ ],
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}
