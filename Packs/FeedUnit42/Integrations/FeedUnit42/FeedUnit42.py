@@ -282,6 +282,10 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                 type_name = 'MITRE ATT&CK'
                 relation_value_field = relation_object.get('external_references')
             elif relation.startswith('indicator'):
+                # Need to create the connection only to file hashes
+                if not relation_object.get('pattern').startswith('[file:'):
+                    continue
+
                 type_name = 'Indicator'
                 relation_value_field = relation_object.get('name')
             elif relation.startswith('malware'):
