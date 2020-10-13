@@ -1,11 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 from datetime import timezone
 import secrets
 import string
 import hashlib
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 import dateparser
 import urllib3
 import traceback
@@ -107,6 +107,47 @@ def clear_trailing_whitespace(res):
             if isinstance(value, str):
                 res[index][key] = value.rstrip()
         index += 1
+    return res
+
+
+def arg_to_dictionary(arg: Any) -> dict:
+    """
+
+    Args:
+        arg: string, looks like: 'param1_name=param1_value, param2_name=param2_value'
+
+    Returns: dictionary : { param1_name : param1_value,
+                            param2_name : param2_value}
+
+    """
+    list_of_arg: list = argToList(arg)
+    args_dictionary: dict = {}
+    for item in list_of_arg:
+        param_array = argToList(item, '=')
+        if len(param_array) != 2:
+            raise ValueError('Please enter comma separated parameters at the following way : “ '
+                             'param1_name=param1_value, param2_name=param2_value “  ')
+        else:
+            value = param_array[1]
+            if value.isdigit():
+                value = int(value)
+            args_dictionary[param_array[0]] = value
+    return args_dictionary
+
+
+def string_to_int_array(string_list: list) -> list:
+    """
+
+    Args:
+        string_list: list of strings
+
+    Returns: list of integers
+
+    """
+    res: list = []
+    if string_list:
+        for item in string_list:
+            res.append(arg_to_int(arg=item, arg_name=str(item)))
     return res
 
 
@@ -888,6 +929,376 @@ class Client(BaseClient):
             return reply_content[0]
         else:
             raise TypeError(f'got unexpected response from api: {reply_content}\n')
+
+    def delete_endpoints(self, endpoint_ids: list):
+        request_data: Dict[str, Any] = {
+            'filters': [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids
+                }
+            ]
+        }
+
+        self._http_request(
+            method='POST',
+            url_suffix='/endpoints/delete/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+    def get_policy(self, endpoint_id):
+        request_data: Dict[str, Any] = {
+            "endpoint_id": endpoint_id
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/get_policy/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply').get('policy_name')
+
+    def get_endpoint_violations(self, endpoint_ids: list, type_of_violation, timestamp_gte: int,
+                                timestamp_lte: int,
+                                ip_list: list, vendor: list, vendor_id: list, product: list, product_id: list,
+                                serial: list,
+                                hostname: list, violation_ids: list, username: list):
+        filters: list = [
+            {
+                'field': 'timestamp',
+                'operator': 'lte',
+                'value': timestamp_lte
+            },
+            {
+                'field': 'timestamp',
+                'operator': 'gte',
+                'value': timestamp_gte
+            },
+            {
+                'field': 'type',
+                'operator': 'in',
+                'value': [type_of_violation]
+            },
+            {
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids
+            },
+            {
+                'field': 'ip_list',
+                'operator': 'in',
+                'value': ip_list
+            },
+            {
+                'field': 'vendor',
+                'operator': 'in',
+                'value': vendor
+            },
+            {
+                'field': 'vendor_id',
+                'operator': 'in',
+                'value': vendor_id
+            },
+            {
+                'field': 'product',
+                'operator': 'in',
+                'value': product
+            },
+            {
+                'field': 'product_id',
+                'operator': 'in',
+                'value': product_id
+            },
+            {
+                'field': 'serial',
+                'operator': 'in',
+                'value': serial
+            },
+            {
+                'field': 'hostname',
+                'operator': 'in',
+                'value': hostname
+            },
+            {
+                'field': 'violation_id_list',
+                'operator': 'in',
+                'value': violation_ids
+            },
+            {
+                'field': 'username',
+                'operator': 'in',
+                'value': username
+            }
+        ]
+        filters = list(filter(lambda x: True if x['value'] else False, filters))
+
+        request_data: Dict[str, Any] = {
+            "filters": filters
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/device_control/get_violations/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
+
+    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list):
+        files = {}
+        if windows:
+            files['windows'] = windows
+        if linux:
+            files['linux'] = linux
+        if macos:
+            files['linux'] = macos
+
+        if not windows and not linux and not macos:
+            raise ValueError('You should enter at least one path.')
+
+        request_data: Dict[str, Any] = {
+            'filters': [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_id_list
+                }
+            ],
+            'files': files
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/file_retrieval/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+        return reply.get('reply')
+
+    def retrieve_file_details(self, action_id: int):
+        request_data: Dict[str, Any] = {
+            "group_action_id": action_id
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/actions/file_retrieval_details/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply').get('data')
+
+    def get_scripts(self, name: list, description: list, created_by: list, windows_supported,
+                    linux_supported, macos_supported, is_high_risk):
+        filters: list = [
+            {
+                "field": "is_high_risk",
+                "operator": "in",
+                "value": [is_high_risk]
+            },
+            {
+                "field": "macos_supported",
+                "operator": "in",
+                "value": [macos_supported]
+            },
+            {
+                "field": "linux_supported",
+                "operator": "in",
+                "value": [linux_supported]
+            },
+            {
+                "field": "windows_supported",
+                "operator": "in",
+                "value": [windows_supported]
+            },
+            {
+                "field": "name",
+                "operator": "in",
+                "value": name
+            },
+            {
+                "field": "description",
+                "operator": "in",
+                "value": description
+            },
+            {
+                "field": "created_by",
+                "operator": "in",
+                "value": created_by
+            }
+        ]
+
+        filters = list(filter(lambda x: True if x['value'] else False, filters))
+
+        request_data: Dict[str, Any] = {
+            "filters": filters
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_scripts/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply').get('scripts')
+
+    def get_script_metadata(self, script_uid):
+        request_data: Dict[str, Any] = {
+            "script_uid": script_uid
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_script_metadata/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
+
+    def get_script_code(self, script_uid):
+        request_data: Dict[str, Any] = {
+            "script_uid": script_uid
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_script_code/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
+
+    def run_script(self, script_uid, endpoint_ids: list, timeout: int, parameters: Dict[str, Any]):
+        filters: list = [{
+            'field': 'endpoint_id_list',
+            'operator': 'in',
+            'value': endpoint_ids
+        }]
+        request_data: Dict[str, Any] = {"script_uid": script_uid, "timeout": timeout, "filters": filters,
+                                        'parameters_values': {}}
+
+        if parameters:
+            request_data['parameters_values'] = parameters
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/run_script/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply').get('action_id')
+
+    def run_snippet_code_script(self, endpoint_ids: list, snippet_code, timeout: int):
+        filters: list = [{
+            'field': 'endpoint_id_list',
+            'operator': 'in',
+            'value': endpoint_ids
+        }]
+        request_data: Dict[str, Any] = {
+            "filters": filters,
+            "snippet_code": snippet_code,
+            "timeout": timeout
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/run_snippet_code_script/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply').get('action_id')
+
+    def get_script_execution_status(self, action_id):
+        request_data: Dict[str, Any] = {
+            "action_id": action_id
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_script_execution_status/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
+
+    def get_script_execution_results(self, action_id):
+        request_data: Dict[str, Any] = {
+            'action_id': action_id
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_script_execution_results/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
+
+    def get_script_execution_result_files(self, action_id, endpoint_id):
+        request_data: Dict[str, Any] = {
+            'action_id': action_id,
+            'endpoint_id': endpoint_id
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_script_execution_results_files/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply').get('data')
+
+    def insert_simple_indicators(self, indicator, type_, severity, expiration_date: int,
+                                 comment, reputation, reliability, vendor_name,
+                                 vendor_reputation, vendor_reliability, vendors: Any, class_string):
+        request_data: Dict[str, Any] = {
+            'indicator': indicator,
+            'type': type_,
+            'severity': severity
+        }
+
+        vendors_list: list = []
+        data_param_names: list = ['expiration_date', 'comment', 'reputation', 'reliability', 'vendors', 'class']
+        data_params: list = [expiration_date, comment, reputation, reliability, vendors, class_string]
+        for data_param in data_params:
+            if data_param:
+                request_data[data_param_names[data_params.index(data_param)]] = data_param
+
+        # user should insert all of the following: vendor_name, vendor_reputation and vendor_reliability, or none of
+        # them.
+        if vendor_name and vendor_reputation and vendor_reliability:
+            vendors_list.append({
+                'vendor_name': vendor_name,
+                'reputation': vendor_reputation,
+                'reliability': vendor_reliability
+            })
+        elif not vendor_name and not vendor_reputation and not vendor_reliability:
+            pass
+        else:
+            raise ValueError('You should enter: vendor_name, vendor_reputation and vendor_reliability.')
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/indicators/insert_jsons',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
 
 
 def get_incidents_command(client, args):
@@ -1976,6 +2387,283 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
     return next_run, incidents
 
 
+def delete_endpoints_command(client: Client, args: Dict[str, str]) -> Tuple[str, Any, Any]:
+    endpoint_id_list: list = argToList(args.get('endpoint_ids'))
+
+    client.delete_endpoints(endpoint_id_list)
+
+    return f'Endpoints {args.get("endpoint_ids")} successfully deleted', None, None
+
+
+def get_policy_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    endpoint_id = args.get('endpoint_id')
+
+    policy_name = client.get_policy(endpoint_id)
+
+    return (
+        f'The policy name of endpoint {endpoint_id} is {policy_name}.',
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.policyName(val.id == obj.id)': policy_name
+        },
+        policy_name
+    )
+
+
+def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    endpoint_ids: list = argToList(args.get('endpoint_ids'))
+    type_of_violation = args.get('type')
+    timestamp_gte: int = arg_to_timestamp(
+        arg=args.get('timestamp_gte'),
+        arg_name='timestamp_gte'
+    )
+    timestamp_lte: int = arg_to_timestamp(
+        arg=args.get('timestamp_lte'),
+        arg_name='timestamp_lte'
+    )
+    ip_list: list = argToList(args.get('ip_list'))
+    vendor: list = argToList(args.get('vendor'))
+    vendor_id: list = argToList(args.get('vendor_id'))
+    product: list = argToList(args.get('product'))
+    product_id: list = argToList(args.get('product_id'))
+    serial: list = argToList(args.get('serial'))
+    hostname: list = argToList(args.get('hostname'))
+    violation_ids: list = string_to_int_array(argToList(args.get('violation_ids')))
+    username: list = argToList(args.get('username'))
+
+    reply = client.get_endpoint_violations(
+        endpoint_ids=endpoint_ids,
+        type_of_violation=type_of_violation,
+        timestamp_gte=timestamp_gte,
+        timestamp_lte=timestamp_lte,
+        ip_list=ip_list,
+        vendor=vendor,
+        vendor_id=vendor_id,
+        product=product,
+        product_id=product_id,
+        serial=serial,
+        hostname=hostname,
+        violation_ids=violation_ids,
+        username=username
+    )
+
+    # todo: change return
+    # table: timestamp, host name, platform, user, ip, type, guid, vendor, product, serial.
+    return (
+        tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), removeNull=True),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations': reply.get('total_count')
+        },
+        reply
+    )
+
+
+def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    endpoint_id_list: list = argToList(args.get('endpoint_ids'))
+    windows: list = argToList(args.get('windows_file_paths'))
+    linux: list = argToList(args.get('linux_file_paths'))
+    macos: list = argToList(args.get('mac_file_paths'))
+
+    reply = client.retrieve_file(
+        endpoint_id_list=endpoint_id_list,
+        windows=windows,
+        linux=linux,
+        macos=macos
+    )
+    action_id = reply.get("action_id")
+
+    return (
+        tableToMarkdown(name='Retrieve files', t={'Action Id': action_id}, headers=['Action Id'], removeNull=True),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.retrievedFiles.actionId(val.actionId == obj.actionId)': action_id
+        },
+        action_id
+    )
+
+
+def retrieve_file_details_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    action_id: int = arg_to_int(arg=args.get('action_id'), arg_name='group_action_id', required=True)
+
+    data = client.retrieve_file_details(action_id)
+
+    return (
+        tableToMarkdown(name='Retrieve file Details', t=data, removeNull=True),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.retrievedFileDetails(val.actionId == obj.actionId)': data
+        },
+        data
+    )
+
+
+def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    script_name: list = argToList(args.get('script_name'))
+    description: list = argToList(args.get('description'))
+    created_by: list = argToList(args.get('created_by'))
+    windows_supported = args.get('windows_supported')
+    linux_supported = args.get('linux_supported')
+    macos_supported = args.get('macos_supported')
+    is_high_risk = args.get('is_high_risk')
+
+    scripts = client.get_scripts(
+        name=script_name,
+        description=description,
+        created_by=created_by,
+        windows_supported=windows_supported,
+        linux_supported=linux_supported,
+        macos_supported=macos_supported,
+        is_high_risk=is_high_risk
+    )
+
+    headers: list = ['name', 'description', 'script_uid', 'modification_date', 'created_by',
+                     'windows_supported', 'linux_supported', 'macos_supported', 'is_high_risk']
+
+    return (
+        tableToMarkdown(name='Scripts', t=scripts, headers=headers, removeNull=True),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.Scripts(val.script_uid==obj.script_uid)': scripts
+        },
+        scripts
+    )
+
+
+def get_script_metadata_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    script_uid = args.get('script_uid')
+
+    reply = client.get_script_metadata(script_uid)
+
+    return (
+        tableToMarkdown(name='Script Metadata', t=reply, headers=[*reply], removeNull=True),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.scriptMetadata(val.actionId == obj.actionId)': reply
+        },
+        reply
+    )
+
+
+def get_script_code_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    script_uid = args.get('script_uid')
+
+    reply = client.get_script_code(script_uid)
+
+    return (
+        f'Script code is :\n {str(reply)}',
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.scriptCode(val.actionId == obj.actionId)': reply
+        },
+        reply
+    )
+
+
+def run_script_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    script_uid = args.get('script_uid')
+    endpoint_ids: list = argToList(args.get('endpoint_ids'))
+    timeout: int = arg_to_int(arg=args.get('timeout'), arg_name='timeout')
+    parameters: dict = arg_to_dictionary(args.get('parameters'))
+
+    action_id = client.run_script(script_uid, endpoint_ids, timeout, parameters)
+
+    return (
+        tableToMarkdown(name='Run Script Command', t={'Action Id': action_id},
+                        headers=['Action Id'], removeNull=True),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.runScript.actionId(val.actionId == obj.actionId)': action_id
+        },
+        action_id
+    )
+
+
+def run_snippet_code_script_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    endpoint_ids: list = argToList(args.get('endpoint_ids'))
+    snippet_code = args.get('snippet_code')
+    timeout: int = arg_to_int(arg=args.get('timeout'), arg_name='timeout')
+
+    action_id = client.run_snippet_code_script(endpoint_ids, snippet_code, timeout)
+
+    return (
+        tableToMarkdown(name='Run Snipped Code Script', t={'Action Id': action_id},
+                        headers=['Action Id'], removeNull=True),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.runSnippetCodeScript.actionId(val.actionId == obj.actionId)': action_id
+        },
+        action_id
+    )
+
+
+def get_script_execution_status_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    action_id = args.get('action_id')
+
+    reply = client.get_script_execution_status(action_id)
+
+    return (
+        tableToMarkdown(name='Execution Status', t=reply, removeNull=True),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionStatus(val.actionId == obj.actionId)': reply
+        },
+        reply
+    )
+
+
+def get_script_execution_results_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    action_id = args.get('action_id')
+
+    reply = client.get_script_execution_results(action_id)
+
+    return (
+        tableToMarkdown(name='Script Execution Results', t=reply.get('results'),
+                        headers=['General Status'], removeNull=True),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionResults(val.actionId == obj.actionId)': reply
+        },
+        reply
+    )
+
+
+def get_script_execution_result_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    action_id = args.get('action_id')
+    endpoint_id = args.get('endpoint_id')
+
+    data = client.get_script_execution_result_files(action_id, endpoint_id)
+
+    return (
+        f'Script execution data is: {str(data)}',
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionResult(val.actionId == obj.actionId)': data
+        },
+        data
+    )
+
+
+def insert_simple_indicators_command(client: Client, args) -> Tuple[str, Any, Any]:
+    indicator = args.get('indicator')
+    type_ = args.get('type')
+    severity = args.get('severity')
+    expiration_date: int = arg_to_int(arg=args.get('expiration_date'), arg_name='expiration_date')
+    comment = args.get('comment')
+    reputation = args.get('reputation')
+    reliability = args.get('reliability')
+    vendor_name = args.get('vendor_name')
+    vendor_reputation = args.get('vendor_reputation')
+    vendor_reliability = args.get('vendor_reliability')
+    vendors = json.loads(args.get('vendors'))
+    class_string = args.get('class')
+
+    client.insert_simple_indicators(
+        indicator=indicator,
+        type_=type_,
+        severity=severity,
+        expiration_date=expiration_date,
+        comment=comment,
+        reputation=reputation,
+        reliability=reliability,
+        vendor_name=vendor_name,
+        vendor_reputation=vendor_reputation,
+        vendor_reliability=vendor_reliability,
+        vendors=vendors,
+        class_string=class_string
+    )
+
+    return 'IOCs successfully uploaded', None, None
+
+
 def main():
     """
     Executes an integration command
@@ -2021,6 +2709,8 @@ def main():
         timeout=timeout
     )
 
+    args = demisto.args()
+
     try:
         if demisto.command() == 'test-module':
             client.test_module(first_fetch_time)
@@ -2032,73 +2722,115 @@ def main():
             demisto.incidents(incidents)
 
         elif demisto.command() == 'xdr-get-incidents':
-            return_outputs(*get_incidents_command(client, demisto.args()))
+            return_outputs(*get_incidents_command(client, args))
 
         elif demisto.command() == 'xdr-get-incident-extra-data':
-            return_outputs(*get_incident_extra_data_command(client, demisto.args()))
+            return_outputs(*get_incident_extra_data_command(client, args))
 
         elif demisto.command() == 'xdr-update-incident':
-            return_outputs(*update_incident_command(client, demisto.args()))
+            return_outputs(*update_incident_command(client, args))
 
         elif demisto.command() == 'xdr-get-endpoints':
-            return_outputs(*get_endpoints_command(client, demisto.args()))
+            return_outputs(*get_endpoints_command(client, args))
 
         elif demisto.command() == 'xdr-insert-parsed-alert':
-            return_outputs(*insert_parsed_alert_command(client, demisto.args()))
+            return_outputs(*insert_parsed_alert_command(client, args))
 
         elif demisto.command() == 'xdr-insert-cef-alerts':
-            return_outputs(*insert_cef_alerts_command(client, demisto.args()))
+            return_outputs(*insert_cef_alerts_command(client, args))
 
         elif demisto.command() == 'xdr-isolate-endpoint':
-            return_outputs(*isolate_endpoint_command(client, demisto.args()))
+            return_outputs(*isolate_endpoint_command(client, args))
 
         elif demisto.command() == 'xdr-unisolate-endpoint':
-            return_outputs(*unisolate_endpoint_command(client, demisto.args()))
+            return_outputs(*unisolate_endpoint_command(client, args))
 
         elif demisto.command() == 'xdr-get-distribution-url':
-            return_outputs(*get_distribution_url_command(client, demisto.args()))
+            return_outputs(*get_distribution_url_command(client, args))
 
         elif demisto.command() == 'xdr-get-create-distribution-status':
-            return_outputs(*get_distribution_status_command(client, demisto.args()))
+            return_outputs(*get_distribution_status_command(client, args))
 
         elif demisto.command() == 'xdr-get-distribution-versions':
             return_outputs(*get_distribution_versions_command(client))
 
         elif demisto.command() == 'xdr-create-distribution':
-            return_outputs(*create_distribution_command(client, demisto.args()))
+            return_outputs(*create_distribution_command(client, args))
 
         elif demisto.command() == 'xdr-get-audit-management-logs':
-            return_outputs(*get_audit_management_logs_command(client, demisto.args()))
+            return_outputs(*get_audit_management_logs_command(client, args))
 
         elif demisto.command() == 'xdr-get-audit-agent-reports':
-            return_outputs(*get_audit_agent_reports_command(client, demisto.args()))
+            return_outputs(*get_audit_agent_reports_command(client, args))
 
         elif demisto.command() == 'xdr-blacklist-files':
-            return_outputs(*blacklist_files_command(client, demisto.args()))
+            return_outputs(*blacklist_files_command(client, args))
 
         elif demisto.command() == 'xdr-whitelist-files':
-            return_outputs(*whitelist_files_command(client, demisto.args()))
+            return_outputs(*whitelist_files_command(client, args))
 
         elif demisto.command() == 'xdr-quarantine-files':
-            return_outputs(*quarantine_files_command(client, demisto.args()))
+            return_outputs(*quarantine_files_command(client, args))
 
         elif demisto.command() == 'xdr-get-quarantine-status':
-            return_outputs(*get_quarantine_status_command(client, demisto.args()))
+            return_outputs(*get_quarantine_status_command(client, args))
 
         elif demisto.command() == 'xdr-restore-file':
-            return_outputs(*restore_file_command(client, demisto.args()))
+            return_outputs(*restore_file_command(client, args))
 
         elif demisto.command() == 'xdr-endpoint-scan':
-            return_outputs(*endpoint_scan_command(client, demisto.args()))
+            return_outputs(*endpoint_scan_command(client, args))
 
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
 
         elif demisto.command() == 'get-remote-data':
-            return_results(get_remote_data_command(client, demisto.args()))
+            return_results(get_remote_data_command(client, args))
 
         elif demisto.command() == 'update-remote-system':
-            return_results(update_remote_system_command(client, demisto.args()))
+            return_results(update_remote_system_command(client, args))
+
+        elif demisto.command() == 'xdr-delete-endpoints':
+            return_outputs(*delete_endpoints_command(client, args))
+
+        elif demisto.command() == 'xdr-get-policy':
+            return_outputs(*get_policy_command(client, args))
+
+        elif demisto.command() == 'xdr-get-endpoint-violations':
+            return_outputs(*get_endpoint_violations_command(client, args))
+
+        elif demisto.command() == 'xdr-retrieve-files':
+            return_outputs(*retrieve_files_command(client, args))
+
+        elif demisto.command() == 'xdr-retrieve-file-details':
+            return_outputs(*retrieve_file_details_command(client, args))
+
+        elif demisto.command() == 'xdr-get-scripts':
+            return_outputs(*get_scripts_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-metadata':
+            return_outputs(*get_script_metadata_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-code':
+            return_outputs(*get_script_code_command(client, args))
+
+        elif demisto.command() == 'xdr-run-script':
+            return_outputs(*run_script_command(client, args))
+
+        elif demisto.command() == 'xdr-run-snippet-code-script':
+            return_outputs(*run_snippet_code_script_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-execution-status':
+            return_outputs(*get_script_execution_status_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-execution-results':
+            return_outputs(*get_script_execution_results_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-execution-result-files':
+            return_outputs(*get_script_execution_result_files_command(client, args))
+
+        elif demisto.command() == 'xdr-insert-simple-indicators':
+            return_outputs(*insert_simple_indicators_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':
