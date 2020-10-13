@@ -1,4 +1,4 @@
-The CyberArk Application Identity Manager (AIM) provides a secure safe in which to store your account credentials. Use this integration to retrieve the account credentials in CyberArk AIM.
+The CyberArk Application Identity Manager (AIM) provides a secure safe in which to store your account credentials. Use this integration to retrieve the account credentials in CyberArk AIM. This integration fetches credentials. For more information, see [Managing Credentials](https://xsoar.pan.dev/docs/reference/articles/managing-credentials).
 
 ## Configure CyberArkAIM v2 on Cortex XSOAR
 
