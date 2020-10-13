@@ -182,6 +182,8 @@ def main():
     credentials_json = json.loads(demisto.params().get('credentials_json', {}))
     project = demisto.params().get('project_id', '')
     region = demisto.params().get('region')
+    # when region is empty, set it to '-' meaning all regions
+    # note : demisto.params().get('region','-') did not worked on Demisto
     region = set_default_region(region)
     proxy = demisto.params().get('proxy', False)
     insecure = demisto.params().get('insecure', False)
