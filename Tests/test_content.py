@@ -323,7 +323,7 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 
 
 def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks, integrations, playbook_id,
-                   succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url,
+                   succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url, demisto_user, demisto_pass,
                    build_name, prints_manager, thread_index=0, is_mock_run=False):
     if not tests_settings.is_private:
         with acquire_test_lock(integrations,
@@ -332,7 +332,7 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, faile
                                thread_index,
                                tests_settings) as lock:
             if lock:
-                status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+                status, inc_id = test_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager, test_options,
                                                   is_mock_run, thread_index=thread_index)
                 # c.api_client.pool.close()
                 if status == PB_Status.COMPLETED:
@@ -360,7 +360,7 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, faile
                 tests_queue.put(conf_json_test_details)
                 succeed = False
     else:
-        status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager,
+        status, inc_id = test_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager,
                                           test_options,
                                           is_mock_run, thread_index=thread_index)
         # c.api_client.pool.close()
@@ -400,7 +400,7 @@ def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy
     proxy.start(playbook_id, record=True, thread_index=thread_index, prints_manager=prints_manager)
     succeed = run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks, integrations,
                              playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                             server_url, build_name, prints_manager, thread_index=thread_index, is_mock_run=True)
+                             server_url, demisto_user, demisto_pass, build_name, prints_manager, thread_index=thread_index, is_mock_run=True)
     proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
     if succeed:
         proxy.clean_mock_file(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
@@ -411,7 +411,7 @@ def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy
 
 
 def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks, integrations,
-             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url,
+             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url, demisto_user, demisto_pass,
              build_name, start_message, prints_manager, thread_index=0):
     rerecord = False
 
@@ -420,7 +420,7 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
         prints_manager.add_print_job(start_mock_message, print, thread_index, include_timestamp=True)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
-        status, _ = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+        status, _ = test_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager, test_options,
                                      is_mock_run=True, thread_index=thread_index)
         # use results
         proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
@@ -460,7 +460,7 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
                                  api_key=c.api_client.configuration.api_key, verify_ssl=False)
     succeed = run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks,
                              integrations, playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
-                             build_number, server_url, build_name, prints_manager, thread_index=thread_index)
+                             build_number, server_url, demisto_user, demisto_pass, build_name, prints_manager, thread_index=thread_index)
 
     if rerecord and succeed:
         proxy.rerecorded_tests.append(playbook_id)
@@ -479,7 +479,7 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
         prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index, include_timestamp=True)
         run_test_logic(conf_json_test_details, tests_queue, tests_settings, client, failed_playbooks, integrations,
                        playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                       server_url, build_name, prints_manager, thread_index=thread_index)
+                       server_url, demisto_user, demisto_pass, build_name, prints_manager, thread_index=thread_index)
         prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print, thread_index,
                                      include_timestamp=True)
 
@@ -491,7 +491,7 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
                        failed_playbooks, integrations,
                        playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
                        build_number,
-                       server_url, build_name, prints_manager, thread_index=thread_index)
+                       server_url, demisto_user, demisto_pass, build_name, prints_manager, thread_index=thread_index)
         prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print,
                                      thread_index,
                                      include_timestamp=True)
@@ -500,7 +500,7 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
     if not is_private:
         mock_run(conf_json_test_details, tests_queue, tests_settings, client, proxy, failed_playbooks, integrations,
                  playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                 server_url, build_name, start_message, prints_manager, thread_index=thread_index)
+                 server_url, demisto_user, demisto_pass, build_name, start_message, prints_manager, thread_index=thread_index)
 
 
 def http_request(url, params_dict=None):
