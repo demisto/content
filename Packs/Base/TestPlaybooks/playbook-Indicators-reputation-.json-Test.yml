@@ -1808,7 +1808,7 @@ tasks:
       key:
         simple: valid_ipv6s
       value:
-        simple: '2001:db8:85a3:8d3:1319:8a2e:370:7348 2001:0db8:0000:0000:0000:ff00:0042:8329'
+        simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348" ,"2001:0db8:0000:0000:0000:ff00:0042:8329"'
     separatecontext: false
     view: |-
       {
@@ -1880,7 +1880,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 2001:db8:85a3:8d3:1319:8a2e:370:7348
+              simple: '\"2001:db8:85a3:8d3:1319:8a2e:370:7348\"'
       - - operator: containsGeneral
           left:
             value:
@@ -1888,7 +1888,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 2001:0db8:0000:0000:0000:ff00:0042:8329
+              simple: '\"2001:0db8:0000:0000:0000:ff00:0042:8329\"'
     view: |-
       {
         "position": {
