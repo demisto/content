@@ -142,7 +142,7 @@
 			"width": 150
 		},
 		{
-			"displayName": "MITRE ATT&CK TACTIC",
+			"displayName": "MITRE ATTACK TACTIC",
 			"fieldCalcScript": "",
 			"isDefault": true,
 			"isReadOnly": false,
@@ -154,7 +154,7 @@
 			"width": 150
 		},
 		{
-			"displayName": "MITRE ATT&CK TECHNIQUE",
+			"displayName": "MITRE ATTACK TECHNIQUE",
 			"fieldCalcScript": "",
 			"isDefault": true,
 			"isReadOnly": false,
