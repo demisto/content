@@ -11,16 +11,17 @@ class Client(BaseClient):
 
 def test_module(client: Client) -> str:
 
-    if 'http://' not in client._base_url and 'https://' not in client._base_url:
+    if "http://" not in client._base_url and "https://" not in client._base_url:
         return "Provide a valid URL for the base_url"
 
-    r = client._http_request("GET", "users", resp_type="response", ok_codes=(200,401,404))
+    r = client._http_request(
+        "GET", "users", resp_type="response", ok_codes=(200, 401, 404)
+    )
 
     if r.status_code == 404:
         return "Page not found, possibly wrong base_url"
     if r.status_code == 401:
         return "Bad API Key"
-
 
     return "ok"
 
@@ -310,7 +311,7 @@ def create_profile(client: Client, **args) -> CommandResults:
     return results
 
 
-def update_profile(client: Client, **args) -> CommandResults:
+def update_profile(client: Client, **args) -> str:
     profileID = args.get("profileID")
 
     data = {}
@@ -376,7 +377,7 @@ def main():
 
     command = demisto.command()
     if command in commands:
-        return_results(commands[command](client, **args))   # type: ignore
+        return_results(commands[command](client, **args))  # type: ignore
     else:
         return_error(f"Command {command} is not available in this integration")
 
