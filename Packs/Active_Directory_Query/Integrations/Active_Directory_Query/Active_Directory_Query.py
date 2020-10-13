@@ -417,7 +417,7 @@ def search_computers(default_base_dn, page_size):
 
     # query by user DN
     if args.get('dn'):
-        query = "(&(objectClass=user)(objectCategory=computer)(dn={}))".format(args['dn'])
+        query = "(&(objectClass=user)(objectCategory=computer)(distinguishedName={}))".format(args['dn'])
 
     # query by name
     if args.get('name'):
