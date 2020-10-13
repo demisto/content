@@ -6,7 +6,7 @@ from CommonServerPython import *
 MAXIMUM_NUMBER_OF_RECORDS = 10
 
 
-def check_sub_domains_in_domain(domains_to_compare: list, sub_domains_to_check: list) -> CommandResults:
+def check_sub_domains_in_domain(domains_to_compare: list, sub_domains_to_check: list):
     """
 
     Args:
