@@ -7,8 +7,8 @@ configuration:
   name: url
   required: true
   type: 0
-- hidden: false
-  display: Username
+- display: Username
+  hidden: false
   name: creds
   required: true
   type: 9
@@ -44,6 +44,20 @@ script:
       description: The name of a specific device to get.
       isArray: false
       name: device
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: From which index to start the list.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: To which index to get the list.
+      isArray: false
+      name: to
       required: false
       secret: false
     deprecated: false
@@ -299,6 +313,20 @@ script:
       name: group
       required: false
       secret: false
+    - default: false
+      defaultValue: '0'
+      description: From which index to start the list.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: To which index to get the list.
+      isArray: false
+      name: to
+      required: false
+      secret: false
     deprecated: false
     description: List ADOM device groups.
     execution: false
@@ -328,12 +356,14 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: From which index to start the list.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
+      defaultValue: '50'
       description: To which index to get the list.
       isArray: false
       name: to
@@ -578,7 +608,7 @@ script:
       - geography
       - wildcard-fqdn
       - dynamic
-      required: true
+      required: false
       secret: false
     - default: false
       description: Policy group name.
@@ -684,12 +714,14 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: From which index to start the list.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
+      defaultValue: '50'
       description: To which index to get the list.
       isArray: false
       name: to
@@ -833,7 +865,7 @@ script:
         the group.
       isArray: false
       name: member
-      required: true
+      required: false
       secret: false
     - default: false
       description: A comment about the address group
@@ -872,12 +904,14 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: From which index to start the list.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
+      defaultValue: '50'
       description: To which index to get the list.
       isArray: false
       name: to
@@ -909,12 +943,14 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: From which index to start the list.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
+      defaultValue: '50'
       description: To which index to get the list.
       isArray: false
       name: to
@@ -1053,12 +1089,14 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: From which index to start the list.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
+      defaultValue: '50'
       description: To which index to get the list.
       isArray: false
       name: to
@@ -1582,12 +1620,14 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: From which index to start the list.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
+      defaultValue: '50'
       description: To which index to get the list.
       isArray: false
       name: to
@@ -1626,13 +1666,13 @@ script:
       description: Whether to enable firewall policy 6 implicit log.
       type: String
     - contextPath: FortiManager.PolicyPackage.package setting.inspection-mode
-      description: Whether to enable inspection mode.
+      description: Package inspection mode.
       type: String
     - contextPath: FortiManager.PolicyPackage.package setting.ngfw-mode
-      description: Whether to enable NGFW mode.
+      description: Package NGFW mode.
       type: String
     - contextPath: FortiManager.PolicyPackage.package setting.ssl-ssh-profile
-      description: Whether to enable SSL SSH profile.
+      description: Package SSL SSH profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.scope_member.name
       description: Policy package scope member name.
@@ -1717,7 +1757,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: proxy
-      description: Whether to enable inspection mode.
+      description: Package inspection mode.
       isArray: false
       name: inspection_mode
       predefined:
@@ -1728,7 +1768,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: profile-based
-      description: Whether to enable NGFW mode
+      description: Package NGFW mode
       isArray: false
       name: ngfw_mode
       predefined:
@@ -1737,7 +1777,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Whether to enable SSL SSH profile
+      description: Package SSL SSH profile
       isArray: false
       name: ssl_ssh_profile
       predefined:
@@ -1814,7 +1854,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to enable inspection mode.
+      description: Package inspection mode.
       isArray: false
       name: inspection_mode
       predefined:
@@ -1824,7 +1864,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to enable NGFW mode
+      description: Package NGFW mode
       isArray: false
       name: ngfw_mode
       predefined:
@@ -1833,7 +1873,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Whether to enable SSL SSH profile
+      description: Package SSL SSH profile
       isArray: false
       name: ssl_ssh_profile
       predefined:
@@ -1876,10 +1916,14 @@ script:
       name: adom
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '0'
       description: From which index to start the list.
       isArray: false
       name: from
+      predefined:
+      - '50'
       required: false
       secret: false
     - default: false
@@ -2606,7 +2650,7 @@ script:
       predefined:
       - enable
       - disable
-      required: true
+      required: false
       secret: false
     - default: false
       description: The ID of the policy to update.
@@ -2692,12 +2736,14 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: From which index to start the list.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
+      defaultValue: '50'
       description: To which index to get the list.
       isArray: false
       name: to

@@ -116,21 +116,20 @@ def get_specific_entity(entity_name: str):
 
 
 def get_range_for_list_command(args: Dict):
-    first_index = args.get('from')
-    last_index = args.get('to')
+    first_index = args.get('from', 0)
+    last_index = args.get('to', 50)
     list_range = []
 
-    if first_index is not None:
-        list_range.append(int(first_index))
-
-    if last_index is not None:
+    # A bug on Forti API when the first index is 0, need to add 1 to the last index for consistency
+    if int(first_index) == 0:
+        list_range.append(0)
         list_range.append(int(last_index) + 1)
 
-    if list_range:
-        return list_range
-
     else:
-        return None
+        list_range.append(int(first_index))
+        list_range.append(int(last_index))
+
+    return list_range
 
 
 def split_param(args, name, default_val='', skip_if_none=False):
@@ -140,7 +139,8 @@ def split_param(args, name, default_val='', skip_if_none=False):
 
 def list_adom_devices_command(client, args):
     devices_data = client.fortimanager_api_call("get", f"/dvmdb/{get_global_or_adom(client, args)}/device"
-                                                       f"{get_specific_entity(args.get('device'))}")
+                                                       f"{get_specific_entity(args.get('device'))}",
+                                                range_info=get_range_for_list_command(args))
 
     headers = ['name', 'ip', 'hostname', 'os_type', 'adm_usr', 'app_ver', 'vdom', 'ha_mode']
 
@@ -156,7 +156,8 @@ def list_adom_devices_command(client, args):
 
 def list_adom_devices_groups_command(client, args):
     device_groups_data = client.fortimanager_api_call("get", f"/dvmdb/{get_global_or_adom(client, args)}/group"
-                                                             f"{get_specific_entity(args.get('group'))}")
+                                                             f"{get_specific_entity(args.get('group'))}",
+                                                      range_info=get_range_for_list_command(args))
 
     headers = ['name', 'type', 'os_type']
 
@@ -307,7 +308,7 @@ def create_service_group_command(client, args):
 
 def update_service_group_command(client, args):
     data = setup_request_data(args, ['adom'])
-    data['member'] = data.get('member').split(',')
+    data['member'] = data.get('member').split(',') if data.get('member') else None
     service_groups = client.fortimanager_api_call("update", f"/pm/config/"
                                                             f"{get_global_or_adom(client, args)}"
                                                             f"/obj/firewall/service/group",
@@ -319,7 +320,7 @@ def update_service_group_command(client, args):
 def delete_service_group_command(client, args):
     client.fortimanager_api_call("delete", f"/pm/config/{get_global_or_adom(client, args)}"
                                            f"/obj/firewall/service/group/{args.get('service_group')}")
-    return f"Deleted Address Group {args.get('service_group')}"
+    return f"Deleted Service Group {args.get('service_group')}"
 
 
 def list_custom_service_command(client, args):
@@ -364,8 +365,16 @@ def delete_custom_service_command(client, args):
 
 def list_policy_packages_command(client, args):
     policy_packages = client.fortimanager_api_call("get", f"pm/pkg/{get_global_or_adom(client, args)}"
-                                                          f"{get_specific_entity(args.get('policy_package'))}",
-                                                   range_info=get_range_for_list_command(args))
+                                                          f"{get_specific_entity(args.get('policy_package'))}")
+
+    # No native range filter in API call, implementing manually
+    from_val = int(args.get('from', 0))
+    to_val = args.get('to')
+    if not args.get('to'):
+        policy_packages = policy_packages[from_val:]
+
+    else:
+        policy_packages = policy_packages[from_val:int(to_val) + 1]
 
     headers = ['name', 'obj_ver', 'type', 'scope_member']
 
@@ -497,7 +506,7 @@ def update_policy_command(client, args):
                                                       f"/pkg/{args.get('package')}/firewall/policy",
                                             data_in_list=data)
 
-    return f"Updated policy with ID {policies.get('id')}"
+    return f"Updated policy with ID {policies.get('policyid')}"
 
 
 def delete_policy_command(client, args):
@@ -511,7 +520,8 @@ def move_policy_command(client, args):
                                          f"/pkg/{args.get('package')}/firewall/policy/{args.get('policy')}",
                                  other_params=setup_request_data(args, ['adom', 'package', 'policy']))
 
-    return f"Moved policy with ID {args.get('policy')} {args.get('option')} {args.get('target')}"
+    return f"Moved policy with ID {args.get('policy')} {args.get('option')} {args.get('target')} " \
+           f"in Policy Package: {args.get('package')}"
 
 
 def list_dynamic_interface_command(client, args):
@@ -551,8 +561,9 @@ def install_policy_package_command(client, args):
         outputs_prefix='FortiManager.Installation',
         outputs_key_field='id',
         outputs=formatted_response,
-        readable_output=f"Installed a policy package {args.get('package')} in ADOM: {get_global_or_adom(client, args)} "
-                        f"on Device {args.get('name')} on VDOM {args.get('vdom')}.\nTask ID: {response.get('task')}",
+        readable_output=f"Installed a policy package {args.get('package')} "
+                        f"in ADOM: {get_global_or_adom(client, args)}\n"
+                        f"On Device {args.get('name')} and VDOM {args.get('vdom')}.\nTask ID: {response.get('task')}",
         raw_response=response
     )
 
