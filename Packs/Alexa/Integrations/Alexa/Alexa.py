@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings()
 
 """GLOBAL VARIABLES/CONSTANTS"""
 THRESHOLD = int(demisto.params().get('threshold'))
-BENIGN = int(demisto.params().get('benign'))
+BENIGN = int(demisto.params().get('benign'), 0)
 USE_SSL = not demisto.params().get('insecure', False)
 PROXIES = handle_proxy()
 
