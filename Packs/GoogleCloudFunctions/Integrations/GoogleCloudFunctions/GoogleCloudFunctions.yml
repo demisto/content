@@ -33,7 +33,7 @@ script:
       description: The project ID the Google Cloud function is in. Default is the instance's project.
       isArray: false
       name: project_id
-      required: true
+      required: false
       secret: false
     - default: false
       description: The region of the Google Cloud function. Default is all regions. You can get a full list of regions using the `google-cloud-function-regions-list` command.
