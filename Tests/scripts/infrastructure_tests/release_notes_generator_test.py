@@ -438,5 +438,5 @@ class TestMergeVersionBlocks:
         """
         entities_data = {'IndicatorTypes': {'accountRep': ''}}
         rn = construct_entities_block(entities_data)
-        assert '### IndicatorTypes' in rn
+        assert '### Indicator Types' in rn
         assert '- **accountRep**' in rn
