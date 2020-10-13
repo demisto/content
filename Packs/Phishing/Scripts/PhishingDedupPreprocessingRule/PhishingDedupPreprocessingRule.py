@@ -1,3 +1,5 @@
+import dateutil
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -47,16 +49,21 @@ def get_existing_incidents(input_args):
     elif 'exsitingIncidentsLookback' in DEFAULT_ARGS:
         get_incidents_args['fromDate'] = DEFAULT_ARGS['exsitingIncidentsLookback']
     status_scope = input_args.get('statusScope', 'All')
+    query_components = []
+    if 'query' in get_incidents_args:
+        query_components.append(get_incidents_args['query'])
     if status_scope == 'ClosedOnly':
-        if 'query' in get_incidents_args:
-            get_incidents_args['query'] = '({}) and (status:Closed)'.format(get_incidents_args['query'])
-        else:
-            get_incidents_args['query'] = 'status:Closed'
+        query_components.append('status:Closed')
     elif status_scope == 'NonClosedOnly':
-        if 'query' in get_incidents_args:
-            get_incidents_args['query'] = '({}) and (-status:Closed)'.format(get_incidents_args['query'])
-        else:
-            get_incidents_args['query'] = '-status:Closed'
+        query_components.append('-status:Closed')
+    elif status_scope == 'All':
+        pass
+    else:
+        return_error('Unsupported statusScope: {}'.format(status_scope))
+    incident_type = input_args.get('incidentTypes', DEFAULT_ARGS['incidentTypes'])
+    type_query = '{}:{}'.format(input_args['incidentTypeFieldName'], incident_type)
+    query_components.append(type_query)
+    get_incidents_args['query'] = ' and '.join('({})'.format(c) for c in query_components)
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
@@ -159,7 +166,10 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
         mask = (existing_incidents_df[FROM_FIELD] != '') & \
                (existing_incidents_df[FROM_FIELD] == new_incident[FROM_FIELD])
         existing_incidents_df = existing_incidents_df[mask]
-    existing_incidents_df.sort_values(by='similarity', ascending=False, inplace=True)
+    existing_incidents_df['created'] = existing_incidents_df['created']\
+        .apply(lambda x: dateutil.parser.parse(x))  # type: ignore
+    existing_incidents_df = existing_incidents_df[existing_incidents_df['similarity'] > SIMILARITY_THRESHOLD]
+    existing_incidents_df.sort_values(by='created', inplace=True)
     if len(existing_incidents_df) > 0:
         return existing_incidents_df.iloc[0], existing_incidents_df.iloc[0]['similarity']
     else:

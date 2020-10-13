@@ -1,5 +1,14 @@
 args:
 - default: false
+  defaultValue: type
+  description: The name of the incident field where its type is stored. Default it
+    "type". Change this arguement only in case you use a custom field for specifying incident
+    type.
+  isArray: false
+  name: incidentTypeFieldName
+  required: false
+  secret: false
+- default: false
   defaultValue: Phishing
   description: A comma-separatetd list of incident types by which to filter.
   isArray: false
@@ -83,7 +92,8 @@ args:
   - NonClosedOnly
   required: false
   secret: false
-comment: An out-of-the-box deduplication preprocessing script based on a machine learning algorithm.
+comment: An out-of-the-box deduplication preprocessing script based on a machine learning
+  algorithm.
 commonfields:
   id: PhishingDedupPreprocessingRule
   version: -1
