@@ -39,8 +39,13 @@ script:
       isArray: true
       name: domains
       required: true
-    - description: Note on what the domain is or why it is being added
+    - default: false
+      defaultValue: Added from XSOAR
+      description: Note on what the domain is or why it is being added
+      isArray: false
       name: comment
+      required: false
+      secret: false
     description: Adds domains to given destination list
     name: umbrella-add-domain
   - arguments:

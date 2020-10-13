@@ -43,7 +43,7 @@ def add_domain(client: Client, **args) -> str:
     uri = f'{organizationId}/destinationlists/{destinationListId}/destinations'
 
     destinations = argToList(args.get('domains'))
-    comment = args.get('comment', '')
+    comment = args.get('comment')
     payload = [{'destination': destination, 'comment': comment} for destination in destinations]
 
     payload = json.dumps(payload)
