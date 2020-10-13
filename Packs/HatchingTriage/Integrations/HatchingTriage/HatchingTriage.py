@@ -160,16 +160,16 @@ def get_pcap(client: Client, **args) -> dict:
     return fileResult(filename, file_content)
 
 
-def get_dumped_files(client: Client, **args) -> CommandResults:
+def get_dumped_files(client: Client, **args) -> dict:
     sample_id = args.get("sample_id")
     task_id = args.get("task_id")
     file_name = args.get("file_name")
 
-    r = client._http_request("GET", f"samples/{sample_id}/{task_id}/files/{file_name}")
-
-    results = CommandResults(
-        outputs_prefix="Triage.sample.file_dump", outputs_key_field="data", outputs=r
+    r = client._http_request(
+        "GET", f"samples/{sample_id}/{task_id}/{file_name}", resp_type="content"
     )
+
+    results = fileResult(f"{file_name}", r)
 
     return results
 
@@ -216,14 +216,9 @@ def create_user(client: Client, **args) -> CommandResults:
 def delete_user(client: Client, **args) -> CommandResults:
     userID = args.get("userID")
 
-    r = client._http_request("DELETE", f"users/{userID}")
+    client._http_request("DELETE", f"users/{userID}")
 
-    results = CommandResults(
-        outputs_prefix="Triage.users",
-        outputs_key_field="data",
-        outputs=r,
-        readable_output="User successfully deleted",
-    )
+    results = "User successfully deleted"
 
     return results
 
@@ -248,7 +243,7 @@ def get_apikey(client: Client, **args) -> CommandResults:
     r = client._http_request("GET", f"users/{userID}/apikeys")
 
     results = CommandResults(
-        outputs_prefix="Triage.apikey", outputs_key_field="data", outputs=r
+        outputs_prefix="Triage.apikey", outputs_key_field="data", outputs=r.get("data")
     )
 
     return results
@@ -256,16 +251,11 @@ def get_apikey(client: Client, **args) -> CommandResults:
 
 def delete_apikey(client: Client, **args) -> CommandResults:
     userID = args.get("userID")
-    apiKeyName = args.get("apiKeyName")
+    apiKeyName = args.get("name")
 
-    r = client._http_request("DELETE", f"users/{userID}/apikeys/{apiKeyName}")
+    client._http_request("DELETE", f"users/{userID}/apikeys/{apiKeyName}")
 
-    results = CommandResults(
-        outputs_prefix="Triage.apikey",
-        outputs_key_field="data",
-        outputs=r,
-        readable_output=f"API key {apiKeyName} was successfully deleted",
-    )
+    results = f"API key {apiKeyName} was successfully deleted"
 
     return results
 
@@ -319,6 +309,8 @@ def update_profile(client: Client, **args) -> CommandResults:
         if arg in ["name", "tags", "timeout"]:
             if arg == "timeout":
                 data[arg] = int(args.get(arg, 60))
+            elif arg == "tags":
+                data[arg] = argToList(args.get(arg))
             else:
                 data[arg] = args.get(arg, None)
 
@@ -336,14 +328,10 @@ def update_profile(client: Client, **args) -> CommandResults:
 def delete_profile(client: Client, **args) -> CommandResults:
     profileID = args.get("profileID")
 
-    r = client._http_request("DELETE", f"profiles/{profileID}")
+    client._http_request("DELETE", f"profiles/{profileID}")
 
-    results = CommandResults(
-        outputs_prefix="Triage.profiles",
-        outputs_key_field="data",
-        outputs=r,
-        readable_output="Profile successfully deleted",
-    )
+    results = f"Profile {profileID} successfully deleted"
+
     return results
 
 
@@ -368,7 +356,7 @@ def main():
         "triage-get-report-triage": get_report_triage,
         "triage-get-kernel-monitor": get_kernel_monitor,
         "triage-get-pcap": get_pcap,
-        "triage-get-dumped-files": get_dumped_files,
+        "triage-get-dumped-file": get_dumped_files,
         "triage-get-users": get_users,
         "triage-create-user": create_user,
         "triage-delete-user": delete_user,
