@@ -7,7 +7,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * QRadarFullSearch
 
 ### Integrations
-This playbook does not use any integrations.
+* QRadar_v2
+* QRadar
 
 ### Scripts
 * IsIPInRanges
