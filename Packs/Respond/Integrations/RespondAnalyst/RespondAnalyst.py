@@ -1,11 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
-# IMPORTS
-
-
 import json
-
 from datetime import datetime, timedelta
+import dateparser
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -40,6 +37,26 @@ def convert_datetime_to_epoch(the_time=0):
 
 def convert_datetime_to_epoch_millis(the_time=0):
     return convert_epoch_to_milli(convert_datetime_to_epoch(the_time=the_time))
+
+def arg_to_timestamp(arg, arg_name: str, required: bool = False):
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp that str - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.timestamp() * 1000)
+    if isinstance(arg, (int, float)):
+        return arg
 
 
 # helper function gets incident ids from Respond into array format
@@ -499,22 +516,32 @@ def get_incident_command(rest_client, args):
     return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
 
 
-def get_incident_command_2(rest_client, args):
-    external_tenant_id = args.get('tenant_id')
-    user_tenant_mappings = rest_client.get_tenant_mappings()
+def get_remote_data_command(client, args):
+    remote_args = GetRemoteDataArgs(args)
+    incident_data = {}
+    try:
+        incident_data = get_incident_command(client, args)
+        incident_data['id'] = incident_data.get('incidentId')
+        demisto.debug(f"Respond incident {remote_args.remote_incident_id}\n"  
+                      f"modified time: {int(incident_data.get('modification_time'))}\n"
+                      f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
 
-    if external_tenant_id is None:
-        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
-            user_tenant_mappings)
-    else:
-        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
-                                                                          external_tenant_id)
+        # todo PaloAltoNetworks_XDR.py file is the only working example of v6 right now and they
+        #  use a 'modification_time' field to determine whether or not an event should be updated
+        #  we should change this to check against that field before trying to update. For now,
+        #  assume every field needs to be updated
 
-    incident_id = int(args['incident_id'])
+        #todo do we need to add feedback entries or are they already there as null
+        #  for the case when an incident was closed in respond but initially was open
 
-    raw_incident = \
-    rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
-    return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
+        return GetRemoteDataResponse(
+            mirrored_object=incident_data,
+            entries=None # for now, but this is where we would add close incident fields
+        )
+
+    except Exception as e:
+        demisto.debug(f'Error in Respond incoming mirror for incident {remote_args.remote_incident_id} \n'
+                      f'Error message: {str(e)}')
 
 
 def fetch_incidents(rest_client, last_run=dict()):
@@ -618,6 +645,9 @@ def main():
 
         elif demisto.command() == 'respond-get-incident':
             return_outputs(get_incident_command(rest_client, demisto.args()))
+
+        elif demisto.command() == 'get-remote-data':
+            return_results(get_remote_data_command(rest_client, demisto.args()))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':
