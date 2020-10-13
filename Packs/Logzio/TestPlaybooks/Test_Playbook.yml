@@ -1,5 +1,5 @@
 id: Logzio - Test
-description: Logz.io Test Playbook
+description: Logz.io Test Playbook description
 version: -1
 name: Logzio - Test
 starttaskid: "0"

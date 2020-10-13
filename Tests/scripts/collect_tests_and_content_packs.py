@@ -362,8 +362,9 @@ def collect_tests_and_content_packs(
 
         # We don't want to test playbooks from Non-certified partners.
         if not is_pack_certified(test_playbook_pack_name):
-            logging.warning(f'Found test playbook {test_playbook_id} which belongs to a Non-certified pack, '
-                            f'hence it will not be tested')
+            logging.info(
+                'Found test playbook {} which belongs to a Non-certified pack, hence it will not be tested'.format(
+                    test_playbook_id))
             continue
 
         for script in test_playbook_data.get('implementing_scripts', []):
@@ -571,7 +572,8 @@ def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playboo
         if integration_id in integration_ids:
             integration_pack = integration_object.get('pack')
             if integration_pack:
-                logging.info(f'Found integration {integration_id} in pack {integration_pack} - adding to packs to install')
+                logging.info(
+                    f'Found integration {integration_id} in pack {integration_pack} - adding to packs to install')
                 packs_to_install.add(integration_object.get('pack'))
             else:
                 logging.warning(f'Found integration {integration_id} without pack - not adding to packs to install')
@@ -923,10 +925,10 @@ def get_test_conf_from_conf(test_id, server_version, conf=deepcopy(CONF)):
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
-        test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
-                                          server_v=server_version,
-                                          to_v=test_conf.get('toversion', '99.99.99')))), None)
+            test_conf.get('playbookID') == test_id
+            and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
+                                              server_v=server_version,
+                                              to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
