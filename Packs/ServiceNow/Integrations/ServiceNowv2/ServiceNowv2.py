@@ -1928,7 +1928,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     demisto.debug(f'ticket_last_update is {ticket_last_update}')
 
     if last_update > ticket_last_update:  # type: ignore
-        demisto.debug('Nothing new in the ticket')
+        demisto.debug('Nothing new in the ticket.')
         ticket = {}
 
     else:
