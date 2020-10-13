@@ -1,5 +1,4 @@
 import demistomock as demisto  # noqa: F401
-import jinja2
 from CommonServerPython import *  # noqa: F401
 from jinja2 import Template
 
@@ -50,7 +49,7 @@ def main():
     for field in proto:
         key = demisto.get(incident_data[0]['CustomFields'], proto[field])
         if key:
-            if field == 'port_number' and dynport == True:
+            if field == 'port_number' and dynport:
                 appidprotocols[field] = 'dynamic'
             else:
                 appidprotocols[field] = key
@@ -108,7 +107,8 @@ def main():
 
     app_xpath = "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
 
-#    ResultEntries = demisto.executeCommand('panorama', { "action" : "set", "type": "config", "element" : app_xml, 'xpath': app_xpath, 'using': 'rlemm_labfw' })
+#    ResultEntries = demisto.executeCommand('panorama', { "action" : "set", "type": "config", "element" : app_xml,
+    #    'xpath': app_xpath, 'using': 'rlemm_labfw' })
 #    demisto.results(ResultEntries)
     demisto.setContext('appidxml', app_xml)
     demisto.setContext('appidxpath', app_xpath)

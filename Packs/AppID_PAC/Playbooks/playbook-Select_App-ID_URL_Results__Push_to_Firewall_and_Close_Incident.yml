@@ -54,6 +54,7 @@ tasks:
       name: Push AppID for ${incident.website}
       type: condition
       version: -1
+      description: ""
     taskid: aef681c4-b5b3-4b16-8d9c-ccca68123244
     timertriggers: []
     type: condition
@@ -210,6 +211,7 @@ tasks:
       name: BuildWebAppID
       script: 185a55a0-116e-48a6-8592-48455467c175
       type: regular
+      description: ""
       version: -1
     taskid: c0136d4f-0a73-4404-8b9f-16782c0f51a1
     timertriggers: []
@@ -417,6 +419,7 @@ tasks:
       name: Was Commit Successful
       type: condition
       version: -1
+      description: ""
     taskid: 01ab6e97-0859-459d-8170-3752bd13b7cd
     timertriggers: []
     type: condition

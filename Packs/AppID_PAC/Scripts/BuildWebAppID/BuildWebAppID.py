@@ -1,5 +1,4 @@
 import demistomock as demisto  # noqa: F401
-import jinja2
 from CommonServerPython import *  # noqa: F401
 from jinja2 import Template
 

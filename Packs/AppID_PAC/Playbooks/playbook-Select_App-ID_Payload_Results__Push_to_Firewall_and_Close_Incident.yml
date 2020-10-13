@@ -115,6 +115,7 @@ tasks:
       name: Select Ascii Results
       type: collection
       version: -1
+      description: ""
     taskid: 9253fc53-7582-4451-82d0-01efd039da9b
     timertriggers: []
     type: collection
@@ -241,6 +242,7 @@ tasks:
       name: Select Hex Results
       type: collection
       version: -1
+      description: ""
     taskid: 610bcfde-dc2a-4d49-8f95-0e737ebaa373
     timertriggers: []
     type: collection
@@ -269,6 +271,7 @@ tasks:
       script: c6273e6d-1f5e-4835-81f6-7688efae4c82
       type: regular
       version: -1
+      description: ""
     taskid: 41f9c18f-df0a-4256-853e-d90e0c57b4c1
     timertriggers: []
     type: regular
@@ -391,6 +394,7 @@ tasks:
       name: Build AppID (Yes/No)
       type: condition
       version: -1
+      description: ""
     taskid: 5995b25c-4580-45f5-84da-8235323e632d
     timertriggers: []
     type: condition
@@ -557,6 +561,7 @@ tasks:
       name: Was Commit Successful
       type: condition
       version: -1
+      description: ""
     taskid: c05666b6-799f-42e8-8736-0ff7ae454900
     timertriggers: []
     type: condition
@@ -715,6 +720,7 @@ tasks:
       name: Check for Required Fields
       type: condition
       version: -1
+      description: ""
     taskid: b74e5e27-9444-4997-8310-280eb1de94ba
     timertriggers: []
     type: condition
