@@ -5,7 +5,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
-    get_mapping_fields_command, get_remote_data_command
+    get_mapping_fields_command, get_remote_data_command, update_remote_system_command
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
@@ -16,7 +16,7 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_CREATE_ITEM_ORDER, RESPONSE_DOCUMENT_ROUTE, RESPONSE_FETCH, RESPONSE_FETCH_ATTACHMENTS_FILE, \
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, \
     RESPONSE_MIRROR_FILE_ENTRY, RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, \
-    MIRROR_COMMENTS_RESPONSE_FROM_XSOAR
+    MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, MIRROR_ENTRIES
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, \
@@ -552,3 +552,33 @@ def test_get_remote_data_no_entries(mocker):
 
     assert 'This is a comment\n\n Mirrored from Cortex XSOAR' not in res
     assert 'test_mirrored_from_xsoar.txt' not in res
+
+
+def upload_file_request(*args):
+    assert 'test_mirrored_from_xsoar.txt' == args[2]
+    return {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test.txt'}
+
+def add_comment_request(*args):
+    assert '(dbot): This is a comment\n\n Mirrored from Cortex XSOAR' == args[3]
+    return {'id': "1234", 'comment': "This is a comment"}
+
+def test_upload_entries_update_remote_system_command(mocker):
+    """
+    Given:
+        -  ServiceNow client
+        -  File and comment entries sent from XSOAR.
+    When
+        - running update_remote_system_command.
+    Then
+        - The checked entries was sent as expected with suffix.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+    params = {}
+    args = {'remoteId': '1234', 'data': {}, 'entries': MIRROR_ENTRIES, 'incidentChanged': False, 'delta': {}}
+    mocker.patch.object(client, 'upload_file', side_effect=upload_file_request)
+    mocker.patch.object(client, 'add_comment', side_effect=add_comment_request)
+
+    update_remote_system_command(client, args, params)
