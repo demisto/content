@@ -14,6 +14,7 @@ class GoogleClient:
     """
     A Client class to wrap the google cloud api library.
     """
+
     def __init__(self, service_name: str, service_version: str, client_secret: str, scopes: list, proxy: bool,
                  insecure: bool, **kwargs):
         """
@@ -63,6 +64,7 @@ class GoogleClient:
                     proxy_pass=parsed_proxy.password)
                 return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=insecure)
         return httplib2.Http(disable_ssl_certificate_validation=insecure)
+
     # disable-secrets-detection-end
 
     def functions_list(self, region=None, project_id=None):
@@ -101,8 +103,8 @@ class GoogleClient:
 
 
 def functions_list_command(client: GoogleClient, args: dict):
-    region = args.get('region')
-    project_id = args.get('project_id')
+    region = client.region
+    project_id = client.project
     res = client.functions_list(region, project_id)
     functions = res.get('functions', [])
     keys = list(functions[0].keys())
@@ -169,15 +171,24 @@ def format_parameters(parameters: str) -> str:
     return json.dumps(dict(pairs))
 
 
+def set_default_region(region):
+    if region is None:
+        # from Google API : If you want to list functions in all locations, use "-" in place of a location
+        return "-"
+    return region
+
+
 def main():
     credentials_json = json.loads(demisto.params().get('credentials_json', {}))
     project = demisto.params().get('project_id', '')
     region = demisto.params().get('region')
+    region = set_default_region(region)
     proxy = demisto.params().get('proxy', False)
     insecure = demisto.params().get('insecure', False)
     scopes = ['https://www.googleapis.com/auth/cloud-platform']
     client = GoogleClient('cloudfunctions', 'v1', credentials_json, scopes, proxy, insecure, project=project,
                           region=region)
+
     commands = {
         'google-cloud-functions-list': functions_list_command,
         'google-cloud-function-regions-list': region_list_command,

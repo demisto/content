@@ -9,7 +9,7 @@ This integration was integrated and tested with API version 1 of Google Cloud Fu
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | credentials_json | Service account private key file contents \(JSON\) | True |
-| project_id | Default project ID | False |
+| project_id | Default project ID | True |
 | region | Default region | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
@@ -30,7 +30,7 @@ Lists all Google Cloud functions.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The project ID the Google Cloud function is in. Default is the instance&#x27;s project. | Optional | 
+| project_id | The project ID the Google Cloud function is in. | Mandatory | 
 | region | The region of the Google Cloud function. Default is all regions. You can get a full list of regions using the `google-cloud-function-regions-list` command. | Optional | 
 
 
@@ -95,7 +95,7 @@ Lists all regions in the project.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The project ID the Google Cloud function is in. Default is the instance&#x27;s project. | Optional | 
+| project_id | The project ID the Google Cloud function is in.  | Mandatory | 
 
 
 ##### Context Output
@@ -202,7 +202,7 @@ Gets the details of a specific Google Cloud function.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The project ID the Google Cloud function is in. Default is the instance&#x27;s project. | Optional | 
+| project_id | The project ID the Google Cloud function is in. | Mandatory | 
 | region | The region of the Google Cloud function. You can get a full list of regions using the `google-cloud-function-regions-list` command. Default is all regions. | Optional | 
 | function_name | The name of the function. | Required | 
 
