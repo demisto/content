@@ -519,7 +519,7 @@ def fetch_incidents_command():
         }
 
         state_parsed_fetch = datetime.strptime(last_fetch[state], TIME_FORMAT)
-        demisto.debug(f"Pass The state parsed fetch: {state_parsed_fetch}")
+        demisto.debug(f"Pass The state parsed fetch")
         incidents_list = get_incidents_batch_by_time_request(request_params)
         demisto.debug(f"Pass The distribution of calls to batches")
         filtered_incidents_list = filter_incidents(incidents_list)
