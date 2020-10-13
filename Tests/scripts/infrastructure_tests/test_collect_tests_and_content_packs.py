@@ -201,8 +201,8 @@ class TestChangedPlaybook:
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET, mocker=mocker)
 
         assert filterd_tests == {self.TEST_ID}
         assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks", "FakePack"}
@@ -213,8 +213,8 @@ class TestChangedTestPlaybook:
     # points at a real file. if that file will change path the test should fail
     GIT_DIFF_RET = "M Packs/EWS/TestPlaybooks/playbook-EWSv2_empty_attachment_test.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET, mocker=mocker)
 
         assert filterd_tests == {self.TEST_ID}
         assert content_packs == {"Base", "DeveloperTools", "EWS"}
@@ -365,8 +365,8 @@ class TestChangedIntegration:
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET, mocker=mocker)
 
         assert filterd_tests == {self.TEST_ID}
         assert content_packs == {"Base", "DeveloperTools", "PagerDuty"}
@@ -390,8 +390,8 @@ class TestChangedIntegrationAndPlaybook:
     GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.py\n" \
                    "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET, mocker=mocker)
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
         assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty', 'FakePack'}
@@ -402,8 +402,8 @@ class TestChangedScript:
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Packs/CommonScripts/Scripts/ExtractIndicatorsFromTextFile/ExtractIndicatorsFromTextFile.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET, mocker=mocker)
 
         assert filterd_tests == {self.TEST_ID}
         assert content_packs == {"Base", "DeveloperTools", "CommonScripts"}
@@ -425,8 +425,8 @@ class TestSampleTesting:
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Tests/scripts/integration-test.yml"
 
-    def test_sample_tests(self):
-        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+    def test_sample_tests(self, mocker):
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET, mocker=mocker)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
         assert "Base" in content_packs
@@ -456,8 +456,8 @@ class TestChangedCommonTesting:
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml"
 
-    def test_all_tests(self):
-        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+    def test_all_tests(self, mocker):
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET, mocker=mocker)
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
         assert content_packs == {"DeveloperTools", 'Base', 'HelloWorld'}
 
@@ -473,7 +473,7 @@ A       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/key.pem
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         files_list, tests_list, all_tests, is_conf_json, sample_tests, modified_metadata_list, is_reputations_json, \
-            is_indicator_json = get_modified_files_for_testing(self.GIT_DIFF_RET)
+        is_indicator_json = get_modified_files_for_testing(self.GIT_DIFF_RET)
         assert len(sample_tests) == 0
         assert 'Packs/Active_Directory_Query/Integrations/' \
                'Active_Directory_Query/Active_Directory_Query.yml' in files_list
@@ -513,6 +513,9 @@ TWO_BEFORE_GA_VERSION = '4.5.0'
 def get_mock_test_list(minimum_server_version=TWO_BEFORE_GA_VERSION, get_modified_files_ret=None, mocker=None,
                        git_diff_ret=''):
     branch_name = 'BranchA'
+    mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+                 return_value=True
+                 )
     if get_modified_files_ret is not None:
         mocker.patch(
             'Tests.scripts.collect_tests_and_content_packs.get_modified_files_for_testing',
@@ -555,6 +558,11 @@ def test_skipped_integration_should_not_be_tested(mocker):
     mock_conf_dict['skipped_integrations']['integration_a'] = 'comment'
 
     fake_id_set = TestUtils.create_id_set()
+
+    # Returning true for the certification check of all packs
+    mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+                 return_value=True
+                 )
 
     # When
     # - filtering tests to run
@@ -607,6 +615,11 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
         fake_id_set = TestUtils.create_id_set(
             with_integration=fake_integration['id_set']
         )
+
+        # Returning true for the certification check of all packs
+        mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+                     return_value=True
+                     )
 
         # When
         # - filtering tests to run
@@ -715,6 +728,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
     fake_test_playbook = TestUtils.create_test_playbook(name='test_playbook_a',
                                                         with_scripts=['FetchFromInstance'])
 
+
     try:
         # - both in conf.json
         fake_conf = TestUtils.create_tests_conf(
@@ -728,6 +742,11 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
             with_integration=fake_integration['id_set'],
             with_test_playbook=fake_test_playbook['id_set']
         )
+
+        # Returning true for the certification check of all packs
+        mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+                     return_value=True
+                     )
 
         # When
         # - filtering tests to run
@@ -804,6 +823,11 @@ class TestExtractMatchingObjectFromIdSet:
                 with_test_playbook=fake_test_playbook['id_set']
             )
 
+            # Returning true for the certification check of all packs
+            mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+                         return_value=True
+                         )
+
             # When
             # - filtering tests to run
             filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
@@ -869,6 +893,11 @@ def test_modified_integration_content_pack_is_collected(mocker):
             }
         )
 
+        # Returning true for the certification check of all packs
+        mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+                     return_value=True
+                     )
+
         filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
             files_string="",
             branch_name="dummy-branch",
@@ -918,7 +947,8 @@ def test_pack_ignore_test_is_skipped(mocker):
 
     try:
         mocker.patch.object(os.path, 'join', return_value=fake_test_playbook['path'])
-        mocker.patch.object(demisto_sdk_tools, 'get_pack_ignore_file_path', return_value=pack_ignore_mgr.pack_ignore_path)
+        mocker.patch.object(demisto_sdk_tools, 'get_pack_ignore_file_path',
+                            return_value=pack_ignore_mgr.pack_ignore_path)
         TestUtils.mock_get_modified_files(mocker, modified_files_list=[fake_integration['path']])
         fake_id_set = TestUtils.create_id_set(
             with_integration=fake_integration["id_set"],
@@ -931,6 +961,10 @@ def test_pack_ignore_test_is_skipped(mocker):
                 "playbookID": test_name
             }
         )
+        # Returning true for the certification check of all packs
+        mocker.patch('Tests.scripts.collect_tests_and_content_packs.is_pack_certified',
+                     return_value=True
+                     )
 
         # add test playbook to ignore list and clean afterward
         with pack_ignore_mgr:
