@@ -543,10 +543,9 @@ def test_get_remote_data_no_entries(mocker):
 
     args = {'id': 'sys_id', 'lastUpdate': 0}
     params = {}
-    mocker.patch.object(client, 'get', return_value=RESPONSE_TICKET_MIRROR)
+    mocker.patch.object(client, 'get', return_value=[RESPONSE_TICKET_MIRROR, RESPONSE_ASSIGNMENT_GROUP])
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR)
     mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE_FROM_XSOAR)
-    mocker.patch.object(client, 'get', return_value=RESPONSE_ASSIGNMENT_GROUP)
 
     res = get_remote_data_command(client, args, params)
 
