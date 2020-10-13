@@ -7,7 +7,9 @@ from PIL import Image
 from datetime import datetime
 from datetime import timezone
 import functools
+import itertools
 import json
+import math
 
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
@@ -52,6 +54,11 @@ class TriageRequestEmptyResponse(Exception):
 
     def __str__(self):
         return f"Could not find a {self.record_type} with id {self.record_id}"
+
+
+class TriageNoReportersFoundError(Exception):
+    """Triage returned empty results, but the integration expected at least one"""
+    pass
 
 
 class TriageInstance:
@@ -152,8 +159,26 @@ class TriageReport:
         }.get(self.attrs["category_id"], 0)
 
     @property
+    def report_subject(self):
+        return self.attrs.get("report_subject")
+
+    @property
     def report_body(self):
         return self.attrs.get("report_body")
+
+    @property
+    def email_urls(self):
+        return [email_url["url"] for email_url in self.attrs["email_urls"]]
+
+    @property
+    def email_attachment_hashes(self):
+        return [
+            [
+                att["email_attachment_payload"]["md5"],
+                att["email_attachment_payload"]["sha256"],
+            ]
+            for att in self.attrs["email_attachments"]
+        ]
 
     @property  # type: ignore
     @functools.lru_cache()
@@ -164,14 +189,15 @@ class TriageReport:
     def terse_attrs(self):
         return {key: self.attrs[key] for key in self.attrs.keys() & TERSE_FIELDS}
 
+    def to_dict(self):
+        return {
+            **self.attrs,
+            # Flatten the Reporter object to a set of `reporter_` prefixed attributes
+            **{f"reporter_{k}": v for k, v in self.reporter.attrs.items()},  # type: ignore
+        }
+
     def to_json(self):
-        """Flatten the Reporter object to a set of `reporter_` prefixed attributes"""
-        return json.dumps(
-            {
-                **self.attrs,
-                **{f"reporter_{k}": v for k, v in self.reporter.attrs.items()},  # type: ignore
-            }
-        )
+        return json.dumps(self.to_dict())
 
     @property  # type: ignore
     @functools.lru_cache()
@@ -193,6 +219,97 @@ class TriageReport:
         return cls(triage_instance, triage_instance.request(f"reports/{report_id}")[0])
 
 
+class TriageInboxReports:
+    """Represents a set of Triage reports from the `inbox` mailbox"""
+    def __init__(
+        self,
+        triage_instance,
+        *,
+        start_date=None,
+        end_date=None,
+        filter_params={},
+        max_pages=1,
+    ):
+        self.triage_instance = triage_instance
+        self.start_date = start_date
+        self.end_date = end_date
+        self.filter = TriageInboxReportFilter(filter_params)
+        self.max_pages = max_pages
+
+    def inbox_reports(self):
+        inbox_reports = [
+            TriageReport(self.triage_instance, response)
+            for response in self.fetch_reports()
+        ]
+
+        return [report for report in inbox_reports if self.filter.is_match(report)]
+
+    def fetch_reports(self):
+        return itertools.chain.from_iterable(self.fetch_report_pages())
+
+    def fetch_report_pages(self):
+        return [
+            self.triage_instance.request(
+                "inbox_reports",
+                params={
+                    "start_date": self.start_date,
+                    "end_date": self.end_date,
+                    "page": page_num,
+                },
+            )
+            for page_num in range(0, math.ceil(self.max_pages))
+        ]
+
+
+class TriageInboxReportFilter:
+    """Performs filtering for Triage Reports"""
+    def __init__(self, filter_params):
+        self.subject = filter_params.get("subject")
+        self.url = filter_params.get("url")
+        self.file_hash = filter_params.get("file_hash")
+        self.reporter_ids = filter_params.get("reporter_ids")
+
+    def is_match(self, report):
+        return (
+            (not self.subject or self.subject in report.report_subject)
+            and (
+                not self.url
+                or any(self.url in email_url for email_url in report.email_urls)
+            )
+            and (
+                not self.file_hash
+                or any(self.file_hash in h for h in report.email_attachment_hashes)
+            )
+            and (not self.reporter_ids or report.reporter.id in self.reporter_ids)
+        )
+
+
+class TriageReporters:
+    """
+    A set of Triage reporters
+    """
+
+    def __init__(self, triage_instance, *, email=None, max_pages=1):
+        self.triage_instance = triage_instance
+        self.email = email
+        self.max_pages = max_pages
+
+    def reporters(self):
+        return [
+            TriageReporter(self.triage_instance, response["id"])  # TODO causes unnecessary extra request---we can just pass in `response`, which has all the fields already # noqa: 501
+            for response in self.fetch_reporters()
+        ]
+
+    def fetch_reporters(self):
+        return itertools.chain.from_iterable(self.fetch_reporter_pages())
+
+    def fetch_reporter_pages(self):
+        for page_num in range(0, math.ceil(self.max_pages)):
+            yield self.triage_instance.request(
+                "reporters", params={"email": self.email, "page": page_num}
+            )
+
+
 class TriageReporter:
     """
     Class representing an end user who has reported a suspicious message
@@ -209,6 +326,14 @@ class TriageReporter:
             self.attrs = matching_reporters[0]
         else:
             self.attrs = {}
+
+    @property
+    def id(self):
+        return self.attrs["id"]
+
+    @property
+    def email(self):
+        return self.attrs["email"]
 
     def exists(self):
         return bool(self.attrs)
@@ -260,8 +385,13 @@ def fetch_reports(triage_instance) -> None:
     start_date = triage_instance.get_demisto_param("start_date")
     max_fetch = triage_instance.get_demisto_param("max_fetch")
 
+    if triage_instance.get_demisto_param("mailbox_location") == "Inbox_Reports":
+        endpoint = "inbox_reports"
+    else:
+        endpoint = "processed_reports"
+
     triage_response = triage_instance.request(
-        "processed_reports",
+        endpoint,
         params={
             "category_id": triage_instance.get_demisto_param("category_id"),
             "match_priority": triage_instance.get_demisto_param("match_priority"),
@@ -309,9 +439,18 @@ def search_reports_command(triage_instance) -> None:
     created_at = parse_date_range(demisto.args().get('created_at', '7 days'))[
         0
     ].replace(tzinfo=timezone.utc)
-    reporter = demisto.getArg('reporter')  # type: str
-    max_matches = int(demisto.getArg('max_matches'))  # type: int
+    try:
+        max_matches = int(demisto.getArg('max_matches'))  # type: int
+    except ValueError:
+        return_error("max_matches must be an integer if specified")
+        return
     verbose = demisto.getArg('verbose') == "true"
+
+    try:
+        reporters_clause = build_reporters_clause(triage_instance)
+    except TriageNoReportersFoundError:
+        return_outputs("Reporter not found.", {}, {})
+        return
 
     results = search_reports(
         triage_instance,
@@ -320,7 +459,7 @@ def search_reports_command(triage_instance) -> None:
         file_hash,
         reported_at,
         created_at,
-        reporter,
+        reporters_clause,
         verbose,
         max_matches,
     )
@@ -345,11 +484,11 @@ def search_reports(
     file_hash=None,
     reported_at=None,
     created_at=None,
-    reporter=None,
+    reporters_clause={},
     verbose=False,
     max_matches=30,
 ) -> list:
-    params = {'start_date': reported_at}
+    params = {'start_date': reported_at, **reporters_clause}
     reports = triage_instance.request("processed_reports", params=params)
 
     matches = []
@@ -379,8 +518,6 @@ def search_reports(
             ]
         ):
             continue
-        if reporter and int(reporter) != report.get('reporter_id'):
-            continue
 
         if not verbose:
             # extract only relevant fields
@@ -391,6 +528,71 @@ def search_reports(
             break
 
     return matches
+
+
+def search_inbox_reports_command(triage_instance) -> None:
+    reported_at = parse_date_range(demisto.args().get("reported_at", "7 days"))[
+        0
+    ].replace(tzinfo=timezone.utc)
+
+    try:
+        reporters_clause = build_reporters_clause(triage_instance)
+    except TriageNoReportersFoundError:
+        return_outputs("Reporter not found.", {}, {})
+        return
+
+    try:
+        max_matches = int(demisto.getArg("max_matches")) or 10
+    except ValueError:
+        return_error("max_matches must be an integer if specified")
+        return
+
+    max_pages = math.ceil(max_matches / 10)  # Triage's number of items per page, rounded up
+
+    reports = TriageInboxReports(
+        triage_instance,
+        start_date=reported_at,
+        filter_params={
+            "subject": demisto.getArg("subject"),
+            "url": demisto.getArg("url"),
+            "file_hash": demisto.getArg("file_hash"),
+            **reporters_clause,
+        },
+        max_pages=max_pages,
+    ).inbox_reports()
+
+    if not reports:
+        return_outputs("No results found.", {}, {})
+        return
+
+    reports_dict = [report.to_dict() for report in reports][:max_matches]
+    ec = {
+        "Cofense.Report(val.ID && val.ID == obj.ID)": snake_to_camel_keys(reports_dict)
+    }
+    hr = tableToMarkdown(
+        "Reports:", reports_dict, headerTransform=split_snake, removeNull=True
+    )
+
+    return_outputs(hr, ec, reports_dict)
+
+
+def build_reporters_clause(triage_instance):
+    reporter_address_or_id = demisto.getArg("reporter")
+
+    if not reporter_address_or_id:
+        return {}
+
+    if reporter_address_or_id.isdigit():
+        return {"reporter_ids": [int(reporter_address_or_id)]}
+
+    reporters = TriageReporters(
+        triage_instance, email=reporter_address_or_id
+    ).reporters()
+
+    if len(reporters) == 0 or not any([reporter.exists() for reporter in reporters]):
+        raise TriageNoReportersFoundError()
+
+    return {"reporter_ids": [reporter.id for reporter in reporters]}
 
 
 def get_all_reporters(triage_instance, time_frame) -> list:
@@ -557,27 +759,30 @@ def get_report_png_by_id(triage_instance, report_id):
     ).content
 
 
+def build_triage_instance():
+    demisto_params = {
+        "start_date": parse_date_range(demisto.getParam("date_range"))[0].isoformat(),
+        "max_fetch": int(demisto.getParam("max_fetch")),
+        "category_id": demisto.getParam("category_id"),
+        "match_priority": demisto.getParam("match_priority"),
+        "tags": demisto.getParam("tags"),
+        "mailbox_location": demisto.getParam("mailbox_location"),
+    }
+
+    return TriageInstance(
+        host=demisto.getParam("host").rstrip("/") if demisto.getParam("host") else "",
+        token=demisto.getParam("token"),
+        user=demisto.getParam("user"),
+        disable_tls_verification=demisto.params().get("insecure", False),
+        demisto_params=demisto_params,
+    )
+
+
 def main():
     try:
         handle_proxy()
 
-        demisto_params = {
-            "start_date": parse_date_range(demisto.getParam('date_range'))[
-                0
-            ].isoformat(),
-            "max_fetch": int(demisto.getParam('max_fetch')),
-            "category_id": demisto.getParam("category_id"),
-            "match_priority": demisto.getParam("match_priority"),
-            "tags": demisto.getParam("tags"),
-        }
-
-        triage_instance = TriageInstance(
-            host=demisto.getParam("host").rstrip("/") if demisto.getParam("host") else "",
-            token=demisto.getParam("token"),
-            user=demisto.getParam("user"),
-            disable_tls_verification=demisto.params().get("insecure", False),
-            demisto_params=demisto_params,
-        )
+        triage_instance = build_triage_instance()
 
         if demisto.command() == "test-module":
             test_function(triage_instance)
@@ -587,6 +792,9 @@ def main():
 
         elif demisto.command() == "cofense-search-reports":
             search_reports_command(triage_instance)
+
+        elif demisto.command() == "cofense-search-inbox-reports":
+            search_inbox_reports_command(triage_instance)
 
         elif demisto.command() == "cofense-get-attachment":
             get_attachment_command(triage_instance)
