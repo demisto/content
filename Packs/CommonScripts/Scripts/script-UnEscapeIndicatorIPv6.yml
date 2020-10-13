@@ -24,8 +24,7 @@ script: >-
   return ipv6_address;
 
 
-Packs/DeveloperTools/TestPlaybooks/script-FormattingPerformance:
-  yml:type: javascript
+type: javascript
 tags:
 - indicator-format
 comment: Extracts IPv6 addresses from specific characters.
