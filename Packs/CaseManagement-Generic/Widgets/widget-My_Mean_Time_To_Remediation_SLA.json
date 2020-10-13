@@ -1,0 +1,27 @@
+{
+  "id": "my-mean-time-to-remediation-sla",
+  "version": -1,
+  "fromVersion": "5.5",
+  "name": "My Mean Time to Remediation (Remediation SLA)",
+  "dataType": "incidents",
+  "widgetType": "duration",
+  "query": "-category:job and remediationsla.runStatus:ended and owner:{me}",
+  "isPredefined": true,
+  "dateRange": {
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 30,
+      "field": ""
+    }
+  },
+  "params": {
+    "keys": [
+      "avg|remediationsla.totalDuration"
+    ]
+  },
+  "description": "The mean time (average time) to remediation across all incidents where the remediation sla timer completed where the Owner is the currnt user. The widget takes into account incidents from the last 30 days by default."
+}
