@@ -499,24 +499,6 @@ def get_incident_command(rest_client, args):
     return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
 
 
-def get_incident_command_2(rest_client, args):
-    external_tenant_id = args.get('tenant_id')
-    user_tenant_mappings = rest_client.get_tenant_mappings()
-
-    if external_tenant_id is None:
-        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
-            user_tenant_mappings)
-    else:
-        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
-                                                                          external_tenant_id)
-
-    incident_id = int(args['incident_id'])
-
-    raw_incident = \
-    rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
-    return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
-
-
 def fetch_incidents(rest_client, last_run=dict()):
     """
     This function will execute each interval (default is 1 minute).
