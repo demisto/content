@@ -1,0 +1,3 @@
+!xm-trigger-workflow recipients="Joey" subject="Major Emu Issue" body="The emu has escaped!"
+!xm-get-events status=ACTIVE
+!xm-get-event event_id=33999001
