@@ -1,0 +1,39 @@
+args:
+- auto: PREDEFINED
+  defaultValue: "yes"
+  description: Updates all available packs unless a dependency isn't installed
+  name: update_all_packages
+  predefined:
+  - "yes"
+  - "no"
+- description: Comma separated list of packs to update
+  isArray: true
+  name: packages
+comment: |-
+  Updates All Content Packs in Demisto 6.0 so you do not have to click to update each content pack. Built in dependency management so this automation will not update any package that has a dependency missing.
+
+  This automation will skip the update if there are warnings during the installation process as well.
+
+
+  Author: Steven Yang, Latest Version Demisto tested: 6.0 beta 77726
+commonfields:
+  id: UpdateAllContentAsyncV2
+  version: -1
+dependson:
+  should:
+  - Demisto REST API|||demisto-api-post
+  - Demisto REST API|||demisto-api-get
+dockerimage: demisto/python3:3.8.5.10845
+enabled: true
+name: UpdateAllContentAsyncV2
+runas: DBotRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+timeout: 1.2µs
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

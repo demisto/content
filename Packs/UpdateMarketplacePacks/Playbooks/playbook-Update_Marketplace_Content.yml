@@ -1,0 +1,401 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: Updates all marketplace content packs if the Details field contains the
+  word 'all'.  If it doesn't it will prompt for which packs to update.
+id: Update Marketplace Content
+inputs:
+- description: 'true/false, set to true to update all content packs, set to false
+    to be prompted for packs to update. '
+  key: UpdateAllContent
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "false"
+name: Update Marketplace Content
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1a114de7-ab89-42dd-8519-061b68d86d05
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 1a114de7-ab89-42dd-8519-061b68d86d05
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: true
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      packages: {}
+      update_all_packages: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Updates All Content Packs in Demisto 6.0 so you do not have to click to update each content pack. Built in dependency management so this automation will not update any package that has a dependency missing.
+        This automation will skip the update if there are warnings during the installation process as well.
+
+
+        Author: Steven Yang, Latest Version Demisto tested: 6.0 beta 77726
+      id: 4295db22-9399-4c25-822c-963ddd73c0ab
+      iscommand: false
+      name: Update All Packs
+      script: b0a9ed64-1beb-4563-8521-c0d53caacd4f
+      type: regular
+      version: -1
+    taskid: 4295db22-9399-4c25-822c-963ddd73c0ab
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Packs updated
+      closeReason:
+        simple: Resolved
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: e8c7275e-7786-4bca-8a28-184c2d7467fe
+      iscommand: true
+      name: Close - Packs updated
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: e8c7275e-7786-4bca-8a28-184c2d7467fe
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: incident.details
+          operator: containsString
+          right:
+            value:
+              simple: all
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d09a8351-81ed-4b46-86d2-dd8b17cd6d47
+      iscommand: false
+      name: Shall we update all content?
+      type: condition
+      version: -1
+    taskid: d09a8351-81ed-4b46-86d2-dd8b17cd6d47
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: true
+    quietmode: 0
+    reputationcalc: 1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieves a list of Marketplace content packs with an update available
+      id: 7d6ce560-f29c-4f58-824b-3e38126268ac
+      iscommand: false
+      name: Get list of packs available for update
+      script: 9b0e806f-08c6-446a-8435-0f06f72d05ac
+      type: regular
+      version: -1
+    taskid: 7d6ce560-f29c-4f58-824b-3e38126268ac
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "5":
+    form:
+      description: Select the Packs you want to update, recommended to also select
+        the "Common" and "Base" packs if available for update.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Packs
+        options: []
+        optionsarg:
+        - simple: ${Marketplace.PacksToUpdate}
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: 'Select the Packs you want to update, it is also recommended to select
+          the "Common" and "Base" packs if available for update.  '
+        type: multiSelect
+      sender: ""
+      title: Marketplace Packs to Update
+      totalanswers: 0
+    id: "5"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Select Marketplace Packs to Update
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2734c6c5-4294-453e-8fa2-f6e29b240fc0
+      iscommand: false
+      name: Select Marketplace Packs to Update
+      type: collection
+      version: -1
+    taskid: 2734c6c5-4294-453e-8fa2-f6e29b240fc0
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: true
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      packages:
+        complex:
+          accessor: "0"
+          root: Marketplace Packs to Update.Answers
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      update_all_packages:
+        simple: "no"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Updates All Content Packs in Demisto 6.0 so you do not have to click to update each content pack. Built in dependency management so this automation will not update any package that has a dependency missing.
+        This automation will skip the update if there are warnings during the installation process as well.
+
+
+        Author: Steven Yang, Latest Version Demisto tested: 6.0 beta 77726
+      id: 0d79d204-f619-41c2-8d0d-6a5902724194
+      iscommand: false
+      name: Update selected packs
+      script: b0a9ed64-1beb-4563-8521-c0d53caacd4f
+      type: regular
+      version: -1
+    taskid: 0d79d204-f619-41c2-8d0d-6a5902724194
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Marketplace.PacksToUpdate
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: Marketplace.PacksToUpdate
+          operator: isNotEmpty
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 876b7a65-1c0d-49c5-8888-e1dc8caf8a2a
+      iscommand: false
+      name: Are there packs to update?
+      type: condition
+      version: -1
+    taskid: 876b7a65-1c0d-49c5-8888-e1dc8caf8a2a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: No Packs required an update.
+      closeReason:
+        simple: Resolved
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: f94ad9bc-acc6-4696-8e58-cfe4eacf12f7
+      iscommand: true
+      name: Close - No Packs to update
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: f94ad9bc-acc6-4696-8e58-cfe4eacf12f7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 1025,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

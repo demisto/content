@@ -1,0 +1,25 @@
+comment: Retrieves a list of Marketplace content packs with an update available
+commonfields:
+  id: GetContentPacksForUpdate
+  version: -1
+dependson:
+  should:
+  - Demisto REST API|||demisto-api-post
+  - Demisto REST API|||demisto-api-get
+dockerimage: demisto/python3:3.8.5.10845
+enabled: true
+name: GetContentPacksForUpdate
+outputs:
+- contextPath: Marketplace.PacksToUpdate
+  description: List of Packs to Update
+runas: DBotRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+timeout: 1.2µs
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

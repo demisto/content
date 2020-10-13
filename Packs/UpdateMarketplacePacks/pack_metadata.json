@@ -1,0 +1,14 @@
+{
+    "name": "Update Marketplace Packs",
+    "description": "Pair of automations and a playbook to update marketplace packs.  Based on Steven Yangs original script, this one can be setup to run as a job where you can either update all packs if the word \"all\" is in the details, or if not it will prompt you for the packs you want to install.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "beauchompers",
+    "url": "",
+    "email": "",
+    "created": "2020-10-13T16:16:43Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
