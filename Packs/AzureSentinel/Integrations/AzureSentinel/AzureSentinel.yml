@@ -525,7 +525,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Retrieve additional information about the entity.
+      description: Whether or not to retrieve additional information about the entity.
       isArray: false
       name: expend
       predefined:
