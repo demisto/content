@@ -1,10 +1,9 @@
-category: Endpoint
+category: Authentication
 commonfields:
   id: Thycotic
   version: -1
 configuration:
-- defaultvalue: 
-  display: Server URL
+- display: Server URL (e.g. https://example.net)
   name: url
   required: true
   type: 0
@@ -28,9 +27,10 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-description: |-
-  Secure privileges for service, application, root,
-  and administrator accounts across your enterprise
+description: Secret Server is the only fully featured Privileged Account Management
+  (PAM) solution available both on premise and in the cloud. It empowers security
+  and IT ops teams to secure and manage all types of privileged accounts and offers
+  the fastest time to value of any PAM solution.
 display: Thycotic
 name: Thycotic
 script:
@@ -83,5 +83,3 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
