@@ -213,7 +213,7 @@ def create_user(client: Client, **args) -> CommandResults:
     return results
 
 
-def delete_user(client: Client, **args) -> CommandResults:
+def delete_user(client: Client, **args) -> str:
     userID = args.get("userID")
 
     client._http_request("DELETE", f"users/{userID}")
@@ -249,7 +249,7 @@ def get_apikey(client: Client, **args) -> CommandResults:
     return results
 
 
-def delete_apikey(client: Client, **args) -> CommandResults:
+def delete_apikey(client: Client, **args) -> str:
     userID = args.get("userID")
     apiKeyName = args.get("name")
 
@@ -325,7 +325,7 @@ def update_profile(client: Client, **args) -> CommandResults:
     return results
 
 
-def delete_profile(client: Client, **args) -> CommandResults:
+def delete_profile(client: Client, **args) -> str:
     profileID = args.get("profileID")
 
     client._http_request("DELETE", f"profiles/{profileID}")
