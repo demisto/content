@@ -142,9 +142,17 @@ def nudge_appropriate_party(t: Terminal, gh: Github, client: WebClient, stale_pr
     pr_opener = stale_pr.user.login
     if pr_opener == 'xsoar-bot':
         # in case we got contribution pr which was opened by xsoar-bot, we set the contributor to be the pr opener
-        contributor = re.search(r"(?<=Description)\s{1,2}@([^'\s]+)", stale_pr.body)
+
+        # PR body, old format - can remove soon
+        contributor = re.search(r"(?<=Description)\s{1,2}@([^']+)", stale_pr.body)
         if contributor:
             pr_opener = contributor.group(1)
+        else:
+            # PR body, new format
+            contributor = re.search(r"(?<=Contributor)\s{1,2}@([^\s]+)", stale_pr.body)
+            if contributor:
+                pr_opener = contributor.group(1)
+
     last_event = f_timeline[-1]
 
     reviewers, _ = stale_pr.get_review_requests()
