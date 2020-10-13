@@ -44,3 +44,9 @@ def test_entity_get(requests_mock):
             'level': "medium"
         }
     }]
+
+
+def test_mark(requests_mock):
+    from XMCyberIntegration import Client, fetch_incidents
+    fetch_incidents(None, None)
+
