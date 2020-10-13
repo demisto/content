@@ -27,68 +27,132 @@ configuration:
   name: username
   required: true
   type: 0
+- display: max fetch
+  defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+
 description: Respond Software Description
 display: Respond Analyst (Developer Contribution)
 name: Respond_Analyst
 script:
   commands:
   - arguments:
-    - description: ID of the Tenant in which the incident resides
+    - default: false
+      description: ID of the Tenant in which the incident resides
+      isArray: false
       name: tenant_id
-    - description: ID of the incident to retrieve
+      required: false
+      secret: false
+    - default: false
+      description: ID of the incident to retrieve
+      isArray: false
       name: incident_id
       required: true
+      secret: false
+    deprecated: false
     description: get a specific incident from Respond
+    execution: false
     name: respond-get-incident
     outputs:
     - contextPath: temp
       description: temp
       type: Unknown
   - arguments:
-    - description: ID of the Tenant in which the incident resides
+    - default: false
+      description: ID of the Tenant in which the incident resides
+      isArray: false
       name: tenant_id
-    - description: ID of the incident to retrieve
+      required: false
+      secret: false
+    - default: false
+      description: ID of the incident to retrieve
+      isArray: false
       name: incident_id
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Outcome of the incident
+      isArray: false
       name: incident_feedback
       predefined:
       - ConfirmedIncident
       - NonActionable
       - Inconclusive
-    - description: additional feedback information
+      required: false
+      secret: false
+    - default: false
+      description: additional feedback information
+      isArray: false
       name: feedback_optional_text
+      required: false
+      secret: false
+    deprecated: false
     description: close an incident in Respond and provide feedback
+    execution: false
     name: respond-close-incident
   - arguments:
-    - description: respond incident id
+    - default: false
+      description: respond incident id
+      isArray: false
       name: incident_id
       required: true
-    - description: tenant id
+      secret: false
+    - default: false
+      description: tenant id
+      isArray: false
       name: tenant_id
-    - description: email
+      required: false
+      secret: false
+    - default: false
+      description: email
+      isArray: false
       name: username
       required: true
+      secret: false
+    deprecated: false
     description: add a user to a respond incident
+    execution: false
     name: respond-assign-user
   - arguments:
-    - description: incident id
+    - default: false
+      description: incident id
+      isArray: false
       name: incident_id
       required: true
-    - description: tenant id
+      secret: false
+    - default: false
+      description: tenant id
+      isArray: false
       name: tenant_id
-    - description: email
+      required: false
+      secret: false
+    - default: false
+      description: email
+      isArray: false
       name: username
       required: true
+      secret: false
+    deprecated: false
     description: remove a user from a Respond incident
+    execution: false
     name: respond-remove-user
-  dockerimage: demisto/python3:3.7.4.977
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0

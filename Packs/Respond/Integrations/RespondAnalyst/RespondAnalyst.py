@@ -70,43 +70,44 @@ class RestClient(BaseClient):
             retries=3
         )
 
+    # sadly the linting process will fail if the format below is not used. Hard to read
     def construct_and_send_full_incidents_query(self, tenant_id, incident_ids):
         query = {"query": "query { fullIncidents(ids: " + str(incident_ids) + ") { "
-                             "id "
-                             "dateCreated "
-                             "eventCount "
-                             "firstEventTime "
-                             "lastEventTime "
-                             "title "
-                             "attackStage "
-                             "assetClass "
-                             "probabilityBucket "
-                             "status "
-                             "priority "
-                             "internalSystems{ "
-                                "hostname "
-                             "} "
-                             "internalSystemsCount "
-                             "feedback { "
-                                 "newStatus "
-                                 "status "
-                                 "newSelectedOptions{ "
-                                     "id "
-                                     "key "
-                                     "value "
-                                 "} "
-                                 "timeGiven "
-                                 "optionalText "
-                                 "userId "
-                                 "closedAt "
-                                 "closedBy "
-                             "} "
-                             "userIds "
-                             "tags { "
-                                "label "
-                             "} "
-                         "} }"
-                }
+                                                                              "id "
+                                                                              "dateCreated "
+                                                                              "eventCount "
+                                                                              "firstEventTime "
+                                                                              "lastEventTime "
+                                                                              "title "
+                                                                              "attackStage "
+                                                                              "assetClass "
+                                                                              "probabilityBucket "
+                                                                              "status "
+                                                                              "priority "
+                                                                              "internalSystems{ "
+                                                                              "hostname "
+                                                                              "} "
+                                                                              "internalSystemsCount "
+                                                                              "feedback { "
+                                                                              "newStatus "
+                                                                              "status "
+                                                                              "newSelectedOptions{ "
+                                                                              "id "
+                                                                              "key "
+                                                                              "value "
+                                                                              "} "
+                                                                              "timeGiven "
+                                                                              "optionalText "
+                                                                              "userId "
+                                                                              "closedAt "
+                                                                              "closedBy "
+                                                                              "} "
+                                                                              "userIds "
+                                                                              "tags { "
+                                                                              "label "
+                                                                              "} "
+                                                                              "} }"
+                 }
         res = self._http_request(
             method='POST',
             url_suffix='/graphql?tenantId=' + tenant_id,
@@ -114,7 +115,6 @@ class RestClient(BaseClient):
             json_data=query
         )
         return res.get('data').get('fullIncidents')
-
 
     def construct_and_send_get_incident_ids_query(self, tenant_id, from_time_str):
         if from_time_str == '':
@@ -130,41 +130,46 @@ class RestClient(BaseClient):
         )
         return res.get('data').get('incidents')
 
-    def construct_and_send_close_incident_mutation(self, tenant_id, feedback_status, feedback_selected_options,
+    def construct_and_send_close_incident_mutation(self, tenant_id, feedback_status,
+                                                   feedback_selected_options,
                                                    feedback_optional_text, incident_id, user):
         if feedback_selected_options is None:
             feedback_selected_options = []
 
+        # sadly the linting process will fail if the format below is not used. Hard to read
         data = {"query": "mutation closeIncident( "
-                              "$incidentId: ID! "
-                              "$user: User! "
-                              "$feedbackStatus: FeedbackStatus! "
-                              "$newFeedbackSelectedOptions: [FeedbackSelectionInput!] "
-                              "$feedbackOptionalText: String ){ "
-                                "closeIncident( "
-                                  "incidentId: $incidentId "
-                                  "user: $user "
-                                  "feedbackStatus: $feedbackStatus "
-                                  "newFeedbackSelectedOptions: $newFeedbackSelectedOptions "
-                                  "feedbackOptionalText: $feedbackOptionalText "
-                                ") { "
-                                    "id "
-                                    "status "
-                                    "feedback { "
-                                      "userId "
-                                      "newStatus "
-                                      "timeGiven "
-                                      "newSelectedOptions{ "
-                                        "id "
-                                        "key "
-                                        "value "
-                                      "} "
-                                      "optionalText "
-                                    "} "
-                                  "} "
-                              "}",
-                    "variables": {"incidentId": incident_id, "user": user, "feedbackStatus": feedback_status, "newFeedbackSelectedOptions": feedback_selected_options, "feedbackOptionalText": feedback_optional_text}
-                 }
+                         "$incidentId: ID! "
+                         "$user: User! "
+                         "$feedbackStatus: FeedbackStatus! "
+                         "$newFeedbackSelectedOptions: [FeedbackSelectionInput!] "
+                         "$feedbackOptionalText: String ){ "
+                         "closeIncident( "
+                         "incidentId: $incidentId "
+                         "user: $user "
+                         "feedbackStatus: $feedbackStatus "
+                         "newFeedbackSelectedOptions: $newFeedbackSelectedOptions "
+                         "feedbackOptionalText: $feedbackOptionalText "
+                         ") { "
+                         "id "
+                         "status "
+                         "feedback { "
+                         "userId "
+                         "newStatus "
+                         "timeGiven "
+                         "newSelectedOptions{ "
+                         "id "
+                         "key "
+                         "value "
+                         "} "
+                         "optionalText "
+                         "} "
+                         "} "
+                         "}",
+                "variables": {"incidentId": incident_id, "user": user,
+                              "feedbackStatus": feedback_status,
+                              "newFeedbackSelectedOptions": feedback_selected_options,
+                              "feedbackOptionalText": feedback_optional_text}
+                }
         res = self._http_request(
             method='POST',
             url_suffix='/graphql?tenantId=' + tenant_id,
@@ -175,15 +180,15 @@ class RestClient(BaseClient):
 
     def construct_and_send_add_user_to_incident_mutation(self, tenant_id, user_id, incident_id):
         data = {"query": "mutation addUserToIncident($id: ID! $userId: String!) { "
-                             "addUserToIncident(incidentId: $id userId: $userId) { "
-                                 "id "
-                                 "userIds "
-                             "} "
+                         "addUserToIncident(incidentId: $id userId: $userId) { "
+                         "id "
+                         "userIds "
+                         "} "
                          "}",
-                "variables": {"id": incident_id, "userId": user_id }
+                "variables": {"id": incident_id, "userId": user_id}
                 }
 
-        res =  self._http_request(
+        res = self._http_request(
             method='POST',
             url_suffix='/graphql?tenantId=' + tenant_id,
             retries=3,
@@ -191,14 +196,15 @@ class RestClient(BaseClient):
         )
         return res.get('data').get('addUserToIncident')
 
-    def construct_and_send_remove_user_from_incident_mutation(self, tenant_id, user_id, incident_id):
+    def construct_and_send_remove_user_from_incident_mutation(self, tenant_id, user_id,
+                                                              incident_id):
         data = {"query": "mutation removeUserFromIncident($id: ID! $userId: String!) { "
-                            "removeUserFromIncident(incidentId: $id userId: $userId) { "
-                                 "id "
-                                 "userIds "
-                             "} "
+                         "removeUserFromIncident(incidentId: $id userId: $userId) { "
+                         "id "
+                         "userIds "
+                         "} "
                          "}",
-                "variables": {"id": incident_id, "userId": user_id }
+                "variables": {"id": incident_id, "userId": user_id}
                 }
 
         res = self._http_request(
@@ -208,6 +214,7 @@ class RestClient(BaseClient):
             json_data=data
         )
         return res.get('data').get('removeUserFromIncident')
+
 
 def test_module(client):
     """
@@ -226,9 +233,11 @@ def test_module(client):
 def fetch_incidents_for_tenant(rest_client, respond_tenant_id, external_tenant_id, from_time):
     # first time fetch is handled in query
     try:
-        response = rest_client.construct_and_send_get_incident_ids_query(respond_tenant_id, from_time)
+        response = rest_client.construct_and_send_get_incident_ids_query(respond_tenant_id,
+                                                                         from_time)
         id_list = list(map(extract_id, response))
-        raw_incidents = rest_client.construct_and_send_full_incidents_query(respond_tenant_id, id_list)
+        raw_incidents = rest_client.construct_and_send_full_incidents_query(respond_tenant_id,
+                                                                            id_list)
     except Exception as err:
         # log error but continue getting incidents for other tenants
         demisto.error(
@@ -346,7 +355,7 @@ def get_user_id_from_email(email, users):
     raise Exception('no user found with email ' + email)
 
 
-def remove_user_command(rest_client, args, gql_client=None):
+def remove_user_command(rest_client, args):
     external_tenant_id = args.get('tenant_id')
     incident_id = int(args['incident_id'])
     user_to_remove = args['username']
@@ -378,7 +387,7 @@ def remove_user_command(rest_client, args, gql_client=None):
     try:
         res = rest_client.construct_and_send_remove_user_from_incident_mutation(respond_tenant_id,
                                                                                 user_to_remove,
-                                                                               incident_id)
+                                                                                incident_id)
         return 'user with email: ' + user_to_remove + ' removed from incident with id ' + res[
             'id'] + ' on tenant ' + str(external_tenant_id)
     except Exception as err:
@@ -418,8 +427,8 @@ def assign_user_command(rest_client, args):
     try:
         res = rest_client.construct_and_send_add_user_to_incident_mutation(respond_tenant_id,
                                                                            user_to_add,
-                                                                          incident_id)
-        return 'user with email: ' + user_to_add + ' added to incident with id ' + res.get('id') +\
+                                                                           incident_id)
+        return 'user with email: ' + user_to_add + ' added to incident with id ' + res.get('id') + \
                ' on tenant ' + str(external_tenant_id)
     except Exception as err:
         demisto.error('error adding user to incident: ' + str(err))
@@ -450,7 +459,7 @@ def close_incident_command(rest_client, args):
     feedback_optional_text = args.get('incident_comments')
     try:
         incident = \
-        rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
+            rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
         if feedback_status is None:
             if incident.get('status') == 'Open':
                 demisto.error('cannot close an incident without providing feedback status')
@@ -469,11 +478,11 @@ def close_incident_command(rest_client, args):
             'lastname': respond_user['lastname']
         }
         res = rest_client.construct_and_send_close_incident_mutation(respond_tenant_id,
-                                                                    feedback_status,
-                                                                    feedback_selected_options,
-                                                                    feedback_optional_text,
-                                                                    incident_id,
-                                                                    respond_graphql_formatted_user)
+                                                                     feedback_status,
+                                                                     feedback_selected_options,
+                                                                     feedback_optional_text,
+                                                                     incident_id,
+                                                                     respond_graphql_formatted_user)
         return ('incident closed and/or feedback updated for incident with id ' + str(incident_id)
                 + ' on tenant ' + external_tenant_id + ':\n' + str(res))
     except Exception as err:
@@ -495,7 +504,7 @@ def get_incident_command(rest_client, args):
     incident_id = int(args['incident_id'])
 
     raw_incident = \
-    rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
+        rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
     return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
 
 

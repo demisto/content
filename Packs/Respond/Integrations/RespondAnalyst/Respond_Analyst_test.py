@@ -15,6 +15,7 @@ params = {
     'insecure': True
 }
 
+
 @pytest.fixture(autouse=True)
 def set_params(mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -41,13 +42,14 @@ def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_m
         'Tenant 1': {'time': 1593044883}
     }
 
-
     requests_mock.get(
         f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
-    mocker.patch.object(client, 'construct_and_send_get_incident_ids_query', return_value=get_ids_response)
-    mocker.patch.object(client, 'construct_and_send_full_incidents_query', return_value=get_full_incidents_response)
+    mocker.patch.object(client, 'construct_and_send_get_incident_ids_query',
+                        return_value=get_ids_response)
+    mocker.patch.object(client, 'construct_and_send_full_incidents_query',
+                        return_value=get_full_incidents_response)
 
     next_run, incidents = fetch_incidents(client, last_run)
     assert len(incidents) == 0
@@ -59,42 +61,42 @@ def test_get_incident_command(mocker, requests_mock):
     from RespondAnalyst import get_incident_command, RestClient
 
     full_incidents_response = [
+        {
+            "assetClass": "Critical",
+            "attackStage": "LateralMovement",
+            "dateCreated": "1591374021992",
+            "eventCount": 24,
+            "feedback": {
+                "closedAt": "1593468999299",
+                "closedBy": "qa-user@respond-software.com",
+                "newStatus": "NonActionable",
+                "optionalText": "blah blah blah",
+                "timeGiven": "1593469076049",
+                "userId": "qa-user@respond-software.com"
+            },
+            "firstEventTime": "1576933531016",
+            "id": "6",
+            "internalSystems": [
                 {
-                    "assetClass": "Critical",
-                    "attackStage": "LateralMovement",
-                    "dateCreated": "1591374021992",
-                    "eventCount": 24,
-                    "feedback": {
-                        "closedAt": "1593468999299",
-                        "closedBy": "qa-user@respond-software.com",
-                        "newStatus": "NonActionable",
-                        "optionalText": "blah blah blah",
-                        "timeGiven": "1593469076049",
-                        "userId": "qa-user@respond-software.com"
-                    },
-                    "firstEventTime": "1576933531016",
-                    "id": "6",
-                    "internalSystems": [
-                        {
-                            "hostname": "enterprise.com"
-                        }
-                    ],
-                    "internalSystemsCount": 1,
-                    "lastEventTime": "1591345217664",
-                    "priority": "Critical",
-                    "probabilityBucket": "VeryHigh",
-                    "status": "Closed",
-                    "tags": [
-                        {
-                            "label": "Multiple Network IPS Signatures Triggered by Same Internal Asset"
-                        }
-                    ],
-                    "title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network IPS Activity",
-                    "userIds": [
-                        "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"
-                    ]
+                    "hostname": "enterprise.com"
                 }
+            ],
+            "internalSystemsCount": 1,
+            "lastEventTime": "1591345217664",
+            "priority": "Critical",
+            "probabilityBucket": "VeryHigh",
+            "status": "Closed",
+            "tags": [
+                {
+                    "label": "Multiple Network IPS Signatures Triggered by Same Internal Asset"
+                }
+            ],
+            "title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network IPS Activity",
+            "userIds": [
+                "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"
             ]
+        }
+    ]
 
     expected_result = load_test_data('test_data/get_incident_response.json')
 
@@ -108,7 +110,8 @@ def test_get_incident_command(mocker, requests_mock):
         f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
-    mocker.patch.object(client, 'construct_and_send_full_incidents_query', return_value=full_incidents_response)
+    mocker.patch.object(client, 'construct_and_send_full_incidents_query',
+                        return_value=full_incidents_response)
     args = {
         'tenant_id': 'Tenant 1',
         'incident_id': 6
@@ -138,8 +141,10 @@ def test_fetch_incidents_no_new(mocker, requests_mock):
         f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
-    mocker.patch.object(client, 'construct_and_send_get_incident_ids_query', return_value=get_ids_response)
-    mocker.patch.object(client, 'construct_and_send_full_incidents_query', return_value=get_full_incidents_response)
+    mocker.patch.object(client, 'construct_and_send_get_incident_ids_query',
+                        return_value=get_ids_response)
+    mocker.patch.object(client, 'construct_and_send_full_incidents_query',
+                        return_value=get_full_incidents_response)
 
     next_run, incidents = fetch_incidents(client, last_run)
     assert len(incidents) == 0
@@ -150,7 +155,8 @@ def test_fetch_incidents_no_new(mocker, requests_mock):
 def test_fetch_incidents(mocker, requests_mock):
     from RespondAnalyst import fetch_incidents, RestClient
 
-    get_ids_response = [{'id': '6'}, {'id': '8'}, {'id': '11'}, {'id': '14'}, {'id': '16'}, {'id': '27'}]
+    get_ids_response = [{'id': '6'}, {'id': '8'}, {'id': '11'}, {'id': '14'}, {'id': '16'},
+                        {'id': '27'}]
 
     get_full_incidents_response = load_test_data('test_data/full_incidents.json')
 
@@ -164,8 +170,10 @@ def test_fetch_incidents(mocker, requests_mock):
         f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1'}
     )
-    mocker.patch.object(client, 'construct_and_send_get_incident_ids_query', return_value=get_ids_response)
-    mocker.patch.object(client, 'construct_and_send_full_incidents_query', return_value=get_full_incidents_response)
+    mocker.patch.object(client, 'construct_and_send_get_incident_ids_query',
+                        return_value=get_ids_response)
+    mocker.patch.object(client, 'construct_and_send_full_incidents_query',
+                        return_value=get_full_incidents_response)
 
     expected_output = load_test_data('test_data/fetch_incidents_response.json')
 
@@ -199,7 +207,8 @@ def test_remove_user(mocker, requests_mock):
     )
     requests_mock.get(
         f'{BASE_URL}/session/activeUser',
-        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1', 'email': 'qa-user@respond-software.com',
+        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1',
+              'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
 
@@ -237,7 +246,8 @@ def test_assign_user(mocker, requests_mock):
     )
     requests_mock.get(
         f'{BASE_URL}/session/activeUser',
-        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1', 'email': 'qa-user@respond-software.com',
+        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1',
+              'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
 
@@ -257,6 +267,7 @@ def test_assign_user(mocker, requests_mock):
     res = assign_user_command(rest_client, args)
     assert res == 'user with email: qa-user3@respond-software.com added to incident with id 5 on tenant Tenant 1'
 
+
 def test_close_incident(mocker, requests_mock):
     from RespondAnalyst import close_incident_command, RestClient
 
@@ -272,7 +283,8 @@ def test_close_incident(mocker, requests_mock):
     close_incident_response = load_test_data('test_data/close_incident_response.json')
     single_full_incident_response = load_test_data('test_data/single_full_incident.json')
 
-    mocker.patch.object(rest_client, 'construct_and_send_close_incident_mutation', return_value=close_incident_response)
+    mocker.patch.object(rest_client, 'construct_and_send_close_incident_mutation',
+                        return_value=close_incident_response)
     mocker.patch.object(rest_client, 'construct_and_send_full_incidents_query',
                         return_value=single_full_incident_response)
     requests_mock.get(
@@ -285,7 +297,8 @@ def test_close_incident(mocker, requests_mock):
     )
     requests_mock.get(
         f'{BASE_URL}/session/activeUser',
-        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1', 'email': 'qa-user@respond-software.com',
+        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1',
+              'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
 
@@ -327,7 +340,8 @@ def test_assign_user_raise_exception(mocker, requests_mock):
     mocker.patch.object(demisto, 'error')
 
     get_all_users_response = load_test_data('test_data/users.json')
-    mocker.patch.object(rest_client, 'construct_and_send_add_user_to_incident_mutation', return_value=Exception)
+    mocker.patch.object(rest_client, 'construct_and_send_add_user_to_incident_mutation',
+                        return_value=Exception)
     requests_mock.get(
         f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
@@ -338,7 +352,8 @@ def test_assign_user_raise_exception(mocker, requests_mock):
     )
     requests_mock.get(
         f'{BASE_URL}/session/activeUser',
-        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1', 'email': 'qa-user@respond-software.com',
+        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1',
+              'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
     args = {
@@ -348,7 +363,8 @@ def test_assign_user_raise_exception(mocker, requests_mock):
     }
     with pytest.raises(Exception):
         assign_user_command(rest_client, args)
-    demisto.error.assert_any_call("error adding user to incident: type object 'Exception' has no attribute 'get'")
+    demisto.error.assert_any_call(
+        "error adding user to incident: type object 'Exception' has no attribute 'get'")
 
 
 def test_remove_user_raises_exception(mocker, requests_mock):
@@ -363,7 +379,8 @@ def test_remove_user_raises_exception(mocker, requests_mock):
     mocker.patch.object(demisto, 'error')
 
     get_all_users_response = load_test_data('test_data/users.json')
-    mocker.patch.object(rest_client, 'construct_and_send_remove_user_from_incident_mutation', return_value=Exception)
+    mocker.patch.object(rest_client, 'construct_and_send_remove_user_from_incident_mutation',
+                        return_value=Exception)
     requests_mock.get(
         f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
@@ -374,7 +391,8 @@ def test_remove_user_raises_exception(mocker, requests_mock):
     )
     requests_mock.get(
         f'{BASE_URL}/session/activeUser',
-        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1', 'email': 'qa-user@respond-software.com',
+        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1',
+              'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
     args = {
@@ -402,8 +420,10 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
 
     get_all_users_response = load_test_data('test_data/users.json')
 
-    mocker.patch.object(rest_client, 'construct_and_send_close_incident_mutation', return_value=Exception)
-    mocker.patch.object(rest_client, 'construct_and_send_full_incidents_query', return_value=Exception)
+    mocker.patch.object(rest_client, 'construct_and_send_close_incident_mutation',
+                        return_value=Exception)
+    mocker.patch.object(rest_client, 'construct_and_send_full_incidents_query',
+                        return_value=Exception)
     requests_mock.get(
         f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
@@ -414,7 +434,8 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
     )
     requests_mock.get(
         f'{BASE_URL}/session/activeUser',
-        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1', 'email': 'qa-user@respond-software.com',
+        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1',
+              'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
 
