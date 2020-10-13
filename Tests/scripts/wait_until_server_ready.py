@@ -1,4 +1,5 @@
 """Wait for server to be ready for tests"""
+import json
 import sys
 import time
 import re
@@ -39,9 +40,9 @@ def main():
     instance_name_to_wait_on = sys.argv[1]
     ready_ami_list = []
     failure = False
-    with open('./Tests/instance_ips.txt', 'r') as instance_file:
-        instance_ips = instance_file.readlines()
-        instance_ips = [line.strip('\n').split(":") for line in instance_ips]
+    with open('./env_results.json', 'r') as json_file:
+        env_results = json.load(json_file)
+        instance_ips = [(env.get('Role'), env.get('InstanceDNS')) for env in env_results]
 
     loop_start_time = time.time()
     last_update_time = loop_start_time

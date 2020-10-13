@@ -39,9 +39,14 @@ def test_read_file(mocker):
     with open('./TestData/input_json_file_test', 'r') as f:
         obj = read_file(f.read(), 'json_string')
         assert len(obj) >= 1
-        obj = read_file(pickle.dumps(obj), 'pickle_string')
-        assert len(obj) >= 1
 
+    with open('./TestData/input_pickle_file_test', 'wb') as f:
+        f.write(pickle.dumps(obj))
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_pickle_file_test'})
+    obj_from_pickle = read_file('./TestData/input_pickle_file_test', 'pickle')
+    assert len(obj_from_pickle) >= 1
+
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
     with open('./TestData/input_json_file_test', 'r') as f:
         obj = read_file(f.read(), 'json_string')
         df = pd.DataFrame.from_dict(obj)
@@ -51,7 +56,7 @@ def test_read_file(mocker):
         assert len(obj2) == len(obj)
 
     with open('./TestData/input_json_file_test', 'r') as f:
-        b64_input = base64.b64encode(f.read())
+        b64_input = base64.b64encode(f.read().encode('utf-8'))
         obj = read_file(b64_input, 'json_b64_string')
         assert len(obj) >= 1
 
@@ -122,9 +127,9 @@ def test_remove_short_text():
             'body': 'TestBody1 TestBody2',
         }
     ]
-    data, desc = remove_short_text(data, 'body', 'body', 2)
-    assert desc == "Dropped 1 samples shorted then 2 words\n"
-    assert len(data) == 1
+    filtered_data, desc = remove_short_text(data, 'body', 'body', 2)
+    assert len(data) - len(filtered_data) == 1
+    assert len(filtered_data) == 1
 
 
 def test_remove_dups():
