@@ -28,6 +28,44 @@ function CloseSession([System.Management.Automation.Runspaces.PSSession]$session
 }
 
 
+function ConvertPSObjectToHashtable
+{
+    param (
+        [Parameter(ValueFromPipeline)]
+        $InputObject
+    )
+
+    process
+    {
+        if ($null -eq $InputObject) { return $null }
+
+        if ($InputObject -is [System.Collections.IEnumerable] -and $InputObject -isnot [string])
+        {
+            $collection = @(
+                foreach ($object in $InputObject) { ConvertPSObjectToHashtable $object }
+            )
+
+            Write-Output -NoEnumerate $collection
+        }
+        elseif ($InputObject -is [psobject])
+        {
+            $hash = @{}
+
+            foreach ($property in $InputObject.PSObject.Properties)
+            {
+                $hash[$property.Name] = ConvertPSObjectToHashtable $property.Value
+            }
+
+            $hash
+        }
+        else
+        {
+            $InputObject
+        }
+    }
+}
+
+
 # Client object
 
 
@@ -36,78 +74,85 @@ class Client {
 	[ValidateNotNullOrEmpty()][string]$userName
 	[ValidateNotNullOrEmpty()][string]$password
 
-	TestConnection() {
+	[psobject]ComplianceNewSearch([string]$search_id, [string]$content_match_query, [string]$description, [string]$exchange_location) {
 		# Establish session to remote
 		$session = CreateNewSession $this.o365Server $this.userName $this.password
-		# Execute simple compliance summary query
-		if (! (Invoke-Command -Session $session -ScriptBlock { Get-ComplianceSearch })) {
-			throw "Fail - Unable to query compliance using pwsh command 'Get-ComplianceSearch'"
-		}
-		# Close session to remote
-		CloseSession $session
-	}
-
-	[hashtable]EwsComplianceNewSearch([string]$search_name, [string]$content_match_query, [string]$description, [array]$exchange_location) {
-		# Establish session to remote
-		$session = CreateNewSession $this.o365Server $this.userName $this.password
-		# Execute command
-		$response = Invoke-Command -Session $session -ScriptBlock { New-ComplianceSearch -Name $search_name  -ContentMatchQuery $content_match_query -Description $description -ExchangeLocation $exchange_location}
+		# Import and Execute command
+		Import-PSSession -Session $session -CommandName New-ComplianceSearch
+		$response = New-ComplianceSearch -Name $search_id -ExchangeLocation $exchange_location
 		# Close session to remote
 		CloseSession $session
 
 		return $response
 	}
 	
-	
-	[hashtable]EwsComplianceRemoveSearch([string]$search_name) {
+	ComplianceRemoveSearch([string]$search_id) {
 		# Establish session to remote
 		$session = CreateNewSession $this.o365Server $this.userName $this.password
-		# Execute command
-		$response = Invoke-Command -Session $session -ScriptBlock { Remove-ComplianceSearch -Identity $search_name }
+		# Import and Execute command
+		Import-PSSession -Session $session -CommandName Remove-ComplianceSearch
+		Remove-ComplianceSearch -Identity $search_id -Confirm:$false
+		# Close session to remote
+		CloseSession $session
+	}
+
+	[array]ComplianceListSearch() {
+		# Establish session to remote
+		$session = CreateNewSession $this.o365Server $this.userName $this.password
+		# Import and Execute command
+		Import-PSSession -Session $session -CommandName Get-ComplianceSearch
+		$response = Get-ComplianceSearch
+		# Close session to remote
+		CloseSession $session
+
+		return $response
+	}
+
+	[psobject]ComplianceGetSearch([string]$search_id) {
+		# Establish session to remote
+		$session = CreateNewSession $this.o365Server $this.userName $this.password
+		# Import and Execute command
+		Import-PSSession -Session $session -CommandName Get-ComplianceSearch
+		$response = Get-ComplianceSearch -Identity $search_id | Select-Object -Property *
 		# Close session to remote
 		CloseSession $session
 
 		return $response
 	}
 	
-	
-	[hashtable]EwsComplianceStartSearch([string]$search_name) {
+	ComplianceStartSearchAction([string]$search_id) {
 		# Establish session to remote
 		$session = CreateNewSession $this.o365Server $this.userName $this.password
-		# Execute command
-		$response = Invoke-Command -Session $session -ScriptBlock { Start-ComplianceSearch -Identity $search_name }
+		# Import and Execute command
+		Import-PSSession -Session $session -CommandName Start-ComplianceSearch
+		Start-ComplianceSearch -Identity $search_id
+		# Close session to remote
+		CloseSession $session
+	}
+	
+	ComplianceStopSearchAction([string]$search_id) {
+		# Establish session to remote
+		$session = CreateNewSession $this.o365Server $this.userName $this.password
+		# Import and Execute command
+		Import-PSSession -Session $session -CommandName Stop-ComplianceSearch
+		Stop-ComplianceSearch -Identity $search_id -Confirm:$false
+		# Close session to remote
+		CloseSession $session
+	}
+	
+	[array]ComplianceGetSearchAction([string]$search_id) {
+		# Establish session to remote
+		$session = CreateNewSession $this.o365Server $this.userName $this.password
+		# Import and Execute command
+		Import-PSSession -Session $session -CommandName Get-ComplianceSearchAction
+		$response = Get-ComplianceSearchAction -Identity $search_id
 		# Close session to remote
 		CloseSession $session
 
 		return $response
 	}
 	
-	
-	[hashtable]EwsComplianceStopSearch([string]$search_name) {
-		# Establish session to remote
-		$session = CreateNewSession $this.o365Server $this.userName $this.password
-		# Execute command
-		$response = Invoke-Command -Session $session -ScriptBlock { Stop-ComplianceSearch -Identity $search_name }
-		# Close session to remote
-		CloseSession $session
-
-		return $response
-	}
-	
-	
-	[hashtable]EwsComplianceGetSearch([string]$search_name) {
-		# Establish session to remote
-		$session = CreateNewSession $this.o365Server $this.userName $this.password
-		# Execute command
-		$response = Invoke-Command -Session $session -ScriptBlock { Get-ComplianceSearch -Identity $search_name }
-		# Close session to remote
-		CloseSession $session
-
-		return $response
-	}
-	
-	
-	[hashtable]EwsCompliancePurge([string]$search_name, [string]$purge_type) {
+	[hashtable]EwsCompliancePurge([string]$search_id, [string]$purge_type) {
 		# Establish session to remote
 		$session = CreateNewSession $this.o365Server $this.userName $this.password
 		# Execute command
@@ -118,24 +163,28 @@ class Client {
 		return $response
 	}
 	
-	
 	[hashtable]EwsGlobalSenderBlacklist() {
-		
+		$response = {}
+
+		return $response
 	}
-	
 	
 	[hashtable]EwsJunkRulesGet() {
+		$response = {}
 		
+		return $response
 	}
-	
 	
 	[hashtable]EwsJunkRulesSet() {
+		$response = {}
 		
+		return $response
 	}
 	
-	
 	[hashtable]EwsMessageTrace() {
+		$response = {}
 		
+		return $response
 	}
 }
 
@@ -144,14 +193,33 @@ class Client {
 
 
 function TestModule([Client]$client) {
-	$client.TestConnection()
+	$client.ComplianceListSearch()
 	
 	return 'ok', {}, {} 
 }
 
 
-function EwsComplianceNewSearchCommand([Client]$client, [hashtable]$kwargs) {
-	$raw_response = $client.EwsComplianceNewSearch($kwargs['search_name'], $kwargs['content_match_query'], $kwargs['description'], $kwargs['exchange_location'])
+function ComplianceNewSearchCommand([Client]$client, [hashtable]$kwargs) {
+	$raw_response = $client.ComplianceNewSearch($kwargs['search_id'], $kwargs['content_match_query'], $kwargs['description'], $kwargs['exchange_location'])
+	$human_readable = 
+	$entry_context = {}
+
+	return $human_readable, $entry_context, $raw_response
+}
+
+
+function ComplianceRemoveSearchCommand([Client]$client, [hashtable]$kwargs) {
+	# Remove operation doesn't return output
+	$client.ComplianceRemoveSearch($kwargs['search_id'])
+	$human_readable = ""
+	$entry_context = {}
+
+	return $human_readable, $entry_context, {}
+}
+
+
+function ComplianceListSearchCommand([Client]$client, [hashtable]$kwargs) {
+	$raw_response = $client.ComplianceListSearch()
 	$human_readable = ""
 	$entry_context = {}
 
@@ -159,8 +227,8 @@ function EwsComplianceNewSearchCommand([Client]$client, [hashtable]$kwargs) {
 }
 
 
-function EwsComplianceRemoveSearchCommand([Client]$client, [hashtable]$kwargs) {
-	$raw_response = $client.EwsComplianceRemoveSearch($kwargs['search_name'])
+function ComplianceGetSearchCommand([Client]$client, [hashtable]$kwargs) {
+	$raw_response = $client.ComplianceGetSearch($kwargs['search_id'])
 	$human_readable = ""
 	$entry_context = {}
 
@@ -168,8 +236,28 @@ function EwsComplianceRemoveSearchCommand([Client]$client, [hashtable]$kwargs) {
 }
 
 
-function EwsComplianceStartSearchCommand([Client]$client, [hashtable]$kwargs) {
-	$raw_response = $client.EwsComplianceStartSearch($kwargs['search_name'])
+function ComplianceStartSearchActionCommand([Client]$client, [hashtable]$kwargs) {
+	# Start operation doesn't return output
+	$client.ComplianceStartSearchAction($kwargs['search_id'])
+	$human_readable = ""
+	$entry_context = {}
+
+	return $human_readable, $entry_context, {}
+}
+
+
+function ComplianceStopSearchActionCommand([Client]$client, [hashtable]$kwargs) {
+	# Stop operation doesn't return output
+	$client.ComplianceStopSearchAction($kwargs['search_id'])
+	$human_readable = ""
+	$entry_context = {}
+
+	return $human_readable, $entry_context, {}
+}
+
+
+function ComplianceGetSearchActionCommand([Client]$client, [hashtable]$kwargs) {
+	$raw_response = $client.ComplianceGetSearchAction($kwargs['search_id']) | Select-Object *
 	$human_readable = ""
 	$entry_context = {}
 
@@ -177,26 +265,8 @@ function EwsComplianceStartSearchCommand([Client]$client, [hashtable]$kwargs) {
 }
 
 
-function EwsComplianceStopSearchCommand([Client]$client, [hashtable]$kwargs) {
-	$raw_response = $client.EwsComplianceStopSearch($kwargs['search_name'])
-	$human_readable = ""
-	$entry_context = {}
-
-	return $human_readable, $entry_context, $raw_response
-}
-
-
-function EwsComplianceGetSearchCommand([Client]$client, [hashtable]$kwargs) {
-	$raw_response = $client.EwsComplianceGetSearch($kwargs['search_name'])
-	$human_readable = ""
-	$entry_context = {}
-
-	return $human_readable, $entry_context, $raw_response
-}
-
-
-function EwsCompliancePurgeCommand([Client]$client, [hashtable]$kwargs) {
-	$raw_response = $client.EwsCompliancePurge($kwargs['search_name'], $kwargs['purge_type'])
+function CompliancePurgeCommand([Client]$client, [hashtable]$kwargs) {
+	$raw_response = $client.EwsCompliancePurge($kwargs['search_id'], $kwargs['purge_type'])
 	$human_readable = ""
 	$entry_context = {}
 
@@ -205,22 +275,38 @@ function EwsCompliancePurgeCommand([Client]$client, [hashtable]$kwargs) {
 
 
 function EwsGlobalSenderBlacklistCommand([Client]$client, [hashtable]$kwargs) {
-	
+	$raw_response = $client.EwsCompliancePurge($kwargs['search_id'], $kwargs['purge_type'])
+	$human_readable = ""
+	$entry_context = {}
+
+	return $human_readable, $entry_context, $raw_response
 }
 
 
 function EwsJunkRulesGetCommand([Client]$client, [hashtable]$kwargs) {
-	
+	$raw_response = $client.EwsCompliancePurge($kwargs['search_id'], $kwargs['purge_type'])
+	$human_readable = ""
+	$entry_context = {}
+
+	return $human_readable, $entry_context, $raw_response
 }
 
 
 function EwsJunkRulesSetCommand([Client]$client, [hashtable]$kwargs) {
-	
+	$raw_response = $client.EwsCompliancePurge($kwargs['search_id'], $kwargs['purge_type'])
+	$human_readable = ""
+	$entry_context = {}
+
+	return $human_readable, $entry_context, $raw_response
 }
 
 
 function EwsMessageTraceCommand([Client]$client, [hashtable]$kwargs) {
-	
+	$raw_response = $client.EwsCompliancePurge($kwargs['search_id'], $kwargs['purge_type'])
+	$human_readable = ""
+	$entry_context = {}
+
+	return $human_readable, $entry_context, $raw_response
 }
 
 
@@ -233,7 +319,7 @@ function Main {
 	
 	$Command = $Demisto.GetCommand()
 	$Demisto.Debug("Command being called is $Command")
-	$Client = [Client]@{
+	$client = [Client]@{
 		o365Server = $demisto.Params()['ExchangeServer']
 		userName   = $demisto.Params()['credentials']['identifier']
 		password   = $demisto.Params()['credentials']['password']
@@ -245,28 +331,34 @@ function Main {
 				($human_readable, $entry_context, $raw_response) = TestModule $client
 			}
 			"ews-compliance-new-search" {
-				($human_readable, $entry_context, $raw_response) = EwsComplianceNewSearchCommand $client $Demisto.Args()
+				($human_readable, $entry_context, $raw_response) = ComplianceNewSearchCommand $client $Demisto.Args() 
 			}
 			"ews-compliance-remove-search" {
-				($human_readable, $entry_context, $raw_response) = EwsComplianceRemoveSearchCommand $client $Demisto.Args()
+				($human_readable, $entry_context, $raw_response) = ComplianceRemoveSearchCommand $client $Demisto.Args() 
 			}
-			"ews-compliance-start-search" {
-				($human_readable, $entry_context, $raw_response) = EwsComplianceStartSearchCommand $client, $Demisto.Args()
-			}
-			"ews-compliance-stop-search" {
-				($human_readable, $entry_context, $raw_response) = EwsComplianceStopSearchCommand $client, $Demisto.Args()
+			"ews-compliance-list-search" {
+				($human_readable, $entry_context, $raw_response) = ComplianceListSearchCommand $client $Demisto.Args() 
 			}
 			"ews-compliance-get-search" {
-				($human_readable, $entry_context, $raw_response) = EwsComplianceGetSearchCommand $client, $Demisto.Args()
+				($human_readable, $entry_context, $raw_response) = ComplianceGetSearchCommand $client $Demisto.Args() 
+			}
+			"ews-compliance-start-search-action" {
+				($human_readable, $entry_context, $raw_response) = ComplianceStartSearchActionCommand $client $Demisto.Args() 
+			}
+			"ews-compliance-stop-search-action" {
+				($human_readable, $entry_context, $raw_response) = ComplianceStopSearchActionCommand $client $Demisto.Args() 
+			}
+			"ews-compliance-get-search-action" {
+				($human_readable, $entry_context, $raw_response) = ComplianceGetSearchActionCommand $client $Demisto.Args()
 			}
 			"ews-compliance-purge" {
-				($human_readable, $entry_context, $raw_response) = EwsCompliancePurgeCommand $client, $Demisto.Args()
+				($human_readable, $entry_context, $raw_response) = EwsCompliancePurgeCommand $client $Demisto.Args()
 			}
 			"ews-global-sender-blacklist" {
-				($human_readable, $entry_context, $raw_response) = EwsCompliancePurgeCommand $client, $Demisto.Args()
+				($human_readable, $entry_context, $raw_response) = EwsCompliancePurgeCommand $client $Demisto.Args()
 			}
 			"ews-junk-rules-get" {
-				($human_readable, $entry_context, $raw_response) = EwsCompliancePurgeCommand $client, $Demisto.Args()
+				($human_readable, $entry_context, $raw_response) = EwsCompliancePurgeCommand $client $Demisto.Args()
 			}
 			"ews-junk-rules-set" {
 				($human_readable, $entry_context, $raw_response) = EwsCompliancePurgeCommand $client, $Demisto.Args()
