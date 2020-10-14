@@ -103,7 +103,7 @@ def main():
     password = demisto.params().get('credentials').get('password')
 
     # get the service API url
-    url = demisto.params()['url']
+    url = demisto.params().get('url')
 
     max_fetch = demisto.params()['max_fetch']
     LOG(f'Command being called is {demisto.command()}')
