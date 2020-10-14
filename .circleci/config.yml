@@ -358,6 +358,11 @@ references:
         GCS_PATH=$(mktemp)
         echo $GCS_MARKET_KEY > $GCS_PATH
 
+        KF=$(mktemp)
+        echo "$GCS_MARKET_KEY" > "$KF"
+        gcloud auth activate-service-account --key-file="$KF" > auth.out 2>&1
+        echo "Auth loaded successfully."
+
         GCS_MARKET_BUCKET="marketplace-dist"
         GCS_BUILD_BUCKET="marketplace-dist-dev"
         SOURCE_PATH="content/packs"
