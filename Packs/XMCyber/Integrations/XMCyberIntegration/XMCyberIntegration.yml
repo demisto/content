@@ -2284,13 +2284,59 @@ script:
       - contextPath: XMCyber.Assets.entityId
         description: 'Current global risk score grade'
         type: String
-      - contextPath: XMCyber.RiskScore.score
-        description: 'Current global risk score number'
-        type: Number
-      - contextPath: XMCyber.RiskScore.trend
-        description: 'Trend from previous week'
-        type: Number
 
+  - name: xmcyber-is-version-supported
+    description: Check if current XM version supports Demisto integration
+    outputs:
+      - contextPath: XMCyber.IsVersion.valid
+        description: 'Flag that indicates if the version is valid'
+        type: Boolean
+
+  - name: xmcyber-top-choke-points
+    description: Return 5 top choke points in the system
+    outputs:
+      - contextPath: XMCyber.TopChokePoints.entityId
+        description: 'Entity id'
+        type: String
+      - contextPath: XMCyber.TopChokePoints.displayName
+        description: 'Entity display name'
+        type: String
+      - contextPath: XMCyber.TopChokePoints.entityType
+        description: 'Entity type'
+        type: String
+      - contextPath: XMCyber.TopChokePoints.score
+        description: 'Entity choke point score'
+        type: String
+      - contextPath: XMCyber.TopChokePoints.trend
+        description: 'Entity trend (score change from the previous week)'
+        type: String
+  
+  - name: xmcyber-top-assets-at-risk
+    description: Return 5 top assets at risk in the system
+    outputs:
+      - contextPath: XMCyber.TopChokePoints.entityId
+        description: 'Entity id'
+        type: String
+      - contextPath: XMCyber.TopChokePoints.displayName
+        description: 'Entity display name'
+        type: String
+      - contextPath: XMCyber.TopChokePoints.entityType
+        description: 'Entity type'
+        type: String
+      - contextPath: XMCyber.TopChokePoints.score
+        description: 'Entity asset at risk score'
+        type: String
+      - contextPath: XMCyber.TopChokePoints.trend
+        description: 'Entity trend (score change from the previous week)'
+        type: String
+    
+  - name: xmcyber-get-version
+    description: Get current xm version
+    outputs:
+      - contextPath: XMCyber.Version.system
+        description: 'Get current system version'
+        type: String
+    
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
   longRunning: false
