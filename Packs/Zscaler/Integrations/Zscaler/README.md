@@ -754,7 +754,7 @@ malware.net
 <h5>Base Command</h5>
 <p><code>zscaler-get-categories</code></p>
 <h5>Input</h5>
-<p>There is no input for t his command.</p>
+<p>There is no input for this command.</p>
 <h5>Context Output</h5>
 <table style="width: 750px;" border="2" cellpadding="6">
 <thead>

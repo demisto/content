@@ -61,6 +61,13 @@ if not PROXY:
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
+''' HELPER CLASSES '''
+
+
+class AuthorizationError(DemistoException):
+    """Error to be raised when 401/403 headers are present in http response"""
+
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -82,6 +89,8 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                 time.sleep(random_num_of_seconds)  # pylint: disable=sleep-exists
                 return http_request(method, url_suffix, data, headers=headers,
                                     num_of_seconds_to_wait=num_of_seconds_to_wait + 3)
+            elif res.status_code in (401, 403):
+                raise AuthorizationError(res.content)
             else:
                 raise Exception('Your request failed with the following error: ' + ERROR_CODES_DICT[res.status_code])
     except Exception as e:
@@ -124,8 +133,8 @@ def login():
         DEFAULT_HEADERS['cookie'] = session_id
         try:
             return test_module()
-        except Exception:
-            demisto.info('Zscaler encountered an authentication error with the saved session. Creating a new session.')
+        except AuthorizationError as e:
+            demisto.info('Zscaler encountered an authentication error.\nError: {}'.format(str(e)))
     ts, key = obfuscateApiKey(API_KEY)
     data = {
         'username': USERNAME,
