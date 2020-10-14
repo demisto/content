@@ -15,13 +15,13 @@ EXPECTED_RESULTS = [{'Type': 1, 'ContentsFormat': 'json', 'Contents': 2, 'EntryC
 
 
 def test_main(mocker):
-    """Verifies that all valid addresses get returned.
+    """Verifies that a reputation data and the wallet_type field are being set for a given valid bitcoin address.
        Given
-       - addresses.
+       - list of bitcoin addresses.
        When
-       - When there are multiple addresses that looks like a bitcoin address.
+       - When a cryptocurrency is being auto extracted.
        Then
-       - Return all valid addresses
+       - Return the updated context for each address.
        """
     mocker.patch.object(demisto, 'args', return_value=ARGS)
     mocker.patch.object(demisto, 'results')
