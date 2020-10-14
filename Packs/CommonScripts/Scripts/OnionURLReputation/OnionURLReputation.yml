@@ -1,0 +1,22 @@
+args:
+- default: false
+  description: The indicators to which to add reputation.
+  isArray: true
+  name: input
+  required: true
+  secret: false
+comment: A reputation script for `Onion URL` indicators.
+commonfields:
+  id: OnionURLReputation
+  version: -1
+enabled: true
+name: OnionURLReputation
+script: '-'
+subtype: python3
+system: false
+tags:
+- reputation
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.12176
+fromversion: 5.0.0
