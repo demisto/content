@@ -366,7 +366,7 @@ references:
         GCS_MARKET_BUCKET="marketplace-dist"
         GCS_BUILD_BUCKET="marketplace-dist-dev"
         SOURCE_PATH="content/packs"
-        BUILD_BUCKET_PATH="test"
+        BUILD_BUCKET_PATH="wow"
         TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
         PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
 
