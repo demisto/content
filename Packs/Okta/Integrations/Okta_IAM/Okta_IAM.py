@@ -4,9 +4,6 @@ from CommonServerPython import *  # noqa: F401
 # noqa: F401
 # noqa: F401
 # noqa: F401
-# IMPORTS
-from email.mime.text import MIMEText
-from smtplib import SMTP
 
 
 import traceback
@@ -52,7 +49,7 @@ class Client:
 
         self.iam = IAMCommandHelper(INCOMING_MAPPER, OUTGOING_MAPPER, user_profile)
         self.app_data = self.iam.map_user_profile_to_app_data()
-        self.res_json = None
+        self.res_json = {}
         self.user_not_found = False
         self.user_id = self.get_user_id()
 
