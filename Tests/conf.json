@@ -141,7 +141,8 @@
         {
             "integrations": "IllusiveNetworks",
             "playbookID": "IllusiveNetworks-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 500
         },
         {
             "integrations": "JSON Feed",
@@ -3080,6 +3081,12 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "Hatching Triage - Detonate File",
+            "integrations": "Hatching Triage",
+            "fromversion": "5.5.0"
+        },
+        {
+
             "integrations": "Talos Feed",
             "playbookID": "FeedTalosTestPlaybook",
             "fromversion": "5.5.0"
@@ -3088,6 +3095,7 @@
             "playbookID": "Field polling test",
             "timeout": 600,
             "fromversion": "5.0.0"
+
         }
     ],
     "skipped_tests": {
@@ -3159,11 +3167,10 @@
         "pyEWS_Test": "Issue 28339",
         "GmailTest": "Issue 27057",
         "playbook-SafeBreach-Test": "Issue 21205",
-        "IllusiveNetworks-Test": "Issue 29087",
-        "Code42-Test": "Issue 29093",
         "SMB test": "Issue 26454",
         "TestCofenseFeed": "Issue 29198",
-        "PAN-OS Query Logs For Indicators Test": "Issue 28753"
+        "PAN-OS Query Logs For Indicators Test": "Issue 28753",
+        "Indeni_test": "Non-certified partner pack, this should be skipped for now"
     },
     "skipped_integrations": {
         
@@ -3260,6 +3267,7 @@
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
+        "Hatching Triage": "Community contribution",
         "SNDBOX": "Issue 28826",
         
         "_comment2": "~~~ UNSTABLE ~~~",
