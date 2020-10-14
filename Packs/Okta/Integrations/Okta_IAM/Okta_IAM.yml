@@ -242,8 +242,9 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.12176
   runonce: false
   script: ''
   subtype: python3
   type: python
+fromversion: 6.0.0
