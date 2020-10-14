@@ -52,7 +52,7 @@ class Client(BaseClient):
                          headers=headers,
                          ok_codes=(200,))
 
-    def get_user_id(self, email):
+    def get_user(self, email):
         uri = 'users'
         query_params = {
             'filter': encode_string_results(f'profile.login eq "{email}"')
@@ -65,9 +65,7 @@ class Client(BaseClient):
         )
 
         if res and len(res) == 1:
-            user_id = res[0].get('id')
-            return encode_string_results(user_id)
-
+            return res[0]
         return None
 
     def deactivate_user(self, user_id):
@@ -82,14 +80,6 @@ class Client(BaseClient):
         uri = f'users/{user_id}/lifecycle/activate'
         res = self._http_request(
             method="POST",
-            url_suffix=uri
-        )
-        return res
-
-    def get_user(self, user_id):
-        uri = f'users/{user_id}'
-        res = self._http_request(
-            method='GET',
             url_suffix=uri
         )
         return res
@@ -180,19 +170,25 @@ def test_module(client):
 
 def get_user_command(client, args, incoming_mapper):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-    user_id = client.get_user_id(user_profile.)
-    if client.user_id:
-        success = client.get_user()
-        if success:
-            client.iam_command_success()
-        else:
-            client.iam_command_failure()
-
+    okta_user = client.get_user(user_profile.email)
+    if not okta_user:
+        error_code, error_message = IAMErrors.USER_NOT_FOUND
+        user_profile.set_result(
+            success=False,
+            error_code=error_code,
+            error_message=error_message
+        )
     else:
-        if client.user_not_found:
-            return_outputs('User does not exist.')
-        else:
-            client.iam_command_failure()
+        user_profile.update_with_app_data(data=okta_user, incoming_mapper)
+        user_profile.set_result(
+            success=True,
+            active=active, # todo
+            iden=user_profile.id,
+            username=bla,
+            email=bla,
+            details=okta_user
+        )
+    return user_profile
 
 
 def enable_user_command(client, args):
@@ -294,8 +290,8 @@ def main():
             test_module(client)
 
     # Log exceptions
-    except Exception:
-        return_error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
+    except DemistoException as e:
+        return_results(handle_error(e.res))  # todo
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
