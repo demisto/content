@@ -2,7 +2,7 @@ comment: 'Assigns the current Incident to the Demisto user who clicked the butto
 commonfields:
   id: AssignToMeButton
   version: -1
-dockerimage: demisto/python3:3.8.5.10845
+dockerimage: demisto/python3:3.8.6.12176
 enabled: true
 name: AssignToMeButton
 runas: DBotWeakRole
