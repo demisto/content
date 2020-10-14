@@ -1,12 +1,12 @@
-# import demistomock as demisto
-# from CommonServerPython import *
-# from CommonServerUserPython import *
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+from typing import Any, Dict, List, Optional, Union
 
 import json
 import urllib3
 import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
 import enum
 
 # Disable insecure warnings
@@ -15,11 +15,16 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
+# Minimum supported version is:  1.38
+MIN_MAJOR_VERSION = 1
+MIN_MINOR_VERSION = 38
 
 BREACHPOINT_LABEL = 'Demisto Breachpoint'
 CRITICAL_ASSET_LABEL = 'Demisto Critical Asset'
 DEFAULT_TIME_ID = 'timeAgo_days_7'
 TOP_ENTITIES = 5
+PAGE_SIZE = 50
+MAX_PAGES = 10
 
 ''' CLIENT CLASS '''
 
@@ -27,20 +32,20 @@ TOP_ENTITIES = 5
 class Client(BaseClient):
     """Client class to interact with XM Cyber API"""
 
-    def get(self, url_suffix, params = None):
+    def get(self, url_suffix, params=None):
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
             params=params
         )
-    
-    def post(self, url_suffix, params = None):
+
+    def post(self, url_suffix, params=None):
         return self._http_request(
             method='POST',
             url_suffix=url_suffix,
             data=json.dumps(params)
         )
-    
+
     def _paginated(self, method, url_suffix, params, page_size, max_pages, log):
         page, total_pages = 1, 1
         data = []
@@ -48,99 +53,25 @@ class Client(BaseClient):
         while page <= total_pages and page <= max_pages:
             if log:
                 writeLog(f'in {url_suffix} while loop {page} {total_pages}')
-            
+
             params["page"] = page
             res = None
             if method == 'GET':
                 res = self.get(url_suffix, params)
             else:
                 res = self.post(url_suffix, params)
-            
+
             data.extend(res['data'])
             total_pages = res['paging']['totalPages']
             page += 1
 
         return data
 
-    def get_paginated(self, url_suffix, params = {}, page_size = 100, max_pages = 100, log = True):
+    def get_paginated(self, url_suffix, params={}, page_size=PAGE_SIZE, max_pages=MAX_PAGES, log=True):
         return self._paginated("GET", url_suffix, params, page_size, max_pages, log)
-    
-    def post_paginated(self, url_suffix, params = {}, page_size = 100, max_pages = 100, log = True):
+
+    def post_paginated(self, url_suffix, params={}, page_size=PAGE_SIZE, max_pages=MAX_PAGES, log=True):
         return self._paginated("POST", url_suffix, params, page_size, max_pages, log)
-
-    # TODO - remove all this functions
-    def get_entity_report(self, entity_id: str, time_id: str):
-        return self.get('/systemReport/entity', {
-                'entityId': entity_id,
-                'timeId': time_id
-            })
-
-    def get_inbound_paths(self, entity_id: str, time_id):
-        # /api/systemReport/entity/inbound
-        return self.get('/systemReport/entity/inbound', {
-                'entityId': entity_id,
-                'timeId': time_id
-            })
-
-    def get_outbound_paths(self, entity_id: str, time_id):
-        # /api/systemReport/entity/outbound
-        return self.get('/systemReport/entity/outbound', {
-                'entityId': entity_id,
-                'timeId': time_id
-            })
-
-    def get_top_techniques(self, time_id):
-        page = 1
-        total_pages = 1
-        techniques = []
-        while page <= total_pages:
-            demisto.info(f'in while loop {page} {total_pages}')
-            res = self._http_request(
-                method='GET',
-                url_suffix='/systemReport/techniques',
-                params={
-                    'timeId': time_id,
-                    'page': page,
-                    'pageSize': 200
-                }
-            )
-            techniques.extend(res['data'])
-            total_pages = res['paging']['totalPages']
-            page += 1
-        return techniques
-
-    def get_entities_by_label(self, label: str):
-        #is this the right API?
-        #/discoveryRules/matchingSensors/getMatchingSensors
-        raise NotImplemented()
-
-    def unlabel_entities(self, entities: List[str], label: str):
-        # api does not exist
-        raise NotImplemented()
-
-    def label_entities(self, entities: List[str], label: str):
-        # api does not exist
-        raise NotImplemented()
-
-    def search_entities(self, search_string):
-        page = 1
-        total_pages = 1
-        entities = []
-        search_string = f'/{search_string}/i'
-        while page <= total_pages:
-            res = self._http_request(
-                method='GET',
-                url_suffix='/systemReport/entities',
-                params={
-                    'search': search_string,
-                    'page': page,
-                    'pageSize': 200
-                }
-            )
-            entities.extend(res['data'])
-            total_pages = res['paging']['totalPages']
-            page += 1
-        return entities
 
 
 class URLS:
@@ -149,24 +80,26 @@ class URLS:
     Risk_Score = '/systemReport/riskScoreV2'
     Top_Assets_At_Risk = '/systemReport/topAssetsAtRiskV2'
     Top_Choke_Points = '/systemReport/topChokePointsV2'
+    Inbound = '/systemReport/entity/inbound'
+    Outbound = '/systemReport/entity/outbound'
+    System_Report = '/systemReport/entity'
+    Techniques = '/systemReport/techniques'
+
 
 class XM:
-    client = None
 
     def __init__(self, client: Client):
         self.client = client
 
-
     def get_version(self):
         return self.client.get(URLS.Version)
-    
-    
+
     # The function return risk score data for the given timeId
     # return dict:
     #   trend - trend from previous time id
     #   current_grade - current risk score grade (A-F)
     #   current_score - current risk score (0-100)
-    
+
     def risk_score(self, time_id, resolution):
         risk_score_response = self.client.get(URLS.Risk_Score, {
             'timeId': time_id,
@@ -180,7 +113,7 @@ class XM:
             "current_grade": risk_score_stats["grade"],
             "current_score": risk_score_stats["score"]
         }
-    
+
     # This general function return data regarding the entities at a specific timeId
     # Params:
     #   only_assets - return only assets
@@ -197,7 +130,6 @@ class XM:
         }
         return self.client.post_paginated(URLS.Entities, query)
 
-    
     def _top_entities(self, url, time_id, amount_of_results):
         response = self.client.get(url, {
             'timeId': time_id,
@@ -206,15 +138,59 @@ class XM:
 
         return response["data"]["entities"]
 
-    
-    def top_assets_at_risk(self, time_id, amount_of_results = TOP_ENTITIES):
+    def top_assets_at_risk(self, time_id, amount_of_results=TOP_ENTITIES):
         return self._top_entities(URLS.Top_Assets_At_Risk, time_id, amount_of_results)
 
-    
-    def top_choke_points(self, time_id, amount_of_results = TOP_ENTITIES):
+    def top_choke_points(self, time_id, amount_of_results=TOP_ENTITIES):
         return self._top_entities(URLS.Top_Choke_Points, time_id, amount_of_results)
 
+    def get_inbound_paths(self, entity_id: str, time_id: str):
+        return self.client.get(URLS.Inbound, {
+            'entityId': entity_id,
+            'timeId': time_id
+        })
+
+    def get_outbound_paths(self, entity_id: str, time_id):
+        return self.client.get(URLS.Outbound, {
+            'entityId': entity_id,
+            'timeId': time_id
+        })
+
+    def get_entities_by_label(self, label: str):
+        # is this the right API?
+        # /discoveryRules/matchingSensors/getMatchingSensors
+        raise NotImplementedError(label)
+
+    def unlabel_entities(self, entities: List[str], label: str):
+        # api does not exist
+        raise NotImplementedError(entities, label)
+
+    def label_entities(self, entities: List[str], label: str):
+        # api does not exist
+        raise NotImplementedError(entities, label)
+
+    def search_entities(self, search_string):
+        return self.client.get_paginated(URLS.Entities, {
+            'search': f'/{search_string}/i'
+        })
+
+    def get_top_techniques(self, time_id):
+        return self.client.get_paginated(URLS.Techniques, {
+            'timeId': time_id
+        })
+
+    def lookup_entities_by_ip(self, ips):
+        raise NotImplementedError(ips)
+
+    def get_entity_report(self, entity_id: str, time_id: str):
+        return self.client.get(URLS.System_Report, {
+            'entityId': entity_id,
+            'timeId': time_id
+        })
+
+
 ''' HELPER FUNCTIONS '''
+
 
 class LogLevel(enum.Enum):
     Debug = 0,
@@ -222,7 +198,7 @@ class LogLevel(enum.Enum):
     Error = 2,
 
 
-def writeLog(msg, logLevel = LogLevel.Info):
+def writeLog(msg, logLevel=LogLevel.Info):
     if logLevel == LogLevel.Debug:
         demisto.debug(msg)
     elif logLevel == LogLevel.Info or logLevel == LogLevel.Error:
@@ -244,10 +220,10 @@ def create_client():
     }
 
     return Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        base_url=base_url,
+        verify=verify_certificate,
+        headers=headers,
+        proxy=proxy)
 
 
 def escape_ip(ip):
@@ -397,19 +373,20 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
 
 
 def raw_path_to_incident_path(path: Any) -> Any:
-    raise NotImplemented()
+    raise NotImplementedError()
+
 
 ''' COMMAND FUNCTIONS '''
 
 
-def asset_attack_path_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def asset_attack_path_list_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     time_id = args.get('time_id')
     if not time_id:
-        time_id = 'timeAgo_days_7'
-    critical_assets = client.get_critical_assets(time_id)
+        time_id = DEFAULT_TIME_ID
+    critical_assets = xm.get_entities(time_id, True)
     attack_paths = []
     for critical_asset in critical_assets:
-        paths = client.get_inbound_paths(critical_asset['entityId'], time_id)
+        paths = xm.get_inbound_paths(critical_asset['entityId'], time_id)
         for path in paths:
             attack_paths.append(path)
     readable_output = 'loaded list of {0} asset attack paths'.format(len(attack_paths))
@@ -421,11 +398,11 @@ def asset_attack_path_list_command(client: Client, args: Dict[str, Any]) -> Comm
     )
 
 
-def techniques_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def techniques_list_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     time_id = args.get('time_id')
     if not time_id:
         time_id = 'timeAgo_days_7'
-    techniques = client.get_top_techniques(time_id)
+    techniques = xm.get_top_techniques(time_id)
     readable_output = f'loaded list of {len(techniques)} top techniques'
     return CommandResults(
         outputs_prefix='XMCyber.Technique',
@@ -435,14 +412,14 @@ def techniques_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def breachpoint_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def breachpoint_update_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
-    entities = client.lookup_entities_by_ip(ips)
-    client.label_entities(entities, BREACHPOINT_LABEL)
-    labeled_entities = client.get_entities_by_label(BREACHPOINT_LABEL)
-    readable_output = 'The {0} has been updated, there are {1} labeled entities'.format( \
+    entities = xm.lookup_entities_by_ip(ips)
+    xm.label_entities(entities, BREACHPOINT_LABEL)
+    labeled_entities = xm.get_entities_by_label(BREACHPOINT_LABEL)
+    readable_output = 'The {0} has been updated, there are {1} labeled entities'.format(
         BREACHPOINT_LABEL, len(labeled_entities))
     return CommandResults(
         outputs_prefix='XMCyber.Entity',
@@ -452,15 +429,14 @@ def breachpoint_update_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def critical_asset_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def critical_asset_add_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
-    entities = client.lookup_entities_by_ip(ips)
-    client.label_entities(entities, CRITICAL_ASSET_LABEL)
-    labeled_entities = client.get_entities_by_label(CRITICAL_ASSET_LABEL)
-    readable_output = 'The {0} has been updated, there are {1} labeled entities'.format(\
-        CRITICAL_ASSET_LABEL, len(labeled_entities))
+    entities = xm.lookup_entities_by_ip(ips)
+    xm.label_entities(entities, CRITICAL_ASSET_LABEL)
+    labeled_entities = xm.get_entities_by_label(CRITICAL_ASSET_LABEL)
+    readable_output = f'The {CRITICAL_ASSET_LABEL} has been updated, there are {len(labeled_entities)} labeled entities'
     return CommandResults(
         outputs_prefix='XMCyber.Entity',
         outputs_key_field='entityId',
@@ -469,17 +445,17 @@ def critical_asset_add_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def attack_paths_to_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def attack_paths_to_entity_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     time_id = args.get('time_id')
     if not time_id:
         time_id = 'timeAgo_days_7'
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
-    entities = client.lookup_entities_by_ip(ips[0])
+    entities = xm.lookup_entities_by_ip(ips[0])
     attack_paths = []
     for entity in entities:
-        paths = client.get_inbound_paths(entity['agentId'], time_id)
+        paths = xm.get_inbound_paths(entity['agentId'], time_id)
         for path in paths:
             attack_paths.append(raw_path_to_incident_path(path))
     readable_output = 'found {0} attack paths to {1} entities'.format(len(attack_paths), len(entities))
@@ -492,7 +468,7 @@ def attack_paths_to_entity_command(client: Client, args: Dict[str, Any]) -> Comm
     )
 
 
-def attack_complexity_to_ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def attack_complexity_to_ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     time_id = args.get('time_id')
     if not time_id:
         time_id = 'timeAgo_days_7'
@@ -503,7 +479,7 @@ def attack_complexity_to_ip_command(client: Client, args: Dict[str, Any]) -> Com
         address = ips[0]['Address']
     except (AttributeError, TypeError):
         address = ips[0]
-    entities = client.lookup_entities_by_ip(address)
+    entities = xm.lookup_entities_by_ip(address)
     if len(entities) == 0:
         outputs = {
             'EntityIpAddress': address,
@@ -513,7 +489,7 @@ def attack_complexity_to_ip_command(client: Client, args: Dict[str, Any]) -> Com
         readable_output = f'Could not find entity with the IP {address}'
     else:
         entity_id = entities[0]['agentId']
-        report = client.get_entity_report(entity_id, time_id)
+        report = xm.get_entity_report(entity_id, time_id)
         attack_complexity = report['attackComplexity']
         average = attack_complexity['avg']['value']
         level = attack_complexity['avg']['level']
@@ -532,17 +508,17 @@ def attack_complexity_to_ip_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def attack_paths_from_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def attack_paths_from_entity_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     time_id = args.get('time_id')
     if not time_id:
         time_id = 'timeAgo_days_7'
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
-    entities = client.lookup_entities_by_ip(ips)
+    entities = xm.lookup_entities_by_ip(ips)
     attack_paths = []
     for entity in entities:
-        paths = client.get_outbound_paths(entity, time_id)
+        paths = xm.get_outbound_paths(entity, time_id)
         for path in paths:
             attack_paths.append(raw_path_to_incident_path(path))
     readable_output = 'found {0} attack paths from {1} entities'.format(len(attack_paths), len(entities))
@@ -554,7 +530,7 @@ def attack_paths_from_entity_command(client: Client, args: Dict[str, Any]) -> Co
     )
 
 
-def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def entity_get_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     ips = argToList(args.get('ip'))
     names = argToList(args.get('name'))
     entities = []
@@ -564,11 +540,11 @@ def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     for ip in ips:
         demisto.info(f'ip {ip}')
         try:
-            entities.extend(client.search_entities(ip['Address']))
+            entities.extend(xm.search_entities(ip['Address']))
         except AttributeError:
-            entities.extend(client.search_entities(ip))
+            entities.extend(xm.search_entities(ip))
     for name in names:
-        entities.extend(client.search_entities(name))
+        entities.extend(xm.search_entities(name))
     if len(entities) == 0:
         readable_output = f'No entities match the properties IPs "{ips}", Names "{names}"'
     else:
@@ -585,7 +561,7 @@ def entity_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                 'entity_id': entity['entityId'],
                 'name': name,
                 'is_asset': is_asset,
-                'is_choke_point': affected_assets['level']!='none',
+                'is_choke_point': affected_assets['level'] != 'none',
                 'affected_assets': {
                     'value': affected_assets['value'],
                     'level': affected_assets['level']
@@ -614,7 +590,7 @@ def risk_score_trend_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
 def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     demisto.info('Running fetch incidents')
     demisto.debug('@@@@@@@@@@@@@@@@@@@@')
-    outputs = [ { 'entity_id': 'markTest' } ]
+    outputs = [{'entity_id': 'markTest'}]
     return CommandResults(
         outputs_prefix='XMCyber',
         outputs_key_field='entity_id',
@@ -642,19 +618,24 @@ def test_module_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
         major = int(s_version[0])
         minor = int(s_version[1])
         if major < 1 or (major == 1 and minor < 37):
-            return f'Instance version not compatible. {system_version} (found) < 1.37 (required).'
+            raise Exception(f'Instance version not compatible. {system_version} (found) < 1.37 (required).')
 
     except DemistoException as e:
         if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+            raise Exception('Authorization Error: make sure API Key is correctly set')
         else:
             raise e
     except Exception as e:
-        return f'Verification Error: could not load XM Cyber version.\n{e}'
-    return 'ok'
+        raise Exception(f'Verification Error: could not load XM Cyber version.\n{e}')
+    return CommandResults(
+        outputs_prefix='XMCyber.TestModule',
+        outputs_key_field='status',
+        outputs={'status': 'ok'}
+    )
 
 
 def get_assets_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    # Not in used - if will be used, need to update yml file
     outputs = xm.get_entities(DEFAULT_TIME_ID, True)
     return CommandResults(
         outputs_prefix='XMCyber.RiskScore',
@@ -676,7 +657,7 @@ def top_choke_points_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     outputs = xm.top_choke_points(DEFAULT_TIME_ID)
     return CommandResults(
         outputs_prefix='XMCyber.TopChokePoints',
-        outputs_key_field='id',
+        outputs_key_field='entityId',
         outputs=outputs
     )
 
@@ -687,6 +668,21 @@ def get_version_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='system',
         outputs=xm.get_version()
     )
+
+
+def is_xm_version_supported_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    version = xm.get_version()
+    system_version = version["system"]
+    system_version_splitted = system_version.split('.')
+    major = int(system_version_splitted[0])
+    minor = int(system_version_splitted[1])
+    result = {'valid': major >= (MIN_MAJOR_VERSION + 1) or minor >= MIN_MINOR_VERSION}
+    return CommandResults(
+        outputs_prefix='XMCyber.IsVersion',
+        outputs_key_field="valid",
+        outputs=result
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -710,7 +706,7 @@ def main() -> None:
     try:
         client = create_client()
         xm = XM(client)
-        
+
         # commands dict
         # key - command key
         # value - command execution function that get two params:
@@ -727,36 +723,22 @@ def main() -> None:
             "xmcyber-assets": get_assets_command,
             "xmcyber-top-assets-at-risk": top_assets_at_risk_command,
             "xmcyber-top-choke-points": top_choke_points_command,
+            "xmcyber-is-version-supported": is_xm_version_supported_command,
+            "xmcyber-asset-attack-path-list": asset_attack_path_list_command,
+            "xmcyber-breachpoint-update": breachpoint_update_command,
+            "xmcyber-critical-asset-add": critical_asset_add_command,
+            "xmcyber-attack-paths-to-entity": attack_paths_to_entity_command,
+            "xmcyber-attack-complexity-to-ip": attack_complexity_to_ip_command,
+            "xmcyber-techniques-list": techniques_list_command,
+            "xmcyber-attack-paths-from-entity": attack_paths_from_entity_command,
+            "xmcyber-entity-get": entity_get_command
         }
 
         if command in commandsDict:
             return_results(commandsDict[command](xm, args))
         else:
-            if demisto.command() == 'xmcyber-attack-complexity-to-ip':
-                return_results(attack_complexity_to_ip_command(client, demisto.args()))
+            raise Exception("Unsupported command: " + command)
 
-            elif demisto.command() == 'xmcyber-asset-attack-path-list':
-                return_results(asset_attack_path_list_command(client, demisto.args()))
-
-            elif demisto.command() == 'xmcyber-techniques-list':
-                return_results(techniques_list_command(client, demisto.args()))
-
-            elif demisto.command() == 'xmcyber-breachpoint-update':
-                return_results(breachpoint_update_command(client, demisto.args()))
-
-            elif demisto.command() == 'xmcyber-critical-asset-add':
-                return_results(critical_asset_add_command(client, demisto.args()))
-
-            elif demisto.command() == 'xmcyber-attack-paths-to-entity':
-                return_results(attack_paths_to_entity_command(client, demisto.args()))
-
-            elif demisto.command() == 'xmcyber-attack-paths-from-entity':
-                return_results(attack_paths_from_entity_command(client, demisto.args()))
-
-            elif demisto.command() == 'xmcyber-entity-get':
-                return_results(entity_get_command(client, demisto.args()))
-            else:
-                raise Exception("Unsupported command: " + command)
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
