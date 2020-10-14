@@ -45,6 +45,7 @@ args:
   description: If false then the context key will be overwritten. If set to true then the script will append to existing context key
   defaultValue: "false"
 scripttarget: 0
+runas: DBotRole
 runonce: false
 tests:
 - No test

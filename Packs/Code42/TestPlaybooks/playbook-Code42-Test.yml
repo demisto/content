@@ -131,8 +131,6 @@ tasks:
         simple: alert=
       id:
         simple: ${inputs.alert-id}
-      using:
-        simple: ${inputs.instance}
     separatecontext: false
     skipunavailable: false
     task:
@@ -236,8 +234,6 @@ tasks:
         simple: alert=
       id:
         simple: ${inputs.alert-id}
-      using:
-        simple: ${inputs.instance}
     separatecontext: false
     skipunavailable: false
     task:
@@ -343,8 +339,6 @@ tasks:
       note: {}
       username:
         simple: ${inputs.username}
-      using:
-        simple: ${inputs.instance}
     separatecontext: false
     skipunavailable: false
     task:
@@ -448,8 +442,6 @@ tasks:
         simple: departingemployee=
       username:
         simple: ${inputs.username}
-      using:
-        simple: ${inputs.instance}
     separatecontext: false
     skipunavailable: false
     task:
@@ -559,8 +551,6 @@ tasks:
       results:
         simple: "100"
       username: {}
-      using:
-        simple: ${inputs.instance}
     separatecontext: false
     skipunavailable: false
     task:
