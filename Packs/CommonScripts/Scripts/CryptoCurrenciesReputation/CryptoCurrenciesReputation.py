@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 BITCOIN = 'bitcoin'
 
+
 def main():
     """
     Reputation scripts are getting triggered after formatting scripts, hence the `input` argument would
