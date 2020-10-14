@@ -80,13 +80,13 @@ def test_handle_yml__should_delete():
 def test_edit_playbooks_directory(tmp_path):
     """
     Given
-    - A path to a tpb that should stay and its toversion field should change.
+    - A path to a tpb that should stay and its toversion field should change to 4.1.9.
 
     When
     - Running edit_playbooks_directory on it.
 
     Then
-    - Tpb should be updated with a new toversion field
+    - Tpb should be updated with a new toversion field.
     """
     tmp_tpb = shutil.copyfile(TEST_TPB, f"{tmp_path}/tpb.yml")
 
