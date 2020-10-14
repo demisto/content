@@ -23,7 +23,7 @@ USER_IS_DIABLED_ERROR = "E0000007"
 '''CLIENT CLASS'''
 
 
-class Client:
+class Client(BaseClient):
     """
     Okta IAM Client class that implements logic to authenticate with Okta.
 
@@ -38,89 +38,65 @@ class Client:
         user_id (str): The employee's Okta user ID.
     """
 
-    def __init__(self, base_url, verify=True, token=None, user_profile=None):
+    def __init__(self, base_url: str, verify: bool, token: str, proxy: bool):
         self.base_url = base_url
         self.verify = verify
-        self.headers = {
+        headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Authorization': f'SSWS {token}'
         }
+        super().__init__(base_url=base_url,
+                         verify=verify,
+                         proxy=proxy,
+                         headers=headers,
+                         ok_codes=(200,))
 
-        self.iam = IAMCommandHelper(INCOMING_MAPPER, OUTGOING_MAPPER, user_profile)
-        self.app_data = self.iam.map_user_profile_to_app_data()
-        self.res_json = {}
-        self.user_not_found = False
-        self.user_id = self.get_user_id()
-
-    def http_request(self, method, url_suffix, params=None, data=None):
-        full_url = urljoin(self.base_url, url_suffix)
-        return requests.request(
-            method,
-            full_url,
-            verify=self.verify,
-            headers=self.headers,
-            params=params,
-            json=data
-        )
-
-    def get_user_id(self):
-        username = self.app_data.get('login')
-        if not username:
-            return None
-
+    def get_user_id(self, email):
         uri = 'users'
         query_params = {
-            'filter': encode_string_results(f'profile.login eq "{username}"')
+            'filter': encode_string_results(f'profile.login eq "{email}"')
         }
 
-        res = self.http_request(
+        res = self._http_request(
             method='GET',
             url_suffix=uri,
             params=query_params
-
         )
 
-        self.res_json = res.json()
+        if res and len(res) == 1:
+            user_id = res[0].get('id')
+            return encode_string_results(user_id)
 
-        if res.status_code == 200:
-            if self.res_json and len(self.res_json) == 1:
-                user_id = self.res_json[0].get('id')
-                return encode_string_results(user_id)
-            else:
-                self.user_not_found = True
         return None
 
-    def deactivate_user(self):
-        uri = f'users/{self.user_id}/lifecycle/deactivate'
-        res = self.http_request(
+    def deactivate_user(self, user_id):
+        uri = f'users/{user_id}/lifecycle/deactivate'
+        res = self._http_request(
             method="POST",
             url_suffix=uri
         )
-        self.res_json = res.json()
-        return res.status_code == 200
+        return res
 
-    def activate_user(self):
-        uri = f'users/{self.user_id}/lifecycle/activate'
-        res = self.http_request(
+    def activate_user(self, user_id):
+        uri = f'users/{user_id}/lifecycle/activate'
+        res = self._http_request(
             method="POST",
             url_suffix=uri
         )
-        self.res_json = res.json()
-        return res.status_code == 200
+        return res
 
-    def get_user(self):
-        uri = f'users/{self.user_id}'
-        res = self.http_request(
+    def get_user(self, user_id):
+        uri = f'users/{user_id}'
+        res = self._http_request(
             method='GET',
             url_suffix=uri
         )
-        self.res_json = res.json()
-        return res.status_code == 200
+        return res
 
-    def create_user(self):
+    def create_user(self, user_data):
         body = {
-            'profile': self.app_data,
+            'profile': user_data,
             'groupIds': [],
             'credentials': {}
         }
@@ -129,28 +105,26 @@ class Client:
             'activate': 'true',
             'provider': 'true'
         }
-        res = self.http_request(
+        res = self._http_request(
             method='POST',
             url_suffix=uri,
             data=body,
             params=query_params
         )
-        self.res_json = res.json()
-        return res.status_code == 200
+        return res
 
-    def update_user(self):
+    def update_user(self, user_id, user_data):
         body = {
-            "profile": self.app_data,
+            "profile": user_data,
             "credentials": {}
         }
-        uri = f"users/{self.user_id}"
-        res = self.http_request(
+        uri = f"users/{user_id}"
+        res = self._http_request(
             method='POST',
             url_suffix=uri,
             data=body
         )
-        self.res_json = res.json()
-        return res.status_code == 200
+        return res
 
     def iam_command_failure(self):
         if str(self.res_json.get('errorCode')) == USER_IS_DIABLED_ERROR:
@@ -204,6 +178,23 @@ def test_module(client):
         raise Exception(f'Failed: Error Code: {res.status_code}. Error Response: {res.json()}')
 
 
+def get_user_command(client, args, incoming_mapper):
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    user_id = client.get_user_id(user_profile.)
+    if client.user_id:
+        success = client.get_user()
+        if success:
+            client.iam_command_success()
+        else:
+            client.iam_command_failure()
+
+    else:
+        if client.user_not_found:
+            return_outputs('User does not exist.')
+        else:
+            client.iam_command_failure()
+
+
 def enable_user_command(client, args):
     if demisto.params().get("enable-disable-user-enabled"):
         if client.user_id:
@@ -251,21 +242,6 @@ def create_user_command(client, args):
             client.iam_command_failure()
 
 
-def get_user_command(client, args):
-    if client.user_id:
-        success = client.get_user()
-        if success:
-            client.iam_command_success()
-        else:
-            client.iam_command_failure()
-
-    else:
-        if client.user_not_found:
-            return_outputs('User does not exist.')
-        else:
-            client.iam_command_failure()
-
-
 def update_user_command(client, args):
     if demisto.params().get("update-user-enabled"):
         if client.user_id:
@@ -290,29 +266,30 @@ def main():
     params = demisto.params()
     base_url = urljoin(params['url'].strip('/'), '/api/v1/')
     token = params.get('apitoken')
+    incoming_mapper = params.get('incoming_mapper')
     verify_certificate = not params.get('insecure', False)
     command = demisto.command()
     args = demisto.args()
 
     LOG(f'Command being called is {command}')
 
-    crud_commands = {
-        'get-user': get_user_command,
-        'create-user': create_user_command,
-        'update-user': update_user_command,
-        'disable-user': disable_user_command,
-        'enable-user': enable_user_command
-    }
-
     client = Client(
         base_url=base_url,
         verify=verify_certificate,
-        token=token,
-        user_profile=args.get('user-profile'))
+        token=token
+    )
 
     try:
-        if command in crud_commands:
-            crud_commands[command](client, args)
+        if command == 'get-user':
+            return_results(get_user_command(client, args, incoming_mapper))
+        elif command == 'create-user':
+            return_results(get_user_command(client, args, incoming_mapper))
+        elif command == 'update-user':
+            return_results(get_user_command(client, args, incoming_mapper))
+        elif command == 'disable-user':
+            return_results(get_user_command(client, args, incoming_mapper))
+        elif command == 'enable-user':
+            return_results(get_user_command(client, args, incoming_mapper))
         elif command == 'test-module':
             test_module(client)
 
