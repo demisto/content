@@ -388,7 +388,7 @@ references:
 
   upload_entities_to_cortex_xsoar: &upload_entities_to_cortex_xsoar
     run:
-        name: Upload integration to Cortex XSOAR
+        name: Upload entities to Cortex XSOAR
         command: |
           demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
           demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
@@ -1060,12 +1060,12 @@ jobs:
           command: python3 Tests/unlock_entity.py integration HelloWorld
       - *upload_entities_to_cortex_xsoar
       - run:
-          name: Download integration from Cortex XSOAR
+          name: Download entities from Cortex XSOAR
           command: |
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
       - run:
-          name: Format the integration
+          name: Format the entities
           command: |
             { # try
             yes | demisto-sdk format -i Packs/HelloWorld/ -nv -ud
@@ -1075,7 +1075,6 @@ jobs:
             }
       - run:
           name: Run validate
-          when: on_success
           command: demisto-sdk validate -i Packs/HelloWorld/
       - run:
           name: Run lint
