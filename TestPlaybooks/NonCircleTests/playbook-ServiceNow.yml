@@ -1,5 +1,6 @@
 id: playbook-ServiceNow
 version: -1
+fromversion: 5.0.0
 name: playbook-ServiceNow
 starttaskid: "0"
 tasks:

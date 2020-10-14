@@ -74,14 +74,39 @@ def test_fetch_incidents(mocker):
     - mock the Client's send_request.
     Then
     - run the fetch incidents command using the Client
-    Validate The length of the results.
+    Validate the length of the results.
+    Validate the incident name
+    Validate that the severity is low (1)
     """
     mocker.patch.object(Client, '_generate_token')
     client = Client('tenant', 'server_url', 'username', 'password', 'verify', 'proxies')
     mocker.patch.object(client, 'list_incidents_request', return_value=RESPONSE_FETCH_INCIDENTS)
-    incidents = fetch_incidents(client, fetch_time='1 hour', incident_status='open', max_fetch='50', last_run={})
+    incidents = fetch_incidents(client, fetch_time='1 hour', incident_status='open', default_severity='',
+                                max_fetch='50', last_run={})
     assert len(incidents) == 1
     assert incidents[0].get('name') == 'Emails with large File attachments: 100107'
+    assert incidents[0].get('severity') == 1
+
+
+def test_fetch_incidents_with_default_severity(mocker):
+    """Unit test
+    Given
+    - fetch incidents command
+    - command args
+    - command raw response
+    When
+    - mock the Client's send_request.
+    Then
+    - run the fetch incidents command using the Client
+    Validate that the severity is high (3)
+    """
+    mocker.patch.object(Client, '_generate_token')
+    client = Client('tenant', 'server_url', 'username', 'password', 'verify', 'proxies')
+    mocker.patch.object(client, 'list_incidents_request', return_value=RESPONSE_FETCH_INCIDENTS)
+    incidents = fetch_incidents(client, fetch_time='1 hour', incident_status='open', default_severity='High',
+                                max_fetch='50', last_run={})
+    assert len(incidents) == 1
+    assert incidents[0].get('severity') == 3
 
 
 def test_fetch_incidents_is_already_fetched(mocker):
@@ -100,7 +125,8 @@ def test_fetch_incidents_is_already_fetched(mocker):
     mocker.patch.object(Client, '_generate_token')
     client = Client('tenant', 'server_url', 'username', 'password', 'verify', 'proxies')
     mocker.patch.object(client, 'list_incidents_request', return_value=RESPONSE_FETCH_INCIDENTS)
-    incidents = fetch_incidents(client, fetch_time='1 hour', incident_status='open', max_fetch='50',
+    incidents = fetch_incidents(client, fetch_time='1 hour', incident_status='open', default_severity='',
+                                max_fetch='50',
                                 last_run={'already_fetched': ['100107'], 'time': "2020-06-07T08:32:41.679579Z"})
     assert len(incidents) == 0
 

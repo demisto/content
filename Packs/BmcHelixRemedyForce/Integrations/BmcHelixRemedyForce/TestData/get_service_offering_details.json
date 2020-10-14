@@ -1,0 +1,22 @@
+{
+  "totalSize": 2,
+  "done": true,
+  "records": [
+    {
+      "attributes": {
+        "type": "BMCServiceDesk__BMC_BaseElement__c",
+        "url": "/services/data/v48.0/sobjects/BMCServiceDesk__BMC_BaseElement__c/a0K2x000000GiMUEA0"
+      },
+      "Id": "a0K2x000000GiMUEA0",
+      "Name": "iPhone 5 - 32GB"
+    },
+    {
+      "attributes": {
+        "type": "BMCServiceDesk__BMC_BaseElement__c",
+        "url": "/services/data/v48.0/sobjects/BMCServiceDesk__BMC_BaseElement__c/a0K2x000000GiMVEA0"
+      },
+      "Id": "a0K2x000000GiMVEA0",
+      "Name": "Hewitt"
+    }
+  ]
+}

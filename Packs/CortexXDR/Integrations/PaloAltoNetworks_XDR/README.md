@@ -35,7 +35,7 @@ To sync incidents between Demisto and Cortex XDR, you should use the **XDRSyncSc
 
 ## Configuration
 ---
-You need to collect several pieces of information in order to configure the integration on Demisto.
+You need to collect several pieces of information in order to configure the integration on Cortex XSOAR.
 
 #### Generate an API Key and API Key ID
 1. In your Cortex XDR platform, go to **Settings**.
@@ -58,9 +58,15 @@ You need to collect several pieces of information in order to configure the inte
     * __Server URL (copy URL from XDR - click ? to see more info.)__
     * __API Key ID__
     * __API Key__
+    * __Maximum number of incidents per fetch__
+    * __First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
+    * __HTTP Timeout__ (default is 120 seconds)
+    * __Fetch incident alerts and artifacts__
+    * __First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
+    * __Incidend Mirroring Direction__
+    * __Sync Incident Owners__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
-    * __First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
@@ -86,6 +92,43 @@ manual_severity:low
 manual_description:null
 xdr_url:https://1111.paloaltonetworks.com/incident-view/31
 ```
+
+* Note: By checking the `Fetch incident alerts and artifacts` integration configuration parameter - fetched incidents will include additional data.
+
+## XDR Incident Mirroring
+**Note this feature is available from Cortex XSOAR version 6.0.0**
+
+You can enable incident mirroring between Cortex XSOAR incidents and Cortex XDR incidents.
+To setup the mirroring follow these instructions:
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for Cortex XDR - IR and select your integration instance.
+3. Enable `Fetches incidents`.
+4. In the `Incident Mirroring Direction` integration parameter, select in which direction should incidents be mirrored:
+  * Incoming - Any changes in XDR incidents will be reflected in XSOAR incidents.
+  * Outgoing - Any changes in XSOAR incidents will be reflected in XDR incidents.
+  * Both - Changes in XSOAR and XDR incidents will be reflected in both directions.
+  * None - Choose this to turn off incident mirroring.
+5. Optional: Check the `Sync Incident Owners` integration parameter to sync the incident owners in both XDR and XSOAR.
+  * Note: This feature will only work if the same users are registered both in Cortex XSOAR and Cortex XDR.
+6. Newly fetched incidents will be mirrored in the chosen direction.
+  * Note: this will not effect existing incidents.
+
+### XDR Mirroring Notes, limitations and Troubleshooting
+
+* While you can mirror changes in incident fields both in and out in each incident, you can only mirror in a single direction at a time. For example:
+  If we have an incident with two fields (A and B) in XDR and XSOAR while *Incoming And Outgoing* mirroring is selected: 
+   * I can mirror field A from XDR to XSOAR and field B from XSOAR to XDR.
+   * I cannot mirror changes from field A in both directions.
+   
+  Initially all fields are mirrored in from XDR to XSOAR. Once they are changed in XSOAR, they can only be mirrored out.
+* **Do not use the `XDRSyncScript` automation nor any playbook that uses this automation** 
+  (e.g `Cortex XDR Incident Sync` or `Cortex XDR incident handling v2`), as it impairs the mirroring functionality.
+
+* When migrating an existing instance to the mirroring feature, or in case the mirroring does not work as expected, make sure that:
+   * The default playbook of the `Cortex XDR Incident` incident type is not `Cortex XDR Incident Sync`, change it to a 
+     different playbook that does not use `XDRSyncScript`.
+   * The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
+
 ## Commands
 ---
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
@@ -145,12 +188,9 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | PaloAltoNetworksXDR.Incident.alert_count | number | Total number of alerts in the incident. | 
 | PaloAltoNetworksXDR.Incident.med_severity_alert_count | number | Number of alerts with the severity MEDIUM. | 
 | PaloAltoNetworksXDR.Incident.user_count | number | Number of users involved in the incident. | 
-| PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident
-"low","medium","high"
- | 
+| PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Can be "low", "medium", or "high". | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Can be "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive" or "resolved_other"
- | 
+| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Can be "new", "under_investigation", "resolved_threat_handled", "resolved_known_issue", "resolved_duplicate", "resolved_false_positive", or "resolved_other". | 
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
 | PaloAltoNetworksXDR.Incident.notes | String | Comments entered by the user regarding the incident. | 
@@ -1338,3 +1378,5 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 | Audit | XDR Agent policy updated on aaaaa.compute.internal |  | ea303670c76e4ad09600c8b346f7c804 | aaaaa.compute.internal |  | 1579282965742.36 | Success | Policy Update | 1579280769141.43 | 7.0.0.1915 | Policy |
 
 
+## Troubleshooting
+ - In case you encounter ReadTimeoutError, we recommend increasing the HTTP request timeout by setting it in the **HTTP Timeout** integration parameter.

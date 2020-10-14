@@ -3,3 +3,6 @@ ignore=BA101
 
 [file:playbook-Carbon_black_Protection_Rapid_IOC_Hunting.yml]
 ignore=BA101
+
+[file:CarbonBlackProtect.yml]
+ignore=IN126

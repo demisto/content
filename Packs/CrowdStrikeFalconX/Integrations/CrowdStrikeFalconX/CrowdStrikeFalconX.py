@@ -768,7 +768,7 @@ def download_ioc_command(
     try:
         response = client.download_ioc(id, name, accept_encoding)
     except Exception as a:
-        print(a)
+        demisto.debug(f'Download ioc exception {a}')
     entry_context = {'csfalconx.resource(val.id === obj.id)': [response]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", response), entry_context, [response]

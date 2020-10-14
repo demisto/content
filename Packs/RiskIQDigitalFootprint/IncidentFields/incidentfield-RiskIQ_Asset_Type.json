@@ -1,0 +1,41 @@
+{
+ "id": "incident_riskiqassettype",
+ "version": -1,
+ "modified": "2020-07-13T01:44:23.599926005+05:30",
+ "name": "RiskIQ Asset Type",
+ "ownerOnly": false,
+ "description": "The type of the asset.",
+ "cliName": "riskiqassettype",
+ "type": "singleSelect",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": [
+  "Domain",
+  "Host",
+  "IP Address",
+  "IP Block",
+  "ASN",
+  "Page",
+  "SSL Cert",
+  "Contact"
+ ],
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "RiskIQ Asset Management"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}

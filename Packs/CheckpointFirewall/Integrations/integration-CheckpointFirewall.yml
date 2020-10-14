@@ -33,12 +33,16 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     //GLOBALS//
+
     var SERVER = params.server.replace(/[\/]+$/, '') + ':' + params.port + '/web_api/';
+
     var SESSION_ID;
 
+
     //DICTIONARIES//
+
     var entityDict = {
         CheckpointFWRule: {
             'name' :                'Name',
@@ -100,14 +104,18 @@ script:
     };
 
 
+
     //HELPERS//
+
     function extend(obj, src) {
         Object.keys(src).forEach(function(key) { obj[key] = src[key]; });
         return obj;
     }
 
 
+
     //returns single object withing entity (i.e. File[0])
+
     function jsonToEntityObject(origObj, newKeys) {
         //log("func started");
         var ret = {};
@@ -136,7 +144,9 @@ script:
     }
 
 
+
     //returns entire entity array (i.e. File)
+
     function jsonToEntity(origObj, newKeys) {
         var j;
         var ret;
@@ -152,6 +162,7 @@ script:
             return ret;
         }
     }
+
 
 
     function prettify_show_hosts(hosts){
@@ -173,6 +184,7 @@ script:
         }
         return pretty_hosts;
     }
+
 
 
     function prettify_rule_data(rule_data) {
@@ -220,6 +232,7 @@ script:
     }
 
 
+
     function prettify_rule_base(rule_base) {
         var pretty_rule_base = [];
         for (i = 0; i < rule_base.length; i++) {
@@ -250,6 +263,7 @@ script:
     }
 
 
+
     function sendRequest(cmdURL, body, cmdHeaders) {
         var headers = cmdHeaders? cmdHeaders : {'content-type': ['application/json'], 'X-chkp-sid' : [SESSION_ID]};
         var res = http(
@@ -269,6 +283,7 @@ script:
     }
 
 
+
     function login() {
         var res = sendRequest('login', JSON.stringify({'user':params.credentials.identifier,'password':params.credentials.password}), {'content-type': ['application/json']});
         try {
@@ -278,6 +293,7 @@ script:
             throw 'Login failed. Answer from Checkpoint is: ' + JSON.stringify(res.Body);
         }
     }
+
 
 
     function logout() {
@@ -294,11 +310,14 @@ script:
     }
 
 
+
     //COMMANDS//
+
     function add_host() {
         sendRequest('add-host', JSON.stringify({name:args.ip, 'ip-address':args.ip}));
         sendRequest('publish', '{}');
     }
+
 
 
     function block_ip() {
@@ -357,6 +376,7 @@ script:
     }
 
 
+
     function show_hosts() {
         var context = {};
         var res;
@@ -380,6 +400,7 @@ script:
     }
 
 
+
     function task_status() {
         var result = sendRequest('show-task', JSON.stringify({'task-id':args.task_id}));
         var res =  JSON.parse(result.Body);
@@ -395,6 +416,7 @@ script:
             EntryContext: context
         };
     }
+
 
 
     function set_rule() {
@@ -429,6 +451,7 @@ script:
     }
 
 
+
     function delete_rule() {
         var res;
         if(args.uid || args.name || args.rule_number){
@@ -449,6 +472,7 @@ script:
     }
 
 
+
     function show_access_rule_base() {
         var result = sendRequest('show-access-rulebase', JSON.stringify({name:args.name}));
         var res = JSON.parse(result.Body);
@@ -464,6 +488,7 @@ script:
     }
 
 
+
     function checkpoint() {
         var res;
         var cmd = args.command;
@@ -476,9 +501,13 @@ script:
         return JSON.parse(res.Body);
     }
 
+
     //EXECUTION//
+
     var answer;
+
     login();
+
     switch (command) {
         case 'test-module':
             show_hosts();
@@ -506,7 +535,9 @@ script:
            answer = checkpoint();
             break;
     }
+
     logout();
+
     return answer;
   type: javascript
   commands:
@@ -528,9 +559,7 @@ script:
       description: Type of the object
       type: string
     - contextPath: CheckpointFWRule.Action
-      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
-        depends on the details-level field of the request. This table shows the level
-        of detail shown when details-level is set to standard
+      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.ActionSetting
       description: Action settings
@@ -539,9 +568,7 @@ script:
       description: Custom fields
       type: string
     - contextPath: CheckpointFWRule.Data
-      description: How much details are returned depends on the details-level field
-        of the request. This table shows the level of detail shown when details-level
-        is set to standard
+      description: How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.Data.Name
       description: Object name. Should be unique in domain.
@@ -562,9 +589,7 @@ script:
       description: True if negate is set for data
       type: string
     - contextPath: CheckpointFWRule.Destination
-      description: Collection of Network objects identified by the name or UID. How
-        much details are returned depends on the details-level field of the request.
-        This table shows the level of detail shown when details-level is set to standard
+      description: Collection of Network objects identified by the name or UID. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.DestinationNegate
       description: True if negate is set for destination.
@@ -627,9 +652,7 @@ script:
       description: Type of the object
       type: string
     - contextPath: CheckpointFWRule.Action
-      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
-        depends on the details-level field of the request. This table shows the level
-        of detail shown when details-level is set to standard
+      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.ActionSetting
       description: Action settings
@@ -638,9 +661,7 @@ script:
       description: Custom fields
       type: string
     - contextPath: CheckpointFWRule.Data
-      description: How much details are returned depends on the details-level field
-        of the request. This table shows the level of detail shown when details-level
-        is set  to standard
+      description: How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set  to standard
       type: string
     - contextPath: CheckpointFWRule.Data.Name
       description: Object name. Should be unique in domain
@@ -661,9 +682,7 @@ script:
       description: True if negate is set for data
       type: string
     - contextPath: CheckpointFWRule.Destination
-      description: Collection of Network objects identified by the name or UID. How
-        much details are returned depends on the details-level field of the request.
-        This table shows the level of detail shown when details-level is set to standard
+      description: Collection of Network objects identified by the name or UID. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.DestinationNegate
       description: True if negate is set for destination
@@ -701,8 +720,7 @@ script:
     - contextPath: CheckpointFWRule.Hits.Value
       description: Value of hits
       type: string
-    description: Set attributes of an access rule object configured in Checkpoint
-      FW
+    description: Set attributes of an access rule object configured in Checkpoint FW
   - name: checkpoint-task-status
     arguments:
     - name: task_id
@@ -731,8 +749,7 @@ script:
       description: Domain type
       type: string
     - contextPath: CheckpointFWTask.LastUpdateTime
-      description: Last update date and time represented in international ISO 8601
-        format
+      description: Last update date and time represented in international ISO 8601 format
       type: string
     - contextPath: CheckpointFWTask.MetaInfo.CreationTime
       description: Object creation time
@@ -747,8 +764,7 @@ script:
       description: Object last modification time
       type: string
     - contextPath: CheckpointFWTask.MetaInfo.LockStatus
-      description: Object lock state. It's not allowed to edit objects locked by other
-        session.
+      description: Object lock state. It's not allowed to edit objects locked by other session.
       type: string
     - contextPath: CheckpointFWTask.MetaInfo.ValidationStatus
       description: Object validation state - ok, info, warning, error
@@ -760,8 +776,7 @@ script:
       description: Read only
       type: string
     - contextPath: CheckpointFWTask.StartTime
-      description: Start time date and time represented in international ISO 8601
-        format.
+      description: Start time date and time represented in international ISO 8601 format.
       type: string
     - contextPath: CheckpointFWTask.Status
       description: Task status
@@ -770,14 +785,10 @@ script:
       description: Is suppressed
       type: string
     - contextPath: CheckpointFWTask.Tags
-      description: Collection of tag objects identified by the name or UID. How much
-        details are returned depends on the details-level field of the request. This
-        table shows the level of detail shown when details-level is set to standard
+      description: Collection of tag objects identified by the name or UID. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWTask.Details
-      description: Task details. How much details are returned depends on the details-level
-        field of the request. This table shows the level of detail shown when details-level
-        is set to standard
+      description: Task details. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWTask.ID
       description: Asynchronous task unique identifier
@@ -832,8 +843,7 @@ script:
       - to
       - from
       - both
-      description: Whether to block traffic "to" or "from" the IPs, or "both". Default     is
-        "both".
+      description: Whether to block traffic "to" or "from" the IPs, or "both". Default     is "both".
     - name: rulename
       required: false
       description: Base name for added rules inside checkpoint db
@@ -852,9 +862,7 @@ script:
       description: Type of the object
       type: string
     - contextPath: CheckpointFWRule.Action
-      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
-        depends on the details-level field of the request. This table shows the level
-        of detail shown when details-level is set to standard
+      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.ActionSetting
       description: Action settings
@@ -863,9 +871,7 @@ script:
       description: Custom fields
       type: string
     - contextPath: CheckpointFWRule.Data
-      description: How much details are returned depends on the details-level field
-        of the request. This table shows the level of detail shown when details-level
-        is set to standard
+      description: How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.Data.Name
       description: Object name. Should be unique in domain
@@ -886,9 +892,7 @@ script:
       description: True if negate is set for data
       type: string
     - contextPath: CheckpointFWRule.Destination
-      description: Collection of Network objects identified by the name or UID. How
-        much details are returned depends on the details-level field of the request.
-        This table shows the level of detail shown when details-level is set to standard
+      description: Collection of Network objects identified by the name or UID. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.DestinationNegate
       description: True if negate is set for destination
@@ -929,8 +933,7 @@ script:
     description: Block one or more IP addresses using Checkpoint Firewall
   - name: checkpoint
     arguments: []
-    description: Use Check Point's Management API (requires management server R80
-      or later). Specifying 'command'=<API command> is mandatory
+    description: Use Check Point's Management API (requires management server R80 or later). Specifying 'command'=<API command> is mandatory
   - name: checkpoint-delete-rule
     arguments:
     - name: uid
@@ -944,4 +947,5 @@ script:
     description: Delete rule from firewall
   runonce: false
 tests:
-- CheckpointFW-test
+- No tests - deprecated
+fromversion: 5.0.0

@@ -1,0 +1,37 @@
+args:
+- default: false
+  defaultValue: ${incident.attachment}
+  description: Attachments
+  isArray: true
+  name: attachments
+  required: false
+  secret: false
+- default: false
+  description: Files
+  isArray: false
+  name: files
+  required: false
+  secret: false
+comment: |-
+  Preprocessing script for email communication layout.
+  This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".
+
+  For more information about the preprocessing rules, refer to: https://demisto.developers.paloaltonetworks.com/docs/incidents/incident-pre-processing
+commonfields:
+  id: PreprocessEmail
+  version: -1
+enabled: false
+name: PreprocessEmail
+script: '-'
+subtype: python3
+system: false
+tags:
+- email
+- preProcessing
+timeout: '0'
+type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.8.5.10845
+runas: DBotRole

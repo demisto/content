@@ -2,10 +2,12 @@ commonfields:
   id: CPShowAccessRulebase
   version: -1
 name: CPShowAccessRulebase
-script: |2-
+script: >2-
 
   dArgs = {'command': 'show-access-rulebase'}
+
   uid = demisto.get(demisto.args(),'uid')
+
   if uid:
       dArgs['uid'] = uid
   else:
@@ -30,7 +32,7 @@ type: python
 subtype: python2
 tags:
 - checkpoint
-comment: Show items in an access rulebase configured in Checkpoint FW.
+comment: Deprecated. Show items in an access rulebase configured in Checkpoint FW.
 system: true
 deprecated: true
 args:
@@ -44,3 +46,4 @@ dependson:
   must:
   - checkpoint
 timeout: 0s
+fromversion: 5.0.0

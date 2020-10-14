@@ -2,13 +2,19 @@ commonfields:
   id: ContextGetHashes
   version: -1
 name: ContextGetHashes
-script: |+
+script: >+
   var hash = args.hash;
+
   var flat = {};
+
   var res = [];
+
   var currentValue;
+
   flattenFields(invContext,undefined,flat);
+
   keysArr = Object.keys(flat);
+
   for (var i = 0; i < keysArr.length; i++) {
       currentValue=flat[keysArr[i]];
       if (hashRegex.test(currentValue) && res.indexOf(currentValue) === -1) {
@@ -37,10 +43,13 @@ script: |+
           }
       }
   }
+
   var md = '### Hashes (' + hash + ') in context\n';
+
   for (var i = 0; i<res.length; i++) {
       md += '- ' + res[i] + '\n';
   }
+
   return {
           Type: entryTypes.note,
           Contents: res,
@@ -63,3 +72,4 @@ args:
   description: Type of hash to get (MD5,SHA1,SHA256,all)
   defaultValue: all
 scripttarget: 0
+fromversion: 5.0.0

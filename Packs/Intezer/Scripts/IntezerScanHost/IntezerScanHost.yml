@@ -33,4 +33,5 @@ timeout: 900ns
 runonce: false
 runas: DBotWeakRole
 tests:
-  - no test (Impossible to mock test)
+- no test (Impossible to mock test)
+fromversion: 5.0.0

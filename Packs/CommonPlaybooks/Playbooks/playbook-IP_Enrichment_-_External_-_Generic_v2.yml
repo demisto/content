@@ -1,7 +1,7 @@
 id: IP Enrichment - External - Generic v2
 version: -1
 name: IP Enrichment - External - Generic v2
-fromversion: 4.1.0
+fromversion: 5.0.0
 description: |-
   Enrich IP addresses using one or more integrations.
 
@@ -156,8 +156,7 @@ tasks:
       id: 6b8d857a-6012-41ac-8133-999741963259
       version: -1
       name: Are there any IP addresses?
-      description: Determine whether the playbook's input contains at least one IP
-        address.
+      description: Determine whether the playbook's input contains at least one IP address.
       type: condition
       iscommand: false
       brand: ""
@@ -193,9 +192,7 @@ tasks:
       id: 583bdb15-2ba1-4818-8040-960105e9c247
       version: -1
       name: Determine whether the IP address is internal or external
-      description: "Checks if the IP address is in the internal IP address ranges.\nIf
-        internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the
-        \"InRange\" attribute to \"no\". "
+      description: "Checks if the IP address is in the internal IP address ranges.\nIf internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the \"InRange\" attribute to \"no\". "
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -352,8 +349,7 @@ tasks:
       id: 0df4420b-8119-4731-8cb3-4745fd044913
       version: -1
       name: Is VirusTotal Private API enabled?
-      description: Checks if there is an active instance of the VirusTotal Private
-        API integration enabled.
+      description: Checks if there is an active instance of the VirusTotal Private API integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -510,8 +506,7 @@ tasks:
       id: bfd335eb-f565-4abd-87d2-6299336bc89b
       version: -1
       name: Is ThreatCrowd enabled?
-      description: Checks if there is an active instance of the ThreatCrowd integration
-        enabled.
+      description: Checks if there is an active instance of the ThreatCrowd integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -642,11 +637,7 @@ inputs:
   value:
     simple: inputs.InternalRange
   required: false
-  description: 'A CSV list of IP address ranges (in CIDR notation). Use this list
-    to check if an IP address is found within a set of IP address ranges. For example:
-    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
-    will use default list provided in the IsIPInRanges script (the known IPv4 private
-    address ranges).'
+  description: 'A CSV list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
 - key: ResolveIP
   value:
     complex:
@@ -677,4 +668,4 @@ outputs:
   description: Endpoint domain name.
   type: string
 tests:
-  - IP Enrichment - Generic v2 - Test
+- IP Enrichment - Generic v2 - Test

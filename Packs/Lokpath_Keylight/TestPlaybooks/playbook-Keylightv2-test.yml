@@ -356,8 +356,7 @@ tasks:
       id: 802e4458-c7d7-4400-852a-1b5a96c477cc
       version: -1
       name: Get field list
-      description: Retrieves detail field listing for a component specified by its
-        ID.
+      description: Retrieves detail field listing for a component specified by its ID.
       script: Lockpath KeyLight v2|||kl-get-field-list
       type: regular
       iscommand: true
@@ -952,3 +951,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

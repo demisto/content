@@ -2,8 +2,8 @@ commonfields:
   id: TruSTAR
   version: -1
 name: TruSTAR
-category: Data Enrichment & Threat Intelligence 
-description: Deprecated - We recommend using TruSTAR v2 instead.
+category: Data Enrichment & Threat Intelligence
+description: Deprecated. We recommend using TruSTAR v2 instead.
 display: TruSTAR (Deprecated)
 deprecated: true
 configuration:
@@ -32,26 +32,22 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: File Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider
-    the file malicious
+- display: File Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the file malicious
   name: file_threshold
   defaultvalue: MEDIUM
   type: 0
   required: false
-- display: URL Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider
-    the URL malicious
+- display: URL Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the URL malicious
   name: url_threshold
   defaultvalue: MEDIUM
   type: 0
   required: false
-- display: IP Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider
-    the IP malicious
+- display: IP Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the IP malicious
   name: ip_threshold
   defaultvalue: MEDIUM
   type: 0
   required: false
-- display: Domain Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to
-    consider the domain malicious
+- display: Domain Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the domain malicious
   name: domain_threshold
   defaultvalue: MEDIUM
   type: 0
@@ -65,12 +61,9 @@ script:
     - name: indicators
       required: true
       default: true
-      description: Indicator value of any type; i.e. an IP address, email address,
-        URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
+      description: Indicator value of any type; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
     - name: enclave-ids
-      description: Comma-separated list of enclave ids; only indicators found in reports
-        from these enclaves will be returned (defaults to all of user’s enclaves).
-        Defaults is all enclaves the user has READ access to.
+      description: Comma-separated list of enclave ids; only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to.
     - name: page-number
       description: Which page of the result set to get
       defaultValue: "0"
@@ -123,9 +116,7 @@ script:
     - contextPath: CVE.priorityLevel
       description: CVE priority level
       type: string
-    description: Search all TruSTAR incident reports for provided indicators and return
-      all correlated indicators from search results. Two indicators are considered
-      “correlated” if they can be found in a common report.
+    description: Search all TruSTAR incident reports for provided indicators and return all correlated indicators from search results. Two indicators are considered “correlated” if they can be found in a common report.
   - name: trustar-trending-indicators
     arguments:
     - name: type
@@ -134,8 +125,7 @@ script:
       - CVE
       - MALWARE
       - other
-      description: The types of indicators to be returned. If other, then all indicator
-        types except for CVE and MALWARE will be returned.
+      description: The types of indicators to be returned. If other, then all indicator types except for CVE and MALWARE will be returned.
       defaultValue: other
     - name: days-back
       description: The number of days back to count correlations for.
@@ -168,9 +158,7 @@ script:
     - contextPath: CVE.ID
       description: CVE ID
       type: string
-    description: Returns the 10 indicators that have recently appeared in the most
-      community reports. This is analogous to the Community Trends section of the
-      dashboard on Station.
+    description: Returns the 10 indicators that have recently appeared in the most community reports. This is analogous to the Community Trends section of the dashboard on Station.
   - name: trustar-search-indicators
     arguments:
     - name: search-term
@@ -178,9 +166,7 @@ script:
       default: true
       description: The term to search for
     - name: enclave-ids
-      description: Comma-separated list of enclave ids; only indicators found in reports
-        from these enclaves will be returned (defaults to all of user’s enclaves).
-        Defaults is all enclaves the user has READ access to.
+      description: Comma-separated list of enclave ids; only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to.
     - name: page-number
       description: Which page of the result set to get
       defaultValue: "0"
@@ -225,8 +211,7 @@ script:
       required: true
       description: Text content of report
     - name: enclave-ids
-      description: CSV of TruSTAR-generated enclave ids. Use the enclave ID, NOT the
-        enclave name. Mandatory if the distribution type is ENCLAVE.
+      description: CSV of TruSTAR-generated enclave ids. Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE.
     - name: distribution-type
       auto: PREDEFINED
       predefined:
@@ -235,12 +220,9 @@ script:
       description: Distribution type of the report
       defaultValue: ENCLAVE
     - name: external-url
-      description: URL for the external report that this originated from, if one exists.
-        Limit 500 alphanumeric characters. Must be unique across all reports for a
-        given company.
+      description: URL for the external report that this originated from, if one exists. Limit 500 alphanumeric characters. Must be unique across all reports for a given company.
     - name: time-began
-      description: ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00.
-        Default is current time.
+      description: ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00. Default is current time.
     outputs:
     - contextPath: TruSTAR.Report.reportTitle
       description: Title of the report
@@ -251,8 +233,7 @@ script:
     - contextPath: TruSTAR.Report.id
       description: ID of the report
       type: string
-    description: Submit a new incident report, and receive the ID it has been assigned
-      in TruSTAR’s system.
+    description: Submit a new incident report, and receive the ID it has been assigned in TruSTAR’s system.
   - name: trustar-update-report
     arguments:
     - name: report-id
@@ -265,12 +246,9 @@ script:
       required: true
       description: Text content of report
     - name: enclave-ids
-      description: CSV of TruSTAR-generated enclave ids. Use the enclave ID, NOT the
-        enclave name. Mandatory if the distribution type is ENCLAVE.
+      description: CSV of TruSTAR-generated enclave ids. Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE.
     - name: external-url
-      description: URL for the external report that this originated from, if one exists.
-        Limit 500 alphanumeric characters. Must be unique across all reports for a
-        given company.
+      description: URL for the external report that this originated from, if one exists. Limit 500 alphanumeric characters. Must be unique across all reports for a given company.
     - name: distribution-type
       auto: PREDEFINED
       predefined:
@@ -279,8 +257,7 @@ script:
       description: Distribution type of the report
       defaultValue: ENCLAVE
     - name: time-began
-      description: ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00.
-        Default is current time.
+      description: ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00. Default is current time.
     outputs:
     - contextPath: TruSTAR.Report.reportTitle
       description: Title of the report
@@ -291,9 +268,7 @@ script:
     - contextPath: TruSTAR.Report.id
       description: ID of the report
       type: string
-    description: Update the report with the specified ID. Either the internal TruSTAR
-      report ID or an external tracking ID can be used. Only the fields passed will
-      be updated. All others will be left unchanged.
+    description: Update the report with the specified ID. Either the internal TruSTAR report ID or an external tracking ID can be used. Only the fields passed will be updated. All others will be left unchanged.
   - name: trustar-report-details
     arguments:
     - name: report-id
@@ -329,17 +304,13 @@ script:
       - external
       description: Type of report ID
       defaultValue: internal
-    description: Deletes a report as specified by given id (id can be TruSTAR report
-      id or external id).
+    description: Deletes a report as specified by given id (id can be TruSTAR report id or external id).
   - name: trustar-get-reports
     arguments:
     - name: from
-      description: Start of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01
-        10:30:00). Based on updated time, and not created time. Default is 1 day ago.
+      description: Start of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00). Based on updated time, and not created time. Default is 1 day ago.
     - name: to
-      description: End of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01
-        10:30:00). Based on updated time, and not created time. Default is current
-        time.
+      description: End of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00). Based on updated time, and not created time. Default is current time.
     - name: distribution-type
       auto: PREDEFINED
       predefined:
@@ -348,15 +319,11 @@ script:
       description: Whether to search for reports in the community, or only in enclaves
       defaultValue: ENCLAVE
     - name: enclave-ids
-      description: Comma separated list of enclave ids to search for reports in. Even
-        if distributionType is COMMUNITY, these enclaves will still be searched as
-        well. Default is All enclaves the user has READ access to.
+      description: Comma separated list of enclave ids to search for reports in. Even if distributionType is COMMUNITY, these enclaves will still be searched as well. Default is All enclaves the user has READ access to.
     - name: tags
-      description: a list of names of tags to filter by; only reports containing ALL
-        of these tags will be returned
+      description: a list of names of tags to filter by; only reports containing ALL of these tags will be returned
     - name: excluded-tags
-      description: reports containing ANY of these tags will be excluded from the
-        results.
+      description: reports containing ANY of these tags will be excluded from the results.
     outputs:
     - contextPath: TruSTAR.Report.reportTitle
       description: Title of the report
@@ -364,20 +331,14 @@ script:
       description: Body of the report
     - contextPath: TruSTAR.Report.id
       description: ID of the report
-    description: 'Returns incident reports matching the specified filters. All parameters
-      are optional: if nothing is specified, the latest 25 reports accessible by the
-      user will be returned (matching the view the user would have by logging into
-      Station).'
+    description: 'Returns incident reports matching the specified filters. All parameters are optional: if nothing is specified, the latest 25 reports accessible by the user will be returned (matching the view the user would have by logging into Station).'
   - name: trustar-correlated-reports
     arguments:
     - name: indicators
       required: true
-      description: Indicator value of any type; i.e. an IP address, email address,
-        URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
+      description: Indicator value of any type; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
     - name: enclave-ids
-      description: Comma-separated list of enclave ids; only indicators found in reports
-        from these enclaves will be returned (defaults to all of user’s enclaves).
-        Defaults is all enclaves the user has READ access to.
+      description: Comma-separated list of enclave ids; only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to.
     - name: page-number
       description: Which page of the result set to get
       defaultValue: "0"
@@ -391,8 +352,7 @@ script:
       - ENCLAVE
       description: Distribution type of the report
       defaultValue: ENCLAVE
-    description: Returns a paginated list of all reports that contain any of the provided
-      indicator values.
+    description: Returns a paginated list of all reports that contain any of the provided indicator values.
   - name: trustar-search-reports
     arguments:
     - name: search-term
@@ -400,8 +360,7 @@ script:
       default: true
       description: The term to search for
     - name: enclave-ids
-      description: Comma-separated list of enclave ids; only indicators found in reports
-        from these enclaves will be returned (defaults to all of user’s enclaves)
+      description: Comma-separated list of enclave ids; only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves)
     description: Searches for all reports that contain the given search term.
   - name: trustar-add-to-whitelist
     arguments:
@@ -434,8 +393,7 @@ script:
     description: Delete an indicator from the user’s company whitelist.
   - name: trustar-get-enclaves
     arguments: []
-    description: Returns the list of all enclaves that the user has access to, as
-      well as whether they can read, create, and update reports in that enclave.
+    description: Returns the list of all enclaves that the user has access to, as well as whether they can read, create, and update reports in that enclave.
   - name: file
     deprecated: true
     arguments:
@@ -448,8 +406,7 @@ script:
       - LOW
       - MEDIUM
       - HIGH
-      description: If ThreatScore is greater or equal than the threshold, then ip
-        will be considered malicious
+      description: If ThreatScore is greater or equal than the threshold, then ip will be considered malicious
     outputs:
     - contextPath: File.MD5
       description: File MD5
@@ -499,8 +456,7 @@ script:
       - LOW
       - MEDIUM
       - HIGH
-      description: If ThreatScore is greater or equal than the threshold, then ip
-        will be considered malicious
+      description: If ThreatScore is greater or equal than the threshold, then ip will be considered malicious
     outputs:
     - contextPath: IP.Address
       description: IP Address
@@ -544,8 +500,7 @@ script:
       - LOW
       - MEDIUM
       - HIGH
-      description: If ThreatScore is greater or equal than the threshold, then ip
-        will be considered malicious
+      description: If ThreatScore is greater or equal than the threshold, then ip will be considered malicious
     outputs:
     - contextPath: URL.Data
       description: URL data
@@ -590,8 +545,7 @@ script:
       - LOW
       - MEDIUM
       - HIGH
-      description: If ThreatScore is greater or equal than the threshold, then ip
-        will be considered malicious
+      description: If ThreatScore is greater or equal than the threshold, then ip will be considered malicious
     outputs:
     - contextPath: Domain.Name
       description: Domain Name
@@ -640,9 +594,7 @@ script:
       - UNRESOLVED
       - CONFIRMED
       - IGNORED
-      description: A list of triage statuses for submissions (UNRESOLVED,CONFIRMED,IGNORED);
-        only email submissions marked with at least one of these statuses will be
-        returned
+      description: A list of triage statuses for submissions (UNRESOLVED,CONFIRMED,IGNORED); only email submissions marked with at least one of these statuses will be returned
       isArray: true
       defaultValue: UNRESOLVED
     outputs:
@@ -683,8 +635,7 @@ script:
       - CONFIRMED
       - IGNORED
       description: Submission status
-    description: Marks a phishing email submission with one of the phishing namespace
-      tags
+    description: Marks a phishing email submission with one of the phishing namespace tags
   - name: trustar-get-phishing-indicators
     arguments:
     - name: normalized_indicator_score
@@ -705,9 +656,7 @@ script:
       - UNRESOLVED
       - CONFIRMED
       - IGNORED
-      description: A list of triage statuses for submissions; only email submissions
-        marked with at least one of these statuses will be returned. Options are 'UNRESOLVED',
-        'CONFIRMED', 'IGNORED'
+      description: A list of triage statuses for submissions; only email submissions marked with at least one of these statuses will be returned. Options are 'UNRESOLVED', 'CONFIRMED', 'IGNORED'
       isArray: true
       defaultValue: UNRESOLVED,CONFIRMED,IGNORED
     outputs:
@@ -730,7 +679,7 @@ script:
       description: Indicator value
       type: string
     description: Get phishing indicators that match the given criteria.
-  dockerimage45: demisto/trustar:latest
   dockerimage: demisto/trustar:20.1.0.8039
   runonce: false
   subtype: python2
+fromversion: 5.0.0

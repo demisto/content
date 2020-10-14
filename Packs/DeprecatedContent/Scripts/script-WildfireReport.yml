@@ -3,9 +3,11 @@ commonfields:
   version: -1
 name: WildfireReport
 deprecated: true
-script: |-
+script: >-
   var results = [];
+
   var raws = [];
+
   if (args.md5) {
       md5s = argToList(args.md5);
       for(var i=0; i<md5s.length;i++)
@@ -17,6 +19,7 @@ script: |-
   } else {
       return 'no';
   }
+
   for(var i=0; i<raws.length;i++) {
       raw = raws[i];
       if (!raw[0] || !raw[0].Contents || !raw[0].Contents.wildfire || !raw[0].Contents.wildfire.file_info) {
@@ -33,6 +36,7 @@ script: |-
               Type: entryTypes.note});
       }
   }
+
   return results;
 type: javascript
 tags:
@@ -54,3 +58,4 @@ dependson:
 timeout: 0s
 tests:
 - No tests
+fromversion: 5.0.0

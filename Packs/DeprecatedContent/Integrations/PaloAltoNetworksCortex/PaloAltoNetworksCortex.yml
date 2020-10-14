@@ -44,8 +44,7 @@ configuration:
   required: false
   type: 15
 - defaultvalue: 24 hours
-  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
-    1 year)
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_timestamp
   required: false
   type: 0
@@ -140,8 +139,7 @@ configuration:
   - wsmprovhost.exe Rare Child Process
   required: false
   type: 16
-description: Deprecated - We recommend using the Cortex Data Lake integration instead.
-  This framework manages all PA's cloud managed products
+description: Deprecated. We recommend using the Cortex Data Lake integration instead. This framework manages all PA's cloud managed products
 display: Palo Alto Networks Cortex (Deprecated)
 name: Palo Alto Networks Cortex
 script:
@@ -163,19 +161,14 @@ script:
       secret: false
     - default: false
       defaultValue: select * from panw.traffic limit 5
-      description: 'A free-text SQL query. For example, query="select * from panw.traffic
-        limit 5". There are multiple tables in Loggings, for example: threat, traffic,
-        and so on. Refer to the Cortex Logging service schema reference for the full
-        list.'
+      description: 'A free-text SQL query. For example, query="select * from panw.traffic limit 5". There are multiple tables in Loggings, for example: threat, traffic, and so on. Refer to the Cortex Logging service schema reference for the full list.'
       isArray: false
       name: query
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The time range for the query, used with the rangeValue argument.
-        For example, timeRange="weeks" timeValue="1" would run the query on the previous
-        week.
+      description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" timeValue="1" would run the query on the previous week.
       isArray: false
       name: timeRange
       predefined:
@@ -185,14 +178,12 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time value for the query, used with the timeRange argument.
-        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
-        week.
+      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       isArray: false
       name: rangeValue
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Runs a query on the Cortex logging service.
     execution: false
     name: cortex-query-logs
@@ -272,9 +263,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The time range for the query, used with the rangeValue argument.
-        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
-        week.
+      description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       isArray: false
       name: timeRange
       predefined:
@@ -284,14 +273,12 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time value for the query, used with the timeRange argument.
-        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
-        week.
+      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       isArray: false
       name: rangeValue
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Runs a query on the Cortex logging service, according to preset queries.
     execution: false
     name: cortex-get-critical-threat-logs
@@ -401,9 +388,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The time range for the query, used with the rangeValue argument.
-        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
-        week.
+      description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       isArray: false
       name: timeRange
       predefined:
@@ -413,14 +398,12 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time value for the query, used with the timeRange argument.
-        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
-        week.
+      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       isArray: false
       name: rangeValue
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Runs a query on the Cortex logging service, according to preset queries.
     execution: false
     name: cortex-get-social-applications
@@ -515,9 +498,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The time range for the query, used with the rangeValue argument.
-        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
-        week.
+      description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       isArray: false
       name: timeRange
       predefined:
@@ -527,21 +508,18 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time value for the query, used with the timeRange argument.
-        For example, timeRange="weeks" rangeValue="1" would run the query on the last
-        week.
+      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the last week.
       isArray: false
       name: rangeValue
       required: false
       secret: false
     - default: false
-      description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc"
-        would return all logs associated with this file.
+      description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc" would return all logs associated with this file.
       isArray: false
       name: SHA256
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Runs a query on the Cortex logging service, according to preset queries.
     execution: false
     name: cortex-search-by-file-hash
@@ -665,18 +643,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: A free-text query for which to search. This forms the WHERE part of the query,
-        for example,
-        !cortex-query-traffic-logs query="src LIKE '192.168.1.*' AND dst='8.8.8.8'"
+      description: A free-text query for which to search. This forms the WHERE part of the query, for example, !cortex-query-traffic-logs query="src LIKE '192.168.1.*' AND dst='8.8.8.8'"
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
       defaultValue: all
-      description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or a list of specific fields in the table.
-        List of fields can be found after viewing all the outputed fields with all.
+      description: The fields that are selected in the query. Selection can be "all" (same as *) or a list of specific fields in the table. List of fields can be found after viewing all the outputed fields with all.
       isArray: false
       name: fields
       required: false
@@ -697,8 +671,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The time range for the query, used with the rangeValue argument.
-        The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
+      description: The time range for the query, used with the rangeValue argument. The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
       isArray: false
       name: timeRange
       predefined:
@@ -708,8 +681,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time value for the query, used with the timeRange argument.
-        The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
+      description: The time value for the query, used with the timeRange argument. The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
       isArray: false
       name: rangeValue
       required: false
@@ -721,33 +693,28 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
-    description: Searches the Cortex panw.traffic table, which is the traffic
-      logs table for PAN-OS and Panorama.
+    deprecated: true
+    description: Searches the Cortex panw.traffic table, which is the traffic logs table for PAN-OS and Panorama.
     execution: false
     name: cortex-query-traffic-logs
     outputs:
     - contextPath: Cortex.Logging.Traffic.Action
-      description: Identifies the action that the firewall took for the network
-        traffic.
+      description: Identifies the action that the firewall took for the network traffic.
       type: String
     - contextPath: Cortex.Logging.Traffic.RiskOfApp
-      description: Indicates the risk of the application, from a network security
-        perspective. The risk range is 1-5, where 5 is the riskiest.
+      description: Indicates the risk of the application, from a network security perspective. The risk range is 1-5, where 5 is the riskiest.
       type: String
     - contextPath: Cortex.Logging.Traffic.Natsport
       description: Post-NAT source port.
       type: String
     - contextPath: Cortex.Logging.Traffic.SessionID
-      description: Identifies the firewall's internal identifier for a specific network
-        session.
+      description: Identifies the firewall's internal identifier for a specific network session.
       type: String
     - contextPath: Cortex.Logging.Traffic.Packets
       description: Number of total packets (transmit and receive) seen for the session.
       type: String
     - contextPath: Cortex.Logging.Traffic.CharacteristicOfApp
-      description: Identifies the behaviorial characteristic of the application associated
-        with the network traffic.
+      description: Identifies the behaviorial characteristic of the application associated with the network traffic.
       type: String
     - contextPath: Cortex.Logging.Traffic.App
       description: Application associated with the network traffic.
@@ -756,15 +723,13 @@ script:
       description: Virtual system associated with the network traffic.
       type: String
     - contextPath: Cortex.Logging.Traffic.Nat
-      description: Indicates whether the firewall is performing network address translation
-        (NAT) for the logged traffic. If it is, this value is 1.
+      description: Indicates whether the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1.
       type: String
     - contextPath: Cortex.Logging.Traffic.ReceiveTime
       description: Time the log was received at the management plane.
       type: String
     - contextPath: Cortex.Logging.Traffic.SubcategoryOfApp
-      description: Identifies the application's subcategory. The subcategory is related
-        to the application's category,
+      description: Identifies the application's subcategory. The subcategory is related to the application's category,
       type: String
     - contextPath: Cortex.Logging.Traffic.Users
       description: Srcuser or dstuser or srcip (one of).
@@ -779,19 +744,16 @@ script:
       description: Post-NAT destination port.
       type: String
     - contextPath: Cortex.Logging.Traffic.Dst
-      description: Original destination IP address. The IP address is an IPv4/IPv6
-        address in hex format.
+      description: Original destination IP address. The IP address is an IPv4/IPv6 address in hex format.
       type: String
     - contextPath: Cortex.Logging.Traffic.Natdst
-      description: If destination NAT performed, the post-NAT destination IP address.
-        The IP address is an IPv4/IPv6 address in hex format.
+      description: If destination NAT performed, the post-NAT destination IP address. The IP address is an IPv4/IPv6 address in hex format.
       type: String
     - contextPath: Cortex.Logging.Traffic.Rule
       description: Name of the security policy rule that the network traffic matched.
       type: String
     - contextPath: Cortex.Logging.Traffic.Dport
-      description: Network traffic's destination port. If this value is 0, then the
-        app is using its standard port.
+      description: Network traffic's destination port. If this value is 0, then the app is using its standard port.
       type: String
     - contextPath: Cortex.Logging.Traffic.Elapsed
       description: Total time taken for the network session to complete.
@@ -806,16 +768,13 @@ script:
       description: Time the log was received at the management plane.
       type: String
     - contextPath: Cortex.Logging.Traffic.SessionEndReason
-      description: The reason a session terminated. If the termination had multiple
-        causes. This field displays only the highest priority reason.
+      description: The reason a session terminated. If the termination had multiple causes. This field displays only the highest priority reason.
       type: String
     - contextPath: Cortex.Logging.Traffic.Natsrc
-      description: If source NAT was performed, the post-NAT source IP address. The
-        IP address is an IPv4/IPv6 address in hex format.
+      description: If source NAT was performed, the post-NAT source IP address. The IP address is an IPv4/IPv6 address in hex format.
       type: String
     - contextPath: Cortex.Logging.Traffic.Src
-      description: Original source IP address. The IP address is an IPv4/IPv6 address
-        in hex format.
+      description: Original source IP address. The IP address is an IPv4/IPv6 address in hex format.
       type: String
     - contextPath: Cortex.Logging.Traffic.Start
       description: Time when the session was established.
@@ -827,13 +786,10 @@ script:
       description: Identifies the high-level family of the application.
       type: String
     - contextPath: Cortex.Logging.Traffic.Srcloc
-      description: Source country or internal region for private addresses. The internal
-        region is a user-defined name for a specific network in the user's enterprise.
+      description: Source country or internal region for private addresses. The internal region is a user-defined name for a specific network in the user's enterprise.
       type: String
     - contextPath: Cortex.Logging.Traffic.Dstloc
-      description: Destination country or internal region for private addresses. The
-        internal region is a user-defined name for a specific network in the user's
-        enterprise.
+      description: Destination country or internal region for private addresses. The internal region is a user-defined name for a specific network in the user's enterprise.
       type: String
     - contextPath: Cortex.Logging.Traffic.Serial
       description: Serial number of the firewall that generated the log.
@@ -842,8 +798,7 @@ script:
       description: Number of total bytes (transmit and receive).
       type: String
     - contextPath: Cortex.Logging.Traffic.VsysID
-      description: A unique identifier for a virtual system on a Palo Alto Networks
-        firewall.
+      description: A unique identifier for a virtual system on a Palo Alto Networks firewall.
       type: String
     - contextPath: Cortex.Logging.Traffic.To
       description: Networking zone to which the traffic was sent.
@@ -901,19 +856,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Free input query to search. This is the WHERE part of the query.
-        so an example will be
-        !cortex-query-traffic-logs query="src LIKE '192.168.1.*'
-        AND dst = '192.168.1.12'"
+      description: Free input query to search. This is the WHERE part of the query. so an example will be !cortex-query-traffic-logs query="src LIKE '192.168.1.*' AND dst = '192.168.1.12'"
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
       defaultValue: all
-      description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or listing of specific fields in the table.
-        List of fields can be found after viewing all the outputed fields with all.
+      description: The fields that are selected in the query. Selection can be "all" (same as *) or listing of specific fields in the table. List of fields can be found after viewing all the outputed fields with all.
       isArray: false
       name: fields
       required: false
@@ -946,9 +896,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The time range for the query, used with the rangeValue argument.
-        For example, timeRange="weeks" timeValue="1" would run the query on the previous
-        week.
+      description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" timeValue="1" would run the query on the previous week.
       isArray: false
       name: timeRange
       predefined:
@@ -958,9 +906,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time value for the query, used with the timeRange argument.
-        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
-        week.
+      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       isArray: false
       name: rangeValue
       required: false
@@ -971,15 +917,13 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
-    description: Searches the Cortex panw.threat table, which is the threat
-      logs table for PAN-OS/Panorama.
+    deprecated: true
+    description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
     execution: false
     name: cortex-query-threat-logs
     outputs:
     - contextPath: Cortex.Logging.Threat.SessionID
-      description: Identifies the firewall's internal identifier for a specific network
-        session.
+      description: Identifies the firewall's internal identifier for a specific network session.
       type: String
     - contextPath: Cortex.Logging.Threat.Action
       description: Identifies the action that the firewall took for the network traffic.
@@ -988,60 +932,43 @@ script:
       description: Application associated with the network traffic.
       type: String
     - contextPath: Cortex.Logging.Threat.Nat
-      description: Indicates whether the firewall is performing network address translation
-        (NAT) for the logged traffic. If it is, this value is 1.
+      description: Indicates whether the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1.
       type: String
     - contextPath: Cortex.Logging.Threat.SubcategoryOfApp
-      description: Identifies the application's subcategory. The subcategoryis related
-        to the application's category, which is identified in category_of_app.
+      description: Identifies the application's subcategory. The subcategoryis related to the application's category, which is identified in category_of_app.
       type: String
     - contextPath: Cortex.Logging.Threat.PcapID
-      description: Packet capture (pcap) ID. This is used to correlate threat pcap
-        files with extended pcaps taken as a part of the session flow. All threat
-        logs will contain either a pcap_id of 0 (no associated pcap) , or an ID referencing
-        the extended pcap file.
+      description: Packet capture (pcap) ID. This is used to correlate threat pcap files with extended pcaps taken as a part of the session flow. All threat logs will contain either a pcap_id of 0 (no associated pcap) , or an ID referencing the extended pcap file.
       type: String
     - contextPath: Cortex.Logging.Threat.Natdst
-      description: If destination NAT performed, the post-NAT destination IP address.
-        The IP address is an IPv4/IPv6 address in hex format.
+      description: If destination NAT performed, the post-NAT destination IP address. The IP address is an IPv4/IPv6 address in hex format.
       type: String
     - contextPath: Cortex.Logging.Threat.Flags
-      description: Bit field which provides details on the session, such as whether
-        the session use IPv6, whether the session was denied due to a URL filtering
-        rule, and/or whether the log corresponds to a transaction within an HTTP proxy
-        session.
+      description: Bit field which provides details on the session, such as whether the session use IPv6, whether the session was denied due to a URL filtering rule, and/or whether the log corresponds to a transaction within an HTTP proxy session.
       type: String
     - contextPath: Cortex.Logging.Threat.Dport
-      description: Network traffic's destination port. If this value is 0, then the
-        app is using its standard port.
+      description: Network traffic's destination port. If this value is 0, then the app is using its standard port.
       type: String
     - contextPath: Cortex.Logging.Threat.ThreatID
-      description: Numerical identifier for the threat type. All threats encountered
-        by Palo Alto Networks firewalls are assigned a unique identifier
+      description: Numerical identifier for the threat type. All threats encountered by Palo Alto Networks firewalls are assigned a unique identifier
       type: String
     - contextPath: Cortex.Logging.Threat.Natsrc
-      description: If source NAT was performed, the post-NAT source IP address. The
-        IP address is an IPv4/IPv6 address in hex format.
+      description: If source NAT was performed, the post-NAT source IP address. The IP address is an IPv4/IPv6 address in hex format.
       type: String
     - contextPath: Cortex.Logging.Threat.CategoryOfApp
-      description: Identifies the managing application, or parent, of the application
-        associated with this network traffic, if any.
+      description: Identifies the managing application, or parent, of the application associated with this network traffic, if any.
       type: String
     - contextPath: Cortex.Logging.Threat.Srcloc
-      description: Source country or internal region for private addresses. The internal
-        region is a user-defined name for a specific network in the user's enterprise.
+      description: Source country or internal region for private addresses. The internal region is a user-defined name for a specific network in the user's enterprise.
       type: String
     - contextPath: Cortex.Logging.Threat.Dstloc
-      description: Destination country or internal region for private addresses. The
-        internal region is a user-defined name for a specific network in the user's
-        enterprise.
+      description: Destination country or internal region for private addresses. The internal region is a user-defined name for a specific network in the user's enterprise.
       type: String
     - contextPath: Cortex.Logging.Threat.To
       description: Networking zone to which the traffic was sent.
       type: String
     - contextPath: Cortex.Logging.Threat.RiskOfApp
-      description: Indicates how risky the application is from a network security
-        perspective. Values range from 1-5, where 5 is the riskiest.
+      description: Indicates how risky the application is from a network security perspective. Values range from 1-5, where 5 is the riskiest.
       type: String
     - contextPath: Cortex.Logging.Threat.Natsport
       description: Post-NAT source port.
@@ -1050,12 +977,10 @@ script:
       description: Session was denied due to a URL filtering rule.
       type: String
     - contextPath: Cortex.Logging.Threat.CharacteristicOfApp
-      description: Identifies the behaviorial characteristic of the application associated
-        with the network traffic.
+      description: Identifies the behaviorial characteristic of the application associated with the network traffic.
       type: String
     - contextPath: Cortex.Logging.Threat.HTTPMethod
-      description: Only in URL filtering logs. Describes the HTTP Method used in the
-        web request
+      description: Only in URL filtering logs. Describes the HTTP Method used in the web request
       type: String
     - contextPath: Cortex.Logging.Threat.From
       description: The networking zone from which the traffic originated.
@@ -1076,8 +1001,7 @@ script:
       description: Post-NAT destination port.
       type: String
     - contextPath: Cortex.Logging.Threat.Dst
-      description: Original destination IP address. The IP address is an IPv4/ IPv6
-        address in hex format.
+      description: Original destination IP address. The IP address is an IPv4/ IPv6 address in hex format.
       type: String
     - contextPath: Cortex.Logging.Threat.Rule
       description: Name of the security policy rule that the network traffic matched.
@@ -1098,17 +1022,13 @@ script:
       description: 'Indicates the direction of the attack, client-to-server or server-to-client:'
       type: String
     - contextPath: Cortex.Logging.Threat.Misc
-      description: 'The meaning of this field differs according to the log''s subtype:
-        Subtype is URL, this field contains the requested URI. Subtype is File, this
-        field contains the file name or file type. Subtype is Virus, this field contains
-        the file name. Subtype is WildFire, this field contains the file name.'
+      description: 'The meaning of this field differs according to the log''s subtype: Subtype is URL, this field contains the requested URI. Subtype is File, this field contains the file name or file type. Subtype is Virus, this field contains the file name. Subtype is WildFire, this field contains the file name.'
       type: String
     - contextPath: Cortex.Logging.Threat.Severity
       description: Severity associated with the event.
       type: String
     - contextPath: Cortex.Logging.Threat.Src
-      description: Original source IP address. The IP address is an IPv4/IPv6 address
-        in hex format.
+      description: Original source IP address. The IP address is an IPv4/IPv6 address in hex format.
       type: String
     - contextPath: Cortex.Logging.Threat.TimeGenerated
       description: Time the log was generated on the data plane.
@@ -1117,16 +1037,13 @@ script:
       description: Serial number of the firewall that generated the log.
       type: String
     - contextPath: Cortex.Logging.Threat.VsysID
-      description: A unique identifier for a virtual system on a Palo Alto Networks
-        firewall.
+      description: A unique identifier for a virtual system on a Palo Alto Networks firewall.
       type: String
     - contextPath: Cortex.Logging.Threat.URLDomain
       description: The name of the internet domain that was visited in this session.
       type: String
     - contextPath: Cortex.Logging.Threat.Category
-      description: For the URL subtype, this identifies the URL Category. For the
-        WildFire subtype, this identifies the verdict on the file. It is one of ‘malicious’,
-        ‘phishing’, ‘grayware’, or ‘benign’;
+      description: For the URL subtype, this identifies the URL Category. For the WildFire subtype, this identifies the verdict on the file. It is one of ‘malicious’, ‘phishing’, ‘grayware’, or ‘benign’;
       type: String
     - contextPath: Cortex.Logging.Threat.Sport
       description: Source port utilized by the session.
@@ -1147,8 +1064,7 @@ script:
       description: The full file name (including file extension).
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
+      description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
   - arguments:
     - default: false
@@ -1182,17 +1098,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Free-text input query to search. This is the WHERE part of the query
-        so an example will be src = '1.1.1.1' OR rule = 'test rule'.
+      description: Free-text input query to search. This is the WHERE part of the query so an example will be src = '1.1.1.1' OR rule = 'test rule'.
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
       defaultValue: all
-      description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or listing of specific fields in the table.
-        List of fields can be found after viewing all the outputed fields with all.
+      description: The fields that are selected in the query. Selection can be "all" (same as *) or listing of specific fields in the table. List of fields can be found after viewing all the outputed fields with all.
       isArray: false
       name: fields
       required: false
@@ -1213,9 +1126,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The time range for the query, used with the rangeValue argument.
-        For example, timeRange="weeks" timeValue="1" would run the query on the previous
-        week.
+      description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" timeValue="1" would run the query on the previous week.
       isArray: false
       name: timeRange
       predefined:
@@ -1225,9 +1136,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time value for the query, used with the timeRange argument.
-        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
-        week.
+      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       isArray: false
       name: rangeValue
       required: false
@@ -1239,9 +1148,8 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
-    description: Searches the Cortex tms.threat table, which is the threat
-      logs table for the Traps endpoint protection and response.
+    deprecated: true
+    description: Searches the Cortex tms.threat table, which is the threat logs table for the Traps endpoint protection and response.
     execution: false
     name: cortex-query-traps-logs
     outputs:
@@ -1255,12 +1163,10 @@ script:
       description: Operating system of the endpoint.
       type: String
     - contextPath: Cortex.Logging.Traps.EndPointHeader.IsVdi
-      description: Indicates whether the endpoint is a virtual desktop infrastructure
-        (VDI).
+      description: Indicates whether the endpoint is a virtual desktop infrastructure (VDI).
       type: String
     - contextPath: Cortex.Logging.Traps.EndPointHeader.OSVersion
-      description: Full version number of the operating system running on the endpoint.
-        For example, 6.1.7601.19135.
+      description: Full version number of the operating system running on the endpoint. For example, 6.1.7601.19135.
       type: String
     - contextPath: Cortex.Logging.Traps.EndPointHeader.Is64
       description: Indicates whether the endpoint is running a 64-bit version of Windows.
@@ -1278,8 +1184,7 @@ script:
       description: The username on which the event was logged.
       type: String
     - contextPath: Cortex.Logging.Traps.EndPointHeader.AgentTime
-      description: Universal Time Coordinated (UTC) equivalent of the time at which
-        an agent logged an event. ISO-8601 string representation.
+      description: Universal Time Coordinated (UTC) equivalent of the time at which an agent logged an event. ISO-8601 string representation.
       type: String
     - contextPath: Cortex.Logging.Traps.EndPointHeader.AgentVersion
       description: Version of the Traps agent.
@@ -1303,8 +1208,7 @@ script:
       description: Hostname of the Traps management service.
       type: String
     - contextPath: Cortex.Logging.Traps.GeneratedTime
-      description: Universal Time Coordinated (UTC) equivalent of the time at which
-        an event was logged.
+      description: Universal Time Coordinated (UTC) equivalent of the time at which an event was logged.
       type: String
     - contextPath: Cortex.Logging.Traps.ServerComponentVersion
       description: Software version of the Traps management service.
@@ -1316,15 +1220,13 @@ script:
       description: Customer ID.
       type: String
     - contextPath: Cortex.Logging.Traps.ServerTime
-      description: Universal Time Coordinated (UTC) equivalent of the time at which
-        the server generated the log. If the log was generated on an endpoint.
+      description: Universal Time Coordinated (UTC) equivalent of the time at which the server generated the log. If the log was generated on an endpoint.
       type: String
     - contextPath: Cortex.Logging.Traps.OriginalAgentTime
       description: Original time on the endpoint device.
       type: String
     - contextPath: Cortex.Logging.Traps.Facility
-      description: 'The Traps system component that initiated the event For example:,
-        TrapsAgent, TrapsServiceCore, TrapsServiceManagement, TrapsServiceBackend.'
+      description: 'The Traps system component that initiated the event For example:, TrapsAgent, TrapsServiceCore, TrapsServiceManagement, TrapsServiceBackend.'
       type: Sting
     - contextPath: Cortex.Logging.Traps.MessageData.PreventionKey
       description: Unique identifier for security events.
@@ -1336,8 +1238,7 @@ script:
       description: Parent process identifier.
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.Processes.ExeFileIdx
-      description: 'Index of target files for specific security events such as: Scanning,
-        Malicious DLL, Malicious Macro events.'
+      description: 'Index of target files for specific security events such as: Scanning, Malicious DLL, Malicious Macro events.'
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.Processes.UserIdx
       description: Index of users.
@@ -1388,8 +1289,7 @@ script:
       description: The prevention mode used.
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.TrapsSeverity
-      description: Traps Severity level associated with the event defined for the
-        Traps management service.
+      description: Traps Severity level associated with the event defined for the Traps management service.
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.User.Username
       description: Source username initiating the process.
@@ -1482,8 +1382,7 @@ script:
       description: The full file name (including file extension).
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
+      description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
     - contextPath: File.Path
       description: The path where the file is located.
@@ -1532,17 +1431,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Free-text input query to search. This forms the WHERE part of the query.
-        For example, endPointHeader.agentIp = '1.1.1.1'.
+      description: Free-text input query to search. This forms the WHERE part of the query. For example, endPointHeader.agentIp = '1.1.1.1'.
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
       defaultValue: all
-      description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or a list of specific fields in the table.
-        You can find the list of fields after viewing all the outputed fields with "all".
+      description: The fields that are selected in the query. Selection can be "all" (same as *) or a list of specific fields in the table. You can find the list of fields after viewing all the outputed fields with "all".
       isArray: false
       name: fields
       required: false
@@ -1563,9 +1459,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The time range for the query, used with the rangeValue argument.
-        For example, timeRange="weeks" timeValue="1" would run the query on the previous
-        week.
+      description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" timeValue="1" would run the query on the previous week.
       isArray: false
       name: timeRange
       predefined:
@@ -1575,9 +1469,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time value for the query, used with the timeRange argument.
-        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
-        week.
+      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       isArray: false
       name: rangeValue
       required: false
@@ -1589,9 +1481,8 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
-    description: Searches the Cortex tms.analytics table, which is the
-      endpoint logs table for Traps Analytics.
+    deprecated: true
+    description: Searches the Cortex tms.analytics table, which is the endpoint logs table for Traps Analytics.
     execution: false
     name: cortex-query-analytics-logs
     outputs:
@@ -1602,12 +1493,10 @@ script:
       description: Operating system of the endpoint.
       type: String
     - contextPath: Cortex.Logging.Analytics.EndPointHeader.IsVdi
-      description: Indicates whether the endpoint is a virtual desktop infrastructure
-        (VDI).
+      description: Indicates whether the endpoint is a virtual desktop infrastructure (VDI).
       type: String
     - contextPath: Cortex.Logging.Analytics.EndPointHeader.OSVersion
-      description: Full version number of the operating system running on the endpoint.
-        For example, 6.1.7601.19135.
+      description: Full version number of the operating system running on the endpoint. For example, 6.1.7601.19135.
       type: String
     - contextPath: Cortex.Logging.Analytics.EndPointHeader.Is64
       description: Indicates whether the endpoint is running a 64-bit version of Windows.
@@ -1628,8 +1517,7 @@ script:
       description: Username of the active user on the endpoint.
       type: String
     - contextPath: Cortex.Logging.Analytics.EndPointHeader.AgentTime
-      description: Universal Time Coordinated (UTC) equivalent of the time at which
-        an agent logged an event. ISO-8601 string representation.
+      description: Universal Time Coordinated (UTC) equivalent of the time at which an agent logged an event. ISO-8601 string representation.
       type: String
     - contextPath: Cortex.Logging.Analytics.EndPointHeader.AgentVersion
       description: Version of the Traps agent.
@@ -1650,11 +1538,7 @@ script:
       description: Event unique ID.
       type: String
     - contextPath: Cortex.Logging.Analytics.GeneratedTime
-      description: Universal Time Coordinated (UTC) equivalent of the time at which
-        an event was logged. For agent events, this represents the time on the endpoint.
-        For policy, configuration, and system events, this represents the time on
-        the Traps management service. ISO-8601 string representation (for example,
-        2017-01-24T09:08:59Z).
+      description: Universal Time Coordinated (UTC) equivalent of the time at which an event was logged. For agent events, this represents the time on the endpoint. For policy, configuration, and system events, this represents the time on the Traps management service. ISO-8601 string representation (for example, 2017-01-24T09:08:59Z).
       type: String
     - contextPath: Cortex.Logging.Analytics.RegionID
       description: ID of the Traps management service region.
@@ -1663,8 +1547,7 @@ script:
       description: Original timestamp for endpoint.
       type: String
     - contextPath: Cortex.Logging.Analytics.Facility
-      description: The Traps system component that initiated the event, for example
-        TrapsAgent, TrapsServiceCore, TrapsServiceManagement, TrapsServiceBackend.
+      description: The Traps system component that initiated the event, for example TrapsAgent, TrapsServiceCore, TrapsServiceManagement, TrapsServiceBackend.
       type: String
     - contextPath: Cortex.Logging.Analytics.MessageData.type
       description: Type of file.
@@ -1745,8 +1628,7 @@ script:
       description: The full file name (including file extension).
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
+      description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
     - contextPath: File.Path
       description: The path where the file is located.
@@ -1773,4 +1655,4 @@ script:
   subtype: python3
 tests:
 - No tests
-fromversion: 4.1.0
+fromversion: 5.0.0

@@ -82,8 +82,7 @@ tasks:
       id: a8e1be4c-738e-4008-85cd-b59e89e3bf24
       version: -1
       name: file upload (url)
-      description: This is a test to check that URL parsing is done correctly (issue
-        - https://github.com/demisto/etc/issues/15551)
+      description: This is a test to check that URL parsing is done correctly (issue - https://github.com/demisto/etc/issues/15551)
       script: '|||atd-file-upload'
       type: regular
       iscommand: true
@@ -159,8 +158,7 @@ tasks:
       id: 79504193-673a-4e7b-8787-f38e46c2b27c
       version: -1
       name: file upload (url)
-      description: This is a test to check that URL parsing is done correctly (issue
-        - https://github.com/demisto/etc/issues/15551)
+      description: This is a test to check that URL parsing is done correctly (issue - https://github.com/demisto/etc/issues/15551)
       script: '|||atd-file-upload'
       type: regular
       iscommand: true
@@ -236,8 +234,7 @@ tasks:
       id: 5ef00fec-a712-4ff6-88ac-e188c964dba8
       version: -1
       name: file upload (url)
-      description: This is a test to check that URL parsing is done correctly (issue
-        - https://github.com/demisto/etc/issues/15551)
+      description: This is a test to check that URL parsing is done correctly (issue - https://github.com/demisto/etc/issues/15551)
       script: '|||atd-file-upload'
       type: regular
       iscommand: true
@@ -313,8 +310,7 @@ tasks:
       id: 7a72924b-e208-4694-8150-eb3a5cfa1db7
       version: -1
       name: file upload (url)
-      description: This is a test to check that URL parsing is done correctly (issue
-        - https://github.com/demisto/etc/issues/15551)
+      description: This is a test to check that URL parsing is done correctly (issue - https://github.com/demisto/etc/issues/15551)
       script: '|||atd-file-upload'
       type: regular
       iscommand: true
@@ -492,3 +488,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

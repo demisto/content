@@ -1,0 +1,36 @@
+{
+    "expected_output": {
+        "BMCServiceDesk__FKCategory__c": "abc",
+        "BMCServiceDesk__incidentDescription__c": "description",
+        "BMCServiceDesk__FKImpact__c": "impact",
+        "BMCServiceDesk__FKUrgency__c": "urgency",
+        "BMCServiceDesk__FKStatus__c": "status",
+        "BMCServiceDesk__dueDateTime__c": "dd",
+        "BMCServiceDesk__FKBusinessService__c": "service",
+        "BMCServiceDesk__FKServiceOffering__c": "so",
+        "BMCServiceDesk__FKBMC_BaseElement__c": "ci",
+        "BMCServiceDesk__outageFrom__c": "os",
+        "BMCServiceDesk__outageTo__c": "oe",
+        "OwnerId": "queue",
+        "BMCServiceDesk__FKOpenBy__c": "se",
+        "BMCServiceDesk__FKClient__c": "ce"
+    },
+    "params": {
+        "category_id": "abc",
+        "broadcast_id": null,
+        "description": "description",
+        "impact_id": "impact",
+        "urgency_id": "urgency",
+        "status_id": "status",
+        "due_date": "dd",
+        "service_id": "service",
+        "service_offering_id": "so",
+        "asset_id": "ci",
+        "outage_start": "os",
+        "outage_end": "oe",
+        "queue_id": "queue",
+        "staff_id": "se",
+        "client_id": "ce",
+        "account_id": null
+    }
+}

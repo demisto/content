@@ -38,8 +38,7 @@ tasks:
       id: f16f4c13-934e-422f-8415-6d84bd306c88
       version: -1
       name: Search devices
-      description: Search for devices in your environment by platform, host name,
-        IP, or a number of other parameters
+      description: Search for devices in your environment by platform, host name, IP, or a number of other parameters
       script: FalconHost|||cs-device-search
       type: regular
       iscommand: true
@@ -318,8 +317,7 @@ tasks:
       id: 68dfc3fe-83f7-4055-8ae4-2c8ea4e0277b
       version: -1
       name: Search with number offset
-      description: Search for devices in your environment by platform, host name,
-        IP, or various other parameters
+      description: Search for devices in your environment by platform, host name, IP, or various other parameters
       script: FalconHost|||cs-device-search
       type: regular
       iscommand: true
@@ -607,8 +605,7 @@ tasks:
       id: b9c891b1-3d19-4a68-8519-2f48f94b7105
       version: -1
       name: Change Detection to in_progress
-      description: Sets the state of a detection in Falcon Host. You can obtain detection
-        IDs from the Falcon Host UI or from the Falcon Streaming API.
+      description: Sets the state of a detection in Falcon Host. You can obtain detection IDs from the Falcon Host UI or from the Falcon Streaming API.
       script: '|||cs-resolve-detection'
       type: regular
       iscommand: true
@@ -669,9 +666,7 @@ tasks:
       id: f40e6b74-da7f-4dd9-8196-18957526f7d3
       version: -1
       name: Search Detections Since 2017
-      description: String search through all Crowdstrike Detection fields.  For example,
-        provide a sensor ID to search for all detections that contain that sensor
-        ID (and any other fields that would happen to contain it)
+      description: String search through all Crowdstrike Detection fields.  For example, provide a sensor ID to search for all detections that contain that sensor ID (and any other fields that would happen to contain it)
       script: '|||cs-detection-search'
       type: regular
       iscommand: true
@@ -814,3 +809,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

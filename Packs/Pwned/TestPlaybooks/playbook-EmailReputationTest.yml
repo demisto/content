@@ -1,7 +1,7 @@
 id: EmailReputationTest
 version: -1
 name: EmailReputationTest
-fromversion: 4.1.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -109,8 +109,7 @@ tasks:
       id: 94739de8-ce55-416d-81b4-c8807c5dacf5
       version: -1
       name: Get Indicator Score
-      description: Add into the incident's context the system internal DBot score
-        for the input indicator
+      description: Add into the incident's context the system internal DBot score for the input indicator
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -181,8 +180,7 @@ tasks:
       id: ee9d34f7-ffc7-4964-8e29-b451bf5aa29d
       version: -1
       name: Sleep
-      description: Sleep for X seconds, Needed to make sure that indicator is returned
-        in next step.
+      description: Sleep for X seconds, Needed to make sure that indicator is returned in next step.
       scriptName: Sleep
       type: regular
       iscommand: false

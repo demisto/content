@@ -46,8 +46,7 @@ script:
   - arguments:
     - default: false
       defaultValue: 1h
-      description: Duration (from now) for which to pull updated data, for
-        example, "1d", "1h" or "10m".
+      description: Duration (from now) for which to pull updated data, for example, "1d", "1h" or "10m".
       isArray: false
       name: since
       required: false
@@ -72,8 +71,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Removes the protocol part from indicators, when the rule can be
-        applied.
+      description: Removes the protocol part from indicators, when the rule can be applied.
       isArray: false
       name: remove_protocol
       predefined:
@@ -84,8 +82,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Removes the query string part from indicators, when the rules can
-        be applied.
+      description: Removes the query string part from indicators, when the rules can be applied.
       isArray: false
       name: remove_query
       predefined:
@@ -235,8 +232,7 @@ script:
       secret: false
     - default: false
       defaultValue: 1h
-      description: Duration (from now) for which to pull updated data, for
-        example, "1d", "1h" or "10m".
+      description: Duration (from now) for which to pull updated data, for example, "1d", "1h" or "10m".
       isArray: false
       name: since
       required: false
@@ -273,8 +269,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Removes the protocol part from indicators, when the rule can be
-        applied.
+      description: Removes the protocol part from indicators, when the rule can be applied.
       isArray: false
       name: remove_protocol
       predefined:
@@ -285,8 +280,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Removes the query string part from indicators, when the rules can
-        be applied.
+      description: Removes the query string part from indicators, when the rules can be applied.
       isArray: false
       name: remove_query
       predefined:
@@ -453,7 +447,6 @@ script:
       description: The actual score.
       type: number
   dockerimage: demisto/python3:3.7.5.4328
-  dockerimage45: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false
   script: '-'
@@ -461,3 +454,4 @@ script:
   subtype: python3
 tests:
 - PhishLabsIOC TestPlaybook
+fromversion: 5.0.0

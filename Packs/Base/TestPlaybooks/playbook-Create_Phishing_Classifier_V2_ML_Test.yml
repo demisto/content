@@ -2,7 +2,7 @@ elasticcommonfields: {}
 id: Create Phishing Classifier V2 ML Test
 version: -1
 name: Create Phishing Classifier V2 ML Test
-fromversion: 4.5.0
+fromversion: 5.0.0
 description: Test CreatePhishingClassifierML playbook
 starttaskid: "0"
 tasks:
@@ -76,8 +76,7 @@ tasks:
       id: 2a277a13-2077-4016-82ce-ba7bb2a38f83
       version: -1
       name: Predict Tag1
-      description: Predict text label using a pre-trained machine learning phishing
-        model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -88,9 +87,7 @@ tasks:
     scriptarguments:
       emailBody: {}
       emailSubject:
-        simple: closed church squeamish squeamish moaning closed closed closed church
-          squeamish squeamish moaning closed closed closed church squeamish squeamish
-          moaning closed closed
+        simple: closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed
       hashSeed: {}
       labelProbabilityThreshold:
         simple: "0"
@@ -222,8 +219,7 @@ tasks:
       id: 3e9344db-ef8e-429e-80a0-cec1f2e739a7
       version: -1
       name: DBot Create Phishing Classifier V2
-      description: Create a phishing classifier using machine learning technique,
-        based on email content
+      description: Create a phishing classifier using machine learning technique, based on email content
       playbookName: DBot Create Phishing Classifier V2
       type: playbook
       iscommand: false
@@ -398,8 +394,7 @@ tasks:
       id: 523d7c79-9890-46a7-803b-8ea9ba7afc3f
       version: -1
       name: Predict Tag2
-      description: Predict text label using a pre-trained machine learning phishing
-        model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -410,9 +405,7 @@ tasks:
     scriptarguments:
       emailBody: {}
       emailSubject:
-        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance
-          faulty waves type boat argument ntidy boy substance faulty waves type boat
-          argument
+        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument
       hashSeed: {}
       labelProbabilityThreshold:
         simple: "0"
@@ -446,8 +439,7 @@ tasks:
       id: ef49e53d-c826-4e42-8bfa-a4efdb663b00
       version: -1
       name: Predict Tag3
-      description: Predict text label using a pre-trained machine learning phishing
-        model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -458,9 +450,7 @@ tasks:
     scriptarguments:
       emailBody: {}
       emailSubject:
-        simple: suspend trucks aboriginal thread succeed gray last fall fall suspend
-          trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal
-          thread succeed gray last fall fall
+        simple: suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall
       hashSeed: {}
       labelProbabilityThreshold:
         simple: "0"

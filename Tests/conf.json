@@ -3,7 +3,31 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": ["Mail Listener v2", "Mail Sender (New)"],
+            "integrations": "Microsoft Endpoint Configuration Manager",
+            "playbookID": "Microsoft ECM - Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CrowdStrike Falcon Intel v2",
+            "playbookID": "CrowdStrike Falcon Intel v2 - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "SecurityIntelligenceServicesFeed",
+            "playbookID": "SecurityIntelligenceServicesFeed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "RiskIQDigitalFootprint",
+            "playbookID": "RiskIQDigitalFootprint-Test",
+            "fromversion": "5.5.0",
+            "timeout": 500
+        },
+        {
+            "integrations": [
+                "Mail Listener v2",
+                "Mail Sender (New)"
+            ],
             "playbookID": "Mail-Listener Test Playbook",
             "fromversion": "5.0.0",
             "instance_names": [
@@ -2966,6 +2990,16 @@
             "fromversion": "4.5.0"
         },
         {
+            "integrations": "Talos Feed",
+            "playbookID": "FeedTalosTestPlaybook",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "Field polling test",
+            "timeout": 600,
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Hatching Triage - Detonate File",
             "integrations": "Hatching Triage",
             "fromversion": "5.5.0"
@@ -3143,6 +3177,7 @@
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
+        "SNDBOX": "Issue 28826",
         "Hatching Triage": "Community contribution",
 
         "_comment2": "~~~ UNSTABLE ~~~",

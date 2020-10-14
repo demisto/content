@@ -8,11 +8,31 @@ latest_time_of_occurrence_of_incidents2 = "2020-12-25T02:07:37Z"
 number_of_incidents = 3
 
 
+class Mocker:
+    # this mocker will return a different response in every following call
+    def __init__(self):
+        self.counter = 0
+        self.res1 = res1
+        self.res2 = res2
+
+    def execute(self):
+        self.counter = self.counter + 1
+        if self.counter % 2 == 0:
+            return self.res1
+        return self.res2
+
+
 with open("./TestData/incidents.json") as f:
     data = json.load(f)
 
 with open("TestData/incidents2.json") as f2:
     data2 = json.load(f2)
+
+with open("./TestData/get_full_timeline_raw1.json") as f3:
+    res1 = json.load(f3)
+
+with open("./TestData/get_full_timeline_raw2.json") as f4:
+    res2 = json.load(f4)
 
 
 def test_fetch_when_last_run_is_time(mocker):
@@ -179,3 +199,25 @@ def test_fetch_multiple_times_with_new_incidents(mocker):
     # only one incidents is being created out of the 2 that were fetched
     assert len(incidents) == 1
     assert last_run["time"] == latest_time_of_occurrence_of_incidents2
+
+
+def test_def_get_full_timeline(mocker):
+    """Unit test
+    Given
+    - raw response of the http request from 2 different requests
+    - the data is the same but the page number is different
+    When
+    - keep getting the same data in different pages
+    Then
+    make sure the loop stops and doesn't cause a timeout
+    """
+    response = Mocker()
+    mocker.patch.object(RedCanary, "http_get", return_value=response.execute())
+    activities = RedCanary.get_full_timeline(1)
+    result1 = response.execute()
+    result2 = response.execute()
+    # make sure the results are not the same, they are from different pages, but the data is
+    assert not result1 == result2
+    assert result1['data'] == result2['data']
+    # make sure the loop ends
+    assert activities

@@ -34,8 +34,7 @@ configuration:
   defaultvalue: "720"
   type: 0
   required: false
-- display: CSV list of sites to fetch from.
-    If no sites are specified, events from all corporation's sites will be fetched.
+- display: CSV list of sites to fetch from. If no sites are specified, events from all corporation's sites will be fetched.
   name: sites_to_fetch
   defaultvalue: ""
   type: 12
@@ -205,8 +204,7 @@ script:
       - String
       - Country
       - Wildcard
-      description: The type for the list you wish to create on Signal Sciences. Legal
-        types are IP, String, Country or Wildcard
+      description: The type for the list you wish to create on Signal Sciences. Legal types are IP, String, Country or Wildcard
     - name: entries_list
       required: true
       description: A CSV list of values, consistent with the list's type.
@@ -242,8 +240,7 @@ script:
     arguments:
     - name: siteName
       required: true
-      description: The name of the site in Signal Sciences that the list you're searching
-        for belongs to.
+      description: The name of the site in Signal Sciences that the list you're searching for belongs to.
     - name: list_id
       required: true
       description: The ID of the list.
@@ -290,8 +287,7 @@ script:
       predefined:
       - Add
       - Remove
-      description: The method to use, must be "Add" or "Remove". The method
-        will determine whether the given entries are added to or removed from the list.
+      description: The method to use, must be "Add" or "Remove". The method will determine whether the given entries are added to or removed from the list.
     - name: entries_list
       required: true
       description: A CSV list of values, consistent with the list's type.
@@ -331,8 +327,7 @@ script:
       description: The name of the site to add an alert to.
     - name: long_name
       required: true
-      description: A human readable description of the alert. Must be between 3 and
-        25 characters.
+      description: A human readable description of the alert. Must be between 3 and 25 characters.
     - name: interval
       required: true
       auto: PREDEFINED
@@ -340,16 +335,13 @@ script:
       - "1"
       - "10"
       - "60"
-      description: The number of minutes of past traffic to examine. Must be 1, 10
-        or 60.
+      description: The number of minutes of past traffic to examine. Must be 1, 10 or 60.
     - name: tag_name
       required: true
-      description: The name of the tag whose occurrences the alert is watching. Must
-        match an existing tag.
+      description: The name of the tag whose occurrences the alert is watching. Must match an existing tag.
     - name: threshold
       required: true
-      description: ' The number of occurrences of the tag in the specified interval that are required to
-        trigger the alert.'
+      description: ' The number of occurrences of the tag in the specified interval that are required to trigger the alert.'
     - name: enabled
       required: true
       auto: PREDEFINED
@@ -363,9 +355,7 @@ script:
       predefined:
       - info
       - flagged
-      description: A flag that describes what happens when the alert is triggered.
-        "info" creates an incident in the dashboard. "flagged" creates an incident
-        and blocks traffic for 24 hours.
+      description: A flag that describes what happens when the alert is triggered. "info" creates an incident in the dashboard. "flagged" creates an incident and blocks traffic for 24 hours.
     outputs:
     - contextPath: SigSciences.Corp.Site.Alert.ID
       description: The unique ID of the alert.
@@ -383,8 +373,7 @@ script:
       description: The number of minutes of past traffic to examine.
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.Threshold
-      description: The number of occurrences of the tag in the specified interval that are required to
-        trigger the alert.
+      description: The number of occurrences of the tag in the specified interval that are required to trigger the alert.
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
       description: ' The number of seconds that this alert is active.'
@@ -427,8 +416,7 @@ script:
       description: The number of minutes of past traffic to examine.
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.Threshold
-      description: The number of occurrences of the tag in the specified interval that are required to
-        trigger the alert.
+      description: The number of occurrences of the tag in the specified interval that are required to trigger the alert.
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
       description: ' The number of seconds this alert is active.'
@@ -468,8 +456,7 @@ script:
       description: The name of the tag whose occurrences the alert is watching.
     - name: long_name
       required: true
-      description: A human readable description of the alert. Must be between 3 and
-        25 characters.
+      description: A human readable description of the alert. Must be between 3 and 25 characters.
     - name: interval
       required: true
       auto: PREDEFINED
@@ -480,8 +467,7 @@ script:
       description: The number of minutes of past traffic to examine.
     - name: threshold
       required: true
-      description: The number of occurrences of the tag in the specified interval that are required to
-        trigger the alert.
+      description: The number of occurrences of the tag in the specified interval that are required to trigger the alert.
     - name: enabled
       required: true
       auto: PREDEFINED
@@ -495,9 +481,7 @@ script:
       predefined:
       - info
       - flagged
-      description: A flag that describes what happens when the alert is triggered.
-        "info" creates an incident in the dashboard. "flagged" creates an incident
-        and blocks traffic for 24 hours.
+      description: A flag that describes what happens when the alert is triggered. "info" creates an incident in the dashboard. "flagged" creates an incident and blocks traffic for 24 hours.
     outputs:
     - contextPath: SigSciences.Corp.Site.Alert.CreatedDate
       description: The unique ID of the alert.
@@ -515,8 +499,7 @@ script:
       description: The number of minutes of past traffic to examine.
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.Threshold
-      description: The number of occurrences of the tag in the specified interval that are required to
-        trigger the alert.
+      description: The number of occurrences of the tag in the specified interval that are required to trigger the alert.
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
       description: ' The number of seconds that this alert is active.'
@@ -556,8 +539,7 @@ script:
       description: The number of minutes of past traffic to examine.
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.Threshold
-      description: The number of occurrences of the tag in the specified interval that are required to
-        trigger the alert.
+      description: The number of occurrences of the tag in the specified interval that are required to trigger the alert.
       type: number
     - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
       description: ' The number of seconds this alert is active.'
@@ -690,13 +672,10 @@ script:
       predefined:
       - Add
       - Remove
-      description: The method you wish to use - must be "Add" or "Remove". The method
-        will determine whether the entries you provide are added to the list or removed
-        from it
+      description: The method you wish to use - must be "Add" or "Remove". The method will determine whether the entries you provide are added to the list or removed from it
     - name: entries_list
       required: true
-      description: A list of values, consistent with the list's type, separated by
-        commas
+      description: A list of values, consistent with the list's type, separated by commas
       isArray: true
     - name: description
       description: A description for the updated list.
@@ -796,9 +775,7 @@ script:
     - contextPath: SigSciences.Corp.Site.Event.UserAgents
       description: An array of user agents.
     - contextPath: SigSciences.Corp.Site.Event.Action
-      description: If "flagged", the IP address is flagged and subsequent malicious requests
-        will be blocked. If "info", the IP address is flagged and subsequent requests will be
-        logged.
+      description: If "flagged", the IP address is flagged and subsequent malicious requests will be blocked. If "info", the IP address is flagged and subsequent requests will be logged.
     - contextPath: SigSciences.Corp.Site.Event.Reasons
       description: The reason the event was triggered.
     - contextPath: SigSciences.Corp.Site.Event.RequestCount
@@ -814,8 +791,7 @@ script:
       description: The date the event expires (RFC3339 format).
       type: string
     - contextPath: SigSciences.Corp.Site.Event.ExpiredBy
-      description: The email address of the user that expired the event (if the event is expired
-        manually).
+      description: The email address of the user that expired the event (if the event is expired manually).
       type: string
     description: Fetches events from Signal Sciences.
   - name: sigsci-get-event-by-id
@@ -840,9 +816,7 @@ script:
     - contextPath: SigSciences.Corp.Site.Event.UserAgents
       description: An array of user agents.
     - contextPath: SigSciences.Corp.Site.Event.Action
-      description: If "flagged", the IP address is flagged and subsequent malicious requests
-        will be blocked. If "info", the IP address is flagged and subsequent requests will be
-        logged.
+      description: If "flagged", the IP address is flagged and subsequent malicious requests will be blocked. If "info", the IP address is flagged and subsequent requests will be logged.
     - contextPath: SigSciences.Corp.Site.Event.Reasons
       description: The reason the event was triggered.
     - contextPath: SigSciences.Corp.Site.Event.RequestCount
@@ -854,8 +828,7 @@ script:
     - contextPath: SigSciences.Corp.Site.Event.DateExpires
       description: The date the event expires (RFC3339 format).
     - contextPath: SigSciences.Corp.Site.Event.ExpiredBy
-      description: The email address of the user that expired the event (if the event is expired
-        manually).
+      description: The email address of the user that expired the event (if the event is expired manually).
     description: Retrieves an event by the event ID.
   - name: sigsci-expire-event
     arguments:
@@ -876,8 +849,7 @@ script:
     - name: limit
       description: The number of entries to return.
     - name: q
-      description: The search query, in Signal Sciences syntax. If a query
-        is not supplied, no requests will be returned.
+      description: The search query, in Signal Sciences syntax. If a query is not supplied, no requests will be returned.
     outputs:
     - contextPath: SigSciences.Corp.Site.Request.ID
       description: The unique ID of the request.
@@ -960,3 +932,4 @@ script:
     description: Retrieves a request by request ID.
   isfetch: true
   runonce: false
+fromversion: 5.0.0

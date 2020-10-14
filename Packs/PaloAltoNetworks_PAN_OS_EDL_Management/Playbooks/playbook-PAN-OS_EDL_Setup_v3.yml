@@ -1,10 +1,8 @@
 id: PAN-OS EDL Setup v3
 version: -1
-fromversion: 4.0.0
+fromversion: 5.0.0
 name: PAN-OS EDL Setup v3
-description: "Configures an external dynamic list in PAN-OS.\nIn the event that the\
-  \ file exists on the web server, it will sync it to demisto. Then it will create\
-  \ an EDL object and a matching rule."
+description: "Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule."
 starttaskid: '0'
 tasks:
   '0':
@@ -34,8 +32,7 @@ tasks:
       id: 64be095d-1f01-4967-847f-5fc69d2b3400
       version: -1
       name: Is PAN-OS integration enabled?
-      description: Checks if there is an active instance of the PAN-OS integration
-        enabled.
+      description: Checks if there is an active instance of the PAN-OS integration enabled.
       type: condition
       iscommand: false
       brand: ''
@@ -84,8 +81,7 @@ tasks:
       id: 0e0a0837-5121-4762-8144-9b0c65eb4ad1
       version: -1
       name: Is PAN-OS EDL Management integration enabled?
-      description: Checks if there is an active instance of the PAN-OS EDL Management
-        integration enabled.
+      description: Checks if there is an active instance of the PAN-OS EDL Management integration enabled.
       type: condition
       iscommand: false
       brand: ''
@@ -184,8 +180,7 @@ tasks:
       id: 2720f90b-4027-4694-8373-ffeff3461228
       version: -1
       name: Add changes from external file to the internal list
-      description: Fetches the content of the external file and merges it with the
-        content of the internal list.
+      description: Fetches the content of the external file and merges it with the content of the internal list.
       script: '|||pan-os-edl-update-from-external-file'
       type: regular
       iscommand: true
@@ -214,8 +209,7 @@ tasks:
       id: f82881a1-c5ee-4903-800d-49ef69e5620b
       version: -1
       name: Create internal list and external file
-      description: Creates an internal list in Demisto and creates an external file
-        on the web server.
+      description: Creates an internal list in Demisto and creates an external file on the web server.
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
@@ -288,8 +282,7 @@ tasks:
       id: 9021dcf2-bcc7-432e-84aa-bcf740cc4c2b
       version: -1
       name: Create EDL Object
-      description: Creates an external dynamic list in PAN-OS and connects it to the
-        external file.
+      description: Creates an external dynamic list in PAN-OS and connects it to the external file.
       script: '|||panorama-create-edl'
       type: regular
       iscommand: true
@@ -324,8 +317,7 @@ tasks:
       id: a95785fa-5788-42cb-8339-8126d27af956
       version: -1
       name: Is auto-commit defined?
-      description: Checks if the values provided in the arguments are equal. If either
-        of the arguments are missing, "no" is returned.
+      description: Checks if the values provided in the arguments are equal. If either of the arguments are missing, "no" is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -355,8 +347,7 @@ tasks:
       id: 7aa57715-2a37-449d-8213-cd6d546a647e
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This option
-        is available when auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This option is available when auto-commit is "false".
       type: regular
       iscommand: false
       brand: ''
@@ -376,8 +367,7 @@ tasks:
       id: beecfebc-ceaa-462b-81bd-3207a042ea6f
       version: -1
       name: Add the list items to the EDL
-      description: Creates an internal list in Demisto and creates an external file
-        on the web server.
+      description: Creates an internal list in Demisto and creates an external file on the web server.
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
@@ -460,8 +450,7 @@ tasks:
       id: b47e13f7-06e8-42d8-8acc-09d6ab7f4692
       version: -1
       name: Is auto-commit defined?
-      description: Checks if the values provided in the arguments are equal. If either
-        of the arguments are missing, "no" is returned.
+      description: Checks if the values provided in the arguments are equal. If either of the arguments are missing, "no" is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -491,8 +480,7 @@ tasks:
       id: 6d679c49-0133-43a4-829e-2d49df0342b5
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This option
-        is available when auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This option is available when auto-commit is "false".
       type: regular
       iscommand: false
       brand: ''
@@ -652,22 +640,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"18_16_yes\": 0.44,\n    \"18_17_#default#\"\
-  : 0.39,\n    \"1_3_#default#\": 0.1,\n    \"2_3_#default#\": 0.1,\n    \"2_7_yes\"\
-  : 0.59\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2155,\n \
-  \     \"width\": 2145,\n      \"x\": 255,\n      \"y\": 50\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {\n    \"18_16_yes\": 0.44,\n    \"18_17_#default#\": 0.39,\n    \"1_3_#default#\": 0.1,\n    \"2_3_#default#\": 0.1,\n    \"2_7_yes\": 0.59\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2155,\n      \"width\": 2145,\n      \"x\": 255,\n      \"y\": 50\n    }\n  }\n}"
 inputs:
 - key: list-name
   value: {}
   required: true
-  description: "The name of the list that will store the IOCs.\nThe name of the file\
-    \ on the web server. This file name is the same as the name of the list with the\
-    \ extension \".txt\" added."
+  description: "The name of the list that will store the IOCs.\nThe name of the file on the web server. This file name is the same as the name of the list with the extension \".txt\" added."
 - key: ioc-type
   value: {}
   required: true
-  description: The type of the IOCs that the list will store. Can be "ip", "url",
-    or "domain".
+  description: The type of the IOCs that the list will store. Can be "ip", "url", or "domain".
 - key: list-items
   value: {}
   required: true
@@ -699,13 +681,11 @@ inputs:
   value:
     simple: bottom
   required: false
-  description: "The position of the rule in the ruleset. Valid values are:\n  * top\n\
-    \  * bottom\n  * before\n  * after\n\nThe default position is 'top'"
+  description: "The position of the rule in the ruleset. Valid values are:\n  * top\n  * bottom\n  * before\n  * after\n\nThe default position is 'top'"
 - key: relative-rule-name
   value: {}
   required: false
-  description: If the rule-position that is chosen is before or after, specify the
-    rule name to which it is related.
+  description: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
 - key: inbound-or-outbound-rule
   value:
     simple: outbound
@@ -714,8 +694,7 @@ inputs:
 - key: rule-name
   value: {}
   required: false
-  description: The name of the rule to update, or the name of the rule that will be
-    created.
+  description: The name of the rule to update, or the name of the rule that will be created.
 - key: device-group
   value: {}
   required: false

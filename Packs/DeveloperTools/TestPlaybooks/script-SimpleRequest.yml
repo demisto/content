@@ -2,16 +2,22 @@ commonfields:
   id: SimpleRequest
   version: -1
 name: SimpleRequest
-script: |-
+script: >-
   import requests
+
   from urllib3 import disable_warnings
 
+
   # disable insecure warnings
+
   disable_warnings()
+
 
   resp = requests.get('https://www.demisto.com', verify=False)
 
+
   output_msg = 'demisto.is_debug is {}'.format(demisto.is_debug)
+
   demisto.debug(output_msg)
 type: python
 tags: []
@@ -24,3 +30,4 @@ dockerimage: demisto/python3:3.7.4.977
 runas: DBotWeakRole
 tests:
 - No test
+fromversion: 5.0.0

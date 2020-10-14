@@ -8,7 +8,7 @@ with open("TestData/search_output.json") as f:
 
 data = raw["data"]
 threats = data["threats"]
-client = Client("https://www.threathq.com", ("username", "password"), tags=['tag1', 'tag2'])
+client = Client("https://www.threathq.com", ("username", "password"), tags=['tag1', 'tag2'], tlp_color='RED')
 
 
 class TestFetchIndicators:
@@ -28,6 +28,7 @@ class TestFetchIndicators:
             assert first_obj["value"] == value
             assert first_obj["type"] == _type
             assert first_obj['fields']['tags'] == client.tags
+            assert first_obj['fields']['trafficlightprotocol'] == client.tlp_color
         else:
             assert not ans
 
@@ -70,5 +71,6 @@ class TestFetchIndicators:
                 assert expected_value[i] in res["value"]
                 assert expected_type[i] in res["type"]
                 assert res['fields']['tags'] == client.tags
+                assert res['fields']['trafficlightprotocol'] == client.tlp_color
         else:
             assert not results

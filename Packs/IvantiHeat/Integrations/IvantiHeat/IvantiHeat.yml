@@ -40,8 +40,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Ivanti Heat integration to manage issues and
-  create Cortex XSOAR incidents from Ivanti Heat.
+description: Use the Ivanti Heat integration to manage issues and create Cortex XSOAR incidents from Ivanti Heat.
 display: Ivanti Heat
 name: Ivanti Heat
 script:
@@ -54,8 +53,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Start date of object records to return, in the following format
-        2012-01-01T00:00:00Z.
+      description: Start date of object records to return, in the following format 2012-01-01T00:00:00Z.
       isArray: false
       name: from
       required: false
@@ -162,8 +160,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates details of a business object, such as a change, problem, or
-      incident.
+    description: Updates details of a business object, such as a change, problem, or incident.
     execution: false
     name: ivanti-heat-object-update
     outputs:
@@ -293,15 +290,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The request body in JSON format. Alternatively, you can use a script to create the
-        request payload, e.g., IvantiHeatCloseIncidentExample.
+      description: The request body in JSON format. Alternatively, you can use a script to create the request payload, e.g., IvantiHeatCloseIncidentExample.
       isArray: false
       name: request-data
       required: true
       secret: false
     deprecated: false
-    description: Performs quick actions on a business object. For example, close,
-      clone, or resolve an incident or a problem.
+    description: Performs quick actions on a business object. For example, close, clone, or resolve an incident or a problem.
     execution: false
     name: ivanti-heat-object-perform-action
   - arguments:
@@ -312,15 +307,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Fields values in JSON format. Alternatively, you can use a script for create the request
-        payload, e.g., IvantiHeatCreateIncidentExample.
+      description: Fields values in JSON format. Alternatively, you can use a script for create the request payload, e.g., IvantiHeatCreateIncidentExample.
       isArray: false
       name: fields
       required: true
       secret: false
     deprecated: false
-    description: Creates business objects that are available out-of-the-box, such as a Change,
-      Problem, Incident, or any custom defined business object.
+    description: Creates business objects that are available out-of-the-box, such as a Change, Problem, Incident, or any custom defined business object.
     execution: false
     name: ivanti-heat-object-create
     outputs:
@@ -380,3 +373,4 @@ script:
   type: python
 tests:
 - Ivanti Heat - Test
+fromversion: 5.0.0

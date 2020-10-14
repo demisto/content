@@ -1,7 +1,7 @@
 id: block_endpoint_-_carbon_black_response
 version: -1
 name: Block Endpoint - Carbon Black Response
-fromversion: "3.5.0"
+fromversion: "5.0.0"
 description: Carbon Black Response - isolate an endpoint, given a hostname.
 starttaskid: "0"
 tasks:
@@ -179,4 +179,4 @@ outputs:
 - contextPath: Endpoint
   description: The isolated enpoint
 tests:
-  - no test
+- no test

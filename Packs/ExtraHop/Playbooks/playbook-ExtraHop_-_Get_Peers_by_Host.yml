@@ -1,11 +1,8 @@
 id: ExtraHop - Get Peers by Host
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: ExtraHop - Get Peers by Host
-description: Given a host, the playbook will retrieve the peer network devices that
-  communicated with that host in a given time range.  In addition to a list of peers
-  and protocols (sorted by bytes) the playbook returns a link to the ExtraHop Live
-  Activity Map to visualize the peer relationships.
+description: Given a host, the playbook will retrieve the peer network devices that communicated with that host in a given time range.  In addition to a list of peers and protocols (sorted by bytes) the playbook returns a link to the ExtraHop Live Activity Map to visualize the peer relationships.
 starttaskid: "0"
 tasks:
   "0":
@@ -64,8 +61,7 @@ tasks:
       id: cf740c00-0812-4696-8dc1-33877ccf12d5
       version: -1
       name: Search for peer devices in ExtraHop Reveal(x)
-      description: Get the list of all of the peers that communicated with the given
-        host in the specified time range.
+      description: Get the list of all of the peers that communicated with the given host in the specified time range.
       script: '|||extrahop-get-peers'
       type: regular
       iscommand: true
@@ -127,8 +123,7 @@ tasks:
       id: 1b5c7cbd-6f0c-4a82-8314-335cd0e92066
       version: -1
       name: Search for device in ExtraHop Reveal(x)
-      description: Search for the device within ExtraHop using the provided name,
-        IP address, and MAC address.
+      description: Search for the device within ExtraHop using the provided name, IP address, and MAC address.
       script: '|||extrahop-device-search'
       type: regular
       iscommand: true
@@ -177,8 +172,7 @@ tasks:
       id: bcd55624-cc38-49fe-8f93-f45bc97a5d4b
       version: -1
       name: Is there a host?
-      description: Check if the host information required to search for peers was
-        provided.
+      description: Check if the host information required to search for peers was provided.
       type: condition
       iscommand: false
       brand: ""
@@ -264,8 +258,7 @@ tasks:
       id: f93ea96a-09bf-4503-8fe6-fc791422d554
       version: -1
       name: Is ExtraHop Reveal(x) enabled?
-      description: Checks if there is an active instance of the ExtraHop Reveal(x)
-        integration enabled.
+      description: Checks if there is an active instance of the ExtraHop Reveal(x) integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -315,8 +308,7 @@ tasks:
       id: ed8c477b-6860-429c-8c8b-888a1ac3e1d7
       version: -1
       name: Get a link to a live activity map in ExtraHop Reveal(x)
-      description: Get a link to a live activity map for the given device in the specified
-        time range.
+      description: Get a link to a live activity map for the given device in the specified time range.
       script: '|||extrahop-get-activity-map'
       type: regular
       iscommand: true
@@ -383,8 +375,7 @@ inputs:
 - key: name
   value: {}
   required: false
-  description: The name of the device. This searches for matches on all ExtraHop name
-    fields (DHCP, DNS, NetBIOS, Cisco Discovery Protocol, etc).
+  description: The name of the device. This searches for matches on all ExtraHop name fields (DHCP, DNS, NetBIOS, Cisco Discovery Protocol, etc).
 - key: ip
   value: {}
   required: false
@@ -396,13 +387,11 @@ inputs:
 - key: from_time
   value: {}
   required: false
-  description: The beginning timestamp of the time range the playbook will use to
-    search, expressed in seconds since the epoch.
+  description: The beginning timestamp of the time range the playbook will use to search, expressed in seconds since the epoch.
 - key: until_time
   value: {}
   required: false
-  description: The ending timestamp of the time range the playbook will use to search,
-    expressed in seconds since the epoch.
+  description: The ending timestamp of the time range the playbook will use to search, expressed in seconds since the epoch.
 outputs:
 - contextPath: ExtraHop.Device
   description: 'Details on the host and any peer devices found. '

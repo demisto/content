@@ -1,7 +1,7 @@
 id: CanaryTools Test
 version: -1
 name: CanaryTools Test
-fromversion: 4.1.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -655,9 +655,7 @@ tasks:
       id: 4b42307f-00ad-456c-8bfa-273b8bdf1a21
       version: -1
       name: isError
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false

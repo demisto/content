@@ -1,6 +1,6 @@
 id: Test-BPA_Integration
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 contentitemfields:
   propagationLabels: []
 name: Test-BPA_Integration
@@ -138,9 +138,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 765,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 765,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
 inputs: []
 outputs: []
 description: ''

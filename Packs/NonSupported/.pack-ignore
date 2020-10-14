@@ -102,3 +102,21 @@ ignore=BA101
 
 [file:NonSupported]
 ignore=PA116
+
+[file:integration-SecureWorks_V350.yml]
+ignore=IN126
+
+[file:QRadar_5_4_9.yml]
+ignore=IN126
+
+[file:JiraV2_old.yml]
+ignore=IN126
+
+[file:integration-Zendesk_3_1_0.yml]
+ignore=IN126
+
+[file:integration-jira_2.5.yml]
+ignore=IN126
+
+[file:integration-ProtectWise_3_1_0.yml]
+ignore=IN126

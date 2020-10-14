@@ -2,7 +2,7 @@ commonfields:
   id: Print
   version: -1
 name: Print
-script: |
+script: >
   return {
       HumanReadableFormat: formats.markdown,
       Type: entryTypes.note,
@@ -18,9 +18,8 @@ args:
 - name: value
   required: true
   default: true
-  description: The value to print to war room, if you want to print a value stored
-    in context, value should be in format ${key}, where key is the name of context
-    key
+  description: The value to print to war room, if you want to print a value stored in context, value should be in format ${key}, where key is the name of context key
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

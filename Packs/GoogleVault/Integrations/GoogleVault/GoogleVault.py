@@ -1314,6 +1314,7 @@ def get_export_command(export_id, matter_id):
 
 
 def download_export_command():
+    out_file = None
     try:
         bucket_name = demisto.getArg('bucketName')
         download_ID = demisto.getArg('downloadID')
@@ -1326,26 +1327,34 @@ def download_export_command():
             return_error('Unable to download export. Error: {}'.format(err_msg))
         else:
             raise ex
+    finally:
+        if out_file:
+            out_file.close()
 
 
 def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
-    out_file = download_storage_object(object_ID, bucket_name)
-    out_file_json = json.loads(xml2json(out_file.getvalue()))
+    out_file = None
+    try:
+        out_file = download_storage_object(object_ID, bucket_name)
+        out_file_json = json.loads(xml2json(out_file.getvalue()))
 
-    if not out_file_json['Root']['Batch'].get('Documents'):
-        demisto.results('The export given contains 0 documents')
-        sys.exit(0)
-    documents = out_file_json['Root']['Batch']['Documents']['Document']
+        if not out_file_json['Root']['Batch'].get('Documents'):
+            demisto.results('The export given contains 0 documents')
+            sys.exit(0)
+        documents = out_file_json['Root']['Batch']['Documents']['Document']
 
-    if type(documents) is dict:
-        documents = [documents]
+        if type(documents) is dict:
+            documents = [documents]
 
-    dictList = build_dict_list(documents)
+        if len(documents) > max_results:
+            documents = documents[:max_results]
 
-    if len(dictList) > max_results:
-        return dictList[0:max_results]
+        dictList = build_dict_list(documents)
+        return dictList
 
-    return dictList
+    finally:
+        if out_file:
+            out_file.close()
 
 
 def get_drive_results_command():
@@ -1403,7 +1412,6 @@ def get_mail_and_groups_results_command(inquiryType):
         view_ID = demisto.getArg('viewID')
         bucket_name = demisto.getArg('bucketName')
         output = download_and_sanitize_export_results(view_ID, bucket_name, max_results)
-
         if not (output[0].get('From') or output[0].get('To') or output[0].get('Subject')):
             return_error(
                 'Error displaying results: Corpus of the invoked command and the supplied ViewID does not match')

@@ -1,0 +1,5 @@
+!dnsdb-rdata type=name value=www.farsightsecurity.com
+!dnsdb-summarize-rdata type=name value=www.farsightsecurity.com
+!dnsdb-rrset owner_name=*.farsightsecurity.com type=NS limit=5
+!dnsdb-summarize-rrset owner_name=*.farsightsecurity.com type=NS limit=5
+!dnsdb-rate-limit

@@ -1723,7 +1723,8 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         }
     }
     service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.compose',
-                                                            'https://www.googleapis.com/auth/gmail.send'])
+                                                            'https://www.googleapis.com/auth/gmail.send'],
+                          delegated_user=emailfrom)
     result = service.users().messages().send(**command_args).execute()
     return result
 

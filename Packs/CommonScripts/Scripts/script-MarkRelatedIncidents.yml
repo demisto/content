@@ -2,10 +2,13 @@ commonfields:
   id: MarkRelatedIncidents
   version: -1
 name: MarkRelatedIncidents
-script: |
+script: >
   var related = argToList(args.related);
+
   var openIncidents = [];
+
   var md = '### Related incidents found\n';
+
   for (var i=0; i<related.length; i++) {
       var incidentDetails = executeCommand('getIncidents', {id: related[i]});
       if (isValidRes(incidentDetails)) {
@@ -15,12 +18,15 @@ script: |
           openIncidents.push(related[i]);
       }
   }
+
   var entry = {Type: entryTypes.note, Contents: related, ContentsFormat: formats.json,
       HumanReadable: '### Related incident found\n- ' + incidents[0].name + ' [' + incidents[0].id + '](/#/Details/' + incidents[0].id + ')\n', Note: true};
   var entryJson = JSON.stringify([entry]);
+
   for (var i=0; i<openIncidents.length; i++) {
       executeCommand('addEntries', {id: openIncidents[i], entries: entryJson});
   }
+
 
   return {Type: entryTypes.note, Contents: related, ContentsFormat: formats.json, HumanReadable: md, Note: true};
 type: javascript
@@ -36,3 +42,7 @@ args:
   description: The list of related incident IDs we want to mark
   isArray: true
 scripttarget: 0
+runas: DBotRole
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

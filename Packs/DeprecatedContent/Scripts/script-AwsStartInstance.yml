@@ -2,9 +2,10 @@ commonfields:
   id: AwsStartInstance
   version: -1
 name: AwsStartInstance
-script: |2
+script: >2
 
   resp = demisto.executeCommand("start-instance", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -19,7 +20,7 @@ script: |2
 type: python
 tags:
 - Amazon Web Services
-comment: This script is deprecated. Use the AWS-EC2 integration instead.
+comment: Deprecated. This script is deprecated. Use the AWS-EC2 integration instead.
 system: true
 args:
 - default: true
@@ -32,3 +33,4 @@ deprecated: true
 dependson:
   must:
   - start-instance
+fromversion: 5.0.0

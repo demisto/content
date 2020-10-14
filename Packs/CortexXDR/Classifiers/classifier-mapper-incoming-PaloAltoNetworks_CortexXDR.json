@@ -13,6 +13,10 @@
 					"complex": null,
 					"simple": "alert_count"
 				},
+				"XDR Alerts": {
+					"complex": null,
+					"simple": "alerts"
+				},
 				"XDR Assigned User Email": {
 					"complex": null,
 					"simple": "assigned_user_mail"
@@ -39,6 +43,10 @@
 					},
 					"simple": ""
 				},
+				"XDR File Artifacts": {
+					"complex": null,
+					"simple": "file_artifacts"
+				},
 				"XDR High Severity Alert Count": {
 					"complex": null,
 					"simple": "high_severity_alert_count"
@@ -59,6 +67,10 @@
 					"complex": null,
 					"simple": "med_severity_alert_count"
 				},
+				"XDR Network Artifacts": {
+					"complex": null,
+					"simple": "network_artifacts"
+				},
 				"XDR Notes": {
 					"complex": null,
 					"simple": "notes"
@@ -71,6 +83,10 @@
 					"complex": null,
 					"simple": "severity"
 				},
+				"XDR Status v2": {
+					"complex": null,
+					"simple": "status"
+				},
 				"XDR Status": {
 					"complex": null,
 					"simple": "status"
@@ -82,6 +98,26 @@
 				"XDR User Count": {
 					"complex": null,
 					"simple": "user_count"
+				},
+				"dbotMirrorId": {
+					"complex": null,
+					"simple": "incident_id"
+				},
+				"dbotMirrorDirection": {
+					"complex": null,
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorInstance": {
+					"complex": null,
+					"simple": "mirror_instance"
+				},
+				"IncomingMirrorError": {
+					"complex": null,
+					"simple": "in_mirror_error"
+				},
+				"OutgoingMirrorError": {
+					"complex": null,
+					"simple": "out_mirror_error"
 				},
 				"occurred": {
 					"complex": {
@@ -97,9 +133,88 @@
 					},
 					"simple": ""
 				},
-				"severity": {
+				"owner": {
 					"complex": null,
-					"simple": "severity"
+					"simple": "owner"
+				},
+				"severity": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "low"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "2"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "medium"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "3"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "high"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					},
+					"simple": ""
 				}
 			}
 		},
@@ -164,9 +279,9 @@
 					"complex": null,
 					"simple": "resolve_comment"
 				},
-				"XDR Severity": {
+				"XDR Status v2": {
 					"complex": null,
-					"simple": "severity"
+					"simple": "status"
 				},
 				"XDR Status": {
 					"complex": null,
@@ -195,8 +310,83 @@
 					"simple": ""
 				},
 				"severity": {
-					"complex": null,
-					"simple": "severity"
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "low"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "2"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "medium"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "3"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "high"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					},
+					"simple": ""
 				}
 			}
 		},

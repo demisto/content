@@ -228,8 +228,7 @@ inputs:
       root: PaloAltoNetworksXDR
       accessor: Endpoint.endpoint_id
   required: false
-  description: The endpoint ID (string) to isolate using Cortex XDR. You can retrieve
-    the string from the xdr-get-endpoints command.
+  description: The endpoint ID (string) to isolate using Cortex XDR. You can retrieve the string from the xdr-get-endpoints command.
   playbookInputQuery:
 outputs:
 - contextPath: CbResponse.Sensors.CbSensorID
@@ -244,6 +243,6 @@ outputs:
 - contextPath: Traps.IsolateResult.Status
   description: The status of the isolation operation.
   type: string
-fromversion: 4.5.0
+fromversion: 5.0.0
 tests:
 - No Test

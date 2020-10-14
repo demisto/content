@@ -144,8 +144,7 @@ tasks:
       id: 64b50ef2-9781-4ae7-8006-3d9767949885
       version: -1
       name: google-kms-get-key
-      description: Returns metadata for a given CryptoKey, as well as its primary
-        CryptoKeyVersion.
+      description: Returns metadata for a given CryptoKey, as well as its primary CryptoKeyVersion.
       script: '|||google-kms-get-key'
       type: regular
       iscommand: true
@@ -265,8 +264,7 @@ tasks:
       id: 3ebc1f45-7bfa-4565-8499-64ed331ad91b
       version: -1
       name: google-kms-get-key
-      description: Returns metadata for a given CryptoKey, as well as its primary
-        CryptoKeyVersion.
+      description: Returns metadata for a given CryptoKey, as well as its primary CryptoKeyVersion.
       script: '|||google-kms-get-key'
       type: regular
       iscommand: true
@@ -386,8 +384,7 @@ tasks:
       id: b56a42b0-36c7-4c22-8d47-b3debd758ae1
       version: -1
       name: google-kms-get-key
-      description: Returns metadata for a given CryptoKey, as well as its primary
-        CryptoKeyVersion.
+      description: Returns metadata for a given CryptoKey, as well as its primary CryptoKeyVersion.
       script: '|||google-kms-get-key'
       type: regular
       iscommand: true
@@ -507,8 +504,7 @@ tasks:
       id: 876c5f24-4a6f-42a8-80ad-041fd9d0984f
       version: -1
       name: google-kms-get-key
-      description: Returns metadata for a given CryptoKey, as well as its primary
-        CryptoKeyVersion.
+      description: Returns metadata for a given CryptoKey, as well as its primary CryptoKeyVersion.
       script: '|||google-kms-get-key'
       type: regular
       iscommand: true
@@ -1053,3 +1049,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

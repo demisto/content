@@ -1012,8 +1012,7 @@ tasks:
       id: 06d7e6e3-6b69-42b9-8a1a-e0fd44ce7234
       version: -1
       name: alienvault-get-passive-dns-data-by-indicator command
-      description: Passive dns records observed by AlienVault Labs pointing to this
-        indicator
+      description: Passive dns records observed by AlienVault Labs pointing to this indicator
       script: '|||alienvault-get-passive-dns-data-by-indicator'
       type: regular
       iscommand: true
@@ -1668,3 +1667,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

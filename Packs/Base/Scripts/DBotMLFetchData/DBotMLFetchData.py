@@ -23,6 +23,9 @@ from datetime import datetime
 import tldextract
 from email.utils import parseaddr
 
+EXECUTION_JSON_FIELD = 'last_execution'
+VERSION_JSON_FIELD = 'script_version'
+
 MAX_ALLOWED_EXCEPTIONS = 20
 
 NO_FETCH_EXTRACT = tldextract.TLDExtract(suffix_list_urls=None)
@@ -57,12 +60,13 @@ DOMAIN_TO_RANK = None
 WORD_TO_REGEX = None
 WORD_TO_NGRAMS = None
 
-FETCH_DATA_VERSION = '1.0'
+FETCH_DATA_VERSION = '2.0'
 LAST_EXECUTION_LIST_NAME = 'FETCH_DATA_ML_LAST_EXECUTION'
 MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 500
 MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION = 3000
 FROM_DATA_FIRST_EXECUTION = FROM_DATA_PERIODIC_EXECUTION = '30 days ago'
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+FIRST_EXECUTION_ARGUMENTS = {'limit': MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION, 'fromDate': FROM_DATA_FIRST_EXECUTION}
 
 IMG_FORMATS = ['.jpeg', '.gif', '.bmp', '.png', '.jfif', '.tiff', '.eps', '.indd', '.jpg']
 
@@ -88,6 +92,11 @@ def timeout_handler(signum, frame):  # Custom signal handler
 
 # Change the behavior of SIGALRM
 signal.signal(signal.SIGALRM, timeout_handler)
+
+
+class ShortTextException(Exception):
+    pass
+
 
 '''
 Define heuristics for finding label field
@@ -519,7 +528,7 @@ def transform_text_to_ngrams_counter(email_body_word_tokenized, email_subject_wo
     return text_ngrams
 
 
-def extract_features_from_incident(row):
+def extract_features_from_incident(row, label_fields):
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_ATTACHMENT_FIELD, EMAIL_HEADERS_FIELD
     email_body = row[EMAIL_BODY_FIELD] if EMAIL_BODY_FIELD in row else ''
     email_subject = row[EMAIL_SUBJECT_FIELD] if EMAIL_SUBJECT_FIELD in row else ''
@@ -536,7 +545,7 @@ def extract_features_from_incident(row):
     email_body, email_subject = email_body.strip().lower(), email_subject.strip().lower()
     text = email_subject + ' ' + email_body
     if len(text) < MIN_TEXT_LENGTH:
-        raise ValueError('Text length is shorter than allowed minimum of: {}'.format(MIN_TEXT_LENGTH))
+        raise ShortTextException('Text length is shorter than allowed minimum of: {}'.format(MIN_TEXT_LENGTH))
     email_body_word_tokenized = word_tokenize(email_body)
     email_subject_word_tokenized = word_tokenize(email_subject)
     text_ngrams = transform_text_to_ngrams_counter(email_body_word_tokenized, email_subject_word_tokenized)
@@ -551,8 +560,7 @@ def extract_features_from_incident(row):
     headers_features = get_headers_features(email_headers)
     url_feautres = get_url_features(email_body=email_body, email_html=email_html, soup=soup)
     attachments_features = get_attachments_features(email_attachments=email_attachments)
-
-    return {
+    res = {
         'ngrams_features': ngrams_features,
         'lexical_features': lexical_features,
         'characters_features': characters_features,
@@ -560,21 +568,21 @@ def extract_features_from_incident(row):
         'ml_features': ml_features,
         'headers_features': headers_features,
         'url_features': url_feautres,
-        'attachments_features': attachments_features
+        'attachments_features': attachments_features,
+        'created': str(row['created']) if 'created' in row else None,
+        'id': str(row['id']) if 'id' in row else None,
+
     }
+    for label in label_fields:
+        if label in row:
+            res[label] = row[label]
+        else:
+            res[label] = float('nan')
+    return res
 
 
-def extract_features_from_all_incidents(incidents_df):
-    X = {  # type: ignore
-        'ngrams_features': [],
-        'lexical_features': [],
-        'characters_features': [],
-        'html_feature': [],
-        'ml_features': [],
-        'headers_features': [],
-        'url_features': [],
-        'attachments_features': []
-    }   # type: ignore
+def extract_features_from_all_incidents(incidents_df, label_fields):
+    X = []
     exceptions_log = []
     exception_indices = set()
     timeout_indices = set()
@@ -583,13 +591,14 @@ def extract_features_from_all_incidents(incidents_df):
         signal.alarm(5)
         try:
             start = time.time()
-            X_i = extract_features_from_incident(row)
+            X_i = extract_features_from_incident(row, label_fields)
             end = time.time()
-            for k, v in X_i.items():
-                X[k].append(v)
+            X.append(X_i)
             durations.append(end - start)
         except TimeoutException:
             timeout_indices.add(index)
+        except ShortTextException:
+            exceptions_log.append(traceback.format_exc())
         except Exception:
             exception_indices.add(index)
             exceptions_log.append(traceback.format_exc())
@@ -597,16 +606,15 @@ def extract_features_from_all_incidents(incidents_df):
                 break
         finally:
             signal.alarm(0)
-    n_fetched_incidents = len(incidents_df) - len(exception_indices) - len(timeout_indices)
-    return X, n_fetched_incidents, exceptions_log, exception_indices, timeout_indices, durations
+    return X, Counter(exceptions_log).most_common(), exception_indices, timeout_indices, durations
 
 
 def extract_data_from_incidents(incidents, input_label_field=None):
     incidents_df = pd.DataFrame(incidents)
     if 'created' in incidents_df:
         incidents_df['created'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))   # type: ignore
-        incidents_df.sort_values(by='created', inplace=True, ascending=False)
-        incidents_df_for_finding_labels_fields_candidates = incidents_df.head(500)
+        incidents_df_for_finding_labels_fields_candidates = incidents_df.sort_values(by='created', ascending=False)\
+            .head(500)
     else:
         incidents_df_for_finding_labels_fields_candidates = incidents_df
     if input_label_field is None:
@@ -618,20 +626,16 @@ def extract_data_from_incidents(incidents, input_label_field=None):
         label_fields = [input_label_field]
     for label in label_fields:
         incidents_df[label].replace('', float('nan'), regex=True, inplace=True)
-    incidents_df.dropna(how='all', subset=label_fields, inplace=True)
+    incidents_df = incidents_df.dropna(how='all', subset=label_fields).reset_index()
     y = []
     for i, label in enumerate(label_fields):
         y.append({'field_name': label,
-                  'rank': '#{}'.format(i + 1),
-                  'values': incidents_df[label].tolist()})
+                  'rank': '#{}'.format(i + 1)})
     load_external_resources()
-    X, n_fetched_incidents, exceptions_log, exception_indices, timeout_indices, durations\
-        = extract_features_from_all_incidents(incidents_df)
-    indices_to_drop = exception_indices.union(timeout_indices)
-    for label_dict in y:
-        label_dict['values'] = [l for i, l in enumerate(label_dict['values']) if i not in indices_to_drop]
+    X, exceptions_log, exception_indices, timeout_indices, durations\
+        = extract_features_from_all_incidents(incidents_df, label_fields)
     return {'X': X,
-            'n_fetched_incidents': n_fetched_incidents,
+            'n_fetched_incidents': len(X),
             'y': y,
             'log':
                 {'exceptions': exceptions_log,
@@ -653,23 +657,27 @@ def return_json_entry(obj):
 def get_args_based_on_last_execution():
     lst = demisto.executeCommand('getList', {'listName': LAST_EXECUTION_LIST_NAME})
     if isError(lst):  # if first execution
-        return {'limit': MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION, 'fromDate': FROM_DATA_FIRST_EXECUTION}
-    else:
-        last_execution_datetime = datetime.strptime(lst[0]['Contents'], DATETIME_FORMAT)
-        try:
-            query = 'modified:>="{}"'.format(datetime.strftime(last_execution_datetime, MODIFIED_QUERY_TIMEFORMAT))
-        except Exception:
-            query = None  # type: ignore
-        finally:
-            res = {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION, 'fromDate': FROM_DATA_PERIODIC_EXECUTION}
-            if query is not None:
-                res['query'] = query  # type: ignore
-            return res
+        return FIRST_EXECUTION_ARGUMENTS
+    try:
+        list_content = lst[0]['Contents']
+        last_execution_json_data = json.loads(list_content)
+        last_execution_time = last_execution_json_data[EXECUTION_JSON_FIELD]
+        last_execution_version = last_execution_json_data[VERSION_JSON_FIELD]
+        if last_execution_version != FETCH_DATA_VERSION:
+            return FIRST_EXECUTION_ARGUMENTS
+        last_execution_datetime = datetime.strptime(last_execution_time, DATETIME_FORMAT)
+        query = 'modified:>="{}"'.format(datetime.strftime(last_execution_datetime, MODIFIED_QUERY_TIMEFORMAT))
+        return {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION,
+                'fromDate': FROM_DATA_PERIODIC_EXECUTION,
+                'query': query}
+    except Exception:
+        return FIRST_EXECUTION_ARGUMENTS
 
 
 def update_last_execution_time():
     execution_datetime_str = datetime.strftime(datetime.now(), DATETIME_FORMAT)
-    res = demisto.executeCommand("createList", {"listName": LAST_EXECUTION_LIST_NAME, "listData": execution_datetime_str})
+    list_content = json.dumps({EXECUTION_JSON_FIELD: execution_datetime_str, VERSION_JSON_FIELD: FETCH_DATA_VERSION})
+    res = demisto.executeCommand("createList", {"listName": LAST_EXECUTION_LIST_NAME, "listData": list_content})
     if is_error(res):
         demisto.results(res)
 

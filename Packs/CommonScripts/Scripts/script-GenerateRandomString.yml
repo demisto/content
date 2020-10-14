@@ -4,11 +4,15 @@ commonfields:
 name: GenerateRandomString
 comment: |-
   Generates random string
-script: |
+script: >
   import json
+
   import string
+
   import time
+
   import random
+
 
   def create_entry(title,data, ec):
       return {
@@ -30,12 +34,18 @@ script: |
 
 
   length = int(demisto.args()["Length"])
+
   punctuation = demisto.args()["Punctuation"]
+
   lowercase = demisto.args()["Lowercase"]
+
   uppercase = demisto.args()["Uppercase"]
+
   digits = demisto.args()["Digits"]
 
+
   characters = ""
+
   if length > 0:
       if uppercase == "True" or lowercase == "True" or digits == "True" or punctuation == "True":
 
@@ -59,12 +69,16 @@ script: |
       sys.exit(0)
 
   password = ""
+
   for x in range(0,length):
       password += random.SystemRandom(random.seed(time.time())).choice(characters)
 
   raw = {"RandomString": password}
+
   raw = json.loads(json.dumps(raw))
+
   ec = {'RandomString': password }
+
   demisto.results(create_entry('RandomString Generated.',raw, ec))
 type: python
 subtype: python2
@@ -109,4 +123,5 @@ outputs:
 scripttarget: 0
 runonce: false
 tests:
-  - RandomStringGenerateTest
+- RandomStringGenerateTest
+fromversion: 5.0.0

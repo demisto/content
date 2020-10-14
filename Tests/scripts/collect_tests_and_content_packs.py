@@ -18,7 +18,14 @@ from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
-coloredlogs.install(level=logging.DEBUG, fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s')
+coloredlogs.install(level=logging.DEBUG,
+                    fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s',
+                    level_styles={
+                        'critical': {'bold': True, 'color': 'red'},
+                        'debug': {'color': 'cyan'},
+                        'error': {'color': 'red'},
+                        'info': {},
+                        'warning': {'color': 'yellow'}})
 
 
 class TestConf(object):
@@ -75,6 +82,17 @@ class TestConf(object):
                     tested_integrations.append(t['integrations'])
 
         return tested_integrations
+
+    def get_packs_of_collected_tests(self, collected_tests, id_set):
+        packs = set([])
+        if collected_tests:
+            for test_obj in id_set.get('TestPlaybooks', []):
+                for test_id, test_data in test_obj.items():
+                    test_obj_name = test_obj[test_id].get('name')
+                    test_obj_pack = test_obj[test_id].get('pack')
+                    if test_obj_name in collected_tests and test_obj_pack:
+                        packs.add(test_obj_pack)
+        return packs
 
     def get_packs_of_tested_integrations(self, collected_tests, id_set):
         packs = set([])
@@ -233,7 +251,6 @@ def get_modified_files_for_testing(files_string):
             file_path = file_data[2]
         else:
             file_path = file_data[1]
-
         # ignoring deleted files.
         # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
         if ((file_status.lower() == 'm' or file_status.lower() == 'a' or file_status.lower().startswith('r'))
@@ -260,7 +277,7 @@ def get_modified_files_for_testing(files_string):
                     re.match(PACKS_INDICATOR_TYPE_JSON_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
-            elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
+            elif checked_type(file_path, JSON_ALL_INDICATOR_FIELDS_REGEXES):
                 is_indicator_json = True
 
             # conf.json
@@ -1038,14 +1055,14 @@ def is_test_uses_active_integration(integration_ids, conf=deepcopy(CONF)):
 
 def get_random_tests(tests_num, rand, conf=deepcopy(CONF), id_set=deepcopy(ID_SET), server_version='0'):
     """Gets runnable tests for the server version"""
-    tests = set([])
-    test_ids = conf.get_test_playbook_ids()
+    all_test_ids = conf.get_test_playbook_ids()
+    runnable_test_ids = [test_id for test_id in all_test_ids if is_test_runnable(test_id, id_set, conf, server_version)]
+    if len(runnable_test_ids) <= tests_num:
+        random_test_ids_to_run = runnable_test_ids
+    else:
+        random_test_ids_to_run = rand.sample(runnable_test_ids, k=tests_num)
 
-    while len(tests) < tests_num:
-        test = rand.choice(test_ids)
-        if is_test_runnable(test, id_set, conf, server_version):
-            tests.add(test)
-    return tests
+    return set(random_test_ids_to_run)
 
 
 def get_tests_for_pack(pack_path):
@@ -1104,7 +1121,8 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
-def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=deepcopy(CONF),
+def get_test_list_and_content_packs_to_install(files_string, branch_name, minimum_server_version='0',
+                                               conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
 
@@ -1149,7 +1167,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if not tests:
         rand = random.Random(branch_name)
         tests = get_random_tests(
-            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
+            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=minimum_server_version)
         packs_to_install = get_content_pack_name_of_test(tests, id_set)
         if changed_common:
             logging.debug('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
@@ -1158,9 +1176,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
         else:
             logging.debug("Running Sanity check only")
 
-            tests.add('TestCommonPython')  # test with no integration configured
-            tests.add('HelloWorld-Test')  # test with integration configured
-            packs_to_install.add("HelloWorld")
+        tests.add('TestCommonPython')  # test with no integration configured
+        tests.add('HelloWorld-Test')  # test with integration configured
+        packs_to_install.add("HelloWorld")
 
     if changed_common:
         tests.add('TestCommonPython')
@@ -1175,13 +1193,27 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_tested_integrations)
 
+    packs_of_collected_tests = conf.get_packs_of_collected_tests(tests, id_set)
+    packs_to_install = packs_to_install.union(packs_of_collected_tests)
+
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
+
+    # remove tests that were skipped via the pack-ignore
+    ignored_tests_set = set()
+    for pack in packs_to_install:
+        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
+    if ignored_tests_set:
+        readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
+        logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
+        tests.difference_update(ignored_tests_set)
 
     return tests, packs_to_install
 
 
 def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id_set: dict) -> Tuple[str, str]:
-    """Computes the lowest from version of the modified files and the highest to version of the modified files
+    """Computes the lowest from version of the modified files, the highest from version and the highest to version of
+    the modified files.
+    In case that max_from_version is higher than max to version - to version will be the the highest default.
     Args:
         all_modified_files_paths: All modified files
         id_set: the content of the id.set_json
@@ -1192,6 +1224,7 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
     """
     max_to_version = LooseVersion('0.0.0')
     min_from_version = LooseVersion('99.99.99')
+    max_from_version = LooseVersion('0.0.0')
     for artifacts in id_set.values():
         for artifact_dict in artifacts:
             for artifact_details in artifact_dict.values():
@@ -1200,14 +1233,16 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
                     to_version = artifact_details.get('toversion')
                     if from_version:
                         min_from_version = min(min_from_version, LooseVersion(from_version))
+                        max_from_version = max(max_from_version, LooseVersion(from_version))
                     if to_version:
                         max_to_version = max(max_to_version, LooseVersion(to_version))
-    if max_to_version.vstring == '0.0.0':
+    if max_to_version.vstring == '0.0.0' or max_to_version < max_from_version:
         max_to_version = LooseVersion('99.99.99')
     if min_from_version.vstring == '99.99.99':
         min_from_version = LooseVersion('0.0.0')
     logging.debug(f'modified files are {all_modified_files_paths}')
     logging.debug(f'lowest from version found is {min_from_version}')
+    logging.debug(f'highest from version found is {max_from_version}')
     logging.debug(f'highest to version found is {max_to_version}')
     return min_from_version.vstring, max_to_version.vstring
 
@@ -1218,19 +1253,42 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
     two_before_ga = two_before_ga or AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
     one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
     ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
+    """
+    The environment naming is being phased out due to it being difficult to follow. In this case,
+    Demisto 6.0 is the GA, Demisto PreGA is (5.5), Demisto GA is one before GA (5.0), Demisto one
+    before GA is two before GA (4.5)
+    """
     envs_to_test = {
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
-        'Demisto two before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
-        'Demisto one before GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
-        'Demisto GA': is_runnable_in_server_version(from_version, ga, to_version),
+        'Demisto one before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
+        'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
+        'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
 
 
-def create_test_file(is_nightly, skip_save=False):
+def get_list_of_files_in_the_pack(path_to_pack):
+    file_paths = []
+    for root, dirs, files in os.walk(path_to_pack):
+        for file in files:
+            file_paths.append(os.path.join(root, file))
+    return file_paths
+
+
+def changed_files_to_string(changed_files):
+    files_with_status = []
+
+    for file_path in changed_files:
+        file_with_status = f'M\t{file_path}'
+        files_with_status.append(file_with_status)
+
+    return '\n'.join(files_with_status)
+
+
+def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
     packs_to_install_string = ''
@@ -1240,7 +1298,10 @@ def create_test_file(is_nightly, skip_save=False):
         branch_name = branch_name_reg.group(1)
 
         logging.info("Getting changed files from the branch: {0}".format(branch_name))
-        if branch_name != 'master':
+        if path_to_pack:
+            changed_files = get_list_of_files_in_the_pack(path_to_pack)
+            files_string = changed_files_to_string(changed_files)
+        elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
             if os.getenv('CONTRIB_BRANCH'):
@@ -1252,9 +1313,10 @@ def create_test_file(is_nightly, skip_save=False):
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
-        two_before_ga = AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
+        minimum_server_version = AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
 
-        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga)
+        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
+                                                                             minimum_server_version)
         tests_string = '\n'.join(tests)
         packs_to_install_string = '\n'.join(packs_to_install)
 
@@ -1284,10 +1346,11 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--nightly', type=tools.str2bool, help='Is nightly or not')
     parser.add_argument('-s', '--skip-save', type=tools.str2bool,
                         help='Skipping saving the test filter file (good for simply doing validation)')
+    parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly, options.skip_save)
+    create_test_file(options.nightly, options.skip_save, options.changed_pack_path)
     if not _FAILED:
         logging.info("Finished test configuration")
         sys.exit(0)

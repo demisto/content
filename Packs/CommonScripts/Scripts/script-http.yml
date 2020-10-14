@@ -3,23 +3,27 @@ commonfields:
   version: -1
 name: http
 comment: Sends http request. Returns the response as json.
-script: |+
+script: >+
   var requestObj = {
       Method: args.method,
   };
+
 
   if (args.username) {
       requestObj.Username = args.username;
   }
 
+
   if (args.username) {
       requestObj.Password = args.password;
   }
+
 
   if (args.body) {
       var body = (typeof args.body) === 'string' ? args.body : JSON.stringify(args.body);
       requestObj.Body = body;
   }
+
 
   if (args.headers) {
       var headersJs = {};
@@ -34,14 +38,20 @@ script: |+
       }
       requestObj.Headers = headersJs;
   }
+
   if (args.saveAsFile === 'yes') {
       requestObj.SaveToFile = true;
   }
 
+
   var unsecure = (args.unsecure === 'true' || args.insecure === 'true');
+
   var proxy = (args.proxy === 'true');
+
   var res = http(args.url, requestObj, unsecure, proxy);
+
   var fileName;
+
   if (args.filename) {
       fileName = args.filename;
   } else if (res.Headers['Content-disposition']) {
@@ -49,6 +59,7 @@ script: |+
   } else {
       fileName = 'http-file';
   }
+
 
   if (args.saveAsFile === 'yes') {
       return {
@@ -58,6 +69,7 @@ script: |+
           Contents: fileName
       };
   }
+
 
   return {
       Type: entryTypes.note,
@@ -123,4 +135,4 @@ outputs:
 - contextPath: HttpRequest.Response
   description: The response for the http request
 scripttarget: 0
-fromversion: 3.5.0
+fromversion: 5.0.0

@@ -34,8 +34,14 @@ class Client(BaseClient):
 
         return self._http_request('GET', f'/ipr/{ip}')
 
-    def url_report(self, url: str) -> dict:
-        return self._http_request('GET', f'/url/{url}').get('result')
+    def url_report(self, url: str):
+        try:
+            response = self._http_request('GET', f'/url/{url}')
+        except Exception as e:
+            if "Not Found" in str(e):
+                return "Not Found"
+            raise
+        return response.get('result')
 
     def cve_report(self, code: str) -> dict:
         return self._http_request('GET', f'/vulnerabilities/search/{code}')
@@ -202,7 +208,9 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
 
     for domain in domains:
         report = client.url_report(domain)
-
+        if report == "Not Found":
+            markdown += f'Domain: {domain} not found\n'
+            continue
         outputs = {'Name': report['url']}
         dbot_score = {
             'Indicator': report['url'],
@@ -249,7 +257,9 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
     for url in urls:
         report = client.url_report(url)
-
+        if report == "Not Found":
+            markdown += f'URL: {url} not found\n'
+            continue
         outputs = {'Data': report['url']}
         dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',
                       'Score': calculate_score(report['score'], threshold)}

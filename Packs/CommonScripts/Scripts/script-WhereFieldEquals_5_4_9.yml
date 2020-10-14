@@ -3,19 +3,25 @@ commonfields:
   version: -1
 name: WhereFieldEquals
 toversion: 5.4.9
-script: |+
+script: >+
   var value = args.value;
+
   var field = args.field;
+
   var equalTo = args.equalTo;
+
   var getField = args.getField;
+
 
   if (!Array.isArray(value)) {
       value = [value];
   }
 
+
   var res = value.filter(function(item) {
      return item && item[field] == equalTo; // using '==' and not '===' to handle number equality better
   });
+
 
   if (getField) {
       if (typeof getField !== 'string') {
@@ -25,6 +31,7 @@ script: |+
       }
   }
 
+
   return res;
 
 type: javascript
@@ -32,12 +39,7 @@ tags:
 - transformer
 - general
 - entirelist
-comment: "Return all items from the list where their given 'field' attribute is equal
-  to 'equalTo' argument\n\nE.g. !WhereFieldEquals with the following arguments:\n
-  - value=[{ name: '192.1,0.82', type: 'IP' }, {  name: 'myFile.txt, type: 'File'
-  \ }, { name: '172.0.0.2', type: 'IP' }]\n - field='type'\n - equalTo='IP'\n - getField='name'
-  \n\nWill return all items names where field 'type' equals 'IP' - ['192.1,0.82',
-  '172.0.0.2']"
+comment: "Return all items from the list where their given 'field' attribute is equal to 'equalTo' argument\n\nE.g. !WhereFieldEquals with the following arguments:\n - value=[{ name: '192.1,0.82', type: 'IP' }, {  name: 'myFile.txt, type: 'File'  }, { name: '172.0.0.2', type: 'IP' }]\n - field='type'\n - equalTo='IP'\n - getField='name' \n\nWill return all items names where field 'type' equals 'IP' - ['192.1,0.82', '172.0.0.2']"
 enabled: true
 args:
 - name: value
@@ -54,3 +56,4 @@ args:
   description: Optional - field to extract from each item
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0
