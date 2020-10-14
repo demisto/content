@@ -40,19 +40,15 @@ URL_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\
 def get_existing_incidents(input_args):
     global DEFAULT_ARGS
     get_incidents_args = {}
-    for arg in ['query', 'limit']:
-        if arg in input_args:
-            get_incidents_args[arg] = input_args[arg]
-        elif arg in DEFAULT_ARGS:
-            get_incidents_args[arg] = DEFAULT_ARGS[arg]
+    get_incidents_args['limit'] = input_args.get('limit', DEFAULT_ARGS['limit'])
     if 'exsitingIncidentsLookback' in input_args:
         get_incidents_args['fromDate'] = input_args['exsitingIncidentsLookback']
     elif 'exsitingIncidentsLookback' in DEFAULT_ARGS:
         get_incidents_args['fromDate'] = DEFAULT_ARGS['exsitingIncidentsLookback']
     status_scope = input_args.get('statusScope', 'All')
     query_components = []
-    if 'query' in get_incidents_args:
-        query_components.append(get_incidents_args['query'])
+    if 'query' in input_args:
+        query_components.append(input_args['query'])
     if status_scope == 'ClosedOnly':
         query_components.append('status:closed')
     elif status_scope == 'NonClosedOnly':
@@ -61,9 +57,10 @@ def get_existing_incidents(input_args):
         pass
     else:
         return_error('Unsupported statusScope: {}'.format(status_scope))
-    incident_type = input_args.get('incidentTypes', DEFAULT_ARGS['incidentTypes'])
     type_field = input_args.get('incidentTypeFieldName', 'type')
-    type_query = '{}:{}'.format(type_field, incident_type)
+    incident_type = input_args.get('incidentTypes')
+    if incident_type is not None:
+        type_query = '{}:{}'.format(type_field, incident_type)
     query_components.append(type_query)
     get_incidents_args['query'] = ' and '.join('({})'.format(c) for c in query_components)
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
