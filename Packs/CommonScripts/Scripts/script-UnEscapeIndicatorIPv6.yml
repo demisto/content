@@ -7,21 +7,34 @@ script: >-
   var BEGINNING_CHARACTERS_LIST = ['(', '[', ' ', '-', '\'', '"', '.', ',', '`'];
   var ENDING_CHARACTERS_LIST = [')', ']', ' ', '-', '\'', '"', '.', ',', '`'];
 
-  var ipv6_address = args.input;
+  function extract_ipv6(un_extracting_ipv6s){
+    first_letter = un_extracting_ipv6s.charAt(0);
 
-  first_letter = ipv6_address.charAt(0);
+    if (BEGINNING_CHARACTERS_LIST.includes(first_letter)) {
+      un_extracting_ipv6s = un_extracting_ipv6s.slice(1);
+    }
 
-  if (BEGINNING_CHARACTERS_LIST.includes(first_letter)) {
-    ipv6_address = ipv6_address.slice(1);
+    last_letter = un_extracting_ipv6s.charAt(un_extracting_ipv6s.length-1);
+
+    if (ENDING_CHARACTERS_LIST.includes(first_letter)) {
+      un_extracting_ipv6s = un_extracting_ipv6s.slice(0, -1);
+    }
+
+    return un_extracting_ipv6s;
   }
 
-  last_letter = ipv6_address.charAt(ipv6_address.length-1);
-
-  if (ENDING_CHARACTERS_LIST.includes(first_letter)) {
-    ipv6_address = ipv6_address.slice(0, -1);
+  function extract_ipv6_list(ipv6_list){
+    var len = ipv6_list.length;
+    var extracted_ipv6 = new Array(len);
+    for (i = 0; i < len; i++) {
+      extracted_ipv6.splice(i, 0, extract_ipv6(ipv6_list[i]));
+    }
+    return extracted_ipv6;
   }
 
-  return ipv6_address;
+  var un_extracting_ipv6s = argToList(args.input);
+  ipv6_addresses = extract_ipv6_list(un_extracting_ipv6s);
+  return ipv6_addresses;
 
 
 type: javascript
@@ -32,7 +45,7 @@ enabled: false
 args:
 - default: false
   description: The address with the characters that surround it.
-  isArray: false
+  isArray: true
   name: input
   required: true
   secret: false

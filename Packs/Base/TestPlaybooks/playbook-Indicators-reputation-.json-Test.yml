@@ -1789,10 +1789,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: e5063e07-161e-41b0-8de7-40171baaf32d
+    taskid: 338133bf-d005-4d8a-8724-a75ab7cc0133
     type: regular
     task:
-      id: e5063e07-161e-41b0-8de7-40171baaf32d
+      id: 338133bf-d005-4d8a-8724-a75ab7cc0133
       version: -1
       name: Set valid IPv6s
       description: Sets a value into the context with the given context key
@@ -1807,8 +1807,9 @@ tasks:
       append: {}
       key:
         simple: valid_ipv6s
+      stringify: {}
       value:
-        simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348" ,"2001:0db8:0000:0000:0000:ff00:0042:8329"'
+        simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:0db8:0000:0000:0000:ff00:0042:8329"'
     separatecontext: false
     view: |-
       {
@@ -1824,10 +1825,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: 284e7d4e-ad3f-408e-8e2c-0c6e7f268880
+    taskid: e8f7357a-f257-4138-8941-0d5bf76ccdef
     type: regular
     task:
-      id: 284e7d4e-ad3f-408e-8e2c-0c6e7f268880
+      id: e8f7357a-f257-4138-8941-0d5bf76ccdef
       version: -1
       name: Print valid IPv6s
       description: Prints text to war room (Markdown supported)
@@ -1857,10 +1858,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: c1654368-ff86-4bae-838b-f1bd82b5fa6f
+    taskid: 9dab5c12-5421-486e-8889-a4ed7d2a8c28
     type: condition
     task:
-      id: c1654368-ff86-4bae-838b-f1bd82b5fa6f
+      id: 9dab5c12-5421-486e-8889-a4ed7d2a8c28
       version: -1
       name: Check auto-extract
       type: condition
@@ -1873,7 +1874,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: in
+      - - operator: containsGeneral
           left:
             value:
               simple: IPv6.Address
@@ -1881,7 +1882,7 @@ tasks:
           right:
             value:
               simple: 2001:db8:85a3:8d3:1319:8a2e:370:7348
-      - - operator: in
+      - - operator: containsGeneral
           left:
             value:
               simple: IPv6.Address
@@ -2612,10 +2613,10 @@ tasks:
     quietmode: 0
   "73":
     id: "73"
-    taskid: 89cc79d1-90ac-4f64-88f3-79db6f07a296
+    taskid: 48e9e898-641a-4684-8ce1-35c0052e8c2e
     type: regular
     task:
-      id: 89cc79d1-90ac-4f64-88f3-79db6f07a296
+      id: 48e9e898-641a-4684-8ce1-35c0052e8c2e
       version: -1
       name: Set IPv6s surrounded by special characters
       description: Sets a value into the context with the given context key
@@ -2648,10 +2649,10 @@ tasks:
     quietmode: 0
   "74":
     id: "74"
-    taskid: 275a3bd4-26a6-45b5-807d-46720710a82e
+    taskid: ec31a25d-0a26-455d-89ce-9c42ef22fd06
     type: regular
     task:
-      id: 275a3bd4-26a6-45b5-807d-46720710a82e
+      id: ec31a25d-0a26-455d-89ce-9c42ef22fd06
       version: -1
       name: Print IPv6s surrounded by special characters
       description: Prints text to war room (Markdown supported)
@@ -2681,10 +2682,10 @@ tasks:
     quietmode: 0
   "76":
     id: "76"
-    taskid: 6b596112-a430-46af-84bf-9e510d82698a
+    taskid: 824e894b-79e5-4ed2-84a9-b3539622057e
     type: condition
     task:
-      id: 6b596112-a430-46af-84bf-9e510d82698a
+      id: 824e894b-79e5-4ed2-84a9-b3539622057e
       version: -1
       name: Check extraction of IPv6s surrounded by special characters
       type: condition
@@ -2692,7 +2693,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "63"
+      - "77"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2725,6 +2726,121 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "77":
+    id: "77"
+    taskid: c8d3f019-6ab5-41ce-8860-a1b7472db2a0
+    type: regular
+    task:
+      id: c8d3f019-6ab5-41ce-8860-a1b7472db2a0
+      version: -1
+      name: Set invalid IPv6s surrounded by special characters
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      append: {}
+      key:
+        simple: invalid_IPv6s_surrounded_by_special_characters
+      stringify: {}
+      value:
+        simple: '"xyz::1234", "this is::not ipv6"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 8550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: 31c5ed04-fdb8-453f-8d5c-16beb52d8d86
+    type: regular
+    task:
+      id: 31c5ed04-fdb8-453f-8d5c-16beb52d8d86
+      version: -1
+      name: Print invalid IPv6s surrounded by special characters
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      value:
+        simple: ${invalid_IPv6s_surrounded_by_special_characters}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 8775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: 0fee601a-9158-4f34-812a-44b8c76b7f07
+    type: condition
+    task:
+      id: 0fee601a-9158-4f34-812a-44b8c76b7f07
+      version: -1
+      name: Check non-extraction of invalid IPv6s surrounded by special characters
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: ::1234
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: '::'
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 8990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -2734,7 +2850,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 11335,
-        "width": 380,
+        "width": 930,
         "x": 50,
         "y": 50
       }
