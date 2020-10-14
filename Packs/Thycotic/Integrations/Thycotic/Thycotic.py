@@ -41,7 +41,7 @@ class Client(BaseClient):
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        return "Bearer " + (self._http_request("POST", "/oauth2/token", headers=headers, data=body))['access_token']
+        return "Bearer " + (self._http_request("POST", "/oauth2/token", headers=headers, data=body)).get('access_token')
 
     def getToken(self):
         return self._token
