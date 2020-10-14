@@ -81,6 +81,14 @@ configuration:
   - sctp
   required: false
   type: 16
+- additionalinfo: Comma separated fields that'll be fetched with every incident. e.g. "pcap,session_id".
+    Enter "*" for all possible fields.
+  defaultvalue: '*'
+  display: Fetch Fields
+  hidden: false
+  name: fetch_fields
+  required: false
+  type: 12
 - display: Incident type
   name: incidentType
   required: false

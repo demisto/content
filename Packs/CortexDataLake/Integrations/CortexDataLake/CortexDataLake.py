@@ -702,6 +702,7 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
                                   fetch_severity: list,
                                   fetch_table: str,
                                   fetch_subtype: list,
+                                  fetch_fields: str,
                                   fetch_limit: str) -> str:
     """
     Prepares the SQL query for fetch incidents command
@@ -710,12 +711,13 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
         fetch_timestamp: The date from which threat logs should be queried
         fetch_severity: Severity associated with the incident.
         fetch_subtype: Identifies the log subtype.
-        fetch_table: Identifies the fetch type
+        fetch_table: Identifies the fetch type.
+        fetch_fields: Fields to fetch fro the table.
 
     Returns:
         SQL query that matches the arguments
     """
-    query = f'SELECT * FROM `{fetch_table}` '  # guardrails-disable-line
+    query = f'SELECT {fetch_fields} FROM `{fetch_table}` '  # guardrails-disable-line
     query += f'WHERE time_generated Between TIMESTAMP("{fetch_timestamp}") ' \
              f'AND CURRENT_TIMESTAMP'
     if fetch_subtype and 'all' not in fetch_subtype:
@@ -950,6 +952,7 @@ def fetch_incidents(client: Client,
                     fetch_severity: list,
                     fetch_table: str,
                     fetch_subtype: list,
+                    fetch_fields: str,
                     fetch_limit: str,
                     last_run: dict) -> Tuple[Dict[str, str], list]:
     last_fetched_event_timestamp = last_run.get('lastRun')
@@ -960,7 +963,7 @@ def fetch_incidents(client: Client,
         last_fetched_event_timestamp, _ = parse_date_range(first_fetch_timestamp)
         last_fetched_event_timestamp = last_fetched_event_timestamp.replace(microsecond=0)
     query = prepare_fetch_incidents_query(last_fetched_event_timestamp, fetch_severity, fetch_table,
-                                          fetch_subtype, fetch_limit)
+                                          fetch_subtype, fetch_fields, fetch_limit)
     demisto.debug('Query being fetched: {}'.format(query))
     records, _ = client.query_loggings(query)
     if not records:
@@ -1017,6 +1020,7 @@ def main():
             first_fetch_timestamp = params.get('first_fetch_timestamp', '24 hours').strip()
             fetch_severity = params.get('firewall_severity')
             fetch_table = params.get('fetch_table')
+            fetch_fields = params.get('fetch_fields') or '*'
             fetch_subtype = params.get('firewall_subtype')
             fetch_limit = params.get('limit')
             last_run = demisto.getLastRun()
@@ -1025,6 +1029,7 @@ def main():
                                                   fetch_severity,
                                                   fetch_table,
                                                   fetch_subtype,
+                                                  fetch_fields,
                                                   fetch_limit,
                                                   last_run)
             demisto.setLastRun(next_run)

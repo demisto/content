@@ -98,6 +98,7 @@ def test_prepare_fetch_incidents_query():
     from CortexDataLake import prepare_fetch_incidents_query
     timestamp = '2020-02-20T16:49:05'
     firewall_subtype = ['attack', 'url']
+    fetch_fields = "*"
     firewall_severity = ['Critical', 'High']
     table_name = "firewall.threat"
     fetch_limit = 10
@@ -112,6 +113,7 @@ def test_prepare_fetch_incidents_query():
                                                               firewall_severity,
                                                               table_name,
                                                               firewall_subtype,
+                                                              fetch_fields,
                                                               fetch_limit)
 
 
