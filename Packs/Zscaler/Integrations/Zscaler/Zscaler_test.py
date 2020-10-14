@@ -285,3 +285,57 @@ def test_login_command__load_from_context(mocker):
     assert logout_mock.called
     assert login_mock.called
     assert raw_res.readable_output == 'Zscaler session created successfully.'
+
+
+def test_logout_command__no_context(mocker):
+    """
+    Scenario: logout when there's no active session
+
+    Given:
+     - There is no active session
+    When:
+     - logout command is performed
+    Then:
+     - Return readable output detailing no action was performed
+    """
+    import Zscaler
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={})
+    raw_res = Zscaler.logout_command()
+    assert raw_res.readable_output == 'No API session was found. No action was performed.'
+
+
+def test_logout_command__happy_context(mocker):
+    """
+    Scenario: logout when there's an active session
+
+    Given:
+     - There is an active session
+    When:
+     - logout command is performed
+    Then:
+     - Return readable output detailing logout was performed
+    """
+    import Zscaler
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={Zscaler.SESSION_ID_KEY: 'test_key'})
+    mocker.patch.object(Zscaler, 'logout', return_value=ResponseMock({}))
+    raw_res = Zscaler.logout_command()
+    assert raw_res.readable_output == "API session logged out of Zscaler successfully."
+
+
+def test_logout_command__context_expired(mocker):
+    """
+    Scenario: fail to logout with AuthorizationError when there's an active session
+
+    Given:
+     - There is an active session
+    When:
+     - logout command is performed
+     - logout action fails with AuthorizationError
+    Then:
+     - Return readable output detailing no logout was done
+    """
+    import Zscaler
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={Zscaler.SESSION_ID_KEY: 'test_key'})
+    mocker.patch.object(Zscaler, 'logout', side_effect=Zscaler.AuthorizationError(''))
+    raw_res = Zscaler.logout_command()
+    assert raw_res.readable_output == "API session is not authenticated. No action was performed."
