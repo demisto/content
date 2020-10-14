@@ -46,9 +46,8 @@ def executeCommand(command, args=None):
     if command == 'GetIncidentsByQuery':
         incidents_str = json.dumps(EXISTING_INCIDENTS)
         return [{'Contents': incidents_str, 'Type': 'not error'}]
-    if command == 'linkIncidents':
-        EXISTING_INCIDENT_ID = args['incidentId']
-        DUP_INCIDENT_ID = args['linkedIncidentIDs']
+    if command == 'CloseInvestigationAsDuplicate':
+        EXISTING_INCIDENT_ID = args['duplicateId']
 
 
 def results(arg):
@@ -214,3 +213,13 @@ def test_html_text(mocker):
     mocker.patch.object(demisto, 'results', side_effect=results)
     main()
     assert duplicated_incidents_found(existing_incident)
+
+
+def test_eliminate_urls_extensions():
+    url = 'https://urldefense.proofpoint.com/v2/url?u=http-3A__fridmancpa.com_&d=DwIGaQ&c=XRWvQHnpdBDRh-yzrHjqLpXuH' \
+          'NC_9nanQc6pPG_SpT0&r=sUpl2dZrOIls7oQLXwn74C7qVYSZVCdsK9UIY1nPz30&m=qD-Bndy5WGvuZizr-Jz7YQ5-8xXgRcK3w8NnNzX' \
+          'lOsk&s=_NEaEUMVW0JU5b--ODhZKY9csky777X1jtFywaQyN2o&e='
+    url_shortened = eliminate_urls_extensions(url)
+    assert url_shortened == 'https://urldefense.proofpoint.com/'
+    template = 'hello world {} goodbye'
+    assert template.format(url_shortened) == eliminate_urls_extensions(template.format(url))

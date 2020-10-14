@@ -2,8 +2,8 @@ args:
 - default: false
   defaultValue: type
   description: The name of the incident field where its type is stored. Default it
-    "type". Change this arguement only in case you use a custom field for specifying incident
-    type.
+    "type". Change this arguement only in case you use a custom field for specifying
+    incident type.
   isArray: false
   name: incidentTypeFieldName
   required: false
@@ -17,7 +17,9 @@ args:
   secret: false
 - default: false
   defaultValue: 100 days ago
-  description: The start date by which to search for duplicated existing incidents. Date format is the same as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00 +0200").
+  description: The start date by which to search for duplicated existing incidents.
+    Date format is the same as in the incidents query page. For example, "3 days ago",
+    ""2019-01-01T00:00:00 +0200").
   isArray: false
   name: exsitingIncidentsLookback
   required: false
@@ -71,7 +73,12 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: TextOnly
-  description: Whether to take into account the email from field for deduplication. "TextOnly" - incidents will be considered as duplicated based on test similarity only, ignoring the sender's adress. "Exact" - incidents will be considered as duplicated if their text is similar and their sender is the same. "Domain" -  incidents will be considered as duplicated if their text is similar and their senders' adress has the same domain. Default is "Domain".
+  description: Whether to take into account the email from field for deduplication.
+    "TextOnly" - incidents will be considered as duplicated based on test similarity
+    only, ignoring the sender's adress. "Exact" - incidents will be considered as
+    duplicated if their text is similar and their sender is the same. "Domain" -  incidents
+    will be considered as duplicated if their text is similar and their senders' adress
+    has the same domain. Default is "Domain".
   isArray: false
   name: fromPolicy
   predefined:
@@ -83,7 +90,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: All
-  description: Whether to compare the new incident to past closed or non closed incidents only. Default is "All".
+  description: Whether to compare the new incident to past closed or non closed incidents
+    only. Default is "All".
   isArray: false
   name: statusScope
   predefined:
