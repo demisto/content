@@ -1,5 +1,3 @@
-import dateutil
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -35,7 +33,7 @@ FROM_POLICY_EXACT = 'Exact'
 FROM_POLICY_DOMAIN = 'Domain'
 
 FROM_POLICY = FROM_POLICY_TEXT_ONLY
-URL_REGEX  = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
+URL_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
             r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
 
@@ -208,9 +206,9 @@ def create_new_incident():
 def create_new_incident_low_similarity(existing_incident, similarity):
     message = 'No duplicate incident found.\n'
     message += 'Most similar incident found is #{} with similarity of {:.1f}%.\n'.format(existing_incident['id'],
-                                                                                     similarity * 100)
+                                                                                         similarity * 100)
     message += 'The threshold for considering 2 incidents as duplicate is a similarity ' \
-               'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD*100)
+               'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
     message += 'Thus these 2 incidents will not be considered as duplicate and current incident will be created.\n'
     demisto.results(message)
 
@@ -230,7 +228,7 @@ def main():
         return
     new_incident = demisto.incidents()[0]
     new_incident_df = preprocess_incidents_df([new_incident])
-    if  len(new_incident_df) == 0:  # len(new_incident_df)==0 means new incident is too short
+    if len(new_incident_df) == 0:  # len(new_incident_df)==0 means new incident is too short
         create_new_incident()
         return
     existing_incidents_df = preprocess_incidents_df(existing_incidents)
