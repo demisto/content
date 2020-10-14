@@ -1,0 +1,26 @@
+args:
+- default: false
+  description: Boilerplate dummy argument.
+  isArray: false
+  name: dummy
+  required: false
+  secret: false
+comment: Boilerplate dummy Script for development
+commonfields:
+  id: BoilerplateScript
+  version: -1
+enabled: false
+name: BoilerplateScript
+outputs:
+  - contextPath: BoilerplateScript.Output
+    description: Boilerplate script dummy output.
+    type: String
+script: '-'
+system: false
+tags:
+- boilerplate
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.8.6.12176
+fromversion: 5.0.0
