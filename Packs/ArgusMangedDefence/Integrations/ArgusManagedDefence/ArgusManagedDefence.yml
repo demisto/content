@@ -463,6 +463,143 @@ script:
     description: Returns cases matching the defined case search criteria
     execution: false
     name: argus_advanced_case_search
+  - arguments:
+    - default: false
+      description: Case ID of Argus case
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: Attach a closing comment
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Close an Argus case
+    execution: false
+    name: argus_close_case
+  - arguments:
+    - default: false
+      description: ID or shortname of customer to create case for. Defaults to current
+        users customer.
+      isArray: false
+      name: customer
+      required: false
+      secret: false
+    - default: false
+      description: ID of service to create case for
+      isArray: false
+      name: service
+      required: false
+      secret: false
+    - default: false
+      description: 'If set, assign given category to new case (by category shortname). '
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: 'Type of case to create '
+      isArray: false
+      name: 'type:'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Status of case to create. If not set, system will select automatically.
+        Creating a new case with status closed is not permitted. '
+      isArray: false
+      name: status
+      predefined:
+      - pendingCustomer
+      - pendingSoc
+      - pendingVendor
+      - pendingClose
+      - workingSoc
+      - workingCustomer
+      required: false
+      secret: false
+    - default: false
+      description: Tags to add on case creation.  (key,value,key,value, ...)
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: true
+      description: Subject of case to create.
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: true
+      description: 'Case description. May use HTML, which will be sanitized. '
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Customer reference for case.
+      isArray: false
+      name: customer_reference
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: medium
+      description: Priority of case to create. (default medium)
+      isArray: false
+      name: priority
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+      required: false
+      secret: false
+    - default: false
+      description: Access mode for new case. (default roleBased)
+      isArray: false
+      name: access_mode
+      required: false
+      secret: false
+    - default: false
+      description: If case is created from an email, specify origin email address
+        here.
+      isArray: false
+      name: origin_email_address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to publish new case. Creating an unpublished case requires
+        special permission. (default true)
+      isArray: false
+      name: publish
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to enable default watchers for this case. If set to false,
+        default watchers will not be enabled, and will not be notified upon creation
+        of this case. (default true)
+      isArray: false
+      name: default_watchers
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Create Argus case
+    execution: false
+    name: argus_create_case
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true

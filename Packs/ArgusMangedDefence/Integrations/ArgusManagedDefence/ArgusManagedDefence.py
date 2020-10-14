@@ -43,6 +43,8 @@ from argus_api.api.reputation.v1.observation import (
     fetch_observations_for_i_p,
 )
 
+from argus_json import argus_case_services, argus_case_categories
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -82,6 +84,46 @@ def argus_status_to_demisto_status(status: str) -> int:
         "closed": 2,
     }
     return mapping.get(status, 0)
+
+
+def list_to_dict(lst: list) -> dict:
+    return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
+
+
+def pretty_print_case_metadata(
+    result: dict, title: str = None
+) -> str:  # TODO improve: markdownify
+    data = result["data"]
+    string = title if title else f"# #{data['id']}: {data['subject']}\n"
+    string += f"_Priority: {data['priority']}, status: {data['status']}, last updated: {data['lastUpdatedTime']}_\n"
+    string += (
+        f"Reported by {data['publishedByUser']['name']} at {data['publishedTime']}\n\n"
+    )
+    string += data["description"]
+    return string
+
+
+def is_valid_service(service: str) -> bool:
+    return any(s["shortName"] == service for s in argus_case_services.services)
+
+
+def is_valid_case_type(service: str, case_type: str) -> bool:
+    if not is_valid_service(service):
+        return False
+    return (
+        case_type
+        in next(
+            (s for s in argus_case_services.services if s["shortName"] == service), {}
+        )["caseTypes"]
+    )
+
+
+def is_valid_category(service: str, case_type: str, category: str) -> bool:
+    return False
+
+
+def is_valid_case(case: dict) -> bool:
+    return is_valid_service() and is_valid_case_type() and is_valid_category()
 
 
 """ COMMAND FUNCTIONS """
@@ -201,6 +243,7 @@ def close_case_command(args: Dict[str, Any]) -> CommandResults:
     result = close_case(
         caseID=case_id,
         comment=args.get("comment", None),
+        # notification=notifcation, TODO implement
     )
     readable_output = f"# #{case_id}: close case\n"
     readable_output += (
@@ -210,7 +253,36 @@ def close_case_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def create_case_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    tags = args.get("tags", None)
+    # if tags:
+    #     tags = str(tags).split(",")
+    #     if len(tags) % 2 != 0:
+    #         raise ValueError("tags list must be of even number", tags)
+    #     tags = list_to_dict(tags)
+
+    result = create_case(
+        customer=args.get("customer", None),
+        service=args.get("service", None),
+        category=args.get("category", None),
+        type=args.get("type", None),
+        status=args.get("status", None),
+        # watchers=args.get("watchers", None), TODO implement
+        # fields=args.get("fields", None), TODO needed?
+        # tags=tags,
+        subject=args.get("subject", None),
+        description=args.get("description", None),
+        customerReference=args.get("customer_reference", None),
+        priority=args.get("priority", None),
+        accessMode=args.get("access_mode", None),
+        # aclMembers=args.get("acl_members", None), TODO needed?
+        # notification=args.get("notification", None), TODO implement
+        originEmailAddress=args.get("origin_email_address", None),
+        # triggers=args.get("triggers", None), TODO needed?
+        publish=args.get("publish", None),
+        defaultWatchers=args.get("default_watchers", None),
+    )
+    readable_output = pretty_print_case_metadata(result)
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def delete_case_command(args: Dict[str, Any]) -> CommandResults:
