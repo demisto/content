@@ -281,9 +281,9 @@ def main():
         # Build updated table
         table = build_grid_command(grid_id=grid_id,
                                    context_path=demisto.getArg('context_path'),
-                                   keys=argToList(demisto.getArg('keys')),
+                                   keys=sorted(argToList(demisto.getArg('keys'))),
                                    overwrite=demisto.getArg('overwrite').lower() == 'true',
-                                   columns=argToList(demisto.getArg('columns')),
+                                   columns=sorted(argToList(demisto.getArg('columns'))),
                                    sort_by=demisto.getArg('sort_by'),
                                    unpack_nested_elements=demisto.getArg('unpack_nested_elements') == 'true')
         # Execute automation 'setIncident` which change the Context data in the incident
