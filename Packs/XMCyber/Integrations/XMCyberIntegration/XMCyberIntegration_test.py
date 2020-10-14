@@ -1,6 +1,6 @@
 import json
 import io
-from XMCyberIntegration import XM, Client, entity_get_command, PAGE_SIZE, URLS
+from XMCyberIntegration import XM, Client, entity_get_command, PAGE_SIZE, URLS, ip_command
 
 
 TEST_URL = 'https://test.com'
@@ -54,3 +54,30 @@ def test_entity_get(requests_mock):
             'level': "medium"
         }
     }]
+
+def test_ip(requests_mock):
+    """Tests ip command function.
+
+    Configures requests_mock instance to generate the appropriate search
+    API response. Checks the output of the command function with the expected output.
+    """
+
+    mock_url = f'{TEST_URL}{URLS.Entities}?search=%2F172.0.0.1%2Fi&page=1&pageSize={PAGE_SIZE}'
+    xm = mock_request_and_get_xm_mock('test_data/entity_get.json', requests_mock, mock_url)
+
+    response = ip_command(xm, {
+        'ip': '172.0.0.1'
+    })
+
+    assert response.outputs_prefix == 'XMCyber.IP'
+    assert response.outputs_key_field == 'ip'
+    assert response.outputs == {
+        'entity_id': '3110337924893579985',
+        'name': 'CorporateDC',
+        'is_asset': True,
+        'is_choke_point': True,
+        'affected_assets': {
+            'value': 14,
+            'level': "medium"
+        }
+    }

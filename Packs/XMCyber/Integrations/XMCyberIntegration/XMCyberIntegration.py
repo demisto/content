@@ -226,156 +226,6 @@ def create_client():
         proxy=proxy)
 
 
-def escape_ip(ip):
-    try:
-        address = ip['Address']
-        return '/' + address.replace('.', '\\.') + '/'
-    except (AttributeError, TypeError):
-        return '/' + ip.replace('.', '\\.') + '/'
-
-
-def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
-    """Converts whois date format to an ISO8601 string
-
-    Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
-    in a datetime. If a list is returned with multiple elements, takes only
-    the first one.
-
-    :type domain_date: ``Union[List[str],str]``
-    :param severity:
-        a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
-
-    :return: Parsed time in ISO8601 format
-    :rtype: ``Optional[str]``
-    """
-
-    if isinstance(domain_date, str):
-        # if str parse the value
-        return dateparser.parse(domain_date).strftime(date_format)
-    elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
-        # if list with at least one element, parse the first element
-        return dateparser.parse(domain_date[0]).strftime(date_format)
-    # in any other case return nothing
-    return None
-
-
-def convert_to_demisto_severity(severity: str) -> int:
-    """Maps HelloWorld severity to Cortex XSOAR severity
-
-    Converts the HelloWorld alert severity level ('Low', 'Medium',
-    'High', 'Critical') to Cortex XSOAR incident severity (1 to 4)
-    for mapping.
-
-    :type severity: ``str``
-    :param severity: severity as returned from the HelloWorld API (str)
-
-    :return: Cortex XSOAR Severity (1 to 4)
-    :rtype: ``int``
-    """
-
-    # In this case the mapping is straightforward, but more complex mappings
-    # might be required in your integration, so a dedicated function is
-    # recommended. This mapping should also be documented.
-    return {
-        'Low': 1,  # low severity
-        'Medium': 2,  # medium severity
-        'High': 3,  # high severity
-        'Critical': 4   # critical severity
-    }[severity]
-
-
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
-    """Converts an XSOAR argument to a Python int
-
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
-    if the input is invalid. If the input is None, it will throw a ValueError
-    if required is ``True``, or ``None`` if required is ``False.
-
-    :type arg: ``Any``
-    :param arg: argument to convert
-
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :return:
-        returns an ``int`` if arg can be converted
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[int]``
-    """
-
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-    if isinstance(arg, str):
-        if arg.isdigit():
-            return int(arg)
-        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
-    if isinstance(arg, int):
-        return arg
-    raise ValueError(f'Invalid number: "{arg_name}"')
-
-
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
-    """Converts an XSOAR argument to a timestamp (seconds from epoch)
-
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
-    since epoch). It will throw a ValueError if the input is invalid.
-    If the input is None, it will throw a ValueError if required is ``True``,
-    or ``None`` if required is ``False.
-
-    :type arg: ``Any``
-    :param arg: argument to convert
-
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :return:
-        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[int]``
-    """
-
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-
-    if isinstance(arg, str) and arg.isdigit():
-        # timestamp is a str containing digits - we just convert it to int
-        return int(arg)
-    if isinstance(arg, str):
-        # we use dateparser to handle strings either in ISO8601 format, or
-        # relative time stamps.
-        # For example: format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
-        if date is None:
-            # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
-
-        return int(date.timestamp())
-    if isinstance(arg, (int, float)):
-        # Convert to int if the input is a float
-        return int(arg)
-    raise ValueError(f'Invalid date: "{arg_name}"')
-
-
-def raw_path_to_incident_path(path: Any) -> Any:
-    raise NotImplementedError()
-
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -684,6 +534,75 @@ def is_xm_version_supported_command(xm: XM, args: Dict[str, Any]) -> CommandResu
     )
 
 
+def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    ips = argToList(args.get('ip'))
+    if len(ips) == 0:
+        raise ValueError('IP(s) not specified')
+    
+    # Context standard for IP class
+    ip_standard_list: List[Common.IP] = []
+    ip_data_list: List[Dict[str, Any]] = []
+
+    for ip in ips:
+        res: List[Any]
+        try:
+            res = xm.search_entities(ip['Address'])
+        except (AttributeError, TypeError):
+            res = xm.search_entities(ip)
+        if len(res) > 0:
+            readable_output = f'**Resolved the following entities for IP {ip}**'
+        else:
+            readable_output = f'**No entity with the IP {ip}'
+        for entity in res:
+            name = entity['name']
+            try:
+                is_asset = entity['asset']
+            except KeyError:
+                is_asset = False
+            affected_assets = entity['affectedUniqueAssets']['count']
+            readable_output += f'\n- {name}'
+            score = 0
+            reputation = affected_assets['level']
+            if reputation == 'none':
+                score = Common.DBotScore.GOOD  # unknown
+            else:
+                score = Common.DBotScore.BAD  # bad
+
+            dbot_score = Common.DBotScore(
+                indicator=ip,
+                indicator_type=DBotScoreType.IP,
+                integration_name='XMCyber',
+                score=score,
+                malicious_description=f'XM Cyber affected assets {reputation}'
+            )
+
+            ip_standard_context = Common.IP(
+                ip=ip,
+                dbot_score=dbot_score
+            )
+
+            ip_standard_list.append(ip_standard_context)
+
+            ip_data_list = {
+                'entity_id': entity['entityId'],
+                'name': name,
+                'is_asset': is_asset,
+                'is_choke_point': affected_assets['level'] != 'none',
+                'affected_assets': {
+                    'value': affected_assets['value'],
+                    'level': affected_assets['level']
+                }
+            }
+    
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='XMCyber.IP',
+        outputs_key_field='ip',
+        outputs=ip_data_list,
+        indicators=ip_standard_list
+    )
+    
+
 ''' MAIN FUNCTION '''
 
 
@@ -731,7 +650,8 @@ def main() -> None:
             "xmcyber-attack-complexity-to-ip": attack_complexity_to_ip_command,
             "xmcyber-techniques-list": techniques_list_command,
             "xmcyber-attack-paths-from-entity": attack_paths_from_entity_command,
-            "xmcyber-entity-get": entity_get_command
+            "xmcyber-entity-get": entity_get_command,
+            "ip": ip_command
         }
 
         if command in commandsDict:
