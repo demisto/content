@@ -386,7 +386,19 @@ references:
               SERVER_URL=$(jq -r 'select(.[].Role == "Demisto Marketplace") | .[].InstanceDNS' ./env_results.json)
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 
+  upload_entities_to_cortex_xsoar: &upload_entities_to_cortex_xsoar
+    run:
+        name: Upload integration to Cortex XSOAR
+        command: |
+          demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
+          demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
 
+  sdk_nightly_jobs: &sdk_nightly_jobs
+    - Demisto SDK Nightly:
+        context: sdk_nightly_env
+    - Demisto SDK Nightly - Run against Cortex XSOAR:
+        context: sdk_nightly_env
+          
 jobs:
   Setup Environment:
     <<: *container_config
@@ -1031,38 +1043,31 @@ jobs:
       - *setup_instance
       - run:
           name: Wait until server ready
-          shell: /bin/bash
           when: always
           command: |
             python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
       - run:
           name: Set Environment Variables
-          when: on_success
           command: |
             echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
             echo "export DEMISTO_BASE_URL=\"https://$(cat env_results.json | jq -r '.[0].InstanceDNS')\"" >> $BASH_ENV
             echo "Server URL: $DEMISTO_BASE_URL"
       - run:
           name: Install SDK Master
-          shell: /bin/bash
-          when: on_success
           command: pip3 install git+https://github.com/demisto/demisto-sdk.git
       - run:
-          name: Unlock HelloWorld integration
-          shell: /bin/bash
-          when: on_success
-          command: python3 Tests/unlock_integrations.py HelloWorld
-      - run:
-          name: Upload integration to Cortex XSOAR
-          when: on_success
-          command: demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
+          name: Unlock HelloWorld integration and playbook
+          command: |
+            python3 Tests/unlock_entity.py integration HelloWorld
+            python3 Tests/unlock_entity.py playbook HelloWorld-Test
+      - *upload_entities_to_cortex_xsoar
       - run:
           name: Download integration from Cortex XSOAR
-          when: on_success
-          command: demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
+          command: |
+            demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
+            demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
       - run:
           name: Format the integration
-          when: on_success
           command: |
             { # try
             yes | demisto-sdk format -i Packs/HelloWorld/ -nv -ud
@@ -1076,8 +1081,8 @@ jobs:
           command: demisto-sdk validate -i Packs/HelloWorld/
       - run:
           name: Run lint
-          when: on_success
           command: demisto-sdk lint -i Packs/HelloWorld/
+      - *upload_entities_to_cortex_xsoar
       - *destroy_instances
       - *store_artifacts
 
@@ -1210,16 +1215,10 @@ workflows:
               only:
                 - master
     jobs:
-      - Demisto SDK Nightly:
-          context: sdk_nightly_env
-      - Demisto SDK Nightly - Run against Cortex XSOAR:
-          context: sdk_nightly_env
+      *sdk_nightly_jobs
 
   sdk_nightly_trigger:
     # will initiate when using the trigger script.
     when: << pipeline.parameters.demisto_sdk_nightly>>
     jobs:
-      - Demisto SDK Nightly:
-          context: sdk_nightly_env
-      - Demisto SDK Nightly - Run against Cortex XSOAR:
-          context: sdk_nightly_env
+      *sdk_nightly_jobs
