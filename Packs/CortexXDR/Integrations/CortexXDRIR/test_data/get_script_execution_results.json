@@ -1,0 +1,21 @@
+{
+  "reply": {
+    "date_created":"2020-10-14 06:08:01",
+    "error_message":"",
+    "results":[{
+    "_return_value":"Name: System Idle Process, CPU: 93.2, Memory: 8192 Name: System, CPU: 0.0, Memory: 32768 Name: svchost.exe, CPU: 0.0, Memory: 688340992 Name: dwm.exe, CPU: 0.0, Memory: 52482048 Name: Registry, CPU: 0.0, Memory: 28200960 Name: smss.exe, CPU: 0.0, Memory: 352256 Name: csrss.exe, CPU: 0.0, Memory: 8957952 Name: wininit.exe, CPU: 0.0, Memory: 1769472 Name: winlogon.exe, CPU: 0.0, Memory: 7708672 Name: services.exe, CPU: 0.0, Memory: 7090176 Name: lsass.exe, CPU: 0.0, Memory: 13578240 Name: fontdrvhost.exe, CPU: 0.0, Memory: 14983168 Name: LogonUI.exe, CPU: 0.0, Memory: 49164288 Name: CyveraConsole.exe, CPU: 0.0, Memory: 75517952 Name: MemCompression, CPU: 0.0, Memory: 131764224 Name: RuntimeBroker.exe, CPU: 0.0, Memory: 105021440 Name: SecurityHealthSystray.exe, CPU: 0.0, Memory: 3235840 Name: spoolsv.exe, CPU: 0.0, Memory: 5238784 Name: rdpclip.exe, CPU: 0.0, Memory: 8519680 Name: VGAuthService.exe, CPU: 0.0, Memory: 1888256 Name: vmtoolsd.exe, CPU: 0.0, Memory: 15568896 Name: cyserver.exe, CPU: 0.0, Memory: 256999424 Name: GoogleCrashHandler.exe, CPU: 0.0, Memory: 1490944 Name: dllhost.exe, CPU: 0.0, Memory: 19132416 Name: Skype.exe, CPU: 0.0, Memory: 76939264 Name: browser_broker.exe, CPU: 0.0, Memory: 9723904 Name: Windows.WARP.JITService.exe, CPU: 0.0, Memory: 12124160 Name: WmiPrvSE.exe, CPU: 0.0, Memory: 17879040 Name: SearchIndexer.exe, CPU: 0.0, Memory: 30621696 Name: MoUsoCoreWorker.exe, CPU: 0.0, Memory: 101072896 Name: msdtc.exe, CPU: 0.0, Memory: 2015232 Name: GoogleCrashHandler64.exe, CPU: 0.0, Memory: 954368 Name: ctfmon.exe, CPU: 0.0, Memory: 12574720 Name: tlaworker.exe, CPU: 0.0, Memory: 4567040 Name: SgrmBroker.exe, CPU: 0.0, Memory: 5386240 Name: explorer.exe, CPU: 0.0, Memory: 131796992 Name: SecurityHealthService.exe, CPU: 0.0, Memory: 7720960 Name: MicrosoftEdgeSH.exe, CPU: 0.0, Memory: 14196736 Name: SearchApp.exe, CPU: 0.0, Memory: 127778816 Name: taskhostw.exe, CPU: 0.0, Memory: 27820032 Name: conhost.exe, CPU: 0.0, Memory: 21106688 Name: cortex-xdr-payload.exe, CPU: 0.0, Memory: 50122752 Name: StartMenuExperienceHost.exe, CPU: 0.0, Memory: 30461952 Name: OneDrive.exe, CPU: 0.0, Memory: 31211520 Name: sihost.exe, CPU: 0.0, Memory: 22646784 Name: ApplicationFrameHost.exe, CPU: 0.0, Memory: 22740992 Name: vm3dservice.exe, CPU: 0.0, Memory: 2592768 Name: cytray.exe, CPU: 0.0, Memory: 5562368 Name: UserOOBEBroker.exe, CPU: 0.0, Memory: 4227072 Name: YourPhone.exe, CPU: 0.0, Memory: 17018880 Name: smartscreen.exe, CPU: 0.0, Memory: 28450816 Name: ShellExperienceHost.exe, CPU: 0.0, Memory: 23031808 Name: notepad.exe, CPU: 0.0, Memory: 82530304 Name: Microsoft.Photos.exe, CPU: 0.0, Memory: 18604032 Name: MicrosoftEdgeCP.exe, CPU: 0.0, Memory: 56811520 Name: cmd.exe, CPU: 0.0, Memory: 921600 Name: TextInputHost.exe, CPU: 0.0, Memory: 13185024 Name: MicrosoftEdge.exe, CPU: 0.0, Memory: 55508992",
+    "domain":"WORKGROUP",
+    "endpoint_id":"aeec6a2cc92e46fab3b6f621722e9916",
+    "endpoint_ip_address":["192.168.1.97"],
+    "endpoint_name": "WIN10X64",
+    "endpoint_status":"STATUS_010_CONNECTED",
+    "execution_status":"COMPLETED_SUCCESSFULLY",
+    "failed_files":"0",
+    "retention_date":null,
+    "retrieved_files":0,
+    "standard_output":null}],
+    "scope":"WIN10X64",
+    "script_description":"Get running processes (CPU and Memory) from endpoint",
+    "script_name":"process_get"
+  }
+}

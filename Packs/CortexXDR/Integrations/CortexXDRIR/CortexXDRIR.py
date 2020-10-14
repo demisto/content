@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 from datetime import timezone
 import secrets
 import string
@@ -149,6 +150,20 @@ def string_to_int_array(string_list: list) -> list:
         for item in string_list:
             res.append(arg_to_int(arg=item, arg_name=str(item)))
     return res
+
+
+def arg_to_json(arg):
+    """
+        Args:
+            arg: string representing json object or None
+
+        Returns: json object or None
+
+        """
+    if arg:
+        return json.loads(arg)
+    else:
+        return None
 
 
 class Client(BaseClient):
@@ -969,16 +984,6 @@ class Client(BaseClient):
                                 hostname: list, violation_ids: list, username: list):
         filters: list = [
             {
-                'field': 'timestamp',
-                'operator': 'lte',
-                'value': timestamp_lte
-            },
-            {
-                'field': 'timestamp',
-                'operator': 'gte',
-                'value': timestamp_gte
-            },
-            {
                 'field': 'type',
                 'operator': 'in',
                 'value': [type_of_violation]
@@ -1034,7 +1039,19 @@ class Client(BaseClient):
                 'value': username
             }
         ]
-        filters = list(filter(lambda x: True if x['value'] else False, filters))
+        filters = list(filter(lambda x: x['value'] and x['value'][0], filters))
+
+        if timestamp_lte:
+            filters.append({
+                'field': 'timestamp',
+                'operator': 'lte',
+                'value': timestamp_lte
+            })
+        if timestamp_gte:
+            filters.append({
+                'field': 'timestamp',
+                'operator': 'gte',
+                'value': timestamp_gte})
 
         request_data: Dict[str, Any] = {
             "filters": filters
@@ -1134,7 +1151,7 @@ class Client(BaseClient):
             }
         ]
 
-        filters = list(filter(lambda x: True if x['value'] else False, filters))
+        filters = list(filter(lambda x: x['value'] and x['value'][0], filters))
 
         request_data: Dict[str, Any] = {
             "filters": filters
@@ -1286,6 +1303,10 @@ class Client(BaseClient):
                 'reputation': vendor_reputation,
                 'reliability': vendor_reliability
             })
+            if request_data.get('vendors'):
+                request_data['vendors'].append(vendors_list)
+            else:
+                request_data['vendors'] = vendors_list
         elif not vendor_name and not vendor_reputation and not vendor_reliability:
             pass
         else:
@@ -2547,7 +2568,7 @@ def get_script_code_command(client: Client, args: Dict[str, str]) -> Tuple[str, 
     return (
         f'Script code is :\n {str(reply)}',
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptCode(val.actionId == obj.actionId)': reply
+            f'{INTEGRATION_CONTEXT_BRAND}.scriptCode(val.script_uid == obj.script_uid)': reply
         },
         reply
     )
@@ -2608,8 +2629,7 @@ def get_script_execution_results_command(client: Client, args: Dict[str, str]) -
     reply = client.get_script_execution_results(action_id)
 
     return (
-        tableToMarkdown(name='Script Execution Results', t=reply.get('results'),
-                        headers=['General Status'], removeNull=True),
+        tableToMarkdown(name='Script Execution Results', t=reply.get('results'), removeNull=True),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionResults(val.actionId == obj.actionId)': reply
         },
@@ -2626,7 +2646,7 @@ def get_script_execution_result_files_command(client: Client, args: Dict[str, st
     return (
         f'Script execution data is: {str(data)}',
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionResult(val.actionId == obj.actionId)': data
+            f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionResultFile(val.actionId == obj.actionId)': data
         },
         data
     )
@@ -2643,7 +2663,7 @@ def insert_simple_indicators_command(client: Client, args) -> Tuple[str, Any, An
     vendor_name = args.get('vendor_name')
     vendor_reputation = args.get('vendor_reputation')
     vendor_reliability = args.get('vendor_reliability')
-    vendors = json.loads(args.get('vendors'))
+    vendors = arg_to_json(args.get('vendors'))
     class_string = args.get('class')
 
     client.insert_simple_indicators(

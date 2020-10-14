@@ -1207,3 +1207,166 @@ def test_run_script_command(requests_mock):
 
     _, context, _ = run_script_command(client, args)
     assert run_script_expected_result == context
+
+
+def test_get_script_execution_status_command(requests_mock):
+    """
+        Given:
+            -action_id
+        When:
+            Retrieve the status of a script execution action.
+        Then:
+            - returns markdown, context data and raw response.
+        """
+    from CortexXDRIR import get_script_execution_status_command, Client
+
+    get_script_execution_status_reply = load_test_data('./test_data/get_script_execution_status.json')
+    get_script_execution_status_expected_result = {
+        'PaloAltoNetworksXDR.scriptExecutionStatus(val.actionId == obj.actionId)':
+            get_script_execution_status_reply.get('reply')}
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_execution_status/',
+                       json=get_script_execution_status_reply)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'action_id': '1799'
+    }
+
+    _, context, _ = get_script_execution_status_command(client, args)
+    assert get_script_execution_status_expected_result == context
+
+
+def test_get_script_execution_results_command(requests_mock):
+    """
+        Given:
+            -action_id
+        When:
+            Retrieve the result of a script execution action.
+        Then:
+            - returns markdown, context data and raw response.
+        """
+    from CortexXDRIR import get_script_execution_results_command, Client
+
+    get_script_execution_results_reply = load_test_data('./test_data/get_script_execution_results.json')
+    get_script_execution_results_command_expected_result = {
+        'PaloAltoNetworksXDR.scriptExecutionResults(val.actionId == obj.actionId)':
+            get_script_execution_results_reply.get('reply')}
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_execution_results/',
+                       json=get_script_execution_results_reply)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'action_id': '1799'
+    }
+
+    _, context, _ = get_script_execution_results_command(client, args)
+    assert get_script_execution_results_command_expected_result == context
+
+
+# def test_get_script_execution_result_files_command(requests_mock):
+#     """
+#         Given:
+#             -action_id,
+#             -endpoint_id
+#         When:
+#             Retrieve the result of a script execution action.
+#         Then:
+#             - returns markdown, context data and raw response.
+#         """
+#     from CortexXDRIR import get_script_execution_result_files_command, Client
+#
+#     # todo: add file
+#     get_script_execution_results_files_reply = load_test_data('./test_data/get_script_execution_results_files.json')
+#     get_script_execution_results_files_command_expected_result = {
+#         'PaloAltoNetworksXDR.scriptExecutionResultFile(val.actionId == obj.actionId)':
+#             get_script_execution_results_files_reply.get('reply').get('data')}
+#     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_execution_results_files/',
+#                        json=get_script_execution_results_files_reply)
+#
+#     client = Client(
+#         base_url=f'{XDR_URL}/public_api/v1', headers={}
+#     )
+#     args = {
+#         'action_id': '1799'
+#     }
+#
+#     _, context, _ = get_script_execution_result_files_command(client, args)
+#     assert get_script_execution_results_files_command_expected_result == context
+
+
+def test_get_script_code_command(requests_mock):
+    """
+        Given:
+            -script_uid
+        When:
+            Get the code of a specific script in the script library.
+        Then:
+            - returns markdown, context data and raw response.
+        """
+    from CortexXDRIR import get_script_code_command, Client
+
+    get_script_code_command_reply = load_test_data('./test_data/get_script_code.json')
+    get_script_code_command_results_files_command_expected_result = {
+        'PaloAltoNetworksXDR.scriptCode(val.script_uid == obj.script_uid)':
+            get_script_code_command_reply.get('reply')}
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_code/',
+                       json=get_script_code_command_reply)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'script_uid': "548023b6e4a01ec51a495ba6e5d2a15d"
+    }
+
+    _, context, _ = get_script_code_command(client, args)
+    assert get_script_code_command_results_files_command_expected_result == context
+
+
+def test_insert_simple_indicators_command(requests_mock):
+    """
+        Given:
+            -
+        When:
+            Upload IOCs as JSON objects that you retrieved from external threat intelligence sources.
+        Then:
+            - returns only human readable string
+        """
+    from CortexXDRIR import insert_simple_indicators_command, Client
+
+    insert_simple_indicators_command_command_expected_result = 'IOCs successfully uploaded'
+    requests_mock.post(f'{XDR_URL}/public_api/v1/indicators/insert_jsons',
+                       json={"reply": "true"})
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        "indicator": "test1",
+        "severity": "INFO",
+        "type": "DOMAIN_NAME",
+        "expiration_date": "1587054895000",
+        "comment": "This is an example IOC",
+        "vendor_name": "hello",
+        "vendor_reliability": "A",
+        "vendor_reputation": "BAD",
+        "vendors": '[\
+                {\
+                "vendor_name": "PANW",\
+                "reputation": "GOOD",\
+                "reliablity": "B"\
+                },\
+                {\
+                "vendor_name": "PANW",\
+                "reputation": "SUSPICIOUS",\
+                "reliablity": "D"\
+                }\
+            ]'
+    }
+
+    human_readable, _, _ = insert_simple_indicators_command(client, args)
+    assert insert_simple_indicators_command_command_expected_result == human_readable

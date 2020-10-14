@@ -1465,23 +1465,6 @@ script:
       description: Action ID of the action initiated. ID will be used as a reference
         to track in the action center.
   - arguments:
-    - description: List of endpoint IDs, comma separated
-      name: endpoint_ids
-      required: true
-    - description: Code to run
-      name: snippet_code
-      required: true
-    - description: Integer, represents the timeout in seconds for this execution.
-      name: timeout
-      required: true
-    description: Initiate a new endpoint script execution action using provided snippet
-      code.
-    name: xdr-run-snippet-code-script
-    outputs:
-    - contextPath: PaloAltoNetworksXDR.runSnippetCodeScript.actionId
-      description: Action ID of the action initiated. ID will be used as a reference
-        to track in the action center.
-  - arguments:
     - description: Integer, identifier of the action, can be found in Cortex XDR console
         ResponseAction CenterAction ID field, or as return value after running - "xdr-run-script"
         command.
@@ -1627,6 +1610,3 @@ script:
 fromversion: 5.0.0
 tests:
 - Test XDR Playbook
-defaultclassifier: Cortex XDR - IR
-defaultmapperin: Cortex XDR - IR-mapper
-defaultmapperout: Cortex XDR - IR-out-mapper

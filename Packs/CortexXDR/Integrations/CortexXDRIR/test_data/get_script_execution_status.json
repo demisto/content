@@ -1,0 +1,14 @@
+{
+  "reply":{
+    "endpoints_aborted": 0,
+    "endpoints_canceled": 0,
+    "endpoints_completed_successfully": 1,
+    "endpoints_expired":0,
+    "endpoints_failed":0,
+    "endpoints_in_progress":0,
+    "endpoints_pending":0,
+    "endpoints_pending_abort":0,
+    "endpoints_timeout":0,
+    "general_status":"COMPLETED_SUCCESSFULLY"
+  }
+}
