@@ -2901,7 +2901,7 @@ enforce the policy. |
 >### Query data Logs:
 >|TimeGenerated|SourceAddress|DestinationAddress|Application|Action|Rule|
 >|---|---|---|---|---|---|
->| 2019/07/24 08:50:24 | 192.168.1.12 | 52.8.161.117 | web-browsing | deny | any - any accept |
+>| 2019/07/24 08:50:24 | 1.1.1.1 | 2.3.4.5 | web-browsing | deny | any - any accept |
 
 ### panorama-security-policy-match
 ***
@@ -3257,7 +3257,7 @@ Show firewall device software version.
             "Info": {
                 "Devicename": "PA-VM",
                 "Model": "PA-VM",
-                "Serial": "007051000050926",
+                "Serial": "000000000000000",
                 "Version": "8.1.7"
             }
         }
@@ -3270,7 +3270,7 @@ Show firewall device software version.
 >### Device Version:
 >|Devicename|Model|Serial|Version|
 >|---|---|---|---|
->| PA-VM | PA-VM | 007051000050926 | 8.1.7 |
+>| PA-VM | PA-VM | 000000000000000 | 8.1.7 |
 
 
 ### panorama-download-latest-content-update
@@ -3826,7 +3826,7 @@ Get SSL decryption rules.
 
 >|Name|UUID|Target|Service|Category|Type|From|To|Source|Destenation|Action|Source-user|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| test | cd3f0487-3872-4691-8387-1a15e7de142b | negate: no | any | member: any | ssl-forward-proxy: null | any | any | any | any | no-decrypt | any |
+>| test | some_uuid | negate: no | any | member: any | ssl-forward-proxy: null | any | any | any | any | no-decrypt | any |
 
 ### panorama-get-wildfire-configuration
 ***
