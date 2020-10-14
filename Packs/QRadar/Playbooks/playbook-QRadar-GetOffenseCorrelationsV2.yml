@@ -816,7 +816,7 @@ tasks:
     task:
       id: 3999e34f-ff50-40da-8d9a-8e9b9660d3ae
       version: -1
-      name: Set timestamp
+      name: Set timestamp to epoch
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -837,11 +837,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1070,
+          "x": -470,
           "y": -30
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
