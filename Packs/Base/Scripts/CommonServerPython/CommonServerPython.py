@@ -27,7 +27,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, List, Any
+    from typing import Optional, List, Any, Dict
 except Exception:
     if sys.version_info[0] < 3:
         # in python 2 an exception in the imports might still be raised even though it is caught.
@@ -4583,8 +4583,8 @@ class IAMCommandHelper:
         self.instance_name = demisto.callingContext['context']['IntegrationInstance']
         self.command = demisto.command().split('-')[0]
         self.mapping_type = 'User Profile'
-        self.outputs = {}
-        self.entry_context = {}
+        self.outputs = {}  # type: Dict[Any, Any]
+        self.entry_context = {}  # type: Dict[Any, Any]
         self.readable_output = ''
         self.incoming_mapper = incoming_mapper
         self.outgoing_mapper = outgoing_mapper
