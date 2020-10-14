@@ -778,15 +778,28 @@ def login_command():
     if session_id:
         try:
             DEFAULT_HEADERS['cookie'] = session_id
+            demisto.info('Zscaler logout active session triggered by zscaler-login command.')
             logout()
         except Exception as e:
-            demisto.debug('Zscaler logout failed with: {}'.format(str(e)))
+            demisto.info('Zscaler logout failed with: {}'.format(str(e)))
     login()
     return CommandResults(readable_output="Zscaler session created successfully.")
 
 
 def logout_command():
-    raw_res = logout().json()
+    ctx = get_integration_context() or {}
+    session_id = ctx.get(SESSION_ID_KEY)
+    if not session_id:
+        return CommandResults(
+            readable_output="No API session was found. No action was performed."
+        )
+    try:
+        DEFAULT_HEADERS['cookie'] = session_id
+        raw_res = logout().json()
+    except AuthorizationError:
+        return CommandResults(
+            readable_output="API session is not authenticated. No action was performed."
+        )
     return CommandResults(
         readable_output="API session logged out of Zscaler successfully.",
         raw_response=raw_res
@@ -814,6 +827,8 @@ def main():
 
     if demisto.command() == 'zscaler-login':
         return_results(login_command())
+    elif demisto.command() == 'zscaler-logout':
+        return_results(logout_command())
     else:
         login()
         try:
@@ -855,8 +870,6 @@ def main():
                 demisto.results(get_whitelist_command())
             elif demisto.command() == 'zscaler-sandbox-report':
                 demisto.results(sandbox_report_command())
-            elif demisto.command() == 'zscaler-logout':
-                return_results(logout_command())
             elif demisto.command() == 'zscaler-activate-changes':
                 return_results(activate_command())
         except Exception as e:
