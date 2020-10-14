@@ -1,4 +1,3 @@
-import sys
 import argparse
 
 import demisto_client
