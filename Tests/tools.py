@@ -4,8 +4,7 @@ import json
 import demisto_client
 from demisto_sdk.commands.common.tools import print_error
 import demisto_sdk.commands.common.tools as sdk_tools
-from demisto_sdk.commands.common.constants import PACKS_PACK_META_FILE_NAME, PACK_METADATA_SUPPORT, \
-    PACK_METADATA_CERTIFICATION
+from demisto_sdk.commands.common.constants import PACKS_PACK_META_FILE_NAME, PACK_METADATA_SUPPORT
 
 
 def update_server_configuration(client, server_configuration, error_msg):

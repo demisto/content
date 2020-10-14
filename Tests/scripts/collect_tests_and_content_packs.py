@@ -1179,6 +1179,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         if test not in tests:
             tests.add(test)
 
+    logging.debug('The tests are: {}'.format(tests))
+
     packs_to_install = packs_to_install.union(get_content_pack_name_of_test(tests, id_set))
 
     if is_conf_json:
