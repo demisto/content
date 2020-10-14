@@ -24,7 +24,7 @@ def init_tests(mocker):
 
 def run_command_test(command_func, args, response, result, mocker):
     response_vlaue = response
-    mocker.patch('Genians.http_request', return_value=response_vlaue)
+    mocker.patch('GenianNAC.http_request', return_value=response_vlaue)
 
     if command_func.__name__ == 'get_ip_nodeid':
         res = command_func(args)
@@ -35,8 +35,8 @@ def run_command_test(command_func, args, response, result, mocker):
 
 
 def test_get_ip_nodeid(mocker):
-    '''Genians-Genian-NAC-get-ip-nodeid'''
-    from Genians import get_ip_nodeid
+    '''Genian-NAC-get-ip-nodeid'''
+    from GenianNAC import get_ip_nodeid
 
     run_command_test(command_func=get_ip_nodeid,
                      args=mock_demisto_args['ip'],
@@ -46,8 +46,8 @@ def test_get_ip_nodeid(mocker):
 
 
 def test_get_tag_list(mocker):
-    '''Genians-Genian-NAC-get-tag-list'''
-    from Genians import get_tag_list
+    '''Genian-NAC-get-tag-list'''
+    from GenianNAC import get_tag_list
 
     run_command_test(command_func=get_tag_list,
                      args='',
@@ -57,8 +57,8 @@ def test_get_tag_list(mocker):
 
 
 def test_list_tag_data_string(mocker):
-    '''Genians-Genian-NAC-list-tag-data-string'''
-    from Genians import list_tag_data_string
+    '''Genian-NAC-list-tag-data-string'''
+    from GenianNAC import list_tag_data_string
 
     result = list_tag_data_string(integration_params['tag_name'])
 
