@@ -10,7 +10,7 @@ configuration:
   type: 0
 - display: Alexa rank - top domains to be considered trusted.
   name: benign
-  defaultvalue: "1000"
+  defaultvalue: "0"
   type: 0
   required: true
   additionalinfo: These domains will be given a DbotScore of good.
