@@ -1083,11 +1083,11 @@ jobs:
       - *destroy_instances
       - *store_artifacts
       - run:
-        name: Slack Notifier
-        shell: /bin/bash
-        command: |
-          ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' ./env_results.json
-        when: always
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' ./env_results.json
+          when: always
 
 workflows:
   version: 2
