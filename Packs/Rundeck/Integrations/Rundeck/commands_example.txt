@@ -4,3 +4,5 @@
 !rundeck-job-execution-abort execution_id=65
 !rundeck-job-retry execution_id=122 job_id={job_id}
 !rundeck-job-executions-query adhoc=false max_paging=3 project_name=Demisto user_filter=galb status_filter=failed
+!rundeck-adhoc-command-run exec_command="echo hello" as_user=adhocTest project_name=Demisto node_keepgoing=true
+!rundeck-webhook-event-send json=`{"gal":1}` auth_token={auth_id}

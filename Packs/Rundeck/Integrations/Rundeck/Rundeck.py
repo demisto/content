@@ -46,7 +46,7 @@ class Client(BaseClient):
             project_name_to_pass = self.project_name
         return self._http_request(
             method='GET',
-            url_suffix=f'/project/{self.project_name_to_pass}/webhooks',
+            url_suffix=f'/project/{project_name_to_pass}/webhooks',
             params=self.params
         )
 
@@ -367,16 +367,27 @@ class Client(BaseClient):
             params=request_params,
         )
 
-    def webhook_event_send(self, auth_token: str):
+    def webhook_event_send(self, auth_token: str, options: str, free_json: str):
         """
         This function posts data to the webhook endpoint
-        :param auth_token: data that you want to post
+        :param options: data that you want to post as dict
+        :param free_json: data you want to post as json
+        :param auth_token: auto token of the webhook
         :return: api response
         """
+        request_params: Dict[str, Any] = {}
+
+        if options:
+            request_params = options
+        else:
+            if free_json:
+                request_params = free_json
+
         return self._http_request(
             method='POST',
             url_suffix=f'/webhook/{auth_token}',
             params=self.params,
+            data=request_params
         )
 
     def adhoc_script_run(self, project_name: str, arg_string: str, node_thread_count: str, node_keepgoing: str, as_user: str, node_filter: str
@@ -750,7 +761,7 @@ def job_execution_abort_command(client: Client, args: dict):
 
 def adhoc_run_command(client: Client, args: dict):
     project_name: str = args.get('project_name', '')
-    exec_command: str = args.get('exec', '')
+    exec_command: str = args.get('exec_command', '')
     node_thread_count: str = args.get('node_thread_count', '')
     node_keepgoing: str = args.get('node_keepgoing', '')  # TODO: add list option true\false
     as_user: str = args.get('as_user')
@@ -817,24 +828,35 @@ def adhoc_script_run_from_url_command(client: Client, args: dict):
                                               arg_string)
     # if not isinstance(result, dict):
     # raise DemistoException(f'Got unexpected response: {result}')
+    filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
 
-    headers = [key.replace("_", " ") for key in [*result.keys()]]
-    readable_output = tableToMarkdown('Adhoc Run Script From Url:', result, headers=headers, headerTransform=pascalToSpace)
+    headers = [key.replace("_", " ") for key in [*filtered_results.keys()]]
+    readable_output = tableToMarkdown('Adhoc Run Script From Url:', filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.ScriptExecutionFromUrl',
-        outputs=result,
+        outputs=filtered_results,
         outputs_key_field='id'
     )
 
 
 def webhook_event_send_command(client: Client, args: dict):
     auth_token = args.get('auth_token', '')
+    options: str = args.get('options', '')
+    free_json: str = args.get('json', '')
+    options_as_dict: dict = attribute_pairs_to_dict(options)
 
-    result = client.webhook_event_send(auth_token)
+    try:
+        if options_as_dict:
+            options_as_str = json.dumps(options_as_dict)
+        else:
+            options_as_str = options_as_dict
+    except Exception as e:
+        raise DemistoException(f'There was a problem converting "free_json" to json. The reason is: {e}')
+    result = client.webhook_event_send(auth_token, options_as_str, free_json)
 
     headers = [key.replace("_", " ") for key in [*result.keys()]]
-    readable_output = tableToMarkdown('Adhoc Run Script From Url:', result, headers=headers,
+    readable_output = tableToMarkdown('Webhook event send:', result, headers=headers,
                                       headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,

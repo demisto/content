@@ -672,13 +672,13 @@ script:
       description: Project name to execute the command
       isArray: false
       name: project_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: Shell command to run
       isArray: false
       name: exec_command
-      required: false
+      required: true
       secret: false
     - default: false
       description: Threadcount to use
@@ -918,10 +918,26 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Data you want to post to the webhook endpoint
+      description: Auto token of the webhook
       isArray: false
       name: auth_token
       required: true
+      secret: false
+    - default: false
+      description: |-
+        Data you want to post to the webhook endpoint. example: op1=val1,op2=val2.
+        can pass either 'options' or 'json'.
+      isArray: false
+      name: options
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Json you want to post to the webhook endpoint.
+        can pass either 'options' or 'json'.
+      isArray: false
+      name: json
+      required: false
       secret: false
     deprecated: false
     description: Send webhook event
