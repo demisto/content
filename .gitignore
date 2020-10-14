@@ -6,7 +6,7 @@ _site
 TestData/EmailWithNonUnicodeAttachmentName.eml
 TestData/EmailWithNonUnicodeSubject.eml
 Integrations/SymantecMSS/test_data/SymantecXML.txt
-*.pyc
+
 *.swp
 .pytest_cache
 .python-version
