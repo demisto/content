@@ -1,4 +1,8 @@
 import pytest
+from GoogleCloudFunctions import set_default_project_id
+
+
+test_set_default_project_id():
 
 
 def test_format_parameters():

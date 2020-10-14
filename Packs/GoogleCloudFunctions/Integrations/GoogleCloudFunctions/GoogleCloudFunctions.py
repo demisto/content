@@ -187,14 +187,14 @@ def set_default_project_id(project, credentials_json):
 def main():
     credentials_json = json.loads(demisto.params().get('credentials_json', {}))
 
-    # when project_id is empty, get it from credentials_json
     project = demisto.params().get('project_id')
     project = set_default_project_id(project, credentials_json)
+    # when project_id is empty, get it from credentials_json
 
-    # when region is empty, set it to '-' meaning all regions
-    # note : demisto.params().get('region','-') did not worked on Demisto
     region = demisto.params().get('region')
     region = set_default_region(region)
+    # when region is empty, set it to '-' meaning all regions
+    # note : demisto.params().get('region','-') did not worked on Demisto
 
     proxy = demisto.params().get('proxy', False)
     insecure = demisto.params().get('insecure', False)
