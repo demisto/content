@@ -46,9 +46,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.9.1"
+      CONTENT_VERSION: "20.10.0"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "46fde7a4345e0c25aa496854447104b22684a3cc" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "8a93f9ad1328fc1f2e4ed75aec24d10159d68312" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -69,6 +69,9 @@ references:
   container_config: &container_config
     docker:
       - image: devdemisto/content-build:3.0.0.7332  # disable-secrets-detection
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
 
   workspace_root: &workspace_root
     /home/circleci/
@@ -985,6 +988,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
+      - setup_remote_docker
       - *restore_cache
       - *prepare_environment
       - *secrets

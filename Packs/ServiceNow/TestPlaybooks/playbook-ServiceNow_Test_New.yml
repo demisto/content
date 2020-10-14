@@ -1,7 +1,7 @@
-id: servicenow_test_new
+id: servicenow_test_v2
 version: -1
 fromversion: 5.0.0
-name: ServiceNow Test New
+name: ServiceNow Test V2
 description: This playbook tests the ServiceNow integration commands.
 starttaskid: "0"
 tasks:

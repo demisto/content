@@ -29,7 +29,10 @@ try:
     from urllib3.util import Retry
     from typing import Optional, List, Any
 except Exception:
-    pass
+    if sys.version_info[0] < 3:
+        # in python 2 an exception in the imports might still be raised even though it is caught.
+        # for more info see https://cosmicpercolator.com/2016/01/13/exception-leaks-in-python-2-and-3/
+        sys.exc_clear()
 
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
@@ -331,24 +334,6 @@ def auto_detect_indicator_type(indicator_value):
         pass
 
     return None
-
-
-# ===== Fix fetching credentials from vault instances =====
-# ====================================================================================
-try:
-    for k, v in demisto.params().items():
-        if isinstance(v, dict):
-            if 'credentials' in v:
-                vault = v['credentials'].get('vaultInstanceId')
-                if vault:
-                    v['identifier'] = v['credentials'].get('user')
-                break
-
-except Exception:
-    pass
-
-
-# ====================================================================================
 
 
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
@@ -4363,131 +4348,6 @@ class GetMappingFieldsResponse:
             all_mappings.append(scheme_types_mapping.extract_mapping())
 
         return all_mappings
-
-
-def handle_incoming_error_in_mirror(incident_data, error):
-    """Handle incoming mirror error.
-
-    :type incident_data: ``dict``
-    :param incident_data: the incoming incident info.
-
-    :type error: ``str``
-    :param error: The incoming mirror error message.
-
-    :return: GetRemoteDataResponse that will include the incoming error information.
-    :rtype: ``GetRemoteDataResponse``
-    """
-    error_entries = []
-    integration_cache = demisto.getIntegrationContext()
-
-    # setup new error if needed
-    if integration_cache.get('in_mirror_error') is None or integration_cache.get('in_mirror_error') != error:
-        demisto.debug("Error in incoming mirror for incident {0}: {1}".format(incident_data.get('id'), error))
-        integration_cache['in_mirror_error'] = error
-        integration_cache['in_error_printed'] = False
-
-    # handle incoming error
-    if integration_cache.get('in_mirror_error'):
-        incident_data['in_mirror_error'] = integration_cache.get('in_mirror_error')
-
-        # check if error was printed
-        if not integration_cache.get('in_error_printed'):
-            # TODO: change this to an error type
-            error_entries.append({
-                'Type': EntryType.NOTE,
-                'Contents': "",
-                'HumanReadable': "An error occurred while mirroring incoming data: {0}".format(
-                    integration_cache.get('in_mirror_error')),
-                'ReadableContentsFormat': EntryFormat.TEXT,
-                'ContentsFormat': EntryFormat.TEXT,
-            })
-            integration_cache['in_error_printed'] = True
-
-    demisto.setIntegrationContext(integration_cache)
-
-    # check for outgoing error
-    out_error_entry = handle_outgoing_error_in_mirror(incident_data)
-    if out_error_entry:
-        error_entries.append(out_error_entry)
-
-    return GetRemoteDataResponse(
-        mirrored_object=incident_data,
-        entries=error_entries
-    )
-
-
-def handle_outgoing_error_in_mirror(incident_data):
-    """Handle outgoing mirror error.
-
-    :type incident_data: ``dict``
-    :param incident_data: the incident info.
-
-    :return: An error entry if the current outgoing error was not printed, an empty dict otherwise.
-    :rtype: ``dict``
-    """
-    out_error_entry = {}
-    integration_cache = demisto.getIntegrationContext()
-
-    # handle incoming error
-    if integration_cache.get('out_mirror_error'):
-        incident_data['out_mirror_error'] = integration_cache.get('out_mirror_error')
-
-        # check if error was printed
-        if not integration_cache.get('out_error_printed'):
-            # TODO: change this to an error type
-            out_error_entry = {
-                'Type': EntryType.NOTE,
-                'Contents': "",
-                'HumanReadable': "An error occurred while mirroring outgoing data: {0}".format(
-                    integration_cache.get('out_mirror_error')),
-                'ReadableContentsFormat': EntryFormat.TEXT,
-                'ContentsFormat': EntryFormat.TEXT,
-            }
-            integration_cache['out_error_printed'] = integration_cache.get('out_mirror_error')
-            demisto.setIntegrationContext(integration_cache)
-
-    return out_error_entry
-
-
-def reset_incoming_and_outgoing_mirror_errors(incident_data):
-    """Handle incoming and outgoing mirror error reset.
-
-    :type incident_data: ``dict``
-    :param incident_data: the incident info.
-
-    :return: No data returned
-    :rtype: ``None``
-    """
-    integration_cache = demisto.getIntegrationContext()
-    integration_cache['in_mirror_error'] = None
-    incident_data['in_mirror_error'] = ''
-
-    if integration_cache.get('out_mirror_error') is None:
-        incident_data['out_mirror_error'] = ''
-
-    demisto.setIntegrationContext(integration_cache)
-
-
-def setup_outgoing_mirror_error(incident_id, error):
-    """Setup outgoing mirror error to be printed in handle outgoing error method.
-
-    :type incident_id: ``str``
-    :param incident_id: the mirrored incident id that had an outgoing error.
-
-    :type error: ``str``
-    :param error: the outgoing error message.
-
-    :return: the mirrored incident id that had an outgoing error.
-    :rtype: ``str``
-    """
-    integration_cache = demisto.getIntegrationContext()
-    if integration_cache.get('out_mirror_error') is None or integration_cache.get('out_mirror_error') != error:
-        demisto.debug("Error in outgoing mirror for incident {0}: {1}".format(incident_id, error))
-        integration_cache['out_mirror_error'] = error
-        integration_cache['out_error_printed'] = False
-
-    demisto.setIntegrationContext(integration_cache)
-    return incident_id
 
 
 def get_x_content_info_headers():
