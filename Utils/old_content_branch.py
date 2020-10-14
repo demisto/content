@@ -19,7 +19,7 @@ NON_CIRCLE_TEST_PLAYBOOKS_DIRECTORY = 'TestPlaybooks'
 DEPRECATED_NON_CIRCLE_TESTS_DIRECTORY = os.path.join('TestPlaybooks', 'NonCircleTests', 'Deprecated')
 
 
-def should_keep_yml_file(yml_content: Dict, new_to_version: str):
+def should_keep_yml_file(yml_content: Dict, new_to_version: str) -> bool:
     """Check if yml file should stay in the feature branch"""
     if parse_version(yml_content.get('toversion', '99.99.99')) < parse_version(new_to_version) or \
             parse_version(yml_content.get('fromversion', '0.0.0')) >= parse_version(new_to_version):
@@ -28,7 +28,7 @@ def should_keep_yml_file(yml_content: Dict, new_to_version: str):
     return True
 
 
-def should_keep_json_file(json_content: Dict, new_to_version: str):
+def should_keep_json_file(json_content: Dict, new_to_version: str) -> bool:
     """Check if json file should stay in the feature branch"""
     if parse_version(json_content.get('toVersion', '99.99.99')) < parse_version(new_to_version) or \
             parse_version(json_content.get('fromVersion', '0.0.0')) >= parse_version(new_to_version):
