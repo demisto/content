@@ -1250,19 +1250,6 @@ workflows:
     jobs:
       - Setup Environment
       - Create Instances
-      - Run Unit Testing And Lint:
-          requires:
-            - Setup Environment
-      - Run Validations:
-          requires:
-            - Setup Environment
-      - Install Packs in Demisto 6_0:
-          requires:
-            - Create Instances
-      - Install Packs in Demisto Marketplace - Master:
-          requires:
-            - Create Instances
       - Upload Packs:
           requires:
-            - Install Packs in Demisto 6_0
-            - Install Packs in Demisto Marketplace - Master
+            - Create Instances
