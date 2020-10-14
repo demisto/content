@@ -180,6 +180,9 @@ def set_default_region(region):
 
 def set_default_project_id(project, credentials_json):
     if project is None:
+        no_project_id_in_credentials = "project_id" not in credentials_json
+        if no_project_id_in_credentials:
+            return_error("Service account private key file contents does not have a project id")
         project = credentials_json["project_id"]
     return project
 
