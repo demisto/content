@@ -1057,9 +1057,7 @@ jobs:
           command: pip3 install git+https://github.com/demisto/demisto-sdk.git
       - run:
           name: Unlock HelloWorld integration and playbook
-          command: |
-            python3 Tests/unlock_entity.py integration HelloWorld
-            python3 Tests/unlock_entity.py playbook HelloWorld-Test
+          command: python3 Tests/unlock_entity.py integration HelloWorld
       - *upload_entities_to_cortex_xsoar
       - run:
           name: Download integration from Cortex XSOAR
