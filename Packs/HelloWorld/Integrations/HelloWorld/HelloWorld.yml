@@ -20,7 +20,7 @@ configuration:
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
-  type: 0  
+  type: 0
 - display: API Key
   name: apikey
   required: true
@@ -123,8 +123,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\
-        \n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
+      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
       isArray: false
       name: start_time
       required: false
@@ -223,8 +222,7 @@ script:
       description: List of IPs.
       isArray: true
     - name: threshold
-      description: If the IP has reputation above the threshold then the IP defined as malicious.
-        If threshold not set, then threshold from instance configuration is used.
+      description: If the IP has reputation above the threshold then the IP defined as malicious. If threshold not set, then threshold from instance configuration is used.
       defaultValue: 65
     outputs:
     - contextPath: DBotScore.Indicator
@@ -334,10 +332,10 @@ script:
       type: String
     - contextPath: IP.Malicious.Vendor
       description: The vendor reporting the IP address as malicious.
-      type: String            
+      type: String
     - contextPath: IP.Malicious.Description
       description: A description explaining why the IP address was reported as malicious.
-      type: String   
+      type: String
     - contextPath: IP.ASN
       description: The autonomous system name for the IP address.
       type: String
@@ -349,8 +347,7 @@ script:
       description: List of Domains.
       isArray: true
     - name: threshold
-      description: If the domain has reputation above the threshold then the domain defined as malicious.
-        If threshold not set, then threshold from instance configuration is used.
+      description: If the domain has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used.
       defaultValue: 65
     outputs:
     - contextPath: DBotScore.Indicator
@@ -412,7 +409,7 @@ script:
       type: String
     - contextPath: IP.ASN
       description: The autonomous system name for the IP address.
-      type: String      
+      type: String
     - contextPath: HelloWorld.Domain.address
       description: Domain admin address.
       type: String
@@ -456,8 +453,7 @@ script:
       description: Domain registrar.
       type: String
     - contextPath: HelloWorld.Domain.score
-      description: Reputation score from HelloWorld for this domain (0 to 100, where higher
-        is worse).
+      description: Reputation score from HelloWorld for this domain (0 to 100, where higher is worse).
       type: Number
     - contextPath: HelloWorld.Domain.state
       description: Domain admin state.
@@ -578,7 +574,7 @@ script:
       type: string
     - contextPath: CVE.ID
       description: The ID of the CVE.
-      type: string      
+      type: string
   dockerimage: demisto/python3:3.8.3.9324
   isfetch: true
   longRunning: false
@@ -589,3 +585,4 @@ script:
   type: python
 defaultclassifier: HelloWorld
 defaultmapperin: HelloWorld-mapper
+fromversion: 5.0.0

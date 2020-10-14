@@ -2,16 +2,20 @@ commonfields:
   id: ConvertXmlFileToJson
   version: -1
 name: ConvertXmlFileToJson
-script: |-
+script: >-
   var xml = getFileByEntryID(args.entryID);
+
   var xmlJson = x2j(xml);
+
   try {
     xmlJson = JSON.parse(xmlJson);
   } catch(err) {}
 
+
   if (args.contextKey && args.contextKey.length > 0) {
       setContext(args.contextKey,xmlJson);
   }
+
   if (args.verbose && args.verbose.length > 0 && args.verbose == 'True'){
       return xmlJson;
   }
@@ -35,3 +39,4 @@ args:
   description: Print json result to warrom
   defaultValue: "True"
 scripttarget: 0
+fromversion: 5.0.0

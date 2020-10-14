@@ -2,7 +2,7 @@ commonfields:
   id: SSDeepReputation
   version: -1
 name: SSDeepReputation
-script: |-
+script: >2-
 
   REPUTATIONS = {
       0: 'None',
@@ -10,6 +10,7 @@ script: |-
       2: 'Suspicious',
       3: 'Bad'
   }
+
 
   def get_indicator_from_value(indicator_value):
       try:
@@ -42,14 +43,19 @@ script: |-
       return related_indicators
 
   ssdeep_value = demisto.args()['input']
+
   current_incident_id = demisto.investigation()['id']
+
   res = demisto.executeCommand('similarSsdeep', {
       'value': ssdeep_value,
       'daysTimeFrame': int(demisto.args()['timeFrameDays']),
       'threshold': int(demisto.args()['threshold'])
   })
+
   ssdeep_indicators = map(lambda x: x['indicator'], res[0]['Contents'])
+
   ssdeep_indicator = get_indicator_from_value(ssdeep_value)
+
   if not ssdeep_indicator:
       # make the current ssdeep part of the current invastigation
       ssdeep_indicator = {
@@ -64,12 +70,16 @@ script: |-
           ssdeep_indicator['investigationIDs'].append(current_incident_id)
 
   ssdeep_indicators.append(ssdeep_indicator)
+
   related_indicators = []
+
   for i in ssdeep_indicators:
       related_indicators += get_ssdeep_related_indicators(i)
 
   max_score = max(map(lambda x: x.get('score'), related_indicators))
+
   max_score_indicator = next(x for x in related_indicators if x.get('score', 0) == max_score)
+
   if max_score > ssdeep_indicator.get('score', 0) and max_score > 1:
       entry = {
           'Type': entryTypes['note'],
@@ -93,8 +103,7 @@ type: python
 subtype: python2
 tags:
 - reputation
-comment: Calculate ssdeep reputation based on similar files (by ssdeep similarity)
-  on the system.
+comment: Calculate ssdeep reputation based on similar files (by ssdeep similarity) on the system.
 enabled: true
 args:
 - name: input
@@ -107,3 +116,4 @@ args:
   defaultValue: "50"
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

@@ -70,8 +70,7 @@ script:
       description: A LINQ query to run in Devo.
     - name: from
       required: true
-      description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python
-        datetime objects, and string datetimes.
+      description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes.
     - name: to
       description: End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range.
     - name: writeToContext
@@ -114,8 +113,7 @@ script:
       description: A string to search for in the specified tables (in any column).
     - name: from
       required: true
-      description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python
-        datetime objects, and string datetimes
+      description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes
     - name: to
       description: End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range.
     - name: writeToContext
@@ -169,3 +167,4 @@ script:
   subtype: python3
 tests:
 - No test - no instance
+fromversion: 5.0.0

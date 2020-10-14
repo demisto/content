@@ -1,0 +1,18 @@
+{
+    "name": "IronDefense - Classifier",
+    "type": "classification",
+    "id": "IronDefense",
+    "description": "IronDefense Classifier",
+    "defaultIncidentType": "",
+	"transformer": {
+		"simple": "type",
+		"complex": null
+	},
+	"keyTypeMap": {
+		"alert": "IronDefense Alert Notification",
+		"dome": "IronDefense IronDome Notification",
+		"event": "IronDefense Event Notification"
+    },
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

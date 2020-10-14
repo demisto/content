@@ -53,3 +53,4 @@ tests:
 dependson:
   must:
   - servicenow-query-table
+fromversion: 5.0.0

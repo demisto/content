@@ -1,6 +1,6 @@
-id: Microsoft Graph - Test
+id: Microsoft Graph User - Test
 version: -1
-name: Microsoft Graph - Test
+name: Microsoft Graph User - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -152,8 +152,7 @@ tasks:
       id: cedd7aa3-8bed-4425-837c-ebd16032258f
       version: -1
       name: Get Delta (mobilePhone)
-      description: Get newly created, updated, or deleted users without having to
-        perform a full read of the entire user collection.
+      description: Get newly created, updated, or deleted users without having to perform a full read of the entire user collection.
       script: '|||msgraph-user-get-delta'
       type: regular
       iscommand: true
@@ -186,8 +185,7 @@ tasks:
       id: 78d50c5f-34b2-4ea0-8180-04dac1eb8a46
       version: -1
       name: Block user
-      description: Terminate users session from all Office 365 and prevents it from
-        siginin in
+      description: Terminate users session from all Office 365 and prevents it from siginin in
       script: '|||msgraph-user-terminate-session'
       type: regular
       iscommand: true
@@ -456,8 +454,7 @@ tasks:
       id: 7a06aa7a-3a05-4f6f-825d-d77a9bd20b1d
       version: -1
       name: Get User
-      description: 'Retrieves the properties and relationships of user object. for
-        more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)'
+      description: 'Retrieves the properties and relationships of user object. for more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)'
       script: '|||msgraph-user-get'
       type: regular
       iscommand: true
@@ -559,3 +556,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

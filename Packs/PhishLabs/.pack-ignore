@@ -1,0 +1,8 @@
+[file:PhishLabsIOC_EIR.yml]
+ignore=IN126
+
+[file:PhishLabsIOC_DRP.yml]
+ignore=IN126
+
+[file:PhishLabsIOC.yml]
+ignore=IN126

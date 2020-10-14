@@ -741,6 +741,16 @@ def incidents(incidents=None):
         )
 
 
+def incident():
+    """Retrieves the current incident
+
+    Returns:
+      dict: dict representing an incident object
+
+    """
+    return incidents()[0]
+
+
 def setContext(contextPath, value):
     """(Script only)
     Sets given value in path in the context data
@@ -757,7 +767,16 @@ def setContext(contextPath, value):
 
 
 def demistoUrls():
-    """Retrieves Demisto server URLs of incident ran in
+    """Retrieves the following URLs related to the incident.
+        - evidenceBoard
+        - investigation
+        - relatedIncidents
+        - server
+        - warRoom
+        - workPlan
+    You can use these URLs when you send notifications outside the system
+    over email or slack and would like to include a link to the incident.
+
 
     Returns:
       dict: Object contains server URLs with page as key and URL as value
@@ -850,9 +869,16 @@ def createIncidents(incidents, lastRun=None, userID=None):
     Creates incident in long running execution
 
     Args:
-      incidents (list): List of incident objects to create
+      incidents (list): List of incident objects to create, with the following optional keys:
+            - name (str)
+            - type (str) - If not provided, an Unclassified incident will be created
+            - labels (list) - List of {"type": _, "value": _} objects
+            - rawJSON (str) - Will be omitted after the classification & mapping step
+            - occurred (str)
+            - details (str)
+            - severity (int)
       lastRun (dict): the LastRun object to set (Default value = None)
-      userID lastIndicator: The user associated with the request (Default value = None)
+      userID (str): The user associated with the request (Default value = None)
 
     Returns:
       Union[list, dict]: Created incident object

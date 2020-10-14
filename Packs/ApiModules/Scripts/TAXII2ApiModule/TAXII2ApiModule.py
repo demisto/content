@@ -62,17 +62,18 @@ STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
 
 class Taxii2FeedClient:
     def __init__(
-        self,
-        url: str,
-        collection_to_fetch,
-        proxies,
-        verify: bool,
-        skip_complex_mode: bool = False,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        field_map: Optional[dict] = None,
-        tags: Optional[list] = None,
-        limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
+            self,
+            url: str,
+            collection_to_fetch,
+            proxies,
+            verify: bool,
+            skip_complex_mode: bool = False,
+            username: Optional[str] = None,
+            password: Optional[str] = None,
+            field_map: Optional[dict] = None,
+            tags: Optional[list] = None,
+            tlp_color: Optional[str] = None,
+            limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -86,6 +87,7 @@ class Taxii2FeedClient:
         :param field_map: map used to create fields entry ({field_name: field_value})
         :param tags: custom tags to be added to the created indicator
         :param limit_per_request: Limit the objects requested per poll request
+        :param tlp_color: Traffic Light Protocol color
         """
         self._conn = None
         self.server = None
@@ -121,6 +123,7 @@ class Taxii2FeedClient:
 
         self.field_map = field_map if field_map else {}
         self.tags = tags if tags else []
+        self.tlp_color = tlp_color
         self.indicator_regexes = [
             re.compile(INDICATOR_EQUALS_VAL_PATTERN),
             re.compile(HASHES_EQUALS_VAL_PATTERN),
@@ -234,7 +237,7 @@ class Taxii2FeedClient:
         return indicators
 
     def extract_indicators_from_envelope_and_parse(
-        self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1
+            self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1
     ) -> List[Dict[str, str]]:
         """
         Extract indicators from an 2.0 envelope generator, or 2.1 envelope (which then polls and repeats process)
@@ -298,7 +301,7 @@ class Taxii2FeedClient:
         return indicators
 
     def poll_collection(
-        self, page_size: int, **kwargs
+            self, page_size: int, **kwargs
     ) -> Union[types.GeneratorType, Dict[str, str]]:
         """
         Polls a taxii collection
@@ -326,7 +329,7 @@ class Taxii2FeedClient:
 
     @staticmethod
     def extract_indicators_from_stix_objects(
-        stix_objs: List[Dict[str, str]]
+            stix_objs: List[Dict[str, str]]
     ) -> List[Dict[str, str]]:
         """
         Extracts indicators from taxii objects
@@ -340,7 +343,7 @@ class Taxii2FeedClient:
         return indicators_objs
 
     def parse_indicators_list(
-        self, indicators_objs: List[Dict[str, str]]
+            self, indicators_objs: List[Dict[str, str]]
     ) -> List[Dict[str, str]]:
         """
         Parses a list of indicator objects, and updates the client.latest_fetched_indicator_created
@@ -366,7 +369,7 @@ class Taxii2FeedClient:
         return indicators
 
     def parse_single_indicator(
-        self, indicator_obj: Dict[str, str]
+            self, indicator_obj: Dict[str, str]
     ) -> List[Dict[str, str]]:
         """
         Parses a single indicator object
@@ -408,11 +411,11 @@ class Taxii2FeedClient:
         return indicators
 
     def get_indicators_from_indicator_groups(
-        self,
-        indicator_groups: List[Tuple[str, str]],
-        indicator_obj: Dict[str, str],
-        indicator_types: Dict[str, str],
-        field_map: Dict[str, str],
+            self,
+            indicator_groups: List[Tuple[str, str]],
+            indicator_obj: Dict[str, str],
+            indicator_types: Dict[str, str],
+            field_map: Dict[str, str],
     ) -> List[Dict[str, str]]:
         """
         Get indicators from indicator regex groups
@@ -481,12 +484,16 @@ class Taxii2FeedClient:
                 tags.append(field_tag)
 
         fields["tags"] = tags
+
+        if self.tlp_color:
+            fields["trafficlightprotocol"] = self.tlp_color
+
         indicator["fields"] = fields
         return indicator
 
     @staticmethod
     def extract_indicator_groups_from_pattern(
-        pattern: str, regexes: List
+            pattern: str, regexes: List
     ) -> List[Tuple[str, str]]:
         """
         Extracts indicator [`type`, `indicator`] groups from pattern

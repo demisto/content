@@ -1,0 +1,652 @@
+id: CrowdStrike Falcon Intel v2 - Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: CrowdStrike Falcon Intel v2 - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 50a71f43-0887-44e3-8a80-e33baf4dcf6b
+    type: start
+    task:
+      id: 50a71f43-0887-44e3-8a80-e33baf4dcf6b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 59dccf94-e7a2-4b05-862b-54084ac9f21f
+    type: regular
+    task:
+      id: 59dccf94-e7a2-4b05-862b-54084ac9f21f
+      version: -1
+      name: cs-reports
+      description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
+        publications.
+      script: '|||cs-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      actors: {}
+      created_date: {}
+      description: {}
+      limit:
+        simple: "1"
+      max_last_modified_date: {}
+      motivations: {}
+      name: {}
+      offset: {}
+      q: {}
+      query: {}
+      slug: {}
+      sort: {}
+      sub_type: {}
+      tags: {}
+      target_countries: {}
+      target_industries: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1b9edcd0-8df5-439c-816d-a0627aff8e45
+    type: condition
+    task:
+      id: 1b9edcd0-8df5-439c-816d-a0627aff8e45
+      version: -1
+      name: Verify Outputs (cs-reports)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Report
+                accessor: ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Report
+                accessor: Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Report
+                accessor: Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Report
+                accessor: Slug
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 9dc4311b-611c-4051-8ed2-8938fe6add02
+    type: regular
+    task:
+      id: 9dc4311b-611c-4051-8ed2-8938fe6add02
+      version: -1
+      name: cs-actors
+      description: Search known actors based on the given parameters.
+      script: '|||cs-actors'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      created_date: {}
+      description: {}
+      limit:
+        simple: "1"
+      max_last_activity_date: {}
+      max_last_modified_date: {}
+      min_last_activity_date: {}
+      motivations: {}
+      name: {}
+      offset: {}
+      origins: {}
+      q: {}
+      query: {}
+      slug: {}
+      sort: {}
+      tagret_industries: {}
+      target_countries: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2399fb5a-57ea-4d59-8767-a60be3b2fd99
+    type: condition
+    task:
+      id: 2399fb5a-57ea-4d59-8767-a60be3b2fd99
+      version: -1
+      name: Verify Outputs (cs-actors)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Actor
+                accessor: ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Actor
+                accessor: Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Actor
+                accessor: Slug
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Actor
+                accessor: ShortDescription
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 6d8f3b13-2e62-47de-8e15-ebee150412ec
+    type: regular
+    task:
+      id: 6d8f3b13-2e62-47de-8e15-ebee150412ec
+      version: -1
+      name: cs-indicators
+      description: Search known indicators based on the given parameters.
+      script: '|||cs-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      id: {}
+      indicator: {}
+      last_updated: {}
+      limit:
+        simple: "1"
+      malicious_confidence: {}
+      offset: {}
+      query: {}
+      sort: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 66339b21-ef59-43b7-82ce-97cc0e1e6cad
+    type: condition
+    task:
+      id: 66339b21-ef59-43b7-82ce-97cc0e1e6cad
+      version: -1
+      name: Verify Outputs (cs-indicators)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Indicator
+                accessor: ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Indicator
+                accessor: Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Indicator
+                accessor: Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 1950544f-d732-4961-86da-347fadce5749
+    type: regular
+    task:
+      id: 1950544f-d732-4961-86da-347fadce5749
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: dbd55b12-7e2d-42e3-8d37-fb2f0bae1173
+    type: regular
+    task:
+      id: dbd55b12-7e2d-42e3-8d37-fb2f0bae1173
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 95c08c0d-1d4a-44e9-803e-eacca29c9ab5
+    type: regular
+    task:
+      id: 95c08c0d-1d4a-44e9-803e-eacca29c9ab5
+      version: -1
+      name: Get IP
+      description: Search known indicators based on the given parameters.
+      script: '|||cs-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      id: {}
+      indicator: {}
+      last_updated: {}
+      limit:
+        simple: "1"
+      malicious_confidence: {}
+      offset: {}
+      query: {}
+      sort: {}
+      type:
+        simple: ip_address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: c2337e6f-4b6c-4c32-8fad-069480920eda
+    type: regular
+    task:
+      id: c2337e6f-4b6c-4c32-8fad-069480920eda
+      version: -1
+      name: Set IP
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append: {}
+      key:
+        simple: IP_Address
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          accessor: Address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 44c3c02d-37be-4e22-8530-8578c1bfe3fa
+    type: regular
+    task:
+      id: 44c3c02d-37be-4e22-8530-8578c1bfe3fa
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        complex:
+          root: FalconIntel
+          accessor: Indicator
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 07256b12-e6f3-46ed-8cd2-0b24c7df0349
+    type: regular
+    task:
+      id: 07256b12-e6f3-46ed-8cd2-0b24c7df0349
+      version: -1
+      name: ip command
+      description: Check IP reputation.
+      script: CrowdStrike Falcon Intel v2|||ip
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon Intel v2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      ip:
+        simple: ${IP_Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: b656510c-0b93-4d02-8b86-5af49b08d759
+    type: condition
+    task:
+      id: b656510c-0b93-4d02-8b86-5af49b08d759
+      version: -1
+      name: Verify Outputs (ip command)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Indicator
+                accessor: ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Indicator
+                accessor: Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Indicator
+                accessor: Type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: d862140d-1ca7-42b2-8e02-6057547d9f24
+    type: title
+    task:
+      id: d862140d-1ca7-42b2-8e02-6057547d9f24
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

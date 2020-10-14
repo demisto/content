@@ -8,7 +8,6 @@ Darkfeed™ and pre-built playbooks can automate your key SOC use cases such as 
 
 The Darkfeed content pack includes the stream of indicators, a customized dashboard and three playbooks that:
 
-Automatically download malicious files from a Darkfeed IOC, detonate them in automated sandboxes, and extract and block any additional indicators and files.
-Automatically discover and enrich indicators with the same actor and source as the triggering IOC. Search for and isolate any compromised endpoints and proactively block IOCs from entering your network.
+- Automatically download malicious files from a Darkfeed IOC, detonate them in automated sandboxes, and extract and block any additional indicators and files.
+- Automatically discover and enrich indicators with the same actor and source as the triggering IOC. Search for and isolate any compromised endpoints and proactively block IOCs from entering your network.
 
-Activation of the Darkfeed™ pack requires your Sixgill API client ID and secret. If you haven’t received your Sixgill credentials, please contact support@cybersixgill.com.

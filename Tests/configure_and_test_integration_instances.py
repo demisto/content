@@ -21,8 +21,8 @@ import demisto_client
 from ruamel import yaml
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
-    run_command, checked_type, get_yaml, str2bool, format_version, find_type
-from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, RUN_ALL_TESTS_FORMAT
+    run_command, get_yaml, str2bool, format_version, find_type
+from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FileType
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
 from Tests.test_content import extract_filtered_tests, ParallelPrintsManager, \
@@ -35,6 +35,17 @@ from Tests.tools import update_server_configuration
 
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
+DOCKER_HARDENING_CONFIGURATION = {
+    'docker.cpu.limit': '1.0',
+    'docker.run.internal.asuser': 'true',
+    'limit.docker.cpu': 'true',
+    'python.pass.extra.keys': '--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192'
+}
+MARKET_PLACE_CONFIGURATION = {
+    'content.pack.verify': 'false',
+    'marketplace.initial.sync.delay': '0',
+    'content.pack.ignore.missing.warnings.contentpack': 'true'
+}
 
 
 class Running(IntEnum):
@@ -67,6 +78,40 @@ class SimpleSSH(SSHClient):
             return run_command(command, is_silenced=False), None
 
 
+class Server:
+
+    def __init__(self, host, user_name, password):
+        self.__ssh_client = None
+        self.__client = None
+        self.host = host
+        self.user_name = user_name
+        self.password = password
+
+    def __str__(self):
+        return self.host
+
+    @property
+    def client(self):
+        if self.__client is None:
+            self.__client = demisto_client.configure(self.host, verify_ssl=False, username=self.user_name, password=self.password)
+        return self.__client
+
+    def add_server_configuration(self, config_dict, error_msg, restart=False):
+        update_server_configuration(self.client, config_dict, error_msg)
+
+        if restart:
+            self.exec_command('sudo systemctl restart demisto')
+
+    def exec_command(self, command):
+        if self.__ssh_client is None:
+            self.__init_ssh()
+        self.__ssh_client.exec_command(command)
+
+    def __init_ssh(self):
+        self.__ssh_client = SimpleSSH(host=self.host.replace('https://', '').replace('http://', ''),
+                                      key_file_path=Build.key_file_path, user='ec2-user')
+
+
 class Build:
     # START CHANGE ON LOCAL RUN #
     content_path = '{}/project'.format(os.getenv('HOME'))
@@ -87,7 +132,8 @@ class Build:
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
-
+        self.servers = [Server(server_url, self.username, self.password) for server_url in self.servers]
+        self.is_private = options.is_private
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
         self.skipped_integrations_conf = conf['skipped_integrations']
@@ -114,6 +160,7 @@ def options_handler():
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
+    parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
 
@@ -234,7 +281,7 @@ def get_integration_names_from_files(integration_files_list):
     return [name for name in integration_names_list if name]  # remove empty values
 
 
-def get_new_and_modified_integration_files(git_sha1):
+def get_new_and_modified_integration_files(build):
     """Return 2 lists - list of new integrations and list of modified integrations since the commit of the git_sha1.
 
     Args:
@@ -245,17 +292,17 @@ def get_new_and_modified_integration_files(git_sha1):
     """
     # get changed yaml files (filter only added and modified files)
     file_validator = ValidateManager()
-    change_log = run_command('git diff --name-status {}'.format(git_sha1))
-    modified_files, added_files, _, _, _ = file_validator.filter_changed_files(change_log)
-    all_integration_regexes = YML_INTEGRATION_REGEXES
+    file_validator.branch_name = build.branch_name
+    modified_files, added_files, _, _, _ = file_validator.get_modified_and_added_files('...', 'origin/master')
 
     new_integration_files = [
-        file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
+        file_path for file_path in added_files if
+        find_type(file_path) in [FileType.INTEGRATION, FileType.BETA_INTEGRATION]
     ]
 
     modified_integration_files = [
         file_path for file_path in modified_files if
-        isinstance(file_path, str) and checked_type(file_path, all_integration_regexes)
+        isinstance(file_path, str) and find_type(file_path) in [FileType.INTEGRATION, FileType.BETA_INTEGRATION]
     ]
 
     return new_integration_files, modified_integration_files
@@ -339,7 +386,7 @@ def change_placeholders_to_values(placeholders_map, config_item):
     """
     item_as_string = json.dumps(config_item)
     for key, value in placeholders_map.items():
-        item_as_string = item_as_string.replace(key, value)
+        item_as_string = item_as_string.replace(key, str(value))
     return json.loads(item_as_string)
 
 
@@ -733,7 +780,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
     return testing_status
 
 
-def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number, is_nightly):
+def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number, is_nightly, is_private):
     """Sets custom marketplace GCP bucket based on branch name and build number
 
     Args:
@@ -752,16 +799,25 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
     prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
 
     # make request to update server configs
+    # disable-secrets-detection-start
     server_configuration = {
         'content.pack.verify': 'false',
         'marketplace.initial.sync.delay': '0',
         'content.pack.ignore.missing.warnings.contentpack': 'true'
     }
-    if not is_nightly:
+    if is_private:
+        server_configuration['marketplace.bootstrap.bypass.url'] = 'https://storage.googleapis.com/marketplace-ci-build'
+        server_configuration['marketplace.gcp.path'] = 'content/builds/{}/{}/content/packs'.format(branch_name,
+                                                                                                   ci_build_number)
+        server_configuration['jobs.marketplacepacks.schedule'] = '1m'
+        server_configuration[
+            'marketplace.premium.gateway.service.url'] = 'https://xsoar-premium-content-team-gateway.demisto.works'
+    elif not is_nightly:
         server_configuration['marketplace.bootstrap.bypass.url'] = \
             'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
                 branch_name, ci_build_number)
     error_msg = "Failed to set GCP bucket server config - with status code "
+    # disable-secrets-detection-end
     return update_server_configuration(client, server_configuration, error_msg)
 
 
@@ -839,21 +895,23 @@ def get_json_file(path):
 
 def configure_servers_and_restart(build, prints_manager):
     if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
-        for server in build.servers:
-            client = demisto_client.configure(base_url=server, username=build.username, password=build.password,
-                                              verify_ssl=False)
-            set_docker_hardening_for_build(client, prints_manager)
-            if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
-                set_marketplace_gcp_bucket_for_build(client, prints_manager, build.branch_name,
-                                                     build.ci_build_number, build.is_nightly)
+        configurations = DOCKER_HARDENING_CONFIGURATION
+        configure_types = ['docker hardening']
+        if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
+            configure_types.append('marketplace')
+            configurations.update(MARKET_PLACE_CONFIGURATION)
 
-            if Build.run_environment == Running.WITH_LOCAL_SERVER:
-                input('restart your server and then press enter.')
-            else:
-                restart_server(server)
-        prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
-        prints_manager.execute_thread_prints(0)
-        sleep(60)
+        error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
+        manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
+        for server in build.servers:
+            server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
+
+        if manual_restart:
+            input('restart your server and then press enter.')
+        else:
+            prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
+            prints_manager.execute_thread_prints(0)
+            sleep(60)
 
 
 def restart_server(server):
@@ -880,7 +938,7 @@ def restart_server_legacy(server):
         print(exc.output)
 
 
-def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
+def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, is_private=False):
     if Build.run_environment == Running.CIRCLECI_RUN:
         filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
         if run_all_tests:
@@ -915,8 +973,9 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
         #  END CHANGE ON LOCAL RUN  #
 
 
-def get_changed_integrations(git_sha1, prints_manager):
-    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(git_sha1)
+def get_changed_integrations(build, prints_manager):
+    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(
+        build) if not build.is_private else ([], [])
     new_integrations_names, modified_integrations_names = [], []
 
     if new_integrations_files:
@@ -951,17 +1010,13 @@ def nightly_install_packs(build, threads_print_manager, install_method=install_a
     threads_list = []
 
     # For each server url we install pack/ packs
-    for thread_index, server_url in enumerate(build.servers):
-        client = demisto_client.configure(base_url=server_url, username=build.username,
-                                          password=build.password, verify_ssl=False)
-        kwargs = {'client': client, 'host': server_url,
+    for thread_index, server in enumerate(build.servers):
+        kwargs = {'client': server.client, 'host': server.host,
                   'prints_manager': threads_print_manager,
                   'thread_index': thread_index}
         if pack_path:
             kwargs['pack_path'] = pack_path
-        t = Thread(target=install_method,
-                   kwargs=kwargs)
-        threads_list.append(t)
+        threads_list.append(Thread(target=install_method, kwargs=kwargs))
     run_threads_list(threads_list)
 
 
@@ -977,15 +1032,12 @@ def install_nightly_pack(build, prints_manager):
     sleep(45)
 
 
-def install_packs(build, prints_manager):
-    pack_ids = get_pack_ids_to_install()
+def install_packs(build, prints_manager, pack_ids=None):
+    pack_ids = get_pack_ids_to_install() if pack_ids is None else pack_ids
     installed_content_packs_successfully = True
-    for server_url in build.servers:
+    for server in build.servers:
         try:
-            client = demisto_client.configure(base_url=server_url, username=build.username, password=build.password,
-                                              verify_ssl=False)
-
-            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, prints_manager, build.is_private)
             if not flag:
                 raise Exception('Failed to search and install packs.')
         except Exception as exc:
@@ -996,12 +1048,10 @@ def install_packs(build, prints_manager):
     return installed_content_packs_successfully
 
 
-def configure_server_instances(build: Build, tests_for_iteration, new_integrations, modified_integrations, prints_manager):
+def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations, prints_manager):
     all_module_instances = []
     brand_new_integrations = []
-    testing_client = demisto_client.configure(base_url=build.servers[0], username=build.username,
-                                              password=build.password,
-                                              verify_ssl=False)
+    testing_client = build.servers[0].client
     for test in tests_for_iteration:
         integrations = get_integrations_for_test(test, build.skipped_integrations_conf)
 
@@ -1010,7 +1060,7 @@ def configure_server_instances(build: Build, tests_for_iteration, new_integratio
         prints_manager.add_print_job(integrations_names, print_warning, 0)
 
         new_integrations, modified_integrations, unchanged_integrations, integration_to_status = group_integrations(
-            integrations, build.skipped_integrations_conf, new_integrations, modified_integrations
+            integrations, build.skipped_integrations_conf, all_new_integrations, modified_integrations
         )
 
         instance_names_conf = test.get('instance_names', [])
@@ -1042,8 +1092,6 @@ def configure_server_instances(build: Build, tests_for_iteration, new_integratio
             continue
         prints_manager.execute_thread_prints(0)
 
-        brand_new_integrations.extend(new_integrations)
-
         module_instances = []
         for integration in integrations_to_configure:
             placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
@@ -1053,6 +1101,14 @@ def configure_server_instances(build: Build, tests_for_iteration, new_integratio
                 module_instances.append(module_instance)
 
         all_module_instances.extend(module_instances)
+        for integration in new_integrations:
+            placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
+            module_instance = configure_integration_instance(integration, testing_client, prints_manager,
+                                                             placeholders_map)
+            if module_instance:
+                module_instances.append(module_instance)
+
+        brand_new_integrations.extend(module_instances)
     return all_module_instances, brand_new_integrations
 
 
@@ -1070,9 +1126,7 @@ def instance_testing(build: Build, all_module_instances, prints_manager, pre_upd
                                      print_warning, 0)
     prints_manager.execute_thread_prints(0)
 
-    testing_client = demisto_client.configure(base_url=build.servers[0], username=build.username,
-                                              password=build.password,
-                                              verify_ssl=False)
+    testing_client = build.servers[0].client
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
@@ -1095,11 +1149,9 @@ def update_content_till_v6(build: Build):
     threads_list = []
     threads_prints_manager = ParallelPrintsManager(len(build.servers))
     # For each server url we install content
-    for thread_index, server_url in enumerate(build.servers):
-        client = demisto_client.configure(base_url=server_url, username=build.username,
-                                          password=build.password, verify_ssl=False)
+    for thread_index, server in enumerate(build.servers):
         t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': client, 'server': server_url, 'ami_name': build.ami_env,
+                   kwargs={'client': server.client, 'server': server.host, 'ami_name': build.ami_env,
                            'prints_manager': threads_prints_manager,
                            'thread_index': thread_index})
         threads_list.append(t)
@@ -1108,9 +1160,7 @@ def update_content_till_v6(build: Build):
 
 
 def disable_instances(build: Build, all_module_instances, prints_manager):
-    client = demisto_client.configure(base_url=build.servers[0], username=build.username, password=build.password,
-                                      verify_ssl=False)
-    __disable_integrations_instances(client, all_module_instances, prints_manager)
+    __disable_integrations_instances(build.servers[0].client, all_module_instances, prints_manager)
     prints_manager.execute_thread_prints(0)
 
 
@@ -1189,31 +1239,61 @@ def test_pack_zip(content_path, target):
                 zip_file.writestr(test_target, test_file.read())
 
 
+def get_non_added_packs_ids(build: Build):
+    """
+
+    :param build: the build object
+    :return: all non added packs i.e. unchanged packs (dependencies) and modified packs
+    """
+    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
+    added_files = run_command(f'git diff --name-only --diff-filter=A '
+                              f'{compare_against}..refs/heads/{build.branch_name} -- Packs/*/pack_metadata.json')
+    added_files = filter(lambda x: x, added_files.split('\n'))
+    added_pack_ids = map(lambda x: x.split('/')[1], added_files)
+    return set(get_pack_ids_to_install()) - set(added_pack_ids)
+
+
+def set_marketplace_url(servers, branch_name, ci_build_number):
+    url_suffix = f'{branch_name}/{ci_build_number}'
+    config_path = 'marketplace.bootstrap.bypass.url'
+    config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
+    for server in servers:
+        server.add_server_configuration(config, 'failed to configure marketplace custom url ', True)
+    sleep(60)
+
+
 def main():
     build = Build(options_handler())
 
     prints_manager = ParallelPrintsManager(1)
 
     configure_servers_and_restart(build, prints_manager)
+    installed_content_packs_successfully = False
 
     if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
         if build.is_nightly:
             install_nightly_pack(build, prints_manager)
             installed_content_packs_successfully = True
         else:
-            installed_content_packs_successfully = install_packs(build, prints_manager)
+            if not build.is_private:
+                pack_ids = get_non_added_packs_ids(build)
+                installed_content_packs_successfully = install_packs(build, prints_manager, pack_ids=pack_ids)
     else:
         installed_content_packs_successfully = True
 
-    tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly)
-    new_integrations, modified_integrations = get_changed_integrations(build.git_sha1, prints_manager)
+    tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly,
+                                    build.is_private)
+    new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
     all_module_instances, brand_new_integrations = \
         configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
+    successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances, prints_manager,
+                                                              pre_update=True)
     if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
-        successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances, prints_manager, pre_update=True)
         update_content_till_v6(build)
-    else:
-        successful_tests_pre, failed_tests_pre = set(), set()
+    elif not build.is_nightly:
+        set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
+        installed_content_packs_successfully = install_packs(build, prints_manager) and installed_content_packs_successfully
+
     all_module_instances.extend(brand_new_integrations)
     successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, prints_manager, pre_update=False)
     disable_instances(build, all_module_instances, prints_manager)

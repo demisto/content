@@ -2,17 +2,25 @@ commonfields:
   id: AquatoneDiscover
   version: -1
 name: AquatoneDiscover
-script: |-
+script: >-
   from subprocess import Popen, PIPE, STDOUT
+
   import subprocess
+
   import time
 
+
   domain = demisto.args()['domain']
+
   stderr = {}
+
   cmd = 'aquatone-discover --domain '+domain
 
+
   p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+
   stdout, stderr = p.communicate()
+
   if p.returncode>0:
       demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],"Contents": stdout+stderr})
   else:
@@ -53,3 +61,4 @@ timeout: 1h0m0s
 runonce: true
 dockerimage: demisto/aquatone
 comment: 'aquatone-discover will find the targets nameservers and shuffle DNS lookups between them. Should a lookup fail on the target domains nameservers, aquatone-discover will fall back to using Google public DNS servers to maximize discovery.'
+fromversion: 5.0.0

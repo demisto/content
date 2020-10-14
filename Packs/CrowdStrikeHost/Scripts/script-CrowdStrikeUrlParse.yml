@@ -2,8 +2,9 @@ commonfields:
   id: CrowdStrikeUrlParse
   version: -1
 name: CrowdStrikeUrlParse
-script: |-
+script: >-
   import re
+
 
   def agent_extract(url):
       '''
@@ -35,8 +36,11 @@ script: |-
 
   AgentId, DetectId = agent_extract(demisto.args()['url'])
 
+
   output = []
+
   context = {}
+
 
   output.append({
       'Type': entryTypes['note'],
@@ -45,6 +49,7 @@ script: |-
       'ReadableContentsFormat': formats['text'],
       'HumanReadable': AgentId if AgentId else '{} doesn\'t contain an agent id',
   })
+
   output.append({
       'Type': entryTypes['note'],
       'Contents': DetectId,
@@ -53,9 +58,12 @@ script: |-
       'HumanReadable': DetectId if DetectId else '{} doesn\'t contain a detect id'
   })
 
+
   demisto.results(output)
 
+
   demisto.setContext('CrowdStrikeUrlParse.AgentId', AgentId)
+
   demisto.setContext('CrowdStrikeUrlParse.DetectId', DetectId)
 type: python
 subtype: python2
@@ -78,3 +86,4 @@ outputs:
   description: Detection ID for CrowdStrike alert
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

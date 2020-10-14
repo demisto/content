@@ -405,8 +405,7 @@ tasks:
       id: 2ef96a17-2e6d-4508-8d02-4bf28902641b
       version: -1
       name: Create Query ID
-      description: Start a Deep Visibility Query and get the queryId, use queryId
-        for all other APIs such as Get All Events
+      description: Start a Deep Visibility Query and get the queryId, use queryId for all other APIs such as Get All Events
       script: '|||sentinelone-create-query'
       type: regular
       iscommand: true
@@ -1010,3 +1009,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

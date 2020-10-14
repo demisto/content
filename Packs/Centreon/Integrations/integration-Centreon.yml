@@ -28,26 +28,40 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: >
     ''' IMPORTS '''
+
     import requests
+
     import json
+
     import os
+
     # disable insecure warnings
+
     requests.packages.urllib3.disable_warnings()
 
+
     ''' GLOBAL VARS '''
+
     SERVER_NAME=demisto.params()['server']
+
     USERNAME=demisto.params()['credentials']['identifier']
+
     PASSWORD=demisto.params()['credentials']['password']
 
+
     BASE_URL= SERVER_NAME + 'centreon/api/index.php?'
+
     USE_SSL = True if demisto.params().get('insecure') else False
+
     DEFAULT_HEADERS = {
         'Content-Type': 'application/json'
     }
 
+
     ''' HELPER FUNCTIONS '''
+
     def httpRequest(method, urlSuffix, data, headers):
         data = {} if data is None else data
 
@@ -105,6 +119,7 @@ script:
         return ''.join(x.capitalize() or '_' for x in word.split('_'))
 
     ''' COMMANDS FUNCTIONS '''
+
 
     def get_host_status():
         """ Returns the status of the connected hosts. """
@@ -176,7 +191,9 @@ script:
         return entry
 
     ''' EXECUTION CODE '''
+
     LOG('command is %s' % (demisto.command(), ))
+
     try:
         handle_proxy()
         if demisto.command() == 'test-module':
@@ -205,11 +222,9 @@ script:
       - all
       - unhandled
       - problems
-      description: 'select the predefined filter like in the monitoring view: all,
-        unhandled, problems'
+      description: 'select the predefined filter like in the monitoring view: all, unhandled, problems'
     - name: fields
-      description: 'the fields list that you want to get separated by a ”,”. For example:
-        fields=id,name,alias,address'
+      description: 'the fields list that you want to get separated by a ”,”. For example: fields=id,name,alias,address'
     - name: status
       auto: PREDEFINED
       predefined:
@@ -218,8 +233,7 @@ script:
       - unreachable
       - pending
       - all
-      description: the status of hosts that you want to get (up, down, unreachable,
-        pending, all)
+      description: the status of hosts that you want to get (up, down, unreachable, pending, all)
     - name: hostgroup
       description: hostgroup id filter. For example, hostgroup=2
     - name: instance
@@ -262,11 +276,9 @@ script:
       - all
       - unhandled
       - problems
-      description: 'select the predefined filter like in the monitoring view: all,
-        unhandled, problems'
+      description: 'select the predefined filter like in the monitoring view: all, unhandled, problems'
     - name: fields
-      description: the fields list that you want to get separated by ",". For example,
-        fields=id,description,host_id
+      description: the fields list that you want to get separated by ",". For example, fields=id,description,host_id
     - name: status
       auto: PREDEFINED
       predefined:
@@ -276,8 +288,7 @@ script:
       - unknown
       - pending
       - all
-      description: the status of services that you want to get (ok, warning, critical,
-        unknown, pending, all)
+      description: the status of services that you want to get (ok, warning, critical, unknown, pending, all)
     - name: hostgroup
       description: hostgroup id filter. For example, hostgroup=2
     - name: servicegroup
@@ -320,4 +331,5 @@ script:
     description: All the monitoring information regarding services
   runonce: false
 tests:
-    - Centreon-Test-Playbook
+- Centreon-Test-Playbook
+fromversion: 5.0.0

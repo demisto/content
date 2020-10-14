@@ -57,7 +57,7 @@ def restcall(method, api, **kwargs):
 
     header = generate_headers(KEY, SECRET)
 
-    url = ("https://%s.uptycs.io/public/api/customers/%s%s" %
+    url = ("https://%s/public/api/customers/%s%s" %
            (DOMAIN, CUSTOMER_ID, api))
 
     try:
@@ -1351,16 +1351,18 @@ def uptycs_get_parent_event_information():
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
+    query = ""
     if child_ancestor_list is not None:
         child_ancestor_list = child_ancestor_list[2:len(child_ancestor_list) - 2].split('}, {')
-    ancestors = []
-    for ancestor in child_ancestor_list:
-        ancestors.append(json.loads("{" + ancestor + "}"))
+        ancestors = []
+        for ancestor in child_ancestor_list:
+            ancestors.append(json.loads("{" + ancestor + "}"))
 
-    if ancestors[0].get("upt_rid", None) is not None:
-        query = "SELECT * FROM process_events WHERE upt_day <= {0} \
+        if ancestors[0].get("upt_rid", None) is not None:
+            query = "SELECT * FROM process_events WHERE upt_day <= {0} \
 AND upt_rid = '{1}'".format(uptday, ancestors[0].get("upt_rid", None))
-    else:
+
+    if query == "":
         query = "SELECT * FROM process_events WHERE upt_day <= {0} AND pid={1} \
 AND upt_time<=CAST('{2}' AS TIMESTAMP)".format(uptday, parent, child_add_time)
 
@@ -1572,18 +1574,21 @@ def uptycs_set_asset_tag():
     tags = restcall(http_method, api_call).get('tags')
 
     tag_set = False
+    tag_key = demisto.args().get('tag_key')
+    tag_value = demisto.args().get('tag_value')
     for tag in tags:
-        if demisto.args().get('tag_key') in tag:
+        if tag_key in tag:
             temp_tag = tag.split('=')
-            new_tag = temp_tag[0] + '=' + temp_tag[1] + ', ' + demisto.args().get('tag_value')
+            new_tag = temp_tag[0] + '=' + temp_tag[1] + ', ' + tag_value
             tags.remove(tag)
             tag_set = True
 
     if tag_set:
         tags.append(new_tag)
+    elif tag_value is not None:
+        tags.append(tag_key + '=' + tag_value)
     else:
-        tags.append(demisto.args().get('tag_key') + '=' + demisto.args().get(
-            'tag_value'))
+        tags.append(tag_key)
 
     http_method = 'put'
     post_data = {
@@ -1989,7 +1994,7 @@ def uptycs_get_threat_vendors_command():
 def uptycs_post_threat_source():
     """post a new threat source"""
 
-    url = ("https://%s.uptycs.io/public/api/customers/%s/threatSources" %
+    url = ("https://%s/public/api/customers/%s/threatSources" %
            (DOMAIN, CUSTOMER_ID))
     header = generate_headers(KEY, SECRET)
 
@@ -2259,7 +2264,7 @@ def uptycs_fetch_incidents():
                         (context.get('description'), context.get('hostName')),
                 "Occurred": alert_time,
                 "Severity": severity_to_int(context.get('severity')),
-                "Details": context.get('id'),
+                "Details": json.dumps(context, indent=4),
                 "rawJSON": json.dumps(context)
             }
             incidents.insert(0, incident)

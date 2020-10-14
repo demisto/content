@@ -2,17 +2,20 @@ commonfields:
   id: IsTrue
   version: -1
 name: IsTrue
-script: |
+script: >
   if (typeof args.value === 'string' || args.value instanceof String) {
       if (args.value === 'true' || args.value === 'True') {
           return 'yes';
       }
       return 'no';
   }
+
   var val = Boolean(args.value);
+
   if (val) {
       return 'yes';
   }
+
   return 'no';
 type: javascript
 tags:
@@ -32,3 +35,4 @@ outputs:
 - contextPath: no
   description: if  value is not True (either has object or string True/true)
 scripttarget: 0
+fromversion: 5.0.0

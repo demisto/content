@@ -1,5 +1,6 @@
 import json
 import os
+import stat
 import subprocess
 import fnmatch
 import re
@@ -35,6 +36,8 @@ class GCPConfig(object):
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     PRODUCTION_BUCKET = "marketplace-dist"
+    PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
+    CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
@@ -163,6 +166,7 @@ class Pack(object):
         self._display_name = None  # initialized in load_user_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
+        self._bucket_url = None  # URL of where the pack was uploaded.
 
     @property
     def name(self):
@@ -303,6 +307,18 @@ class Pack(object):
         """ setter of downloads count property of the pack.
         """
         self._downloads_count = download_count_value
+
+    @property
+    def bucket_url(self):
+        """ str: pack bucket_url.
+        """
+        return self._bucket_url
+
+    @bucket_url.setter
+    def bucket_url(self, bucket_url):
+        """ str: pack bucket_url.
+        """
+        self._bucket_url = bucket_url
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -518,6 +534,12 @@ class Pack(object):
         pack_metadata['certification'] = Pack._get_certification(support_type=pack_metadata['support'],
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
+        if pack_metadata['price'] > 0:
+            pack_metadata['premium'] = True
+            pack_metadata['vendorId'] = user_metadata.get('vendorId')
+            pack_metadata['vendorName'] = user_metadata.get('vendorName')
+            if user_metadata.get('previewOnly'):
+                pack_metadata['previewOnly'] = True
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
         pack_metadata['versionInfo'] = build_number
@@ -580,7 +602,6 @@ class Pack(object):
             int: number of packs downloads.
         """
         downloads_count = 0
-
         if self._pack_name in packs_statistic_df.index.values:
             downloads_count = int(packs_statistic_df.loc[self._pack_name]['num_count'].astype('int32'))
 
@@ -677,14 +698,26 @@ class Pack(object):
         finally:
             return task_status
 
-    def zip_pack(self):
+    def encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
+
+        shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
+        os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
+        current_working_dir = os.getcwd()
+        os.chdir(extract_destination_path)
+        output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
+        subprocess.call('chmod +x ./encryptor', shell=True)
+        full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
+        subprocess.call(full_command, shell=True)
+        os.chdir(current_working_dir)
+
+    def zip_pack(self, extract_destination_path="", pack_name="", encryption_key=""):
         """ Zips pack folder.
 
         Returns:
             bool: whether the operation succeeded.
             str: full path to created pack zip.
         """
-        zip_pack_path = f"{self._pack_path}.zip"
+        zip_pack_path = f"{self._pack_path}.zip" if not encryption_key else f"{self._pack_path}_not_encrypted.zip"
         task_status = False
 
         try:
@@ -695,6 +728,9 @@ class Pack(object):
                         relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
+            if encryption_key:
+                self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
+                zip_pack_path = zip_pack_path.replace("_not_encrypted.zip", ".zip")
             task_status = True
             print_color(f"Finished zipping {self._pack_name} pack.", LOG_COLORS.GREEN)
         except Exception as e:
@@ -753,7 +789,8 @@ class Pack(object):
         finally:
             return task_status, pack_was_modified
 
-    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack):
+    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack,
+                          private_content=False):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
@@ -764,6 +801,7 @@ class Pack(object):
             latest_version (str): pack latest version.
             storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
             override_pack (bool): whether to override existing pack.
+            private_content (bool): Is being used in a private content build.
 
         Returns:
             bool: whether the operation succeeded.
@@ -779,7 +817,7 @@ class Pack(object):
             if existing_files and not override_pack:
                 print_warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
                 print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-                return task_status, True
+                return task_status, True, None
 
             pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
             blob = storage_bucket.blob(pack_full_path)
@@ -787,15 +825,22 @@ class Pack(object):
 
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
+            if private_content:
+                try:
+                    shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content'
+                                               f'-private/content/artifacts/packs/{self._pack_name}.zip')
+                except FileExistsError:
+                    shutil.copy(zip_pack_path,
+                                f'/artifacts/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
 
-            return task_status, False
+            return task_status, False, pack_full_path
         except Exception as e:
             task_status = False
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
-            return task_status, True
+            return task_status, True, None
 
     def prepare_release_notes(self, index_folder_path, build_number):
         """
@@ -1075,7 +1120,6 @@ class Pack(object):
 
         try:
             user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
-
             if not os.path.exists(user_metadata_path):
                 print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
                 return task_status, user_metadata
@@ -1084,7 +1128,6 @@ class Pack(object):
                 user_metadata = json.load(user_metadata_file)  # loading user metadata
                 # part of old packs are initialized with empty list
                 user_metadata = {} if isinstance(user_metadata, list) else user_metadata
-
             # store important user metadata fields
             self.support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
             self.current_version = user_metadata.get('currentVersion', '')
@@ -1135,7 +1178,9 @@ class Pack(object):
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
                                                              user_metadata.get('displayedImages', []))
-            self.downloads_count = self._get_downloads_count(packs_statistic_df)
+
+            if packs_statistic_df is not None:
+                self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
             formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,

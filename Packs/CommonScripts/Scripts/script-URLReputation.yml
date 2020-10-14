@@ -2,8 +2,9 @@ commonfields:
   id: URLReputation
   version: -1
 name: URLReputation
-script: |-
+script: >-
   results = demisto.executeCommand('url', {'url': demisto.get(demisto.args(),'url')})
+
 
   for item in results:
       if isError(item):
@@ -23,3 +24,4 @@ args:
   description: URL to look up
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

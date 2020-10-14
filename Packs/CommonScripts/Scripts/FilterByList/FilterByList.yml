@@ -7,8 +7,7 @@ args:
   secret: false
 - default: false
   defaultValue: Indicators Whitelist
-  description: Name of the list against which to check the value. The default is the
-    Indicators Whitelist.
+  description: Name of the list against which to check the value. The default is the Indicators Whitelist.
   isArray: false
   name: listname
   required: false
@@ -16,8 +15,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'No'
-  description: Whether to ignore the case of the item for which you are searching.
-    Default is "No".
+  description: Whether to ignore the case of the item for which you are searching. Default is "No".
   isArray: false
   name: ignorecase
   predefined:
@@ -28,8 +26,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'No'
-  description: Whether to match the exact item in the list, or look for any string
-    that contains it. Default is "No".
+  description: Whether to match the exact item in the list, or look for any string that contains it. Default is "No".
   isArray: false
   name: matchexact
   predefined:
@@ -44,8 +41,7 @@ args:
   name: delimiter
   required: false
   secret: false
-comment: Checks whether the specified item is in a list. The default list is the Demisto
-  Indicators Whitelist.
+comment: Checks whether the specified item is in a list. The default list is the Demisto Indicators Whitelist.
 commonfields:
   id: FilterByList
   version: -1
@@ -72,3 +68,4 @@ runas: DBotWeakRole
 runonce: false
 tests:
 - FilterByList - Test
+fromversion: 5.0.0

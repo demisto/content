@@ -1,0 +1,28 @@
+args:
+- default: false
+  description: The end date for fetching incidents in ISO format. Incidents will be fetched until the last day of the specified month. For example, if you specify 2020-08-14, incidents created on the specified "from" date until  2020-08-31 will be returned.
+  isArray: false
+  name: to
+  required: false
+  secret: false
+- default: false
+  description: The start date for fetching incidents in ISO format. Incidents will be fetched starting from the first day of the specified month. For example, if you specify 2020-08-14, incidents created on 2020-08-01 will be returned.
+  isArray: false
+  name: from
+  required: false
+  secret: false
+comment: Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations.
+commonfields:
+  id: GetLargestInputsAndOuputsInIncidents
+  version: -1
+enabled: false
+name: GetLargestInputsAndOuputsInIncidents
+script: '-'
+subtype: python3
+system: false
+tags:
+- widget
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.12176
+fromversion: 6.0.0

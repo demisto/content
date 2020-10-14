@@ -58,7 +58,7 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Terminates a user’s session from all Office 365 applications, and prevents sign in.</p>
+<p>Terminates a user’s session from all Office 365 applications, and prevents sign in. Can only work with a self-deployed application and the permission: Directory.AccessAsUser.All(Delegated)</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command">Base Command</h5>
@@ -1127,7 +1127,7 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Changes the user password. Permissions: Directory.AccessAsUser.All(Delegated)</p>
+<p>Changes the user password. Can only work with a self-deployed application and the permission: Directory.AccessAsUser.All(Delegated)</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-7">Base Command</h5>

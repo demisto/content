@@ -1,0 +1,16 @@
+{
+    "name": "Lacework",
+    "description": "Lacework is focused on giving customers visibility and control over their cloud operations at cloud scale to the monitoring of all activities across all cloud components.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Alan Nix",
+    "url": "https://github.com/alannix-lw",
+    "email": "",
+    "created": "2020-08-19T16:14:09Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

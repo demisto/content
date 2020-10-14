@@ -1,0 +1,121 @@
+{
+  "uid": "a-1234",
+  "name": "Network",
+  "rulebase": [
+    {
+      "uid": "1234",
+      "name": "access_rule_1",
+      "type": "access-rule",
+      "domain": {
+        "uid": "1234",
+        "name": "SMC User",
+        "domain-type": "domain"
+      },
+      "rule-number": 1,
+      "track": {
+        "type": "9845679",
+        "per-session": false,
+        "per-connection": false,
+        "accounting": false,
+        "enable-firewall-session": false,
+        "alert": "none"
+      },
+      "source": [
+        "987654321"
+      ],
+      "source-negate": false,
+      "destination": [
+        "987654321"
+      ],
+      "destination-negate": false,
+      "service": [
+        "987654321"
+      ],
+      "service-negate": false,
+      "vpn": [
+        "987654321"
+      ],
+      "action": "78910",
+      "action-settings": {
+        
+      },
+      "content": [
+        "987654321"
+      ],
+      "content-negate": false,
+      "content-direction": "any",
+      "time": [
+        "987654321"
+      ],
+      "custom-fields": {
+        "field-1": "",
+        "field-2": "",
+        "field-3": ""
+      },
+      "meta-info": {
+        "lock": "unlocked",
+        "validation-state": "ok",
+        "last-modify-time": {
+          "posix": 1598383250016,
+          "iso-8601": "2020-08-25T22:20+0300"
+        },
+        "last-modifier": "admin",
+        "creation-time": {
+          "posix": 1598383250016,
+          "iso-8601": "2020-08-25T22:20+0300"
+        },
+        "creator": "admin"
+      },
+      "comments": "",
+      "enabled": true,
+      "install-on": [
+        "000000000"
+      ]
+    }
+  ],
+  "objects-dictionary": [
+    {
+      "uid": "987654321",
+      "name": "Any",
+      "type": "CpmiAnyObject",
+      "domain": {
+        "uid": "11111111",
+        "name": "Check Point Data",
+        "domain-type": "data domain"
+      }
+    },
+    {
+      "uid": "78910",
+      "name": "Drop",
+      "type": "RulebaseAction",
+      "domain": {
+        "uid": "11111111",
+        "name": "Check Point Data",
+        "domain-type": "data domain"
+      }
+    },
+    {
+      "uid": "222222222",
+      "name": "None",
+      "type": "Track",
+      "domain": {
+        "uid": "11111111",
+        "name": "Check Point Data",
+        "domain-type": "data domain"
+      }
+    },
+    {
+      "uid": "000000000",
+      "name": "Policy Targets",
+      "type": "Global",
+      "domain": {
+        "uid": "11111111",
+        "name": "Check Point Data",
+        "domain-type": "data domain"
+      }
+    }
+  ],
+  "from": 1,
+  "to": 1,
+  "total": 16
+}

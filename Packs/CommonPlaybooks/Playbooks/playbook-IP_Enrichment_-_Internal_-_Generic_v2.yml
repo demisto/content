@@ -285,9 +285,7 @@ tasks:
       id: 38e2fd1f-3863-4034-80af-14cb06cbcf25
       version: -1
       name: Determine whether the IP address is internal or external
-      description: "Checks if the IP address is in the internal IP address ranges.\n\
-        If internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets\
-        \ the \"InRange\" attribute to \"no\". \n"
+      description: "Checks if the IP address is in the internal IP address ranges.\nIf internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the \"InRange\" attribute to \"no\". \n"
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -433,11 +431,7 @@ inputs:
   value:
     simple: inputs.InternalRange
   required: false
-  description: "A CSV list of IP address ranges (in CIDR notation). Use this list\
-    \ to check if an IP address is found within a set of IP address ranges. \nFor\
-    \ example: \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). If no\
-    \ list is provided, will use default list provided in the IsIPInRanges script\
-    \ (the known IPv4 private address ranges)."
+  description: "A CSV list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. \nFor example: \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). If no list is provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges)."
   playbookInputQuery:
 - key: ResolveIP
   value:
@@ -469,6 +463,6 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name.
   type: string
-fromversion: 4.1.0
+fromversion: 5.0.0
 tests:
 - IP Enrichment - Generic v2 - Test

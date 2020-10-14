@@ -140,8 +140,8 @@ def test_get_whitelist(mocker):
 
 # disable-secrets-detection-start
 test_data = [
-    ('https://madeup.fake.com/css?family=blah:1,2,3', 'true', ['https://madeup.fake.com/css?family=blah:1', '2', '3']),
-    ('https://madeup.fake.com/css?family=blah:1,2,3', 'false', ['https://madeup.fake.com/css?family=blah:1,2,3'])
+    ('https://madeup.fake.com/css?family=blah:1,2,3', 'true', ['madeup.fake.com/css?family=blah:1', '2', '3']),
+    ('https://madeup.fake.com/css?family=blah:1,2,3', 'false', ['madeup.fake.com/css?family=blah:1,2,3'])
 ]
 # disable-secrets-detection-end
 
@@ -168,7 +168,7 @@ def test_url_multiple_arg(url, multiple, expected_data):
     with requests_mock.mock() as m:
         # 'fake_resp_content' doesn't really matter here since we are checking the data being sent in the call,
         # not what it is that we expect to get in response
-        fake_resp_content = '[{"url": "blah", "urlClassifications": [], "urlClassificationsWithSecurityAlert": []}]'
+        fake_resp_content = b'[{"url": "blah", "urlClassifications": [], "urlClassificationsWithSecurityAlert": []}]'
         m.post(Zscaler.BASE_URL + '/urlLookup', content=fake_resp_content)
         args = {
             'url': url,

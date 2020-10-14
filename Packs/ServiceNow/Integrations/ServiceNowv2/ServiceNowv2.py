@@ -1,6 +1,6 @@
 import shutil
-import traceback
-from typing import List, Tuple, Dict, Callable, Any
+import dateparser
+from typing import List, Tuple, Dict, Callable, Any, Union
 
 from CommonServerPython import *
 
@@ -87,6 +87,56 @@ DEFAULT_RECORD_FIELDS = {
     'sys_created_by': 'CreatedBy',
     'sys_created_on': 'CreatedAt'
 }
+
+
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
+
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
+    """
+    Converts an XSOAR argument to a timestamp (seconds from epoch).
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
+    since epoch). It will throw a ValueError if the input is invalid.
+    If the input is None, it will throw a ValueError if required is ``True``,
+    or ``None`` if required is ``False``.
+
+    Args:
+        arg: argument to convert
+        arg_name: argument name.
+        required: throws exception if ``True`` and argument provided is None
+
+    Returns:
+        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    """
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp is a str containing digits - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # we use dateparser to handle strings either in ISO8601 format, or
+        # relative time stamps.
+        # For example: format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.timestamp())
+    if isinstance(arg, (int, float)):
+        # Convert to int if the input is a float
+        return int(arg)
+    raise ValueError(f'Invalid date: "{arg_name}"')
 
 
 def get_server_url(server_url: str) -> str:
@@ -432,7 +482,6 @@ class Client(BaseClient):
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
-
         max_retries = 3
         num_of_tries = 0
         while num_of_tries < max_retries:
@@ -456,6 +505,10 @@ class Client(BaseClient):
                                        auth=(self._username, self._password),
                                        verify=self._verify, proxies=self._proxies)
 
+            if "Instance Hibernating page" in res.text:
+                raise DemistoException(
+                    "A connection was established but the instance is in hibernate mode.\n"
+                    "Please wake your instance and try again.")
             try:
                 json_res = res.json()
             except Exception as err:
@@ -507,7 +560,7 @@ class Client(BaseClient):
         """
         query_params = {'sysparm_limit': 1, 'sysparm_query': f'name={template_name}'}
 
-        result = self.send_request('GET', 'table/sys_template', params=query_params)
+        result = self.send_request('table/sys_template', 'GET', params=query_params)
 
         if len(result['result']) == 0:
             raise ValueError("Incorrect template name.")
@@ -1748,6 +1801,14 @@ def fetch_incidents(client: Client) -> list:
     for result in res.get('result', []):
         labels = []
 
+        result['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
+        result['mirror_tags'] = [
+            demisto.params().get('comment_tag'),
+            demisto.params().get('file_tag'),
+            demisto.params().get('work_notes_tag')
+        ]
+        result['mirror_instance'] = demisto.integrationInstance()
+
         if client.timestamp_field not in result:
             raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket")
 
@@ -1806,7 +1867,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
-    result = client.send_request(f'table/{client.ticket_type}?sysparm_limit=1', 'GET')
+    result = client.send_request(f'table/{client.ticket_type}', params={'sysparm_limit': 1}, method='GET')
     if 'result' not in result:
         raise Exception('ServiceNow error: ' + str(result))
     ticket = result.get('result')
@@ -1821,6 +1882,232 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}, True
 
 
+def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
+    """
+    get-remote-data command: Returns an updated incident and entries
+    Args:
+        client: XSOAR client to use
+        args:
+            id: incident id to retrieve
+            lastUpdate: when was the last time we retrieved data
+
+    Returns:
+        List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
+    """
+
+    ticket_id = args.get('id', '')
+    demisto.debug(f'Getting update for remote {ticket_id}')
+    last_update = arg_to_timestamp(
+        arg=args.get('lastUpdate'),
+        arg_name='lastUpdate',
+        required=True
+    )
+    demisto.debug(f'last_update is {last_update}')
+
+    ticket_type = client.ticket_type
+    result = client.get(ticket_type, ticket_id)
+
+    if not result or 'result' not in result:
+        return 'Ticket was not found.'
+
+    if isinstance(result['result'], list):
+        if len(result['result']) == 0:
+            return 'Ticket was not found.'
+
+        ticket = result['result'][0]
+
+    else:
+        ticket = result['result']
+
+    ticket_last_update = arg_to_timestamp(
+        arg=ticket.get('sys_updated_on'),
+        arg_name='sys_updated_on',
+        required=False
+    )
+
+    demisto.debug(f'ticket_last_update is {ticket_last_update}')
+
+    if last_update > ticket_last_update:  # type: ignore
+        demisto.debug('Nothing new in the ticket')
+        ticket = {}
+
+    else:
+        demisto.debug(f'ticket is updated: {ticket}')
+
+    # get latest comments and files
+    entries = []
+    attachments_res = client.get_ticket_attachments(ticket_id)
+    file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''))
+    if 'result' in attachments_res:
+        attachments = attachments_res['result']
+        for attachment in attachments:
+            entry_time = arg_to_timestamp(
+                arg=attachment.get('sys_created_on'),
+                arg_name='sys_created_on',
+                required=False
+            )
+
+            if file_entries:
+                for file_ in file_entries:
+                    if file_.get('File') == attachment.get('file_name'):
+                        if last_update > entry_time:
+                            continue
+                        else:
+                            entries.append(file_)
+
+    sys_param_limit = args.get('limit', client.sys_param_limit)
+    sys_param_offset = args.get('offset', client.sys_param_offset)
+
+    sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
+
+    comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
+    demisto.debug(f'Comments result is {comments_result}')
+
+    if not comments_result or 'result' not in comments_result:
+        demisto.debug(f'Pull result is {ticket}')
+        return [ticket] + entries
+
+    for note in comments_result.get('result', []):
+        entry_time = arg_to_timestamp(
+            arg=note.get('sys_created_on'),
+            arg_name='sys_created_on',
+            required=False
+        )
+        demisto.debug(f'entry_time is {entry_time}')
+
+        if last_update > entry_time:  # type: ignore
+            continue
+
+        comments_context = {'comments_and_work_notes': note.get('value')}
+        entries.append({
+            'Type': note.get('type'),
+            'Category': note.get('category'),
+            'Contents': note.get('value'),
+            'ContentsFormat': note.get('format'),
+            'Tags': note.get('tags'),
+            'Note': True,
+            'EntryContext': comments_context
+        })
+    # Parse user dict to email
+    assigned_to = ticket.get('assigned_to', {})
+    caller = ticket.get('caller_id', {})
+    assignment_group = ticket.get('assignment_group', {})
+
+    if assignment_group:
+        group_result = client.get('sys_user_group', assignment_group.get('value'))
+        group = group_result.get('result', {})
+        group_name = group.get('name')
+        ticket['assignment_group'] = group_name
+
+    if assigned_to:
+        user_result = client.get('sys_user', assigned_to.get('value'))
+        user = user_result.get('result', {})
+        user_email = user.get('email')
+        ticket['assigned_to'] = user_email
+
+    if caller:
+        user_result = client.get('sys_user', caller.get('value'))
+        user = user_result.get('result', {})
+        user_email = user.get('email')
+        ticket['caller_id'] = user_email
+
+    if ticket.get('resolved_by'):
+        if params.get('close_incident'):
+            demisto.debug(f'ticket is closed: {ticket}')
+            entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeReason': f'From ServiceNow: {ticket.get("close_notes")}'
+                },
+                'ContentsFormat': EntryFormat.JSON
+            })
+
+    demisto.debug(f'Pull result is {ticket}')
+    return [ticket] + entries
+
+
+def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
+    """
+    This command pushes local changes to the remote system.
+    Args:
+        client:  XSOAR Client to use.
+        args:
+            args['data']: the data to send to the remote system
+            args['entries']: the entries to send to the remote system
+            args['incident_changed']: boolean telling us if the local incident indeed changed or not
+            args['remote_incident_id']: the remote incident id
+        params:
+            entry_tags: the tags to pass to the entries (to separate between comments and work_notes)
+
+    Returns: The remote incident id - ticket_id
+
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    if parsed_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
+
+    ticket_type = client.ticket_type
+    ticket_id = parsed_args.remote_incident_id
+    if parsed_args.incident_changed:
+        demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
+        fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
+        if not params.get('close_ticket'):
+            fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
+
+        demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
+        result = client.update(ticket_type, ticket_id, fields)
+
+        demisto.info(f'Ticket Update result {result}')
+
+    entries = parsed_args.entries
+    if entries:
+        demisto.debug(f'New entries {entries}')
+
+        for entry in entries:
+            demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
+            # Mirroring files as entries
+            if entry.get('type') == 3:
+                path_res = demisto.getFilePath(entry.get('id'))
+                file_name = path_res.get('name')
+                client.upload_file(ticket_id, entry.get('id'), file_name, ticket_type)
+            else:
+                # Mirroring comment and work notes as entries
+                tags = entry.get('tags', [])
+                key = ''
+                if params.get('work_notes_tag') in tags:
+                    key = 'work_notes'
+                elif params.get('comment_tag') in tags:
+                    key = 'comments'
+                user = entry.get('user', 'dbot')
+                text = f"({user}): {str(entry.get('contents', ''))}"
+                client.add_comment(ticket_id, ticket_type, key, text)
+
+    return ticket_id
+
+
+def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
+    """
+    Returns the list of fields for an incident type.
+    Args:
+        client: XSOAR client to use
+
+    Returns: Dictionary with keys as field names
+
+    """
+
+    incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
+    demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
+
+    for field in SNOW_ARGS:
+        incident_type_scheme.add_field(field)
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(incident_type_scheme)
+
+    return mapping_response
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1829,8 +2116,8 @@ def main():
     LOG(f'Executing command {command}')
 
     params = demisto.params()
-    username = params['credentials']['identifier']
-    password = params['credentials']['password']
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
     verify = not params.get('insecure', False)
 
     version = params.get('api_version')
@@ -1889,6 +2176,12 @@ def main():
             demisto.incidents(incidents)
         elif command == 'servicenow-get-ticket':
             demisto.results(get_ticket_command(client, args))
+        elif command == 'get-remote-data':
+            return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
+        elif command == 'update-remote-system':
+            return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
+        elif demisto.command() == 'get-mapping-fields':
+            return_results(get_mapping_fields_command(client))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
@@ -1903,5 +2196,5 @@ def main():
             raise
 
 
-if __name__ in ["__builtin__", "builtins"]:
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

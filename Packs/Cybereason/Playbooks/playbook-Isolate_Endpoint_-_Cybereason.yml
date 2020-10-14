@@ -1,6 +1,6 @@
 id: Isolate Endpoint - Cybereason
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Isolate Endpoint - Cybereason
 description: This playbook isolates an endpoint based on the hostname provided.
 starttaskid: '0'
@@ -112,8 +112,7 @@ tasks:
       id: 72580fee-68d4-40f6-88d8-f1a17877e084
       version: -1
       name: Isolate endpoint
-      description: Isolates a machine that has been infected from the rest of the
-        network.
+      description: Isolates a machine that has been infected from the rest of the network.
       script: '|||cybereason-isolate-machine'
       type: regular
       iscommand: true
@@ -148,10 +147,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"1_2_yes\": 0.32,\n    \"1_4_#default#\"\
-  : 0.17,\n    \"2_3_yes\": 0.3,\n    \"2_4_#default#\": 0.19\n  },\n  \"paper\":\
-  \ {\n    \"dimensions\": {\n      \"height\": 735,\n      \"width\": 820,\n    \
-  \  \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {\n    \"1_2_yes\": 0.32,\n    \"1_4_#default#\": 0.17,\n    \"2_3_yes\": 0.3,\n    \"2_4_#default#\": 0.19\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 735,\n      \"width\": 820,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
 inputs:
 - key: Hostname
   value: {}
@@ -159,4 +155,4 @@ inputs:
   description: The hostname of the endpoint to isolate using Cybereason.
 outputs: []
 tests:
-  - No Test
+- No Test

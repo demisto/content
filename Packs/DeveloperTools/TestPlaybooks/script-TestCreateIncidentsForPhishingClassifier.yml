@@ -2,22 +2,29 @@ commonfields:
   id: TestCreateIncidentsForPhishingClassifier
   version: -1
 name: TestCreateIncidentsForPhishingClassifier
-script: |+
+script: >+
   import random, base64, pickle
+
   NUMBER_OF_INCIDENTS = int(demisto.args()['numberOfIncidents'])
+
   words_tag1 = ["closed", "church", "squeamish", "friction", "moaning", "gratis", "angle", "smash", "kiss", "desk", "icky", "aunt"]
+
   words_tag2 = ["ntidy","boy","substance","faulty","friction","waves","type","boat","argument","metal","legal","marked"]
+
   words_tag3 = ["suspend","trucks","aboriginal","thread","succeed","gray","collar","fall","last","volatile","exotic","chief"]
+
 
   incident1_template = {
       'type': 'Simulation',
       'name': 'Tag1',
   }
 
+
   incident2_template = {
       'type': 'Simulation',
       'name': 'Tag2',
   }
+
 
   for i in range(0, NUMBER_OF_INCIDENTS):
       incident1_template["details"] = " ".join([words_tag1[i] for i in [random.randint(0, len(words_tag1)-1) for i in range(30)]]),
@@ -27,6 +34,7 @@ script: |+
       demisto.executeCommand("createNewIncident", incident2_template)
 
   incidents = []
+
   for i in range(0, NUMBER_OF_INCIDENTS):
       incidents.append({
           'type': 'Simulation',
@@ -35,8 +43,11 @@ script: |+
       })
 
   encoded_data = base64.b64encode(pickle.dumps(incidents))
+
   res = demisto.executeCommand("createList", {"listName": demisto.args()['historicListName'], "listData": encoded_data})
+
   demisto.results(res)
+
 
   demisto.results({
       'Contents': 'Done crete incidents',
@@ -74,3 +85,4 @@ runonce: false
 dockerimage: demisto/python:2.7.18.9326
 runas: DBotWeakRole
 comment: ''
+fromversion: 5.0.0

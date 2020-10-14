@@ -51,8 +51,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Google Key Management Service API for CryptoKey management and
-  encrypt/decrypt functionality.
+description: Use the Google Key Management Service API for CryptoKey management and encrypt/decrypt functionality.
 display: Google Key Management Service
 name: Google Key Management Service
 script:
@@ -62,7 +61,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -107,8 +106,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID for the created crypto-key. It must be unique within a
-        KeyRing and match the regular expression [a-zA-Z0-9_-]{1,63}.
+      description: The ID for the created crypto-key. It must be unique within a KeyRing and match the regular expression [a-zA-Z0-9_-]{1,63}.
       isArray: false
       name: crypto_key
       required: true
@@ -121,7 +119,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Date of the next scheduled rotation time. The Key Management Service automatically creates a new version of this CryptoKey and 
+        Date of the next scheduled rotation time. The Key Management Service automatically creates a new version of this CryptoKey and
         marks the new version as primary at the next rotation time.
         Key rotations performed manually through cryptoKeyVersions.create and cryptoKeys.updatePrimaryVersion do not affect nextRotationTime.
 
@@ -135,10 +133,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The statement that was generated and signed by the HSM at the key creation
-        time. Use this statement to verify attributes of the key as stored on the
-        HSM, independently of Google. Only provided for key versions with protectionLevel
-        HSM.
+      description: The statement that was generated and signed by the HSM at the key creation time. Use this statement to verify attributes of the key as stored on the HSM, independently of Google. Only provided for key versions with protectionLevel HSM.
       isArray: true
       name: attestation
       required: false
@@ -163,9 +158,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ENCRYPT_DECRYPT
-      description: 'The cryptographic capabilities of a
-        CryptoKey. A given key can only be used for the operations allowed by its
-        purpose. Can be: "CRYPTO_KEY_PURPOSE_UNSPECIFIED", "ENCRYPT_DECRYPT", "ASYMMETRIC_SIGN", "ASYMMETRIC_DECRYPT".'
+      description: 'The cryptographic capabilities of a CryptoKey. A given key can only be used for the operations allowed by its purpose. Can be: "CRYPTO_KEY_PURPOSE_UNSPECIFIED", "ENCRYPT_DECRYPT", "ASYMMETRIC_SIGN", "ASYMMETRIC_DECRYPT".'
       isArray: false
       name: purpose
       predefined:
@@ -177,10 +170,7 @@ script:
       secret: false
     - default: false
       defaultValue: '7776000'
-      description: The time between when new key versions are generated automatically.
-        Must be between 24 hours and 876,000
-        hours. Keys with ENCRYPT_DECRYPT purpose support automatic rotation. For other
-        keys, this field must be omitted. A duration in seconds.
+      description: The time between when new key versions are generated automatically. Must be between 24 hours and 876,000 hours. Keys with ENCRYPT_DECRYPT purpose support automatic rotation. For other keys, this field must be omitted. A duration in seconds.
       isArray: false
       name: rotation_period
       required: true
@@ -188,8 +178,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: GOOGLE_SYMMETRIC_ENCRYPTION
-      description: Algorithm to use when creating a CryptoKeyVersion based on this
-        template.
+      description: Algorithm to use when creating a CryptoKeyVersion based on this template.
       isArray: false
       name: algorithm
       predefined:
@@ -214,8 +203,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: SOFTWARE
-      description: 'Protections levels for cryptographic operations when creating a CryptoKeyVersion. Can be:
-        Can be: "PROECTECTION_LEVEL_UNSPECIFIED", "SOFTWARE", "HSM". Default is "SOFTWARE".'
+      description: 'Protections levels for cryptographic operations when creating a CryptoKeyVersion. Can be: Can be: "PROECTECTION_LEVEL_UNSPECIFIED", "SOFTWARE", "HSM". Default is "SOFTWARE".'
       isArray: false
       name: protection_level
       predefined:
@@ -227,9 +215,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to create a CryptoKey without any
-        CryptoKeyVersions. You have to create the CryptoKeyVersion to
-        use this key.
+      description: Whether to create a CryptoKey without any CryptoKeyVersions. You have to create the CryptoKeyVersion to use this key.
       isArray: false
       name: skip_initial_version_creation
       predefined:
@@ -253,19 +239,17 @@ script:
       type: String
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-         The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically 
-         creates a new version of this CryptoKey and marks the new version as primary.
+        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
+        creates a new version of this CryptoKey and marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
-      description: The period for which the nextRotationTime is advanced, when the service
-        automatically rotates a key.
+      description: The period for which the nextRotationTime is advanced, when the service automatically rotates a key.
       type: String
     - contextPath: GoogleKMS.CryptoKey.Labels
       description: Labels with user-defined metadata.
       type: String
     - contextPath: GoogleKMS.CryptoKey.VersionTemplate.ProtectionLevel
-      description: The protection level describing how cryptographic operations are performed
-        with this CryptoKeyVersion.
+      description: The protection level describing how cryptographic operations are performed with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.VersionTemplate.Algorithm
       description: The CryptoKeyVersionAlgorithm that this CryptoKeyVersion supports.
@@ -280,8 +264,7 @@ script:
       description: The time when this CryptoKeyVersion was created.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.ProtectionLevel
-      description: The ProtectionLevel describing how cryptographic operations are performed
-        with this CryptoKeyVersion.
+      description: The ProtectionLevel describing how cryptographic operations are performed with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.Algorithm
       description: The algorithm in use in the primary CryptoKeyVersion.
@@ -294,7 +277,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical region where requests to Cloud KMS for a given resource are handled, 
+        The geographical region where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -352,8 +335,8 @@ script:
       secret: false
     - default: false
       description: |-
-        A base64-encoded string passed to Cloud KMS as part of an encrypt or decrypt request. 
-        The optional data that must match the data originally supplied in the EncryptRequest.additional_authenticated_data.        
+        A base64-encoded string passed to Cloud KMS as part of an encrypt or decrypt request.
+        The optional data that must match the data originally supplied in the EncryptRequest.additional_authenticated_data.
       isArray: false
       name: additional_authenticated_data
       required: false
@@ -389,7 +372,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For example, https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -427,7 +410,7 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A grouping of keys for organizational purposes. 
+        A grouping of keys for organizational purposes.
         Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
@@ -448,8 +431,8 @@ script:
     - default: false
       description: |-
         A base64-encoded string passed to Cloud KMS as part of an encrypt or decrypt request. Must also be provided during decryption through DecryptRequest.additional_authenticated_data.
-        The maximum size depends on the key version's protection level. 
-        For SOFTWARE keys, the AAD must be no larger than 64KiB. For HSM keys, the combined length of the plain text and additionalAuthenticatedData fields must be no larger than 8KiB.        
+        The maximum size depends on the key version's protection level.
+        For SOFTWARE keys, the AAD must be no larger than 64KiB. For HSM keys, the combined length of the plain text and additionalAuthenticatedData fields must be no larger than 8KiB.
       isArray: false
       name: additional_authenticated_data
       required: false
@@ -485,7 +468,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For example, https://cloud.google.com/kms/docs/locations.
         Keyword 'default' sets the location to the default location.
       isArray: false
@@ -551,20 +534,17 @@ script:
       type: Date
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-         The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically 
-         creates a new version of this CryptoKey and marks the new version as primary.
+        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
+        creates a new version of this CryptoKey and marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
-      description: The period for which the nextRotationTime is advanced, when the service
-        automatically rotates a key. 
-        hours.
+      description: The period for which the nextRotationTime is advanced, when the service automatically rotates a key. hours.
       type: String
     - contextPath: GoogleKMS.CryptoKey.Labels
       description: Labels with user-defined metadata.
       type: String
     - contextPath: GoogleKMS.CryptoKey.VersionTemplate.ProtectionLevel
-      description: The ProtectionLevel describing how cryptographic operations are performed
-        with this CryptoKeyVersion.
+      description: The ProtectionLevel describing how cryptographic operations are performed with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.VersionTemplate.Algorithm
       description: The CryptoKeyVersionAlgorithm that this CryptoKeyVersion supports.
@@ -579,8 +559,7 @@ script:
       description: The time at which this CryptoKeyVersion was created.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.ProtectionLevel
-      description: The ProtectionLevel describing how cryptographic operations are performed
-        with this CryptoKeyVersion.
+      description: The ProtectionLevel describing how cryptographic operations are performed with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.Algorithm
       description: The algorithm used in the primary CryptoKeyVersion.
@@ -645,7 +624,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically 
+        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
         creates a new version of this CryptoKey and marks the new version as primary.
         Key rotations performed manually via cryptoKeyVersions.create and cryptoKeys.updatePrimaryVersion do not affect nextRotationTime.
 
@@ -657,10 +636,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Statement that was generated and signed by the HSM at key creation
-        time. Use this statement to verify attributes of the key as stored on the
-        HSM, independently of Google. Only provided for key versions with protectionLevel
-        HSM.
+      description: Statement that was generated and signed by the HSM at key creation time. Use this statement to verify attributes of the key as stored on the HSM, independently of Google. Only provided for key versions with protectionLevel HSM.
       isArray: true
       name: attestation
       required: false
@@ -683,9 +659,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'CryptoKeyPurpose describes the cryptographic capabilities of a
-        CryptoKey. A given key can only be used for the operations allowed by its
-        purpose. Can be: "CRYPTO_KEY_PURPOSE_UNSPECIFIED", "ENCRYPT_DECRYPT", "ASYMMETRIC_SIGN", "ASYMMETRIC_DECRYPT".'
+      description: 'CryptoKeyPurpose describes the cryptographic capabilities of a CryptoKey. A given key can only be used for the operations allowed by its purpose. Can be: "CRYPTO_KEY_PURPOSE_UNSPECIFIED", "ENCRYPT_DECRYPT", "ASYMMETRIC_SIGN", "ASYMMETRIC_DECRYPT".'
       isArray: false
       name: purpose
       predefined:
@@ -696,18 +670,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Time between when new key versions are generated automatically.
-        Must between 24 hours and 876,000 hours. If rotation_period is set, next_rotation_time must also be set.  Keys
-        with purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this
-        field must be omitted. A duration in seconds.
+      description: Time between when new key versions are generated automatically. Must between 24 hours and 876,000 hours. If rotation_period is set, next_rotation_time must also be set.  Keys with purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this field must be omitted. A duration in seconds.
       isArray: false
       name: rotation_period
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Algorithm to use when creating a CryptoKeyVersion based on this
-        template.
+      description: Algorithm to use when creating a CryptoKeyVersion based on this template.
       isArray: false
       name: algorithm
       predefined:
@@ -731,8 +701,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The protection_level to use when creating a CryptoKeyVersion based
-        on this template. Can be: "PROTECTION_LEVEL_UNSPECIFIED", "SOFTWARE", "HSM".'
+      description: 'The protection_level to use when creating a CryptoKeyVersion based on this template. Can be: "PROTECTION_LEVEL_UNSPECIFIED", "SOFTWARE", "HSM".'
       isArray: false
       name: protection_level
       predefined:
@@ -763,19 +732,17 @@ script:
       type: String
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically 
+        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
         creates a new version of this CryptoKey and marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
-      description: The period for which the nextRotationTime is advanced, when the service
-        automatically rotates a key.
+      description: The period for which the nextRotationTime is advanced, when the service automatically rotates a key.
       type: String
     - contextPath: GoogleKMS.CryptoKey.Labels
       description: Labels with user-defined metadata.
       type: String
     - contextPath: GoogleKMS.CryptoKey.VersionTemplate.ProtectionLevel
-      description: The ProtectionLevel describing how crypto operations are performed
-        with this CryptoKeyVersion.
+      description: The ProtectionLevel describing how crypto operations are performed with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.VersionTemplate.Algorithm
       description: The CryptoKeyVersionAlgorithm that this CryptoKeyVersion supports.
@@ -790,8 +757,7 @@ script:
       description: The time at which this CryptoKeyVersion was created.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.ProtectionLevel
-      description: The ProtectionLevel describing how cryptographic operations are performed
-        with this CryptoKeyVersion.
+      description: The ProtectionLevel describing how cryptographic operations are performed with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.Algorithm
       description: The algorithm in use in the primary CryptoKeyVersion.
@@ -856,8 +822,7 @@ script:
       secret: false
     - default: false
       defaultValue: default
-      description: The CryptoKeyVersion ID to destroy. Use keyword 'default' to use
-        the primary CryptoKeyVersion of the given CryptoKey.
+      description: The CryptoKeyVersion ID to destroy. Use keyword 'default' to use the primary CryptoKeyVersion of the given CryptoKey.
       isArray: false
       name: crypto_key_version
       required: true
@@ -923,8 +888,7 @@ script:
       secret: false
     - default: false
       defaultValue: default
-      description: The CryptoKeyVersion ID to restore. Use keyword 'default' to use
-        the primary CryptoKeyVersion of the given CryptoKey.
+      description: The CryptoKeyVersion ID to restore. Use keyword 'default' to use the primary CryptoKeyVersion of the given CryptoKey.
       isArray: false
       name: crypto_key_version
       required: true
@@ -990,8 +954,7 @@ script:
       secret: false
     - default: false
       defaultValue: default
-      description: The CryptoKeyVersion ID to disable. Use keyword 'default' to use
-        the primary CryptoKeyVersion of the given CryptoKey.
+      description: The CryptoKeyVersion ID to disable. Use keyword 'default' to use the primary CryptoKeyVersion of the given CryptoKey.
       isArray: false
       name: crypto_key_version
       required: true
@@ -1005,7 +968,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -1057,8 +1020,7 @@ script:
       secret: false
     - default: false
       defaultValue: default
-      description: The CryptoKeyVersion ID to enable. Use keyword 'default' to use
-        the primary CryptoKeyVersion of the given CryptoKey.
+      description: The CryptoKeyVersion ID to enable. Use keyword 'default' to use the primary CryptoKeyVersion of the given CryptoKey.
       isArray: false
       name: crypto_key_version
       required: true
@@ -1072,7 +1034,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -1118,9 +1080,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Shows only keys with this primary CryptoKeyVersion state. Leave
-        empty to show all. Can be: "CRYPTO_KEY_VERSION_STATE_UNSPECIFIED", "PENDING_GENERATION", "ENABLED", "DISABLED", "DESTROYED",
-        "DESTROY_SCHEDULED", "PENDING_IMPORT", "IMPORT_FAILED".'
+      description: 'Shows only keys with this primary CryptoKeyVersion state. Leave empty to show all. Can be: "CRYPTO_KEY_VERSION_STATE_UNSPECIFIED", "PENDING_GENERATION", "ENABLED", "DISABLED", "DESTROYED", "DESTROY_SCHEDULED", "PENDING_IMPORT", "IMPORT_FAILED".'
       isArray: false
       name: key_state
       predefined:
@@ -1143,7 +1103,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the location to the default location.
       isArray: false
@@ -1328,7 +1288,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -1390,7 +1350,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -1438,8 +1398,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Shows only keys with this primary CryptoKeyVersion state. Leave
-        empty to show all.
+      description: Shows only keys with this primary CryptoKeyVersion state. Leave empty to show all.
       isArray: false
       name: key_state
       predefined:
@@ -1474,15 +1433,13 @@ script:
         marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
-      description: The period for which the nextRotationTime is advanced, when the service
-        automatically rotates a key.
+      description: The period for which the nextRotationTime is advanced, when the service automatically rotates a key.
       type: String
     - contextPath: GoogleKMS.CryptoKey.Labels
       description: Labels with user-defined metadata.
       type: String
     - contextPath: GoogleKMS.CryptoKey.VersionTemplate.ProtectionLevel
-      description: The ProtectionLevel describing how crypto operations are performed
-        with this CryptoKeyVersion.
+      description: The ProtectionLevel describing how crypto operations are performed with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.VersionTemplate.Algorithm
       description: The CryptoKeyVersionAlgorithm that this CryptoKeyVersion supports.
@@ -1497,8 +1454,7 @@ script:
       description: The time at which this CryptoKeyVersion was created.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.ProtectionLevel
-      description: The ProtectionLevel describing how crypto operations are performed
-        with this CryptoKeyVersion.
+      description: The ProtectionLevel describing how crypto operations are performed with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.Algorithm
       description: The algorithm in use in the primary CryptoKeyVersion
@@ -1511,7 +1467,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -1581,7 +1537,7 @@ script:
     - contextPath: GoogleKMS.PublicKey.Algorithm
       description: The algorithm used in the CryptoKey
       type: String
-  dockerimage: demisto/google-kms:1.0.0.2689
+  dockerimage: demisto/google-kms:1.0.0.11103
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -1591,3 +1547,4 @@ script:
   subtype: python3
 tests:
 - Google-KMS-test
+fromversion: 5.0.0

@@ -1148,8 +1148,7 @@ tasks:
       id: 9fb0ecf0-0948-4a29-894f-643811455c26
       version: -1
       name: gmail-set-autoreply
-      description: 'Set auto-reply for the user. Note: if body is not set, the current
-        body will be deleted'
+      description: 'Set auto-reply for the user. Note: if body is not set, the current body will be deleted'
       script: '|||gmail-set-autoreply'
       type: regular
       iscommand: true
@@ -1259,8 +1258,7 @@ tasks:
       id: e1c474f2-fa58-44dc-8fdf-dc76a7d70239
       version: -1
       name: gmail-set-autoreply - reset to original autoreply
-      description: 'Set auto-reply for the user. Note: if body is not set, the current
-        body will be deleted'
+      description: 'Set auto-reply for the user. Note: if body is not set, the current body will be deleted'
       script: '|||gmail-set-autoreply'
       type: regular
       iscommand: true
@@ -1309,7 +1307,7 @@ tasks:
       message-id:
         simple: ${Gmail.SentMail.ID}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -1354,7 +1352,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: admin@demistodev.com
+              simple: shai@demistodev.com
       - - operator: isEqualString
           left:
             value:
@@ -1389,10 +1387,7 @@ tasks:
       id: d2d0351e-052e-45fd-80ab-027db25ac5d4
       version: -1
       name: gmail-delegate-user-mailbox
-      description: Adds a delegate to the mailbox, without sending any verification
-        email. The delegate user must be a member of the same G Suite organization
-        as the delegator user.  Note that a delegate user must be referred to by their
-        primary email address, and not an email alias.
+      description: Adds a delegate to the mailbox, without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user.  Note that a delegate user must be referred to by their primary email address, and not an email alias.
       script: '|||gmail-delegate-user-mailbox'
       type: regular
       iscommand: true
@@ -1453,7 +1448,7 @@ tasks:
                   simple: ID
       permanent: {}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -1539,10 +1534,7 @@ tasks:
       id: d64f78b2-25f4-4af5-8597-acacf50f3d3e
       version: -1
       name: gmail-remove-delegated-mailbox
-      description: Removes a delegate from the mailbox, without sending any verification
-        email. The delegate user must be a member of the same G Suite organization
-        as the delegator user.  Note that a delegate user must be referred to by their
-        primary email address, and not an email alias.
+      description: Removes a delegate from the mailbox, without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user.  Note that a delegate user must be referred to by their primary email address, and not an email alias.
       script: '|||gmail-remove-delegated-mailbox'
       type: regular
       iscommand: true
@@ -1591,7 +1583,8 @@ tasks:
       body:
         simple: bla bla bla
       cc: {}
-      from: {}
+      from:
+        simple: shai@demistodev.com
       htmlBody: {}
       replyTo: {}
       subject:
@@ -1621,16 +1614,7 @@ tasks:
       id: 010732fb-fa79-4652-82ba-f31ea86ecfe8
       version: -1
       name: GeneratePassword
-      description: "This function generates a password and allows various parameters
-        to customize the properties of the password depending on the use case (e.g.
-        password complexity requirements).  The default behavior is to generate a
-        password of  *random length* including all four character classes (upper,
-        lower, digits, symbols) with at least five and at most ten characters per
-        class. \n\nThe min_* values all default to 0. This means that if the command
-        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
-        a password of length zero could be generated. It is therefore recommended
-        to always include a min_* parameter that matches. \n\nThe debug parameter
-        will print certain properties of the command into the WarRoom for easy diagnostics."
+      description: "This function generates a password and allows various parameters to customize the properties of the password depending on the use case (e.g. password complexity requirements).  The default behavior is to generate a password of  *random length* including all four character classes (upper, lower, digits, symbols) with at least five and at most ten characters per class. \n\nThe min_* values all default to 0. This means that if the command is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that a password of length zero could be generated. It is therefore recommended to always include a min_* parameter that matches. \n\nThe debug parameter will print certain properties of the command into the WarRoom for easy diagnostics."
       scriptName: GeneratePassword
       type: regular
       iscommand: false
@@ -2007,3 +1991,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

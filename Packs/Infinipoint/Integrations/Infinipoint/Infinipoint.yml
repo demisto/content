@@ -57,7 +57,7 @@ script:
   type: python
   commands:
   - name: infinipoint-get-vulnerable-devices
-    description: Get Vulnerable Devices
+    description: Get vulnerable devices associated with a particular CVE
     arguments:
     - name: device_os
       description: The device operating system, e.g. Ubutnu, Amazon Linux AMI, CentOS,
@@ -87,7 +87,7 @@ script:
       description: Vulnerabilities count
       type: Number
   - name: infinipoint-get-assets-programs
-    description: infinipoint get assets programs
+    description: Get programs for managed devices and cloud instances
     arguments:
     - name: name
       description: Software name, e.g. VMware
@@ -139,7 +139,7 @@ script:
       description: Total software
       type: Number
   - name: infinipoint-get-cve
-    description: infinipoint get cve
+    description: Get details of existing CVE
     arguments:
     - name: cve_id
       description: cve id, e.g. CVE-2020-1301
@@ -335,7 +335,7 @@ script:
       description: Vulnerable version
       type: String
   - name: infinipoint-get-device
-    description: get device
+    description: Get details for managed device
     arguments:
     - name: host
       description: hostname, e.g. DESKTOP-CIK123
@@ -463,7 +463,7 @@ script:
       description: Infinipoint unique Hostname
       type: String
   - name: infinipoint-get-tag
-    description: get tag
+    description: Get tag details by name
     arguments:
     - name: name
       description: Tag name, e.g. it-department-tag
@@ -487,7 +487,7 @@ script:
       description: Tag type
       type: Number
   - name: infinipoint-get-networks
-    description: get networks
+    description: Get networks details
     arguments:
     - name: alias, e.g. office
       description: network alias name
@@ -578,10 +578,10 @@ script:
     - contextPath: Infinipoint.Networks.Info.unmanagedCount
       description: Unmanaged devices count
       type: Number
-  - name: infinipoint-get-assets-hardware
-    description: get assets hardware
+  - name: infinipoint-get-assets-devices
+    description: Get managed devices
     arguments:
-    - name: host
+    - name: $host
       description: hostname, e.g. DESKTOP-CIK123
     - name: os_type
       auto: PREDEFINED
@@ -649,7 +649,7 @@ script:
       description: Last logged in user
       type: String
   - name: infinipoint-get-assets-cloud
-    description: get assets cloud
+    description: Get managed cloud instances
     arguments:
     - name: host
       description: hostname
@@ -738,7 +738,7 @@ script:
       description: List of open ports
       type: Number
   - name: infinipoint-get-assets-users
-    description: get assets users
+    description: Get users for managed devices and cloud instances
     arguments:
     - name: host
       description: host name
@@ -766,8 +766,8 @@ script:
     - contextPath: Infinipoint.Assets.User.username
       description: Username
       type: String
-  - name: infinipoint-get-action
-    description: get action
+  - name: infinipoint-get-action-results
+    description: Get results for a given action ID
     arguments:
     - name: action_id
       description: Action id (infinipoint), e.g. 9ef2494d-862e-43c8-963c-3587cde75c4d
@@ -789,7 +789,7 @@ script:
       description: Responses type
       type: String
   - name: infinipoint-get-queries
-    description: get queries
+    description: Get queries details for a givan query name
     arguments:
     - name: name
       description: Query name, e.g Windows Logon Session
@@ -819,8 +819,8 @@ script:
     - contextPath: Infinipoint.Scripts.Search.osType
       description: OS type
       type: Number
-  - name: infinipoint-run-queries
-    description: run queries
+  - name: infinipoint-execute-action
+    description: Run queries on managed devices
     arguments:
     - name: id
       description: Query ID, e.g 9b071f4c-da87-409c-9cd1-59a275e52c9d
@@ -842,7 +842,7 @@ script:
       description: Query name
       type: String
   - name: infinipoint-get-non-compliance
-    description: get non compliance devices
+    description: Get compliance details by time offset
     arguments:
     - name: offset
       description: Infinipoint offset - First fetch time
@@ -885,7 +885,7 @@ script:
       description: timestamp
       type: Number
   - name: infinipoint-get-device-details
-    description: get device details
+    description: Get detailed Information for managed device
     arguments:
     - name: discoveryId
       description: discovery id, e.g 23eb50e7ceb907975686ba5cebbd3520
@@ -985,7 +985,7 @@ script:
       description: User name
       type: String
   - name: infinipoint-get-compliance-status
-    description: get compliance status
+    description: Get compliance status of a specific device
     arguments:
     - name: device_id
       description: device id
@@ -998,7 +998,7 @@ script:
       description: success
       type: Number
 
-  dockerimage: demisto/pyjwt3:1.0.0.8871
+  dockerimage: demisto/pyjwt3:1.0.0.10828
   isfetch: true
   runonce: false
   script: '-'

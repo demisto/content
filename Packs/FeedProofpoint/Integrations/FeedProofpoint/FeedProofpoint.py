@@ -14,10 +14,11 @@ SOURCE_NAME = "Proofpoint Feed"
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, auth_code, tags: list = None, **kwargs):
+    def __init__(self, base_url, auth_code, tags: list = None, tlp_color: Optional[str] = None, **kwargs):
         if tags is None:
             tags = []
         self._tags: list = tags
+        self.tlp_color = tlp_color
         base_url = url_concat(base_url, auth_code, "reputation")
         super().__init__(base_url, **kwargs)
 
@@ -107,8 +108,8 @@ class Client(BaseClient):
                 yield item
 
     @staticmethod
-    def _process_item(item: dict, tags: list) -> dict:
-        return {
+    def _process_item(item: dict, tags: list, tlp_color: Optional[str] = None) -> dict:
+        indicator_obj = {
             "value": item["value"],
             "type": item["type"],
             "rawJSON": item,
@@ -123,6 +124,11 @@ class Client(BaseClient):
                 }
             }
         }
+
+        if tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+        return indicator_obj
 
     def _build_iterator_domain(self) -> Generator[dict, None, None]:
         """Gets back a dict of domain attributes.
@@ -149,7 +155,7 @@ class Client(BaseClient):
             list of indicators
         """
         return [
-            self._process_item(item, self._tags)
+            self._process_item(item, self._tags, self.tlp_color)
             for item in self._build_iterator_domain()
         ]
 
@@ -160,7 +166,7 @@ class Client(BaseClient):
             list of indicators
         """
         return [
-            self._process_item(item, self._tags)
+            self._process_item(item, self._tags, self.tlp_color)
             for item in self._build_iterator_ip()
         ]
 
@@ -261,7 +267,8 @@ def main():
         auth_code=params.get("auth_code"),
         verify=not params.get("insecure", False),
         proxy=params.get("proxy"),
-        tags=argToList(params.get("feedTags"))
+        tags=argToList(params.get("feedTags")),
+        tlp_color=params.get('tlp_color')
     )
     command = demisto.command()
     demisto.info("Command being called is {}".format(command))

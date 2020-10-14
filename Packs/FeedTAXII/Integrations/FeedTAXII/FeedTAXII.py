@@ -1,5 +1,5 @@
 import tempfile
-from typing import Dict
+from typing import Dict, Optional
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -468,7 +468,8 @@ class Taxii11(object):
 class TAXIIClient(object):
     def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
                  discovery_service: str = '', poll_service: str = None, collection: str = None,
-                 credentials: dict = None, cert_text: str = None, key_text: str = None, tags: str = None, **kwargs):
+                 credentials: dict = None, cert_text: str = None, key_text: str = None, tags: str = None,
+                 tlp_color: Optional[str] = None, **kwargs):
         """
         TAXII Client
         :param insecure: Set to true to ignore https certificate
@@ -509,6 +510,7 @@ class TAXIIClient(object):
         self.password = None
         self.crt = None
         self.tags = argToList(tags)
+        self.tlp_color = tlp_color
         # authentication
         if credentials:
             if '_header:' in credentials.get('identifier', None):
@@ -977,12 +979,19 @@ def fetch_indicators_command(client):
         indicator = item.get('indicator')
         if indicator:
             item['value'] = indicator
-            indicators.append({
+            indicator_obj = {
                 'value': indicator,
                 'type': item.get('type'),
-                'fields': {'tags': client.tags},
+                'fields': {
+                    'tags': client.tags,
+                },
                 'rawJSON': item,
-            })
+            }
+            if client.tlp_color:
+                indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+
+            indicators.append(indicator_obj)
+
     return indicators
 
 

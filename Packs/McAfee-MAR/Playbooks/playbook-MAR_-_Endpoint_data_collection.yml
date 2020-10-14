@@ -1,7 +1,7 @@
 id: MAR - Endpoint data collection
 version: -1
 name: MAR - Endpoint data collection
-fromversion: ""
+fromversion: "5.0.0"
 description: |-
   Use McAfee Active Response to collect data from an endpoint for IR purposes (requires ePO as well)
 
@@ -1057,7 +1057,7 @@ inputs:
     simple: ${Endpoint.Hostname}
   required: false
   description: Hostname to run on
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
-  - MAR - Endpoint data collection test
+- MAR - Endpoint data collection test

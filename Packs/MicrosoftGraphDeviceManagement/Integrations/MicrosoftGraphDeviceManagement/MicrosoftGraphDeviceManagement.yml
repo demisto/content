@@ -34,7 +34,8 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-description: Microsoft Intune is a Microsoft cloud-based management solution that provides for mobile device and operating system management
+description: Microsoft Intune is a Microsoft cloud-based management solution that
+  provides for mobile device and operating system management
 display: Microsoft Graph Device Management (Microsoft Intune)
 name: Microsoft Graph Device Management
 script:
@@ -62,13 +63,15 @@ script:
       description: Name of the device
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceOwnerType
-      description: Ownership of the device. Possible values are unknown, company, personal.
+      description: Ownership of the device. Possible values are unknown, company,
+        personal.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ActionResults.actionName
       description: Action name
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ActionResults.ActionState
-      description: State of the action. Possible values are none, pending, canceled, active, done, failed, notSupported
+      description: State of the action. Possible values are none, pending, canceled,
+        active, done, failed, notSupported
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ActionResults.StartDateTime
       description: Time the action was initiated
@@ -80,19 +83,23 @@ script:
       description: Enrollment time of the device
       type: Date
     - contextPath: MSGraphDeviceManagement.Device.LastSyncDateTime
-      description: The date and time that the device last completed a successful sync with Intune.
+      description: The date and time that the device last completed a successful sync
+        with Intune.
       type: Date
     - contextPath: MSGraphDeviceManagement.Device.OperatingSystem
       description: Operating system of the device. Windows, iOS, etc.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ComplianceState
-      description: Compliance state of the device. Possible values are unknown, compliant, noncompliant, conflict, error, inGracePeriod, configManager
+      description: Compliance state of the device. Possible values are unknown, compliant,
+        noncompliant, conflict, error, inGracePeriod, configManager
       type: String
     - contextPath: MSGraphDeviceManagement.Device.JailBroken
       description: whether the device is jail broken or rooted.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ManagementAgent
-      description: Management channel of the device. Possible values are eas, mdm, easMdm, intuneClient, easIntuneClient, configurationManagerClient, configurationManagerClientMdm, configurationManagerClientMdmEas, unknown, jamf, googleCloudDevicePolicyController.
+      description: Management channel of the device. Possible values are eas, mdm,
+        easMdm, intuneClient, easIntuneClient, configurationManagerClient, configurationManagerClientMdm,
+        configurationManagerClientMdmEas, unknown, jamf, googleCloudDevicePolicyController.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.OSVersion
       description: Operating system version of the device.
@@ -110,16 +117,22 @@ script:
       description: Email(s) for the user associated with the device
       type: String
     - contextPath: MSGraphDeviceManagement.Device.AzureADDeviceId
-      description: The unique identifier for the Azure Active Directory device. Read only.
+      description: The unique identifier for the Azure Active Directory device. Read
+        only.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.CategoryDisplayName
       description: Device category display name
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ExchangeAccessState
-      description: The Access State of the device in Exchange. Possible values are none, unknown, allowed, blocked, quarantined.
+      description: The Access State of the device in Exchange. Possible values are
+        none, unknown, allowed, blocked, quarantined.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.exchangeAccessStateReason
-      description: The reason for the device's access state in Exchange. Possible values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule, exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled, unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword, deviceNotKnownWithManagedApp.
+      description: The reason for the device's access state in Exchange. Possible
+        values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule,
+        exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled,
+        unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword,
+        deviceNotKnownWithManagedApp.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.IsSupervised
       description: Device supervised status
@@ -188,34 +201,44 @@ script:
       description: The version of the Boot Manager
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.secureBoot
-      description: When Secure Boot is enabled, the core components must have the correct cryptographic signatures
+      description: When Secure Boot is enabled, the core components must have the
+        correct cryptographic signatures
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootDebugging
-      description: When bootDebugging is enabled, the device is used in development and testing
+      description: When bootDebugging is enabled, the device is used in development
+        and testing
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemKernelDebugging
-      description: When operatingSystemKernelDebugging is enabled, the device is used in development and testing
+      description: When operatingSystemKernelDebugging is enabled, the device is used
+        in development and testing
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrity
-      description: When code integrity is enabled, code execution is restricted to integrity verified code
+      description: When code integrity is enabled, code execution is restricted to
+        integrity verified code
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.testSigning
-      description: When test signing is allowed, the device does not enforce signature validation during boot
+      description: When test signing is allowed, the device does not enforce signature
+        validation during boot
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.safeMode,
-      description: Safe mode is a troubleshooting option for Windows that starts your computer in a limited state
+      description: Safe mode is a troubleshooting option for Windows that starts your
+        computer in a limited state
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.windowsPE
-      description: Operating system running with limited services that is used to prepare a computer for Windows
+      description: Operating system running with limited services that is used to
+        prepare a computer for Windows
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.earlyLaunchAntiMalwareDriverProtection
-      description: ELAM provides protection for the computers in your network when they start up
+      description: ELAM provides protection for the computers in your network when
+        they start up
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.virtualSecureMode
-      description: VSM is a container that protects high value assets from a compromised kernel
+      description: VSM is a container that protects high value assets from a compromised
+        kernel
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.pcrHashAlgorithm
-      description: Informational attribute that identifies the HASH algorithm that was used by TPM
+      description: Informational attribute that identifies the HASH algorithm that
+        was used by TPM
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootAppSecurityVersion
       description: The security version number of the Boot Application
@@ -233,13 +256,16 @@ script:
       description: Fingerprint of the Custom Secure Boot Configuration Policy
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrityPolicy
-      description: The Code Integrity policy that is controlling the security of the boot environment
+      description: The Code Integrity policy that is controlling the security of the
+        boot environment
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootRevisionListInfo
-      description: The Boot Revision List that was loaded during initial boot on the attested device
+      description: The Boot Revision List that was loaded during initial boot on the
+        attested device
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemRevListInfo
-      description: The Operating System Revision List that was loaded during initial boot on the attested device
+      description: The Operating System Revision List that was loaded during initial
+        boot on the attested device
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.healthStatusMismatchInfo
       description: This attribute appears if DHA-Service detects an integrity issue
@@ -260,10 +286,14 @@ script:
       description: Free Storage in Bytes
       type: Number
     - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceName
-      description: Automatically generated name to identify a device. Can be overwritten to a user friendly name.
+      description: Automatically generated name to identify a device. Can be overwritten
+        to a user friendly name.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.PartnerReportedThreatState
-      description: Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured.
+      description: Indicates the threat state of a device when a Mobile Threat Defense
+        partner is in use by the account and device. Read Only. Possible values are
+        unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
+        unresponsive, compromised, misconfigured.
       type: String
   - arguments:
     - default: false
@@ -274,7 +304,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Check the device with Intune, immediately receive pending actions and policies
+    description: Check the device with Intune, immediately receive pending actions
+      and policies
     execution: false
     name: msgraph-sync-device
   - arguments:
@@ -424,7 +455,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: deletes a user that you select from the local cache on a shared iPad device
+    description: deletes a user that you select from the local cache on a shared iPad
+      device
     execution: false
     name: msgraph-delete-user-from-shared-apple-device
   - arguments:
@@ -458,7 +490,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: removes any apps that are installed on a PC running Windows 10. it helps remove pre-installed (OEM) apps that are typically installed with a new PC
+    description: removes any apps that are installed on a PC running Windows 10. it
+      helps remove pre-installed (OEM) apps that are typically installed with a new
+      PC
     execution: false
     name: msgraph-clean-windows-device
   - arguments:
@@ -601,13 +635,15 @@ script:
       description: Name of the device
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceOwnerType
-      description: Ownership of the device. Possible values are unknown, company, personal.
+      description: Ownership of the device. Possible values are unknown, company,
+        personal.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ActionResults.actionName
       description: Action name
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ActionResults.ActionState
-      description: State of the action. Possible values are none, pending, canceled, active, done, failed, notSupported
+      description: State of the action. Possible values are none, pending, canceled,
+        active, done, failed, notSupported
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ActionResults.StartDateTime
       description: Time the action was initiated
@@ -619,19 +655,23 @@ script:
       description: Enrollment time of the device
       type: Date
     - contextPath: MSGraphDeviceManagement.Device.LastSyncDateTime
-      description: The date and time that the device last completed a successful sync with Intune.
+      description: The date and time that the device last completed a successful sync
+        with Intune.
       type: Date
     - contextPath: MSGraphDeviceManagement.Device.OperatingSystem
       description: Operating system of the device. Windows, iOS, etc.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ComplianceState
-      description: Compliance state of the device. Possible values are unknown, compliant, noncompliant, conflict, error, inGracePeriod, configManager
+      description: Compliance state of the device. Possible values are unknown, compliant,
+        noncompliant, conflict, error, inGracePeriod, configManager
       type: String
     - contextPath: MSGraphDeviceManagement.Device.JailBroken
       description: whether the device is jail broken or rooted.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ManagementAgent
-      description: Management channel of the device. Possible values are eas, mdm, easMdm, intuneClient, easIntuneClient, configurationManagerClient, configurationManagerClientMdm, configurationManagerClientMdmEas, unknown, jamf, googleCloudDevicePolicyController.
+      description: Management channel of the device. Possible values are eas, mdm,
+        easMdm, intuneClient, easIntuneClient, configurationManagerClient, configurationManagerClientMdm,
+        configurationManagerClientMdmEas, unknown, jamf, googleCloudDevicePolicyController.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.OSVersion
       description: Operating system version of the device.
@@ -649,16 +689,22 @@ script:
       description: Email(s) for the user associated with the device
       type: String
     - contextPath: MSGraphDeviceManagement.Device.AzureADDeviceId
-      description: The unique identifier for the Azure Active Directory device. Read only.
+      description: The unique identifier for the Azure Active Directory device. Read
+        only.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.CategoryDisplayName
       description: Device category display name
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ExchangeAccessState
-      description: The Access State of the device in Exchange. Possible values are none, unknown, allowed, blocked, quarantined.
+      description: The Access State of the device in Exchange. Possible values are
+        none, unknown, allowed, blocked, quarantined.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.exchangeAccessStateReason
-      description: The reason for the device's access state in Exchange. Possible values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule, exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled, unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword, deviceNotKnownWithManagedApp.
+      description: The reason for the device's access state in Exchange. Possible
+        values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule,
+        exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled,
+        unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword,
+        deviceNotKnownWithManagedApp.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.IsSupervised
       description: Device supervised status
@@ -727,34 +773,44 @@ script:
       description: The version of the Boot Manager
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.secureBoot
-      description: When Secure Boot is enabled, the core components must have the correct cryptographic signatures
+      description: When Secure Boot is enabled, the core components must have the
+        correct cryptographic signatures
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootDebugging
-      description: When bootDebugging is enabled, the device is used in development and testing
+      description: When bootDebugging is enabled, the device is used in development
+        and testing
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemKernelDebugging
-      description: When operatingSystemKernelDebugging is enabled, the device is used in development and testing
+      description: When operatingSystemKernelDebugging is enabled, the device is used
+        in development and testing
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrity
-      description: When code integrity is enabled, code execution is restricted to integrity verified code
+      description: When code integrity is enabled, code execution is restricted to
+        integrity verified code
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.testSigning
-      description: When test signing is allowed, the device does not enforce signature validation during boot
+      description: When test signing is allowed, the device does not enforce signature
+        validation during boot
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.safeMode,
-      description: Safe mode is a troubleshooting option for Windows that starts your computer in a limited state
+      description: Safe mode is a troubleshooting option for Windows that starts your
+        computer in a limited state
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.windowsPE
-      description: Operating system running with limited services that is used to prepare a computer for Windows
+      description: Operating system running with limited services that is used to
+        prepare a computer for Windows
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.earlyLaunchAntiMalwareDriverProtection
-      description: ELAM provides protection for the computers in your network when they start up
+      description: ELAM provides protection for the computers in your network when
+        they start up
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.virtualSecureMode
-      description: VSM is a container that protects high value assets from a compromised kernel
+      description: VSM is a container that protects high value assets from a compromised
+        kernel
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.pcrHashAlgorithm
-      description: Informational attribute that identifies the HASH algorithm that was used by TPM
+      description: Informational attribute that identifies the HASH algorithm that
+        was used by TPM
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootAppSecurityVersion
       description: The security version number of the Boot Application
@@ -772,13 +828,16 @@ script:
       description: Fingerprint of the Custom Secure Boot Configuration Policy
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrityPolicy
-      description: The Code Integrity policy that is controlling the security of the boot environment
+      description: The Code Integrity policy that is controlling the security of the
+        boot environment
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootRevisionListInfo
-      description: The Boot Revision List that was loaded during initial boot on the attested device
+      description: The Boot Revision List that was loaded during initial boot on the
+        attested device
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemRevListInfo
-      description: The Operating System Revision List that was loaded during initial boot on the attested device
+      description: The Operating System Revision List that was loaded during initial
+        boot on the attested device
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.healthStatusMismatchInfo
       description: This attribute appears if DHA-Service detects an integrity issue
@@ -799,12 +858,16 @@ script:
       description: Free Storage in Bytes
       type: Number
     - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceName
-      description: Automatically generated name to identify a device. Can be overwritten to a user friendly name.
+      description: Automatically generated name to identify a device. Can be overwritten
+        to a user friendly name.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.PartnerReportedThreatState
-      description: Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured.
+      description: Indicates the threat state of a device when a Mobile Threat Defense
+        partner is in use by the account and device. Read Only. Possible values are
+        unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
+        unresponsive, compromised, misconfigured.
       type: String
-  dockerimage: demisto/crypto:1.0.0.7634
+  dockerimage: demisto/crypto:1.0.0.11412
   isfetch: false
   longRunning: false
   longRunningPort: false

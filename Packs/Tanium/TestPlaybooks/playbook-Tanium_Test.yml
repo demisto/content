@@ -38,8 +38,7 @@ tasks:
       id: 6ee0d97d-4d1b-4f4e-859f-d1cd26de7cc6
       version: -1
       name: Ask questions
-      description: Ask the server to parse the question text and choose the first
-        parsed result as the question to run
+      description: Ask the server to parse the question text and choose the first parsed result as the question to run
       script: Tanium|||tn-ask-question
       type: regular
       iscommand: true
@@ -70,10 +69,8 @@ tasks:
     task:
       id: 6d572b5b-be75-4397-84c2-b339dae456eb
       version: -1
-      name: Run a complex Tanium query to find all machines with processes starting
-        with "EC"
-      description: Ask the server to parse the question text and choose the first
-        parsed result as the question to run
+      name: Run a complex Tanium query to find all machines with processes starting with "EC"
+      description: Ask the server to parse the question text and choose the first parsed result as the question to run
       script: Tanium|||tn-ask-question
       type: regular
       iscommand: true
@@ -266,3 +263,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

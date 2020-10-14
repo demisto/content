@@ -2,7 +2,7 @@ commonfields:
   id: SetIPsTest
   version: -1
 name: SetIPsTest
-script: |2+
+script: >2+
 
   context_output = [{
       'Address': '98.137.246.7'
@@ -36,4 +36,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - no test (it's a part of ip enrichment test playbook)
+- no test (it's a part of ip enrichment test playbook)
+fromversion: 5.0.0

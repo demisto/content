@@ -22,6 +22,7 @@ from contextlib import contextmanager
 import urllib3
 import requests
 import demisto_client.demisto_api
+from demisto_client.demisto_api.rest import ApiException
 from slackclient import SlackClient
 
 from Tests.mock_server import MITMProxy, AMIConnection
@@ -48,6 +49,8 @@ CIRCLE_BUILD_NUM = os.environ.get('CIRCLE_BUILD_NUM')
 WORKFLOW_ID = os.environ.get('CIRCLE_WORKFLOW_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
 SLACK_MEM_CHANNEL_ID = 'CM55V7J8K'
+PROXY_LOG_FILE_NAME = 'proxy_metrics.csv'
+ENV_RESULTS_PATH = './env_results.json'
 
 
 def options_handler():
@@ -249,16 +252,15 @@ def update_test_msg(integrations, test_message):
     return test_message
 
 
-def turn_off_telemetry(server, demisto_api_key):
+def turn_off_telemetry(xsoar_client):
     """
     Turn off telemetry on the AMI instance
 
-    :param server: demisto server to connect to
-    :param demisto_api_key: api key to use for connection
+    :param xsoar_client: Preconfigured client for the XSOAR instance
     :return: None
     """
-    client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
-    body, status_code, _ = demisto_client.generic_request_func(self=client, method='POST',
+
+    body, status_code, _ = demisto_client.generic_request_func(self=xsoar_client, method='POST',
                                                                path='/telemetry?status=notelemetry')
 
     if status_code != 200:
@@ -266,9 +268,9 @@ def turn_off_telemetry(server, demisto_api_key):
         sys.exit(1)
 
 
-def reset_containers(server, demisto_api_key, prints_manager, thread_index):
+def reset_containers(server, demisto_user, demisto_pass, prints_manager, thread_index):
     prints_manager.add_print_job('Resetting containers', print, thread_index)
-    client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
+    client = demisto_client.configure(base_url=server, username=demisto_user, password=demisto_pass, verify_ssl=False)
     body, status_code, _ = demisto_client.generic_request_func(self=client, method='POST',
                                                                path='/containers/reset')
     if status_code != 200:
@@ -366,9 +368,12 @@ def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy
                              server_url, build_name, prints_manager, thread_index=thread_index, is_mock_run=True)
     proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
     if succeed:
+        proxy.successful_rerecord_count += 1
         proxy.clean_mock_file(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         proxy.move_mock_file_to_repo(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
-
+    else:
+        proxy.failed_rerecord_count += 1
+        proxy.failed_rerecord_tests.append(playbook_id)
     proxy.set_repo_folder()
     return succeed
 
@@ -388,6 +393,7 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
         # use results
         proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
         if status == PB_Status.COMPLETED:
+            proxy.successful_tests_count += 1
             succeed_message = 'PASS: {} succeed'.format(test_message)
             prints_manager.add_print_job(succeed_message, print_color, thread_index, LOG_COLORS.GREEN)
             succeed_playbooks.append(playbook_id)
@@ -410,7 +416,7 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
             end_mock_message = f'------ Test {test_message} end ------\n'
             prints_manager.add_print_job(end_mock_message, print, thread_index, include_timestamp=True)
             return
-
+        proxy.failed_tests_count += 1
         mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
         prints_manager.add_print_job(mock_failed_message, print, thread_index)
         rerecord = True
@@ -431,11 +437,11 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
     prints_manager.add_print_job(test_end_message, print, thread_index, include_timestamp=True)
 
 
-def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_api_key, proxy, failed_playbooks,
+def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, demisto_pass, proxy, failed_playbooks,
              integrations, unmockable_integrations, playbook_id, succeed_playbooks, test_message, test_options,
              slack, circle_ci, build_number, server_url, build_name, prints_manager, is_ami=True, thread_index=0):
     start_message = f'------ Test {test_message} start ------'
-    client = demisto_client.configure(base_url=server_url, api_key=demisto_api_key, verify_ssl=False)
+    client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
         prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index, include_timestamp=True)
@@ -621,11 +627,13 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
-                      skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
-                      filtered_tests, skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
-                      unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                      server_numeric_version, demisto_api_key, prints_manager, thread_index=0, is_ami=True):
+def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeout, skipped_tests_conf,
+                      nightly_integrations, skipped_integrations_conf, skipped_integration, is_nightly,
+                      run_all_tests, is_filter_configured, filtered_tests, skipped_tests, secret_params,
+                      failed_playbooks, playbook_skipped_integration, unmockable_integrations,
+                      succeed_playbooks, slack, circle_ci, build_number, server, build_name,
+                      server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
+                      prints_manager, thread_index=0, is_ami=True):
     playbook_id = t['playbookID']
     nightly_test = t.get('nightly', False)
     integrations_conf = t.get('integrations', [])
@@ -708,9 +716,18 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
         text = stdout if not stderr else stderr
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
-    run_test(t, tests_queue, tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations,
-             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
-             build_number, server, build_name, prints_manager, is_ami, thread_index=thread_index)
+    run_test(t, tests_queue, tests_settings, demisto_user, demisto_pass, proxy, failed_playbooks,
+             integrations, unmockable_integrations, playbook_id, succeed_playbooks, test_message,
+             test_options, slack, circle_ci, build_number, server, build_name, prints_manager,
+             is_ami, thread_index=thread_index)
+
+
+def load_env_results_json():
+    if not os.path.isfile(ENV_RESULTS_PATH):
+        return {}
+
+    with open(ENV_RESULTS_PATH, 'r') as json_file:
+        return json.load(json_file)
 
 
 def get_server_numeric_version(ami_env, is_local_run=False):
@@ -726,19 +743,16 @@ def get_server_numeric_version(ami_env, is_local_run=False):
         (str) Server numeric version
     """
     default_version = '99.99.98'
-    env_results_path = './env_results.json'
     if is_local_run:
         print_color(f'Local run, assuming server version is {default_version}', LOG_COLORS.GREEN)
         return default_version
 
-    if not os.path.isfile(env_results_path):
-        print_warning(f'Did not find {env_results_path} file, assuming server version is {default_version}.')
+    env_json = load_env_results_json()
+    if not env_json:
+        print_warning(f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
         return default_version
 
-    with open(env_results_path, 'r') as json_file:
-        env_results = json.load(json_file)
-
-    instances_ami_names = set([env.get('AmiName') for env in env_results if ami_env in env.get('Role', '')])
+    instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}
     if len(instances_ami_names) != 1:
         print_warning(f'Did not get one AMI Name, got {instances_ami_names}.'
                       f' Assuming server version is {default_version}')
@@ -763,10 +777,9 @@ def get_server_numeric_version(ami_env, is_local_run=False):
 def get_instances_ips_and_names(tests_settings):
     if tests_settings.server:
         return [tests_settings.server]
-    with open('./Tests/instance_ips.txt', 'r') as instance_file:
-        instance_ips = instance_file.readlines()
-        instance_ips = [line.strip('\n').split(":") for line in instance_ips]
-        return instance_ips
+    env_json = load_env_results_json()
+    instances_ips = [(env.get('Role'), env.get('InstanceDNS')) for env in env_json]
+    return instances_ips
 
 
 def get_test_records_of_given_test_names(tests_settings, tests_names_to_search):
@@ -778,6 +791,11 @@ def get_test_records_of_given_test_names(tests_settings, tests_names_to_search):
         if test_name and test_name in tests_names_to_search:
             test_records_with_supplied_names.append(test_record)
     return test_records_with_supplied_names
+
+
+def get_json_file(path):
+    with open(path, 'r') as json_file:
+        return json.loads(json_file.read())
 
 
 def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_tests_names,
@@ -793,8 +811,9 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     build_number = tests_settings.buildNumber
     build_name = tests_settings.buildName
     conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
-
     demisto_api_key = tests_settings.api_key
+    demisto_user = secret_conf['username']
+    demisto_pass = secret_conf['userPassword']
 
     default_test_timeout = conf.get('testTimeout', 30)
 
@@ -814,9 +833,11 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         prints_manager.add_print_job('no integrations are configured for test', print, thread_index)
         prints_manager.execute_thread_prints(thread_index)
         return
+    xsoar_client = demisto_client.configure(base_url=server, username=demisto_user,
+                                            password=demisto_pass, verify_ssl=False)
 
     # turn off telemetry
-    turn_off_telemetry(server, demisto_api_key)
+    turn_off_telemetry(xsoar_client)
 
     proxy = None
     if is_ami:
@@ -830,7 +851,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     skipped_integration = set([])
     playbook_skipped_integration = set([])
 
-    disable_all_integrations(demisto_api_key, server, prints_manager, thread_index=thread_index)
+    disable_all_integrations(xsoar_client, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
     mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
     unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
@@ -844,7 +865,9 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     try:
         # first run the mock tests to avoid mockless side effects in container
         if is_ami and mockable_tests:
-            proxy.configure_proxy_in_demisto(demisto_api_key, server, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
+            proxy.configure_proxy_in_demisto(proxy=proxy.ami.docker_ip + ':' + proxy.PROXY_PORT,
+                                             username=demisto_user, password=demisto_pass,
+                                             server=server)
             executed_in_current_round, mockable_tests_queue = initialize_queue_and_executed_tests_set(mockable_tests)
             while not mockable_tests_queue.empty():
                 t = mockable_tests_queue.get()
@@ -858,12 +881,12 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                                   run_all_tests, is_filter_configured, filtered_tests,
                                   skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                                   unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                                  build_name, server_numeric_version, demisto_api_key, prints_manager,
-                                  thread_index=thread_index)
-            proxy.configure_proxy_in_demisto(demisto_api_key, server, '')
+                                  build_name, server_numeric_version, demisto_user, demisto_pass,
+                                  demisto_api_key, prints_manager, thread_index=thread_index)
+            proxy.configure_proxy_in_demisto(username=demisto_user, password=demisto_pass, server=server)
 
             # reset containers after clearing the proxy server configuration
-            reset_containers(server, demisto_api_key, prints_manager, thread_index)
+            reset_containers(server, demisto_user, demisto_pass, prints_manager, thread_index)
 
         prints_manager.add_print_job("\nRunning mock-disabled tests", print, thread_index)
         executed_in_current_round, unmockable_tests_queue = initialize_queue_and_executed_tests_set(unmockable_tests)
@@ -879,12 +902,16 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                               is_nightly, run_all_tests, is_filter_configured, filtered_tests, skipped_tests,
                               secret_params, failed_playbooks, playbook_skipped_integration, unmockable_integrations,
                               succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                              server_numeric_version, demisto_api_key, prints_manager, thread_index, is_ami)
+                              server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
+                              prints_manager, thread_index, is_ami)
             prints_manager.execute_thread_prints(thread_index)
 
     except Exception as exc:
-        prints_manager.add_print_job(f'~~ Thread {thread_index + 1} failed ~~\n{str(exc)}\n{traceback.format_exc()}',
-                                     print_error, thread_index)
+        if exc.__class__ == ApiException:
+            error_message = exc.body
+        else:
+            error_message = f'~~ Thread {thread_index + 1} failed ~~\n{str(exc)}\n{traceback.format_exc()}'
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         prints_manager.execute_thread_prints(thread_index)
         failed_playbooks.append(f'~~ Thread {thread_index + 1} failed ~~')
         raise
@@ -904,6 +931,36 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
             comment = 'The following integrations are skipped and critical for the test:\n {}'. \
                 format('\n- '.join(playbook_skipped_integration))
             add_pr_comment(comment)
+        # Sending proxy metrics to GCP
+        try:
+            storage_client = storage.Client()
+            now = datetime.datetime.now().replace(microsecond=0).isoformat()
+            # each log line will be comprised of the following metrics:
+            # - Date
+            # - Count of successful tests
+            # - Count of failed tests
+            # - Count of successful rerecords
+            # - Count of failed rerecords
+            # - IDs of the playbooks that were rerecorded successfully
+            # - Ids of the playbooks that have failed rerecording
+            new_proxy_line = f'{now},' \
+                             f'{proxy.successful_tests_count},' \
+                             f'{proxy.failed_tests_count},' \
+                             f'{proxy.successful_rerecord_count},' \
+                             f'{proxy.failed_rerecord_count},' \
+                             f'{";".join(proxy.rerecorded_tests)},' \
+                             f'{";".join(proxy.failed_rerecord_tests)}\n'
+            bucket = storage_client.bucket(BUCKET_NAME)
+            # Google storage objects are immutable and there is no way to append to them.
+            # The workaround is to create a new temp file and then compose the log file with the new created file
+            # see here for more info https://cloud.google.com/storage/docs/json_api/v1/objects/compose
+            new_file_blob = bucket.blob(f'{LOCKS_PATH}/{WORKFLOW_ID}.txt')
+            new_file_blob.upload_from_string(new_proxy_line)
+            current_file_blob = bucket.blob(f'{LOCKS_PATH}/{PROXY_LOG_FILE_NAME}')
+            current_file_blob.compose([current_file_blob, new_file_blob])
+            new_file_blob.delete()
+        except Exception:
+            prints_manager.add_print_job("Failed to save proxy metrics", print, thread_index)
 
 
 def update_round_set_and_sleep_if_round_completed(executed_in_current_round: set,

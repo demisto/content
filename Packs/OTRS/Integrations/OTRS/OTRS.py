@@ -88,7 +88,8 @@ def demisto_entry_to_otrs_attachment(entry_list):
     for file in entry_list:
         file_path = demisto.getFilePath(file)
         with open(file_path['path'], 'rb') as file_content:
-            encoded_file = base64.b64encode(file_content.read())  # Encoding file content in base64, as required by OTRS
+            encoded_file = base64.b64encode(file_content.read()).decode('utf-8')  # Encoding file content in base64,
+            # as required by OTRS and then decode it as mentioned in https://gitlab.com/rhab/PyOTRS/-/issues/18
 
         # Getting file type from context
         context_files = demisto.get(demisto.context(), 'File')

@@ -3,7 +3,7 @@
 <ul>
 <li>Monitor a specific email account and create incidents from incoming emails to the defined folder.</li>
 <li>Send and reply to emails.</li>
-
+</ul>
 
 <h2>Fetch Incidents</h2>
 <p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Demisto fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.</p>
@@ -14,9 +14,9 @@ For more details about the authentication used in this integration, see <a href=
 <h3>Required Permissions</h3>
 The following permissions are required for all commands:
 <ul>
- <li>Mail.ReadWrite</li>
- <li>Mail.Send</li>
- <li>User.Read</li>
+ <li>Mail.ReadWrite - Delegated</li>
+ <li>Mail.Send - Delegated</li>
+ <li>User.Read - Delegated</li>
 </ul>
 <h2>Configure Microsoft Graph Mail Single User on Cortex XSOAR</h2>
 <ol>
@@ -746,13 +746,5 @@ There are no context output for this command.
 
 <h5>Human Readable Output</h5>
 <p>
-<p>
-```✅ Success!```
+✅ Success!
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-<h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2>

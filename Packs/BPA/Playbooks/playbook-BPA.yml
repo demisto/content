@@ -183,6 +183,6 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 4.5.0
+fromversion: 5.0.0
 tests:
-  - Test-BPA_Integration
+- Test-BPA_Integration

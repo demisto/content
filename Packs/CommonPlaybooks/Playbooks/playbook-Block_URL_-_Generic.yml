@@ -517,8 +517,7 @@ inputs:
   value:
     simple: Demisto Remediation - URL EDL
   required: false
-  description: URL list from the instance context with which to override the remote
-    file.
+  description: URL list from the instance context with which to override the remote file.
   playbookInputQuery:
 - key: LogForwarding
   value: {}
@@ -561,6 +560,6 @@ inputs:
   description: The list of categories. Relevant from PAN-OS v9.x.
   playbookInputQuery:
 outputs: []
-fromversion: 4.0.0
+fromversion: 5.0.0
 tests:
 - block_indicators_-_generic_-_test

@@ -69,8 +69,7 @@ tasks:
       id: 45f1703e-d7dc-4d77-8f9c-599163198df2
       version: -1
       name: Get hosts
-      description: Retrieves a list of hosts for a given entity, or an empty list
-        if none is found.
+      description: Retrieves a list of hosts for a given entity, or an empty list if none is found.
       script: '|||lr-get-hosts-by-entity'
       type: regular
       iscommand: true
@@ -769,3 +768,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
