@@ -4592,12 +4592,70 @@ class IAMCommandHelper:
 
     def return_outputs(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
                        error_message=None, details=None):
+        """Add a row to the widget.
+
+        :type success: ``bool``
+        :param success: whether or not the action succeeded
+
+        :type active: ``str``
+        :param active: whether or not the user is active succeeded
+
+        :type iden: ``str``
+        :param iden: the data to add to the list/table.
+
+        :type username: ``str``
+        :param username: the data to add to the list/table.
+
+        :type email: ``str``
+        :param email: the data to add to the list/table.
+
+        :type error_code: ``str``
+        :param error_code: the data to add to the list/table.
+
+        :type error_message: ``str``
+        :param error_message: the data to add to the list/table.
+
+        :type details: ``str``
+        :param details: the data to add to the list/table.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
         self.create_outputs(success, active, iden, username, email, error_code, error_message, details)
         self.create_readable_output()
         return_outputs(readable_output=self.readable_output, outputs=self.entry_context, raw_response=details)
 
     def create_outputs(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
                        error_message=None, details=None):
+        """Add a row to the widget.
+
+        :type success: ``Any``
+        :param success: the data to add to the list/table.
+
+        :type active: ``Any``
+        :param active: the data to add to the list/table.
+
+        :type iden: ``Any``
+        :param iden: the data to add to the list/table.
+
+        :type username: ``Any``
+        :param username: the data to add to the list/table.
+
+        :type email: ``Any``
+        :param email: the data to add to the list/table.
+
+        :type error_code: ``Any``
+        :param error_code: the data to add to the list/table.
+
+        :type error_message: ``Any``
+        :param error_message: the data to add to the list/table.
+
+        :type details: ``Any``
+        :param details: the data to add to the list/table.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
         self.outputs = {
             'brand': self.brand,
             'instanceName': self.instance_name,
@@ -4619,6 +4677,11 @@ class IAMCommandHelper:
         }
 
     def create_readable_output(self):
+        """Add a row to the widget.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
         title = self.command.title() + ' User Results ({})'.format(self.brand)
         self.readable_output = tableToMarkdown(
             name=title,
@@ -4629,6 +4692,11 @@ class IAMCommandHelper:
         )
 
     def map_user_profile_to_app_data(self):
+        """Add a row to the widget.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
         if not self.user_profile:
             return_error('You must provide user-profile argument.')
         elif not isinstance(self.user_profile, dict):
@@ -4640,6 +4708,14 @@ class IAMCommandHelper:
         return app_data
 
     def map_app_data_to_user_profile(self, app_data):
+        """Add a row to the widget.
+
+        :type app_data: ``Any``
+        :param app_data: the data to add to the list/table.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
         if not app_data:
             return {}
         user_profile = demisto.mapObject(app_data, self.incoming_mapper, self.mapping_type)
