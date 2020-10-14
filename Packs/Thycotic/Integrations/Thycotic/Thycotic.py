@@ -2,11 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-# import json
-import requests
-# import dateparser
-# import time
-# from datetime import datetime, timedelta
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
