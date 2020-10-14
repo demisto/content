@@ -1,7 +1,8 @@
-from typing import Tuple, List, Dict, Any, Optional
+from typing import Tuple, List, Dict, Optional
 
 import urllib3
 from requests.auth import HTTPBasicAuth
+from dateparser import parse
 
 from CommonServerPython import *
 
@@ -71,14 +72,23 @@ class STIX21Processor:
         indicator_pattern_value = indicator_pattern_value[1:-1]
 
         if indicator_pattern_value.startswith('file'):
-            hash_values = indicator_pattern_value.split('OR')
+            hash_values = indicator_pattern_value.split(' OR ')
             hashes_dict = dict()  # type: Dict
 
             for h in hash_values:
                 key, value = h.split('=')
                 hashes_dict[key.strip().split('file:hashes.')[1].replace("'", '')] = value.strip().replace("'", '')
 
-            return ['file'], [hashes_dict['MD5']], hashes_dict
+            if hashes_dict.get('MD5'):
+                return ['file'], [hashes_dict['MD5']], hashes_dict
+            elif hashes_dict.get('SHA-1'):
+                return ['file'], [hashes_dict['SHA-1']], hashes_dict
+            elif hashes_dict.get('SHA-256'):
+                return ['file'], [hashes_dict['SHA-256']], hashes_dict
+            elif hashes_dict.get('SHA-512'):
+                return ['file'], [hashes_dict['SHA-512']], hashes_dict
+            else:
+                return [], [], {}
 
         try:
             indicator_types = list()  # type: List
@@ -295,12 +305,14 @@ class Client(BaseClient):
         tlp_color (str): Traffic Light Protocol color.
     """
 
-    def __init__(self, public_key: str, private_key: str, malicious_threshold: int, reputation_interval: int,
+    def __init__(self, public_key: str, private_key: str, first_fetch_timestamp: int,
+                 malicious_threshold: int, reputation_interval: int,
                  polling_timeout: int = 20, insecure: bool = False, proxy: bool = False,
                  tags: list = [], tlp_color: Optional[str] = None):
         super().__init__(base_url=API_URL, verify=not insecure, proxy=proxy)
         self.public_key = public_key
         self.private_key = private_key
+        self.first_fetch_timestamp = first_fetch_timestamp
         self.reputation_interval = reputation_interval
         self.malicious_threshold = malicious_threshold
         self._polling_timeout = polling_timeout
@@ -394,9 +406,10 @@ class Client(BaseClient):
         }
 
         if limit == -1:
-            query_url = '/collections/indicators/objects?length=1000'
+            query_url = f'/collections/indicators/objects?added_after={self.first_fetch_timestamp}&length=1000'
         else:
-            query_url = f'/collections/indicators/objects?length={min(limit, 1000)}'
+            query_url = f'/collections/indicators/objects?added_after={self.first_fetch_timestamp}&' \
+                        f'length={min(limit, 1000)}'
 
         round_count = 0
         while True:
@@ -459,9 +472,10 @@ class Client(BaseClient):
         }
 
         if limit == -1:
-            query_url = '/collections/reports/objects?length=100'
+            query_url = f'/collections/reports/objects?added_after={self.first_fetch_timestamp}&length=100'
         else:
-            query_url = f'/collections/reports/objects?length={limit}'
+            query_url = f'/collections/reports/objects?added_after={self.first_fetch_timestamp}&' \
+                        f'length={min(limit, 100)}'
 
         round_count = 0
         while True:
@@ -608,6 +622,8 @@ def main():
 
     public_key = demisto.params().get('credentials').get('identifier')
     private_key = demisto.params().get('credentials').get('password')
+    first_fetch_timestamp = parse(demisto.params().get('first_fetch_timestamp', '1 month')).timestamp()
+    first_fetch_timestamp = str(first_fetch_timestamp).split('.')[0]
     threshold = demisto.params().get('threshold', '70')
     reputation_interval = demisto.params().get('reputation_interval', '30')
     verify_threshold_reputation_interval_types(threshold, reputation_interval)
@@ -624,7 +640,7 @@ def main():
     demisto.info(f'Command being called is {command}')
     command = demisto.command()
     try:
-        client = Client(public_key, private_key, int(threshold), int(reputation_interval),
+        client = Client(public_key, private_key, first_fetch_timestamp, int(threshold), int(reputation_interval),
                         polling_timeout, insecure, proxy, feedTags, tlp_color)
         if command == 'test-module':
             return_outputs(*test_module(client))
