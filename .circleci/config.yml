@@ -357,8 +357,18 @@ references:
         ID_SET=$CIRCLE_ARTIFACTS/id_set.json
         GCS_PATH=$(mktemp)
         echo $GCS_MARKET_KEY > $GCS_PATH
-        TARGET_PATH="test/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM/content/packs"
-        python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist-dev' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -sb $TARGET_PATH
+
+        GCS_MARKET_BUCKET="marketplace-dist"
+        GCS_BUILD_BUCKET="marketplace-dist-dev"
+        SOURCE_PATH="content/packs"
+        BUILD_BUCKET_PATH="test"
+        TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
+        PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
+
+        echo "Copying master files at: $SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
+        gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH"
+        echo "Finished copying successfully."
+
         rm $GCS_PATH
       when: on_success
 
