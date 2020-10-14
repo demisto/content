@@ -3081,6 +3081,12 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "Hatching Triage - Detonate File",
+            "integrations": "Hatching Triage",
+            "fromversion": "5.5.0"
+        },
+        {
+
             "integrations": "Talos Feed",
             "playbookID": "FeedTalosTestPlaybook",
             "fromversion": "5.5.0"
@@ -3089,6 +3095,7 @@
             "playbookID": "Field polling test",
             "timeout": 600,
             "fromversion": "5.0.0"
+
         }
     ],
     "skipped_tests": {
@@ -3260,6 +3267,7 @@
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
+        "Hatching Triage": "Community contribution",
         "SNDBOX": "Issue 28826",
         
         "_comment2": "~~~ UNSTABLE ~~~",
