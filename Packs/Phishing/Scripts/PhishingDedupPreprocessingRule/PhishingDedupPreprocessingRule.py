@@ -1,4 +1,4 @@
-import dateutil
+import dateutil  # type: ignore
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -163,7 +163,8 @@ def filter_out_same_incident(existing_incidents_df, new_incident):
 
 
 def filter_newer_incidents(existing_incidents_df, new_incident):
-    earlier_incidents_mask = existing_incidents_df['created'] < dateutil.parser.parse(new_incident['created'])
+    new_incident_datetime = dateutil.parser.parse(new_incident['created'])  # type: ignore
+    earlier_incidents_mask = existing_incidents_df['created'] < new_incident_datetime
     return existing_incidents_df[earlier_incidents_mask]
 
 
