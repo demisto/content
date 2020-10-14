@@ -54,9 +54,9 @@ def get_existing_incidents(input_args):
     if 'query' in get_incidents_args:
         query_components.append(get_incidents_args['query'])
     if status_scope == 'ClosedOnly':
-        query_components.append('status:Closed')
+        query_components.append('status:closed')
     elif status_scope == 'NonClosedOnly':
-        query_components.append('-status:Closed')
+        query_components.append('-status:closed')
     elif status_scope == 'All':
         pass
     else:
