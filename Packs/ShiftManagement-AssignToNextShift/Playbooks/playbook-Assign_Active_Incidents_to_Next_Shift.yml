@@ -136,6 +136,7 @@ tasks:
       name: Are there open Incidents?
       type: condition
       version: -1
+      description: ""
     taskid: b4016677-69df-4ca2-8857-459997ee86a4
     timertriggers: []
     type: condition
@@ -259,6 +260,7 @@ tasks:
       name: Are there users on call?
       type: condition
       version: -1
+      description: ""
     taskid: 9a2a798d-7c83-43e2-87c5-d57c0d82db90
     timertriggers: []
     type: condition
