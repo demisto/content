@@ -2,15 +2,21 @@ import pytest
 from GoogleCloudFunctions import set_default_project_id
 
 
-@pytest.mark.parametrize('project, credentials_json, expected_output', [
+@pytest.mark.parametrize('project, credentials_json, expected_output,expected_exception', [
     ("some-project-id", {"credentials_json": {"type": "service_account", "project_id": "some-project-id"}},
-     "some-project-id"),
-    (None, {"credentials_json": {"type": "service_account", "project_id": "some-project-id"}}, "some-project-id"),
-    ("some-project-id", {"credentials_json": {"type": "service_account"}}, "some-project-id"),
+     "some-project-id", None),
+    (None, {"credentials_json": {"type": "service_account", "project_id": "some-project-id"}}, "some-project-id", None),
+    ("some-project-id", {"credentials_json": {"type": "service_account"}}, "some-project-id", None),
+    (None, {"credentials_json": {"type": "service_account"}}, None, SystemExit)
+
 ])
-def test_set_default_project_id(project, credentials_json, expected_output):
+def test_set_default_project_id(project, credentials_json, expected_output, expected_exception):
     credentials_json = credentials_json.get('credentials_json')
-    assert set_default_project_id(project, credentials_json) == expected_output
+    if expected_exception is None:
+        assert set_default_project_id(project, credentials_json) == expected_output
+    else:
+        with pytest.raises(SystemExit):
+            assert set_default_project_id(project, credentials_json) == expected_output
 
 
 def test_format_parameters():
