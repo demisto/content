@@ -3095,13 +3095,7 @@
             "playbookID": "Field polling test",
             "timeout": 600,
             "fromversion": "5.0.0"
-        },
-	      {
-	          "integrations": "Thycotic",
-	          "playbookID": "Thycotic-Test",
-            "timeout": 600,
-            "fromversion": "5.0.0"
-	      }
+        }
     ],
     "skipped_tests": {
         "PCAP File Carving Test": "Merged with PCAP Analysis Test",
