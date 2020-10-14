@@ -19,6 +19,7 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
+from enum import Enum
 
 import demistomock as demisto
 
@@ -2749,7 +2750,7 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget``
+    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget`` or ``IAMUserProfile``
     :param results: A result object to return as a War-Room entry.
 
     :return: None
@@ -2774,6 +2775,10 @@ def return_results(results):
 
     if isinstance(results, GetRemoteDataResponse):
         demisto.results(results.extract_for_local())
+        return
+
+    if isinstance(results, IAMUserProfile):
+        demisto.results(results.to_context())
         return
 
     demisto.results(results)
@@ -3860,10 +3865,10 @@ if 'requests' in sys.modules:
                             # Try to parse json error response
                             error_entry = res.json()
                             err_msg += '\n{}'.format(json.dumps(error_entry))
-                            raise DemistoException(err_msg)
+                            raise DemistoException(err_msg, res=res)
                         except ValueError:
                             err_msg += '\n{}'.format(res.text)
-                            raise DemistoException(err_msg)
+                            raise DemistoException(err_msg, res=res)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
@@ -4207,7 +4212,11 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 
 class DemistoException(Exception):
-    pass
+    def __init__(self, message, exception=None, res=None, *args):
+        self.res = res
+        self.message = message
+        self.exception = exception
+        super(DemistoException, self).__init__(message, exception, *args)
 
 
 class GetRemoteDataArgs:
@@ -4572,26 +4581,47 @@ class TableOrListWidget(BaseWidget):
         })
 
 
-class IAMCommandHelper:
+class IAMErrors(Enum):
+    USER_NOT_FOUND = (404, 'User not found')
+    USER_ALREADY_EXISTS = (409, 'User already exists')
+
+
+class IAMUserProfile:
     """
-        A class for IAM integration commands.
+        A User Profile object class for IAM integrations.
     """
 
-    def __init__(self, incoming_mapper, outgoing_mapper, user_profile):
-        # type: (str, str, Any) -> None
+    def __init__(self, user_profile, user_profile_delta=None):
+        # type: (Any, Any) -> None
         self.brand = demisto.callingContext['context']['IntegrationBrand']
         self.instance_name = demisto.callingContext['context']['IntegrationInstance']
         self.command = demisto.command().split('-')[0]
-        self.mapping_type = 'User Profile'
-        self.outputs = {}  # type: Dict[Any, Any]
-        self.entry_context = {}  # type: Dict[Any, Any]
-        self.readable_output = ''
-        self.incoming_mapper = incoming_mapper
-        self.outgoing_mapper = outgoing_mapper
-        self.user_profile = user_profile
 
-    def return_outputs(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
-                       error_message=None, details=None):
+        self.outputs = {}  # type: Dict[Any, Any]
+        self.readable_output = ''
+
+        self.user_profile = safe_load_json(user_profile)
+        self.user_profile_delta = safe_load_json(user_profile_delta)
+
+    def to_context(self):
+        entry_context = {
+            'IAM.UserProfile(val.email && val.email == obj.email)': self.user_profile,
+            'IAM.Vendor(val.instanceName && val.instanceName == self.instanceName && '
+            'val.email && val.email == obj.email)': self.outputs
+        }
+
+        return_entry = {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': self.outputs,
+            'HumanReadable': self.readable_output,
+            'EntryContext': entry_context
+        }
+
+        return return_entry
+
+    def set_result(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
+                   error_message=None, details=None):
         """Add a row to the widget.
 
         :type success: ``bool``
@@ -4623,7 +4653,6 @@ class IAMCommandHelper:
         """
         self.create_outputs(success, active, iden, username, email, error_code, error_message, details)
         self.create_readable_output()
-        return_outputs(readable_output=self.readable_output, outputs=self.entry_context, raw_response=details)
 
     def create_outputs(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
                        error_message=None, details=None):
@@ -4670,12 +4699,6 @@ class IAMCommandHelper:
             'details': details
         }
 
-        self.entry_context = {
-            'IAM.UserProfile(val.email && val.email == obj.email)': self.user_profile,
-            'IAM.Vendor(val.instanceName && val.instanceName == self.instanceName &&'
-            ' val.email && val.email == obj.email)': self.outputs
-        }
-
     def create_readable_output(self):
         """Add a row to the widget.
 
@@ -4691,35 +4714,18 @@ class IAMCommandHelper:
             removeNull=True
         )
 
-    def map_user_profile_to_app_data(self):
+    def map_object(self, mapper_name, mapping_type=None):
         """Add a row to the widget.
 
         :return: No data returned
         :rtype: ``None``
         """
+        if not mapping_type:
+            mapping_type = 'User Profile'
         if not self.user_profile:
             return_error('You must provide user-profile argument.')
-        elif not isinstance(self.user_profile, dict):
-            try:
-                self.user_profile = json.loads(self.user_profile)
-            except Exception:
-                return_error('The provided user-profile is not a valid json.')
-        app_data = demisto.mapObject(self.user_profile, self.outgoing_mapper, self.mapping_type)
+        app_data = demisto.mapObject(self.user_profile, mapper_name, mapping_type)
         return app_data
-
-    def map_app_data_to_user_profile(self, app_data):
-        """Add a row to the widget.
-
-        :type app_data: ``Any``
-        :param app_data: the data to add to the list/table.
-
-        :return: No data returned
-        :rtype: ``None``
-        """
-        if not app_data:
-            return {}
-        user_profile = demisto.mapObject(app_data, self.incoming_mapper, self.mapping_type)
-        return user_profile
 
     def set_command_name(self, command):
         self.command = command
