@@ -32,7 +32,7 @@ class Client:
         verify (bool): XSOAR insecure parameter.
         headers (dict): Okta API request headers.
         iam (IAMCommandHelper): An IAM Command Helper class object.
-        app_data (dict): dsfdsf
+        app_data (dict): The user data, in Okta's format.
         res_json (dict): The last response's json data.
         user_not_found (bool): Whether or not the employee exists in Okta.
         user_id (str): The employee's Okta user ID.
