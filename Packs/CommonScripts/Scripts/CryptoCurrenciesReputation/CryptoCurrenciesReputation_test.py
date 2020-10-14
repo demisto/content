@@ -5,10 +5,12 @@ ARGS = {
     'input': '1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i,1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9'}
 EXPECTED_RESULTS = [{'Type': 1, 'ContentsFormat': 'json', 'Contents': 2, 'EntryContext': {
     'DBotScore': {'Indicator': '1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'Type': 'Cryptocurrency Wallet', 'Score': 2,
+                  'Vendor': 'Cryptocurrency',
                   'TypeEnnricher': {'WalletType': 'bitcoin'}}}}, {'Type': 1, 'ContentsFormat': 'json', 'Contents': 2,
                                                                   'EntryContext': {'DBotScore': {
                                                                       'Indicator': '1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9',
                                                                       'Type': 'Cryptocurrency Wallet', 'Score': 2,
+                                                                      'Vendor': 'Cryptocurrency',
                                                                       'TypeEnnricher': {'WalletType': 'bitcoin'}}}}]
 
 
