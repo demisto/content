@@ -242,7 +242,7 @@ def test_no_text_fields(mocker):
     assert 'No text fields' in RESULTS
 
 
-def test_no_text_fields(mocker):
+def test_short_text(mocker):
     global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
     EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
     existing_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
