@@ -173,9 +173,13 @@ def phishtank_reload_command(client: Client):
     current_date = date_to_timestamp(datetime.now(), DATE_FORMAT)
     context = {"list": parsed_response, "timestamp": current_date}
     demisto.setIntegrationContext(context)
-    output = 'PhishTankV2 Database reloaded \n'
-    output += f'Total **{len(parsed_response.keys())}** URLs loaded.\n'
-    return CommandResults(readable_output=output)
+    readable_output = 'PhishTankV2 Database reloaded \n'
+    number_of_urls_loaded = len(parsed_response.keys())
+    readable_output += f'Total **{number_of_urls_loaded}** URLs loaded.\n'
+    last_load = datetime.utcfromtimestamp(context["timestamp"] / 1000.0).strftime("%a %b %d %Y %H:%M:%S (UTC)")
+    output_to_context = {"LastReloadTime": last_load}
+    return CommandResults(readable_output=readable_output, outputs=output_to_context,
+                          outputs_key_field="LastReloadTime")
 
 
 def phishtank_status_command():
@@ -190,13 +194,16 @@ def phishtank_status_command():
     data = demisto.getIntegrationContext()
     status = "PhishTankV2 Database Status\n"
     data_was_not_reloaded_yet = data == dict()
+    last_load = None
     if data_was_not_reloaded_yet:
         status += "Database not loaded.\n"
     else:
         last_load = datetime.utcfromtimestamp(data["timestamp"] / 1000.0).strftime("%a %b %d %Y %H:%M:%S (UTC)")
-        status += f'Total **{len(data["list"].keys())}** URLs loaded.\n' \
+        number_of_urls_loaded = len(data["list"].keys())
+        status += f'Total **{number_of_urls_loaded}** URLs loaded.\n' \
                   f'Last Load time **{last_load}**\n'
-    return CommandResults(readable_output=status)
+    output_to_context = {"LastReloadTime": last_load}
+    return CommandResults(readable_output=status, outputs=output_to_context, outputs_key_field="LastReloadTime")
 
 
 def reload(client: Client) -> dict:
