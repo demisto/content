@@ -1,5 +1,5 @@
 Synapse intelligence analysis platform.
-This integration was integrated and tested with version xx of Synapse
+This integration was integrated and tested with version `2.7.0` of Synapse
 ## Configure Synapse on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
