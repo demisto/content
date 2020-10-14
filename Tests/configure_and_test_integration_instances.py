@@ -949,8 +949,6 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, i
 
         elif filter_configured and filtered_tests:
             tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
-            print('From get tests command')
-            print(tests_for_iteration)
         else:
             tests_for_iteration = tests
 
@@ -1069,9 +1067,6 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         )
 
         instance_names_conf = test.get('instance_names', [])
-        print('##################')
-        print('instance names:')
-        print(instance_names_conf)
         if not isinstance(instance_names_conf, list):
             instance_names_conf = [instance_names_conf]
 

@@ -962,19 +962,11 @@ def get_test_from_conf(branch_name, conf=deepcopy(CONF)):
     for t in conf_tests:
         playbook_id = t['playbookID']
         integrations_conf = t.get('integrations', [])
-        instance_names = t.get('instance_names', [])
         if playbook_id in changed:
             tests.add(playbook_id)
             continue
         if not isinstance(integrations_conf, list):
             integrations_conf = [integrations_conf]
-
-        if not isinstance(instance_names, list):
-            instance_names = [instance_names]
-
-        for instance in instance_names:
-            if instance in changed:
-                tests.add(playbook_id)
 
         for integration in integrations_conf:
             if integration in changed:
@@ -1203,6 +1195,15 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
+
+    # remove tests that were skipped via the pack-ignore
+    ignored_tests_set = set()
+    for pack in packs_to_install:
+        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
+    if ignored_tests_set:
+        readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
+        logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
+        tests.difference_update(ignored_tests_set)
 
     return tests, packs_to_install
 
