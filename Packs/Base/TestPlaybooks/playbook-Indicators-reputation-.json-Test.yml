@@ -1873,7 +1873,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: in
           left:
             value:
               simple: IPv6.Address
@@ -1881,7 +1881,7 @@ tasks:
           right:
             value:
               simple: 2001:db8:85a3:8d3:1319:8a2e:370:7348
-      - - operator: containsGeneral
+      - - operator: in
           left:
             value:
               simple: IPv6.Address
