@@ -1,6 +1,7 @@
 from CommonServerPython import *
 from PhishingDedupPreprocessingRule import *
 import json
+from datetime import datetime
 
 ID_CONtER = 0
 
@@ -22,7 +23,9 @@ def create_incident(subject=None, body=None, html=None, emailfrom=None):
     incident = {
         "CustomFields": {},
         "id": str(IDS_COUNTER),
-        "name": ' '.join(str(x) for x in [subject, body, html, emailfrom, id])
+        "name": ' '.join(str(x) for x in [subject, body, html, emailfrom]),
+        'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f %z')
+
     }
     IDS_COUNTER += 1
     if subject is not None:
@@ -223,3 +226,31 @@ def test_eliminate_urls_extensions():
     assert url_shortened == 'https://urldefense.proofpoint.com/'
     template = 'hello world {} goodbye'
     assert template.format(url_shortened) == eliminate_urls_extensions(template.format(url))
+
+
+def test_no_text_fields(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+    existing_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'TextOnly'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(emailfrom='mt.kb.user@gmail.co')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert 'No text fields' in RESULTS
+
+
+def test_no_text_fields(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+    existing_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'TextOnly'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(emailfrom='mt.kb.user@gmail.co', body='short text')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert 'too short' in RESULTS

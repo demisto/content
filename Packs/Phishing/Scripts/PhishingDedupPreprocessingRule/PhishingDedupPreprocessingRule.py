@@ -1,3 +1,5 @@
+import dateutil
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -57,12 +59,13 @@ def get_existing_incidents(input_args):
         pass
     else:
         return_error('Unsupported statusScope: {}'.format(status_scope))
-    type_field = input_args.get('incidentTypeFieldName', 'type')
     incident_type = input_args.get('incidentTypes')
     if incident_type is not None:
+        type_field = input_args.get('incidentTypeFieldName', 'type')
         type_query = '{}:{}'.format(type_field, incident_type)
-    query_components.append(type_query)
-    get_incidents_args['query'] = ' and '.join('({})'.format(c) for c in query_components)
+        query_components.append(type_query)
+    if len(query_components) > 0:
+        get_incidents_args['query'] = ' and '.join('({})'.format(c) for c in query_components)
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
@@ -140,15 +143,28 @@ def preprocess_incidents_df(existing_incidents):
         incidents_df[FROM_FIELD] = ''
     incidents_df[FROM_FIELD] = incidents_df[FROM_FIELD].apply(lambda x: x.strip())
     incidents_df[FROM_DOMAIN_FIELD] = incidents_df[FROM_FIELD].apply(lambda address: extract_domain(address))
+    incidents_df['created'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
     return incidents_df
 
 
-def filter_out_new_incident(existing_incidents_df, new_incident):
+def incident_has_text_fields(incident):
+    text_fields = [EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_BODY_FIELD]
+    if any(field in incident for field in text_fields):
+        return True
+    elif 'CustomFields' in incident and any(field in incident['CustomFields'] for field in text_fields):
+        return True
+    return False
+
+
+def filter_out_same_incident(existing_incidents_df, new_incident):
     same_id_mask = existing_incidents_df['id'] == new_incident['id']
     existing_incidents_df = existing_incidents_df[~same_id_mask]
-    earlier_incidents_mask = existing_incidents_df['id'].astype(int) < int(new_incident['id'])
-    existing_incidents_df = existing_incidents_df[earlier_incidents_mask]
     return existing_incidents_df
+
+
+def filter_newer_incidents(existing_incidents_df, new_incident):
+    earlier_incidents_mask = existing_incidents_df['created'] < dateutil.parser.parse(new_incident['created'])
+    return existing_incidents_df[earlier_incidents_mask]
 
 
 def vectorize(text, vectorizer):
@@ -210,6 +226,17 @@ def create_new_incident_low_similarity(existing_incident, similarity):
     demisto.results(message)
 
 
+def create_new_incident_no_text_fields():
+    text_fields = [EMAIL_BODY_FIELD, EMAIL_HTML_FIELD, EMAIL_SUBJECT_FIELD]
+    message = 'No text fields were found within this incident: {}.\n'.format(','.join(text_fields))
+    message += 'Incident will be created.'
+    demisto.results(message)
+
+
+def create_new_incident_too_short():
+    demisto.results('Incident text after preprocessing is too short for deduplication. Incident will be created.')
+
+
 def main():
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, MIN_TEXT_LENGTH, FROM_POLICY
     input_args = demisto.args()
@@ -224,12 +251,16 @@ def main():
         create_new_incident()
         return
     new_incident = demisto.incidents()[0]
+    if not incident_has_text_fields(new_incident):
+        create_new_incident_no_text_fields()
+        return
     new_incident_df = preprocess_incidents_df([new_incident])
     if len(new_incident_df) == 0:  # len(new_incident_df)==0 means new incident is too short
-        create_new_incident()
+        create_new_incident_too_short()
         return
     existing_incidents_df = preprocess_incidents_df(existing_incidents)
-    existing_incidents_df = filter_out_new_incident(existing_incidents_df, new_incident)
+    existing_incidents_df = filter_out_same_incident(existing_incidents_df, new_incident)
+    existing_incidents_df = filter_newer_incidents(existing_incidents_df, new_incident)
     if len(existing_incidents_df) == 0:
         create_new_incident()
         return
