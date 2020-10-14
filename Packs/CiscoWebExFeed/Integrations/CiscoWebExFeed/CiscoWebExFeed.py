@@ -1,6 +1,4 @@
 import re
-import time
-import urllib.request
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import demistomock as demisto  # noqa: F401
@@ -228,7 +226,7 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
 
                 indicator_mapping_fields['tags'] = client.tags
                 if client.tlp_color:
-                    indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color
+                    indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color  # type: ignore
 
                 indicators.append({
                     'value': value,
