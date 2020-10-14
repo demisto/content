@@ -9,7 +9,6 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: Phishing
   description: A comma-separatetd list of incident types by which to filter.
   isArray: false
   name: incidentTypes
