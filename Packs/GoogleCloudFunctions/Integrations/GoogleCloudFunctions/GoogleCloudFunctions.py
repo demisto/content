@@ -171,7 +171,7 @@ def format_parameters(parameters: str) -> str:
     return json.dumps(dict(pairs))
 
 
-def resolve_default_region(region):
+def resolve_default_region(region: str):
     # when region is empty, set it to '-' meaning all regions
     # note : demisto.params().get('region','-') did not worked on Demisto
     if not region:
@@ -180,7 +180,7 @@ def resolve_default_region(region):
     return region
 
 
-def resolve_default_project_id(project, credentials_json):
+def resolve_default_project_id(project: str, credentials_json: dict):
     if not project:
         # when project_id is empty, get it from credentials_json
         no_project_id_in_credentials = "project_id" not in credentials_json
