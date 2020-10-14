@@ -4730,5 +4730,18 @@ class IAMUserProfile:
         app_data = demisto.mapObject(self._user_profile, mapper_name, mapping_type)
         return app_data
 
+    def update_with_app_data(self, app_data, mapper_name, mapping_type=None):
+        """ updates the user_profile attribute according to the given app_data
+
+        :param app_data: The user data in app (dict)
+        :param mapper_name: incoming mapper name (str)
+        :param mapping_type: Optional - Mapping type (str)
+        """
+        if not mapping_type:
+            mapping_type = 'User Profile'
+        if not isinstance(app_data, dict):
+            app_data = safe_load_json(app_data)
+        self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)
+
     def set_command_name(self, command):
         self._command = command
