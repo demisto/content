@@ -12,3 +12,8 @@ Trigger xMatters workflows and on-call schedules to track down the appropriate r
 <kbd>
    <img src="/Playbooks/xMatters_-_Wait_for_Response.png">
 </kbd>
+
+
+## Installation Details
+
+For details on setting up the xMatters environment, navigate to the installation document [here](https://github.com/xmatters/xm-labs-xsoar). 
