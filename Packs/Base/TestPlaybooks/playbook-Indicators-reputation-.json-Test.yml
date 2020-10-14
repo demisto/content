@@ -2696,7 +2696,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '1::'
+              simple: '[1::]'
       - - operator: containsGeneral
           left:
             value:
@@ -2704,7 +2704,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 1::6:7:8
+              simple: ',1::6:7:8,'
     view: |-
       {
         "position": {
