@@ -1,0 +1,7 @@
+{
+  "test 1": 1,
+  "test 2": "str",
+  "test 3": [
+    1, "str", true
+  ]
+}

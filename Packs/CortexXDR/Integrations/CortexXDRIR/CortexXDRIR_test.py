@@ -1370,3 +1370,43 @@ def test_insert_simple_indicators_command(requests_mock):
 
     human_readable, _, _ = insert_simple_indicators_command(client, args)
     assert insert_simple_indicators_command_command_expected_result == human_readable
+
+
+def test_arg_to_dictionary():
+    from CortexXDRIR import arg_to_dictionary
+
+    string = 'param1_name=param1_value, param2_name=param2_value'
+    ret_value = {
+        "param1_name": "param1_value",
+        "param2_name": "param2_value"
+    }
+    assert arg_to_dictionary(string) == ret_value
+
+    string = 'param1=1, param2=2'
+    ret_value = {
+        "param1": 1,
+        "param2": 2
+    }
+
+    assert arg_to_dictionary(string) == ret_value
+    assert arg_to_dictionary(None) == {}
+
+
+def test_string_to_int_array():
+    from CortexXDRIR import string_to_int_array
+
+    string_list = ["1", "2", "3", "4"]
+    num_list = [1, 2, 3, 4]
+
+    assert string_to_int_array(string_list) == num_list
+    assert string_to_int_array("") == []
+
+
+def test_arg_to_json():
+    from CortexXDRIR import arg_to_json
+
+    string = '{"test 1": 1, "test 2": "str", "test 3": [1, "str", true]}'
+    json_obj = load_test_data("./test_data/arg_to_json.json")
+
+    assert arg_to_json(string) == json_obj
+    assert arg_to_json(None) is None
