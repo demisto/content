@@ -75,8 +75,9 @@ def say_hello_command(args: Dict[str, Any]) -> CommandResults:
     }
 
     return CommandResults(
-        human_readable=markdown,
+        readable_output=markdown,
         outputs=outputs,
+        outputs_key_field=None
     )
 
 
