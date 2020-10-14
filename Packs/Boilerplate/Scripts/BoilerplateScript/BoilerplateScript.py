@@ -9,9 +9,6 @@ Developer Documentation: https://xsoar.pan.dev/docs/welcome
 Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
 Linting: https://xsoar.pan.dev/docs/integrations/linting
 
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorldScript/HelloWorldScript.py
-
 """
 
 import demistomock as demisto
