@@ -768,28 +768,47 @@ tasks:
       }
   "28":
     id: "28"
-    ignoreworker: false
+    taskid: 5b063e09-3b47-41c8-8e21-ad3042a3258c
+    type: regular
+    task:
+      id: 5b063e09-3b47-41c8-8e21-ad3042a3258c
+      version: -1
+      name: Set timestamp to epoch
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     scriptarguments:
       append: {}
       key:
-        simple: EpochTime
+        simple: Time
       stringify: {}
       value:
         complex:
           root: inputs.StartTime
           transformers:
-          - args:
+          - operator: FormattedDateToEpoch
+            args:
               formatter:
                 value:
                   simple: '%Y-%m-%dT%H:%M:%S.%fZ'
-            operator: FormattedDateToEpoch
     separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1070,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
     taskid: 3999e34f-ff50-40da-8d9a-8e9b9660d3ae
