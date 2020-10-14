@@ -749,7 +749,7 @@ def main():
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo)
-    print(f'***** {current_commit_hash=}, {remote_previous_commit_hash=}')
+    print(f'***** curr={current_commit_hash}, prev={remote_previous_commit_hash}')
 
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
@@ -764,7 +764,7 @@ def main():
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
 
-    print(f'***** {index_folder_path=}, {index_generation=}')
+    print(f'***** index_folder_path={index_folder_path}, index_generation={index_generation}')
 
     if not option.override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
