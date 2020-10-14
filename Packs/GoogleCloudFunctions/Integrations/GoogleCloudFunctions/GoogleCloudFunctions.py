@@ -172,6 +172,8 @@ def format_parameters(parameters: str) -> str:
 
 
 def set_default_region(region):
+    # when region is empty, set it to '-' meaning all regions
+    # note : demisto.params().get('region','-') did not worked on Demisto
     if region is None:
         # from Google API : If you want to list functions in all locations, use "-" in place of a location
         return "-"
@@ -180,8 +182,10 @@ def set_default_region(region):
 
 def set_default_project_id(project, credentials_json):
     if project is None:
+        # when project_id is empty, get it from credentials_json
         no_project_id_in_credentials = "project_id" not in credentials_json
         if no_project_id_in_credentials:
+            # when not provided project id at all, return error
             return_error("Service account private key file contents does not have a project id")
         project = credentials_json["project_id"]
     return project
@@ -189,16 +193,10 @@ def set_default_project_id(project, credentials_json):
 
 def main():
     credentials_json = json.loads(demisto.params().get('credentials_json', {}))
-
     project = demisto.params().get('project_id')
     project = set_default_project_id(project, credentials_json)
-    # when project_id is empty, get it from credentials_json
-
     region = demisto.params().get('region')
     region = set_default_region(region)
-    # when region is empty, set it to '-' meaning all regions
-    # note : demisto.params().get('region','-') did not worked on Demisto
-
     proxy = demisto.params().get('proxy', False)
     insecure = demisto.params().get('insecure', False)
     scopes = ['https://www.googleapis.com/auth/cloud-platform']
