@@ -25,6 +25,10 @@ ENCRYPTION_KEY_CONST = 'auth_key'
 DEFAULT_API_URL = 'https://api.us.cdl.paloaltonetworks.com'
 MINUTES_60 = 60 * 60
 SECONDS_30 = 30
+FETCH_TABLE_HR_NAME = {
+    "firewall.threat": "Cortex Firewall Threat",
+    "firewall.file_data": "Cortex Firewall File Data"
+}
 
 
 class Client(BaseClient):
@@ -696,6 +700,7 @@ def get_encrypted(auth_id: str, key: str) -> str:
 
 def prepare_fetch_incidents_query(fetch_timestamp: str,
                                   fetch_severity: list,
+                                  fetch_table: str,
                                   fetch_subtype: list,
                                   fetch_limit: str) -> str:
     """
@@ -705,11 +710,12 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
         fetch_timestamp: The date from which threat logs should be queried
         fetch_severity: Severity associated with the incident.
         fetch_subtype: Identifies the log subtype.
+        fetch_table: Identifies the fetch type
 
     Returns:
         SQL query that matches the arguments
     """
-    query = 'SELECT * FROM `firewall.threat` '  # guardrails-disable-line
+    query = f'SELECT * FROM `{fetch_table}` '  # guardrails-disable-line
     query += f'WHERE time_generated Between TIMESTAMP("{fetch_timestamp}") ' \
              f'AND CURRENT_TIMESTAMP'
     if fetch_subtype and 'all' not in fetch_subtype:
@@ -722,11 +728,11 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
     return query
 
 
-def convert_log_to_incident(log: dict) -> dict:
+def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
     time_generated = log.get('time_generated', 0)
     occurred = human_readable_time_from_epoch_time(time_generated, utc_time=True)
     incident = {
-        'name': 'Cortex Firewall Threat',
+        'name': FETCH_TABLE_HR_NAME[fetch_table],
         'rawJSON': json.dumps(log, ensure_ascii=False),
         'occurred': occurred
     }
@@ -942,6 +948,7 @@ def build_query(args, table_name):
 def fetch_incidents(client: Client,
                     first_fetch_timestamp: str,
                     fetch_severity: list,
+                    fetch_table: str,
                     fetch_subtype: list,
                     fetch_limit: str,
                     last_run: dict) -> Tuple[Dict[str, str], list]:
@@ -952,13 +959,14 @@ def fetch_incidents(client: Client,
     else:
         last_fetched_event_timestamp, _ = parse_date_range(first_fetch_timestamp)
         last_fetched_event_timestamp = last_fetched_event_timestamp.replace(microsecond=0)
-    query = prepare_fetch_incidents_query(last_fetched_event_timestamp, fetch_severity, fetch_subtype, fetch_limit)
+    query = prepare_fetch_incidents_query(last_fetched_event_timestamp, fetch_severity, fetch_table,
+                                          fetch_subtype, fetch_limit)
     demisto.debug('Query being fetched: {}'.format(query))
     records, _ = client.query_loggings(query)
     if not records:
         return {'lastRun': str(last_fetched_event_timestamp)}, []
 
-    incidents = [convert_log_to_incident(record) for record in records]
+    incidents = [convert_log_to_incident(record, fetch_table) for record in records]
     max_fetched_event_timestamp = max(records, key=lambda record: record.get('time_generated', 0)).get('time_generated',
                                                                                                        0)
     next_run = {'lastRun': human_readable_time_from_epoch_time(max_fetched_event_timestamp)}
@@ -1008,12 +1016,14 @@ def main():
         elif command == 'fetch-incidents':
             first_fetch_timestamp = params.get('first_fetch_timestamp', '24 hours').strip()
             fetch_severity = params.get('firewall_severity')
+            fetch_table = params.get('fetch_table')
             fetch_subtype = params.get('firewall_subtype')
             fetch_limit = params.get('limit')
             last_run = demisto.getLastRun()
             next_run, incidents = fetch_incidents(client,
                                                   first_fetch_timestamp,
                                                   fetch_severity,
+                                                  fetch_table,
                                                   fetch_subtype,
                                                   fetch_limit,
                                                   last_run)
