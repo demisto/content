@@ -92,5 +92,5 @@
 	"name": "User Profile - Okta (Outgoing)",
 	"type": "mapping-outgoing",
 	"version": -1,
-	"fromversion": "6.0.0"
+	"fromVersion": "6.0.0"
 }

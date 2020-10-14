@@ -83,6 +83,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: "true"
+      description: Whether or not to create the user if not found.
       name: create-if-not-exists
       predefined:
       - "true"
@@ -165,10 +166,11 @@ script:
     - auto: PREDEFINED
       defaultValue: "true"
       name: create-if-not-exists
+      description: Whether or not to create the user if not found.
       predefined:
       - "true"
       - "false"
-    description: Enable active users by setting the active attribute equal to true.
+    description: Enable a deprovisioned user.
     execution: true
     name: enable-user
     outputs:
@@ -206,7 +208,7 @@ script:
     - description: A User Profile indicator.
       name: user-profile
       required: true
-    description: Disable active users by setting the active attribute equal to false.
+    description: Disable an active user.
     execution: true
     name: disable-user
     outputs:

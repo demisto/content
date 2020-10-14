@@ -88,5 +88,5 @@
 	"name": "User Profile - Okta (Incoming)",
 	"type": "mapping-incoming",
 	"version": -1,
-	"fromversion": "6.0.0"
+	"fromVersion": "6.0.0"
 }
