@@ -1,0 +1,143 @@
+commonfields:
+  id: XSOAR Mirroring
+  version: -1
+fromversion: 6.0.0
+name: XSOAR Mirroring
+display: XSOAR Mirroring
+category: Utilities
+description: 'Facilitates mirroring of XSOAR incidents between different XSOAR tenants.'
+configuration:
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: XSOAR Server URL
+  name: url
+  defaultvalue: https://127.0.0.1
+  type: 0
+  required: true
+  additionalinfo: The URL of the XSOAR server to which you are connecting.
+- display: API Key
+  name: apikey
+  type: 4
+  required: true
+  additionalinfo: The API key to access the server. The key must be provided by the
+    server to which you are connecting.
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Maximum number of incidents to pull per fetch.
+  name: max_fetch
+  defaultvalue: "100"
+  type: 0
+  required: false
+- display: Fetch only incidents that match the query
+  name: query
+  type: 0
+  required: false
+  additionalinfo: Don't add created time to the query as this field will be addressed
+    in the "First fetch time".
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: Entry Categories
+  name: categories
+  defaultvalue: notes,chats
+  type: 0
+  required: false
+  additionalinfo: Which entries to retrieve from the XSOAR server.
+- display: Entry tags
+  name: tags
+  type: 0
+  required: false
+  additionalinfo: Only entries with these tags are retrieved from the XSOAR server.
+    If no tags are listed, no entries are retrieved.
+- additionalinfo: Choose the tag to add to an entry to mirror it as an entry to the
+    other XSOAR instance.
+  defaultvalue: Ping
+  display: Entry Tag
+  hidden: false
+  name: mirror_tag
+  required: false
+  type: 0
+- defaultvalue: Incoming And Outgoing
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: xsoar-search-incidents
+    arguments:
+    - name: query
+      description: Which incidents to retrieve
+      defaultValue: -status:closed -category:job
+    - name: start_time
+      description: from when to search
+      defaultValue: 3 days
+    - name: max_results
+      description: How many incidents to retrieve.
+      defaultValue: "10"
+    - name: columns
+      description: Which columns to display.
+      defaultValue: id,name,type,status,severity,owner,occured
+    description: Search remote XSOAR for incidents
+  - name: xsoar-get-incident
+    arguments:
+    - name: id
+      required: true
+      description: The remote incident id
+    - name: from_date
+      description: Retrieve entries that were created after the last update.
+      defaultValue: 3 days
+    - name: categories
+      description: Retrieve only the entries from these categories.
+      defaultValue: chats,notes
+    - name: tags
+      description: Only entries with these tags are retrieved from the XSOAR server.
+        If no tags are listed, no entries are retrieved.
+    - name: max_results
+      description: Max number of entries to retrieve
+      defaultValue: "10"
+    description: Retrieve incident and entries from remote XSOAR.
+  - name: get-remote-data
+    arguments:
+    - name: id
+      required: true
+      description: The remote incident id
+    - name: lastUpdate
+      description: Retrieve entries that were created after the last update.
+    description: Get remote data from a remote incident. Please note that this method
+      will not update the current incident, it's here for debugging purposes.
+  - name: get-mapping-fields
+    arguments: []
+    description: Retrieves the mapping schema from a remote incident.
+  dockerimage: demisto/python3:3.8.5.11789
+  isfetch: true
+  runonce: false
+  subtype: python3
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+tests:
+- No tests (auto formatted)

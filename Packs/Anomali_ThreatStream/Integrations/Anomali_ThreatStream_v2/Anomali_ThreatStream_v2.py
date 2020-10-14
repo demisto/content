@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+
 ''' IMPORTS '''
 
 import json
@@ -573,49 +574,42 @@ def get_passive_dns(value, type="ip", limit=50):
 
 
 def import_ioc_with_approval(import_type, import_value, confidence="50", classification="Private",
-                             threat_type="exploit", severity="low", ip_mapping=False, domain_mapping=False,
-                             url_mapping=False, email_mapping=False, md5_mapping=False):
+                             threat_type="exploit", severity="low", ip_mapping=None, domain_mapping=None,
+                             url_mapping=None, email_mapping=None, md5_mapping=None):
     """
         Imports indicators data to ThreatStream.
         The data can be imported using one of three import_types: data-text (plain-text),
         file-id of uploaded file to war room or URL.
     """
-    ip_mapping = demisto.args().get('ip_mapping', 'no') == 'yes'
-    domain_mapping = demisto.args().get('domain_mapping', 'no') == 'yes'
-    url_mapping = demisto.args().get('url_mapping', 'no') == 'yes'
-    email_mapping = demisto.args().get('email_mapping', 'no') == 'yes'
-    md5_mapping = demisto.args().get('md5_mapping', 'no') == 'yes'
-
     files = None
     uploaded_file = None
-    data = {
-        'confidence': confidence,
-        'classification': classification,
-        'ip_mapping': ip_mapping,
-        'domain_mapping': domain_mapping,
-        'url_mapping': url_mapping,
-        'email_mapping': email_mapping,
-        'md5_mapping': md5_mapping,
-        'threat_type': threat_type,
-        'severity': severity
-    }
+    data = assign_params(
+        classification=classification,
+        confidence=int(confidence),
+        ip_mapping=ip_mapping,
+        domain_mapping=domain_mapping,
+        url_mapping=url_mapping,
+        email_mapping=email_mapping,
+        md5_mapping=md5_mapping,
+        threat_type=threat_type,
+        severity=severity,
+    )
 
     if import_type == 'file-id':
         try:
             # import_value will be entry id of uploaded file to war room
             file_info = demisto.getFilePath(import_value)
         except Exception:
-            return_error(F"Entry {import_value} does not contain a file.")
+            raise DemistoException(f"Entry {import_value} does not contain a file.")
 
         uploaded_file = open(file_info['path'], 'rb')
         files = {'file': (file_info['name'], uploaded_file)}
-        params = build_params()
+    elif import_type == 'url':
+        data['url'] = import_value
     else:
-        if import_value == 'url':
-            params = build_params(url=import_value)
-        else:
-            params = build_params(datatext=import_value)
+        data['datatext'] = import_value
 
+    params = build_params()
     # in case import_type is not file-id, http_requests will receive None as files
     res = http_request("POST", "v1/intelligence/import/", params=params, data=data, files=files)
     # closing the opened file if exist
