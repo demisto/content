@@ -3085,6 +3085,7 @@
             "integrations": "Hatching Triage",
             "fromversion": "5.5.0"
         },
+        {
 
             "integrations": "Talos Feed",
             "playbookID": "FeedTalosTestPlaybook",
