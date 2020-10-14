@@ -177,9 +177,9 @@ def phishtank_reload_command(client: Client):
     number_of_urls_loaded = len(parsed_response.keys())
     readable_output += f'Total **{number_of_urls_loaded}** URLs loaded.\n'
     last_load = datetime.utcfromtimestamp(context["timestamp"] / 1000.0).strftime("%a %b %d %Y %H:%M:%S (UTC)")
-    output_to_context = {"LastReloadTime": last_load}
+    output_to_context = [last_load]
     return CommandResults(readable_output=readable_output, outputs=output_to_context,
-                          outputs_key_field="LastReloadTime")
+                          outputs_prefix="LastReloadTime")
 
 
 def phishtank_status_command():
@@ -202,8 +202,8 @@ def phishtank_status_command():
         number_of_urls_loaded = len(data["list"].keys())
         status += f'Total **{number_of_urls_loaded}** URLs loaded.\n' \
                   f'Last Load time **{last_load}**\n'
-    output_to_context = {"LastReloadTime": last_load}
-    return CommandResults(readable_output=status, outputs=output_to_context, outputs_key_field="LastReloadTime")
+    output_to_context = [last_load]
+    return CommandResults(readable_output=status, outputs=output_to_context, outputs_prefix="LastReloadTime")
 
 
 def reload(client: Client) -> dict:
