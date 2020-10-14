@@ -282,10 +282,6 @@
             "playbookID": "TestDarktracePlaybook"
         },
         {
-            "integrations": "d729ce60-63bc-4a61-9669-abc8a1ceb0f5",
-            "playbookID": "TestDarktracePlaybook"
-        },
-        {
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld-Test",
             "fromversion": "5.0.0"
@@ -2910,9 +2906,6 @@
             "integrations": "Workday",
             "playbookID": "Workday - Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "Darktrace Test Playbook"
         }
     ],
     "skipped_tests": {
