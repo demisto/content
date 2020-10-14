@@ -866,7 +866,7 @@ script:
         unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
         unresponsive, compromised, misconfigured.
       type: String
-  dockerimage: demisto/crypto:1.0.0.11412
+  dockerimage: demisto/crypto:1.0.0.12410
   isfetch: false
   longRunning: false
   longRunningPort: false
