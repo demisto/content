@@ -1,12 +1,5 @@
 id: QRadar - Get offense correlations v2
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.0.11
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
 name: QRadar - Get offense correlations v2
 fromversion: 5.0.0
 description: |-
@@ -572,7 +565,7 @@ tasks:
     task:
       id: 0876b8fd-d1a3-4519-8310-e0e8973cf071
       version: -1
-      name: Is Qradar v1 enabled?
+      name: Is Qradar enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -650,7 +643,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: QRadar_v3
+              simple: QRadar_v2
       - - operator: isEqualString
           left:
             value:
