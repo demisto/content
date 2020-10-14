@@ -15,15 +15,15 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 """
 
 import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
 from typing import Dict, Any
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''
@@ -81,7 +81,9 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service
+        # TODO: ADD HERE some code to test connectivity and authentication to your service.
+        # This  should validate all the inputs given in the integration configuration panel,
+        # either manually or by using an API that uses them.
         pass
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
@@ -153,8 +155,8 @@ def main() -> None:
             return_results(result)
 
         # TODO: REMOVE the following dummy command case:
-        # elif demisto.command() == 'boilerplate-do-something':
-        #     return_results(boilerplate_do_something_command(Client, demisto.args()))
+        elif demisto.command() == 'boilerplate-dummy':
+            return_results(boilerplate_dummy_command(client, demisto.args()))
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
