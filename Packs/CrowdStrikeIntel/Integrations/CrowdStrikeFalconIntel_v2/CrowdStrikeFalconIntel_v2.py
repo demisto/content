@@ -30,7 +30,7 @@ class Client:
     """
 
     def __init__(self, params: Dict[str, str]):
-        self._cs_client: CrowdStrikeClient = CrowdStrikeClient(params=params)
+        self.cs_client: CrowdStrikeClient = CrowdStrikeClient(params=params)
         self.query_params: Dict[str, str] = {'offset': 'offset', 'limit': 'limit', 'sort': 'sort', 'free_search': 'q'}
         self.date_params: Dict[str, Dict[str, str]] = {
             'created_date': {'operator': '', 'api_key': 'created_date'},
@@ -78,9 +78,6 @@ class Client:
 
         return filter_query
 
-    def check_quota_status(self) -> Dict[str, Any]:
-        return self._cs_client.check_quota_status()
-
     def get_indicator(self, indicator_value: str, indicator_type: str) -> Dict[str, Any]:
         args: Dict[str, Any] = {
             'indicator': indicator_value,
@@ -94,19 +91,19 @@ class Client:
             args['type'] = indicator_type
 
         params: Dict[str, Any] = self.build_request_params(args)
-        return self._cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
+        return self.cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
 
     def cs_actors(self, args: Dict[str, str]) -> Dict[str, Any]:
         params: Dict[str, Any] = self.build_request_params(args)
-        return self._cs_client.http_request(method='GET', url_suffix='intel/combined/actors/v1', params=params)
+        return self.cs_client.http_request(method='GET', url_suffix='intel/combined/actors/v1', params=params)
 
     def cs_indicators(self, args: Dict[str, str]) -> Dict[str, Any]:
         params: Dict[str, Any] = self.build_request_params(args)
-        return self._cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
+        return self.cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
 
     def cs_reports(self, args: Dict[str, str]) -> Dict[str, Any]:
         params: Dict[str, Any] = self.build_request_params(args)
-        return self._cs_client.http_request(method='GET', url_suffix='intel/combined/reports/v1', params=params)
+        return self.cs_client.http_request(method='GET', url_suffix='intel/combined/reports/v1', params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -326,29 +323,12 @@ def run_test_module(client: Client) -> Union[str, Exception]:
     """
     If a client is successfully constructed then an access token was successfully created,
     therefore the username and password are valid and a connection was made.
-    On top of the above, this function checks for allocated quota and validates the http request to actors & indicators.
+    On top of the above, this function validates the http request to indicators endpoint.
     :param client: the client object with an access token
     :return: ok if got a valid access token and not all the quota is used at the moment
     """
-    output: Dict[str, Any] = client.check_quota_status()
-
-    error = output.get('errors')
-    if error and isinstance(error, list):
-        return error[0]
-
-    meta = output.get('meta')
-    if meta is not None and isinstance(meta, dict):
-        quota = meta.get('quota')
-        if quota is not None:
-            total = quota.get('total')
-            used = quota.get('used')
-            if total <= used:
-                raise Exception(f'Quota limitation has been reached: {used}')
-            else:
-                client._cs_client.http_request('GET', 'intel/combined/indicators/v1', params={'limit': 1})
-                client._cs_client.http_request('GET', 'intel/combined/actors/v1', params={'limit': 1})
-                return 'ok'
-    raise Exception('Quota limitation is unreachable')
+    client.cs_client.http_request('GET', 'intel/combined/indicators/v1', params={'limit': 1})
+    return 'ok'
 
 
 def file_command(file: str, client: Client) -> CommandResults:

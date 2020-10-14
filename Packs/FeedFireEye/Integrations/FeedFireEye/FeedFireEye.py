@@ -389,7 +389,6 @@ class Client(BaseClient):
         headers = {
             'Accept': 'application/vnd.oasis.stix+json; version=2.1',
             'X-App-Name': 'content.xsoar.cortex.paloaltonetworks.v1.0',
-            'Authorization': f'Bearer {self.get_access_token()}'
         }
 
         if limit == -1:
@@ -398,6 +397,8 @@ class Client(BaseClient):
             query_url = f'/collections/indicators/objects?length={min(limit, 1000)}'
 
         while True:
+            headers['Authorization'] = f'Bearer {self.get_access_token()}'
+
             response = self._http_request(
                 method='GET',
                 url_suffix=query_url,
@@ -449,7 +450,6 @@ class Client(BaseClient):
         headers = {
             'Accept': 'application/vnd.oasis.stix+json; version=2.1',
             'X-App-Name': 'content.xsoar.cortex.paloaltonetworks.v1.0',
-            'Authorization': f'Bearer {self.get_access_token()}'
         }
 
         if limit == -1:
@@ -458,6 +458,8 @@ class Client(BaseClient):
             query_url = f'/collections/reports/objects?length={limit}'
 
         while True:
+            headers['Authorization'] = f'Bearer {self.get_access_token()}'
+
             response = self._http_request(
                 method='GET',
                 url_suffix=query_url,
