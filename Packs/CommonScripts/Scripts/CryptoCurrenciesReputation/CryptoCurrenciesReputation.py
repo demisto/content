@@ -26,6 +26,7 @@ def main():
                     'Indicator': address,
                     'Type': 'Cryptocurrency Wallet',
                     'Score': 2,  # suspicious
+                    'Vendor': 'Cryptocurrency',
                     'TypeEnnricher': context
                 }
             }
