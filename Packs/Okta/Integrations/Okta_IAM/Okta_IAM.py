@@ -179,7 +179,7 @@ def get_user_command(client, args, incoming_mapper):
             error_message=error_message
         )
     else:
-        user_profile.update_with_app_data(data=okta_user, incoming_mapper)
+        user_profile.update_with_app_data(app_data=okta_user, incoming_mapper)
         user_profile.set_result(
             success=True,
             active=active, # todo
