@@ -4593,28 +4593,31 @@ class IAMUserProfile:
 
     def __init__(self, user_profile, user_profile_delta=None):
         # type: (Any, Any) -> None
-        self.brand = demisto.callingContext['context']['IntegrationBrand']
-        self.instance_name = demisto.callingContext['context']['IntegrationInstance']
-        self.command = demisto.command().split('-')[0]
+        self._brand = demisto.callingContext['context']['IntegrationBrand']
+        self._instance_name = demisto.callingContext['context']['IntegrationInstance']
+        self._command = demisto.command().split('-')[0]
 
-        self.outputs = {}  # type: Dict[Any, Any]
-        self.readable_output = ''
+        self._outputs = {}  # type: Dict[Any, Any]
+        self._readable_output = ''
 
-        self.user_profile = safe_load_json(user_profile)
-        self.user_profile_delta = safe_load_json(user_profile_delta)
+        self._user_profile = safe_load_json(user_profile)
+        self._user_profile_delta = safe_load_json(user_profile_delta)
+
+    def __getattr__(self, item):
+        return self._user_profile.get(item)
 
     def to_context(self):
         entry_context = {
-            'IAM.UserProfile(val.email && val.email == obj.email)': self.user_profile,
+            'IAM.UserProfile(val.email && val.email == obj.email)': self._user_profile,
             'IAM.Vendor(val.instanceName && val.instanceName == self.instanceName && '
-            'val.email && val.email == obj.email)': self.outputs
+            'val.email && val.email == obj.email)': self._outputs
         }
 
         return_entry = {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
-            'Contents': self.outputs,
-            'HumanReadable': self.readable_output,
+            'Contents': self._outputs,
+            'HumanReadable': self._readable_output,
             'EntryContext': entry_context
         }
 
@@ -4685,10 +4688,10 @@ class IAMUserProfile:
         :return: No data returned
         :rtype: ``None``
         """
-        self.outputs = {
-            'brand': self.brand,
-            'instanceName': self.instance_name,
-            'action': self.command,
+        self._outputs = {
+            'brand': self._brand,
+            'instanceName': self._instance_name,
+            'action': self._command,
             'success': success,
             'active': active,
             'id': iden,
@@ -4705,8 +4708,8 @@ class IAMUserProfile:
         :return: No data returned
         :rtype: ``None``
         """
-        title = self.command.title() + ' User Results ({})'.format(self.brand)
-        self.readable_output = tableToMarkdown(
+        title = self._command.title() + ' User Results ({})'.format(self._brand)
+        self._readable_output = tableToMarkdown(
             name=title,
             t=self.outputs,
             headers=["brand", "instanceName", "success", "active", "id", "username",
@@ -4722,10 +4725,10 @@ class IAMUserProfile:
         """
         if not mapping_type:
             mapping_type = 'User Profile'
-        if not self.user_profile:
+        if not self._user_profile:
             return_error('You must provide user-profile argument.')
-        app_data = demisto.mapObject(self.user_profile, mapper_name, mapping_type)
+        app_data = demisto.mapObject(self._user_profile, mapper_name, mapping_type)
         return app_data
 
     def set_command_name(self, command):
-        self.command = command
+        self._command = command
