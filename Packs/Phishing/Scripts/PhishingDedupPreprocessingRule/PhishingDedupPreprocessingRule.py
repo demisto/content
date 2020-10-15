@@ -223,7 +223,7 @@ def close_new_incident_and_link_to_existing(new_incident, existing_incident, sim
     message = 'Duplicate incidents found: #{}, #{} with similarity of {:.1f}%. '.format(new_incident['id'],
                                                                                         existing_incident['id'],
                                                                                         similarity * 100)
-    message += 'This incident will be closed and linked to {}.'.format(existing_incident['id'])
+    message += 'This incident will be closed and linked to #{}.'.format(existing_incident['id'])
     demisto.results(message)
 
 
