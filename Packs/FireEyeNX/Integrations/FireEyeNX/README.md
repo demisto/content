@@ -1,5 +1,5 @@
 FireEye Network Security is an effective cyber threat protection solution that helps organizations minimize the risk of costly breaches by  accurately detecting and immediately stopping advanced, targeted and other evasive attacks hiding in Internet traffic.
-
+This integration was integrated and tested with version 2.0.0 of FireEyeNX APIs.	
 ## Configure FireEyeNX on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -630,5 +630,4 @@ Search and Retrieve FireEye events based on several filters.
 >|Event ID|Time (UTC)|Victim IP|Attacker IP|CVE ID|Severity|Rule|Protocol|
 >|---|---|---|---|---|---|---|---|
 >| 1 | 2020-08-10T06:31:00Z | 1.1.1.1 | 1.1.1.1 | CVE-123 | 1 | dummy | 1 |
-
 
