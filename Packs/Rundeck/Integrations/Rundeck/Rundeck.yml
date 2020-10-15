@@ -22,7 +22,7 @@ configuration:
 - display: project name
   hidden: false
   name: project_name
-  required: true
+  required: false
   type: 0
 description: Rundeck is runbook automation for incident management, business continuity,
   and self-service operations.
@@ -151,7 +151,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A time to run the job.
+      description: A time to run the job in a ISO-8601 date and time stamp with timezone,
+        with optional milliseconds. e.g. 2019-10-12T12:20:55-0800 or 2019-10-12T12:20:55.123-0800
       isArray: false
       name: run_at_time
       required: false
@@ -960,7 +961,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+  - No tests
 defaultmapperin: HelloWorld-mapper
 defaultclassifier: HelloWorld
 fromversion: 5.0.0

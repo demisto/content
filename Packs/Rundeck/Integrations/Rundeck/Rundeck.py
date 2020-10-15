@@ -866,16 +866,23 @@ def webhook_event_send_command(client: Client, args: dict):
     )
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, project_name: Optional[str]) -> str:
     try:
-        client.get_project_list()
+        projects_list = client.get_project_list()
     except DemistoException as e:
         if 'unauthorized' in str(e):
             return 'Authorization Error: make sure your token is correctly set'
         else:
             raise e
     else:
-        return 'ok'
+        if project_name:
+            for project in projects_list:
+                if project_name == project.get('name'):
+                    return 'ok'
+            return f'Could not find the next project: "{project_name}"' \
+                   f'. please enter another one or delete it completely.'
+        else:
+            return 'ok'
 
 
 ''' MAIN FUNCTION '''
@@ -925,7 +932,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, project_name)
             return_results(result)
         elif demisto.command() == 'rundeck-projects-list':
             result = project_list_command(client)
@@ -967,7 +974,8 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        error_msg = str(e).replace("\\n", "\n")
+        return_error(f'Failed to execute {demisto.command()} command.\n Error:\n {error_msg}')
 
 
 ''' ENTRY POINT '''
