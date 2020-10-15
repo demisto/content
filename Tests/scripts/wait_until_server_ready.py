@@ -39,7 +39,6 @@ def main():
     global SETUP_TIMEOUT
     instance_name_to_wait_on = sys.argv[1]
     ready_ami_list = []
-    failure = False
     with open('./env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
         instance_ips = [(env.get('Role'), env.get('InstanceDNS')) for env in env_results]
@@ -66,7 +65,6 @@ def main():
                     if SETUP_TIMEOUT != 60 * 10:
                         print_warning('Setting SETUP_TIMEOUT to 10 minutes.')
                         SETUP_TIMEOUT = 60 * 10
-                    failure = True
                     continue
                 except Exception as exp:
                     print_warning(f'{ami_instance_name} encountered an error: {str(exp)}\n'
@@ -87,10 +85,6 @@ def main():
             last_update_time = current_time
         if len(instance_ips) > len(ready_ami_list):
             sleep(1)
-
-    if failure:
-        print_error('One or more instance were dropped by amazon, if raised often - report to team leader.')
-        sys.exit(1)
 
 
 if __name__ == "__main__":
