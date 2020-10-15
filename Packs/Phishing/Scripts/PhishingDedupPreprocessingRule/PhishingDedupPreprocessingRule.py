@@ -244,7 +244,7 @@ def close_new_incident_and_link_to_existing(new_incident, existing_incident, sim
 
 
 def create_new_incident():
-    return_entry('No duplicate incident found')
+    return_entry('This incident is not a duplicate of an existing incident.')
 
 
 def create_new_incident_low_similarity(existing_incident, similarity):
