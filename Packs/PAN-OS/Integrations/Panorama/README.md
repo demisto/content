@@ -4,10 +4,6 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 
 ## Panorama Playbook
 * **PanoramaCommitConfiguration** : Based on the playbook input, the Playbook will commit the configuration to Palo Alto Firewall, or push the configuration from Panorama to predefined device groups of firewalls. The integration is available from Demisto v3.0, but playbook uses the GenericPooling sub-playbook, which is only available from Demisto v4.0.
-* **(Deprecated) PanoramaQueryTrafficLogs** : Use the Panorama Query Logs playbook instead.W raps the following commands with genericPolling to enable a complete flow to query traffic logs.
-   * [panorama-query-traffic-logs](#panorama-query-traffic-logs)
-   * [panorama-check-traffic-logs-status](#panorama-check-traffic-logs-status)
-   * [panorama-get-traffic-logs](#panorama-get-traffic-logs)
 * **Panorama Query Logs** : W raps several commands (listed below) with genericPolling to enable a complete flow to query the following log types: traffic, threat, URL, data-filtering, and Wildfire.
    * [panorama-query-logs](#panorama-query-logs)
    * [panorama-check-logs-status](#panorama-check-logs-status)
