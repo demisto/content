@@ -459,7 +459,7 @@ tasks:
       name: Dismiss Prisma Cloud alert
       description: Dismiss the alerts matching the given filter. Must provide either
         policy IDs or alert IDs.
-      script: RedLock|||redlock-dismiss-alerts
+      script: |||redlock-dismiss-alerts
       type: regular
       iscommand: true
       brand: RedLock

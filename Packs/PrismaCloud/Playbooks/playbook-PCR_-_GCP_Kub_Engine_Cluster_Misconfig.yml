@@ -80,7 +80,7 @@ tasks:
       version: -1
       name: Get cluster details
       description: Gets the details of a specific cluster.
-      script: GoogleKubernetesEngine|||gcloud-clusters-describe
+      script: |||gcloud-clusters-describe
       type: regular
       iscommand: true
       brand: GoogleKubernetesEngine
@@ -564,7 +564,7 @@ tasks:
       name: Disable basic auth
       description: Enable basic (username/password) auth for the cluster. Enable will
         create user admin with generated password.
-      script: GoogleKubernetesEngine|||gcloud-clusters-set-muster-auth
+      script: |||gcloud-clusters-set-muster-auth
       type: regular
       iscommand: true
       brand: GoogleKubernetesEngine
@@ -603,7 +603,7 @@ tasks:
       name: Disable legacy auth
       description: Configuration for the legacy Attribute Based Access Control authorization
         mode.
-      script: GoogleKubernetesEngine|||gcloud-clusters-set-legacy-auth
+      script: |||gcloud-clusters-set-legacy-auth
       type: regular
       iscommand: true
       brand: GoogleKubernetesEngine
@@ -643,7 +643,7 @@ tasks:
       description: |-
         Configuration options for the master authorized networks feature.
         Enabled master authorized networks will disallow all external traffic to access Kubernetes master through HTTPS except traffic from the given CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.
-      script: GoogleKubernetesEngine|||gcloud-clusters-set-master-authorized-network
+      script: |||gcloud-clusters-set-master-authorized-network
       type: regular
       iscommand: true
       brand: GoogleKubernetesEngine
@@ -724,7 +724,7 @@ tasks:
       description: Enable or Disable k8s stackdriver. Important - To use this functinality
         the user should enable manually logging to "monitoring.googleapis.com/kubernetes"
         manulally via the GCP console.
-      script: GoogleKubernetesEngine|||gcloud-clusters-set-k8s-stackdriver
+      script: |||gcloud-clusters-set-k8s-stackdriver
       type: regular
       iscommand: true
       brand: GoogleKubernetesEngine
@@ -767,7 +767,7 @@ tasks:
       description: Enable or Disable k8s stackdriver. Important - To use this functinality
         the user should enable manually logging to "monitoring.googleapis.com/kubernetes"
         manulally via the GCP console.
-      script: GoogleKubernetesEngine|||gcloud-clusters-set-k8s-stackdriver
+      script: |||gcloud-clusters-set-k8s-stackdriver
       type: regular
       iscommand: true
       brand: GoogleKubernetesEngine
@@ -808,7 +808,7 @@ tasks:
       version: -1
       name: Enable HTTP load balancing
       description: Sets the addons for a specific cluster.
-      script: GoogleKubernetesEngine|||gcloud-clusters-set-addons
+      script: |||gcloud-clusters-set-addons
       type: regular
       iscommand: true
       brand: GoogleKubernetesEngine
@@ -848,7 +848,7 @@ tasks:
       version: -1
       name: Disable UI/Dashboard
       description: Sets the addons for a specific cluster.
-      script: GoogleKubernetesEngine|||gcloud-clusters-set-addons
+      script: |||gcloud-clusters-set-addons
       type: regular
       iscommand: true
       brand: GoogleKubernetesEngine
@@ -888,7 +888,7 @@ tasks:
       version: -1
       name: Enable binary auth
       description: Enable or Disable binary auth.
-      script: GoogleKubernetesEngine|||gcloud-clusters-set-binary-auth
+      script: |||gcloud-clusters-set-binary-auth
       type: regular
       iscommand: true
       brand: GoogleKubernetesEngine
@@ -926,7 +926,7 @@ tasks:
       version: -1
       name: Enable intra-node visibility
       description: Enable or Disable for intra node visibility in cluster.
-      script: GoogleKubernetesEngine|||gcloud-clusters-set-intra-node-visibility
+      script: |||gcloud-clusters-set-intra-node-visibility
       type: regular
       iscommand: true
       brand: GoogleKubernetesEngine
