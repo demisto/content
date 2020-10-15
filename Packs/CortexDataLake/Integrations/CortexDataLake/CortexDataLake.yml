@@ -25,7 +25,7 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
-- additionalinfo: Choose from what table incidents will be fetched from.
+- additionalinfo: Choose which table incidents will be fetched from.
   defaultvalue: firewall.threat
   display: Fetch Table
   hidden: false
@@ -81,7 +81,7 @@ configuration:
   - sctp
   required: false
   type: 16
-- additionalinfo: Comma separated fields that'll be fetched with every incident. e.g. "pcap,session_id".
+- additionalinfo: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id".
     Enter "*" for all possible fields.
   defaultvalue: '*'
   display: Fetch Fields
