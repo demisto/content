@@ -375,7 +375,7 @@ class MsClient:
             dict. Related IPs
         """
         cmd_url = f'/alerts/{alert_id}/ips'
-        return self.ms_client.http_request(method='GET', urk_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
     def get_alert_related_user(self, alert_id):
         """Retrieves the User related to a specific alert.

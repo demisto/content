@@ -100,6 +100,9 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
         else:
             if original_label in labels_mapping:
                 row[tag_field] = labels_mapping[original_label]
+            elif original_label.lower() in labels_mapping:
+                original_label = original_label.lower()
+                row[tag_field] = labels_mapping[original_label]
             else:
                 missing_labels_counter[original_label] += 1
                 continue
