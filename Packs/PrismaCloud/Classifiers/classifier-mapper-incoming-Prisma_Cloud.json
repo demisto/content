@@ -507,7 +507,7 @@
 				},
 				"Account Name": {
 					"complex": {
-						"accessor": "account",
+						"accessor": "accountname",
 						"filters": [],
 						"root": "resource",
 						"transformers": []
@@ -995,7 +995,7 @@
 				},
 				"Account Name": {
 					"complex": {
-						"accessor": "account",
+						"accessor": "accountname",
 						"filters": [],
 						"root": "resource",
 						"transformers": []
@@ -1483,7 +1483,7 @@
 				},
 				"Account Name": {
 					"complex": {
-						"accessor": "account",
+						"accessor": "accountname",
 						"filters": [],
 						"root": "resource",
 						"transformers": []
@@ -1971,7 +1971,7 @@
 				},
 				"Account Name": {
 					"complex": {
-						"accessor": "account",
+						"accessor": "accountname",
 						"filters": [],
 						"root": "resource",
 						"transformers": []
