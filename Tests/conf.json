@@ -1970,7 +1970,8 @@
                 "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize"
-            ]
+            ],
+            "memory_threshold": 115
         },
         {
             "playbookID": "Phishing - Core - Test - Incident Starter",
@@ -1981,7 +1982,8 @@
                 "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize"
-            ]
+            ],
+            "memory_threshold": 100
         },
         {
             "integrations": "duo",
@@ -2450,7 +2452,8 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "memory_threshold": 100
         },
         {
             "integrations": "Anomali ThreatStream v2",
