@@ -48,6 +48,10 @@ class Client(BaseClient):
                          headers=headers,
                          ok_codes=(200,))
 
+    def test(self):
+        uri = 'users/me'
+        self._http_request(method='GET', url_suffix=uri)
+
     def get_user(self, email):
         uri = 'users'
         query_params = {
@@ -120,7 +124,7 @@ def iam_command_failure(user_profile, e):
     if error_code == USER_IS_DIABLED_ERROR:
         error_message = 'User is disabled'
     else:
-        error_message = e.res.get('errorMessage')
+        error_message = get_error_details(e.res)
 
     user_profile.set_result(success=False,
                             error_code=error_code,
@@ -146,10 +150,10 @@ def iam_command_success(user_profile, okta_user):
     )
 
 
-def get_error_details(res_json):
-    error_msg = f'{res_json.get("errorSummary")}. '
+def get_error_details(res):
+    error_msg = f'{res.get("errorSummary")}. '
     causes = ''
-    for idx, cause in enumerate(res_json.get('errorCauses', []), 1):
+    for idx, cause in enumerate(res.get('errorCauses', []), 1):
         causes += f'{idx}. {cause.get("errorSummary")}\n'
     if causes:
         error_msg += f'Reason:\n{causes}'
@@ -160,12 +164,11 @@ def get_error_details(res_json):
 
 
 def test_module(client):
-    uri = 'users/me'
-    res = client._http_request(method='GET', url_suffix=uri)
+    client.test()
     return_results('ok')
 
 
-def get_user_command(client, args, incoming_mapper):
+def get_user_command(client, args, mapper_in):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     try:
         okta_user = client.get_user(user_profile.email)
@@ -173,7 +176,7 @@ def get_user_command(client, args, incoming_mapper):
             error_code, error_message = IAMErrors.USER_NOT_FOUND
             user_profile.set_result(success=False, error_code=error_code, error_message=error_message)
         else:
-            user_profile.update_with_app_data(okta_user, incoming_mapper)
+            user_profile.update_with_app_data(okta_user, mapper_in)
             iam_command_success(user_profile, okta_user)
 
     except DemistoException as e:
@@ -182,7 +185,7 @@ def get_user_command(client, args, incoming_mapper):
     return user_profile
 
 
-def enable_user_command(client, args, outgoing_mapper, is_command_enabled, is_create_user_enabled):
+def enable_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled):
     if is_command_enabled:
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         try:
@@ -190,7 +193,7 @@ def enable_user_command(client, args, outgoing_mapper, is_command_enabled, is_cr
             if not okta_user:
                 if args.get('create-if-not-exists').lower() == 'true':
                     user_profile.set_command_name('create')
-                    user_profile = create_user_command(client, args, outgoing_mapper, is_create_user_enabled)
+                    user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
                 else:
                     return_outputs('Skipping - user does not exist.')
             else:
@@ -220,7 +223,7 @@ def disable_user_command(client, args, is_command_enabled):
         return user_profile
 
 
-def create_user_command(client, args, outgoing_mapper, is_command_enabled):
+def create_user_command(client, args, mapper_out, is_command_enabled):
     if is_command_enabled:
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         try:
@@ -228,7 +231,7 @@ def create_user_command(client, args, outgoing_mapper, is_command_enabled):
             if okta_user:
                 return_outputs('Skipping - user already exist.')
             else:
-                okta_profile = user_profile.map_object(outgoing_mapper)
+                okta_profile = user_profile.map_object(mapper_out)
                 created_user = client.create_user(okta_profile)
                 user_profile.set_id(created_user.get('id'))
                 iam_command_success(user_profile, okta_user)
@@ -239,20 +242,20 @@ def create_user_command(client, args, outgoing_mapper, is_command_enabled):
         return user_profile
 
 
-def update_user_command(client, args, outgoing_mapper, is_command_enabled, is_create_user_enabled):
+def update_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled):
     if is_command_enabled:
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         try:
             okta_user = client.get_user(user_profile.email)
             if okta_user:
-                okta_profile = user_profile.map_object(outgoing_mapper)
+                okta_profile = user_profile.map_object(mapper_out)
                 updated_user = client.update_user(okta_profile)
                 user_profile.set_id(updated_user.get('id'))
                 iam_command_success(user_profile, okta_user)
             else:
                 if args.get('create-if-not-exists').lower() == 'true':
                     user_profile.set_command_name('create')
-                    user_profile = create_user_command(client, args, outgoing_mapper, is_create_user_enabled)
+                    user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
                 else:
                     return_outputs('Skipping - user does not exist.')
 
@@ -284,16 +287,16 @@ def main():
     params = demisto.params()
     base_url = urljoin(params['url'].strip('/'), '/api/v1/')
     token = params.get('apitoken')
-    incoming_mapper = params.get('incoming-mapper')
-    outgoing_mapper = params.get('outgoing-mapper')
+    mapper_in = params.get('mapper-in')
+    mapper_out = params.get('mapper-out')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
 
-    is_create_user_enabled = params.get("create-user-enabled")
-    is_enable_disable_user_enabled = params.get("enable-disable-user-enabled")
-    is_update_user_enabled = demisto.params().get("update-user-enabled")
+    is_create_enabled = params.get("create-user-enabled")
+    is_enable_disable_enabled = params.get("enable-disable-user-enabled")
+    is_update_enabled = demisto.params().get("update-user-enabled")
 
     LOG(f'Command being called is {command}')
 
@@ -306,48 +309,23 @@ def main():
 
     try:
         if command == 'get-user':
-            user_profile = get_user_command(
-                client,
-                args,
-                incoming_mapper
-            )
+            user_profile = get_user_command(client, args, mapper_in)
             return_results(user_profile)
 
         elif command == 'create-user':
-            user_profile = create_user_command(
-                client,
-                args,
-                outgoing_mapper,
-                is_create_user_enabled
-            )
+            user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
             return_results(user_profile)
 
         elif command == 'update-user':
-            user_profile = update_user_command(
-                client,
-                args,
-                outgoing_mapper,
-                is_update_user_enabled,
-                is_create_user_enabled
-            )
+            user_profile = update_user_command(client, args, mapper_out, is_update_enabled, is_create_enabled)
             return_results(user_profile)
 
         elif command == 'disable-user':
-            user_profile = disable_user_command(
-                client,
-                args,
-                is_enable_disable_user_enabled
-            )
+            user_profile = disable_user_command(client, args, is_enable_disable_enabled)
             return_results(user_profile)
 
         elif command == 'enable-user':
-            user_profile = enable_user_command(
-                client,
-                args,
-                outgoing_mapper,
-                is_enable_disable_user_enabled,
-                is_create_user_enabled
-            )
+            user_profile = enable_user_command(client, args, mapper_out, is_enable_disable_enabled, is_create_enabled)
             return_results(user_profile)
 
         elif command == 'test-module':

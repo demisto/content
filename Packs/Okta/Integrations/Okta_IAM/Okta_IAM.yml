@@ -36,12 +36,12 @@ configuration:
   type: 8
 - defaultvalue: User Profile - Okta (Incoming)
   display: Incoming Mapper
-  name: incoming-mapper
+  name: mapper-in
   required: true
   type: 0
 - defaultvalue: User Profile - Okta (Outgoing)
   display: Ougoing Mapper
-  name: outgoing-mapper
+  name: mapper-out
   required: true
   type: 0
 description: Integrate with Okta's Identity Access Management service to streamline
