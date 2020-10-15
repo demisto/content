@@ -305,7 +305,7 @@ class Client(BaseClient):
         tlp_color (str): Traffic Light Protocol color.
     """
 
-    def __init__(self, public_key: str, private_key: str, first_fetch_timestamp: int,
+    def __init__(self, public_key: str, private_key: str, first_fetch_timestamp: str,
                  malicious_threshold: int, reputation_interval: int,
                  polling_timeout: int = 20, insecure: bool = False, proxy: bool = False,
                  tags: list = [], tlp_color: Optional[str] = None):
@@ -453,6 +453,7 @@ class Client(BaseClient):
             except KeyError:
                 break
 
+        demisto.debug('Fetching raw indicators from feed fully completed')
         return raw_indicators, relationships, stix_entities
 
     def fetch_all_reports_from_api(self, limit: int) -> List:
@@ -508,6 +509,7 @@ class Client(BaseClient):
             except KeyError:
                 break
 
+        demisto.debug('Fetching raw reports from feed fully completed')
         return raw_reports
 
     def build_iterator(self, limit: int) -> List:
