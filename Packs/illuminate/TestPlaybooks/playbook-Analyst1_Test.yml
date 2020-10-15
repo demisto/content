@@ -185,7 +185,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: Analyst1.Email.ID
+              simple: Analyst1.Email.IDw
             iscontext: true
           right:
             value:
