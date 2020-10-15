@@ -232,12 +232,12 @@ def create_new_incident():
 
 
 def create_new_incident_low_similarity(existing_incident, similarity):
-    message = 'No duplicate incident found.\n'
+    message = 'This incident is not a duplicate of an existing incident.\n'
     message += 'Most similar incident found is #{} with similarity of {:.1f}%.\n'.format(existing_incident['id'],
                                                                                          similarity * 100)
     message += 'The threshold for considering 2 incidents as duplicate is a similarity ' \
                'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
-    message += 'Thus these 2 incidents will not be considered as duplicate and current incident will be created.\n'
+    message += 'Therefore these 2 incidents will not be considered as duplicate and the current incident will be created.\n'
     demisto.results(message)
 
 
