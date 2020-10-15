@@ -623,7 +623,7 @@ inputs: []
 outputs: []
 tests:
 - TestDarktracePlaybook
-fromversion: 5.0.0
+fromversion: 6.0.0
 description: Handles each fetched Darktrace model breach by gathering additional detail
   about the activity and device, providing enrichment data from Darktrace and XSOAR,
   linking similar incidents, and giving the ability to acknowledge the model breach
