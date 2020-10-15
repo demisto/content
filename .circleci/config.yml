@@ -539,18 +539,16 @@ jobs:
       - *create_artifact
       - *update_tests_step
       - *download_configuration
-      - run:
-          name: Download Artifacts
-          when: always
-          command: |
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                echo "Using AMI - Not downloading artifacts"
-
-              else
-                ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
-            fi
+      - when:
+          # If this is an ami run - No need to download server artifacts
+          condition: << pipeline.parameters.non_ami_run >>
+          steps:
+            - run:
+                name: Download Artifacts
+                when: always
+                command: |
+                  ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                  cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
       - *collect_test_list_and_content_packs
       - *calculate_packs_dependencies
       - unless:
