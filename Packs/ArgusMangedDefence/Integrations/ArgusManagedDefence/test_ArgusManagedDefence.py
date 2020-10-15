@@ -4,6 +4,7 @@ COMMENT_ID = "some-long-hash"
 TAG_ID = "some-long-hash"
 TAG_KEY = "test_key"
 TAG_VALUE = "test_value"
+ATTACHMENT_ID = "some-long-hash"
 
 
 def test_is_valid_service():
@@ -73,7 +74,7 @@ def test_create_case_command(requests_mock):
     from ArgusManagedDefence import create_case_command
     from argus_json import argus_case_data
 
-    method_url = f"/cases/v2/case/"
+    method_url = f"/cases/v2/case"
 
     requests_mock.post(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_METADATA)
     args = {
@@ -128,7 +129,15 @@ def test_edit_comment_command(requests_mock):
 
 
 def test_get_attachment_command(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import get_attachment_command
+    from argus_json import argus_case_data
+
+    method_url = f"/cases/v2/case/{CASE_ID}/attachments/{ATTACHMENT_ID}"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_ATTACHMENT)
+    args = {"case_id": CASE_ID, "attachment_id": ATTACHMENT_ID}
+    result = get_attachment_command(args)
+    assert result.raw_response == argus_case_data.ARGUS_CASE_ATTACHMENT
 
 
 def test_get_case_metadata_by_id_command(requests_mock):
@@ -149,10 +158,10 @@ def test_list_case_attachments_command(requests_mock):
 
     method_url = f"/cases/v2/case/{CASE_ID}/attachments"
 
-    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_ATTACHMENT)
+    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_ATTACHMENTS)
     args = {"case_id": CASE_ID}
     result = list_case_attachments_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_ATTACHMENT
+    assert result.raw_response == argus_case_data.ARGUS_CASE_ATTACHMENTS
 
 
 def test_list_case_tags_command(requests_mock):

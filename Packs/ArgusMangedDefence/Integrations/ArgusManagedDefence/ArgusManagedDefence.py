@@ -406,7 +406,19 @@ def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    case_id = args.get("case_id", None)
+    attachment_id = args.get("attachment_id", None)
+    if not case_id:
+        raise ValueError("case id not specified")
+    if not attachment_id:
+        raise ValueError("attachment id not specified")
+    result = get_attachment(caseID=case_id, attachmentID=attachment_id)
+    readable_output = f"# #{case_id}: attachment metadata\n"
+    readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['addedTime']}*\n"
+    readable_output += f"{result['data']['name']} ({result['data']['mimeType']}, {result['data']['size']} kb)\n\n"
+    readable_output += f"_id: {result['data']['id']}_\n"
+
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:

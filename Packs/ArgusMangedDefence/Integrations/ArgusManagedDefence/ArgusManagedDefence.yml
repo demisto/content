@@ -920,6 +920,23 @@ script:
     description: Request changes to basic fields of an existing case.
     execution: false
     name: argus_update_case
+  - arguments:
+    - default: false
+      description: ID of Argus case
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of attachement
+      isArray: false
+      name: attachment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch specific attachment metadata
+    execution: false
+    name: argus_get_attachment
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true
