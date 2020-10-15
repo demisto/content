@@ -129,7 +129,15 @@ def test_get_attachment(requests_mock):
 
 
 def test_get_case_metadata_by_id(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import get_case_metadata_by_id_command
+    from argus_json import argus_case_data
+
+    method_url = f"/cases/v2/case/{CASE_ID}"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_METADATA)
+    args = {"case_id": CASE_ID}
+    result = get_case_metadata_by_id_command(args)
+    assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
 
 
 def test_list_case_attachments(requests_mock):

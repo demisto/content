@@ -410,7 +410,12 @@ def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    case_id = args.get("case_id", None)
+    if not case_id:
+        raise ValueError("case id not specified")
+    result = get_case_metadata_by_id(id=case_id, skipRedirect=args.get("skip_redirect", None))
+    readable_output = pretty_print_case_metadata(result)
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
