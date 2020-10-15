@@ -373,6 +373,8 @@ def test_func():
     if API_KEY_ID:
         headers['authorization'] = get_api_key_header_val(API_KEY)
 
+    handle_proxy()
+
     try:
         if USERNAME:
             res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE, headers=headers)

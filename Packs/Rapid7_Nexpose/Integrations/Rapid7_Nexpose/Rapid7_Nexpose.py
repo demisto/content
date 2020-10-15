@@ -16,7 +16,7 @@ HOUR_IN_MINUTES = 60
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-SESSION = None
+SESSION = ''
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 VERIFY_SSL = not demisto.params().get('unsecure', False)
@@ -61,8 +61,6 @@ def login():
         return ''
 
     return body['sessionID']
-
-
 
 
 def get_headers():
