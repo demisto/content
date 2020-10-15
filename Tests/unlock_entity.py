@@ -16,3 +16,4 @@ if __name__ == "__main__":
         "Could not update configurations",
     )
     print(f"{args.type}: {args.name} unlocked.")
+    

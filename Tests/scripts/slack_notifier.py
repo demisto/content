@@ -116,7 +116,7 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
     return content_team_attachment
 
 
-def get_attachments_for_all_steps(build_url, title = 'SDK Nightly Build'):
+def get_attachments_for_all_steps(build_url, title='SDK Nightly Build'):
     steps_fields = get_entities_fields(entity_title="Failed Steps")
     color = 'good' if not steps_fields else 'danger'
     title = f'{title} - Success' if not steps_fields else '{title} - Failure'
@@ -235,7 +235,9 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
             print_color('Starting Slack notifications about SDK nightly build - test playbook', LOG_COLORS.GREEN)
             content_team_attachments = get_attachments_for_all_steps(build_url)
         elif test_type == SDK_RUN_AGAINST_FAILED_STEPS_TYPE:
-            content_team_attachments = get_attachments_for_all_steps(build_url, title='Demisto SDK Nightly - Run Against Cortex XSOAR')
+            content_team_attachments = get_attachments_for_all_steps(
+                build_url, title='Demisto SDK Nightly - Run Against Cortex XSOAR'
+            )
         else:
             raise NotImplementedError('The test_type parameter must be only \'test_playbooks\' or \'unittests\'')
         print('Content team attachments:\n', content_team_attachments)
@@ -257,7 +259,7 @@ def main():
                        options.slack,
                        options.test_type,
                        env_results_file_name=options.env_results_file_name)
-    elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINS_FAILED_STEPS_TYPE):
+    elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
         slack_notifier(options.url, options.slack, options.test_type)
     else:
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
