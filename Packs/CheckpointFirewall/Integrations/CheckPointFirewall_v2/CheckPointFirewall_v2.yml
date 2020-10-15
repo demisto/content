@@ -2088,6 +2088,24 @@ script:
     - contextPath: CheckPoint.Object.ipv4
       description: IPv4 address of the specified object.
       type: String
+    - name: checkpoint-package-list
+    arguments:
+    - name: identifier
+      required: true
+    - name: session_id
+      description: Execute command with a specific session ID
+      defaultValue: None
+    outputs:
+    - contextPath: CheckPoint.Package.name
+      description: Name of the package
+      type: string
+    - contextPath: CheckPoint.Package.uid
+      description: UID of the package
+      type: string
+    - contextPath: CheckPoint.Package.type
+      description: ' package Type'
+      type: string
+    description: Get checkpoint-packages details
   dockerimage: demisto/python3:3.8.5.11789
   feed: false
   isfetch: false
