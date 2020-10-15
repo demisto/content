@@ -179,14 +179,7 @@ URL_COMMAND_LIST = [
         {"phish_id": "1", "submission_time": "2019-10-20T23:54:13+00:00",
          "verified": "yes", "verification_time": "2019-10-20T23:54:13+00:00",
          "online": "yes", "target": "Other"
-         }, 'http://url.example1',
-        {'URL(val.Data && val.Data == obj.Data)': {'Data': 'http://url.example1',
-                                                   'Malicious': {'Vendor': 'PhishTankV2',
-                                                                 'Description': 'Match found in PhishTankV2 database'}},
-         'DBotScore(val.Indicator && '
-         'val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-             'Indicator': 'http://url.example1', 'Type': 'url', 'Vendor': 'PhishTankV2',
-             'Score': 3}},
+         }, ['http://url.example1'], 3,
         "### PhishTankV2 Database - URL Query \n#### Found matches for URL http://url.example1 \n|online"
         "|phish_id|submission_time|target|verification_time|verified|\n|---|---|---|---|---|---|\n| yes | 1 | "
         "2019-10-20T23:54:13+00:00 | Other | 2019-10-20T23:54:13+00:00 | yes |\nAdditional details at "
@@ -196,44 +189,30 @@ URL_COMMAND_LIST = [
         {"phish_id": "1", "submission_time": "2019-10-20T23:54:13+00:00",
          "verification_time": "2019-10-20T23:54:13+00:00",
          "online": "yes", "target": "Other"
-         }, 'http://url.example1',
-        {
-            'URL(val.Data && val.Data == obj.Data)': {'Data': 'http://url.example1'},
-            'DBotScore'
-            '(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-                'Indicator': 'http://url.example1',
-                'Type': 'url', 'Vendor': 'PhishTankV2',
-                'Score': 0}},
+         }, ['http://url.example1'], 0,
         "### PhishTankV2 Database - URL Query \n#### No matches for URL http://url.example1 \n"
     ),
     (  # valid data , verified = no
         {"phish_id": "1", "submission_time": "2019-10-20T23:54:13+00:00",
          "verified": "no", "verification_time": "2019-10-20T23:54:13+00:00",
          "online": "yes", "target": "Other"
-         }, 'http://url.example1',
-        {'URL(val.Data && val.Data == obj.Data)': {'Data': 'http://url.example1'},
-         'DBotScore(val.Indicator && val.Indicator == obj.Indicator '
-         '&& val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-             'Indicator': 'http://url.example1', 'Type': 'url', 'Vendor': 'PhishTankV2',
-             'Score': 2}},
+         }, ['http://url.example1'],
+        2,
         "### PhishTankV2 Database - URL Query \n#### Found matches for URL http://url.example1 \n|online"
         "|phish_id|submission_time|target|verification_time|verified|\n|---|---|---|---|---|---|\n| yes | 1 | "
         "2019-10-20T23:54:13+00:00 | Other | 2019-10-20T23:54:13+00:00 | no |\nAdditional details at "
         "http://www.phishtank.com/phish_detail.php?phish_id=1 \n"
     ),
     (  # no data
-        {}, 'http://url.example1',
-        {'URL(val.Data && val.Data == obj.Data)': {'Data': 'http://url.example1'},
-         'DBotScore(val.Indicator && val.Indicator == obj.Indicator '
-         '&& val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-             'Indicator': 'http://url.example1', 'Type': 'url', 'Vendor': 'PhishTankV2', 'Score': 0}},
+        {}, ['http://url.example1'],
+        0,
         "### PhishTankV2 Database - URL Query \n#### No matches for URL http://url.example1 \n"
     ),
 ]
 
 
-@pytest.mark.parametrize('data,url,expected_output,expected_table', URL_COMMAND_LIST)
-def test_url_command(mocker, data, url, expected_output, expected_table):
+@pytest.mark.parametrize('data,url,expected_score,expected_table', URL_COMMAND_LIST)
+def test_url_command(mocker, data, url, expected_score, expected_table):
     """
     Given:
         - Got url to check for scores
@@ -245,7 +224,7 @@ def test_url_command(mocker, data, url, expected_output, expected_table):
         - Returns markdown table and outputs
     """
     client = create_client(False, False, "1")
-    # import PhishTankV2 as ptv2
-    mocker.patch('PhishTankV2.get_url_data', return_value=(data, url))
-    assert url_command(client, url).outputs == expected_output and url_command(client,
-                                                                               url).readable_output == expected_table
+    mocker.patch('PhishTankV2.get_url_data', return_value=(data, url[0]))
+    assert url_command(client, url).indicators[0].dbot_score.score == expected_score and url_command(client,
+                                                                                                     url). \
+        readable_output == expected_table

@@ -143,19 +143,20 @@ def create_verified_markdown(url_data, url):
     return markdown
 
 
-def url_command(client: Client, url: str):
-    url_data, url = get_url_data(client, url)
+def url_command(client: Client, url_list: list):
     markdown = "### PhishTankV2 Database - URL Query \n"
-    url_data_is_valid = url_data and "verified" in url_data.keys()
-    if url_data_is_valid:
-        dbot = url_data_to_dbot_score(url_data, url)
-        output = Common.URL(url, dbot).to_context()
-        markdown += create_verified_markdown(url_data, url)
-    else:
-        markdown += f'#### No matches for URL {url} \n'
-        dbot = Common.DBotScore(url, DBotScoreType.URL, "PhishTankV2", 0)
-        output = Common.URL(url, dbot).to_context()
-    return CommandResults(readable_output=markdown, outputs=output)
+    url_object_list_output = []
+    for url in url_list:
+        url_data, url = get_url_data(client, url)
+        url_data_is_valid = url_data and "verified" in url_data.keys()
+        if url_data_is_valid:
+            dbot = url_data_to_dbot_score(url_data, url)
+            markdown += create_verified_markdown(url_data, url)
+        else:
+            markdown += f'#### No matches for URL {url} \n'
+            dbot = Common.DBotScore(url, DBotScoreType.URL, "PhishTankV2", 0)
+        url_object_list_output.append(Common.URL(url, dbot))
+    return CommandResults(readable_output=markdown, indicators=url_object_list_output)
 
 
 def phishtank_reload_command(client: Client):
@@ -312,7 +313,7 @@ def main() -> None:
             return_results(test_module(client))
 
         elif demisto.command() == 'url':
-            url = demisto.args().get("url")
+            url = argToList(demisto.args().get("url"))
             return_results(url_command(client, url))
 
         elif demisto.command() == 'phishtank-reload':
