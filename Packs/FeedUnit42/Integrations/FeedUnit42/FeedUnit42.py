@@ -251,6 +251,7 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
 
         for sub_report in sub_reports:
             if sub_report.get('id') in related_sub_reports:
+                # Indicators relationship only comes from being related to the malware objects of the report.
                 related_ids += [id_ for id_ in matched_relationships.get(sub_report.get('id'), [])
                                 if not id_.startswith('indicator')]
 
