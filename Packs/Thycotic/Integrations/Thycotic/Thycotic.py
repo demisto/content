@@ -19,7 +19,6 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, proxy=proxy)
         self._username = username
         self._password = password
-        self._proxy = proxy
         self._token = self._generate_token()
         self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
 
@@ -100,7 +99,7 @@ def main():
     # get the service API url
     url = demisto.params().get('url')
     proxy = demisto.params().get('proxy', False)
-
+    verify = not demisto.params().get('insecure', False)
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(server_url=url, username=username, password=password, proxy=proxy)
