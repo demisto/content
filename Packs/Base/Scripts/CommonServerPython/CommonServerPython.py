@@ -4213,7 +4213,7 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 class DemistoException(Exception):
     def __init__(self, message, exception=None, res=None, *args):
-        self.res = res
+        self.res = res if res else {}
         self.message = message
         self.exception = exception
         super(DemistoException, self).__init__(message, exception, *args)
