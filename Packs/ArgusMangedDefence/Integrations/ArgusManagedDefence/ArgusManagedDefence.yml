@@ -775,6 +775,151 @@ script:
     description: Remove existing tag with key, value matching
     execution: false
     name: argus_remove_case_tag_by_key_value
+  - arguments:
+    - default: false
+      description: ID of Argus case to update
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: If set, change subject of case.
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
+      description: 'If set, change description of case. May use HTML, will be sanitized. '
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'If set, change status of case '
+      isArray: false
+      name: status
+      predefined:
+      - pendingCustomer
+      - pendingSoc
+      - pendingVendor
+      - pendingClose
+      - workingSoc
+      - workingCustomer
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'If set, change priority of case. '
+      isArray: false
+      name: priority
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'If set, assign given category to specified category (by category
+        shortname). Set value to empty string to unset category. '
+      isArray: false
+      name: category
+      predefined:
+      - network-testing
+      - unauthorized-access
+      - dos
+      - data-leakage
+      - exposed-malicious
+      - malicious-infection
+      - poor-practice
+      - reconnaissance
+      - misconfigured
+      - vpn-down
+      - sensor-malfunctioning
+      - not-receiving-traffic
+      - false-positive
+      - suspected-targeted-attack
+      - duplicate
+      - problem-managed
+      - problem-customer
+      - adware
+      - network-connection-lost
+      - failed-authentication
+      - missing-log-sources
+      - no-threat
+      - phishing
+      - argus-improvement
+      - argus-bug
+      required: false
+      secret: false
+    - default: false
+      description: 'If set, set given user as reporter for case (by ID or shortname).
+        Shortname will be resolved in the current users domain. '
+      isArray: false
+      name: reporter
+      required: false
+      secret: false
+    - default: false
+      description: 'If set, assign given user to case (by ID or shortname). Shortname
+        will be resolved in the current users domain. If blank, this will unset assignedUser. '
+      isArray: false
+      name: assigned_user
+      required: false
+      secret: false
+    - default: false
+      description: If set, assign given technical user (solution engineer) to case
+        (by ID or shortname). Shortname will be resolved in the current users domain.
+        If blank, this will unset assignedTech.
+      isArray: false
+      name: assigned_tech
+      required: false
+      secret: false
+    - default: false
+      description: 'If set, change customer reference for case. '
+      isArray: false
+      name: customer_reference
+      required: false
+      secret: false
+    - default: false
+      description: 'If set, add comment to case. May use HTML, will be sanitized. '
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: If update is made from an email, specify origin email address here
+      isArray: false
+      name: origin_email_address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'f set, update the hasEvents flag for this case, signalling that
+        this case may have events associated to it. '
+      isArray: false
+      name: has_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If true, add comment as internal. (default false)
+      isArray: false
+      name: internal_comment
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Request changes to basic fields of an existing case.
+    execution: false
+    name: argus_update_case
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true

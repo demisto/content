@@ -512,7 +512,28 @@ def remove_case_tag_by_key_value_command(args: Dict[str, Any]) -> CommandResults
 
 
 def update_case_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    case_id = args.get("case_id", None)
+    if not case_id:
+        raise ValueError("case id not specified")
+    result = update_case(
+        id=case_id,
+        subject=args.get("subject", None),
+        description=args.get("description", None),
+        status=args.get("status", None),
+        priority=args.get("priority", None),
+        category=args.get("category", None),
+        reporter=args.get("reporter", None),
+        assignedUser=args.get("assigned_user", None),
+        assignedTech=args.get("assigned_tech", None),
+        customerReference=args.get("customer_reference", None),
+        comment=args.get("comment", None),
+        # notification=args.get("notification", None), TODO needed?
+        originEmailAddress=args.get("origin_email_address", None),
+        hasEvents=args.get("has_events", None),
+        internalComment=args.get("internal_comment", None),
+    )
+    readable_output = pretty_print_case_metadata(result)
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:

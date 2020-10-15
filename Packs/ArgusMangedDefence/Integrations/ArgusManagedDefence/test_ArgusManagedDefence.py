@@ -23,7 +23,7 @@ def test_is_valid_case_type():
     assert not is_valid_case_type("ids", "not_a_type")
 
 
-def test_add_case_tag(requests_mock):
+def test_add_case_tag_command(requests_mock):
     from ArgusManagedDefence import add_case_tag_command
     from argus_json import argus_case_data
 
@@ -35,7 +35,7 @@ def test_add_case_tag(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_TAGS
 
 
-def test_add_comment(requests_mock):
+def test_add_comment_command(requests_mock):
     from ArgusManagedDefence import add_comment_command
     from argus_json import argus_case_data
 
@@ -47,7 +47,7 @@ def test_add_comment(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_COMMENT
 
 
-def test_advanced_case_search(requests_mock):
+def test_advanced_case_search_command(requests_mock):
     from ArgusManagedDefence import advanced_case_search_command
     from argus_json import argus_case_data
 
@@ -58,7 +58,7 @@ def test_advanced_case_search(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_SEARCH_RESULT
 
 
-def test_close_case(requests_mock):
+def test_close_case_command(requests_mock):
     from ArgusManagedDefence import close_case_command
     from argus_json import argus_case_data
 
@@ -69,7 +69,7 @@ def test_close_case(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
 
 
-def test_create_case(requests_mock):
+def test_create_case_command(requests_mock):
     from ArgusManagedDefence import create_case_command
     from argus_json import argus_case_data
 
@@ -87,7 +87,7 @@ def test_create_case(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
 
 
-def test_delete_case(requests_mock):
+def test_delete_case_command(requests_mock):
     from ArgusManagedDefence import delete_case_command
     from argus_json import argus_case_data
 
@@ -99,7 +99,7 @@ def test_delete_case(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
 
 
-def test_delete_comment(requests_mock):
+def test_delete_comment_command(requests_mock):
     from ArgusManagedDefence import delete_comment_command
     from argus_json import argus_case_data
 
@@ -111,11 +111,11 @@ def test_delete_comment(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_COMMENT
 
 
-def test_download_attachment(requests_mock):
+def test_download_attachment_command(requests_mock):
     raise NotImplementedError
 
 
-def test_edit_comment(requests_mock):
+def test_edit_comment_command(requests_mock):
     from ArgusManagedDefence import edit_comment_command
     from argus_json import argus_case_data
 
@@ -127,11 +127,11 @@ def test_edit_comment(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_COMMENT
 
 
-def test_get_attachment(requests_mock):
+def test_get_attachment_command(requests_mock):
     raise NotImplementedError
 
 
-def test_get_case_metadata_by_id(requests_mock):
+def test_get_case_metadata_by_id_command(requests_mock):
     from ArgusManagedDefence import get_case_metadata_by_id_command
     from argus_json import argus_case_data
 
@@ -143,7 +143,7 @@ def test_get_case_metadata_by_id(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
 
 
-def test_list_case_attachments(requests_mock):
+def test_list_case_attachments_command(requests_mock):
     from ArgusManagedDefence import list_case_attachments_command
     from argus_json import argus_case_data
 
@@ -155,7 +155,7 @@ def test_list_case_attachments(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_ATTACHMENT
 
 
-def test_list_case_tags(requests_mock):
+def test_list_case_tags_command(requests_mock):
     from ArgusManagedDefence import list_case_tags_command
     from argus_json import argus_case_data
 
@@ -167,7 +167,7 @@ def test_list_case_tags(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_TAGS
 
 
-def test_list_case_comments(requests_mock):
+def test_list_case_comments_command(requests_mock):
     from ArgusManagedDefence import list_case_comments_command
     from argus_json import argus_case_data
 
@@ -191,7 +191,7 @@ def test_remove_case_tag_by_id_command(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_TAGS
 
 
-def test_remove_case_tag_by_key_value(requests_mock):
+def test_remove_case_tag_by_key_value_command(requests_mock):
     from ArgusManagedDefence import remove_case_tag_by_key_value_command
     from argus_json import argus_case_data
 
@@ -203,34 +203,42 @@ def test_remove_case_tag_by_key_value(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_TAGS
 
 
-def test_update_case(requests_mock):
+def test_update_case_command(requests_mock):
+    from ArgusManagedDefence import update_case_command
+    from argus_json import argus_case_data
+
+    method_url = f"/cases/v2/case/{CASE_ID}"
+
+    requests_mock.put(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_METADATA)
+    args = {"case_id": CASE_ID}
+    result = update_case_command(args)
+    assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
+
+
+def test_get_events_for_case_command(requests_mock):
     raise NotImplementedError
 
 
-def test_get_events_for_case(requests_mock):
+def test_list_aggregated_events_command(requests_mock):
     raise NotImplementedError
 
 
-def test_list_aggregated_events(requests_mock):
+def test_get_payload_command(requests_mock):
     raise NotImplementedError
 
 
-def test_get_payload(requests_mock):
+def test_get_pcap_command(requests_mock):
     raise NotImplementedError
 
 
-def test_get_pcap(requests_mock):
+def test_search_records_command(requests_mock):
     raise NotImplementedError
 
 
-def test_search_records(requests_mock):
+def test_fetch_observations_for_domain_command(requests_mock):
     raise NotImplementedError
 
 
-def test_fetch_observations_for_domain(requests_mock):
-    raise NotImplementedError
-
-
-def test_fetch_observations_for_i_p(requests_mock):
+def test_fetch_observations_for_i_p_command(requests_mock):
     raise NotImplementedError
 
