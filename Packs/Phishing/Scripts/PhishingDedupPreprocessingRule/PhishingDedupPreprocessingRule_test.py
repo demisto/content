@@ -254,3 +254,10 @@ def test_short_text(mocker):
     mocker.patch.object(demisto, 'results', side_effect=results)
     main()
     assert 'too short' in RESULTS
+
+
+def test_generate_incident_type_query_component():
+    type_fields_arg = 'type1,type2'
+    type_values_arg = "hello world, hello world 2"
+    res = generate_incident_type_query_component(type_fields_arg, type_values_arg)
+    assert res == 'type1:("hello world" "hello world 2") or type2:("hello world" "hello world 2")'
