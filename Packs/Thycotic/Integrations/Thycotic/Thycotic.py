@@ -52,7 +52,7 @@ class Client(BaseClient):
 
 def test_module(client: Client,) -> str:
     if client._token == '':
-        raise Exception('Dont access token')
+        raise Exception('Failed to get authorization token. Check you credential and access to Secret Server.')
 
     return 'ok'
 
