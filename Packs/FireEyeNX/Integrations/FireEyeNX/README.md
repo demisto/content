@@ -42,8 +42,8 @@ Search and Retrieve FireEye alerts based on several filters.
 | src_ip | The source IPv4 address related to the malware alert. | Optional | 
 | dst_ip | The destination IPv4 address related to the malware alert. | Optional | 
 | duration | Specifies the time interval to search. This filter is used with either the start_time or end_time filter. If duration, start time, and end time are not specified, the system defaults to duration=12_hours, end_time=current_time. If only duration is specified, the end_time defaults to the current_time.<br/><br/>Options: 1_hour, 2_hours, 6_hours, 12_hours, 24_hours, 48_hours<br/> | Optional | 
-| start_time | Specifies the start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00 | Optional | 
-| end_time | Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00 | Optional | 
+| start_time | Specifies the start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00<br/>2 days<br/>5 hours| Optional | 
+| end_time | Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00<br/>2 days<br/>5 hours | Optional | 
 | file_name | The name of the malware file. | Optional | 
 | file_type | The malware file type. | Optional | 
 | info_level | Specifies the level of information to be returned.<br/><br/>Options: concise, normal, extended | Optional | 
@@ -504,8 +504,8 @@ Returns reports on selected alerts by specifying a time_frame value or a start_t
 | --- | --- | --- |
 | report_type | The type of report to be queried. | Required | 
 | type | The output format of the report. Accepted values are csv, pdf, or both depending upon report type. | Optional | 
-| start_time | Searches between two specified time frames. When specifying a start_time value, you must specify both a start_time and an end_ time value.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00 | Optional | 
-| end_time | Searches between two specified time frames. When specifying an end_ time value, you must specify both a start_time and an end_time value.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00 | Optional | 
+| start_time | Searches between two specified time frames. When specifying a start_time value, you must specify both a start_time and an end_ time value.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00<br/>2 days<br/>5 hours | Optional | 
+| end_time | Searches between two specified time frames. When specifying an end_ time value, you must specify both a start_time and an end_time value.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00<br/>2 days<br/>5 hours | Optional | 
 | time_frame | The timeframe in which reports are searched. | Optional | 
 | limit | This option is required only for IPS Top N reports. The limit option sets the maximum number (N) of items covered by each report. | Optional | 
 | interface | This option is required only for IPS reports. The interface option sets the Internet<br/>interface to one of the following values: A, B, C, D, AB, All | Optional | 
@@ -555,8 +555,8 @@ Search and Retrieve FireEye events based on several filters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | duration | Specifies the time interval to search. This filter is used with the end_time filter. If The duration is not specified, the system defaults to duration=12_hours, end_time= current_time. | Optional | 
-| start_time | Specifies the start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00 | Optional | 
-| end_time | Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. <br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00 | Optional | 
+| start_time | Specifies the start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.<br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00<br/>2 days<br/>5 hours | Optional | 
+| end_time | Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. <br/>Formats:<br/>YYYY-MM-dd<br/>YYYY-MM-ddTHH:mm:ss<br/>Example:<br/>2020-05-01<br/>2020-05-01T00:00:00<br/>2 days<br/>5 hours | Optional | 
 | mvx_correlated_only | Specifies whether to include all IPS events or MVX-correlated events only. Default: false | Optional | 
 
 

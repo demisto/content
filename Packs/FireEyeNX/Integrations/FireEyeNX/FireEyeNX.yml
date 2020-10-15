@@ -164,7 +164,7 @@ script:
     - default: false
       description: "Searches between two specified time frames. When specifying a\
         \ start_time value, you must specify both a start_time and an end_ time value.\n\
-        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
+        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
       isArray: false
       name: start_time
       required: false
@@ -172,7 +172,7 @@ script:
     - default: false
       description: "Searches between two specified time frames. When specifying an\
         \ end_ time value, you must specify both a start_time and an end_time value.\n\
-        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
+        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
       isArray: false
       name: end_time
       required: false
@@ -319,7 +319,7 @@ script:
       description: "Specifies the start time of the search. This filter is used with\
         \ the duration filter. If the start_time is specified but not the duration,\
         \ the system defaults to duration=12_hours, starting at the specified start_time.\n\
-        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
+        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
       isArray: false
       name: start_time
       required: false
@@ -328,7 +328,7 @@ script:
       description: "Specifies the end time of the search. This filter is used with\
         \ the duration filter. If the end_time is specified but not the duration,\
         \ the system defaults to duration=12_hours, ending at the specified end_time.\n\
-        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
+        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
       isArray: false
       name: end_time
       required: false
@@ -1171,7 +1171,7 @@ script:
       description: "Specifies the start time of the search. This filter is used with\
         \ the duration filter. If the start_time is specified but not the duration,\
         \ the system defaults to duration=12_hours, starting at the specified start_time.\n\
-        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
+        Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
       isArray: false
       name: start_time
       required: false
@@ -1180,7 +1180,7 @@ script:
       description: "Specifies the end time of the search. This filter is used with\
         \ the duration filter. If the end_time is specified but not the duration,\
         \ the system defaults to duration=12_hours, ending at the specified end_time.\
-        \ \nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00"
+        \ \nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
       isArray: false
       name: end_time
       required: false
