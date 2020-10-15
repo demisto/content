@@ -43,8 +43,6 @@ from argus_api.api.reputation.v1.observation import (
     fetch_observations_for_i_p,
 )
 
-from argus_json import argus_case_services, argus_case_categories
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -56,6 +54,72 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_INCIDENTS_TO_FETCH = 50
 FETCH_TAG = demisto.params().get("fetch_tag")
+services = [
+    {
+        "id": 2,
+        "shortName": "ids",
+        "name": "Security Monitoring",
+        "caseTypes": [
+            "operationalIncident",
+            "change",
+            "securityIncident",
+            "informational",
+        ],
+        "workflows": [
+            "severityAlert",
+            "escalateInfra",
+            "escalateTI",
+            "escalateDEV",
+            "validation",
+            "customerUpdate",
+            "slaViolation",
+            "escalateNSA",
+            "escalateLog",
+            "internalSlaViolation",
+            "escalateMSSAnalyst",
+            "escalation",
+            "tuning",
+        ],
+    },
+    {
+        "id": 6,
+        "shortName": "support",
+        "name": "Support",
+        "caseTypes": ["informational", "operationalIncident"],
+        "workflows": ["customerUpdate", "escalateDEV"],
+    },
+    {
+        "id": 13,
+        "shortName": "administrative",
+        "name": "Administrative",
+        "caseTypes": ["informational"],
+        "workflows": [
+            "escalateTRS",
+            "customerUpdate",
+            "escalateNSA",
+            "escalateInfra",
+            "escalateTI",
+            "escalateLog",
+            "escalateMSSAnalyst",
+            "escalateDEV",
+        ],
+    },
+    {
+        "id": 221,
+        "shortName": "advisory",
+        "name": "Advisory",
+        "caseTypes": ["informational"],
+        "workflows": ["customerUpdate", "escalateMSSAnalyst"],
+    },
+    {
+        "id": 260,
+        "shortName": "vulnscan",
+        "name": "Vulnerability Scanning",
+        "caseTypes": ["informational", "operationalIncident"],
+        "workflows": ["escalateTRS", "customerUpdate", "escalateDEV"],
+    },
+]
+
 
 """ CLIENT CLASS """
 
@@ -86,8 +150,11 @@ def argus_status_to_demisto_status(status: str) -> int:
     return mapping.get(status, 0)
 
 
-def list_to_dict(lst: list) -> dict:
-    return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
+def build_tags_from_list(lst: list) -> List[Dict]:
+    tags = []
+    for i in range(0, len(lst), 2):
+        tags.append({"key": lst[i], "value": lst[i + 1]})
+    return tags
 
 
 def pretty_print_case_metadata(
@@ -104,26 +171,14 @@ def pretty_print_case_metadata(
 
 
 def is_valid_service(service: str) -> bool:
-    return any(s["shortName"] == service for s in argus_case_services.services)
+    return any(s["shortName"] == service for s in services)
 
 
 def is_valid_case_type(service: str, case_type: str) -> bool:
-    if not is_valid_service(service):
-        return False
-    return (
+    return is_valid_service(service) and (
         case_type
-        in next(
-            (s for s in argus_case_services.services if s["shortName"] == service), {}
-        )["caseTypes"]
+        in next((s for s in services if s["shortName"] == service), {})["caseTypes"]
     )
-
-
-def is_valid_category(service: str, case_type: str, category: str) -> bool:
-    return False
-
-
-def is_valid_case(case: dict) -> bool:
-    return is_valid_service() and is_valid_case_type() and is_valid_category()
 
 
 """ COMMAND FUNCTIONS """
@@ -253,24 +308,38 @@ def close_case_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def create_case_command(args: Dict[str, Any]) -> CommandResults:
+    subject = args.get("subject", None)
+    description = args.get("description", None)
+    service = args.get("service", None)
+    case_type = args.get("type", None)
     tags = args.get("tags", None)
-    # if tags:
-    #     tags = str(tags).split(",")
-    #     if len(tags) % 2 != 0:
-    #         raise ValueError("tags list must be of even number", tags)
-    #     tags = list_to_dict(tags)
+    if not subject:
+        raise ValueError("subject not specified")
+    if not description:
+        raise ValueError("description not specified")
+    if not service:
+        raise ValueError("service not specified")
+    if not case_type:
+        raise ValueError("case_type not specified")
+    if not is_valid_case_type(service, case_type):
+        raise ValueError("invalid service: case type combination")
+    if tags:
+        tags = str(tags).split(",")
+        if len(tags) % 2 != 0:
+            raise ValueError("tags list must be of even number", tags)
+        tags = build_tags_from_list(tags)
 
     result = create_case(
         customer=args.get("customer", None),
-        service=args.get("service", None),
+        service=service,
         category=args.get("category", None),
-        type=args.get("type", None),
+        type=case_type,
         status=args.get("status", None),
         # watchers=args.get("watchers", None), TODO implement
         # fields=args.get("fields", None), TODO needed?
-        # tags=tags,
-        subject=args.get("subject", None),
-        description=args.get("description", None),
+        tags=tags,
+        subject=subject,
+        description=description,
         customerReference=args.get("customer_reference", None),
         priority=args.get("priority", None),
         accessMode=args.get("access_mode", None),
@@ -282,6 +351,7 @@ def create_case_command(args: Dict[str, Any]) -> CommandResults:
         defaultWatchers=args.get("default_watchers", None),
     )
     readable_output = pretty_print_case_metadata(result)
+
     return CommandResults(readable_output=readable_output, outputs=result)
 
 

@@ -18,6 +18,10 @@ def test_is_valid_case_type():
     assert not is_valid_case_type("not_a_service", "change")
     assert not is_valid_case_type("ids", "not_a_type")
 
+def test_is_valid_category():
+    from ArgusManagedDefence import is_valid_category
+    assert is_valid_category("administrative", "informational", "argus-bug")
+
 
 def test_add_case_tag(requests_mock):
     from ArgusManagedDefence import add_case_tag_command
@@ -72,7 +76,13 @@ def test_create_case(requests_mock):
     method_url = f"/cases/v2/case/"
 
     requests_mock.post(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_METADATA)
-    args = {"case_id": case_id}
+    args = {
+        "subject": "test subject",
+        "description": "test description",
+        "service": "administrative",
+        "type": "informational",
+        "tags": "test_key,test_value"
+    }
     result = create_case_command(args)
     assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
 

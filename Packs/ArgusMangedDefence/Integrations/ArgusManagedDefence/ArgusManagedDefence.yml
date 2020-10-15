@@ -488,23 +488,63 @@ script:
       name: customer
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: ID of service to create case for
       isArray: false
       name: service
-      required: false
+      predefined:
+      - ids
+      - support
+      - administrative
+      - advisory
+      - vulnscan
+      required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: 'If set, assign given category to new case (by category shortname). '
       isArray: false
       name: category
+      predefined:
+      - network-testing
+      - unauthorized-access
+      - dos
+      - data-leakage
+      - exposed-malicious
+      - malicious-infection
+      - poor-practice
+      - reconnaissance
+      - misconfigured
+      - vpn-down
+      - sensor-malfunctioning
+      - not-receiving-traffic
+      - false-positive
+      - suspected-targeted-attack
+      - duplicate
+      - problem-managed
+      - problem-customer
+      - adware
+      - network-connection-lost
+      - failed-authentication
+      - missing-log-sources
+      - no-threat
+      - phishing
+      - argus-improvement
+      - argus-bug
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: 'Type of case to create '
       isArray: false
-      name: 'type:'
-      required: false
+      name: type
+      predefined:
+      - operationalIncident
+      - change
+      - securityIncident
+      - informational
+      required: true
       secret: false
     - auto: PREDEFINED
       default: false
@@ -523,7 +563,7 @@ script:
       secret: false
     - default: false
       description: Tags to add on case creation.  (key,value,key,value, ...)
-      isArray: false
+      isArray: true
       name: tags
       required: false
       secret: false
@@ -531,13 +571,13 @@ script:
       description: Subject of case to create.
       isArray: false
       name: subject
-      required: false
+      required: true
       secret: false
     - default: true
       description: 'Case description. May use HTML, which will be sanitized. '
       isArray: false
       name: description
-      required: false
+      required: true
       secret: false
     - default: false
       description: Customer reference for case.
