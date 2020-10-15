@@ -204,7 +204,7 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
         mask = (existing_incidents_df[FROM_FIELD] != '') & \
                (existing_incidents_df[FROM_FIELD] == new_incident[FROM_FIELD])
         existing_incidents_df = existing_incidents_df[mask]
-    existing_incidents_df['distance'] = existing_incidents_df['similarity'].apply(lambda x: 1-x)
+    existing_incidents_df['distance'] = existing_incidents_df['similarity'].apply(lambda x: 1 - x)
     tie_breaker_col = 'id'
     try:
         existing_incidents_df['int_id'] = existing_incidents_df['id'].astype(int)
