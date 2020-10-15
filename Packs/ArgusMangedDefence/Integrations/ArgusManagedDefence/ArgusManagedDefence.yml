@@ -651,6 +651,23 @@ script:
     description: Mark existing case as deleted
     execution: false
     name: argus_delete_case
+  - arguments:
+    - default: false
+      description: ID of Argus case where comment exists
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of comment to mark as deleted
+      isArray: false
+      name: comment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Mark existing comment as deleted
+    execution: false
+    name: argus_delete_comment
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true

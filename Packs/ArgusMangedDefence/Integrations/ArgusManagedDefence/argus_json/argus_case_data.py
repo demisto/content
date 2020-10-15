@@ -467,4 +467,3 @@ ARGUS_CASE_SEARCH_RESULT = {
         }
     ],
 }
-

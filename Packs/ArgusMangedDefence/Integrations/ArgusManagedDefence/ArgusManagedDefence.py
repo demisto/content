@@ -366,7 +366,19 @@ def delete_case_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    case_id = args.get("case_id", None)
+    comment_id = args.get("comment_id", None)
+    if not case_id:
+        raise ValueError("case id not specified")
+    if not comment_id:
+        raise ValueError("comment id not specifed")
+    result = delete_comment(caseID=case_id, commentID=comment_id)
+    readable_output = f"# #{case_id}: Deleted comment\n"
+    readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['lastUpdatedTime']}*\n"
+    readable_output += f"{result['data']['comment']}"
+    readable_output += f"Flags: {str(result['data']['flags'])}"
+
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def download_attachment_command(args: Dict[str, Any]) -> CommandResults:
@@ -428,6 +440,8 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
             f"#### *{comment['addedByUser']['userName']} - {comment['addedTime']}*\n"
         )
         readable_output += f"{comment['comment']}\n\n"
+        readable_output += f"_id: {comment['id']}_\n"
+        readable_output += "* * *\n"
 
     return CommandResults(readable_output=readable_output, outputs=result)
 
