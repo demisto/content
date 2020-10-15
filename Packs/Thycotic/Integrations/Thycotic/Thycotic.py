@@ -99,7 +99,7 @@ def main():
     # get the service API url
     url = demisto.params().get('url')
     proxy = demisto.params().get('proxy', False)
-
+    verify = not demisto.params().get('insecure', False)
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(server_url=url, username=username, password=password, proxy=proxy)
