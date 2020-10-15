@@ -1512,9 +1512,7 @@ tasks:
       id: 14386fd7-3472-4950-87f1-1a0b814b107b
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
-        the instance.
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -1603,9 +1601,7 @@ tasks:
       id: 5ba298dc-a230-479c-8928-3d2c9cf6f87c
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
-        the instance.
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -1666,8 +1662,7 @@ tasks:
       id: 885f0470-6be3-41cb-8de8-ef75175030c2
       version: -1
       name: panorama-security-policy-match
-      description: Checks whether a session matches the specified security policy.
-        This command is only available on Firewall instances.
+      description: Checks whether a session matches the specified security policy. This command is only available on Firewall instances.
       script: '|||panorama-security-policy-match'
       type: regular
       iscommand: true
@@ -1902,9 +1897,7 @@ tasks:
       id: e65e70a0-ae92-4dea-8d87-5a470bfacd9e
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
-        the instance.
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -2078,3 +2071,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

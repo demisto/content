@@ -1,7 +1,7 @@
-id: ARIA Packet Intelligence - Test
+id: temp - Test
 version: -1
-name: ARIA Packet Intelligence - Test
-description: Use for testing the aria_packet_intelligence integration
+name: temp - Test
+description: temp testing
 starttaskid: "0"
 tasks:
   "0":

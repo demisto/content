@@ -17,7 +17,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -42,7 +42,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "2"
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -68,7 +68,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     scriptarguments:
       all:
         simple: "yes"
@@ -101,10 +101,10 @@ tasks:
       brand: Cymon
     nexttasks:
       '#none#':
-        - "4"
-        - "5"
-        - "7"
-        - "34"
+      - "4"
+      - "5"
+      - "7"
+      - "34"
     scriptarguments:
       execution-timeout:
         simple: "60"
@@ -129,18 +129,14 @@ tasks:
       id: e380d504-92b2-4d81-860e-a192864376bb
       version: -1
       name: StringContains
-      description: "Checks whether substring is within string. Returns: \nyes - string
-        contains substring. \nno - string does not contain substring. \nIf stringSeperator
-        is provided, the substring will be split using the separator, and each item
-        will be checked.\nIf one of the items will be found in the string, the srcipt
-        will return yes.\n"
+      description: "Checks whether substring is within string. Returns: \nyes - string contains substring. \nno - string does not contain substring. \nIf stringSeperator is provided, the substring will be split using the separator, and each item will be checked.\nIf one of the items will be found in the string, the srcipt will return yes.\n"
       scriptName: StringContains
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-        - "6"
+      - "6"
     scriptarguments:
       string:
         simple: ${IP.Address}
@@ -165,18 +161,14 @@ tasks:
       id: 67698dc7-2ea2-4b43-8c13-1fbc13f68d57
       version: -1
       name: StringContains
-      description: "Checks whether substring is within string. Returns: \nyes - string
-        contains substring. \nno - string does not contain substring. \nIf stringSeperator
-        is provided, the substring will be split using the separator, and each item
-        will be checked.\nIf one of the items will be found in the string, the srcipt
-        will return yes.\n"
+      description: "Checks whether substring is within string. Returns: \nyes - string contains substring. \nno - string does not contain substring. \nIf stringSeperator is provided, the substring will be split using the separator, and each item will be checked.\nIf one of the items will be found in the string, the srcipt will return yes.\n"
       scriptName: StringContains
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-        - "6"
+      - "6"
     scriptarguments:
       string:
         simple: ${IP.Malicious.Vendor}
@@ -207,7 +199,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "8"
+      - "8"
     separatecontext: false
     view: |-
       {
@@ -238,7 +230,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "6"
+      - "6"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -270,7 +262,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "9"
+      - "9"
     scriptarguments:
       all:
         simple: "yes"
@@ -303,7 +295,7 @@ tasks:
       brand: Cymon
     nexttasks:
       '#none#':
-        - "10"
+      - "10"
     scriptarguments:
       execution-timeout:
         simple: "60"
@@ -334,17 +326,17 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "11"
+      - "11"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotExists
-              left:
-                value:
-                  complex:
-                    root: IP
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: IP
+            iscontext: true
     view: |-
       {
         "position": {
@@ -368,7 +360,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "12"
+      - "12"
     separatecontext: false
     view: |-
       {
@@ -394,7 +386,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "13"
+      - "13"
     scriptarguments:
       all:
         simple: "yes"
@@ -427,9 +419,9 @@ tasks:
       brand: Cymon
     nexttasks:
       '#none#':
-        - "16"
-        - "14"
-        - "15"
+      - "16"
+      - "14"
+      - "15"
     scriptarguments:
       execution-timeout:
         simple: "60"
@@ -467,7 +459,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "17"
+      - "17"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -492,18 +484,14 @@ tasks:
       id: b542ea3d-9b4a-4cdd-859c-20ea7b70eaac
       version: -1
       name: StringContains
-      description: "Checks whether substring is within string. Returns: \nyes - string
-        contains substring. \nno - string does not contain substring. \nIf stringSeperator
-        is provided, the substring will be split using the separator, and each item
-        will be checked.\nIf one of the items will be found in the string, the srcipt
-        will return yes.\n"
+      description: "Checks whether substring is within string. Returns: \nyes - string contains substring. \nno - string does not contain substring. \nIf stringSeperator is provided, the substring will be split using the separator, and each item will be checked.\nIf one of the items will be found in the string, the srcipt will return yes.\n"
       scriptName: StringContains
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-        - "17"
+      - "17"
     scriptarguments:
       string:
         simple: ${IP.Malicious.Vendor}
@@ -528,18 +516,14 @@ tasks:
       id: 469df6b8-412e-4c3c-8337-6d6127aa664f
       version: -1
       name: StringContains
-      description: "Checks whether substring is within string. Returns: \nyes - string
-        contains substring. \nno - string does not contain substring. \nIf stringSeperator
-        is provided, the substring will be split using the separator, and each item
-        will be checked.\nIf one of the items will be found in the string, the srcipt
-        will return yes.\n"
+      description: "Checks whether substring is within string. Returns: \nyes - string contains substring. \nno - string does not contain substring. \nIf stringSeperator is provided, the substring will be split using the separator, and each item will be checked.\nIf one of the items will be found in the string, the srcipt will return yes.\n"
       scriptName: StringContains
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-        - "17"
+      - "17"
     scriptarguments:
       string:
         simple: ${IP.Address}
@@ -570,7 +554,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "18"
+      - "18"
     separatecontext: false
     view: |-
       {
@@ -596,7 +580,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "19"
+      - "19"
     scriptarguments:
       all:
         simple: "yes"
@@ -629,7 +613,7 @@ tasks:
       brand: Cymon
     nexttasks:
       '#none#':
-        - "22"
+      - "22"
     scriptarguments:
       execution-timeout:
         simple: "60"
@@ -662,7 +646,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "23"
+      - "23"
     separatecontext: false
     view: |-
       {
@@ -688,7 +672,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "21"
+      - "21"
     separatecontext: false
     view: |-
       {
@@ -714,7 +698,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "24"
+      - "24"
     scriptarguments:
       all:
         simple: "yes"
@@ -747,7 +731,7 @@ tasks:
       brand: Cymon
     nexttasks:
       '#none#':
-        - "25"
+      - "25"
     scriptarguments:
       domain:
         simple: asdfd23rf.com
@@ -781,22 +765,22 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "26"
+      - "26"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotExists
-              left:
-                value:
-                  complex:
-                    root: Domain
-                iscontext: true
-          - - operator: isNotExists
-              left:
-                value:
-                  simple: Cymon.Domain
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: Domain
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: Cymon.Domain
+            iscontext: true
     view: |-
       {
         "position": {
@@ -820,7 +804,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "27"
+      - "27"
     separatecontext: false
     view: |-
       {
@@ -846,7 +830,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "28"
+      - "28"
     scriptarguments:
       all:
         simple: "yes"
@@ -879,10 +863,10 @@ tasks:
       brand: Cymon
     nexttasks:
       '#none#':
-        - "30"
-        - "31"
-        - "32"
-        - "33"
+      - "30"
+      - "31"
+      - "32"
+      - "33"
     scriptarguments:
       domain:
         simple: google.com
@@ -918,7 +902,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "35"
+      - "35"
     separatecontext: false
     view: |-
       {
@@ -937,18 +921,14 @@ tasks:
       id: 531d96db-3762-4e91-8867-7e0cdc589c93
       version: -1
       name: StringContains
-      description: "Checks whether substring is within string. Returns: \nyes - string
-        contains substring. \nno - string does not contain substring. \nIf stringSeperator
-        is provided, the substring will be split using the separator, and each item
-        will be checked.\nIf one of the items will be found in the string, the srcipt
-        will return yes.\n"
+      description: "Checks whether substring is within string. Returns: \nyes - string contains substring. \nno - string does not contain substring. \nIf stringSeperator is provided, the substring will be split using the separator, and each item will be checked.\nIf one of the items will be found in the string, the srcipt will return yes.\n"
       scriptName: StringContains
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-        - "29"
+      - "29"
     scriptarguments:
       string:
         simple: ${Domain.Name}
@@ -973,18 +953,14 @@ tasks:
       id: 394a0ca9-7bcd-43ba-880e-04c0d8487254
       version: -1
       name: StringContains
-      description: "Checks whether substring is within string. Returns: \nyes - string
-        contains substring. \nno - string does not contain substring. \nIf stringSeperator
-        is provided, the substring will be split using the separator, and each item
-        will be checked.\nIf one of the items will be found in the string, the srcipt
-        will return yes.\n"
+      description: "Checks whether substring is within string. Returns: \nyes - string contains substring. \nno - string does not contain substring. \nIf stringSeperator is provided, the substring will be split using the separator, and each item will be checked.\nIf one of the items will be found in the string, the srcipt will return yes.\n"
       scriptName: StringContains
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-        - "29"
+      - "29"
     scriptarguments:
       string:
         simple: ${Domain.Malicious.Vendor}
@@ -1021,12 +997,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "29"
+      - "29"
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: "Domain.Activities.Tags, Domain.Activities.Time, Domain.Activities.Title,
-          Domain.Activities.Hostname, \nDomain.Activities.IP"
+        simple: "Domain.Activities.Tags, Domain.Activities.Time, Domain.Activities.Title, Domain.Activities.Hostname, \nDomain.Activities.IP"
       path:
         simple: Cymon
     separatecontext: false
@@ -1059,7 +1034,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "29"
+      - "29"
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -1095,7 +1070,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "6"
+      - "6"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -1127,7 +1102,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "36"
+      - "36"
     scriptarguments:
       all:
         simple: "yes"
@@ -1160,10 +1135,10 @@ tasks:
       brand: Cymon
     nexttasks:
       '#none#':
-        - "38"
-        - "39"
-        - "40"
-        - "37"
+      - "38"
+      - "39"
+      - "40"
+      - "37"
     scriptarguments:
       domain:
         simple: google.com
@@ -1194,18 +1169,14 @@ tasks:
       id: fd22df77-3f1f-4b07-8d4a-94fd624aba61
       version: -1
       name: StringContains
-      description: "Checks whether substring is within string. Returns: \nyes - string
-        contains substring. \nno - string does not contain substring. \nIf stringSeperator
-        is provided, the substring will be split using the separator, and each item
-        will be checked.\nIf one of the items will be found in the string, the srcipt
-        will return yes.\n"
+      description: "Checks whether substring is within string. Returns: \nyes - string contains substring. \nno - string does not contain substring. \nIf stringSeperator is provided, the substring will be split using the separator, and each item will be checked.\nIf one of the items will be found in the string, the srcipt will return yes.\n"
       scriptName: StringContains
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-        - "41"
+      - "41"
     scriptarguments:
       string:
         simple: ${Domain.Malicious.Vendor}
@@ -1230,18 +1201,14 @@ tasks:
       id: a2f24ba8-4dfc-4609-85d3-a4e2e980b1c2
       version: -1
       name: StringContains
-      description: "Checks whether substring is within string. Returns: \nyes - string
-        contains substring. \nno - string does not contain substring. \nIf stringSeperator
-        is provided, the substring will be split using the separator, and each item
-        will be checked.\nIf one of the items will be found in the string, the srcipt
-        will return yes.\n"
+      description: "Checks whether substring is within string. Returns: \nyes - string contains substring. \nno - string does not contain substring. \nIf stringSeperator is provided, the substring will be split using the separator, and each item will be checked.\nIf one of the items will be found in the string, the srcipt will return yes.\n"
       scriptName: StringContains
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-        - "41"
+      - "41"
     scriptarguments:
       string:
         simple: ${Domain.Name}
@@ -1278,12 +1245,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "41"
+      - "41"
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: "Domain.Activities.Tags, Domain.Activities.Time, Domain.Activities.Title,
-          Domain.Activities.Hostname, \nDomain.Activities.IP"
+        simple: "Domain.Activities.Tags, Domain.Activities.Time, Domain.Activities.Title, Domain.Activities.Hostname, \nDomain.Activities.IP"
       path:
         simple: Cymon
     separatecontext: false
@@ -1316,7 +1282,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "41"
+      - "41"
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -1368,3 +1334,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

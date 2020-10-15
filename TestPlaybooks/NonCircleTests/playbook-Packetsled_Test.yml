@@ -2,9 +2,7 @@ id: TestPacketsled
 version: -1
 name: TestPacketsled
 fromversion: ""
-description: Enumerate the packetsled entities with incidents, and query each entity
-  for artifacts (metadata, extracted files, and packet capture) that are then delivered
-  into the demisto War Room.
+description: Enumerate the packetsled entities with incidents, and query each entity for artifacts (metadata, extracted files, and packet capture) that are then delivered into the demisto War Room.
 starttaskid: "0"
 tasks:
   "0":
@@ -170,3 +168,6 @@ view: |-
     }
   }
 inputs: []
+toversion: 4.5.9
+tests:
+- No test

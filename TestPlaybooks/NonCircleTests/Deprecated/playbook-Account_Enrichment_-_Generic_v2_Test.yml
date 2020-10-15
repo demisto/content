@@ -183,11 +183,7 @@ tasks:
       - "5"
     scriptarguments:
       message:
-        simple: The accounts were not enriched as expected (did not get the outputs
-          that we expected from the Account Enrichment - Generic playbook). Check
-          if the users still exist in the integrations used by that playbook (Active
-          Directory, for example). Also checks that the outputs are there and that
-          they are the outputs we are checking for.
+        simple: The accounts were not enriched as expected (did not get the outputs that we expected from the Account Enrichment - Generic playbook). Check if the users still exist in the integrations used by that playbook (Active Directory, for example). Also checks that the outputs are there and that they are the outputs we are checking for.
     separatecontext: false
     view: |-
       {
@@ -250,3 +246,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

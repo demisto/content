@@ -465,8 +465,7 @@ tasks:
     task:
       id: a52e23c6-7780-442e-8ff9-194e2936d558
       version: -1
-      name: 'servicenow-update-ticket Ticket #0, Summary: "Goodbye Please", Assignee:
-        "New Assignee", State: "2 - In Progress"'
+      name: 'servicenow-update-ticket Ticket #0, Summary: "Goodbye Please", Assignee: "New Assignee", State: "2 - In Progress"'
       script: '|||servicenow-update-ticket'
       type: regular
       iscommand: true
@@ -1829,8 +1828,7 @@ tasks:
       id: 7920cbf8-6bc7-4c62-8acc-72c53201ee67
       version: -1
       name: servicenow-get-ticket-notes
-      description: Get notes from the specified ServiceNow ticket - Permissions are
-        required for the sys_journal_field table.
+      description: Get notes from the specified ServiceNow ticket - Permissions are required for the sys_journal_field table.
       script: '|||servicenow-get-ticket-notes'
       type: regular
       iscommand: true
@@ -2290,3 +2288,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

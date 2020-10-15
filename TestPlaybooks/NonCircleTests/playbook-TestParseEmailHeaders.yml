@@ -307,8 +307,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?=
-                =?utf-8?q?mmer=C3=A7ant_Pickup_!?='
+              simple: '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?= =?utf-8?q?mmer=C3=A7ant_Pickup_!?='
       - - operator: isEqualString
           left:
             value:
@@ -408,3 +407,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

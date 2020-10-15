@@ -44,8 +44,7 @@ tasks:
       - "13"
     scriptarguments:
       body:
-        simple: <h1>Incident ID ${incident.id}</h1><p>Hello from Demisto Playbook,
-          Incident ID ${incident.id} created on ${incident.created}.</p>
+        simple: <h1>Incident ID ${incident.id}</h1><p>Hello from Demisto Playbook, Incident ID ${incident.id} created on ${incident.created}.</p>
       space:
         simple: DemistoContent
       title:
@@ -95,8 +94,7 @@ tasks:
     task:
       id: fd00ee53-4389-40b0-8eab-45831984cd2f
       version: -1
-      name: Check to see if any Pages were returned and that the newly created Page
-        exists
+      name: Check to see if any Pages were returned and that the newly created Page exists
       type: condition
       iscommand: false
       brand: ""
@@ -166,8 +164,7 @@ tasks:
       - "22"
     scriptarguments:
       body:
-        simple: ${Confluence.Content.body.storage.value}<br/><br/><p>This is a successful
-          Page update!</p>
+        simple: ${Confluence.Content.body.storage.value}<br/><br/><p>This is a successful Page update!</p>
       currentversion:
         simple: ${Confluence.Content.Version}
       pageid:
@@ -532,3 +529,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

@@ -63,8 +63,7 @@ tasks:
       id: e0973ef7-c26c-45d4-815a-7debb4982073
       version: -1
       name: ip
-      description: Check IP reputation (when information is available, returns a JSON
-        with details).  Uses all configured Threat Intelligence feeds
+      description: Check IP reputation (when information is available, returns a JSON with details).  Uses all configured Threat Intelligence feeds
       script: Shodan|||ip
       type: regular
       iscommand: true
@@ -199,3 +198,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

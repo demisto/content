@@ -529,8 +529,7 @@ tasks:
       - "21"
     scriptarguments:
       query:
-        simple: RegistryEvents | where MachineId contains '4899036531e374137f63289c3267bad772c13fef'
-          | take 1 | project MachineId, ReportId, tostring(EventTime)
+        simple: RegistryEvents | where MachineId contains '4899036531e374137f63289c3267bad772c13fef' | take 1 | project MachineId, ReportId, tostring(EventTime)
     separatecontext: false
     view: |-
       {
@@ -729,3 +728,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

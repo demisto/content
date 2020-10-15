@@ -173,8 +173,7 @@ tasks:
       id: c2ec5003-ddfd-4c70-8fea-b6f17e3f078f
       version: -1
       name: Did enrichment work?
-      description: Checks whether the enrichment outputs that we expected are in the
-        context.
+      description: Checks whether the enrichment outputs that we expected are in the context.
       type: condition
       iscommand: false
       brand: ""
@@ -240,11 +239,7 @@ tasks:
       - "4"
     scriptarguments:
       message:
-        simple: Not all enrichment outputs were in context. Please check if hostnames
-          that the integrations should know - have changed, and whether outputs of
-          those integrations were the outputs we expected. For example, there could
-          be a case where we look for "Windows 7" as the output for OS version, but
-          the system was upgraded to Windows 10.
+        simple: Not all enrichment outputs were in context. Please check if hostnames that the integrations should know - have changed, and whether outputs of those integrations were the outputs we expected. For example, there could be a case where we look for "Windows 7" as the output for OS version, but the system was upgraded to Windows 10.
     separatecontext: false
     view: |-
       {
@@ -270,3 +265,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test
