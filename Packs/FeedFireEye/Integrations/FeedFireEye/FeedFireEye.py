@@ -305,19 +305,23 @@ class Client(BaseClient):
         tlp_color (str): Traffic Light Protocol color.
     """
 
-    def __init__(self, public_key: str, private_key: str, first_fetch_timestamp: str,
+    def __init__(self, public_key: str, private_key: str,
                  malicious_threshold: int, reputation_interval: int,
                  polling_timeout: int = 20, insecure: bool = False, proxy: bool = False,
                  tags: list = [], tlp_color: Optional[str] = None):
         super().__init__(base_url=API_URL, verify=not insecure, proxy=proxy)
         self.public_key = public_key
         self.private_key = private_key
-        self.first_fetch_timestamp = first_fetch_timestamp
         self.reputation_interval = reputation_interval
         self.malicious_threshold = malicious_threshold
         self._polling_timeout = polling_timeout
         self.tags = tags
         self.tlp_color = tlp_color
+
+        integration_context = demisto.getIntegrationContext()
+        # 946768556 is 2000-01-01
+        self.last_indicators_fetch_time = integration_context.get('last_indicators_fetch_time', 946768556)
+        self.last_reports_fetch_time = integration_context.get('last_reports_fetch_time', 946768556)
 
     @staticmethod
     def parse_access_token_expiration_time(expires_in: str) -> int:
@@ -406,9 +410,9 @@ class Client(BaseClient):
         }
 
         if limit == -1:
-            query_url = f'/collections/indicators/objects?added_after={self.first_fetch_timestamp}&length=1000'
+            query_url = f'/collections/indicators/objects?added_after={self.last_indicators_fetch_time}&length=1000'
         else:
-            query_url = f'/collections/indicators/objects?added_after={self.first_fetch_timestamp}&' \
+            query_url = f'/collections/indicators/objects?added_after={self.last_indicators_fetch_time}&' \
                         f'length={min(limit, 1000)}'
 
         round_count = 0
@@ -473,9 +477,9 @@ class Client(BaseClient):
         }
 
         if limit == -1:
-            query_url = f'/collections/reports/objects?added_after={self.first_fetch_timestamp}&length=100'
+            query_url = f'/collections/reports/objects?added_after={self.last_reports_fetch_time}&length=100'
         else:
-            query_url = f'/collections/reports/objects?added_after={self.first_fetch_timestamp}&' \
+            query_url = f'/collections/reports/objects?added_after={self.last_reports_fetch_time}&' \
                         f'length={min(limit, 100)}'
 
         round_count = 0
@@ -624,8 +628,6 @@ def main():
 
     public_key = demisto.params().get('credentials').get('identifier')
     private_key = demisto.params().get('credentials').get('password')
-    first_fetch_timestamp = parse(demisto.params().get('first_fetch_timestamp', '1 month')).timestamp()
-    first_fetch_timestamp = str(first_fetch_timestamp).split('.')[0]
     threshold = demisto.params().get('threshold', '70')
     reputation_interval = demisto.params().get('reputation_interval', '30')
     verify_threshold_reputation_interval_types(threshold, reputation_interval)
@@ -642,7 +644,7 @@ def main():
     demisto.info(f'Command being called is {command}')
     command = demisto.command()
     try:
-        client = Client(public_key, private_key, first_fetch_timestamp, int(threshold), int(reputation_interval),
+        client = Client(public_key, private_key, int(threshold), int(reputation_interval),
                         polling_timeout, insecure, proxy, feedTags, tlp_color)
         if command == 'test-module':
             return_outputs(*test_module(client))
