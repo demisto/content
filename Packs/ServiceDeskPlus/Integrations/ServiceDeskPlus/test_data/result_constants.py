@@ -43,7 +43,7 @@ EXPECTED_CREATE_REQUEST = {
                 'id': '123640000000006805'
             },
             'CreatedBy': {
-                'email_id': 'akrupnik@paloaltonetworks.com',
+                'email_id': 'email@address.com',
                 'is_technician': True,
                 'sms_mail': None,
                 'phone': None,
@@ -133,11 +133,11 @@ EXPECTED_UPDATE_REQUEST = {
                 'id': '123640000000006805'
             },
             'CreatedBy': {
-                'email_id': 'akrupnik@paloaltonetworks.com',
+                'email_id': 'email@address.com',
                 'is_technician': True,
                 'sms_mail': None,
                 'phone': None,
-                'name': 'Arseny Krupnik',
+                'name': 'First Last',
                 'mobile': None,
                 'id': '123640000000142582',
                 'photo_url': 'https://contacts.zoho.com/file?exp=10&ID=712874208&t=user&height=60&width=60',
@@ -223,11 +223,11 @@ EXPECTED_LIST_SINGLE_REQUEST = {
                 'id': '123640000000006805'
             },
             'CreatedBy': {
-                'email_id': 'akrupnik@paloaltonetworks.com',
+                'email_id': 'email@address.com',
                 'is_technician': True,
                 'sms_mail': None,
                 'phone': None,
-                'name': 'Arseny Krupnik',
+                'name': 'First Last',
                 'mobile': None,
                 'id': '123640000000142582',
                 'photo_url': 'https://contacts.zoho.com/file?exp=10&ID=712874208&t=user&height=60&width=60',
@@ -272,11 +272,11 @@ EXPECTED_LIST_MULTIPLE_REQUESTS = {
     'ServiceDeskPlus(val.ID===obj.ID)': {
         'Request': [{
             'Requester': {
-                'email_id': 'akrupnik@paloaltonetworks.com',
+                'email_id': 'email@address.com',
                 'is_technician': True,
                 'sms_mail': None,
                 'phone': None,
-                'name': 'Arseny Krupnik',
+                'name': 'First Last',
                 'mobile': None,
                 'id': '123640000000142582',
                 'photo_url': 'https://contacts.zoho.com/file?exp=10&ID=712874208&t=user&height=60&width=60',
@@ -291,10 +291,10 @@ EXPECTED_LIST_MULTIPLE_REQUESTS = {
             'DisplayId': '74',
             'Subject': 'request 1',
             'Technician': {
-                'email_id': 'hhalliyal@paloaltonetworks.com',
+                'email_id': 'email@address.com',
                 'cost_per_hour': '0',
                 'phone': None,
-                'name': 'Hema Halliyal Halliyal',
+                'name': 'First Last',
                 'mobile': None,
                 'id': '123640000000142552',
                 'photo_url': 'https://contacts.zoho.com/file?exp=10&ID=712510951&t=user&height=60&width=60',
@@ -307,11 +307,11 @@ EXPECTED_LIST_MULTIPLE_REQUESTS = {
             'Status': 'Open'
         }, {
             'Requester': {
-                'email_id': 'akrupnik@paloaltonetworks.com',
+                'email_id': 'email@address.com',
                 'is_technician': True,
                 'sms_mail': None,
                 'phone': None,
-                'name': 'Arseny Krupnik',
+                'name': 'First Last',
                 'mobile': None,
                 'id': '123640000000142582',
                 'photo_url': 'https://contacts.zoho.com/file?exp=10&ID=712874208&t=user&height=60&width=60',
@@ -326,10 +326,10 @@ EXPECTED_LIST_MULTIPLE_REQUESTS = {
             'DisplayId': '73',
             'Subject': 'check request outputs',
             'Technician': {
-                'email_id': 'hhalliyal@paloaltonetworks.com',
+                'email_id': 'email@address.com',
                 'cost_per_hour': '0',
                 'phone': None,
-                'name': 'Hema Halliyal Halliyal',
+                'name': 'First Last',
                 'mobile': None,
                 'id': '123640000000142552',
                 'photo_url': 'https://contacts.zoho.com/file?exp=10&ID=712510951&t=user&height=60&width=60',
@@ -342,11 +342,11 @@ EXPECTED_LIST_MULTIPLE_REQUESTS = {
             'Status': 'Open'
         }, {
             'Requester': {
-                'email_id': 'akrupnik@paloaltonetworks.com',
+                'email_id': 'email@address.com',
                 'is_technician': True,
                 'sms_mail': None,
                 'phone': None,
-                'name': 'Arseny Krupnik',
+                'name': 'First Last',
                 'mobile': None,
                 'id': '123640000000142582',
                 'photo_url': 'https://contacts.zoho.com/file?exp=10&ID=712874208&t=user&height=60&width=60',
@@ -361,10 +361,10 @@ EXPECTED_LIST_MULTIPLE_REQUESTS = {
             'DisplayId': '75',
             'Subject': 'updated request 2 from demisto',
             'Technician': {
-                'email_id': 'hhalliyal@paloaltonetworks.com',
+                'email_id': 'email@address.com',
                 'cost_per_hour': '0',
                 'phone': None,
-                'name': 'Hema Halliyal Halliyal',
+                'name': 'First Last',
                 'mobile': None,
                 'id': '123640000000142552',
                 'photo_url': 'https://contacts.zoho.com/file?exp=10&ID=712510951&t=user&height=60&width=60',
@@ -408,11 +408,11 @@ EXPECTED_RESOLUTION_LIST = {
         'Resolution': {
             'SubmittedOn': '2020-06-09T14:32:15.000Z',
             'SubmittedBy': {
-                'email_id': 'akrupnik@paloaltonetworks.com',
+                'email_id': 'email@address.com',
                 'is_technician': True,
                 'sms_mail': None,
                 'phone': None,
-                'name': 'Arseny Krupnik',
+                'name': 'First Last',
                 'mobile': None,
                 'id': '123640000000142582',
                 'photo_url': 'https://contacts.zoho.com/file?exp=10&ID=712874208&t=user&height=60&width=60',
