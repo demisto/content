@@ -1,4 +1,4 @@
-The ARIA Cybesecurity Solutions Software-Defined Security (SDS) platform integrates with Demisto to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.
+The ARIA Cybesecurity Solutions Software-Defined Security (SDS) platform integrates with Cortex XSOAR to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.
 This integration was integrated and tested with version 1.0.9 of ARIA Packet Intelligence
 ## Configure ARIA Packet Intelligence on Cortex XSOAR
 
@@ -14,12 +14,12 @@ This integration was integrated and tested with version 1.0.9 of ARIA Packet Int
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 Note that all commands support a remediation configuration string (RCS). It is a set of parameters that defines how and 
 where the rule will be deployed. This string consists of two sets containing comma-separated lists, with the dollar sign ($)
-separating the sets. For details of the RCS, please refer to the Appendix at the end of this document and the ARIA SOAR Integration Guide for Demisto.
+separating the sets. For details of the RCS, please refer to the Appendix at the end of this document and the ARIA SOAR Integration Guide for Cortex XSOAR.
 ### aria-block-conversation
 ***
 Creates a rule that drops all packets that match the specified 5-tuple values.
@@ -99,7 +99,7 @@ Creates a rule that drops all packets that match the specified 5-tuple values.
 >### aria-block-conversation
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: convBlock<br/>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 \<\> TCP : DROP, END<br/>RCS: PIdevice@all | command_state: Success<br/>timestamp: 1601688609 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '230e10c2-0dea-c12f-8929-092130038061', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '04972eb4-45b2-a877-12f2-4fcc7638f6c1', 'instance_number': '0', 'completion': True} |
+>| Name: convBlock<br/>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : DROP, END<br/>RCS: PIdevice@all | command_state: Success<br/>timestamp: 1601688609 | {'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '230e10c2-0dea-c12f-8929-092130038061', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '04972eb4-45b2-a877-12f2-4fcc7638f6c1', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-unblock-conversation
@@ -263,7 +263,7 @@ Creates a rule that redirects a conversation that matches 5-tuple values to the 
 >### aria-record-conversation
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: convRecord<br/>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 \<\> TCP : REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END<br/>RCS: PIdevice@all | command_state: Success<br/>timestamp: 1601688621 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '0fbc758b-ab0d-95f4-9955-56c96089fa98', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'ab63e403-4f3a-1f3c-6005-c01d249eb185', 'instance_number': '0', 'completion': True} |
+>| Name: convRecord<br/>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END<br/>RCS: PIdevice@all | command_state: Success<br/>timestamp: 1601688621 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '0fbc758b-ab0d-95f4-9955-56c96089fa98', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': 'ab63e403-4f3a-1f3c-6005-c01d249eb185', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-stop-recording-conversation
@@ -425,7 +425,7 @@ Adds a rule that generates an alert when a conversation that matches the specifi
 >### aria-alert-conversation
 >|Rule|Status|Endpoints|
 >|---|---|---|
->| Name: convAlert<br/>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 \<\> TCP : ALERT email 2 4 re-trigger-count 1000, END<br/>RCS: null | command_state: Success<br/>timestamp: 1601688638 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '92573cdb-9e81-b408-1417-6668cddae433', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '48808901-91b2-5284-d1a3-39cb5fcb1add', 'instance_number': '0', 'completion': True} |
+>| Name: convAlert<br/>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : ALERT email 2 4 re-trigger-count 1000, END<br/>RCS: null | command_state: Success<br/>timestamp: 1601688638 | {'FQN': '<sds_cluster_0>.<sds_node_sia32>.<sds_component_PacketIntelligence>.<sds_uuid_590c49ce-1286-481b-ae07-f4192130e7af>', 'IPAddress': '192.168.0.101', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '92573cdb-9e81-b408-1417-6668cddae433', 'instance_number': '0', 'completion': True},<br/>{'FQN': '<sds_cluster_0>.<sds_node_sia12>.<sds_component_PacketIntelligence>.<sds_uuid_07023d45-d4a0-4204-949d-86ce009fd172>', 'IPAddress': '192.168.0.100', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'trid': '48808901-91b2-5284-d1a3-39cb5fcb1add', 'instance_number': '0', 'completion': True} |
 
 
 ### aria-mute-alert-conversation
@@ -2308,4 +2308,4 @@ equivalent to using the wildcard. For example, MA.all.all is equivalent to "MA.\
 > | securityDomain@ARIA-NORTH@<br/>PIdevice@MA.HR.sia1,sia2,^ARIA-SOUTH| This RCS will select the SIA with a region label of "MA", group label of "HR", and name label of "sia1". It will also select the SIA named "sia2" as well as any SIAs that are members of both domains (i.e., ARIA-NORTH and ARIA-SOUTH). |
 
 ## Additional Information
-For more information, please see the ARIA_SOAR_Integration_Guide_Demisto.
+For more information, please see the ARIA_SOAR_Integration_Guide_XSOAR.
