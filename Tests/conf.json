@@ -2769,13 +2769,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Feodo Tracker Hashes Feed",
-            "playbookID": "playbook-feodoteackerhash_test",
-            "fromversion": "5.5.0",
-            "memory_threshold": 150,
-            "timeout": 600
-        },
-        {
             "integrations": "Feodo Tracker IP Blocklist Feed",
             "instance_names": "feodo_tracker_ip_currently__active",
             "playbookID": "playbook-feodotrackeripblock_test",
@@ -3081,6 +3074,12 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "Hatching Triage - Detonate File",
+            "integrations": "Hatching Triage",
+            "fromversion": "5.5.0"
+        },
+        {
+
             "integrations": "Talos Feed",
             "playbookID": "FeedTalosTestPlaybook",
             "fromversion": "5.5.0"
@@ -3089,6 +3088,7 @@
             "playbookID": "Field polling test",
             "timeout": 600,
             "fromversion": "5.0.0"
+
         }
     ],
     "skipped_tests": {
@@ -3160,7 +3160,6 @@
         "pyEWS_Test": "Issue 28339",
         "GmailTest": "Issue 27057",
         "playbook-SafeBreach-Test": "Issue 21205",
-        "Code42-Test": "Issue 29093",
         "SMB test": "Issue 26454",
         "TestCofenseFeed": "Issue 29198",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
@@ -3261,7 +3260,9 @@
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
+        "Hatching Triage": "Community contribution",
         "SNDBOX": "Issue 28826",
+        "illuminate": "Will be replaced by analyst1 - Issue 9401",
         
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
@@ -3279,6 +3280,7 @@
         "Zabbix": "Supported by external developer",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
+        "Smokescreen IllusionBLACK": "partner integration",
         
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
@@ -3436,8 +3438,6 @@
         "DShield Feed",
         "AlienVault Reputation Feed",
         "BruteForceBlocker Feed",
-        "Feodo Tracker Hashes Feed",
-        "Feodo Tracker IP Blocklist Feed",
         "Feodo Tracker IP Blocklist Feed",
         "AlienVault OTX TAXII Feed",
         "Prisma Access Egress IP feed",
