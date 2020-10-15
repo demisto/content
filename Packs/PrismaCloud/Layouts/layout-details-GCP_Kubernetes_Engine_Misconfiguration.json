@@ -2,7 +2,7 @@
 	"TypeName": "",
 	"id": "GCP Kubernetes Engine Misconfiguration",
 	"kind": "details",
-	"fromVersion": "5.0.0",
+	"fromVersion": "6.0.0",
 	"layout": {     
                 "TypeName": "",
                 "id": "GCP Kubernetes Engine Misconfiguration",
