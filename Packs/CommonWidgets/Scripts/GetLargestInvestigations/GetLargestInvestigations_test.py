@@ -20,9 +20,20 @@ raw_incidents_data = [
                 'newInvPlaybooks': {
                     'keyN': 9,
                     'leafSize': '29 MB'
-                }
+                },
             },
         'dbName': '082020'
+    },
+    {
+        'buckets':
+            {
+                'investigations-playground': {
+                    'keyN': 1301,
+                    'leafSize': '4.8 MB',
+                    'Date': ''
+                }
+            },
+        'dbName': 'main'
     }
 ]
 
@@ -36,6 +47,11 @@ investigations = {
         'keyN': 1301,
         'leafSize': '4.8 MB',
         'Date': '082020'
+    },
+    'investigations-playground': {
+        'keyN': 1301,
+        'leafSize': '4.8 MB',
+        'Date': 'main'
     }
 }
 
@@ -81,12 +97,14 @@ def test_parse_investigations_to_table():
         order (sorted by size) and that the date is formatted correctly.
     """
     from GetLargestInvestigations import parse_investigations_to_table
-    table = parse_investigations_to_table(investigations)
-    assert table.get('total') == 2
+    table = parse_investigations_to_table(investigations, True)
+    assert table.get('total') == 3
     assert table.get('data')[0].get('IncidentID') == '4187'
-    assert table.get('data')[0].get('Size') == '4.8 MB'
-    assert table.get('data')[1].get('IncidentID') == '4185'
-    assert table.get('data')[1].get('Date') == '08-2020'
+    assert table.get('data')[0].get('Size(MB)') == 4.8
+    assert table.get('data')[1].get('Date') == ''
+    assert table.get('data')[1].get('IncidentID') == 'playground'
+    assert table.get('data')[2].get('IncidentID') == '4185'
+    assert table.get('data')[2].get('Date') == '08-2020'
 
 
 def test_get_month_database_names(mocker):
