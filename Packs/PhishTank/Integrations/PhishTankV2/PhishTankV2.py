@@ -179,7 +179,7 @@ def phishtank_reload_command(client: Client):
     last_load = datetime.utcfromtimestamp(context["timestamp"] / 1000.0).strftime("%a %b %d %Y %H:%M:%S (UTC)")
     output_to_context = [last_load]
     return CommandResults(readable_output=readable_output, outputs=output_to_context,
-                          outputs_prefix="LastReloadTime")
+                          outputs_prefix="LastReloadTime(val)")
 
 
 def phishtank_status_command():
@@ -194,7 +194,7 @@ def phishtank_status_command():
     data = demisto.getIntegrationContext()
     status = "PhishTankV2 Database Status\n"
     data_was_not_reloaded_yet = data == dict()
-    last_load = None
+    last_load = ""
     if data_was_not_reloaded_yet:
         status += "Database not loaded.\n"
     else:
@@ -203,7 +203,7 @@ def phishtank_status_command():
         status += f'Total **{number_of_urls_loaded}** URLs loaded.\n' \
                   f'Last Load time **{last_load}**\n'
     output_to_context = [last_load]
-    return CommandResults(readable_output=status, outputs=output_to_context, outputs_prefix="LastReloadTime")
+    return CommandResults(readable_output=status, outputs=output_to_context, outputs_prefix="LastReloadTime(val)")
 
 
 def reload(client: Client) -> dict:
