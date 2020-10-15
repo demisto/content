@@ -693,7 +693,7 @@ def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
     # Timestamp - Issue last sync in demisto server side
     incident_modified_date: datetime = parse_date_string(lastUpdate)
 
-    # Update incidents only if issue modified in jira server side after last sync
+    # Update incident only if issue modified in Jira server-side after the last sync
     if jira_modified_date > incident_modified_date:
         incident_update = create_update_incident_from_ticket(issue_raw_response)    # Getting labels to be updated in incident
 
