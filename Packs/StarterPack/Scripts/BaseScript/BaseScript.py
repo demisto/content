@@ -1,6 +1,6 @@
-"""Boilerplate Script for Cortex XSOAR (aka Demisto)
+"""Base Script for Cortex XSOAR (aka Demisto)
 
-This Boilerplate is an empty script with some basic structure according
+This is an empty script with some basic structure according
 to the code conventions.
 
 MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
@@ -23,7 +23,7 @@ import traceback
 
 
 # TODO: REMOVE the following dummy function:
-def boilerplate_dummy(dummy: str) -> Dict[str, str]:
+def basescript_dummy(dummy: str) -> Dict[str, str]:
     """Returns a simple python dict with the information provided
     in the input (dummy).
 
@@ -42,17 +42,17 @@ def boilerplate_dummy(dummy: str) -> Dict[str, str]:
 
 
 # TODO: REMOVE the following dummy command function
-def boilerplate_dummy_command(args: Dict[str, Any]) -> CommandResults:
+def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
 
     dummy = args.get('dummy', None)
     if not dummy:
         raise ValueError('dummy not specified')
 
     # Call the standalone function and get the raw response
-    result = boilerplate_dummy(dummy)
+    result = basescript_dummy(dummy)
 
     return CommandResults(
-        outputs_prefix='Boilerplate',
+        outputs_prefix='BaseScript',
         outputs_key_field='',
         outputs=result,
     )
@@ -65,10 +65,10 @@ def boilerplate_dummy_command(args: Dict[str, Any]) -> CommandResults:
 def main():
     try:
         # TODO: replace the invoked command function with yours
-        return_results(boilerplate_dummy_command(demisto.args()))
+        return_results(basescript_dummy_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute BoilerplateScript. Error: {str(ex)}')
+        return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
 
 
 ''' ENTRY POINT '''

@@ -1,6 +1,6 @@
-"""Boilerplate Integration for Cortex XSOAR (aka Demisto)
+"""Base Integration for Cortex XSOAR (aka Demisto)
 
-This Boilerplate is an empty Integration with some basic structure according
+This is an empty Integration with some basic structure according
 to the code conventions.
 
 MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
@@ -44,7 +44,7 @@ class Client(BaseClient):
     """
 
     # TODO: REMOVE the following dummy function:
-    def boilerplate_dummy(self, dummy: str) -> Dict[str, str]:
+    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
         """Returns a simple python dict with the information provided
         in the input (dummy).
 
@@ -94,17 +94,17 @@ def test_module(client: Client) -> str:
 
 
 # TODO: REMOVE the following dummy command function
-def boilerplate_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     dummy = args.get('dummy', None)
     if not dummy:
         raise ValueError('dummy not specified')
 
     # Call the Client function and get the raw response
-    result = client.boilerplate_dummy(dummy)
+    result = client.baseintegration_dummy(dummy)
 
     return CommandResults(
-        outputs_prefix='Boilerplate',
+        outputs_prefix='BaseIntegration',
         outputs_key_field='',
         outputs=result,
     )
@@ -155,8 +155,8 @@ def main() -> None:
             return_results(result)
 
         # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'boilerplate-dummy':
-            return_results(boilerplate_dummy_command(client, demisto.args()))
+        elif demisto.command() == 'baseintegration-dummy':
+            return_results(baseintegration_dummy_command(client, demisto.args()))
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors

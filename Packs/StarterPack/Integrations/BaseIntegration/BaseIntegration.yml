@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Boilerplate
+  id: BaseIntegration
   version: -1
 configuration:
 - defaultvalue: https://example.com/
@@ -21,25 +21,25 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Boilerplate integration for development purposes.
-display: Boilerplate Integration for Development
-name: Boilerplate
+description: Base Integration for development purposes.
+display: Base Integration for Development
+name: BaseIntegration
 script:
   commands:
   - arguments:
     - default: false
-      description: Boilerplate dummy argument.
+      description: Base integration command dummy argument.
       isArray: false
       name: dummy
       required: false
       secret: false
     deprecated: false
-    description: Boilerplate dummy command
+    description: Base integration dummy command.
     execution: false
-    name: boilerplate-dummy
+    name: baseintegration-dummy
     outputs:
-    - contextPath: Boilerplate.Output
-      description: Boilerplate dummy output.
+    - contextPath: BaseIntegration.Output
+      description: Base Integration dummy output.
       type: String
   isfetch: false
   runonce: false

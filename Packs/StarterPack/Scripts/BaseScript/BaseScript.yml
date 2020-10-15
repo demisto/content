@@ -1,24 +1,24 @@
 args:
 - default: false
-  description: Boilerplate dummy argument.
+  description: Base Script dummy argument.
   isArray: false
   name: dummy
   required: false
   secret: false
-comment: Boilerplate dummy Script for development
+comment: Base Script for development.
 commonfields:
-  id: BoilerplateScript
+  id: BaseScript
   version: -1
 enabled: false
-name: BoilerplateScript
+name: BaseScript
 outputs:
-  - contextPath: BoilerplateScript.Output
-    description: Boilerplate script dummy output.
+  - contextPath: BaseScript.Output
+    description: Base Script dummy output.
     type: String
 script: '-'
 system: false
 tags:
-- boilerplate
+- basescript
 timeout: '0'
 type: python
 subtype: python3

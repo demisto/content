@@ -1,4 +1,4 @@
-This is a Boilerplate script README markdown file.
+This is a Base integration README markdown file.
 
 This contains your integration full documentation.
 

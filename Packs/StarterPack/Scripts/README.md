@@ -1,6 +1,6 @@
-This is a Boilerplate integration README markdown file.
+This is a Base Script README markdown file.
 
-This contains your integration full documentation.
+This contains your script full documentation.
 
 Auto-generate this file using `demisto-sdk generate-docs` from your integration yml file!
 

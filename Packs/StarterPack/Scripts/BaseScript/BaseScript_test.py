@@ -1,4 +1,4 @@
-"""Boilerplate Integration for Cortex XSOAR - Unit Tests file
+"""Base Script for Cortex XSOAR - Unit Tests file
 
 Pytest Unit Tests: all funcion names must start with "test_"
 
@@ -6,8 +6,6 @@ More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 
 MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
 
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
 """
 
 import json
@@ -20,7 +18,7 @@ def util_load_json(path):
 
 
 # TODO: REMOVE the following dummy unit test function
-def test_boilerplate_dummy():
+def test_basescript_dummy():
     """Tests helloworld-say-hello command function.
 
     Checks the output of the command function with the expected output.
@@ -28,15 +26,14 @@ def test_boilerplate_dummy():
     No mock is needed here because the say_hello_command does not call
     any external API.
     """
-    from Boilerplate import Client, boilerplate_dummy_command
+    from BaseScript import basescript_dummy_command
 
-    client = Client(base_url='https://mock_url/', verify=False)
     args = {
         'dummy': 'this is a dummy response'
     }
-    response = boilerplate_dummy_command(client, args)
+    response = basescript_dummy_command(args)
 
-    mock_response = util_load_json('test_data/boilerplate-dummy.json')
+    mock_response = util_load_json('test_data/basescript-dummy.json')
 
     assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+# TODO: ADD HERE your unit tests
