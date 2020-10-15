@@ -6,6 +6,8 @@ import re
 import requests
 import json
 
+handle_proxy()
+
 RANGE_OPERATORS = ['in-range', 'is-between', 'not-in-range']
 YEAR_IN_MINUTES = 525600
 MONTH_IN_MINUTES = 43800
@@ -1303,7 +1305,6 @@ def set_scan_status(scan_id, scan_status):
 
 def main():
     try:
-        handle_proxy()
         if demisto.command() == 'test-module':
             get_assets(limit=1)
             demisto.results('ok')

@@ -103,7 +103,8 @@ def get_api_key_header_val(api_key):
 
 def elasticsearch_builder():
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-    proxies = handle_proxy() if PROXY else None
+    proxies = handle_proxy()
+    proxies = proxies if PROXY else None
     if API_KEY_ID:
         es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
                            api_key=API_KEY, proxies=proxies)
