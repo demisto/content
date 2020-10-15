@@ -1,6 +1,5 @@
-Secure privileges for service, application, root,
-and administrator accounts across your enterprise
-This integration was integrated and tested with version 10.9 of Thycotic
+Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
+This integration was integrated and tested with version xx of Thycotic
 ## Configure Thycotic on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,12 +8,10 @@ This integration was integrated and tested with version 10.9 of Thycotic
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL | True |
+| url | Server URL \(e.g. https://example.net\) | True |
 | credentials | Username | True |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
 | insecure | Trust any certificate \(not secure\) | False |
-| max_fetch |  | False |
+| proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -36,15 +33,24 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| token | String | Access token | 
+| Thycotic.authenticate.token | String | Retrived authorization token for access to Thycotic Secret Server | 
 
 
 #### Command Example
-``` ```
+```!thycotic-authenticate-token```
+
+#### Context Example
+```json
+{
+    "Thycotic": {
+        "authenticate": "Bearer AgLK0hDZBDCd1U7PCKA6bUTKL72jGLFXlalHtBKfQnh_fnQ9oiILu4Q0CT9AtIFNW5AtgaibGCwhG7JnXntQbDGZz_lp4IZZK-QLOm7pKRotjgvwie-zX0l_Iyth4cmeIqM2iYtzGfaLWB7ivtpThU5XxWl_uvvWGo_eqoUchMxV0AH3pOLUIRh576NesPT7oekAZKxknm6crEMID1rL-fOHGXGRikSCEZo_u9v_ZJjskoqi3NPn8enrs8Ip-bt5svOQdN2LVWmRyD2BPJE3C9jckBwDkuG7Qi8m_LRTjLnMu6ICP_wsT-HmWR980Kb4UNyxlf8_kJpPf5t8jq9vEVggBz2xqzUrxELSXChAjeruKuOZrhlNCMgz9fUavenzinAHsOewoAxvzlrAPnZ-uYrqSAoQmbfz7YJo6CfsLRsor-fGYbyOoAqIanCR353BiNedocpkhH9jBFIzvGtVaP1lcGhxcL8dnKFCXAfuLUVv5Xrv3OrM5kVeadlejX7OH6KfhnTlSUb0q6-xIUZcvTWhRuA0seJuoMi_XzrivMxLY5HJLYH_3W5zWwC2tdUpqRFfG8izyzfG8Q5ngdpz_wq_ZFw3Xtrz-9wNk8npDSBKaaHgKCLCpa92BSJLcHx0pBk"
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>Access token for current session: Bearer AgLK0hDZBDCd1U7PCKA6bUTKL72jGLFXlalHtBKfQnh_fnQ9oiILu4Q0CT9AtIFNW5AtgaibGCwhG7JnXntQbDGZz_lp4IZZK-QLOm7pKRotjgvwie-zX0l_Iyth4cmeIqM2iYtzGfaLWB7ivtpThU5XxWl_uvvWGo_eqoUchMxV0AH3pOLUIRh576NesPT7oekAZKxknm6crEMID1rL-fOHGXGRikSCEZo_u9v_ZJjskoqi3NPn8enrs8Ip-bt5svOQdN2LVWmRyD2BPJE3C9jckBwDkuG7Qi8m_LRTjLnMu6ICP_wsT-HmWR980Kb4UNyxlf8_kJpPf5t8jq9vEVggBz2xqzUrxELSXChAjeruKuOZrhlNCMgz9fUavenzinAHsOewoAxvzlrAPnZ-uYrqSAoQmbfz7YJo6CfsLRsor-fGYbyOoAqIanCR353BiNedocpkhH9jBFIzvGtVaP1lcGhxcL8dnKFCXAfuLUVv5Xrv3OrM5kVeadlejX7OH6KfhnTlSUb0q6-xIUZcvTWhRuA0seJuoMi_XzrivMxLY5HJLYH_3W5zWwC2tdUpqRFfG8izyzfG8Q5ngdpz_wq_ZFw3Xtrz-9wNk8npDSBKaaHgKCLCpa92BSJLcHx0pBk
 
 ### thycotic-secret-password-get
 ***
@@ -65,15 +71,24 @@ Retrieve password from secret
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| secret_password | String | Password | 
+| Thycotic.secret.secret_password | String | Retrived password from secret  | 
 
 
 #### Command Example
-``` ```
+```!thycotic-secret-password-get secret_id=10366```
+
+#### Context Example
+```json
+{
+    "Thycotic": {
+        "secret": "test1234567890"
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>Retrieved password by ID 10366 test1234567890
 
 ### thycotic-secret-username-get
 ***
@@ -94,12 +109,21 @@ Retrieved username from secret
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| secret_username | String | Username from secret | 
+| Thycotic.secret.secret_username | String | Retrived username from secret. | 
 
 
 #### Command Example
-``` ```
+```!thycotic-secret-username-get secret_id=10366```
+
+#### Context Example
+```json
+{
+    "Thycotic": {
+        "secret": "andy"
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>Retrieved username by ID 10366 andy
