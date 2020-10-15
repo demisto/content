@@ -864,6 +864,14 @@ class Pack(object):
                 with open(changelog_index_path, "r") as changelog_file:
                     changelog = json.load(changelog_file)
 
+                # get the latest rn version in the changelog.json file
+                changelog_rn_versions = [LooseVersion(ver) for ver in [*changelog]]
+                changelog_rn_versions.sort(reverse=True)
+                if changelog_rn_versions:
+                    changelog_latest_rn_version = changelog_rn_versions[0].vstring
+                else:
+                    pass
+
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
                 if os.path.exists(release_notes_dir):
