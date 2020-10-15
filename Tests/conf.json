@@ -2611,10 +2611,10 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "QRadar_v2",
+            "integrations": "QRadar",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 600,
-            "fromversion": "6.0.0"
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "SetAndHandleEmpty test",

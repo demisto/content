@@ -1,21 +1,20 @@
-This playbook uses the QRadar integration to investigate an access incident by gathering user and IP information.
-
+Investigates an Access incident by gathering user and IP address information.
 The playbook then interacts with the user that triggered the incident to confirm whether or not they initiated the access action.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-### Sub-playbooks
+## Sub-playbooks
 * Access Investigation - Generic
 * QRadar - Get offense correlations v2
 
-### Integrations
-This playbook does not use any integrations.
+## Integrations
+* Builtin
 
-### Scripts
-* Set
+## Scripts
+This playbook does not use any scripts.
 
-### Commands
+## Commands
 * setIncident
 
 ## Playbook Inputs
@@ -28,4 +27,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Access Investigation - QRadar](https://raw.githubusercontent.com/demisto/content/33e98bf473f174ef010069b34f16aaac0ab55504/Packs/QRadar/doc_files/Access_Investigation_-_QRadar.png)
+![Access_Investigation_QRadar](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Access_Investigation_QRadar.png)
