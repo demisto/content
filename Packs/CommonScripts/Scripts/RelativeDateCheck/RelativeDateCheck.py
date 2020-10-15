@@ -14,11 +14,11 @@ def check_date(value, relative_date):
 
 
 def main():
-    value = demisto.args()['left']
-    if type(value) is list:
-        value = demisto.args()['left'][0]
+    value = demisto.args().get('left')
+    if isinstance(value,list):
+        value =  demisto.args().get('left')[0]
 
-    relative_date = demisto.args()['right']
+    relative_date =  demisto.args().get('right')
     return_results(check_date(value, relative_date))
 
 
