@@ -274,10 +274,9 @@ def incident_to_incident_context(incident):
             :rtype ``dict``
         """
     incident_id = str(incident.get('incident_id'))
-    incident_hosts = incident.get('hosts')[0]
     incident_context = {
         'name': f'Incident ID: {incident_id}',
-        'occurred': incident_hosts.get('modified_timestamp'),
+        'occurred': str(incident.get('start')),
         'rawJSON': json.dumps(incident)
     }
     return incident_context
@@ -921,7 +920,7 @@ def get_detections_entities(detections_ids):
 def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0):
     get_incidents_endpoint = '/incidents/queries/incidents/v1'
     params = {
-        'sort': 'modified_timestamp.asc',
+        'sort': 'start.asc',
         'offset': offset,
         'limit': INCIDENTS_PER_FETCH
     }
@@ -929,7 +928,7 @@ def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int 
         params['filter'] = filter_arg
 
     elif last_created_timestamp:
-        params['filter'] = "modified_timestamp:>'{0}'".format(last_created_timestamp)
+        params['filter'] = "start:>'{0}'".format(last_created_timestamp)
 
     response = http_request('GET', get_incidents_endpoint, params)
 
@@ -1254,7 +1253,7 @@ def fetch_incidents():
         incident_type = 'detection'
         last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(incident_type)
 
-        fetch_query = demisto.params().get('fetch_query')
+        fetch_query = demisto.params().get('detections_fetch_query')
         if fetch_query:
             fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
             detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, offset=offset), 'resources')
@@ -1295,11 +1294,14 @@ def fetch_incidents():
         incident_type = 'incident'
 
         last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(incident_type)
+        last_run = demisto.getLastRun()
+        last_incident_fetch = last_run.get('last_incident_fetch')
+        last_new_incident_fetched = ''
 
-        fetch_query = demisto.params().get('fetch_query')
+        fetch_query = demisto.params().get('incidents_fetch_query')
 
         if fetch_query:
-            fetch_query = "modified_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
+            fetch_query = "start:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
             incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query, offset=offset), 'resources')
 
         else:
@@ -1325,14 +1327,18 @@ def fetch_incidents():
                     if incident_date_timestamp > last_fetch_timestamp:
                         last_fetch_time = incident_date
                         last_fetch_timestamp = incident_date_timestamp
+                        last_new_incident_fetched = incident.get('incident_id')
 
-                    incidents.append(incident_to_context)
+                    if last_incident_fetch != incident.get('incident_id'):
+                        incidents.append(incident_to_context)
 
             if len(incidents) == INCIDENTS_PER_FETCH:
                 demisto.setLastRun({'first_behavior_incident_time': prev_fetch,
-                                    'incident_offset': offset + INCIDENTS_PER_FETCH})
+                                    'incident_offset': offset + INCIDENTS_PER_FETCH,
+                                    'last_incident_fetch': last_new_incident_fetched})
             else:
-                demisto.setLastRun({'first_behavior_incident_time': last_fetch_time})
+                demisto.setLastRun({'first_behavior_incident_time': last_fetch_time,
+                                    'last_incident_fetch': last_new_incident_fetched})
     return incidents
 
 
@@ -2261,7 +2267,7 @@ def list_incident_summaries_command():
         return CommandResults(readable_output='No incidents were found.')
     incidents_response_data = get_incidents_entities(ids)
     incidents = [resource for resource in incidents_response_data.get('resources')]
-    incidents_human_readable = detections_to_human_readable(incidents)
+    incidents_human_readable = incidents_to_human_readable(incidents)
     return CommandResults(
         readable_output=incidents_human_readable,
         outputs_prefix='CrowdStrike.Incidents',
