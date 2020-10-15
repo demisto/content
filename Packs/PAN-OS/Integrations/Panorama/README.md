@@ -66,7 +66,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 | key | API Key | True |
 | device_group | Device group - Panorama instances only \(write shared for Shared location\) | False |
 | vsys | Vsys - Firewall instances only | False |
-| template | Template - Panorama instances only. | False |
+| template | Template - Panorama instances only | False |
 | use_url_filtering | Use URL Filtering for auto enrichment | False |
 | additional_suspicious | URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious. | False |
 | additional_malicious | URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious. | False |
