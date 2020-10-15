@@ -1,6 +1,6 @@
 This integration supports both Palo Alto Networks Panorama and Palo Alto Networks Firewall. You can create separate instances of each integration, and they are not necessarily related or dependent on one another.
 Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
-This integration was integrated and tested with version 8.1.0 of Palo Alto Firewall, Palo Alto Panorama
+This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo Alto Firewall, Palo Alto Panorama
 
 ## Panorama Playbook
 * **PanoramaCommitConfiguration** : Based on the playbook input, the Playbook will commit the configuration to Palo Alto Firewall, or push the configuration from Panorama to predefined device groups of firewalls. The integration is available from Demisto v3.0, but playbook uses the GenericPooling sub-playbook, which is only available from Demisto v4.0.
