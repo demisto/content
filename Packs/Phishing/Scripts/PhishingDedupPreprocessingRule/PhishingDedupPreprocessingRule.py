@@ -237,19 +237,20 @@ def create_new_incident_low_similarity(existing_incident, similarity):
                                                                                          similarity * 100)
     message += 'The threshold for considering 2 incidents as duplicate is a similarity ' \
                'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
-    message += 'Therefore these 2 incidents will not be considered as duplicate and the current incident will be created.\n'
+    message += 'Therefore these 2 incidents will not be considered as duplicate and the current incident ' \
+               'will remain active.\n'
     demisto.results(message)
 
 
 def create_new_incident_no_text_fields():
     text_fields = [EMAIL_BODY_FIELD, EMAIL_HTML_FIELD, EMAIL_SUBJECT_FIELD]
     message = 'No text fields were found within this incident: {}.\n'.format(','.join(text_fields))
-    message += 'Incident will be created.'
+    message += 'Incident will remain active.'
     demisto.results(message)
 
 
 def create_new_incident_too_short():
-    demisto.results('Incident text after preprocessing is too short for deduplication. Incident will be created.')
+    demisto.results('Incident text after preprocessing is too short for deduplication. Incident will remain active.')
 
 
 def main():
