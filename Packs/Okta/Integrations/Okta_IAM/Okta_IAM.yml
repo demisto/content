@@ -19,30 +19,45 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: "true"
+- defaultvalue: 'true'
   display: Create User Command Enabled
   name: create-user-enabled
   required: false
   type: 8
-- defaultvalue: "true"
+- defaultvalue: 'true'
   display: Update User Command Enabled
   name: update-user-enabled
   required: false
   type: 8
-- defaultvalue: "true"
+- defaultvalue: 'true'
   display: Enable/Disable User Commands Enabled
   name: enable-disable-user-enabled
   required: false
   type: 8
-description: Integrate with Okta's Identity Access Management service to streamline users' lifecycle processes.
+- defaultvalue: User Profile - Okta (Incoming)
+  display: Incoming Mapper
+  name: incoming-mapper
+  required: true
+  type: 0
+- defaultvalue: User Profile - Okta (Outgoing)
+  display: Ougoing Mapper
+  name: outgoing-mapper
+  required: true
+  type: 0
+description: Integrate with Okta's Identity Access Management service to streamline
+  users' lifecycle processes.
 display: Okta IAM
 name: Okta IAM
 script:
   commands:
   - arguments:
-    - description: User Profile indicator details.
+    - default: false
+      description: User Profile indicator details.
+      isArray: false
       name: user-profile
       required: true
+      secret: false
+    deprecated: false
     description: Creates a user.
     execution: true
     name: create-user
@@ -78,17 +93,26 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - description: A User Profile indicator.
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
       name: user-profile
       required: true
+      secret: false
     - auto: PREDEFINED
-      defaultValue: "true"
+      default: false
+      defaultValue: 'true'
       description: Whether or not to create the user if not found.
+      isArray: false
       name: create-if-not-exists
       predefined:
-      - "true"
-      - "false"
-    description: Updates an existing user with the data passed in the user-profile argument.
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an existing user with the data passed in the user-profile
+      argument.
     execution: true
     name: update-user
     outputs:
@@ -123,10 +147,15 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - description: A User Profile indicator.
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
       name: user-profile
       required: true
+      secret: false
+    deprecated: false
     description: Retrieves a single user resource.
+    execution: false
     name: get-user
     outputs:
     - contextPath: IAM.Vendor.active
@@ -160,16 +189,24 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - description: A User Profile indicator.
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
       name: user-profile
       required: true
+      secret: false
     - auto: PREDEFINED
-      defaultValue: "true"
-      name: create-if-not-exists
+      default: false
+      defaultValue: 'true'
       description: Whether or not to create the user if not found.
+      isArray: false
+      name: create-if-not-exists
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
     description: Enable a deprovisioned user.
     execution: true
     name: enable-user
@@ -205,9 +242,13 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - description: A User Profile indicator.
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
       name: user-profile
       required: true
+      secret: false
+    deprecated: false
     description: Disable an active user.
     execution: true
     name: disable-user
@@ -243,10 +284,13 @@ script:
       description: The employee's username in the app.
       type: String
   dockerimage: demisto/python3:3.8.6.12176
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
 tests:
-  - No tests
+- No tests
+fromversion: 6.0.0
