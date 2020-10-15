@@ -132,13 +132,6 @@ The BatchWriteItem operation puts or deletes multiple items in one or more table
   | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-create-backup
 ***
 Creates a backup for an existing table.  Each time you create an on-demand backup, the entire table data is backed up. There is no limit to the number of on-demand backups that can be taken.   When you create an on-demand backup, a time marker of the request is cataloged, and the backup is created asynchronously, by applying all changes until the time of the request to the last full table snapshot. Backup requests are processed instantaneously and become available for restore within minutes.  You can call CreateBackup at a maximum rate of 50 times per second. All backups in DynamoDB work without consuming any provisioned throughput on the table.  If you submit a backup request on 2018-12-14 at 14:25:00, the backup is guaranteed to contain all data committed to the table up to 14:24:00, and data committed after 14:26:00 will not be. The backup might contain data modifications made between 14:24:00 and 14:26:00. On-demand backup does not support causal consistency.   Along with data, the following are also included on the backups:   *  Global secondary indexes (GSIs) 
@@ -179,13 +172,6 @@ Creates a backup for an existing table.  Each time you create an on-demand backu
 | AWS-DynamoDB.BackupDetails.BackupCreationDateTime | unknown | Time at which the backup was created. This is the request time of the backup.  | 
 | AWS-DynamoDB.BackupDetails.BackupExpiryDateTime | unknown | Time at which the automatic on-demand backup created by DynamoDB will expire. This SYSTEM on-demand backup expires automatically 35 days after its creation. | 
 | AWS-DynamoDB.BackupDetails | unknown | Contains the details of the backup created for the table. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-create-global-table
@@ -230,13 +216,6 @@ Creates a global table from an existing table. A global table creates a replicat
   | 
 | AWS-DynamoDB.GlobalTableDescription.GlobalTableName | unknown | The global table name. | 
 | AWS-DynamoDB.GlobalTableDescription | unknown | Contains the details of the global table. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-create-table
@@ -429,13 +408,6 @@ The CreateTable operation adds a new table to your account. In an AWS account, t
 | AWS-DynamoDB.TableDescription | unknown | Represents the properties of the table. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-delete-backup
 ***
 Deletes an existing backup of a table. You can call DeleteBackup at a maximum rate of 10 times per second.
@@ -543,13 +515,6 @@ Deletes an existing backup of a table. You can call DeleteBackup at a maximum ra
 | AWS-DynamoDB.BackupDescription | unknown | Contains the description of the backup created for the table. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-delete-item
 ***
 Deletes a single item in a table by primary key. You can perform a conditional delete operation that deletes the item if it exists, or if it has an expected attribute value. In addition to deleting an item, you can also return the item's attribute values in the same operation, using the ReturnValues parameter. Unless you specify conditions, the DeleteItem is an idempotent operation; running it multiple times on the same item or attribute does *not* result in an error response. Conditional deletes are useful for deleting items only if specific conditions are met. If those conditions are met, DynamoDB performs the delete. Otherwise, the item is not deleted.
@@ -600,13 +565,6 @@ Deletes a single item in a table by primary key. You can perform a conditional d
 | AWS-DynamoDB.ItemCollectionMetrics | unknown | Information about item collections, if any, that were affected by the DeleteItem operation. ItemCollectionMetrics is only returned if the ReturnItemCollectionMetrics parameter was specified. If the table does not have any local secondary indexes, this information is not returned in the response. Each ItemCollectionMetrics element consists of:  \*   ItemCollectionKey - The partition key value of the item collection. This is the same as the partition key value of the item itself. 
  \*   SizeEstimateRangeGB - An estimate of item collection size, in gigabytes. This value is a two-element array containing a lower bound and an upper bound for the estimate. The estimate includes the size of all the items in the table, plus the size of all attributes projected into all of the local secondary indexes on that table. Use this estimate to measure whether a local secondary index is approaching its size limit. The estimate is subject to change over time; therefore, do not rely on the precision or accuracy of the estimate. 
   | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-delete-table
@@ -780,13 +738,6 @@ The DeleteTable operation deletes a table and all of its items. After a DeleteTa
 | AWS-DynamoDB.TableDescription | unknown | Represents the properties of a table. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-describe-backup
 ***
 Describes an existing backup of a table. You can call DescribeBackup at a maximum rate of 10 times per second.
@@ -894,13 +845,6 @@ Describes an existing backup of a table. You can call DescribeBackup at a maximu
 | AWS-DynamoDB.BackupDescription | unknown | Contains the description of the backup created for the table. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-describe-continuous-backups
 ***
 Checks the status of continuous backups and point in time recovery on the specified table. Continuous backups are ENABLED on all tables at table creation. If point in time recovery is enabled, PointInTimeRecoveryStatus will be set to ENABLED.  After continuous backups and point in time recovery are enabled, you can restore to any point in time within EarliestRestorableDateTime and LatestRestorableDateTime.   LatestRestorableDateTime is typically 5 minutes before the current time. You can restore your table to any point in time during the last 35 days.  You can call DescribeContinuousBackups at a maximum rate of 10 times per second.
@@ -936,13 +880,6 @@ Checks the status of continuous backups and point in time recovery on the specif
 | AWS-DynamoDB.ContinuousBackupsDescription | unknown | Represents the continuous backups and point in time recovery settings on the table. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-describe-endpoints
 ***
 Returns the regional endpoint information.
@@ -969,13 +906,6 @@ Returns the regional endpoint information.
 | AWS-DynamoDB.Endpoints.Address | unknown | IP address of the endpoint. | 
 | AWS-DynamoDB.Endpoints.CachePeriodInMinutes | unknown | Endpoint cache time to live \(TTL\) value. | 
 | AWS-DynamoDB.Endpoints | unknown | List of endpoints. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-describe-global-table
@@ -1013,13 +943,6 @@ Returns information about the specified global table.
   | 
 | AWS-DynamoDB.GlobalTableDescription.GlobalTableName | unknown | The global table name. | 
 | AWS-DynamoDB.GlobalTableDescription | unknown | Contains the details of the global table. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-describe-global-table-settings
@@ -1120,13 +1043,6 @@ Describes Region-specific settings for a global table.
 | AWS-DynamoDB.ReplicaSettings | unknown | The Region-specific settings for the global table. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-describe-limits
 ***
 Returns the current provisioned-capacity limits for your AWS account in a Region, both for the Region as a whole and for any one DynamoDB table that you create there. When you establish an AWS account, the account has initial limits on the maximum read capacity units and write capacity units that you can provision across all of your DynamoDB tables in a given Region. Also, there are per-table limits that apply when you create a table there. For more information, see Limits page in the *Amazon DynamoDB Developer Guide*. Although you can increase these limits by filing a case at AWS Support Center, obtaining the increase is not instantaneous. The DescribeLimits action lets you write code to compare the capacity you are currently using to those limits imposed by your account so that you have enough time to apply for an increase before you hit a limit. For example, you could use one of the AWS SDKs to do the following:  2.  Call DescribeLimits for a particular Region to obtain your current account limits on provisioned capacity there. 
@@ -1163,13 +1079,6 @@ Returns the current provisioned-capacity limits for your AWS account in a Region
 | AWS-DynamoDB.AccountMaxWriteCapacityUnits | unknown | The maximum total write capacity units that your account allows you to provision across all of your tables in this Region. | 
 | AWS-DynamoDB.TableMaxReadCapacityUnits | unknown | The maximum read capacity units that your account allows you to provision for a new table that you are creating in this Region, including the read capacity units provisioned for its global secondary indexes \(GSIs\). | 
 | AWS-DynamoDB.TableMaxWriteCapacityUnits | unknown | The maximum write capacity units that your account allows you to provision for a new table that you are creating in this Region, including the write capacity units provisioned for its global secondary indexes \(GSIs\). | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-describe-table
@@ -1343,13 +1252,6 @@ Returns information about the table, including the current status of the table, 
 | AWS-DynamoDB.Table | unknown | The properties of the table. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-describe-time-to-live
 ***
 Gives a description of the Time to Live (TTL) status on the specified table. 
@@ -1377,13 +1279,6 @@ Gives a description of the Time to Live (TTL) status on the specified table.
 | AWS-DynamoDB.TimeToLiveDescription.TimeToLiveStatus | unknown |  The TTL status for the table. | 
 | AWS-DynamoDB.TimeToLiveDescription.AttributeName | unknown |  The name of the TTL attribute for items in the table. | 
 | AWS-DynamoDB.TimeToLiveDescription | unknown |  | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-get-item
@@ -1430,13 +1325,6 @@ The GetItem operation returns a set of attributes for the item with the given pr
 | AWS-DynamoDB.ConsumedCapacity | unknown | The capacity units consumed by the GetItem operation. The data returned includes the total provisioned throughput consumed, along with statistics for the table and any indexes involved in the operation. ConsumedCapacity is only returned if the ReturnConsumedCapacity parameter was specified. For more information, see Read/Write Capacity Mode in the \*Amazon DynamoDB Developer Guide\*. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-list-backups
 ***
 List backups associated with an AWS account. To list backups for a given table, specify TableName. ListBackups returns a paginated list of results with at most 1 MB worth of items in a page. You can also specify a limit for the maximum number of entries to be returned in a page.  In the request, start time is inclusive, but end time is exclusive. Note that these limits are for the time at which the original backup was requested. You can call ListBackups a maximum of five times per second.
@@ -1480,13 +1368,6 @@ List backups associated with an AWS account. To list backups for a given table, 
 | AWS-DynamoDB.LastEvaluatedBackupArn | unknown |  The ARN of the backup last evaluated when the current page of results was returned, inclusive of the current page of results. This value may be specified as the ExclusiveStartBackupArn of a new ListBackups operation in order to fetch the next page of results.   If LastEvaluatedBackupArn is empty, then the last page of results has been processed and there are no more results to be retrieved.   If LastEvaluatedBackupArn is not empty, this may or may not indicate that there is more data to be returned. All results are guaranteed to have been returned if and only if no value for LastEvaluatedBackupArn is returned.  | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-list-global-tables
 ***
 Lists all global tables that have a replica in the specified Region.
@@ -1519,13 +1400,6 @@ Lists all global tables that have a replica in the specified Region.
 | AWS-DynamoDB.LastEvaluatedGlobalTableName | unknown | Last evaluated global table name. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-list-tables
 ***
 Returns an array of table names associated with the current account and endpoint. The output from ListTables is paginated, with each page returning a maximum of 100 table names.
@@ -1552,13 +1426,6 @@ Returns an array of table names associated with the current account and endpoint
 | --- | --- | --- |
 | AWS-DynamoDB.TableNames | unknown | The names of the tables associated with the current account at the current endpoint. The maximum size of this array is 100. If LastEvaluatedTableName also appears in the output, you can use this value as the ExclusiveStartTableName parameter in a subsequent ListTables request and obtain the next page of results. | 
 | AWS-DynamoDB.LastEvaluatedTableName | unknown | The name of the last table in the current page of results. Use this value as the ExclusiveStartTableName in a new request to obtain the next page of results, until all the table names are returned. If you do not receive a LastEvaluatedTableName value in the response, this means that there are no more table names to be retrieved. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-list-tags-of-resource
@@ -1590,13 +1457,6 @@ List all tags on an Amazon DynamoDB resource. You can call ListTagsOfResource up
 | AWS-DynamoDB.Tags.Value | unknown | The value of the tag. Tag values are case-sensitive and can be null. | 
 | AWS-DynamoDB.Tags | unknown | The tags currently associated with the Amazon DynamoDB resource. | 
 | AWS-DynamoDB.NextToken | unknown | If this value is returned, there are additional results to be displayed. To retrieve them, call ListTagsOfResource again, with NextToken set to this value. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-put-item
@@ -1660,13 +1520,6 @@ Creates a new item, or replaces an old item with a new item. If an item that has
   | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-query
 ***
 The Query operation finds items based on primary key values. You can query any table or secondary index that has a composite primary key (a partition key and a sort key).  Use the KeyConditionExpression parameter to provide a specific value for the partition key. The Query operation will return all of the items from the table or index with that partition key value. You can optionally narrow the scope of the Query operation by specifying a sort key value and a comparison operator in KeyConditionExpression. To further refine the Query results, you can optionally provide a FilterExpression. A FilterExpression determines which items within the results should be returned to you. All of the other results are discarded.   A Query operation always returns a result set. If no matching items are found, the result set will be empty. Queries that do not return results consume the minimum number of read capacity units for that type of read operation.    DynamoDB calculates the number of read capacity units consumed based on item size, not on the amount of data that is returned to an application. The number of capacity units consumed will be the same whether you request all of the attributes (the default behavior) or just some of them (using a projection expression). The number will also be the same whether or not you use a FilterExpression.    Query results are always sorted by the sort key value. If the data type of the sort key is Number, the results are returned in numeric order; otherwise, the results are returned in order of UTF-8 bytes. By default, the sort order is ascending. To reverse the order, set the ScanIndexForward parameter to false.   A single Query operation will read up to the maximum number of items set (if using the Limit parameter) or a maximum of 1 MB of data and then apply any filtering to the results using FilterExpression. If LastEvaluatedKey is present in the response, you will need to paginate the result set. For more information, see Paginating the Results in the *Amazon DynamoDB Developer Guide*.   FilterExpression is applied after a Query finishes, but before the results are returned. A FilterExpression cannot contain partition key or sort key attributes. You need to specify those attributes in the KeyConditionExpression.    A Query operation can return an empty result set and a LastEvaluatedKey if all the items read for the page of results are filtered out.   You can query a table, a local secondary index, or a global secondary index. For a query on a table or on a local secondary index, you can set the ConsistentRead parameter to true and obtain a strongly consistent result. Global secondary indexes support eventually consistent reads only, so do not specify ConsistentRead when querying a global secondary index.
@@ -1721,13 +1574,6 @@ The Query operation finds items based on primary key values. You can query any t
 | AWS-DynamoDB.ConsumedCapacity.LocalSecondaryIndexes | unknown | The amount of throughput consumed on each local index affected by the operation. | 
 | AWS-DynamoDB.ConsumedCapacity.GlobalSecondaryIndexes | unknown | The amount of throughput consumed on each global index affected by the operation. | 
 | AWS-DynamoDB.ConsumedCapacity | unknown | The capacity units consumed by the Query operation. The data returned includes the total provisioned throughput consumed, along with statistics for the table and any indexes involved in the operation. ConsumedCapacity is only returned if the ReturnConsumedCapacity parameter was specified. For more information, see Provisioned Throughput in the \*Amazon DynamoDB Developer Guide\*. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-restore-table-from-backup
@@ -1917,13 +1763,6 @@ Creates a new table from an existing backup. Any number of users can execute up 
 | AWS-DynamoDB.TableDescription.SSEDescription.KMSMasterKeyArn | unknown | The KMS customer master key \(CMK\) ARN used for the AWS KMS encryption. | 
 | AWS-DynamoDB.TableDescription.SSEDescription | unknown | The description of the server-side encryption status on the specified table. | 
 | AWS-DynamoDB.TableDescription | unknown | The description of the table created from an existing backup. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-restore-table-to-point-in-time
@@ -2121,13 +1960,6 @@ Restores the specified table to the specified point in time within EarliestResto
 | AWS-DynamoDB.TableDescription | unknown | Represents the properties of a table. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-scan
 ***
 The Scan operation returns one or more items and item attributes by accessing every item in a table or a secondary index. To have DynamoDB return fewer items, you can provide a FilterExpression operation. If the total number of scanned items exceeds the maximum dataset size limit of 1 MB, the scan stops and results are returned to the user as a LastEvaluatedKey value to continue the scan in a subsequent operation. The results also include the number of items exceeding the limit. A scan can result in no table data meeting the filter criteria.  A single Scan operation reads up to the maximum number of items set (if using the Limit parameter) or a maximum of 1 MB of data and then apply any filtering to the results using FilterExpression. If LastEvaluatedKey is present in the response, you need to paginate the result set. For more information, see Paginating the Results in the *Amazon DynamoDB Developer Guide*.   Scan operations proceed sequentially; however, for faster performance on a large table or secondary index, applications can request a parallel Scan operation by providing the Segment and TotalSegments parameters. For more information, see Parallel Scan in the *Amazon DynamoDB Developer Guide*.  Scan uses eventually consistent reads when accessing the data in a table; therefore, the result set might not include the changes to data in the table immediately before the operation began. If you need a consistent copy of the data, as of the time that the Scan begins, you can set the ConsistentRead parameter to true.
@@ -2181,13 +2013,6 @@ The Scan operation returns one or more items and item attributes by accessing ev
 | AWS-DynamoDB.ConsumedCapacity | unknown | The capacity units consumed by the Scan operation. The data returned includes the total provisioned throughput consumed, along with statistics for the table and any indexes involved in the operation. ConsumedCapacity is only returned if the ReturnConsumedCapacity parameter was specified. For more information, see Provisioned Throughput in the \*Amazon DynamoDB Developer Guide\*. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-tag-resource
 ***
 Associate a set of tags with an Amazon DynamoDB resource. You can then activate these user-defined tags so that they appear on the Billing and Cost Management console for cost allocation tracking. You can call TagResource up to five times per second, per account.  For an overview on tagging DynamoDB resources, see Tagging for DynamoDB in the *Amazon DynamoDB Developer Guide*.
@@ -2214,12 +2039,6 @@ Associate a set of tags with an Amazon DynamoDB resource. You can then activate 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-transact-get-items
@@ -2267,13 +2086,6 @@ There is no context output for this command.
 | AWS-DynamoDB.docs | unknown | If the \*ReturnConsumedCapacity\* value was TOTAL, this is an array of ConsumedCapacity objects, one for each table addressed by TransactGetItem objects in the \*TransactItems\* parameter. These ConsumedCapacity objects report the read-capacity units consumed by the TransactGetItems call in that table. | 
 | AWS-DynamoDB.Responses.Item | unknown | Map of attribute data consisting of the data type and attribute value. | 
 | AWS-DynamoDB.Responses | unknown | An ordered array of up to 25 ItemResponse objects, each of which corresponds to the TransactGetItem object in the same position in the \*TransactItems\* array. Each ItemResponse object contains a Map of the name-value pairs that are the projected attributes of the requested item. If a requested item could not be retrieved, the corresponding ItemResponse object is Null, or if the requested item has no projected attributes, the corresponding ItemResponse object is an empty Map.  | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-transact-write-items
@@ -2351,13 +2163,6 @@ There is no context output for this command.
 | AWS-DynamoDB.ItemCollectionMetrics | unknown | A list of tables that were processed by TransactWriteItems and, for each table, information about any item collections that were affected by individual UpdateItem, PutItem, or DeleteItem operations.  | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-untag-resource
 ***
 Removes the association of tags from an Amazon DynamoDB resource. You can call UntagResource up to five times per second, per account.  For an overview on tagging DynamoDB resources, see Tagging for DynamoDB in the *Amazon DynamoDB Developer Guide*.
@@ -2382,12 +2187,6 @@ Removes the association of tags from an Amazon DynamoDB resource. You can call U
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-update-continuous-backups
@@ -2424,13 +2223,6 @@ There is no context output for this command.
 | AWS-DynamoDB.ContinuousBackupsDescription.PointInTimeRecoveryDescription.LatestRestorableDateTime | unknown |  LatestRestorableDateTime is typically 5 minutes before the current time.  | 
 | AWS-DynamoDB.ContinuousBackupsDescription.PointInTimeRecoveryDescription | unknown | The description of the point in time recovery settings applied to the table. | 
 | AWS-DynamoDB.ContinuousBackupsDescription | unknown | Represents the continuous backups and point in time recovery settings on the table. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-update-global-table
@@ -2473,13 +2265,6 @@ Adds or removes replicas in the specified global table. The global table must al
   | 
 | AWS-DynamoDB.GlobalTableDescription.GlobalTableName | unknown | The global table name. | 
 | AWS-DynamoDB.GlobalTableDescription | unknown | Contains the details of the global table. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-update-global-table-settings
@@ -2594,13 +2379,6 @@ Updates settings for a global table.
 | AWS-DynamoDB.ReplicaSettings | unknown | The Region-specific settings for the global table. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-update-item
 ***
 Edits an existing item's attributes, or adds a new item to the table if it does not already exist. You can put, delete, or add attribute values. You can also perform a conditional update on an existing item (insert a new attribute name-value pair if it doesn't exist, or replace an existing name-value pair if it has certain expected attribute values). You can also return the item's attribute values in the same UpdateItem operation using the ReturnValues parameter.
@@ -2653,13 +2431,6 @@ Edits an existing item's attributes, or adds a new item to the table if it does 
 | AWS-DynamoDB.ItemCollectionMetrics | unknown | Information about item collections, if any, that were affected by the UpdateItem operation. ItemCollectionMetrics is only returned if the ReturnItemCollectionMetrics parameter was specified. If the table does not have any local secondary indexes, this information is not returned in the response. Each ItemCollectionMetrics element consists of:  \*   ItemCollectionKey - The partition key value of the item collection. This is the same as the partition key value of the item itself. 
  \*   SizeEstimateRangeGB - An estimate of item collection size, in gigabytes. This value is a two-element array containing a lower bound and an upper bound for the estimate. The estimate includes the size of all the items in the table, plus the size of all attributes projected into all of the local secondary indexes on that table. Use this estimate to measure whether a local secondary index is approaching its size limit. The estimate is subject to change over time; therefore, do not rely on the precision or accuracy of the estimate. 
   | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### aws-dynamodb-update-table
@@ -2854,13 +2625,6 @@ Modifies the provisioned throughput settings, global secondary indexes, or Dynam
 | AWS-DynamoDB.TableDescription | unknown | Represents the properties of the table. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### aws-dynamodb-update-time-to-live
 ***
 The UpdateTimeToLive method enables or disables Time to Live (TTL) for the specified table. A successful UpdateTimeToLive call returns the current TimeToLiveSpecification. It can take up to one hour for the change to fully process. Any additional UpdateTimeToLive calls for the same table during this one hour duration result in a ValidationException.  TTL compares the current time in epoch time format to the time stored in the TTL attribute of an item. If the epoch time value stored in the attribute is less than the current time, the item is marked as expired and subsequently deleted.   The epoch time format is the number of seconds elapsed since 12:00:00 AM January 1, 1970 UTC.   DynamoDB deletes expired items on a best-effort basis to ensure availability of throughput for other data operations.   DynamoDB typically deletes expired items within two days of expiration. The exact duration within which an item gets deleted after expiration is specific to the nature of the workload. Items that have expired and not been deleted will still show up in reads, queries, and scans.  As items are deleted, they are removed from any local secondary index and global secondary index immediately in the same eventually consistent way as a standard delete operation. For more information, see Time To Live in the Amazon DynamoDB Developer Guide. 
@@ -2890,11 +2654,3 @@ The UpdateTimeToLive method enables or disables Time to Live (TTL) for the speci
 | AWS-DynamoDB.TimeToLiveSpecification.Enabled | unknown | Indicates whether TTL is to be enabled \(true\) or disabled \(false\) on the table. | 
 | AWS-DynamoDB.TimeToLiveSpecification.AttributeName | unknown | The name of the TTL attribute used to store the expiration time for items in the table. | 
 | AWS-DynamoDB.TimeToLiveSpecification | unknown | Represents the output of an UpdateTimeToLive operation. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
