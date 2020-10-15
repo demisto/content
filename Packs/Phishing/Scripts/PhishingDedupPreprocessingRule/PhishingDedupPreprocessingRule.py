@@ -60,7 +60,7 @@ def get_existing_incidents(input_args):
     else:
         return_error('Unsupported statusScope: {}'.format(status_scope))
     type_values = input_args.get('incidentTypes')
-    if type_values != 'None':
+    if type_values is not None and type_values != 'None':
         type_fields = input_args.get('incidentTypeFieldName', 'type')
         type_query = generate_incident_type_query_component(type_fields, type_values)
         query_components.append(type_query)
@@ -204,7 +204,14 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
         mask = (existing_incidents_df[FROM_FIELD] != '') & \
                (existing_incidents_df[FROM_FIELD] == new_incident[FROM_FIELD])
         existing_incidents_df = existing_incidents_df[mask]
-    existing_incidents_df.sort_values(by='similarity', inplace=True, ascending=False)
+    existing_incidents_df['distance'] = existing_incidents_df['similarity'].apply(lambda x: 1-x)
+    tie_breaker_col = 'id'
+    try:
+        existing_incidents_df['int_id'] = existing_incidents_df['id'].astype(int)
+        tie_breaker_col = 'int_id'
+    except Exception:
+        pass
+    existing_incidents_df.sort_values(by=['distance', 'created', tie_breaker_col], inplace=True)
     if len(existing_incidents_df) > 0:
         return existing_incidents_df.iloc[0], existing_incidents_df.iloc[0]['similarity']
     else:
