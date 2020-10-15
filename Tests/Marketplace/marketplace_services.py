@@ -728,9 +728,9 @@ class Pack(object):
                         relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
-            # if encryption_key:
-                # self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
-                # zip_pack_path = zip_pack_path.replace("_not_encrypted.zip", ".zip")
+            if encryption_key:
+                self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
+                zip_pack_path = zip_pack_path.replace("_not_encrypted.zip", ".zip")
             task_status = True
             print_color(f"Finished zipping {self._pack_name} pack.", LOG_COLORS.GREEN)
         except Exception as e:
