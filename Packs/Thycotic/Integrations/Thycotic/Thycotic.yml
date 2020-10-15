@@ -15,6 +15,11 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
 description: Secret Server is the only fully featured Privileged Account Management
   (PAM) solution available both on premise and in the cloud. It empowers security
   and IT ops teams to secure and manage all types of privileged accounts and offers
