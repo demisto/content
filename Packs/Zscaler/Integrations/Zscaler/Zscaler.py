@@ -432,7 +432,7 @@ def url_lookup(args):
 
 
 def ip_lookup(ip):
-    response = lookup_request(ip)
+    response = lookup_request(ip, multiple=True)
     hr = json.loads(response.content)
     if hr:
         ioc_context = [None] * len(hr)  # type: List[Any]
