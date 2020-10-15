@@ -100,6 +100,9 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
         else:
             if original_label in labels_mapping:
                 row[tag_field] = labels_mapping[original_label]
+            elif original_label.lower() in labels_mapping:
+                original_label = original_label.lower()
+                row[tag_field] = labels_mapping[original_label]
             else:
                 missing_labels_counter[original_label] += 1
                 continue
@@ -224,6 +227,12 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
         err += ['The following labels were not mapped to any label in the labels mapping: {}.'.format(missing_labels)]
         if labels_mapping != ALL_LABELS:
             err += ['The given mapped labels are: {}.'.format(', '.join(labels_mapping.keys()))]
+        return_error('\n'.join(err))
+    if len(exist_labels_counter) == 0:
+        err = ['Did not found any incidents with labels of the labels mapping.']
+        if len(missing_labels_counter) > 0:
+            err += ['The following labels were found: {}'.format(', '.join(k for k in missing_labels_counter))]
+            err += ['Please include these labels at the mapping, or change the query to include your relevant labels']
         return_error('\n'.join(err))
     if len(missing_labels_counter) > 0:
         human_readable = tableToMarkdown("Skip labels - did not match any of specified labels", missing_labels_counter)

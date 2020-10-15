@@ -35,6 +35,10 @@
             ]
         },
         {
+            "integrations": "OpenCTI Feed",
+            "playbookID": "OpenCTI Feed Test"
+        },
+        {
             "integrations": "AWS - Security Hub",
             "playbookID": "AWS-securityhub Test"
         },
@@ -137,7 +141,8 @@
         {
             "integrations": "IllusiveNetworks",
             "playbookID": "IllusiveNetworks-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 500
         },
         {
             "integrations": "JSON Feed",
@@ -584,7 +589,18 @@
         },
         {
             "integrations": "ServiceNow v2",
-            "playbookID": "servicenow_test_new"
+            "playbookID": "servicenow_test_v2"
+        },
+        {
+            "playbookID": "Create ServiceNow Ticket and Mirror Test",
+            "integrations": "ServiceNow v2",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "Create ServiceNow Ticket and State Polling Test",
+            "integrations": "ServiceNow v2",
+            "fromversion": "6.0.0",
+            "timeout": 500
         },
         {
             "integrations": "ExtraHop v2",
@@ -710,13 +726,6 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "playbookID": "palo_alto_panorama_test_pb",
-            "timeout": 1000,
-            "nightly": true
-        },
-        {
-            "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "Panorama Query Logs - Test",
             "fromversion": "5.5.0",
@@ -725,8 +734,25 @@
         },
         {
             "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall",
+            "playbookID": "palo_alto_firewall_test_pb",
+            "fromversion": "5.5.0",
+            "timeout": 1000,
+            "nightly": true
+        },
+        {
+            "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "palo_alto_firewall_test_pb",
+            "fromversion": "5.5.0",
+            "timeout": 1000,
+            "nightly": true
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "playbookID": "palo_alto_panorama_test_pb",
+            "fromversion": "5.5.0",
             "timeout": 1000,
             "nightly": true
         },
@@ -734,6 +760,7 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "palo_alto_panorama_test_pb",
+            "fromversion": "5.5.0",
             "timeout": 1000,
             "nightly": true
         },
@@ -1943,7 +1970,8 @@
                 "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize"
-            ]
+            ],
+            "memory_threshold": 115
         },
         {
             "playbookID": "Phishing - Core - Test - Incident Starter",
@@ -1954,7 +1982,8 @@
                 "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize"
-            ]
+            ],
+            "memory_threshold": 100
         },
         {
             "integrations": "duo",
@@ -2423,7 +2452,8 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "memory_threshold": 100
         },
         {
             "integrations": "Anomali ThreatStream v2",
@@ -2683,7 +2713,8 @@
         {
             "integrations": "BruteForceBlocker Feed",
             "playbookID": "playbook-BruteForceBlocker_test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 190
         },
         {
             "integrations": "illuminate",
@@ -2741,13 +2772,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Feodo Tracker Hashes Feed",
-            "playbookID": "playbook-feodoteackerhash_test",
-            "fromversion": "5.5.0",
-            "memory_threshold": 150,
-            "timeout": 600
-        },
-        {
             "integrations": "Feodo Tracker IP Blocklist Feed",
             "instance_names": "feodo_tracker_ip_currently__active",
             "playbookID": "playbook-feodotrackeripblock_test",
@@ -2762,11 +2786,13 @@
         {
             "integrations": "Code42",
             "playbookID": "Code42-Test",
+            "fromversion": "5.0.0",
             "timeout": 600
         },
         {
             "playbookID": "Code42 File Search Test",
-            "integrations": "Code42"
+            "integrations": "Code42",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "FetchIndicatorsFromFile-test",
@@ -2855,7 +2881,8 @@
         },
         {
             "integrations": "DNSDB_v2",
-            "playbookID": "DNSDB-Test"
+            "playbookID": "DNSDB-Test",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
@@ -3005,6 +3032,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "WootCloud",
+            "playbookID": "TestWootCloudPlaybook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Ivanti Heat",
             "playbookID": "Ivanti Heat - Test"
         },
@@ -3035,11 +3067,23 @@
             "playbookID": "Imperva WAF - Test"
         },
         {
+            "integrations": "CheckPointFirewall_v2",
+            "playbookID": "checkpoint-testplaybook",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "Hatching Triage - Detonate File",
+            "integrations": "Hatching Triage",
+            "fromversion": "5.5.0"
+        },
+        {
+
             "integrations": "Talos Feed",
             "playbookID": "FeedTalosTestPlaybook",
             "fromversion": "5.5.0"
@@ -3048,6 +3092,7 @@
             "playbookID": "Field polling test",
             "timeout": 600,
             "fromversion": "5.0.0"
+
         }
     ],
     "skipped_tests": {
@@ -3115,14 +3160,20 @@
         "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
-        "MISP V2 Test": "Issue 26905",
         "Logzio - Test": "Issue 26729",
         "pyEWS_Test": "Issue 28339",
-        "DuoAdmin API test playbook": "Issue 24937"
+        "GmailTest": "Issue 27057",
+        "playbook-SafeBreach-Test": "Issue 21205",
+        "SMB test": "Issue 26454",
+        "TestCofenseFeed": "Issue 29198",
+        "PAN-OS Query Logs For Indicators Test": "Issue 28753",
+        "Indeni_test": "Non-certified partner pack, this should be skipped for now"
     },
     "skipped_integrations": {
 
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "ZeroFox": "Issue 29284",
+        "Recorded Future v2": "Issue 29090",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
         "Infoblox": "Issue 25651",
@@ -3176,6 +3227,7 @@
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
         "Check Point": "Issue 18643",
+        "CheckPointFirewall_v2": "Issue 18643",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Jask": "Issue 18879",
@@ -3206,17 +3258,17 @@
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
         "PaloAltoNetworks_PrismaCloudCompute": "Issue 27112",
-        "Code42": "Instance not set up yet",
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "Ivanti Heat": "Issue 26259",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
+        "Hatching Triage": "Community contribution",
         "SNDBOX": "Issue 28826",
+        "illuminate": "Will be replaced by analyst1 - Issue 9401",
 
         "_comment2": "~~~ UNSTABLE ~~~",
-        "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
 
@@ -3230,11 +3282,9 @@
 
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
-        "SafeBreach v2": "it is a partner integration, no instance",
-        "IllusiveNetworks": "supported by partner",
-        "Recorded Future v2": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
+        "Smokescreen IllusionBLACK": "partner integration",
 
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
@@ -3353,7 +3403,8 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "QRadar": "Playbooks has parallel steps which are causing inconsistent results"
+        "QRadar": "Playbooks has parallel steps which are causing inconsistent results",
+        "MISP V2": "Issue 26905"
     },
     "parallel_integrations": [
         "SNDBOX",
@@ -3391,8 +3442,6 @@
         "DShield Feed",
         "AlienVault Reputation Feed",
         "BruteForceBlocker Feed",
-        "Feodo Tracker Hashes Feed",
-        "Feodo Tracker IP Blocklist Feed",
         "Feodo Tracker IP Blocklist Feed",
         "AlienVault OTX TAXII Feed",
         "Prisma Access Egress IP feed",
@@ -3411,6 +3460,9 @@
                 "pid_threshold": 11
             },
             "demisto/py-ews:2.0": {
+                "memory_threshold": 150
+            },
+            "demisto/pymisp:1.0.0.52": {
                 "memory_threshold": 150
             },
             "demisto/pytan": {

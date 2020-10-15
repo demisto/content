@@ -3005,3 +3005,19 @@ RESPONSE_ASSIGNMENT_GROUP = {'result': {'parent': '', 'manager':
                                        'sys_created_on': '2020-07-11 09:50:32', 'name': 'Help Desk',
                                        'exclude_manager': 'false', 'email': '', 'include_members': 'false',
                                        'sys_created_by': 'admin'}}
+
+
+RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR = [{'Contents': '', 'ContentsFormat': 'text', 'Type': 3,
+                                          'File': 'test_mirrored_from_xsoar.txt',
+                                          'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'}]
+
+MIRROR_COMMENTS_RESPONSE_FROM_XSOAR = {'result': [{
+    'sys_id': '549fc0bfdbaa101053482fb748961941', 'sys_created_on': '2020-08-17 06:31:49', 'name': 'incident',
+    'element_id': '9bf0f1afdbe6101053482fb748961908', 'sys_tags': '',
+    'value': 'This is a comment\n\n Mirrored from Cortex XSOAR', 'sys_created_by': 'admin', 'element': 'comments'}]}
+
+MIRROR_ENTRIES = [
+    {'Contents': '', 'ContentsFormat': 'text', 'type': 3, 'File': 'test.txt',
+     'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'},
+    {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
+     'tags': ['comments', 'work_notes'], 'note': True}]
