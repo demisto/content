@@ -40,7 +40,7 @@ script:
     execution: false
     name: thycotic-authenticate-token
     outputs:
-    - contextPath: token
+    - contextPath: Thycotic.authenticate.token
       description: Access token
       type: String
   - arguments:
