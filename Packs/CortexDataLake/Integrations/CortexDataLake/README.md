@@ -22,10 +22,10 @@ This integration was integrated and tested with version 2 of Cortex Data Lake
     * __Encryption Key__: From the authentication process
     * __Fetch incidents__: Whether to fetch incidents or not
     * __first_fetch_timestamp__: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year)
-    * __Fetch Table__: Choose from what table incidents will be fetched from.
+    * __Fetch Table__: Choose the table from which incidents will be fetched.
     * __Severity of events to fetch (Firewall)__: Select from all,Critical,High,Medium,Low,Informational,Unused
     * __Subtype of events to fetch (Firewall)__: Select from all,attack,url,virus,spyware,vulnerability,file,scan,flood,packet,resource,data,url-content,wildfire,extpcap,wildfire-virus,http-hdr-insert,http-hdr,email-hdr,spyware-dns,spyware-wildfire-dns,spyware-wpc-dns,spyware-custom-dns,spyware-cloud-dns,spyware-raven,spyware-wildfire-raven,spyware-wpc-raven,wpc-virus,sctp
-    * __Fetch Fields__: Comma separated fields that'll be fetched with every incident. e.g. "pcap,session_id". Enter "*" for all possible fields.
+    * __Fetch Fields__: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id". Enter "*" for all possible fields.
     * __Incidents fetched per query__: How many incidents will be fetched per query. Caution: high number could create overload. Default is 10.
     * __proxy__: Use system proxy settings
     * __insecure__: Trust any certificate (not secure)
