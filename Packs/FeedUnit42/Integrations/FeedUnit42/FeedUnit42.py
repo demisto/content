@@ -251,7 +251,8 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
 
         for sub_report in sub_reports:
             if sub_report.get('id') in related_sub_reports:
-                related_ids += matched_relationships.get(sub_report.get('id'), [])
+                related_ids += [id_ for id_ in matched_relationships.get(sub_report.get('id'), [])
+                                if not id_.startswith('indicator')]
 
                 for object_id in sub_report.get('object_refs', []):
                     if object_id.startswith('malware'):
@@ -298,7 +299,7 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                 report['fields']['feedrelatedindicators'].extend([{
                     'type': type_name,
                     'value': relation_value_field,
-                    'description': relation_object.get('description', 'No description provided.')
+                    'description': ', '.join(relation_object.get('labels', ['No description provided.']))
                 }])
 
             else:
