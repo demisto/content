@@ -137,36 +137,15 @@ def search_pack(client, prints_manager, pack_display_name, pack_id, thread_index
     try:
         # make the search request
         response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                            path='/contentpacks/marketplace/search',
-                                                                            method='POST',
-                                                                            body={"packsQuery": pack_display_name},
+                                                                            path=f'/contentpacks/marketplace/{pack_id}',
+                                                                            method='GET',
                                                                             accept='application/json',
                                                                             _request_timeout=None)
 
         if 200 <= status_code < 300:
             result_object = ast.literal_eval(response_data)
             search_results = result_object.get('packs', [])
-
-            if not search_results:
-                # make the search request
-                response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                    path='/contentpacks/marketplace/search',
-                                                                                    method='POST',
-                                                                                    body={"packsQuery": pack_id},
-                                                                                    accept='application/json',
-                                                                                    _request_timeout=None)
-                result_object = ast.literal_eval(response_data)
-                search_results = result_object.get('packs', [])
-
             pack_data = get_pack_data_from_results(search_results, pack_display_name)
-
-            print_msg = f'\n\n\n\n\n\n###################################################\n' \
-                        f'{pack_display_name}\n' \
-                        f'response_data:\n{pack_id}\n' \
-                        f'result_object:\n{pack_data}\n' \
-                        f'\n###################################################\n\n\n\n\n\n'
-            prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.RED)
-            prints_manager.execute_thread_prints(thread_index)
 
             if pack_data:
                 print_msg = 'Found pack {} in bucket!\n'.format(pack_display_name)
