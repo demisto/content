@@ -19,7 +19,6 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, proxy=proxy)
         self._username = username
         self._password = password
-        self._proxy = proxy
         self._token = self._generate_token()
         self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
 
