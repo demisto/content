@@ -43,7 +43,7 @@ script:
     execution: false
     name: thycotic-secret-password-get
     outputs:
-    - contextPath: secret_password
+    - contextPath: Thycotic.secret.secret_password
       description: 'Retrived password from secret '
       type: String
   - arguments:
