@@ -142,6 +142,12 @@ def search_pack(client, prints_manager, pack_display_name, pack_id, thread_index
                                                                             accept='application/json',
                                                                             _request_timeout=None)
 
+        print_msg = f"===================\n" \
+                    f"{response_data}" \
+                    f"/contentpacks/marketplace/{pack_id}"
+        prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.RED)
+        prints_manager.execute_thread_prints(thread_index)
+
         if 200 <= status_code < 300:
             result_object = ast.literal_eval(response_data)
             search_results = result_object.get('packs', [])
