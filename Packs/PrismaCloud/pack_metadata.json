@@ -38,6 +38,10 @@
             "mandatory": false,
             "display_name": "Google Cloud Compute"
         },
+        "GCP-Kubernetes": {
+            "mandatory": false,
+            "display_name": "GCP - Kubernetes Engine"
+        },
         "AWS-EC2": {
             "mandatory": false,
             "display_name": "AWS - EC2"
