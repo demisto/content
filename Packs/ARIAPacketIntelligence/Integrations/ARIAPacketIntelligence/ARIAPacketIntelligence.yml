@@ -4,7 +4,7 @@ commonfields:
 name: ARIA Packet Intelligence
 display: ARIA Packet Intelligence
 category: Network Security
-description: 'The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform integrates with Demisto to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.'
+description: 'The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform integrates with Cortex XSOAR to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.'
 configuration:
 - display: SDSo Base URL (e.g. http://<IP address or FQDN of SDSo Node>:7443)
   name: sdso
@@ -906,7 +906,7 @@ script:
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the source subnet logic block, disabling the alerts.
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.12176
   runonce: false
 tests:
 - No test
