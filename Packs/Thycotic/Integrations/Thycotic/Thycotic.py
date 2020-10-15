@@ -15,8 +15,8 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
-    def __init__(self, server_url: str, username: str, password: str, proxy: bool):
-        super().__init__(base_url=server_url, proxy=proxy)
+    def __init__(self, server_url: str, username: str, password: str, proxy: bool, verify: bool):
+        super().__init__(base_url=server_url, proxy=proxy, verify=verify)
         self._username = username
         self._password = password
         self._token = self._generate_token()
@@ -102,7 +102,7 @@ def main():
     verify = not demisto.params().get('insecure', False)
     LOG(f'Command being called is {demisto.command()}')
     try:
-        client = Client(server_url=url, username=username, password=password, proxy=proxy)
+        client = Client(server_url=url, username=username, password=password, proxy=proxy, verify=verify)
 
         if demisto.command() == 'thycotic-authenticate-token':
             return_results(authenticate_token_command(client))
