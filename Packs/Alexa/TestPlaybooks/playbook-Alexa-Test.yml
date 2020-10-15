@@ -701,7 +701,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '2'
+              simple: '1'
     view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 2990\n  }\n}"
     note: false
     timertriggers: []
