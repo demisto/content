@@ -1,9 +1,7 @@
 args:
 - default: false
   defaultValue: type
-  description: A comma-separatetd list of names of the incident fields where incident type
-    is stored. Default it "type". Change this arguement only in case you use a custom
-    field for specifying incident type.
+  description: The name of the incident field where its type is stored. Default is "type". Change this arguement only in case you use a custom field for specifying incident type.
   isArray: false
   name: incidentTypeFieldName
   required: false

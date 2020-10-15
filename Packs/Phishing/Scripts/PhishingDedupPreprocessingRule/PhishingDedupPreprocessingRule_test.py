@@ -258,10 +258,10 @@ def test_short_text(mocker):
 
 
 def test_generate_incident_type_query_component():
-    type_fields_arg = 'type1,type2'
-    type_values_arg = "hello world, hello world 2"
+    type_fields_arg = 'type1'
+    type_values_arg = "hello world, hello world 2,hello world 3"
     res = generate_incident_type_query_component(type_fields_arg, type_values_arg)
-    assert res == 'type1:("hello world" "hello world 2") or type2:("hello world" "hello world 2")'
+    assert res == 'type1:("hello world" "hello world 2" "hello world 3")'
 
 
 def test_linked_to_oldest_incident(mocker):

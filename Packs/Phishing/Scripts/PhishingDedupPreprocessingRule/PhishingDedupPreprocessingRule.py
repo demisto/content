@@ -61,8 +61,8 @@ def get_existing_incidents(input_args):
         return_error('Unsupported statusScope: {}'.format(status_scope))
     type_values = input_args.get('incidentTypes')
     if type_values is not None and type_values != 'None':
-        type_fields = input_args.get('incidentTypeFieldName', 'type')
-        type_query = generate_incident_type_query_component(type_fields, type_values)
+        type_field = input_args.get('incidentTypeFieldName', 'type')
+        type_query = generate_incident_type_query_component(type_field, type_values)
         query_components.append(type_query)
     if len(query_components) > 0:
         get_incidents_args['query'] = ' and '.join('({})'.format(c) for c in query_components)
@@ -73,15 +73,11 @@ def get_existing_incidents(input_args):
     return incidents
 
 
-def generate_incident_type_query_component(type_fields_arg, type_values_arg):
-    type_fields = [x.strip() for x in type_fields_arg.split(',')]
+def generate_incident_type_query_component(type_field_arg, type_values_arg):
+    type_field = type_field_arg.strip()
     type_values = [x.strip() for x in type_values_arg.split(',')]
-    type_query_components = []
     types_unions = ' '.join(f'"{t}"' for t in type_values)
-    for f in type_fields:
-        type_query_components.append(f'{f}:({types_unions})')
-    type_query = ' or '.join(type_query_components)
-    return type_query
+    return f'{type_field}:({types_unions})'
 
 
 def extract_domain(address):
