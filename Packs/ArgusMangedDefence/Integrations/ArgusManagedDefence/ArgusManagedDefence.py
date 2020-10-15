@@ -209,9 +209,9 @@ def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("key not specified")
     if not value:
         raise ValueError("value not specified")
+
     tag = {"key": key, "value": value}
     result = add_case_tag(caseID=case_id, tags=tag)
-    # tags = {key: result['data'][0][key] for key in result['data'][0].keys() & {'key', 'value', 'addedTimestamp'}}
     headers = ["key", "value", "addedTime"]
     readable_output = tableToMarkdown(
         f"#{case_id}: Tags", result["data"], headers=headers
@@ -231,6 +231,7 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("case_id not specified")
     if not comment:
         raise ValueError("comment not specified")
+
     result = add_comment(
         caseID=case_id,
         comment=comment,
@@ -290,6 +291,7 @@ def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
     readable_output += tableToMarkdown(
         "Output not suitable for playground", result["data"]
     )
+
     return CommandResults(readable_output=readable_output, outputs=result)
 
 
@@ -297,6 +299,7 @@ def close_case_command(args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", None)
     if not case_id:
         raise ValueError("case_id not specified")
+
     result = close_case(
         caseID=case_id,
         comment=args.get("comment", None),
@@ -306,6 +309,7 @@ def close_case_command(args: Dict[str, Any]) -> CommandResults:
     readable_output += (
         f"_Status: {result['data']['status']}, at: {result['data']['closedTime']}_"
     )
+
     return CommandResults(readable_output=readable_output, outputs=result)
 
 
@@ -361,8 +365,10 @@ def delete_case_command(args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", None)
     if not case_id:
         raise ValueError("case id not specified")
+
     result = delete_case(caseID=case_id)
     readable_output = pretty_print_case_metadata(result, "Case deleted")
+
     return CommandResults(readable_output=readable_output, outputs=result)
 
 
@@ -373,6 +379,7 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("case id not specified")
     if not comment_id:
         raise ValueError("comment id not specified")
+
     result = delete_comment(caseID=case_id, commentID=comment_id)
     readable_output = f"# #{case_id}: Deleted comment\n"
     readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['lastUpdatedTime']}*\n"
@@ -396,6 +403,7 @@ def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("comment id not specified")
     if not comment:
         raise ValueError("comment not specified")
+
     result = edit_comment(caseID=case_id, commentID=comment_id, comment=comment)
     readable_output = f"# #{case_id}: Updated comment\n"
     readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['lastUpdatedTime']}*\n"
@@ -412,6 +420,7 @@ def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("case id not specified")
     if not attachment_id:
         raise ValueError("attachment id not specified")
+
     result = get_attachment(caseID=case_id, attachmentID=attachment_id)
     readable_output = f"# #{case_id}: attachment metadata\n"
     readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['addedTime']}*\n"
@@ -425,8 +434,12 @@ def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", None)
     if not case_id:
         raise ValueError("case id not specified")
-    result = get_case_metadata_by_id(id=case_id, skipRedirect=args.get("skip_redirect", None))
+
+    result = get_case_metadata_by_id(
+        id=case_id, skipRedirect=args.get("skip_redirect", None)
+    )
     readable_output = pretty_print_case_metadata(result)
+
     return CommandResults(readable_output=readable_output, outputs=result)
 
 
@@ -434,9 +447,12 @@ def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", None)
     if not case_id:
         raise ValueError("case_id not specified")
-    result = list_case_attachments(caseID=case_id, limit=args.get("limit", None), offset=args.get("offset", None))
+
+    result = list_case_attachments(
+        caseID=case_id, limit=args.get("limit", None), offset=args.get("offset", None)
+    )
     readable_output = f"# #{case_id}: Case attachments\n"
-    for attachment in result['data']:
+    for attachment in result["data"]:
         readable_output += f"#### *{attachment['addedByUser']['userName']} - {attachment['addedTime']}*\n"
         readable_output += f"{attachment['name']} ({attachment['mimeType']}, {attachment['size']} kb)\n\n"
         readable_output += f"_id: {attachment['id']}_\n"
@@ -451,11 +467,13 @@ def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
     offset = args.get("offset", None)
     if not case_id:
         raise ValueError("case_id not specified")
+
     result = list_case_tags(caseID=case_id, limit=limit, offset=offset)
     headers = ["key", "value", "addedTime", "id"]
     readable_output = tableToMarkdown(
         f"#{case_id}: Tags", result["data"], headers=headers
     )
+
     return CommandResults(readable_output=readable_output, outputs=result)
 
 
@@ -470,6 +488,7 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("case_id not specified")
     if sort_by:
         sort_by = ["addedTimestamp"] if sort_by == "ascending" else ["-addedTimestamp"]
+
     result = list_case_comments(
         caseID=case_id,
         beforeComment=before_comment,
@@ -497,11 +516,13 @@ def remove_case_tag_by_id_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("case id not specified")
     if not tag_id:
         raise ValueError("tag id not specified")
+
     result = remove_case_tag_by_id(caseID=case_id, tagID=tag_id)
     headers = ["key", "value", "addedTime", "id", "flags"]
     readable_output = tableToMarkdown(
         f"#{case_id}: Delete tags", result["data"], headers=headers
     )
+
     return CommandResults(readable_output=readable_output, outputs=result)
 
 
@@ -515,11 +536,13 @@ def remove_case_tag_by_key_value_command(args: Dict[str, Any]) -> CommandResults
         raise ValueError("key not specified")
     if not value:
         raise ValueError("value not specified")
+
     result = remove_case_tag_by_key_value(caseID=case_id, tagKey=key, tagValue=value)
     headers = ["key", "value", "addedTime", "id", "flags"]
     readable_output = tableToMarkdown(
         f"#{case_id}: Delete tags", result["data"], headers=headers
     )
+
     return CommandResults(readable_output=readable_output, outputs=result)
 
 
@@ -527,6 +550,7 @@ def update_case_command(args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", None)
     if not case_id:
         raise ValueError("case id not specified")
+
     result = update_case(
         id=case_id,
         subject=args.get("subject", None),
@@ -545,6 +569,7 @@ def update_case_command(args: Dict[str, Any]) -> CommandResults:
         internalComment=args.get("internal_comment", None),
     )
     readable_output = pretty_print_case_metadata(result)
+
     return CommandResults(readable_output=readable_output, outputs=result)
 
 
