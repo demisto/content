@@ -1,6 +1,6 @@
 Secure privileges for service, application, root,
 and administrator accounts across your enterprise
-This integration was integrated and tested with version xx of Thycotic
+This integration was integrated and tested with version 10.9 of Thycotic
 ## Configure Thycotic on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
