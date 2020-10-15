@@ -454,6 +454,11 @@ class Client(BaseClient):
             try:
                 query_url = response.links['next']['url']
                 query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
+
+                if 'last_id_modified_timestamp=' in query_url:
+                    last_fetch_time_modified_timestamp = query_url.split('last_id_modified_timestamp=')[1]
+                    self.last_indicators_fetch_time = parse_timestamp(last_fetch_time_modified_timestamp)
+
             except KeyError:
                 break
 
@@ -510,6 +515,11 @@ class Client(BaseClient):
             try:
                 query_url = response.links['next']['url']
                 query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
+
+                if 'last_id_modified_timestamp=' in query_url:
+                    last_fetch_time_modified_timestamp = query_url.split('last_id_modified_timestamp=')[1]
+                    self.last_reports_fetch_time = parse_timestamp(last_fetch_time_modified_timestamp)
+
             except KeyError:
                 break
 
@@ -528,6 +538,11 @@ class Client(BaseClient):
         indicators = stix_processor.process_indicators()
         stix_indicators = stix_processor.process_stix_entities()
         reports = stix_processor.process_reports()
+
+        demisto.setIntegrationContext({
+            'last_indicators_fetch_time': self.last_indicators_fetch_time,
+            'last_reports_fetch_time': self.last_reports_fetch_time
+        })
 
         return indicators + stix_indicators + reports
 
