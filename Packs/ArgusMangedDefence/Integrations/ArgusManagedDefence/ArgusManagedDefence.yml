@@ -735,6 +735,46 @@ script:
     description: List attachments for an existing case
     execution: false
     name: argus_list_case_attachments
+  - arguments:
+    - default: false
+      description: ID of Argus case
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of tag to remove
+      isArray: false
+      name: tag_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove existing tag by tag ID
+    execution: false
+    name: argus_remove_case_tag_by_id
+  - arguments:
+    - default: false
+      description: ID of Argus case
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: Key of tag to remove
+      isArray: false
+      name: key
+      required: true
+      secret: false
+    - default: false
+      description: Value of tag to remove
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove existing tag with key, value matching
+    execution: false
+    name: argus_remove_case_tag_by_key_value
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true

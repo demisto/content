@@ -1,6 +1,9 @@
 BASE_URL = "https://api.mnemonic.no"
 CASE_ID = 1337
 COMMENT_ID = "some-long-hash"
+TAG_ID = "some-long-hash"
+TAG_KEY = "test_key"
+TAG_VALUE = "test_value"
 
 
 def test_is_valid_service():
@@ -176,8 +179,28 @@ def test_list_case_comments(requests_mock):
     assert result.raw_response == argus_case_data.ARGUS_CASE_COMMENTS_LIST
 
 
+def test_remove_case_tag_by_id_command(requests_mock):
+    from ArgusManagedDefence import remove_case_tag_by_id_command
+    from argus_json import argus_case_data
+
+    method_url = f"/cases/v2/case/{CASE_ID}/tags/{TAG_ID}"
+
+    requests_mock.delete(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_TAGS)
+    args = {"case_id": CASE_ID, "tag_id": TAG_ID}
+    result = remove_case_tag_by_id_command(args)
+    assert result.raw_response == argus_case_data.ARGUS_CASE_TAGS
+
+
 def test_remove_case_tag_by_key_value(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import remove_case_tag_by_key_value_command
+    from argus_json import argus_case_data
+
+    method_url = f"/cases/v2/case/{CASE_ID}/tags/{TAG_KEY}/{TAG_VALUE}"
+
+    requests_mock.delete(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_TAGS)
+    args = {"case_id": CASE_ID, "key": TAG_KEY, "value": TAG_VALUE}
+    result = remove_case_tag_by_key_value_command(args)
+    assert result.raw_response == argus_case_data.ARGUS_CASE_TAGS
 
 
 def test_update_case(requests_mock):

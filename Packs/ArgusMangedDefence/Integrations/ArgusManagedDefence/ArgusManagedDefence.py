@@ -440,7 +440,7 @@ def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
     if not case_id:
         raise ValueError("case_id not specified")
     result = list_case_tags(caseID=case_id, limit=limit, offset=offset)
-    headers = ["key", "value", "addedTime"]
+    headers = ["key", "value", "addedTime", "id"]
     readable_output = tableToMarkdown(
         f"#{case_id}: Tags", result["data"], headers=headers
     )
@@ -478,8 +478,37 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
     return CommandResults(readable_output=readable_output, outputs=result)
 
 
+def remove_case_tag_by_id_command(args: Dict[str, Any]) -> CommandResults:
+    case_id = args.get("case_id", None)
+    tag_id = args.get("tag_id", None)
+    if not case_id:
+        raise ValueError("case id not specified")
+    if not tag_id:
+        raise ValueError("tag id not specified")
+    result = remove_case_tag_by_id(caseID=case_id, tagID=tag_id)
+    headers = ["key", "value", "addedTime", "id", "flags"]
+    readable_output = tableToMarkdown(
+        f"#{case_id}: Delete tags", result["data"], headers=headers
+    )
+    return CommandResults(readable_output=readable_output, outputs=result)
+
+
 def remove_case_tag_by_key_value_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    case_id = args.get("case_id", None)
+    key = args.get("key", None)
+    value = args.get("value", None)
+    if not case_id:
+        raise ValueError("case id not specified")
+    if not key:
+        raise ValueError("key not specified")
+    if not value:
+        raise ValueError("value not specified")
+    result = remove_case_tag_by_key_value(caseID=case_id, tagKey=key, tagValue=value)
+    headers = ["key", "value", "addedTime", "id", "flags"]
+    readable_output = tableToMarkdown(
+        f"#{case_id}: Delete tags", result["data"], headers=headers
+    )
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def update_case_command(args: Dict[str, Any]) -> CommandResults:
@@ -586,6 +615,9 @@ def main() -> None:
 
         elif demisto.command() == "argus_list_case_comments":
             return_results(list_case_comments_command(demisto.args()))
+
+        elif demisto.command() == "argus_remove_case_tag_by_id":
+            return_results(remove_case_tag_by_id_command(demisto.args()))
 
         elif demisto.command() == "argus_remove_case_tag_by_key_value":
             return_results(remove_case_tag_by_key_value_command(demisto.args()))
