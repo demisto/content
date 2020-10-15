@@ -58,7 +58,7 @@ script:
     execution: false
     name: thycotic-secret-username-get
     outputs:
-    - contextPath: secret_username
+    - contextPath: Thycotic.secret.secret_username
       description: Retrived username from secret.
       type: String
   dockerimage: demisto/python3:3.8.6.12176
