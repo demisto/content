@@ -1279,5 +1279,5 @@ script:
 tests:
 - FireEyeNX-Test
 fromversion: 5.0.0
-defaultclassifier: FireEye NX
+defaultclassifier: FireEye NX - Classifier
 defaultmapperin: FireEye NX-mapper
