@@ -113,7 +113,15 @@ def test_download_attachment(requests_mock):
 
 
 def test_edit_comment(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import edit_comment_command
+    from argus_json import argus_case_data
+
+    method_url = f"/cases/v2/case/{CASE_ID}/comments/{COMMENT_ID}"
+
+    requests_mock.put(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_COMMENT)
+    args = {"case_id": CASE_ID, "comment_id": COMMENT_ID, "comment": "test comment"}
+    result = edit_comment_command(args)
+    assert result.raw_response == argus_case_data.ARGUS_CASE_COMMENT
 
 
 def test_get_attachment(requests_mock):

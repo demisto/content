@@ -668,6 +668,29 @@ script:
     description: Mark existing comment as deleted
     execution: false
     name: argus_delete_comment
+  - arguments:
+    - default: false
+      description: ID of Argus case where comment exists
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of comment to edit
+      isArray: false
+      name: comment_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment text which will replace the current text
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Edit existing comment
+    execution: false
+    name: argus_edit_comment
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true

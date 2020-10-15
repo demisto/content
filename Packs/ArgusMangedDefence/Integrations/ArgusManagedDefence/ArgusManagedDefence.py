@@ -241,7 +241,8 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
     )
     readable_output = f"# #{case_id}: Added comment\n"
     readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['addedTime']}*\n"
-    readable_output += f"{result['data']['comment']}"
+    readable_output += f"{result['data']['comment']}\n\n"
+    readable_output += f"_id: {result['data']['id']}_\n"
 
     return CommandResults(readable_output=readable_output, outputs=result)
 
@@ -371,7 +372,7 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
     if not case_id:
         raise ValueError("case id not specified")
     if not comment_id:
-        raise ValueError("comment id not specifed")
+        raise ValueError("comment id not specified")
     result = delete_comment(caseID=case_id, commentID=comment_id)
     readable_output = f"# #{case_id}: Deleted comment\n"
     readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['lastUpdatedTime']}*\n"
@@ -386,7 +387,22 @@ def download_attachment_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    case_id = args.get("case_id", None)
+    comment_id = args.get("comment_id", None)
+    comment = args.get("comment", None)
+    if not case_id:
+        raise ValueError("case id not specified")
+    if not comment_id:
+        raise ValueError("comment id not specified")
+    if not comment:
+        raise ValueError("comment not specified")
+    result = edit_comment(caseID=case_id, commentID=comment_id, comment=comment)
+    readable_output = f"# #{case_id}: Updated comment\n"
+    readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['lastUpdatedTime']}*\n"
+    readable_output += f"{result['data']['comment']}\n\n"
+    readable_output += f"_id: {result['data']['id']}_\n"
+
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
