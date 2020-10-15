@@ -744,8 +744,12 @@ def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
 ''' COMMANDS FUNCTIONS '''
 
 
-def test_module(client: Client):
-    query = 'SELECT * FROM `firewall.traffic` limit 1'
+def test_module(client: Client, fetch_table, fetch_fields, is_fetch):
+    if not is_fetch:
+        # fetch params not to be tested (won't be used)
+        fetch_fields = '*'
+        fetch_table = 'firewall.traffic'
+    query = f'SELECT {fetch_fields} FROM `{fetch_table}` limit 1'
     client.query_loggings(query)
     return_outputs('ok')
 
@@ -995,11 +999,14 @@ def main():
     proxy = params.get('proxy', False)
     client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
     args = demisto.args()
+    fetch_table = params.get('fetch_table')
+    fetch_fields = params.get('fetch_fields') or '*'
+
     command = demisto.command()
     LOG(f'command is {command}')
     try:
         if command == 'test-module':
-            test_module(client)
+            test_module(client, fetch_table, fetch_fields, params.get('isFetch'))
         elif command == 'cdl-query-logs':
             return_outputs(*query_logs_command(args, client))
         elif command == 'cdl-get-critical-threat-logs':
