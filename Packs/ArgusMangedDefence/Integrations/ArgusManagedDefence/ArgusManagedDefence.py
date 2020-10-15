@@ -27,6 +27,7 @@ from argus_api.api.cases.v2.case import (
     list_case_attachments,
     list_case_tags,
     list_case_comments,
+    remove_case_tag_by_id,
     remove_case_tag_by_key_value,
     update_case,
 )
@@ -356,7 +357,12 @@ def create_case_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def delete_case_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    case_id = args.get("case_id", None)
+    if not case_id:
+        raise ValueError("case id not specified")
+    result = delete_case(caseID=case_id)
+    readable_output = pretty_print_case_metadata(result, "Case deleted")
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def delete_comment_command(args: Dict[str, Any]) -> CommandResults:

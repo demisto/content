@@ -88,7 +88,15 @@ def test_create_case(requests_mock):
 
 
 def test_delete_case(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import delete_case_command
+    from argus_json import argus_case_data
+
+    method_url = f"/cases/v2/case/{case_id}"
+
+    requests_mock.delete(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_METADATA)
+    args = {"case_id": case_id}
+    result = delete_case_command(args)
+    assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
 
 
 def test_delete_comment(requests_mock):
