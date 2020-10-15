@@ -3473,6 +3473,9 @@
             },
             "demisto/threatconnect-tcex": {
                 "pid_threshold": 11
+            },
+            "demisto/taxii2": {
+                "pid_threshold": 11
             }
         }
     }
