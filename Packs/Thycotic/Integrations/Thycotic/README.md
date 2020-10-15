@@ -1,5 +1,5 @@
 Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
-This integration was integrated and tested with version xx of Thycotic
+This integration was integrated and tested with version 10.9 of Thycotic
 ## Configure Thycotic on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
