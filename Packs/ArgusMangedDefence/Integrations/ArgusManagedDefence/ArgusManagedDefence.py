@@ -419,7 +419,18 @@ def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    case_id = args.get("case_id", None)
+    if not case_id:
+        raise ValueError("case_id not specified")
+    result = list_case_attachments(caseID=case_id, limit=args.get("limit", None), offset=args.get("offset", None))
+    readable_output = f"# #{case_id}: Case attachments\n"
+    for attachment in result['data']:
+        readable_output += f"#### *{attachment['addedByUser']['userName']} - {attachment['addedTime']}*\n"
+        readable_output += f"{attachment['name']} ({attachment['mimeType']}, {attachment['size']} kb)\n\n"
+        readable_output += f"_id: {attachment['id']}_\n"
+        readable_output += "* * *\n"
+
+    return CommandResults(readable_output=readable_output, outputs=result)
 
 
 def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:

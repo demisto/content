@@ -712,6 +712,29 @@ script:
     description: Returns the basic case descriptor for the case identified by ID
     execution: false
     name: argus_get_case_metadata_by_id
+  - arguments:
+    - default: false
+      description: ID of Argus case
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: Maximum number of returned results
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Skip a number of results
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: List attachments for an existing case
+    execution: false
+    name: argus_list_case_attachments
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true
