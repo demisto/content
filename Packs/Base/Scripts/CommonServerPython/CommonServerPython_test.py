@@ -2467,8 +2467,8 @@ def test_set_latest_integration_context(mocker):
 
     # Assert
     assert int_context_calls == 2
-    assert int_context_args_1 == (int_context['context'], int_context['version'], True)
-    assert int_context_args_2 == (int_context['context'], int_context['version'] + 1, True)
+    assert int_context_args_1 == (int_context['context'], True, int_context['version'])
+    assert int_context_args_2 == (int_context['context'], True, int_context['version'] + 1)
 
 
 def test_set_latest_integration_context_es(mocker):
@@ -2492,8 +2492,8 @@ def test_set_latest_integration_context_es(mocker):
 
     # Assert
     assert int_context_calls == 2
-    assert int_context_args_1[1:] == (es_inv_context_version_first, True)
-    assert int_context_args_2[1:] == (es_inv_context_version_second, True)
+    assert int_context_args_1[1:] == (True, es_inv_context_version_first)
+    assert int_context_args_2[1:] == (True, es_inv_context_version_second)
 
 
 def test_set_latest_integration_context_fail(mocker):

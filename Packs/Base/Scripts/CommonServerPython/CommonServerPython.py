@@ -4040,7 +4040,7 @@ def merge_lists(original_list, updated_list, key):
     return merged_list
 
 
-def set_integration_context(context, version, sync=True):
+def set_integration_context(context, sync=True, version=-1):
     """
     Sets the integration context.
 
@@ -4137,7 +4137,7 @@ def set_to_integration_context_with_retries(context, object_keys=None, sync=True
         # If we get a ValueError (DB Version), then the version was not updated and we need to try again.
         attempt += 1
         try:
-            set_integration_context(integration_context, version, sync)
+            set_integration_context(integration_context, sync, version)
             demisto.debug('Successfully updated integration context with version {}.'
                           ''.format(version))
             break
