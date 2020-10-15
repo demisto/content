@@ -214,6 +214,22 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
         return None, None
 
 
+def return_entry(message, existing_incident=None):
+    if existing_incident is None:
+        similar_incident = {}
+    else:
+        similar_incident = {
+            'rawId': existing_incident['id'],
+            'id': existing_incident['id'],
+            'name': existing_incident.get('name')
+        }
+    outputs = {
+        'similarIncident': similar_incident,
+        'isSimilarIncidentFound': existing_incident is not None
+    }
+    return_outputs(message, outputs)
+
+
 def close_new_incident_and_link_to_existing(new_incident, existing_incident, similarity):
     res = demisto.executeCommand("CloseInvestigationAsDuplicate", {
         'duplicateId': existing_incident['id']})
@@ -224,11 +240,11 @@ def close_new_incident_and_link_to_existing(new_incident, existing_incident, sim
                                                                                         existing_incident['id'],
                                                                                         similarity * 100)
     message += 'This incident will be closed and linked to #{}.'.format(existing_incident['id'])
-    demisto.results(message)
+    return_entry(message, existing_incident.to_dict())
 
 
 def create_new_incident():
-    demisto.results('No duplicate incident found')
+    return_entry('No duplicate incident found')
 
 
 def create_new_incident_low_similarity(existing_incident, similarity):
@@ -239,18 +255,18 @@ def create_new_incident_low_similarity(existing_incident, similarity):
                'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
     message += 'Therefore these 2 incidents will not be considered as duplicate and the current incident ' \
                'will remain active.\n'
-    demisto.results(message)
+    return_entry(message)
 
 
 def create_new_incident_no_text_fields():
     text_fields = [EMAIL_BODY_FIELD, EMAIL_HTML_FIELD, EMAIL_SUBJECT_FIELD]
     message = 'No text fields were found within this incident: {}.\n'.format(','.join(text_fields))
     message += 'Incident will remain active.'
-    demisto.results(message)
+    return_entry(message)
 
 
 def create_new_incident_too_short():
-    demisto.results('Incident text after preprocessing is too short for deduplication. Incident will remain active.')
+    return_entry('Incident text after preprocessing is too short for deduplication. Incident will remain active.')
 
 
 def main():

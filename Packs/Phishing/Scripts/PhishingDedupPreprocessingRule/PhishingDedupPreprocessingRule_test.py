@@ -240,7 +240,7 @@ def test_no_text_fields(mocker):
     mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
     mocker.patch.object(demisto, 'results', side_effect=results)
     main()
-    assert 'No text fields' in RESULTS
+    assert 'No text fields' in RESULTS['HumanReadable']
 
 
 def test_short_text(mocker):
@@ -254,7 +254,7 @@ def test_short_text(mocker):
     mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
     mocker.patch.object(demisto, 'results', side_effect=results)
     main()
-    assert 'too short' in RESULTS
+    assert 'too short' in RESULTS['HumanReadable']
 
 
 def test_generate_incident_type_query_component():
