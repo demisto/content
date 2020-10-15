@@ -403,6 +403,15 @@
         "startCol": 0
        },
        {
+        "endCol": 4,
+        "fieldId": "darktracemodelbreach",
+        "height": 22,
+        "id": "4f3fa160-f196-11ea-a065-99b212c43c46",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
         "dropEffect": "move",
         "endCol": 4,
         "fieldId": "darktracemodelname",
@@ -414,20 +423,11 @@
         "startCol": 2
        },
        {
-        "endCol": 4,
-        "fieldId": "darktracemodelbreach",
-        "height": 22,
-        "id": "4f3fa160-f196-11ea-a065-99b212c43c46",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 2
-       },
-       {
         "dropEffect": "move",
         "endCol": 4,
-        "fieldId": "darktracemodelbreachid",
+        "fieldId": "darktracemodeltags",
         "height": 22,
-        "id": "da1a6ae0-0c30-11eb-8de6-5df860fd5c43",
+        "id": "11ef2fc0-f1a4-11ea-b8cb-5ba8b4ea73b1",
         "index": 1,
         "listId": "caseinfoid-1a81bd00-f196-11ea-a065-99b212c43c46",
         "sectionItemType": "field",
@@ -436,9 +436,9 @@
        {
         "dropEffect": "move",
         "endCol": 4,
-        "fieldId": "darktracemodeltags",
+        "fieldId": "darktracemodelpriority",
         "height": 22,
-        "id": "11ef2fc0-f1a4-11ea-b8cb-5ba8b4ea73b1",
+        "id": "e2fdcdf0-0de8-11eb-83e5-eb61ba4ba60a",
         "index": 2,
         "listId": "caseinfoid-1a81bd00-f196-11ea-a065-99b212c43c46",
         "sectionItemType": "field",
@@ -456,20 +456,33 @@
        {
         "dropEffect": "move",
         "endCol": 6,
-        "fieldId": "darktracemodelbreachscore",
+        "fieldId": "darktracemodelbreachid",
         "height": 22,
-        "id": "7bfe1920-f196-11ea-a065-99b212c43c46",
+        "id": "da1a6ae0-0c30-11eb-8de6-5df860fd5c43",
         "index": 0,
         "listId": "caseinfoid-1a81bd00-f196-11ea-a065-99b212c43c46",
         "sectionItemType": "field",
         "startCol": 4
        },
        {
+        "dropEffect": "move",
+        "endCol": 6,
+        "fieldId": "darktracemodelbreachscore",
+        "height": 22,
+        "id": "7bfe1920-f196-11ea-a065-99b212c43c46",
+        "index": 1,
+        "listId": "caseinfoid-1a81bd00-f196-11ea-a065-99b212c43c46",
+        "sectionItemType": "field",
+        "startCol": 4
+       },
+       {
+        "dropEffect": "move",
         "endCol": 6,
         "fieldId": "darktracemodelid",
         "height": 22,
         "id": "840526e0-f196-11ea-a065-99b212c43c46",
-        "index": 1,
+        "index": 2,
+        "listId": "caseinfoid-1a81bd00-f196-11ea-a065-99b212c43c46",
         "sectionItemType": "field",
         "startCol": 4
        },
@@ -478,7 +491,7 @@
         "fieldId": "darktracemodeluuid",
         "height": 22,
         "id": "8721a920-f196-11ea-a065-99b212c43c46",
-        "index": 2,
+        "index": 3,
         "sectionItemType": "field",
         "startCol": 4
        }

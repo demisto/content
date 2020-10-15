@@ -82,6 +82,10 @@
      "complex": null,
      "simple": "model.name"
     },
+    "Darktrace Model Priority": {
+     "complex": null,
+     "simple": "model.priority"
+    },
     "Darktrace Model Tags": {
      "complex": {
       "accessor": "tags",
