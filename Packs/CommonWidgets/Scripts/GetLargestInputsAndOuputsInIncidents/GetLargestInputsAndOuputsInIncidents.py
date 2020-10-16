@@ -71,7 +71,7 @@ def get_extra_data_from_investigations(investigations):
 
 def main():
     try:
-        raw_output = demisto.executeCommand('GetLargestInvestigations_copy', args={'from': demisto.args().get('from'),
+        raw_output = demisto.executeCommand('GetLargestInvestigations', args={'from': demisto.args().get('from'),
                                                                                    'to': demisto.args().get('to'),
                                                                                    'table_result': 'true'})
         investigations = raw_output[0].get('Contents', {}).get('data')
