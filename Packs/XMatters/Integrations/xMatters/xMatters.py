@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-#from CommonServerUserPython import *
+# from CommonServerUserPython import *
 import requests
 import json
 import dateparser
@@ -24,6 +24,21 @@ class Client(BaseClient):
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
+
+    def xm_get_user(self, user: str):
+        """Retrieves a user in xMatters. Good for testing authentication
+        :type user: ``str``
+        :param user: The user to retrieve
+
+        :return: Result from getting the user
+        :rtype: ``Dict[str, Any]``
+        """
+        res = self._http_request(
+            method='GET',
+            url_suffix='/api/xm/1/people/' + user
+        )
+
+        return res
 
     def xm_trigger_workflow(self, recipients: Optional[str] = None,
                             subject: Optional[str] = None, body: Optional[str] = None,
@@ -469,7 +484,9 @@ def xm_trigger_workflow_command(client: Client, recipients: str,
 
     return CommandResults(
         readable_output="Successfully sent a message to xMatters.",
-        outputs=outputs
+        outputs=outputs,
+        outputs_prefix='xMatters.Workflow',
+        outputs_key_field='request_id'
     )
 
 
@@ -532,7 +549,9 @@ def xm_get_events_command(client: Client, request_id: Optional[str] = None, stat
 
     return CommandResults(
         readable_output="Retrieved Events from xMatters.",
-        outputs=reduced_out
+        outputs=reduced_out,
+        outputs_prefix='xMatters.GetEvents',
+        outputs_key_field='event_id'
     )
 
 
@@ -556,8 +575,58 @@ def xm_get_event_command(client: Client, event_id: str) -> CommandResults:
 
     return CommandResults(
         readable_output="Retrieved Event from xMatters.",
-        outputs=reduced_out
+        outputs=reduced_out,
+        outputs_prefix='xMatters.GetEvents',
+        outputs_key_field='event_id'
     )
+
+
+def test_module(from_xm: Client, to_xm: Client, user: str) -> str:
+    """Tests API connectivity and authentication'
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type client: ``Client``
+    :param Client: xMatters client to use
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+
+    # INTEGRATION DEVELOPER TIP
+    # Client class should raise the exceptions, but if the test fails
+    # the exception text is printed to the Cortex XSOAR UI.
+    # If you have some specific errors you want to capture (i.e. auth failure)
+    # you should catch the exception here and return a string with a more
+    # readable output (for example return 'Authentication Error, API Key
+    # invalid').
+    # Cortex XSOAR will print everything you return different than 'ok' as
+    # an error
+    try:
+        to_xm.xm_trigger_workflow(
+            recipients='nobody',
+            subject='Test - please ignore',
+            body='Test - please ignore'
+        )
+
+    except DemistoException as e:
+        if 'Forbidden' in str(e):
+            return 'Authorization Error: Check the URL of an HTTP trigger in a flow'
+        else:
+            raise e
+
+    try:
+        from_xm.xm_get_user(user='rando')
+
+    except DemistoException as e:
+        if 'Forbidden' in str(e):
+            return 'Authorization Error: Username and Password fields and verify the user exists'
+        else:
+            raise e
+
+    return 'ok'
 
 
 ''' MAIN FUNCTION '''
@@ -662,6 +731,12 @@ def main() -> None:
             return_results(xm_get_event_command(
                 client=from_xm_client,
                 event_id=demisto.args().get('event_id')
+            ))
+        elif demisto.command() == 'test-module':
+            return_results(test_module(
+                from_xm=from_xm_client,
+                to_xm=to_xm_client,
+                user=username
             ))
 
     # Log exceptions and return errors
