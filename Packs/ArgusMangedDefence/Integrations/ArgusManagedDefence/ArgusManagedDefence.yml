@@ -1023,6 +1023,242 @@ script:
     deprecated: false
     execution: false
     name: argus_list_aggregated_events
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: skip_future_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: exclude
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: event_identifier
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: location_id
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: severity
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: customer
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: alarm_id
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: attack_category_id
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: source_geo_country
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: destination_geo_country
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: geo_country
+      required: false
+      secret: false
+    - default: false
+      description: '(as dict: key,value)'
+      isArray: false
+      name: properties
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: exact_match_properties
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: sub_criteria
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: signature
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: last_updated_timestamp
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: index_start_time
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: index_end_time
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: destination_ip
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: source_ip
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: destination_port
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: source_port
+      required: false
+      secret: false
+    - default: false
+      description: (as lst)
+      isArray: false
+      name: port
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: min_severity
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: max_severity
+      required: false
+      secret: false
+    - default: false
+      description: Limit results (default 25)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: include_deleted
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: min_count
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: associated_case_id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: source_ip_min_bits
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: destination_ip_min_bits
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: start_timestamp
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: end_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: Order results by these properties (prefix with - to sort descending)
+        (as list)
+      isArray: false
+      name: sort_by
+      required: false
+      secret: false
+    - default: false
+      description: Search objects with these flags set  (as list)
+      isArray: false
+      name: include_flags
+      required: false
+      secret: false
+    - default: false
+      description: Exclude objects with these flags set (as list)
+      isArray: false
+      name: exclude_flags
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Search for aggregated events (OSB! advanced method: look in API
+      doc)'
+    execution: false
+    name: argus_find_aggregated_events
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true

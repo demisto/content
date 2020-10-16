@@ -33,7 +33,7 @@ from argus_api.api.cases.v2.case import (
 )
 
 from argus_api.api.events.v1.case.case import get_events_for_case
-from argus_api.api.events.v1.aggregated import list_aggregated_events
+from argus_api.api.events.v1.aggregated import find_aggregated_events, list_aggregated_events
 from argus_api.api.events.v1.payload import get_payload
 from argus_api.api.events.v1.pcap import get_pcap
 
@@ -152,10 +152,16 @@ def argus_status_to_demisto_status(status: str) -> int:
 
 
 def build_tags_from_list(lst: list) -> List[Dict]:
+    if not lst:
+        return None
     tags = []
     for i in range(0, len(lst), 2):
         tags.append({"key": lst[i], "value": lst[i + 1]})
     return tags
+
+
+def str_to_list(string: str) -> list:
+    return string.strip().split(",") if string else None
 
 
 def pretty_print_case_metadata(
@@ -633,7 +639,53 @@ def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    result = find_aggregated_events(
+        skipFutureEvents=args.get("skip_future_events", None),
+        exclude=args.get("exclude", None),
+        eventIdentifier=str_to_list(args.get("event_identifier", None)),
+        locationID=str_to_list(args.get("location_id", None)),
+        severity=str_to_list(args.get("severity", None)),
+        customer=str_to_list(args.get("customer", None)),
+        alarmID=str_to_list(args.get("alarm_id", None)),
+        attackCategoryID=str_to_list(args.get("attack_category_id", None)),
+        sourceGeoCountry=str_to_list(args.get("source_geo_country", None)),
+        destinationGeoCountry=str_to_list(args.get("destination_geo_country", None)),
+        geoCountry=str_to_list(args.get("geo_country", None)),
+        properties=build_tags_from_list(str_to_list(args.get("properties", None))),
+        exactMatchProperties=args.get("exact_match_properties", None),
+        subCriteria=str_to_list(args.get("sub_criteria", None)),
+        signature=str_to_list(args.get("signature", None)),
+        lastUpdatedTimestamp=args.get("last_updated_timestamp", None),
+        indexStartTime=args.get("index_start_time", None),
+        indexEndTime=args.get("index_end_time", None),
+        destinationIP=str_to_list(args.get("destination_ip", None)),
+        sourceIP=str_to_list(args.get("source_ip", None)),
+        ip=str_to_list(args.get("ip", None)),
+        destinationPort=str_to_list(args.get("destination_port", None)),
+        sourcePort=str_to_list(args.get("source_port", None)),
+        port=str_to_list(args.get("port", None)),
+        minSeverity=args.get("min_severity", None),
+        maxSeverity=args.get("max_severity", None),
+        limit=args.get("limit", 25),
+        offset=args.get("offset", None),
+        includeDeleted=args.get("include_deleted", None),
+        minCount=args.get("min_count", None),
+        associatedCaseID=str_to_list(args.get("associated_case_id", None)),
+        sourceIPMinBits=args.get("source_ip_min_bits", None),
+        destinationIPMinBits=args.get("destination_ip_min_bits", None),
+        startTimestamp=args.get("start_timestamp", "-24hours"),
+        endTimestamp=args.get("end_timestamp", "now"),
+        sortBy=str_to_list(args.get("sort_by", None)),
+        includeFlags=str_to_list(args.get("include_flags", None)),
+        excludeFlags=str_to_list(args.get("exclude_flags", None)),
+    )
+    readable_output = f"# List Events\n"
+    readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
+    readable_output += tableToMarkdown("Events", result["data"])
+    outputs = {"Argus.Event(val.id === obj.id)": result["data"]}
+    return CommandResults(
+        readable_output=readable_output, outputs=outputs, raw_response=result
+    )
 
 
 def list_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
