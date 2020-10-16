@@ -1,0 +1,16 @@
+{
+ "name": "Google Drive - Classifier",
+ "type": "classification",
+ "id": "Google Drive",
+ "description": "Classifies Google Drive Incidents.",
+ "defaultIncidentType": "Google Drive Activity",
+ "keyTypeMap": {
+  "Google Drive Activity": "Google Drive Activity"
+ },
+ "transformer": {
+  "complex": null,
+  "simple": ".=\"Google Drive Activity\""
+ },
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

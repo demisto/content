@@ -1,0 +1,31 @@
+{
+ "id": "incident_googledriveactivitycopiedshareddrivetitle",
+ "version": -1,
+ "modified": "2020-09-17T15:22:15.738078116+05:30",
+ "name": "Google Drive Activity Copied Shared Drive Title",
+ "ownerOnly": false,
+ "description": "The title of the shared drive.",
+ "cliName": "googledriveactivitycopiedshareddrivetitle",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Drive Activity"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

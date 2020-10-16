@@ -1,0 +1,23 @@
+{
+ "id": "Google Drive Activity",
+ "version": -1,
+ "vcShouldIgnore": false,
+ "locked": false,
+ "name": "Google Drive Activity",
+ "prevName": "Google",
+ "color": "#1ee8b5",
+ "hours": 0,
+ "days": 0,
+ "weeks": 0,
+ "hoursR": 0,
+ "daysR": 0,
+ "weeksR": 0,
+ "system": false,
+ "readonly": false,
+ "default": false,
+ "autorun": false,
+ "disabled": false,
+ "reputationCalc": 0,
+ "layout": "Google Drive Activity",
+ "fromVersion": "5.0.0"
+}

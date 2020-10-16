@@ -1,0 +1,12 @@
+{
+    "incidents": [
+        {
+            "name": "Permission Change",
+            "occurred": "2020-09-18T09:32:42.761Z",
+            "rawJSON": "{\"primaryActionDetail\": {\"permissionChange\": {\"addedPermissions\": [{\"role\": \"EDITOR\", \"personName\": \"people/101124359955557659537\"}], \"removedPermissions\": [{\"role\": \"EDITOR\", \"personName\": \"people/101124359955557659537\"}]}}, \"actors\": \"Known User: people/118105533760233960163\\n\", \"actions\": [{\"detail\": {\"permissionChange\": {\"addedPermissions\": [{\"role\": \"EDITOR\", \"user\": {\"knownUser\": {\"personName\": \"people/101124359955557659537\"}}}]}}}, {\"detail\": {\"edit\": {}}}], \"targets\": [{\"itemname\": \"items/1Y6SneAiZdWrRX4KATejd9W4W213ItScK\", \"title\": \"TestPlaybook.yml\", \"owner\": \"people/118105533760233960163\", \"iscurrentuser\": true}], \"timestamp\": \"2020-09-18T09:32:42.761Z\"}"
+        }
+    ],
+    "last_fetch": {
+        "last_fetch": 1600421562761
+    }
+}

@@ -1,0 +1,68 @@
+{
+ "id": "incident_googledriveactivityrestrictionchanges",
+ "version": -1,
+ "modified": "2020-09-17T23:10:22.580252474+05:30",
+ "name": "Google Drive Activity Restriction Changes",
+ "ownerOnly": false,
+ "description": "The set of changes made to restrictions.",
+ "cliName": "googledriveactivityrestrictionchanges",
+ "type": "grid",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Drive Activity"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "columns": [
+  {
+   "key": "feature",
+   "displayName": "Feature",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "newrestriction",
+   "displayName": "New Restriction",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  }
+ ],
+ "defaultRows": [
+  {
+
+  },
+  {
+
+  },
+  {
+
+  }
+ ],
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}
