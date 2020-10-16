@@ -648,7 +648,7 @@ def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_
     while urls_count > urls_scanned_count and retries_left > 0:
         retries_left -= 1
         # In case there were url scans that have not finished: try again after giving them enough time to finish
-        time.sleep(scan_finish_time_in_seconds)
+        time.sleep(scan_finish_time_in_seconds)  # pylint: disable=sleep-exists
         for url in urls:
             if url not in requests_responses_dict:
                 response = get_url_report(url, all_info)

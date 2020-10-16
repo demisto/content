@@ -1,0 +1,25 @@
+{
+ "dataType": "scripts",
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "fromDateLicense": "0001-01-01T00:00:00Z",
+  "period": {
+   "by": "",
+   "byFrom": "",
+   "byTo": "",
+   "field": "",
+   "fromValue": null,
+   "toValue": null
+  },
+  "toDate": "0001-01-01T00:00:00Z"
+ },
+ "description": "A number widget showing the failed integrations.",
+ "id": "Failing-Instances-Number",
+ "isPredefined": true,
+ "name": "Number Of Failed Instances",
+ "query": "IntegrationsCheck-Widget-NumberFailingInstances",
+ "size": 0,
+ "version": -1,
+ "widgetType": "number",
+ "fromVersion": "6.0.0"
+}

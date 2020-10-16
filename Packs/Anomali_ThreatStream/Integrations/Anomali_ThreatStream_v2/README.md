@@ -137,10 +137,8 @@ Checks the reputation of the given domain name.
 | --- | --- | --- |
 | Domain.Name | String | The domain name. | 
 | Domain.DNS | String | IPs resolved by DNS.  | 
-| Domain.WHOIS.CreationDate | Date | Date the domain was created. The date format is: YYYYMMDDThhmmss.
-Where T denotes the start of the value for time, in UTC time. | 
-| Domain.WHOIS.UpdatedDate | Date | Date the domain was last updated. The date format is: YYYYMMDDThhmmss.
-Where T denotes the start of the value for time, in UTC time. | 
+| Domain.WHOIS.CreationDate | Date | Date the domain was created. The date format is: YYYYMMDDThhmmss. Where T denotes the start of the value for time, in UTC time. | 
+| Domain.WHOIS.UpdatedDate | Date | Date the domain was last updated. The date format is: YYYYMMDDThhmmss. Where T denotes the start of the value for time, in UTC time. | 
 | Domain.WHOIS.Registrant.Name | String | Name of the registrant. | 
 | Domain.WHOIS.Registrant.Email | String | Email address of the registrant. | 
 | Domain.WHOIS.Registrant.Phone | String | Phone number of the registrant. | 
@@ -1720,9 +1718,9 @@ Checks the reputation of the given URL.
 
 #### Human Readable Output
 
-##### URL reputation for: http://194.147.35.172/mikey.mpsl
+##### URL reputation for: `http://194.147.35.172/mikey.mpsl`
 
 | Address | Confidence | Source | Type | Status | Modified | Organization | Country | Severity |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| http://194.147.35.172/mikey.mpsl | 90 | H3X Tracker | url | active | 2019-06-24T10:10:05.890Z | LLC Baxet | RU | very-high |
+| `http://194.147.35.172/mikey.mpsl` | 90 | H3X Tracker | url | active | 2019-06-24T10:10:05.890Z | LLC Baxet | RU | very-high |
 
