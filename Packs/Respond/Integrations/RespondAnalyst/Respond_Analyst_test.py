@@ -26,6 +26,7 @@ def load_test_data(json_path):
         return json.load(f)
 
 
+
 def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_mock):
     from RespondAnalyst import fetch_incidents, RestClient
 

@@ -69,11 +69,15 @@ def extract_id(incident_id_map):
 class RestClient(BaseClient):
     def get_tenant_mappings(self):
         # need to send one request to big-monolith service to get the external tenant id
-        return self._http_request(
+        tenant_mappings = self._http_request(
             method='GET',
             url_suffix='/session/tenantIdMapping',
             retries=3
         )
+        if len(tenant_mappings) == 0:
+            demisto.error('no tenants found for user')
+            raise Exception('no tenants found for user')
+        return tenant_mappings
 
     def get_current_user(self):
         return self._http_request(
@@ -305,7 +309,10 @@ def format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id):
         'assignedUsers': raw_incident.get('userIds'),
         'feedback': standardized_feedback,
         'tenantIdRespond': respond_tenant_id,
-        'tenantId': external_tenant_id
+        'tenantId': external_tenant_id,
+        'respondRemoteId': f'{external_tenant_id}:{raw_incident.get("id")}',
+        'dbotMirrorDirection': 'In',
+        'dbotMirrorInstance': demisto.integrationInstance()
     }
     # add tenant ids and incident URLs to incidents (cannot get them with gql query)
     raw_incident['tenantId'] = external_tenant_id
@@ -527,32 +534,36 @@ def get_incident_command(rest_client, args):
     return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
 
 
-def get_remote_data_command(client, args):
-    remote_args = GetRemoteDataArgs(args)
-    incident_data = {}
-    try:
-        incident_data = get_incident_command(client, args)
-        incident_data['id'] = incident_data.get('incidentId')
-        demisto.debug(f"Respond incident {remote_args.remote_incident_id}\n"
-                      f"modified time: {int(incident_data.get('modification_time'))}\n"
-                      f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
+def get_remote_data_command(rest_client, args):
+    args['tenant_id'] = args.get('id').split(':')[0]
+    args['incident_id'] = args.get('id').split(':')[1]
 
-        # todo PaloAltoNetworks_XDR.py file is the only working example of v6 right now and they
-        #  use a 'modification_time' field to determine whether or not an event should be updated
-        #  we should change this to check against that field before trying to update. For now,
-        #  assume every field needs to be updated
+    incident_data = {}
+    entries = []
+    try:
+        updated_incident = get_incident_command(rest_client, args)
+        updated_incident['id'] = updated_incident.get('respondRemoteId')
+        demisto.debug(f"Respond incident {args.get('id')}\n"
+                      f"update time:   {arg_to_timestamp(args.get('last_update'), 'last_update')}")
+
+        # todo both working examples of v6 right now use a 'modification_time' type field to
+        #  determine whether or not an event should be updated we should change this to check
+        #  against that field before trying to update. For now, assume every field needs to be
+        #  updated
 
         # todo do we need to add feedback entries or are they already there as null
         #  for the case when an incident was closed in respond but initially was open
 
-        return GetRemoteDataResponse(
-            mirrored_object=incident_data,
-            entries=None  # for now, but this is where we would add close incident fields
-        )
+        # for now
+        # add feedback as third param in id field. if no feedback, field should be string 'None'
+        # then, when updating an incident, if feedback in id is 'None' and there is feedback on the
+        # new incident, add all feedback fields to entries array
+
+        return [updated_incident] + entries
 
     except Exception as e:
         demisto.debug(
-            f'Error in Respond incoming mirror for incident {remote_args.remote_incident_id} \n'
+            f'Error in Respond incoming mirror for incident {args["id"]} \n'
             f'Error message: {str(e)}')
 
 
@@ -574,10 +585,6 @@ def fetch_incidents(rest_client, last_run=dict()):
 
     # get tenant ids
     tenant_mappings = rest_client.get_tenant_mappings()
-
-    if len(tenant_mappings) == 0:
-        demisto.error('no tenants found for user')
-        raise Exception('no tenants found for user')
 
     incidents = []
     next_run = last_run
@@ -641,6 +648,7 @@ def main():
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
+            demisto.debug('fetch incidents called')
             # get all tenant ids
             next_run, incidents = fetch_incidents(rest_client, demisto.getLastRun())
             demisto.setLastRun(next_run)
@@ -659,6 +667,7 @@ def main():
             return_outputs(get_incident_command(rest_client, demisto.args()))
 
         elif demisto.command() == 'get-remote-data':
+            demisto.debug('remote data called')
             return_results(get_remote_data_command(rest_client, demisto.args()))
 
     except Exception as err:
