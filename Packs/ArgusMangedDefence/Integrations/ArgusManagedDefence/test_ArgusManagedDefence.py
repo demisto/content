@@ -279,8 +279,19 @@ def test_get_events_for_case_command(requests_mock):
     assert result.raw_response == argus_event_data.ARGUS_EVENTS_FOR_CASE
 
 
-def test_list_aggregated_events_command(requests_mock):
+def test_find_aggregated_events_command(requests_mock):
     raise NotImplementedError
+
+
+def test_list_aggregated_events_command(requests_mock):
+    from ArgusManagedDefence import list_aggregated_events_command
+    from argus_json import argus_event_data
+
+    method_url = f"/events/v1/aggregated"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENTS_FOR_CASE)
+    result = list_aggregated_events_command({})
+    assert result.raw_response == argus_event_data.ARGUS_EVENTS_FOR_CASE
 
 
 def test_get_payload_command(requests_mock):

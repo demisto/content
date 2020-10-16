@@ -977,6 +977,52 @@ script:
     description: Fetch events associated with specified case.
     execution: false
     name: argus_get_events_for_case
+  - arguments:
+    - default: false
+      description: Limit to customerID.
+      isArray: false
+      name: customer_id
+      required: false
+      secret: false
+    - default: false
+      description: Limit to signature.
+      isArray: false
+      name: signature
+      required: false
+      secret: false
+    - default: false
+      description: Limit to ip/network.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: Limit to events after this timestamp (default is last 24 hours).
+      isArray: false
+      name: start_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: Limit to events before this timestamp. Defaults to now.
+      isArray: false
+      name: end_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: Limit results (default 25).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Skip a number of results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: argus_list_aggregated_events
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true

@@ -632,9 +632,27 @@ def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
+def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
     raise NotImplementedError
 
+
+def list_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
+    result = list_aggregated_events(
+        customerID=args.get("customer_id", None),
+        signature=args.get("signature", None),
+        ip=args.get("ip", None),
+        startTimestamp=args.get("start_timestamp", None),
+        endTimestamp=args.get("end_timestamp", None),
+        limit=args.get("limit", None),
+        offset=args.get("offset", None)
+    )
+    readable_output = f"# List Events\n"
+    readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
+    readable_output += tableToMarkdown("Events", result["data"])
+    outputs = {"Argus.Event(val.id === obj.id)": result["data"]}
+    return CommandResults(
+        readable_output=readable_output, outputs=outputs, raw_response=result
+    )
 
 def get_payload_command(args: Dict[str, Any]) -> CommandResults:
     raise NotImplementedError
@@ -740,6 +758,9 @@ def main() -> None:
 
         elif demisto.command() == "argus_get_events_for_case":
             return_results(get_events_for_case_command(demisto.args()))
+
+        elif demisto.command() == "argus_find_aggregated_events":
+            return_results(find_aggregated_events_command(demisto.args()))
 
         elif demisto.command() == "argus_list_aggregated_events":
             return_results(list_aggregated_events_command(demisto.args()))
