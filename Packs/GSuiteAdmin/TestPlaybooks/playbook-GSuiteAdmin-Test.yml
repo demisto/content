@@ -1,0 +1,1308 @@
+id: GSuiteAdmin-Test
+version: -1
+name: GSuiteAdmin-Test
+description: |-
+  This playbook uses the G Suite Admin integration and tests the scenarios
+  of the various commands like gsuite-user-create, gsuite-mobile-update, gsuite-mobile-delete, gsuite-role-assignment-list, gsuite-role-assignment-create, gsuite-user-alias-add, gsuite-token-revoke, gsuite-datatransfer-request-create, gsuite-datatransfer-list, gsuite-group-create, gsuite-role-create, gsuite-custom-user-schema-create, gsuite-custom-user-schema-update, gsuite-user-update, and gsuite-user-delete.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61d77820-392b-454f-88fe-033a54ad1935
+    type: start
+    task:
+      id: 61d77820-392b-454f-88fe-033a54ad1935
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: c950ee4d-7fb1-403d-819b-9df42db4590c
+    type: regular
+    task:
+      id: c950ee4d-7fb1-403d-819b-9df42db4590c
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: fa749242-f4f7-4c1a-8c4c-672e818cc64f
+    type: regular
+    task:
+      id: fa749242-f4f7-4c1a-8c4c-672e818cc64f
+      version: -1
+      name: gsuite-mobile-update
+      script: '|||gsuite-mobile-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      action:
+        simple: admin_account_wipe
+      admin_email:
+        simple: deval@nimbledata.io
+      customer_id:
+        simple: my_customer
+      resource_id:
+        simple: AFiQxQ-zftSrI-EtoVKa4f1PfQX-rxwdZU2VagUblF2lE8IhU8RV_TRknFOcUId06hbrDdpvWUvv8KWQ3F4frcDi5d1UeldLi2ojNx4dtUjwGn8f0DUO8xo
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 04bd966f-d05d-45b8-897f-c6fde4e9268a
+    type: regular
+    task:
+      id: 04bd966f-d05d-45b8-897f-c6fde4e9268a
+      version: -1
+      name: gsuite-mobile-delete
+      script: '|||gsuite-mobile-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      admin_email:
+        simple: deval@nimbledata.io
+      customer_id:
+        simple: my_customer
+      resource_id:
+        simple: AFiQxQ-zftSrI-EtoVKa4f1PfQX-rxwdZU2VagUblF2lE8IhU8RV_TRknFOcUId06hbrDdpvWUvv8KWQ3F4frcDi5d1UeldLi2ojNx4dtUjwGn8f0DUO8xo
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 1bdfd494-eb8a-4938-8a34-427826ab0658
+    type: regular
+    task:
+      id: 1bdfd494-eb8a-4938-8a34-427826ab0658
+      version: -1
+      name: gsuite-user-alias-add
+      script: '|||gsuite-user-alias-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      admin_email:
+        simple: deval@nimbledata.io
+      alias:
+        simple: demisto@nimbledata.io
+      user_key:
+        simple: deval@nimbledata.io
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: ff54298c-f244-4fac-8546-86f9588dab11
+    type: condition
+    task:
+      id: ff54298c-f244-4fac-8546-86f9588dab11
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserAlias.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserAlias.alias
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: cddc62cc-82fe-4d5e-882c-504d3408d5fa
+    type: regular
+    task:
+      id: cddc62cc-82fe-4d5e-882c-504d3408d5fa
+      version: -1
+      name: gsuite-user-create
+      script: '|||gsuite-user-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      address_type: {}
+      admin_email:
+        simple: deval@nimbledata.io
+      country: {}
+      extended_address: {}
+      first_name:
+        simple: XSOAR
+      gender: {}
+      is_address_primary: {}
+      is_ip_white_listed: {}
+      is_phone_number_primary: {}
+      last_name:
+        simple: XSOAR
+      notes_content_type: {}
+      notes_value: {}
+      password:
+        simple: Xsoar@123
+      phone_number: {}
+      phone_number_type: {}
+      postal_code: {}
+      primary_email:
+        simple: xsoar@nimbledata.io
+      recovery_email: {}
+      recovery_phone: {}
+      region: {}
+      secondary_email_address: {}
+      secondary_email_type: {}
+      street_address: {}
+      suspended: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 21d2951c-62f3-469f-8eb4-252172705074
+    type: condition
+    task:
+      id: 21d2951c-62f3-469f-8eb4-252172705074
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.primaryEmail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.firstName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.lastName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.customerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.creationTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 8b7092bc-6989-4bb8-848a-0ce49b4a5b17
+    type: regular
+    task:
+      id: 8b7092bc-6989-4bb8-848a-0ce49b4a5b17
+      version: -1
+      name: gsuite-group-create
+      script: '|||gsuite-group-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      admin_email:
+        simple: deval@nimbledata.io
+      group_description: {}
+      group_email:
+        simple: newgroup@nimbledata.io
+      group_name:
+        simple: new group
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 86cf359e-8868-487b-8566-5bd00e8d4fd9
+    type: condition
+    task:
+      id: 86cf359e-8868-487b-8566-5bd00e8d4fd9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.Group.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.Group.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 30550307-1463-4a77-82aa-c32c34aa814a
+    type: regular
+    task:
+      id: 30550307-1463-4a77-82aa-c32c34aa814a
+      version: -1
+      name: gsuite-role-assignment-list
+      script: '|||gsuite-role-assignment-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      admin_email:
+        simple: deval@nimbledata.io
+      customer_id:
+        simple: my_customer
+      max_results: {}
+      page_token: {}
+      role_id: {}
+      user_key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 8e6c49a2-030f-44b0-8562-a39136214634
+    type: condition
+    task:
+      id: 8e6c49a2-030f-44b0-8562-a39136214634
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.RoleAssignment.roleAssignmentId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.RoleAssignment.roleId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 8b817950-a36c-4153-841a-4a232842a3a2
+    type: regular
+    task:
+      id: 8b817950-a36c-4153-841a-4a232842a3a2
+      version: -1
+      name: gsuite-role-assignment-create
+      script: '|||gsuite-role-assignment-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      admin_email:
+        simple: deval@nimbledata.io
+      assigned_to:
+        simple: "112697610726424936164"
+      customer_id:
+        simple: my_customer
+      org_unit_id: {}
+      role_id:
+        simple: "13801188331880449"
+      scope_type:
+        simple: CUSTOMER
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 0d662073-dfd6-4027-8771-cdca3e3ae9f1
+    type: condition
+    task:
+      id: 0d662073-dfd6-4027-8771-cdca3e3ae9f1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.RoleAssignment.roleAssignmentId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.RoleAssignment.roleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.RoleAssignment.assignedTo
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 6ae26250-dea6-4a91-8228-d508609d160f
+    type: regular
+    task:
+      id: 6ae26250-dea6-4a91-8228-d508609d160f
+      version: -1
+      name: gsuite-role-create
+      script: '|||gsuite-role-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      admin_email:
+        simple: deval@nimbledata.io
+      customer_id:
+        simple: my_customer
+      role_description: {}
+      role_name:
+        simple: NEW XSOAR
+      role_privileges:
+        simple: MANAGE_ENTERPRISE_PRIVATE_APPS:00tyjcwt49hs5nq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: d02ffa59-5e0f-479f-8901-8673ca0613e5
+    type: condition
+    task:
+      id: d02ffa59-5e0f-479f-8901-8673ca0613e5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.Role.roleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.Role.roleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.Role.rolePrivileges.privilegeName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.Role.rolePrivileges.serviceId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 632f2d92-4f70-4660-86f1-4e95f4a3971e
+    type: regular
+    task:
+      id: 632f2d92-4f70-4660-86f1-4e95f4a3971e
+      version: -1
+      name: gsuite-token-revoke
+      script: '|||gsuite-token-revoke'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      admin_email:
+        simple: deval@nimbledata.io
+      client_id:
+        simple: 292824132082.apps.googleusercontent.com
+      user_key:
+        simple: paulomi@nimbledata.io
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 81ebf97d-e68d-4604-8017-dbc131b78655
+    type: regular
+    task:
+      id: 81ebf97d-e68d-4604-8017-dbc131b78655
+      version: -1
+      name: gsuite-datatransfer-list
+      script: '|||gsuite-datatransfer-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      admin_email:
+        simple: deval@nimbledata.io
+      customer_id:
+        simple: my_customer
+      max_results:
+        simple: "1"
+      new_owner_user_id: {}
+      old_owner_user_id: {}
+      page_token: {}
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 7e67056f-03ad-42c6-888d-7df51d6358ed
+    type: condition
+    task:
+      id: 7e67056f-03ad-42c6-888d-7df51d6358ed
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.oldOwnerUserId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.newOwnerUserId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.overallTransferStatusCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.requestTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.applicationDataTransfers.applicationTransferStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.applicationDataTransfers.applicationId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 41417ab2-c5fc-4d0a-85c8-45e1d174b495
+    type: regular
+    task:
+      id: 41417ab2-c5fc-4d0a-85c8-45e1d174b495
+      version: -1
+      name: gsuite-custom-user-schema-create
+      script: '|||gsuite-custom-user-schema-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      admin_email:
+        simple: deval@nimbledata.io
+      customer_id:
+        simple: my_customer
+      field_json_entry_id: {}
+      field_raw_json:
+        simple: '{"fields":[{"fieldType":"BOOL","fieldName":"surname","displayName":"Surname","multiValued":true}]}'
+      schema_display_name:
+        simple: family details
+      schema_name:
+        simple: FamilyDetails
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: a8b39165-aec7-4a49-8c5f-cd881c27d14d
+    type: condition
+    task:
+      id: a8b39165-aec7-4a49-8c5f-cd881c27d14d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.schemaId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.schemaName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.fields.fieldId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.fields.fieldType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.fields.fieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.fields.displayName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 38d3bdde-f4d6-47a1-87a1-a077a6495af3
+    type: regular
+    task:
+      id: 38d3bdde-f4d6-47a1-87a1-a077a6495af3
+      version: -1
+      name: gsuite-custom-user-schema-update
+      script: '|||gsuite-custom-user-schema-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      admin_email:
+        simple: deval@nimbledata.io
+      customer_id:
+        simple: my_customer
+      field_json_entry_id: {}
+      field_raw_json:
+        simple: '{"fields":[{"fieldType":"BOOL","fieldName":"surname","displayName":"Surname","multiValued":true}]}'
+      schema_display_name:
+        simple: newfamilydetails
+      schema_id: {}
+      schema_name:
+        simple: FamilyDetails
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 7c827f3f-3d29-4fd2-85da-2e739bdce702
+    type: condition
+    task:
+      id: 7c827f3f-3d29-4fd2-85da-2e739bdce702
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.schemaId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.schemaName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.fields.fieldId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.fields.fieldType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.fields.fieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.UserSchema.fields.displayName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 42709dc5-50ce-4054-8424-7c593670e9cd
+    type: regular
+    task:
+      id: 42709dc5-50ce-4054-8424-7c593670e9cd
+      version: -1
+      name: gsuite-datatransfer-request-create
+      script: '|||gsuite-datatransfer-request-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      application_id:
+        simple: "55656082996"
+      application_transfer_params: {}
+      new_owner_id:
+        simple: "110760119443780932332"
+      old_owner_id:
+        simple: "108028652821197762751"
+      raw_json: {}
+      raw_json_entry_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 11ab047f-9f9d-4eac-8d52-d2a9ecb7947f
+    type: condition
+    task:
+      id: 11ab047f-9f9d-4eac-8d52-d2a9ecb7947f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.oldOwnerUserId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.newOwnerUserId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.applicationDataTransfers.applicationId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.applicationDataTransfers.applicationTransferStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.overallTransferStatusCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.DataTransfer.requestTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: be0df5b3-209b-4c25-8a64-ea1e906db44c
+    type: title
+    task:
+      id: be0df5b3-209b-4c25-8a64-ea1e906db44c
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 708aecba-a884-4732-89df-e77050f545fa
+    type: regular
+    task:
+      id: 708aecba-a884-4732-89df-e77050f545fa
+      version: -1
+      name: gsuite-user-update
+      description: Updates a user.
+      script: '|||gsuite-user-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      address_type: {}
+      admin_email:
+        simple: deval@nimbledata.io
+      archived: {}
+      country: {}
+      extended_address: {}
+      first_name:
+        simple: XSOAR_new
+      gender: {}
+      is_address_primary: {}
+      is_ip_white_listed: {}
+      is_phone_number_primary: {}
+      last_name:
+        simple: XSOAR_new
+      notes_content_type: {}
+      notes_value: {}
+      org_unit_path: {}
+      password: {}
+      phone_number: {}
+      phone_number_type: {}
+      postal_code: {}
+      primary_email: {}
+      recovery_email: {}
+      recovery_phone: {}
+      region: {}
+      secondary_email_address: {}
+      secondary_email_type: {}
+      street_address: {}
+      suspended: {}
+      user_key:
+        simple: xsoar@nimbledata.io
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: b510231d-7b51-44f2-89f1-226f7eda14ac
+    type: condition
+    task:
+      id: b510231d-7b51-44f2-89f1-226f7eda14ac
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.primaryEmail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.firstName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.lastName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.customerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.creationTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 29b71a08-6822-498a-8eed-41c8d3e41b11
+    type: regular
+    task:
+      id: 29b71a08-6822-498a-8eed-41c8d3e41b11
+      version: -1
+      name: gsuite-user-delete
+      description: Deletes a user.
+      script: '|||gsuite-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      admin_email:
+        simple: deval@nimbledata.io
+      user_key:
+        simple: xsoar@nimbledata.io
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5505,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

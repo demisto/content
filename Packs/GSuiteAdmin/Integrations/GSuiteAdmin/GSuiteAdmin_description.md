@@ -4,7 +4,7 @@ Configure a Service Account and retrieve it's key in JSON format by following th
 Provide at least one of the scopes mentioned for each command.
 
 ### Commands and it's scopes
-* gsuite-user-create 
+* gsuite-user-create, gsuite-user-update, and gsuite-user-delete
 	* https://www.googleapis.com/auth/admin.directory.user  
 * gsuite-mobile-update 
 	*  https://www.googleapis.com/auth/admin.directory.device.mobile.action   		

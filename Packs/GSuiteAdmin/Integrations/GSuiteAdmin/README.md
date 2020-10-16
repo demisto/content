@@ -909,4 +909,240 @@ and application_id respectively.
 >|---|---|---|---|---|---|
 >| AKrEtIYCgUCoI7j9IqOCJ2q4HkJUVaZJaYpgSPDEP-GIzkHz3pH1CQuBa-P38vqhSOSuKcJOwPT8GSKhTGDqOw8vJt8FQeTL8Q | 119443780932332 | 108028652821197762751 | inProgress | 2020-09-22T07:44:44.473Z | Application Id: 435070579839,<br/>Application Transfer Status: pending |
 
+### gsuite-user-update
+***
+Updates a user.
 
+
+#### Base Command
+
+`gsuite-user-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| first_name | The user's first name. | Optional | 
+| last_name | The user's last name. | Optional | 
+| password | Stores the password for the user account. A password can contain any combination of ASCII characters. A minimum of 8 characters is required. The maximum length is 100 characters. The password will be sent in MD5 hash format. | Optional | 
+| primary_email | The user's primary email address. The primary_email must be unique and cannot be an alias of another user. | Optional | 
+| country | User's Country. | Optional | 
+| address_type | The address type. | Optional | 
+| postal_code | The ZIP or postal code, if applicable. | Optional | 
+| is_address_primary | Set to true, If this is the user's primary address. | Optional | 
+| extended_address | For extended addresses, such as an address that includes a sub-region. | Optional | 
+| region | The abbreviated province or state. | Optional | 
+| street_address | The street address, such as 1600 Amphitheatre Parkway. Whitespace within the string is ignored; however, newlines are significant. | Optional | 
+| secondary_email_address | The user's secondary email address. | Optional | 
+| secondary_email_type | The type of the secondary email account. | Optional | 
+| gender | User's gender. | Optional | 
+| is_ip_white_listed | If true, the user's IP address is white listed. | Optional | 
+| notes_content_type | Content type of note, either plain text or HTML. If not provided, considered as plain text. | Optional | 
+| notes_value | Contents of notes. | Optional | 
+| phone_number | A human-readable phone number. It may be in any telephone number format. | Optional | 
+| phone_number_type | The type of phone number. | Optional | 
+| is_phone_number_primary | Indicates if this is the user's primary phone number. A user may only have one primary phone number. | Optional | 
+| recovery_email | Recovery email of the user. | Optional | 
+| recovery_phone | Recovery phone of the user. The phone number must be in the E.164 format, starting with the plus sign (+). Example: +16506661212. | Optional | 
+| suspended | Indicates if the user is suspended. | Optional | 
+| admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
+| user_key | Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID. | Required | 
+| archived | Indicates if the user is archived. | Optional | 
+| org_unit_path | To move the user to OU (Organization Unit). The full path of the parent organization associated with the user. If the parent organization is the top-level, it is represented as a forward slash (/). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GSuite.User.id | String | The unique ID for the user. | 
+| GSuite.User.primaryEmail | String | The user's primary email address. | 
+| GSuite.User.firstName | String | The user's first name. | 
+| GSuite.User.lastName | String | The user's last name. | 
+| GSuite.User.customerId | String | The unique ID for the customer's G Suite account. | 
+| GSuite.User.gender | String | Gender. | 
+| GSuite.User.suspended | Boolean | Indicates if the user is suspended. | 
+| GSuite.User.notesValue | String | Contents of notes. | 
+| GSuite.User.notesContentType | String | Content type of notes. | 
+| GSuite.User.isAdmin | Boolean | Indicates a user with super administrator privileges. | 
+| GSuite.User.creationTime | Date | The time the user's account was created. | 
+| GSuite.User.phones.value | String | A human-readable phone number. It may be in any telephone number format. | 
+| GSuite.User.phones.type | String | The type of phone number. | 
+| GSuite.User.phones.primary | Boolean | Indicates if this is the user's primary phone number. | 
+| GSuite.User.phones.customType | String | If the value of type is custom, this property contains the custom type. | 
+| GSuite.User.addresses.type | String | The address type. | 
+| GSuite.User.addresses.customType | String | If the address type is custom, this property contains the custom value. | 
+| GSuite.User.addresses.sourceIsStructured | Boolean | Indicates if the user-supplied address was formatted. Formatted addresses are not currently supported. | 
+| GSuite.User.addresses.formatted | String | A full and unstructured postal address. This is not synced with the structured address fields. | 
+| GSuite.User.addresses.poBox | String | The post office box, if present. | 
+| GSuite.User.addresses.locality | String | The town or city of the address. | 
+| GSuite.User.addresses.countryCode | String | The country code. Uses the ISO 3166-1 standard. | 
+| GSuite.User.addresses.country | String | Country. | 
+| GSuite.User.addresses.postalCode | String | The ZIP or postal code. | 
+| GSuite.User.addresses.region | String | The abbreviated province or state. | 
+| GSuite.User.addresses.streetAddress | String | The street address. | 
+| GSuite.User.addresses.extendedAddress | String | For extended addresses, such as an  address that includes a sub-region. | 
+| GSuite.User.addresses.primary | Boolean | If this is the user's primary address. | 
+| GSuite.User.emails.address | String | The user's secondary email. | 
+| GSuite.User.emails.type | String | The secondary email type. | 
+| GSuite.User.emails.customType | String | If the value of type is custom, this property contains the custom type string. | 
+| GSuite.User.emails.primary | Boolean | Indicates if this is the user's primary email. Only one entry can be marked as primary. | 
+| GSuite.User.ipWhitelisted | Boolean | If true, the user's IP address is white listed. | 
+| GSuite.User.recoveryEmail | String | Recovery email of the user. | 
+| GSuite.User.isDelegatedAdmin | Boolean | Indicates if the user is a delegated administrator. | 
+| GSuite.User.recoveryPhone | String | Recovery phone of the user. | 
+| GSuite.User.orgUnitPath | String | The full path of the parent organization associated with the user. If the parent organization is the top-level, it is represented as a forward slash \(/\). | 
+| GSuite.User.isMailboxSetup | Boolean | Indicates if the user's Google mailbox is created. | 
+| GSuite.User.kind | Boolean | The type of the API resource. | 
+| GSuite.User.etag | Boolean | ETag of the resource. | 
+| GSuite.User.hashFunction | String | Stores the hash format of the password property. | 
+| GSuite.User.archived | Boolean | Indicates if the user is archived. | 
+| GSuite.User.fullName | String | The user's full name formed by concatenating the first and last name values. | 
+| GSuite.User.lastLoginTime | Date | The last time the user logged into the user's account. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example, 2010-04-05T17:30:04\+01:00. | 
+| GSuite.User.deletionTime | Date | The time the user's account was deleted. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example 2010-04-05T17:30:04\+01:00. | 
+| GSuite.User.agreedToTerms | Boolean | This property is true if the user has completed an initial login and accepted the Terms of Service agreement. | 
+| GSuite.User.suspensionReason | String | Has the reason a user account is suspended either by the administrator or by Google at the time of suspension. The property is returned only if the suspended property is true. | 
+| GSuite.User.changePasswordAtNextLogin | Boolean | Indicates if the user is forced to change their password at next login. This setting doesn't apply when the user signs in via a third-party identity provider. | 
+| GSuite.User.ims.type | Boolean | Type of the user's Instant Messenger \(IM\) account. | 
+| GSuite.User.ims.customType | String | If the IM type is custom, this property holds the custom type string. | 
+| GSuite.User.ims.protocol | String | An IM protocol identifies the IM network. The value can be a custom network or the standard network. | 
+| GSuite.User.ims.customProtocol | String | If the protocol value is custom_protocol, this property holds the custom protocol's string. | 
+| GSuite.User.ims.im | String | The user's IM network ID. | 
+| GSuite.User.ims.primary | Boolean | If this is the user's primary IM. Only one entry in the IM list can have a value of true. | 
+| GSuite.User.externalIds.value | String | The value of the external ID. | 
+| GSuite.User.externalIds.type | String | The type of the external ID. | 
+| GSuite.User.externalIds.customType | String | If the external ID type is custom, this property holds the custom type. | 
+| GSuite.User.relations.value | String | The name of the person the user is related to. | 
+| GSuite.User.relations.type | String | The type of relation. | 
+| GSuite.User.relations.customType | String | If the value of type is custom, this property contains the custom type. | 
+| GSuite.User.organizations.name | String | The name of the organization. | 
+| GSuite.User.organizations.title | String | The user's title within the organization, for example 'member' or 'engineer'. | 
+| GSuite.User.organizations.primary | Boolean | Indicates if this is the user's primary organization. A user may only have one primary organization. | 
+| GSuite.User.organizations.type | String | The type of organization. | 
+| GSuite.User.organizations.customType | String | If the value of type is custom, this property contains the custom type. | 
+| GSuite.User.organizations.department | String | Specifies the department within the organization, such as 'sales' or 'engineering'. | 
+| GSuite.User.organizations.symbol | String | Text string symbol of the organization. For example, the text symbol for Google is GOOG. | 
+| GSuite.User.organizations.location | String | The physical location of the organization. This does not need to be a fully qualified address. | 
+| GSuite.User.organizations.description | String | The description of the organization. | 
+| GSuite.User.organizations.domain | String | The domain the organization belongs to. | 
+| GSuite.User.organizations.costCenter | String | The cost center of the user's organization. | 
+| GSuite.User.organizations.fullTimeEquivalent | String | The full-time equivalent millipercent within the organization \(100000 = 100%\). | 
+| GSuite.User.languages.languageCode | String | Language Code. Should be used for storing Google III LanguageCode string representation for language. Illegal values cause SchemaException. | 
+| GSuite.User.languages.customLanguage | String | Other language. A user can provide their own language name if there is no corresponding Google III language code. If this is set, LanguageCode can't be set. | 
+| GSuite.User.posixAccounts.username | String | The username of the account. | 
+| GSuite.User.posixAccounts.uid | Number | The POSIX compliant user ID. | 
+| GSuite.User.posixAccounts.gid | Number | The default group ID. | 
+| GSuite.User.posixAccounts.homeDirectory | String | The path to the home directory for this account. | 
+| GSuite.User.posixAccounts.shell | String | The path to the login shell for this account. | 
+| GSuite.User.posixAccounts.gecos | String | The GECOS \(user information\) for this account. | 
+| GSuite.User.posixAccounts.systemId | String | System identifier for which account Username or Uid apply to. | 
+| GSuite.User.posixAccounts.primary | Boolean | If this is user's primary account within the SystemId. | 
+| GSuite.User.posixAccounts.accountId | String | A POSIX account field identifier. | 
+| GSuite.User.posixAccounts.operatingSystemType | String | The operating system type for this account. | 
+| GSuite.User.sshPublicKeys.key | String | An SSH public key. | 
+| GSuite.User.sshPublicKeys.expirationTimeUsec | String | An expiration time in microseconds since epoch. | 
+| GSuite.User.sshPublicKeys.fingerprint | String | A SHA-256 fingerprint of the SSH public key. | 
+| GSuite.User.aliases | Unknown | List of the user's alias email addresses. | 
+| GSuite.User.nonEditableAliases | Unknown | List of the user's non-editable alias email addresses. These are typically outside the account's primary domain or sub-domain. | 
+| GSuite.User.websites.value | String | The URL of the website. | 
+| GSuite.User.websites.primary | Boolean | If this is user's primary website or not. | 
+| GSuite.User.websites.type | String | The type or purpose of the website. For example, a website could be labeled as home or blog. Alternatively, an entry can have a custom type. | 
+| GSuite.User.websites.customType | String | The custom type. Only used if the type is custom. | 
+| GSuite.User.locations.type | String | The location type. | 
+| GSuite.User.locations.customType | String | If the location type is custom, this property contains the custom value. | 
+| GSuite.User.locations.area | String | Textual location. This is most useful for display purposes to concisely describe the location. For example, "Mountain View, CA", "Near Seattle". | 
+| GSuite.User.locations.buildingId | String | Building identifier. | 
+| GSuite.User.locations.floorName | String | Floor name/number. | 
+| GSuite.User.locations.floorSection | String | Floor section. More specific location within the floor. For example, if a floor is divided into sections "A", "B", and "C", this field would identify one of those values. | 
+| GSuite.User.locations.deskCode | String | Most specific textual code of individual desk location. | 
+| GSuite.User.keywords.type | String | Each entry can have a type which indicates standard type of that entry. For example, keyword could be of type occupation or outlook. In addition to the standard type, an entry can have a custom type and can give it any name. Such types should have the CUSTOM value as type and also have a customType value. | 
+| GSuite.User.keywords.customType | String | Custom Type. | 
+| GSuite.User.keywords.value | String | Keyword. | 
+| GSuite.User.isEnrolledIn2Sv | Boolean | Is enrolled in 2-step verification. | 
+| GSuite.User.isEnforcedIn2Sv | Boolean | Is 2-step verification enforced. | 
+| GSuite.User.includeInGlobalAddressList | Boolean | Indicates if the user's profile is visible in the G Suite global address list when the contact sharing feature is enabled for the domain. | 
+| GSuite.User.thumbnailPhotoUrl | String | Photo Url of the user. | 
+| GSuite.User.thumbnailPhotoEtag | String | ETag of the user's photo. | 
+| GSuite.User.customSchemas | Unknown | Custom fields of the user. | 
+
+
+#### Command Example
+```!gsuite-user-update first_name="test" last_name="user" user_key="test@domain.io"```
+
+#### Context Example
+```json
+{
+    "GSuite": {
+        "User": {
+            "agreedToTerms": true,
+            "archived": false,
+            "changePasswordAtNextLogin": false,
+            "creationTime": "2020-09-19T13:43:57.000Z",
+            "customerId": "C03puekhd",
+            "emails": [
+                {
+                    "address": "test1@domain.io",
+                    "type": "custom"
+                },
+                {
+                    "address": "test@domain.io",
+                    "primary": true
+                },
+                {
+                    "address": "fetch.incident@nimbledata.io.test-google-a.com"
+                }
+            ],
+            "etag": "\"9T9vzOl0oqU3TCQ3eSvkwrTkXlbD64F_wxS6Ylj40QU/GKWilUYP3FNjmD4oxz40br3JKWc\"",
+            "firstName": "test",
+            "id": "113716761692464219843",
+            "includeInGlobalAddressList": true,
+            "ipWhitelisted": false,
+            "isAdmin": false,
+            "isDelegatedAdmin": false,
+            "isMailboxSetup": true,
+            "kind": "admin#directory#user",
+            "lastLoginTime": "2020-10-02T04:59:48.000Z",
+            "lastName": "user",
+            "nonEditableAliases": [
+                "test@domain.io.test-google-a.com"
+            ],
+            "orgUnitPath": "/",
+            "primaryEmail": "test@domain.io",
+            "suspended": false
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated User Details
+>|Id|Customer Id|Primary Email|First Name|Last Name|Archived|Suspended|Org Unit Path|Is Admin|Creation Time|Secondary Email Details|Ip Whitelisted|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 113716761692464219843 | C03puekhd |test@domain.io | test | user | false | false | / | false | 2020-09-19T13:43:57.000Z | Address: test1@nimbledata.io<br/>Type: custom | false |
+
+### gsuite-user-delete
+***
+Deletes a user.
+
+
+#### Base Command
+
+`gsuite-user-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_key | Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID. | Required | 
+| admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!gsuite-user-delete user_key=user.test@domain.io```
+
+#### Human Readable Output
+
+>User with user key user.test@domain.io deleted successfully.

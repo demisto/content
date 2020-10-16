@@ -796,3 +796,53 @@ def test_prepare_datatransfer_payload_from_arguments():
 
     from GSuiteAdmin import prepare_datatransfer_payload_from_arguments
     assert prepare_datatransfer_payload_from_arguments(args) == output
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_user_delete_command(gsuite_client):
+    """
+    Scenario: user delete command successful execution.
+
+    Given:
+    - Working API integration and correct parameters
+
+    When:
+    - Calling command method user_delete_command.
+
+    Then:
+    - Ensure expected human readable output is being set.
+    """
+    from GSuiteAdmin import user_delete_command
+    response = user_delete_command(gsuite_client, {'user_key': 'user1'})
+    assert response.readable_output == HR_MESSAGES['USER_DELETE'].format('user1')
+
+
+def test_user_update_command(gsuite_client, mocker):
+    """
+    Scenario: gsuite-user-update should works if valid arguments are provided.
+
+    Given:
+    - Command args.
+
+    When:
+    - Calling gsuite-user-update command with the arguments provided.
+
+    Then:
+    - Ensure CommandResult entry should be as expected.
+    """
+    from GSuiteAdmin import user_update_command
+    with open('test_data/user_create_args.json', 'r') as file:
+        args = json.load(file)
+    args['archived'] = 'true'
+    args['org_unit_path'] = '\\'
+    with open('test_data/user_update_response.json') as file:
+        api_response = json.load(file)
+    with open('test_data/user_update_entry_context.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = user_update_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['HumanReadable']
+    assert command_result.outputs == expected_entry_context['EntryContext']['GSuite.User(val.id == obj.id)']
+    assert command_result.raw_response == expected_entry_context['Contents']
+    assert command_result.outputs_key_field == ['id']
+    assert command_result.outputs_prefix == 'GSuite.User'

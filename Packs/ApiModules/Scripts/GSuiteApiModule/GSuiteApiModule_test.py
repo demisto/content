@@ -1,9 +1,12 @@
 import json
+import time
+from unittest.mock import patch
+
 import pytest
 
 from GSuiteApiModule import DemistoException, COMMON_MESSAGES, GSuiteClient
 
-with open('TestData/service_account_json.txt') as f:
+with open('test_data/service_account_json.txt') as f:
     TEST_JSON = f.read()
 
 PROXY_METHOD_NAME = 'GSuiteApiModule.handle_proxy'
@@ -74,7 +77,7 @@ def test_safe_load_non_strict_json_empty():
     assert GSuiteClient.safe_load_non_strict_json('') == {}
 
 
-def test_validate_and_extract_response():
+def test_validate_and_extract_response(mocker):
     """
     Scenario: Parse response when status code is 200 or 204.
 
@@ -87,14 +90,14 @@ def test_validate_and_extract_response():
     Then:
     - Ensure content json should be parsed successfully.
     """
-    from GSuiteApiModule import httplib2
-
+    from GSuiteApiModule import httplib2, demisto
+    mocker.patch.object(demisto, 'debug')
     response = httplib2.Response({'status': 200})
     expected_content = {'response': {}}
     assert GSuiteClient.validate_and_extract_response((response, b'{"response": {}}')) == expected_content
 
 
-def test_validate_and_extract_response_error():
+def test_validate_and_extract_response_error(mocker):
     """
     Scenario: Should raise exception when status code is not 200 or 204.
 
@@ -107,8 +110,8 @@ def test_validate_and_extract_response_error():
     Then:
     - Ensure the Demisto exception should be raised respective to status code.
     """
-    from GSuiteApiModule import httplib2
-
+    from GSuiteApiModule import httplib2, demisto
+    mocker.patch.object(demisto, 'debug')
     response = httplib2.Response({'status': 400})
 
     with pytest.raises(DemistoException, match=COMMON_MESSAGES['BAD_REQUEST_ERROR'].format('BAD REQUEST')):

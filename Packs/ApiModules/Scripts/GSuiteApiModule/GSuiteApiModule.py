@@ -192,6 +192,8 @@ class GSuiteClient:
         }
 
         try:
+            # Depth details of error.
+            demisto.debug(response[1].decode() if type(response[1]) is bytes else response[1])
             message = GSuiteClient.safe_load_non_strict_json(response[1]).get('error', {}).get('message', '')
         except ValueError:
             message = COMMON_MESSAGES['UNEXPECTED_ERROR']
@@ -241,8 +243,10 @@ class GSuiteClient:
         :raises ValueError: if boolean arg value is invalid.
         """
         if arg in args:
-            if args[arg].lower() in ['true', 'false']:
-                args[arg] = args[arg].lower()
+            if args[arg].lower() == 'true':
+                args[arg] = True
+            elif args[arg].lower() == 'false':
+                args[arg] = False
             else:
                 raise ValueError(COMMON_MESSAGES['BOOLEAN_ERROR'].format(arg_name if arg_name else arg))
 
