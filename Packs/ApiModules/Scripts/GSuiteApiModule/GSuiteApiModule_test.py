@@ -1,7 +1,4 @@
 import json
-import time
-from unittest.mock import patch
-
 import pytest
 
 from GSuiteApiModule import DemistoException, COMMON_MESSAGES, GSuiteClient
