@@ -793,7 +793,7 @@ def fetch_incidents(client, last_run: Dict, params: Dict, is_test: bool = False)
         incidents.append(incident)
 
         timestamp = int(
-            dateparser.parse(
+            dateparser.parse(  # type: ignore
                 activity.get('timestamp', activity.get('timeRange', {}).get('endTime', ''))).timestamp() * 1000)
 
         if timestamp > last_fetch:
