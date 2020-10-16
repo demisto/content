@@ -937,6 +937,23 @@ script:
     description: Fetch specific attachment metadata
     execution: false
     name: argus_get_attachment
+  - arguments:
+    - default: false
+      description: ID of Argus case
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of attachment to download
+      isArray: false
+      name: attachment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Download specific attachment contents.
+    execution: false
+    name: argus_download_attachment
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true

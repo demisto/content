@@ -131,7 +131,16 @@ def test_delete_comment_command(requests_mock):
 
 
 def test_download_attachment_command(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import download_attachment_command
+    with open("argus_json/argus_case_data.py", "rb") as file:
+        content = file.read()
+
+    method_url = f"/cases/v2/case/{CASE_ID}/attachments/{ATTACHMENT_ID}/download"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", content=content)
+    args = {"case_id": CASE_ID, "attachment_id": ATTACHMENT_ID}
+    result = download_attachment_command(args)
+    assert result['File'] == ATTACHMENT_ID
 
 
 def test_edit_comment_command(requests_mock):

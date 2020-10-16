@@ -217,7 +217,9 @@ def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
         f"#{case_id}: Tags", result["data"], headers=headers
     )
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def add_comment_command(args: Dict[str, Any]) -> CommandResults:
@@ -245,7 +247,9 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
     readable_output += f"{result['data']['comment']}\n\n"
     readable_output += f"_id: {result['data']['id']}_\n"
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
@@ -292,7 +296,9 @@ def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
         "Output not suitable for playground", result["data"]
     )
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def close_case_command(args: Dict[str, Any]) -> CommandResults:
@@ -310,7 +316,9 @@ def close_case_command(args: Dict[str, Any]) -> CommandResults:
         f"_Status: {result['data']['status']}, at: {result['data']['closedTime']}_"
     )
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def create_case_command(args: Dict[str, Any]) -> CommandResults:
@@ -358,7 +366,9 @@ def create_case_command(args: Dict[str, Any]) -> CommandResults:
     )
     readable_output = pretty_print_case_metadata(result)
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def delete_case_command(args: Dict[str, Any]) -> CommandResults:
@@ -369,7 +379,9 @@ def delete_case_command(args: Dict[str, Any]) -> CommandResults:
     result = delete_case(caseID=case_id)
     readable_output = pretty_print_case_metadata(result, "Case deleted")
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
@@ -386,11 +398,22 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
     readable_output += f"{result['data']['comment']}"
     readable_output += f"Flags: {str(result['data']['flags'])}"
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
-def download_attachment_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+def download_attachment_command(args: Dict[str, Any]) -> fileResult:
+    case_id = args.get("case_id", None)
+    attachment_id = args.get("attachment_id", None)
+    if not case_id:
+        raise ValueError("case id not specified")
+    if not attachment_id:
+        raise ValueError("attachment id not specified")
+
+    result = download_attachment(caseID=case_id, attachmentID=attachment_id)
+
+    return fileResult(attachment_id, result.content)
 
 
 def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
@@ -410,7 +433,9 @@ def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
     readable_output += f"{result['data']['comment']}\n\n"
     readable_output += f"_id: {result['data']['id']}_\n"
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
@@ -424,10 +449,12 @@ def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
     result = get_attachment(caseID=case_id, attachmentID=attachment_id)
     readable_output = f"# #{case_id}: attachment metadata\n"
     readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['addedTime']}*\n"
-    readable_output += f"{result['data']['name']} ({result['data']['mimeType']}, {result['data']['size']} kb)\n\n"
+    readable_output += f"{result['data']['name']} ({result['data']['mimeType']}, {result['data']['size']} bytes)\n\n"
     readable_output += f"_id: {result['data']['id']}_\n"
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
@@ -440,7 +467,9 @@ def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
     )
     readable_output = pretty_print_case_metadata(result)
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
@@ -458,7 +487,9 @@ def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
         readable_output += f"_id: {attachment['id']}_\n"
         readable_output += "* * *\n"
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
@@ -474,7 +505,9 @@ def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
         f"#{case_id}: Tags", result["data"], headers=headers
     )
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
@@ -506,7 +539,9 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
         readable_output += f"_id: {comment['id']}_\n"
         readable_output += "* * *\n"
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def remove_case_tag_by_id_command(args: Dict[str, Any]) -> CommandResults:
@@ -523,7 +558,9 @@ def remove_case_tag_by_id_command(args: Dict[str, Any]) -> CommandResults:
         f"#{case_id}: Delete tags", result["data"], headers=headers
     )
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def remove_case_tag_by_key_value_command(args: Dict[str, Any]) -> CommandResults:
@@ -543,7 +580,9 @@ def remove_case_tag_by_key_value_command(args: Dict[str, Any]) -> CommandResults
         f"#{case_id}: Delete tags", result["data"], headers=headers
     )
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def update_case_command(args: Dict[str, Any]) -> CommandResults:
@@ -570,7 +609,9 @@ def update_case_command(args: Dict[str, Any]) -> CommandResults:
     )
     readable_output = pretty_print_case_metadata(result)
 
-    return CommandResults(readable_output=readable_output, outputs=result)
+    return CommandResults(
+        readable_output=readable_output, outputs=result["data"], raw_response=result
+    )
 
 
 def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
