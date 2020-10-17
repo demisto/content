@@ -1,0 +1,183 @@
+{
+    "id": "HelloWorld",
+    "version": 154,
+    "modified": "2020-10-17T12:05:15.382045+03:00",
+    "packID": "",
+    "itemVersion": "",
+    "fromServerVersion": "",
+    "toServerVersion": "",
+    "commitMessage": "",
+    "currentVersion": "1.1.10",
+    "name": "HelloWorld",
+    "description": "This is the Hello World integration for getting started.",
+    "updated": "2020-10-16T00:06:07+03:00",
+    "created": "2020-03-10T10:37:18+02:00",
+    "support": "community",
+    "author": "Cortex XSOAR",
+    "authorImage": "",
+    "supportDetails": {
+        "url": "https://www.paloaltonetworks.com/cortex",
+        "email": ""
+    },
+    "certification": "verified",
+    "serverMinVersion": "6.0.0",
+    "serverMaxVersion": "",
+    "general": [
+        "generalFieldByCortexXSOAR",
+        "generalFieldFree"
+    ],
+    "tags": [],
+    "rawTags": [],
+    "categories": [
+        "Utilities"
+    ],
+    "contentItems": {
+        "integration": [
+            {
+                "name": "HelloWorld (Community Contribution)",
+                "description": "This is the Hello World integration for getting started.",
+                "category": "Utilities",
+                "commands": [
+                    {
+                        "name": "helloworld-say-hello",
+                        "description": "Hello command - prints hello to anyone."
+                    },
+                    {
+                        "name": "helloworld-search-alerts",
+                        "description": "Search HelloWorld Alerts."
+                    },
+                    {
+                        "name": "helloworld-get-alert",
+                        "description": "Retrieve alert extra data by ID."
+                    },
+                    {
+                        "name": "helloworld-update-alert-status",
+                        "description": "Update the status for an alert."
+                    },
+                    {
+                        "name": "ip",
+                        "description": "Return IP information and reputation"
+                    },
+                    {
+                        "name": "domain",
+                        "description": "Returns Domain information and reputation."
+                    },
+                    {
+                        "name": "helloworld-scan-start",
+                        "description": "Start scan on an asset."
+                    },
+                    {
+                        "name": "helloworld-scan-status",
+                        "description": "Retrieve scan status for one or more scan IDs."
+                    },
+                    {
+                        "name": "helloworld-scan-results",
+                        "description": "Retrieve scan status in Context or as a File (default) for a Scan."
+                    }
+                ]
+            }
+        ],
+        "automation": [
+            {
+                "name": "HelloWorldScript",
+                "description": "Hello World Script",
+                "tags": [
+                    "helloworld"
+                ]
+            }
+        ],
+        "incidentfield": [
+            {
+                "name": "Hello World Status",
+                "type": "shortText",
+                "description": ""
+            },
+            {
+                "name": "Hello World ID",
+                "type": "shortText",
+                "description": ""
+            },
+            {
+                "name": "Hello World Type",
+                "type": "shortText",
+                "description": ""
+            }
+        ],
+        "incidenttype": [
+            {
+                "name": "Hello World Alert",
+                "playbook": "Handle Hello World Alert",
+                "closureScript": "",
+                "hours": 0,
+                "days": 0,
+                "weeks": 0
+            }
+        ],
+        "playbook": [
+            {
+                "name": "Handle Hello World Alert",
+                "description": "This is a playbook which will handle the alerts coming from the Hello World service"
+            },
+            {
+                "name": "HelloWorld Scan",
+                "description": "This Playbook simulates a vulnerability scan using the \"HelloWorld\" sample integration. It's used to demonstrate how to use the GenericPolling mechanism to run jobs that take several seconds or minutes to complete. It is designed to be used as a subplaybook, but you can also use it as a standalone playbook, by providing the ${Endpoint.Hostname} input in the Context.\n\nOther inputs include the report output format (JSON context or File attached), and the Interval/Timeouts to use for polling the scan status until it's complete."
+            }
+        ],
+        "classifier": [
+            {
+                "name": "Hello World - Incoming Mapper",
+                "description": "Maps incoming Hello World alert fields."
+            },
+            {
+                "name": "Hello World - Classification",
+                "description": "Classifies Hello World alerts."
+            }
+        ],
+        "layoutscontainer": [
+            {
+                "name": "Hello World Alert",
+                "description": ""
+            }
+        ]
+    },
+    "contentItemTypes": [
+        "integration",
+        "automation",
+        "incidentfield",
+        "incidenttype",
+        "playbook",
+        "classifier",
+        "layoutscontainer"
+    ],
+    "integrations": [
+        {
+            "name": "HelloWorld (Community Contribution)",
+            "imagePath": "content/packs/HelloWorld/HelloWorld_image.png"
+        }
+    ],
+    "useCases": [],
+    "rawUseCases": [],
+    "keywords": [],
+    "rawKeywords": [],
+    "price": 0,
+    "installMessage": "",
+    "versionInfo": "148197",
+    "eulaLink": "https://github.com/demisto/content/blob/master/LICENSE",
+    "rating": 5,
+    "ratingCount": 1,
+    "changelog": {
+        "1.1.10": {
+            "displayName": "1.1.10 - 148197",
+            "released": "2020-10-16T00:06:07+03:00",
+            "path": "",
+            "releaseNotes": "\n#### Scripts\n##### HelloWorldScript\n- Updated to newer Code Conventions (CommandResults)\n- Upgraded the Docker image to demisto/python3:3.8.6.12176.\n\n#### Integration\n##### HelloWorld\n- Upgraded the Docker image to demisto/python3:3.8.6.12176."
+        },
+        "1.1.9": {
+            "displayName": "1.1.9 - R124496",
+            "released": "2020-09-23T20:36:09+03:00",
+            "path": "",
+            "releaseNotes": "\n#### Integrations\n##### HelloWorld\n- Added default classifiers and mappers.\n"
+        }
+    },
+    "downloads": 0
+}

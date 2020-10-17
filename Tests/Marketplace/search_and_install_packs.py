@@ -24,18 +24,6 @@ def get_pack_display_name(pack_id):
     return ''
 
 
-def get_pack_data_from_results(search_results, pack_display_name):
-    if not search_results:
-        return {}
-    for pack in search_results:
-        if pack.get('name') == pack_display_name:
-            return {
-                'id': pack.get('id'),
-                'version': pack.get('currentVersion')
-            }
-    return {}
-
-
 def create_dependencies_data_structure(response_data, dependants_ids, dependencies_data, checked_packs):
     """ Recursively creates the packs' dependencies data structure for the installation requests
     (only required and uninstalled).
