@@ -3,8 +3,10 @@ import demistomock as demisto
 
 
 def test_date_match(mocker):
-    # Check that the passed date is earlier than the relative
-    # Yes, if this code is around in 30 years time the date will need updating or it'll assert incorrectly.
+    """
+    Given a date and relative date, when the date is sooner than the specified date, return bool true.
+    """
+
     args_value = {
         "left": "2020-10-12T22:17:17",
         "right": "30 years ago"
@@ -17,7 +19,10 @@ def test_date_match(mocker):
 
 
 def test_date_match_non_iso(mocker):
-    # Try other date formats
+    """
+    Given a date in NON-ISO compatible format, and relative date, when the date is sooner than the specified date,
+    return bool true.
+    """
     args_value = {
         "left": "2020-10-12",
         "right": "30 years ago"
@@ -30,7 +35,9 @@ def test_date_match_non_iso(mocker):
 
 
 def test_date_no_match(mocker):
-    # Check that the passed date is later than the relative
+    """
+    Given a date and relative date, when the date is older than the relative date, return false.
+    """
     args_value = {
         "left": "2000-01-01T00:00:00",
         "right": "1 day ago"
