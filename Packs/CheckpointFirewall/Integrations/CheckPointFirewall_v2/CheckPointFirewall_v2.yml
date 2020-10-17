@@ -27,7 +27,7 @@ configuration:
   required: false
   type: 8
 description: Read information and to send commands to the Check Point Firewall server.
-display: CheckPointFirewall v2
+display: Check Point Firewall v2
 name: CheckPointFirewall_v2
 script:
   commands:
@@ -2088,7 +2088,7 @@ script:
     - contextPath: CheckPoint.Object.ipv4
       description: IPv4 address of the specified object.
       type: String
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false
   longRunning: false
