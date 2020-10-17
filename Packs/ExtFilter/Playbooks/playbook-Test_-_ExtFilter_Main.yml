@@ -1,0 +1,1058 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c8354dc8-9644-4b2e-835b-eb8a147c0bdc
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: c385868a-cc48-4c9c-88b5-7e462d63ff40
+inputs: []
+name: Test - ExtFilter Main
+outputs: []
+sourceplaybookid: d9d715b7-2600-4535-8bfd-0978ff593976
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e7c37eb4-69a2-4ad8-87f4-e125e9ff73a9
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: e7c37eb4-69a2-4ad8-87f4-e125e9ff73a9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: acfa6f5a-828d-47cf-8f47-bd710f831ded
+      iscommand: false
+      name: Cleanup ContextData
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: acfa6f5a-828d-47cf-8f47-bd710f831ded
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ExpectedOutput:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "CSV": [{
+                          "ActivityName": "File uploaded",
+                          "DeviceID": "D000001"
+                        }, {
+                          "ActivityName": "User Logged In - Failed",
+                          "DeviceID": "D000003"
+                        }
+                      ],
+                      "TrustedDevices": ["D000002", "D000003"]
+                    }
+            operator: concat
+          - operator: ParseJSON
+      ExtFilterFilter:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    [
+                      {
+                        "ActivityName": {
+                          "==": "User Logged In - Failed"
+                        }
+                      },
+                      "or",
+                      [
+                        {
+                          "ActivityName": {
+                            "in list": "File uploaded,File downloaded"
+                          }
+                        },
+                        "and",
+                        "not",
+                        {
+                          "DeviceID": {
+                            "matches any string of": "${Input.TrustedDevices}"
+                          }
+                        }
+                      ]
+                    ]
+            operator: concat
+      ExtFilterOperation:
+        simple: matches custom conditions of
+      ExtFilterPath:
+        simple: CSV
+      Input:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "TrustedDevices": ["D000002","D000003"],
+                      "CSV": [
+                        {
+                          "ActivityName": "User Logged In - Success",
+                          "DeviceID": "D000001"
+                        },
+                        {
+                          "ActivityName": "File uploaded",
+                          "DeviceID": "D000001"
+                        },
+                        {
+                          "ActivityName": "File downloaded",
+                          "DeviceID": "D000002"
+                        },
+                        {
+                          "ActivityName": "User Logged In - Failed",
+                          "DeviceID": "D000003"
+                        }
+                      ]
+                    }
+            operator: concat
+          - operator: ParseJSON
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1af1de65-9a35-4985-8db1-883840db80b7
+      iscommand: false
+      name: matches custom conditions of
+      playbookId: d9d715b7-2600-4535-8bfd-0978ff593976
+      type: playbook
+      version: -1
+    taskid: 1af1de65-9a35-4985-8db1-883840db80b7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ExpectedOutput:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "Contents": {
+                        "File": [
+                          {
+                            "Name": "b.exe",
+                            "Size": 200
+                          }
+                        ],
+                        "Host": [
+                          {
+                            "Name": "computer1",
+                            "IP": "1.1.1.1"
+                          },
+                          {
+                            "Name": "computer2",
+                            "IP": "2.2.2.2"
+                          }
+                        ]
+                      }
+                    }
+            operator: concat
+          - operator: ParseJSON
+      ExtFilterFilter:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "Name": {
+                        "ends with": ".exe"
+                      }
+                    }
+            operator: concat
+      ExtFilterOperation:
+        simple: is filtered by
+      ExtFilterPath:
+        simple: Contents.File
+      Input:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "Contents": {
+                        "File": [
+                          {
+                            "Name": "a.dat",
+                            "Size": 100
+                          },
+                          {
+                            "Name": "b.exe",
+                            "Size": 200
+                          },
+                          {
+                            "Name": "c.txt",
+                            "Size": 300
+                          }
+                        ],
+                        "Host": [
+                          {
+                            "Name": "computer1",
+                            "IP": "1.1.1.1"
+                          },
+                          {
+                            "Name": "computer2",
+                            "IP": "2.2.2.2"
+                          }
+                        ]
+                      }
+                    }
+            operator: concat
+          - operator: ParseJSON
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1c54e28a-3aae-4148-883d-6c70a642d25c
+      iscommand: false
+      name: is filtered by
+      playbookId: d9d715b7-2600-4535-8bfd-0978ff593976
+      type: playbook
+      version: -1
+    taskid: 1c54e28a-3aae-4148-883d-6c70a642d25c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ExpectedOutput:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "Autofocus": {
+                        "detected": true,
+                        "version": 456
+                      }
+                    }
+            operator: concat
+          - operator: ParseJSON
+      ExtFilterFilter:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "detected": {
+                        "==": true
+                      }
+                    }
+            operator: concat
+      ExtFilterOperation:
+        simple: value matches custom conditions of
+      ExtFilterPath: {}
+      Input:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "Trendmicro": {
+                        "detected": false,
+                        "version": 123
+                      },
+                      "Autofocus": {
+                        "detected": true,
+                        "version": 456
+                      },
+                      "XXX": {
+                        "version": 789
+                      }
+                    }
+            operator: concat
+          - operator: ParseJSON
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8ab39521-e1a6-4d53-8fc9-e828bcf87ecd
+      iscommand: false
+      name: value matches custom conditions of
+      playbookId: d9d715b7-2600-4535-8bfd-0978ff593976
+      type: playbook
+      version: -1
+    taskid: 8ab39521-e1a6-4d53-8fc9-e828bcf87ecd
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ExpectedOutput:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "Node2" : {
+                        "Node1a" : [
+                          "aaa"
+                        ],
+                        "Node1b": [
+                          "xxx"
+                        ]
+                      }
+                    }
+            operator: concat
+          - operator: ParseJSON
+      ExtFilterFilter:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "Node2.Node1a": {
+                        "is filtered by": {
+                          "": {
+                            "contains": "aaa"
+                          }
+                        }
+                      }
+                    }
+            operator: concat
+      ExtFilterOperation:
+        simple: matches custom conditions of
+      ExtFilterPath: {}
+      Input:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "Node2" : {
+                        "Node1a" : [
+                          "aaa",
+                          "bbb",
+                          "ccc"
+                        ],
+                        "Node1b" : [
+                          "xxx"
+                        ]
+                      }
+                    }
+            operator: concat
+          - operator: ParseJSON
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 94daf7e7-f599-438b-87c9-55bd8c8e2afd
+      iscommand: false
+      name: Filter for nested array
+      playbookId: d9d715b7-2600-4535-8bfd-0978ff593976
+      type: playbook
+      version: -1
+    taskid: 94daf7e7-f599-438b-87c9-55bd8c8e2afd
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ExpectedOutput:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    [
+                      {
+                        "IP": "1.1.1.1",
+                        "Host": "COMPUTER1",
+                        "User": "MAOKI"
+                      }
+                    ]
+            operator: concat
+          - operator: ParseJSON
+      ExtFilterFilter:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "Host" : {
+                        "matches wildcard": "COMPUTER*"
+                      }
+                    }
+            operator: concat
+      ExtFilterOperation:
+        simple: matches custom conditions of
+      ExtFilterPath: {}
+      Input:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    [
+                      {
+                        "IP": "1.1.1.1",
+                        "Host": "COMPUTER1",
+                        "User": "MAOKI"
+                      },
+                      {
+                        "IP": "2.2.2.2",
+                        "Host": "SERVER2",
+                        "User": "NGOTOH"
+                      }
+                    ]
+            operator: concat
+          - operator: ParseJSON
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9cda22aa-95de-4e35-8e38-9358c00f210e
+      iscommand: false
+      name: Wildcard Filter
+      playbookId: d9d715b7-2600-4535-8bfd-0978ff593976
+      type: playbook
+      version: -1
+    taskid: 9cda22aa-95de-4e35-8e38-9358c00f210e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ExpectedOutput:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    [
+                      {
+                        "IP": "1.1.1.1",
+                        "Host": "COMPUTER1",
+                        "User": "MAOKI"
+                      }
+                    ]
+            operator: concat
+          - operator: ParseJSON
+      ExtFilterFilter:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "Host" : {
+                        "matches regex": "COMPUTER.*"
+                      }
+                    }
+            operator: concat
+      ExtFilterOperation:
+        simple: matches custom conditions of
+      ExtFilterPath: {}
+      Input:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    [
+                      {
+                        "IP": "1.1.1.1",
+                        "Host": "COMPUTER1",
+                        "User": "MAOKI"
+                      },
+                      {
+                        "IP": "2.2.2.2",
+                        "Host": "SERVER2",
+                        "User": "NGOTOH"
+                      }
+                    ]
+            operator: concat
+          - operator: ParseJSON
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 76f5aa31-581b-411d-8dec-fd718fbac7fc
+      iscommand: false
+      name: Regex Filter
+      playbookId: d9d715b7-2600-4535-8bfd-0978ff593976
+      type: playbook
+      version: -1
+    taskid: 76f5aa31-581b-411d-8dec-fd718fbac7fc
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ExpectedOutput:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "COMPXX1": {
+                        "Log": [
+                          {
+                            "date": "2020-10-01 00:00:01 JST",
+                            "type": "alert",
+                            "desc": "C2 detection",
+                            "protocol": "https",
+                            "ip.src": "192.168.0.1",
+                            "ip.dst": "2.2.2.2",
+                            "port.src": 12345,
+                            "port.dst": 443,
+                            "risk.score": 40,
+                            "message": "xxxxxxxxxxxx"
+                          }
+                        ],
+                        "IP": "192.168.0.1",
+                        "UserName": "NAOKI",
+                        "RiskScore": 40
+                      },
+                      "SRVXYY1": {
+                        "Log": [
+                          {
+                            "date": "2020-10-01 00:00:01 JST",
+                            "type": "alert",
+                            "desc": "C2 detection",
+                            "protocol": "https",
+                            "ip.src": "192.168.0.2",
+                            "ip.dst": "2.2.2.2",
+                            "port.src": 12345,
+                            "port.dst": 443,
+                            "risk.score": 30,
+                            "message": "xxxxxxxxxxxx"
+                          },
+                          {
+                            "date": "2020-10-01 00:00:03 JST",
+                            "type": "event",
+                            "desc": "access",
+                            "protocol": "ssh",
+                            "ip.src": "192.168.0.2",
+                            "ip.dst": "4.4.4.4",
+                            "port.src": 12345,
+                            "port.dst": 22,
+                            "risk.score": 0,
+                            "message": "xxxxxxxxxxxx"
+                          }
+                        ],
+                        "IP": "192.168.0.2",
+                        "UserName": "TGOTOH",
+                        "RiskScore": 10
+                      }
+                    }
+            operator: concat
+          - operator: ParseJSON
+      ExtFilterFilter:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    [
+                      {
+                        "Log": {
+                          "is filtered by" : [
+                            {
+                              "risk.score": {
+                                ">=": 20, "<=": 50
+                              }
+                            },
+                            "or",
+                            {
+                              "protocol": {
+                                "==": "ssh"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "and",
+                      {
+                        "RiskScore": {
+                          ">=" : 10
+                        }
+                      }
+                    ]
+            operator: concat
+      ExtFilterOperation:
+        simple: value matches custom conditions of
+      ExtFilterPath: {}
+      Input:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "COMPXX1": {
+                        "Log": [
+                          {
+                            "date": "2020-10-01 00:00:01 JST",
+                            "type": "alert",
+                            "desc": "C2 detection",
+                            "protocol": "https",
+                            "ip.src": "192.168.0.1",
+                            "ip.dst": "2.2.2.2",
+                            "port.src": 12345,
+                            "port.dst": 443,
+                            "risk.score": 40,
+                            "message": "xxxxxxxxxxxx"
+                          },
+                          {
+                            "date": "2020-10-01 00:00:02 JST",
+                            "type": "alert",
+                            "desc": "C2 detection",
+                            "protocol": "https",
+                            "ip.src": "192.168.0.1",
+                            "ip.dst": "3.3.3.3",
+                            "port.src": 12345,
+                            "port.dst": 443,
+                            "risk.score": 60,
+                            "message": "xxxxxxxxxxxx"
+                          },
+                          {
+                            "date": "2020-10-01 00:00:03 JST",
+                            "type": "event",
+                            "desc": "access",
+                            "protocol": "https",
+                            "ip.src": "192.168.0.1",
+                            "ip.dst": "4.4.4.4",
+                            "port.src": 12345,
+                            "port.dst": 443,
+                            "risk.score": 0,
+                            "message": "xxxxxxxxxxxx"
+                          }
+                        ],
+                        "IP": "192.168.0.1",
+                        "UserName": "NAOKI",
+                        "RiskScore": 40
+                      },
+                      "SRVXYY1": {
+                        "Log": [
+                          {
+                            "date": "2020-10-01 00:00:01 JST",
+                            "type": "alert",
+                            "desc": "C2 detection",
+                            "protocol": "https",
+                            "ip.src": "192.168.0.2",
+                            "ip.dst": "2.2.2.2",
+                            "port.src": 12345,
+                            "port.dst": 443,
+                            "risk.score": 30,
+                            "message": "xxxxxxxxxxxx"
+                          },
+                          {
+                            "date": "2020-10-01 00:00:02 JST",
+                            "type": "event",
+                            "desc": "access",
+                            "protocol": "https",
+                            "ip.src": "192.168.0.2",
+                            "ip.dst": "3.3.3.3",
+                            "port.src": 12345,
+                            "port.dst": 443,
+                            "risk.score": 0,
+                            "message": "xxxxxxxxxxxx"
+                          },
+                          {
+                            "date": "2020-10-01 00:00:03 JST",
+                            "type": "event",
+                            "desc": "access",
+                            "protocol": "ssh",
+                            "ip.src": "192.168.0.2",
+                            "ip.dst": "4.4.4.4",
+                            "port.src": 12345,
+                            "port.dst": 22,
+                            "risk.score": 0,
+                            "message": "xxxxxxxxxxxx"
+                          }
+                        ],
+                        "IP": "192.168.0.2",
+                        "UserName": "TGOTOH",
+                        "RiskScore": 10
+                      },
+                      "SRVXZZ2": {
+                        "Log": [
+                          {
+                            "date": "2020-10-01 00:00:03 JST",
+                            "type": "event",
+                            "desc": "access",
+                            "protocol": "https",
+                            "ip.src": "192.168.0.3",
+                            "ip.dst": "4.4.4.4",
+                            "port.src": 12345,
+                            "port.dst": 443,
+                            "risk.score": 0,
+                            "message": "xxxxxxxxxxxx"
+                          }
+                        ],
+                        "IP": "192.168.0.3",
+                        "UserName": "GMACHIDA",
+                        "RiskScore": 0
+                      }
+                    }
+            operator: concat
+          - operator: ParseJSON
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c1a34948-ce4e-4134-837a-00e44923a991
+      iscommand: false
+      name: Complex Filters 1
+      playbookId: d9d715b7-2600-4535-8bfd-0978ff593976
+      type: playbook
+      version: -1
+    taskid: c1a34948-ce4e-4134-837a-00e44923a991
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1410
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ExpectedOutput:
+        simple: |-
+          {
+            "aaa": [
+              "bbb",
+              "${incident.name}"
+            ]
+          }
+      ExtFilterFilter:
+        complex:
+          accessor: =}
+          root: ${
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    {
+                      "includes": "${incident.name}"
+                    }
+            operator: concat
+      ExtFilterOperation:
+        simple: value is filtered by
+      ExtFilterPath: {}
+      Input:
+        simple: |-
+          {
+            "aaa": [
+              "bbb",
+              "${incident.name}"
+            ],
+            "xxx": [
+              "yyy",
+              "zzz"
+            ]
+          }
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7314fc5e-9d85-4daf-8c93-90d69485904d
+      iscommand: false
+      name: Filter by incident fields
+      playbookId: d9d715b7-2600-4535-8bfd-0978ff593976
+      type: playbook
+      version: -1
+    taskid: 7314fc5e-9d85-4daf-8c93-90d69485904d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1590
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1635,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,167 @@
+args:
+- description: Value to be filtered
+  isArray: true
+  name: value
+  required: true
+- description: Context Path to which to filter
+  name: path
+- auto: PREDEFINED
+  description: 'Filter Operation: value is filtered by,is filtered by,keeps,doesn''t
+    keep,is,isn''t,equals,doesn''t equal,greater or equal,greater than,less or equal,less
+    than,in range,starts with,starts with caseless,doesn''t start with,doesn''t start
+    with caseless,ends with,ends with caseless,doesn''t end with,doesn''t end with
+    caseless,includes,includes caseless,doesn''t include,doesn''t include caseless,finds,finds
+    caseless,doesn''t find,doesn''t find caseless,matches,matches caseless,doesn''t
+    match,doesn''t match caseless,matches wildcard,matches caseless wildcard,doesn''t
+    match wildcard,doesn''t match caseless wildcard,matches regex,matches caseless
+    regex,doesn''t match regex,doesn''t match caseless regex,in list,in caseless list,not
+    in list,not in caseless list,contains,contains caseless,doesn''t contain,doesn''t
+    contain caseless,contains any match with wildcard,contains any match with caseless
+    wildcard,doesn''t contain any match with wildcard,doesn''t contain any match with
+    caseless wildcard,contains any match with regex,contains any match with caseless
+    regex,doesn''t contain any match with regex,doesn''t contain any match with caseless
+    regex,matches wildcard,matches caseless wildcard,doesn''t match wildcard,doesn''t
+    match caseless wildcard,matches regex,matches caseless regex,doesn''t match regex,doesn''t
+    match caseless regex,matches any string of,matches any caseless string of,doesn''t
+    match any string of,doesn''t match any caseless string of,,matches any line of,,matches
+    any caseless line of,,doesn''t match any line of,,doesn''t match any caseless
+    line of,matches any wildcard of,matches any caseless wildcard of,doesn''t match
+    any wildcard of,doesn''t match any caseless wildcard of,matches any regex of,matches
+    any caseless regex of,doesn''t match any regex of,doesn''t match any caseless
+    regex of,matches conditions of,matches custom conditions of,value matches conditions
+    of,value matches custom conditions of,===,!==,==,!=,>=,>,<=,<'
+  isArray: true
+  name: operation
+  predefined:
+  - is filtered by
+  - keeps
+  - doesn't keep
+  - is
+  - isn't
+  - equals
+  - doesn't equal
+  - greater or equal
+  - greater than
+  - less or equal
+  - less than
+  - in range
+  - starts with
+  - starts with caseless
+  - doesn't start with
+  - doesn't start with caseless
+  - ends with
+  - ends with caseless
+  - doesn't end with
+  - doesn't end with caseless
+  - includes
+  - includes caseless
+  - doesn't include
+  - doesn't include caseless
+  - finds
+  - finds caseless
+  - doesn't find
+  - doesn't find caseless
+  - matches
+  - matches caseless
+  - doesn't match
+  - doesn't match caseless
+  - matches wildcard
+  - matches caseless wildcard
+  - doesn't match wildcard
+  - doesn't match caseless wildcard
+  - matches regex
+  - matches caseless regex
+  - doesn't match regex
+  - doesn't match caseless regex
+  - in list
+  - in caseless list
+  - not in list
+  - not in caseless list
+  - contains
+  - contains caseless
+  - doesn't contain
+  - doesn't contain caseless
+  - contains any match with wildcard
+  - contains any match with caseless wildcard
+  - doesn't contain any match with wildcard
+  - doesn't contain any match with caseless wildcard
+  - contains any match with regex
+  - contains any match with caseless regex
+  - doesn't contain any match with regex
+  - doesn't contain any match with caseless regex
+  - matches wildcard
+  - matches caseless wildcard
+  - doesn't match wildcard
+  - doesn't match caseless wildcard
+  - matches regex
+  - matches caseless regex
+  - doesn't match regex
+  - doesn't match caseless regex
+  - matches any string of
+  - matches any caseless string of
+  - doesn't match any string of
+  - doesn't match any caseless string of
+  - ""
+  - matches any line of
+  - ""
+  - matches any caseless line of
+  - ""
+  - doesn't match any line of
+  - ""
+  - doesn't match any caseless line of
+  - matches any wildcard of
+  - matches any caseless wildcard of
+  - doesn't match any wildcard of
+  - doesn't match any caseless wildcard of
+  - matches any regex of
+  - matches any caseless regex of
+  - doesn't match any regex of
+  - doesn't match any caseless regex of
+  - matches conditions of
+  - matches custom conditions of
+  - value matches conditions of
+  - value matches custom conditions of
+  - ===
+  - '!=='
+  - ==
+  - '!='
+  - '>='
+  - '>'
+  - <=
+  - <
+  required: true
+- description: Filter Value
+  name: filter
+  required: true
+- description: '`demisto` context: You must input . (single dot) on `From previous
+    tasks` when you use it.'
+  name: ctx_demisto
+- description: '`inputs` context: You must input ''inputs'' (no quotation) on `From
+    previous tasks` when you use it.'
+  name: ctx_inputs
+- description: '`list` context: You must input ''list'' (no quotation) on `From previous
+    tasks` when you use it.'
+  name: ctx_lists
+- description: '`incident` context,  Change to `From previous tasks` and input `incident`'
+  name: ctx_incident
+comment: Extended filter function for transformer
+commonfields:
+  id: ExtFilter
+  version: -1
+dockerimage: demisto/python3:3.8.6.12176
+enabled: true
+name: ExtFilter
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- entirelist
+- general
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+dockerimage45: demisto/python3:3.8.1.6120
