@@ -121,7 +121,7 @@ def get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock)
         lock.release()
 
 
-def search_pack(client, prints_manager, pack_display_name, thread_index, lock):
+def search_pack(client, prints_manager, pack_display_name, pack_id, thread_index, lock):
     """ Make a pack search request.
 
     Args:
@@ -137,16 +137,18 @@ def search_pack(client, prints_manager, pack_display_name, thread_index, lock):
     try:
         # make the search request
         response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                            path='/contentpacks/marketplace/search',
-                                                                            method='POST',
-                                                                            body={"packsQuery": pack_display_name},
+                                                                            path=f'/contentpacks/marketplace/{pack_id}',
+                                                                            method='GET',
                                                                             accept='application/json',
                                                                             _request_timeout=None)
 
         if 200 <= status_code < 300:
             result_object = ast.literal_eval(response_data)
-            search_results = result_object.get('packs', [])
-            pack_data = get_pack_data_from_results(search_results, pack_display_name)
+            pack_data = {
+                'id': result_object.get('id'),
+                'version': result_object.get('currentVersion')
+            }
+
             if pack_data:
                 print_msg = 'Found pack {} in bucket!\n'.format(pack_display_name)
                 prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.GREEN)
@@ -174,7 +176,8 @@ def search_pack(client, prints_manager, pack_display_name, thread_index, lock):
         lock.release()
 
 
-def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999, private_install=False):
+def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999,
+                  private_install=False):
     """ Make a packs installation request.
 
     Args:
@@ -206,7 +209,8 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                 header_params=header_params, files=files)
             if 200 <= status_code < 300:
                 message = 'License was successfully updated!\n'
-                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
+                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                             include_timestamp=True)
             else:
                 result_object = ast.literal_eval(response_data)
                 message = result_object.get('message', '')
@@ -249,7 +253,8 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
 
             if 200 <= status_code < 300:
                 message = 'Packs were successfully installed!\n'
-                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
+                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                             include_timestamp=True)
             else:
                 result_object = ast.literal_eval(response_data)
                 message = result_object.get('message', '')
@@ -284,7 +289,7 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
     if pack_id not in packs_to_install:
         pack_display_name = get_pack_display_name(pack_id)
         if pack_display_name:
-            pack_data = search_pack(client, prints_manager, pack_display_name, thread_index, lock)
+            pack_data = search_pack(client, prints_manager, pack_display_name, pack_id, thread_index, lock)
         if pack_data is None:
             pack_data = {
                 'id': pack_id,
