@@ -1,0 +1,2 @@
+How to configure the integration
+The Authorization token provided to hit API nneds to be provided here. For any questions, reach out to the #demisto-developers channel on the DFIR Community on Slack (https://dfircommunity.slack.com)
