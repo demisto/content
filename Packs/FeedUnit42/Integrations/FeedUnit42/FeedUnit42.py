@@ -174,7 +174,7 @@ def sort_report_objects_by_type(objects):
 
         for object_id in obj.get('object_refs'):
             if object_id.startswith('report'):
-                is_main = True
+                is_main_report = True
                 break
 
         if is_main_report:
