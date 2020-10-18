@@ -1,5 +1,5 @@
 PhishTank is a free community site where anyone can submit, verify, track and share phishing data.
-This integration was integrated and tested with version 1.0.1 of PhishTank
+This integration was integrated and tested with version 1.0.1 of PhishTank.
 ## Configure PhishTankV2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -11,15 +11,15 @@ This integration was integrated and tested with version 1.0.1 of PhishTank
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | fetchIntervalHours | Database refresh interval \(hours\) | False |
-| appkey | App Key | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### url
 ***
-Check URL Reputation
+Checks the reputation of the supplied URLs.
 
 
 #### Base Command
@@ -30,20 +30,20 @@ Check URL Reputation
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL to check | Required | 
+| url | A comma-separated list of URLs to check the reputation of. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | String | Bad URLs found | 
-| URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision | 
-| URL.Malicious.Description | String | or malicious URLs, the reason for the vendor to make the decision | 
-| DBotScore.Indicator | String | The indicator we tested | 
-| DBotScore.Type | String | The type of the indicator | 
-| DBotScore.Vendor | String | Vendor used to calculate the score | 
-| DBotScore.Score | Number | The actual score | 
+| URL.Data | String | A list of URLs with a bad reputation. | 
+| URL.Malicious.Vendor | String | For malicious URLs, the vendor that tagged the URL as malicious. | 
+| URL.Malicious.Description | String | For malicious URLs, the reason the vendor tagged the URL as malicious. | 
+| DBotScore.Indicator | String | The indicator tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
 
 
 #### Command Example
