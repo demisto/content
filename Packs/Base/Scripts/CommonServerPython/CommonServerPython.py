@@ -4619,7 +4619,7 @@ class IAMUserProfile:
         self._user_profile = safe_load_json(user_profile)
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
 
-    def __getattr__(self, item):
+    def get_attribute(self, item):
         return self._user_profile.get(item)
 
     def to_context(self):
