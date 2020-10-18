@@ -369,7 +369,6 @@ async def long_running_loop(
     try:
         offset_to_store = offset
         sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
-        last_integration_context_set = datetime.utcnow()
         async with init_refresh_token(base_url, client_id, client_secret, verify_ssl, proxy) as refresh_token:
             stream.set_refresh_token(refresh_token)
             async for event in stream.fetch_event(
@@ -392,21 +391,19 @@ async def long_running_loop(
                 }]
                 demisto.createIncidents(incident)
                 offset_to_store = int(event_offset) + 1
-                if last_integration_context_set + timedelta(minutes=1) <= datetime.utcnow():
-                    integration_context = get_integration_context()
-                    integration_context['offset'] = offset_to_store
-                    if store_samples:
-                        try:
-                            sample_events_to_store.append(event)
-                            demisto.debug(f'Storing new {len(sample_events_to_store)} sample events')
-                            sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
-                            sample_events += sample_events_to_store
-                            integration_context['sample_events'] = list(sample_events)
-                        except Exception as e:
-                            demisto.error(f'Failed storing sample events - {e}')
-                    demisto.debug(f'Storing offset {offset_to_store}')
-                    set_to_integration_context_with_retries(integration_context)
-                    last_integration_context_set = datetime.utcnow()
+                integration_context = get_integration_context()
+                integration_context['offset'] = offset_to_store
+                if store_samples:
+                    try:
+                        sample_events_to_store.append(event)
+                        demisto.debug(f'Storing new {len(sample_events_to_store)} sample events')
+                        sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
+                        sample_events += sample_events_to_store
+                        integration_context['sample_events'] = list(sample_events)
+                    except Exception as e:
+                        demisto.error(f'Failed storing sample events - {e}')
+                demisto.debug(f'Storing offset {offset_to_store}')
+                set_to_integration_context_with_retries(integration_context)
     except Exception as e:
         demisto.error(f'An error occurred in the long running loop: {e}')
     finally:
