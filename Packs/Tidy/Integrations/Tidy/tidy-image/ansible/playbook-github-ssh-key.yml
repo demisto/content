@@ -1,0 +1,82 @@
+---
+- name: GitHub ssh key
+  hosts: all
+  tasks:
+    - name: Create ~/.ssh directory
+      file:
+        path: ~/.ssh
+        state: directory
+
+    - name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+      openssh_keypair:
+        path: ~/.ssh/id_rsa_ansible
+        force: yes
+
+    - name: Remove file (delete file)
+      file:
+        path: ~/.ssh/config
+        state: absent
+
+    - name: Add ssh configuration
+      blockinfile:
+        path: ~/.ssh/config
+        create: yes
+        block: |
+          Host *
+            AddKeysToAgent yes
+            IdentityFile ~/.ssh/id_rsa_ansible
+        marker: "# {mark} TIDY MANAGED BLOCK - ssh config"
+
+    - name: Evaluating the authentication agent & adding the key...
+      shell: eval "$(ssh-agent -s)" && ssh-add -K ~/.ssh/id_rsa_ansible
+
+    - name: Auto accept rsa key fingerprint from command line
+      blockinfile:
+        path: "{{ item }}"
+        marker: "# {mark} RSA configuration"
+        block: |
+          function sshtmp
+          {
+              ssh -o "ConnectTimeout 3" \
+                  -o "StrictHostKeyChecking no" \
+                  -o "UserKnownHostsFile /dev/null" \
+                      "$@"
+          }
+          function scptmp
+          {
+              exec scp -o "ConnectTimeout 3" \
+                  -o "StrictHostKeyChecking no" \
+                  -o "UserKnownHostsFile /dev/null" \
+                  "$@"
+          }
+      loop:
+        - "~/.bash_profile"
+        - "~/.zshrc"
+
+    - name: get github key with api access
+      uri:
+        url: https://api.github.com/user/keys
+        method: get
+        validate_certs: no
+        headers:
+          Authorization: "token {{ github_access_token }}"
+      register: github_keys
+
+    - name: get remote public key file contents
+      command: "cat ~/.ssh/id_rsa_ansible.pub"
+      register: key
+
+    - name: Post github key with api access
+      uri:
+        url: https://api.github.com/user/keys
+        method: post
+        validate_certs: no
+        body: {
+          "title": "Ansible",
+          "key": "{{ key.stdout }}"
+        }
+        body_format: json
+        status_code: [200,201]
+        headers:
+          Authorization: "token {{ github_access_token }}"
+

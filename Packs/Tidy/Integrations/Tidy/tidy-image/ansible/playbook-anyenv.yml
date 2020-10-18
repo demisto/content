@@ -1,0 +1,43 @@
+---
+- name: anyenv
+  hosts: all
+  pre_tasks:
+    - name: add init to ~/.zshrc and ~/.bash_profile
+      blockinfile:
+        path: "{{ item }}"
+        block: |
+          export ANYENV_ROOT=~/.anyenv
+          export PATH="$ANYENV_ROOT/bin:$PATH"
+          eval "$(anyenv init -)"
+        marker: "# {mark} TIDY MANAGED BLOCK - anyenv"
+      loop:
+        - "~/.zshrc"
+        - "~/.bash_profile"
+    - name: Sourcing
+      shell: source ~/.bash_profile
+
+  roles:
+    - name: pddg.anyenv
+      var:
+        anyenv_plugins:
+          - repo: https://github.com/znz/anyenv-update
+            version: master
+
+  tasks:
+    - name: Install {{ env }}
+      shell: source ~/.bash_profile && anyenv install {{ env }} -s
+      args:
+        executable: /bin/bash
+
+    - name: Install {{ env }} versions
+      shell: source ~/.bash_profile && {{ env }} install {{ item }} -s
+      args:
+        executable: /bin/bash
+      loop: "{{ versions }}"
+
+    - name: "{{ env }} global versions"
+      shell: source ~/.bash_profile && {{ env }} global {{ item }}
+      args:
+        executable: /bin/bash
+      loop: "{{ global_versions }}"
+

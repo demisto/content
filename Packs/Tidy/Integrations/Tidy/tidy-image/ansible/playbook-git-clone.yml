@@ -1,0 +1,11 @@
+---
+- name: Git clone repo
+  hosts: all
+  tasks:
+    - name: Git clone repo
+      git:
+        repo: "{{ repo }}"
+        dest: "{{ dest }}"
+        force: "{{ force }}"
+        update: "{{ update }}"
+

@@ -1,0 +1,12 @@
+---
+- name: Git
+  hosts: all
+  tasks:
+    - name: "Add block to {{ path }}"
+      blockinfile:
+        path: "{{ path }}"
+        create: "{{ create }}"
+        block: |
+          {{ block }}
+        marker: "# {mark} MANAGED BLOCK - {{ marker }}"
+

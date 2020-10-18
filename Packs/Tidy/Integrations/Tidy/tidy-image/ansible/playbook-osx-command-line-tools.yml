@@ -1,0 +1,9 @@
+---
+- name: osx-command-line-tools
+  hosts: all
+  roles:
+    - role: elliotweiser.osx-command-line-tools
+      vars:
+        - force_install
+
+

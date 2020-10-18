@@ -1,0 +1,11 @@
+---
+- name: Git
+  hosts: all
+  tasks:
+    - name: Add a setting to ~/.gitconfig
+      community.general.git_config:
+        name: "{{ key }}"
+        value: "{{ value }}"
+        scope: "{{ scope }}"
+        state: present"
+
