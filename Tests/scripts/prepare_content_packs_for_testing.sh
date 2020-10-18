@@ -24,7 +24,7 @@ echo "Auth loaded successfully."
 
 GCS_MARKET_BUCKET="marketplace-dist-dev"
 GCS_BUILD_BUCKET="marketplace-ci-build"
-SOURCE_PATH="content/packs"
+SOURCE_PATH="wow/content/packs"
 BUILD_BUCKET_PATH="content/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM"
 TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
 PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
