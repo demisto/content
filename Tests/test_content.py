@@ -910,6 +910,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     disable_all_integrations(xsoar_client, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
     if is_private:
+        #  Private builds do not use mocking. Here we copy the mocked test list to the unmockable list.
         private_test_names = mockable_tests_names + unmockable_tests_names
         private_tests = get_test_records_of_given_test_names(tests_settings, private_test_names)
         mockable_tests = []
@@ -927,6 +928,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     try:
         # first run the mock tests to avoid mockless side effects in container
         if is_ami and mockable_tests and not is_private:
+            #  Mocks do not run on private builds. Private builds should not enter this conditional.
             proxy.configure_proxy_in_demisto(proxy=proxy.ami.docker_ip + ':' + proxy.PROXY_PORT,
                                              username=demisto_user, password=demisto_pass,
                                              server=server)
@@ -994,6 +996,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                 format('\n- '.join(playbook_skipped_integration))
             add_pr_comment(comment)
         if not is_private:
+            # We do not use proxies for private testing. No need for metrics if the build is private
             # Sending proxy metrics to GCP
             try:
                 storage_client = storage.Client()
