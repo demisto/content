@@ -96,21 +96,21 @@ class Client(BaseClient):
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            data=body,
+            data=json.dumps(body),
             params=query_params
         )
         return res
 
     def update_user(self, user_id, user_data):
         body = {
-            "profile": user_data,
-            "credentials": {}
+            "profile": user_data
         }
+        demisto.log(str(body))
         uri = f"users/{user_id}"
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            data=body
+            data=json.dumps(body)
         )
         return res
 
@@ -173,7 +173,7 @@ def get_user_command(client, args, mapper_in):
     try:
         okta_user = client.get_user(user_profile.email)
         if not okta_user:
-            error_code, error_message = IAMErrors.USER_NOT_FOUND
+            error_code, error_message = 404, 'User not found'
             user_profile.set_result(success=False, error_code=error_code, error_message=error_message)
         else:
             user_profile.update_with_app_data(okta_user, mapper_in)
@@ -232,8 +232,11 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
                 return_outputs('Skipping - user already exist.')
             else:
                 okta_profile = user_profile.map_object(mapper_out)
+                if not okta_profile.get('login'):
+                    okta_profile['login'] = okta_profile.get('email')
+                demisto.log('update_user - after map_object: ' + str(okta_profile))
                 created_user = client.create_user(okta_profile)
-                user_profile.set_id(created_user.get('id'))
+                # user_profile.set_id(created_user.get('id'))
                 iam_command_success(user_profile, okta_user)
 
         except DemistoException as e:
@@ -248,9 +251,10 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
         try:
             okta_user = client.get_user(user_profile.email)
             if okta_user:
-                okta_profile = user_profile.map_object(mapper_out)
-                updated_user = client.update_user(okta_profile)
-                user_profile.set_id(updated_user.get('id'))
+                user_id = okta_user.get('id')
+                okta_profile = user_profile.map_object(mapper_out)  # todo: fix mapper
+                updated_user = client.update_user(user_id, okta_profile)
+                # user_profile.set_id(updated_user.get('id'))
                 iam_command_success(user_profile, okta_user)
             else:
                 if args.get('create-if-not-exists').lower() == 'true':
@@ -264,26 +268,11 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
 
         return user_profile
 
-    if is_command_enabled:
-        if client.user_id:
-            success = client.update_user()
-            if success:
-                client.iam_command_success()
-            else:
-                client.iam_command_failure()
-
-        else:
-            if client.user_not_found and args.get('create-if-not-exists') == 'true':
-                create_user_command(client, args)
-            else:
-                client.iam_command_failure()
-
 
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    handle_proxy()
     params = demisto.params()
     base_url = urljoin(params['url'].strip('/'), '/api/v1/')
     token = params.get('apitoken')
