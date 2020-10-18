@@ -1070,6 +1070,8 @@ jobs:
           command: |
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
+            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Incident Test" --insecure -f
+            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
       - run:
           name: Format the entities
           command: |
