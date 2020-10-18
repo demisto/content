@@ -14,10 +14,10 @@ args:
   secret: false
 comment: Evaluates to True if the left value is sooner than the right date.
 commonfields:
-  id: RelativeDateCheck
+  id: BeforeRelativeDate
   version: -1
 enabled: true
-name: RelativeDateCheck
+name: BeforeRelativeDate
 script: '-'
 subtype: python3
 system: false
