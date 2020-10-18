@@ -3093,6 +3093,11 @@
             "timeout": 600,
             "fromversion": "5.0.0"
 
+        },
+        {
+            "integrations": "Generic Webhook",
+            "playbookID": "Generic Webhook - Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3307,6 +3312,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Generic Webhook": "Does not send HTTP traffic",
         "Microsoft Endpoint Configuration Manager": "Uses Microsoft winRM",
         "VirusTotal - Private API": "proxy failures with recording. related issues: 26463, 28888",
         "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",
