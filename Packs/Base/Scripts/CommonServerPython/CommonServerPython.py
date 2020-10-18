@@ -3865,10 +3865,10 @@ if 'requests' in sys.modules:
                             # Try to parse json error response
                             error_entry = res.json()
                             err_msg += '\n{}'.format(json.dumps(error_entry))
-                            raise DemistoException(err_msg, res=res)
+                            raise DemistoException(err_msg, res=error_entry)
                         except ValueError:
                             err_msg += '\n{}'.format(res.text)
-                            raise DemistoException(err_msg, res=res)
+                            raise DemistoException(err_msg, res=res.text)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
@@ -4581,32 +4581,49 @@ class TableOrListWidget(BaseWidget):
         })
 
 
-class IAMErrors(Enum):
-    USER_NOT_FOUND = (404, 'User not found')
-    USER_ALREADY_EXISTS = (409, 'User already exists')
+class IAMErrors(object):
+    USER_DOES_NOT_EXIST = 404, 'User does not exist'
+    USER_ALREADY_EXISTS = 409, 'User already exists'
 
 
 class IAMUserProfile:
     """
         A User Profile object class for IAM integrations.
+
+        Attributes:
+            _user_profile (str): The user profile information.
+            _user_profile_delta (str): The user profile delta.
+            _brand (str): The integration name.
+            _instance_name (str): The instance name.
+            _command (str): The command name.
+            _outputs (str): The command outputs.
+            _readable_output (str): The command readable output.
     """
 
     def __init__(self, user_profile, user_profile_delta=None):
-        # type: (Any, Any) -> None
-        self._brand = demisto.callingContext['context']['IntegrationBrand']
-        self._instance_name = demisto.callingContext['context']['IntegrationInstance']
+        """ IAMUserProfile constructor.
+
+        :param user_profile: The user
+        :param user_profile_delta:
+        """
+        self._brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
+        self._instance_name = demisto.callingContextget('context', {}).get('IntegrationInstance')
         self._command = demisto.command().split('-')[0]
 
         self._outputs = {}  # type: Dict[Any, Any]
         self._readable_output = ''
 
         self._user_profile = safe_load_json(user_profile)
-        self._user_profile_delta = safe_load_json(user_profile_delta)
+        self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
 
     def __getattr__(self, item):
         return self._user_profile.get(item)
 
     def to_context(self):
+        """ Generates a XSOAR IAM entry from the user profile object.
+
+        :return: (dict) A XSOAR entry.
+        """
         entry_context = {
             'IAM.UserProfile(val.email && val.email == obj.email)': self._user_profile,
             'IAM.Vendor(val.instanceName && val.instanceName == self.instanceName && '
@@ -4624,104 +4641,88 @@ class IAMUserProfile:
         return return_entry
 
     def set_result(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
-                   error_message=None, details=None):
-        """Add a row to the widget.
+                   error_message=None, details=None, skip=False, skip_reason=None):
+        """ Sets the outputs and readable outputs attributes according to the given arguments.
 
-        :type success: ``bool``
-        :param success: whether or not the action succeeded
-
-        :type active: ``str``
-        :param active: whether or not the user is active succeeded
-
-        :type iden: ``str``
-        :param iden: the data to add to the list/table.
-
-        :type username: ``str``
-        :param username: the data to add to the list/table.
-
-        :type email: ``str``
-        :param email: the data to add to the list/table.
-
-        :type error_code: ``str``
-        :param error_code: the data to add to the list/table.
-
-        :type error_message: ``str``
-        :param error_message: the data to add to the list/table.
-
-        :type details: ``str``
-        :param details: the data to add to the list/table.
-
-        :return: No data returned
-        :rtype: ``None``
+        :param success: (bool) whether or not the command succeeded.
+        :param active:  (bool) whether or not the user status is active.
+        :param iden: (str) the user ID.
+        :param username: (str) the username of the user.
+        :param email:  (str) the email of the user.
+        :param error_code: (str or int) the error code of the response, if exists.
+        :param error_message: (str) the error details of the response, if exists.
+        :param details: (dict) the full response.
+        :param skip: (bool) whether or not the command is skipped.
+        :param skip_reason: (str) If the command is skipped, describes the reason.
         """
-        self.create_outputs(success, active, iden, username, email, error_code, error_message, details)
-        self.create_readable_output()
+        self.create_outputs(success, active, iden, username, email, error_code,
+                            error_message, details, skip, skip_reason)
+        self.create_readable_output(skip=skip)
 
     def create_outputs(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
-                       error_message=None, details=None):
-        """Add a row to the widget.
+                       error_message=None, details=None, skip=False, skip_reason=None):
+        """ Sets the outputs in `_outputs` attribute.
 
-        :type success: ``Any``
-        :param success: the data to add to the list/table.
-
-        :type active: ``Any``
-        :param active: the data to add to the list/table.
-
-        :type iden: ``Any``
-        :param iden: the data to add to the list/table.
-
-        :type username: ``Any``
-        :param username: the data to add to the list/table.
-
-        :type email: ``Any``
-        :param email: the data to add to the list/table.
-
-        :type error_code: ``Any``
-        :param error_code: the data to add to the list/table.
-
-        :type error_message: ``Any``
-        :param error_message: the data to add to the list/table.
-
-        :type details: ``Any``
-        :param details: the data to add to the list/table.
-
-        :return: No data returned
-        :rtype: ``None``
+        :param success: (bool) whether or not the command succeeded.
+        :param active:  (bool) whether or not the user status is active.
+        :param iden: (str) the user ID.
+        :param username: (str) the username of the user.
+        :param email:  (str) the email of the user.
+        :param error_code: (str or int) the error code of the response, if exists.
+        :param error_message: (str) the error details of the response, if exists.
+        :param details: (dict) the full response.
+        :param skip: (bool) whether or not the command is skipped.
+        :param skip_reason: (str) If the command is skipped, describes the reason.
         """
-        self._outputs = {
-            'brand': self._brand,
-            'instanceName': self._instance_name,
-            'action': self._command,
-            'success': success,
-            'active': active,
-            'id': iden,
-            'username': username,
-            'email': email,
-            'errorCode': error_code,
-            'errorMessage': error_message,
-            'details': details
-        }
+        if not skip:
+            self._outputs = {
+                'brand': self._brand,
+                'instanceName': self._instance_name,
+                'action': self._command,
+                'success': success,
+                'active': active,
+                'id': iden,
+                'username': username,
+                'email': email,
+                'errorCode': error_code,
+                'errorMessage': error_message,
+                'details': details
+            }
+        else:
+            self._outputs = {
+                'brand': self._brand,
+                'instanceName': self._instance_name,
+                'action': self._command,
+                'skipped': True,
+                'reason': skip_reason
+            }
 
-    def create_readable_output(self):
-        """Add a row to the widget.
+    def create_readable_output(self, skip=False):
+        """ Sets the human readable output in `_readable_output` attribute.
 
-        :return: No data returned
-        :rtype: ``None``
+        :param skip: (bool) Whether or not the command is skipped.
         """
         title = self._command.title() + ' User Results ({})'.format(self._brand)
+
+        if not skip:
+            headers = ["brand", "instanceName", "success", "active", "id", "username",
+                       "email", "errorCode", "errorMessage", "details"]
+        else:
+            headers = ["brand", "instanceName", "skipped", "reason"]
+
         self._readable_output = tableToMarkdown(
             name=title,
-            t=self.outputs,
-            headers=["brand", "instanceName", "success", "active", "id", "username",
-                     "email", "errorCode", "errorMessage", "details"],
+            t=self._outputs,
+            headers=headers,
             removeNull=True
         )
 
     def map_object(self, mapper_name, mapping_type=None):
-        """Add a row to the widget.
+        """ Returns the user data, in an application data format.
 
-        :return: No data returned
-        :rtype: ``None``
+        :param mapper_name: (str) The outgoing mapper from XSOAR to the application.
+        :param mapping_type: (str) The mapping type of the mapper (optional).
+        :return: (dict) the user data, in the app data format.
         """
         if not mapping_type:
             mapping_type = 'User Profile'
