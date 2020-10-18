@@ -10,7 +10,7 @@ This integration was integrated and tested with version v1 of Okta.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Okta URL \(https://&amp;lt;domain&amp;gt;.okta.com\) | True |
+| url | Okta URL \(https://<domain>.okta.com\) | True |
 | apitoken | API Token \(see Detailed Instructions\) | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
