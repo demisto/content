@@ -12,12 +12,12 @@ args:
   name: right
   required: true
   secret: false
-comment: Evaluates to True if the left value is sooner than the right date.
+comment: Checks the given datetime has occured after the provided relative time.
 commonfields:
-  id: BeforeRelativeDate
+  id: AfterRelativeDate
   version: -1
 enabled: true
-name: BeforeRelativeDate
+name: AfterRelativeDate
 script: '-'
 subtype: python3
 system: false

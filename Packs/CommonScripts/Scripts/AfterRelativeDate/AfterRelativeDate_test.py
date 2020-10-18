@@ -1,4 +1,4 @@
-from RelativeDateCheck import main
+from AfterRelativeDate import main
 import demistomock as demisto
 
 
