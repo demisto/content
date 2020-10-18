@@ -2,7 +2,7 @@ from typing import Tuple, List, Dict, Optional
 
 import urllib3
 from requests.auth import HTTPBasicAuth
-from dateparser import parse
+import math
 
 from CommonServerPython import *
 
@@ -293,6 +293,26 @@ class STIX21Processor:
         }
 
         return report
+
+
+def parse_timestamp(next_url_to_extract_timestamp_from):
+    """Extract the last fetched indicator timestamp.
+
+    Args:
+        next_url_to_extract_timestamp_from (str): The last indicator fetched timestamp is encoded in the url.
+
+    Returns:
+        int. Last fetch timestamp.
+    """
+    try:
+        encoded_string = re.findall(r'last_id_modified_timestamp=(.*%3D%3D)', next_url_to_extract_timestamp_from)[0]
+        decoded_string = base64.b64decode(encoded_string.replace('%3D%3D', '==')).decode('utf-8')
+        timestamp_in_micro_seconds = int(decoded_string.split(',')[0])
+        timestamp_in_seconds = math.floor(timestamp_in_micro_seconds / 1000000)
+        return timestamp_in_seconds
+    except Exception:
+        # 946768556 is 2000-01-01
+        return 946768556
 
 
 class Client(BaseClient):
@@ -626,6 +646,14 @@ def fetch_indicators_command(client: Client, limit: int = -1):
     return indicators, raw_response
 
 
+def reset_fetch_command():
+    """
+    Reset the last fetch from the integration context
+    """
+    demisto.setIntegrationContext({})
+    return 'Fetch was reset successfully'
+
+
 def verify_threshold_reputation_interval_types(threshold: str, reputation_interval: str):
     if not str.isdigit(threshold):
         return_error(f'{INTEGRATION_NAME} wrong parameter value - '
@@ -663,6 +691,8 @@ def main():
                         polling_timeout, insecure, proxy, feedTags, tlp_color)
         if command == 'test-module':
             return_outputs(*test_module(client))
+        elif command == 'fireeye-reset-fetch-indicators':
+            return_outputs(*reset_fetch_command())
         elif command == 'fireeye-get-indicators':
             return_outputs(*get_indicators_command(client))
         elif command == 'fetch-indicators':

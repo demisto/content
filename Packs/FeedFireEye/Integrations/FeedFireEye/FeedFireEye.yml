@@ -126,6 +126,10 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: fireeye-get-indicators
+  - deprecated: false
+    description: 'WARNING: This command will reset your fetch history.'
+    execution: false
+    name: fireeye-reset-fetch-indicators
   dockerimage: demisto/python3:3.8.6.12176
   feed: true
   isfetch: false

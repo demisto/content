@@ -3,7 +3,7 @@ from typing import Optional
 
 import pytest
 import requests_mock
-from FeedFireEye import Client, STIX21Processor, FE_CONFIDENCE_TO_REPUTATION
+from FeedFireEye import Client, STIX21Processor, FE_CONFIDENCE_TO_REPUTATION, parse_timestamp
 from freezegun import freeze_time
 
 import demistomock as demisto
@@ -305,3 +305,23 @@ def test_reputation_calculation(confidence, date, threshold, reputation_interval
     """
     FE_CONFIDENCE_TO_REPUTATION[3] = threshold
     assert STIX21Processor.calculate_indicator_reputation(confidence, date, reputation_interval) == expected
+
+
+def test_parse_timestamp():
+    """
+
+    Given:
+        - Next URL value from FE response
+
+    When:
+        - Saving the last timestamp fetched to context
+
+    Then:
+        - Returns decoded timestamp
+
+    """
+    assert parse_timestamp(
+        'https://api.intelligence.fireeye.com/collections/indicators/objects?length=1000&'
+        'last_id_modified_timestamp=MTU4MDgwOTIxOTcyODY0NixpbmRpY2F0b3ItLTA5MWI3OWQxLTllOWQtNWExYS04ODMzLTZlNTkyZmNj'
+        'MmM1NQ%3D%3D&added_after=1580764458'
+    ) == 1580809219
