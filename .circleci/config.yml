@@ -392,6 +392,9 @@ references:
         command: |
           demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
           demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
+          demisto-sdk upload -i Packs/HelloWorld/Layouts/layout-Hello_World_Test_Layout.json --insecure
+          demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Incident_Test.json --insecure
+          demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
 
   sdk_nightly_jobs: &sdk_nightly_jobs
     - Demisto SDK Nightly:
@@ -1058,6 +1061,9 @@ jobs:
       - run:
           name: Unlock HelloWorld integration and playbook
           command: python3 Tests/unlock_entity.py integration HelloWorld
+      - run:
+          name: Create and upload incident type, incident field and a layout to Cortex XSOAR
+          command: python3 Tests/create_entities_for_nightly_sdk.py HelloWorld
       - *upload_entities_to_cortex_xsoar
       - run:
           name: Download entities from Cortex XSOAR
