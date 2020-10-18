@@ -89,7 +89,7 @@ def get_new_entity_record(entity_path: str) -> Tuple[str, str]:
     return name, description
 
 
-def construct_entities_block(entities_data: dict):
+def construct_entities_block(entities_data: dict, add_whitespaces: bool = True):
     """
     convert entities information to a pack release note block
 
@@ -106,6 +106,7 @@ def construct_entities_block(entities_data: dict):
                 },
                 ...
             }
+        add_whitespaces: whether to add whitespaces to the entity name or not
 
     Returns:
         release note block string
@@ -119,7 +120,10 @@ def construct_entities_block(entities_data: dict):
             if entity_type in ('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields'):
                 release_notes += f'- **{name}**\n'
             else:
-                release_notes += f'##### {name}  \n{description}\n'
+                if add_whitespaces:
+                    release_notes += f'##### {name}  \n{description}\n'
+                else:
+                    release_notes += f'##### {name}\n{description}\n'
 
     return release_notes
 
@@ -248,13 +252,17 @@ def get_release_notes_dict(release_notes_files):
     return release_notes_dict, packs_metadata_dict
 
 
-def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata: dict):
+def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata: dict, wrap_pack: bool = True,
+                         add_whitespaces: bool = True):
     """
     merge several pack release note versions into a single block.
 
     Args:
         pack_name: pack name
         pack_versions_dict: a mapping from a pack version to a release notes file content.
+        wrap_pack: whether to wrap the rn with the pack header or not.
+        add_whitespaces: a parameter to pass to construct_entities_block function which indicates
+        whether to add whitespaces to the entity name or not
 
     Returns:
         a single pack release note block
@@ -290,11 +298,14 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata
                 else:
                     entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
 
-    pack_release_notes = construct_entities_block(entities_data)
+    pack_release_notes = construct_entities_block(entities_data, add_whitespaces).strip()
 
-    partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
-    return (f'### {pack_name} Pack v{latest_version}{partner}\n'
-            f'{pack_release_notes.strip()}')
+    if wrap_pack:
+        partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
+        return (f'### {pack_name} Pack v{latest_version}{partner}\n'
+                f'{pack_release_notes}')
+
+    return pack_release_notes
 
 
 def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, packs_metadata_dict, version,
