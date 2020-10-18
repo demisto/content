@@ -302,10 +302,10 @@ def create_incident_from_ticket(issue):
 
 
 def create_update_incident_from_ticket(issue: dict) -> dict:
-    """ Create incident update object - Removing merging keys 'type' and 'value' to single dict.
+    """ Create incident update.
 
     Args:
-        issue: Dict representing the Jira issue.
+        issue: Dict representing the Jira issue (Raw).
 
     Returns:
         dict: Labels to update in incident.

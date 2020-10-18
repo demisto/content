@@ -6,7 +6,7 @@ display: Atlassian Jira v2
 fromversion: 5.0.0
 category: Case Management
 description: Use the Jira integration to manage issues and create Demisto incidents
-  from projects.
+  from projects, From version XSOAR 6.0 and above mirror issues to existing issue incidents in demisto.
 configuration:
 - defaultvalue: 'false'
   display: Mirror incoming incidents
@@ -309,7 +309,7 @@ script:
       description: The ID or key of the issue.
     description: Deletes an issue in Jira.
   - name: jira-get-id-offset
-    description: Get id offset from begining.
+    description: Get first issue.
     outputs:
     - contextPath: Ticket.idOffSet
       description: The ID offset.
