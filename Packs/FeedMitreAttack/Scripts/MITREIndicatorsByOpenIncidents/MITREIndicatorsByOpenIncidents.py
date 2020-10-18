@@ -21,7 +21,7 @@ def main():
         res = demisto.searchIndicators(query=query)
 
         indicators = []
-        for ind in res['iocs']:
+        for ind in res.get('iocs', []):
             indicators.append({
                 'Value': dict_safe_get(ind, ['value']),
                 'Name': dict_safe_get(ind, ['CustomFields', 'mitrename']),
@@ -30,10 +30,10 @@ def main():
 
             })
 
-        temp = tableToMarkdown('MITRE ATT&CK techniques by related Incidents', indicators,
+        incidents_table = tableToMarkdown('MITRE ATT&CK techniques by related Incidents', indicators,
                                headers=['Value', 'Name', 'Phase Name', 'Description'])
 
-        return_outputs(temp)
+        return_outputs(incidents_table)
     except Exception:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute MITREIndicatorsByOpenIncidents script. Error: {traceback.format_exc()}')
