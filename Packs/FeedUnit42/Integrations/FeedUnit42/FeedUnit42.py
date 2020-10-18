@@ -170,14 +170,14 @@ def sort_report_objects_by_type(objects):
     sub_report_objects = []
 
     for obj in objects:
-        is_main = False
+        is_main_report = False
 
         for object_id in obj.get('object_refs'):
             if object_id.startswith('report'):
                 is_main = True
                 break
 
-        if is_main:
+        if is_main_report:
             main_report_objects.append(obj)
         else:
             sub_report_objects.append(obj)
@@ -385,7 +385,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
         feed_tags: feed tags.
         tlp_color: Traffic Light Protocol color.
     Returns:
-        Indicators.
+        List. Processed indicators and reports from feed.
     """
     with Pool(cpu_count()) as pool:
         pool.starmap(multiprocessing_wrapper_get_stix_objects,

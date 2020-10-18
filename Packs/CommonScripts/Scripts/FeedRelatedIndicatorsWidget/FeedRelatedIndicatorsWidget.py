@@ -20,7 +20,7 @@ def create_related_indicator_object(value: str, type_: str, description: str):
 
     descriptions = []
 
-    for desc in description.split(','):
+    for desc in argToList(description):
         desc = desc.strip()
 
         if re.match(urlRegex, desc):

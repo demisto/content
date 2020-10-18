@@ -1,3 +1,4 @@
+import pytest
 import demistomock as demisto
 
 FILE_INDICATOR = {'CustomFields': {
@@ -75,3 +76,45 @@ def test_feed_related_indicator(mocker):
                                      '[https://attack.mitre.org/techniques/T1496]' \
                                      '(https://attack.mitre.org/techniques/T1496)<br><br> |\n| MITRE ATT&CK |  | ' \
                                      'Some Description<br><br> |\n'
+
+
+RELATED_INDICATOR_OBJECTS_PACK = [
+    ('value1', 'type1', 'https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc',
+     {
+         'Value': 'value1',
+         'Type': 'type1',
+         'Description': '[https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc]'
+                        '(https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc)\n\n'
+     }
+     ),
+    ('value1', 'type1', None,
+     {
+         'Value': 'value1',
+         'Type': 'type1',
+         'Description': '\n\n'
+     }
+     ),
+    ('value1', 'type1', 'desc1, desc2',
+     {
+         'Value': 'value1',
+         'Type': 'type1',
+         'Description': 'desc1, desc2\n\n'
+     }
+     ),
+    ('value1', 'type1', 'desc1, https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc',
+     {
+         'Value': 'value1',
+         'Type': 'type1',
+         'Description': 'desc1, [https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc]'
+                        '(https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc)\n\n'
+     }
+     )
+
+]
+
+
+@pytest.mark.parametrize('value, type_, description, expected_output', RELATED_INDICATOR_OBJECTS_PACK)
+def test_create_related_indicator_object(value, type_, description, expected_output):
+    from FeedRelatedIndicatorsWidget import create_related_indicator_object
+
+    assert create_related_indicator_object(value, type_, description) == expected_output
