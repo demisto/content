@@ -70,7 +70,7 @@ def upload_to_sdk(path, *args):
         so we process the output to see that all files created are succeeded.
     """
     print('Uploading to SDK')
-    stdout, stderr, = run_command(f'demisto-sdk upload -i {str(path)}')
+    stdout, stderr, = run_command(f'demisto-sdk upload -i {str(path)} --insecure')
     try:
         trimmed = re.search("SUCCESSFUL UPLOADS.*FAILED UPLOADS", stdout, flags=re.DOTALL).group()
     except AttributeError:
