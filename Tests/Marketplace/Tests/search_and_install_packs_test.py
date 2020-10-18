@@ -169,7 +169,7 @@ def test_search_pack(mocker):
    Given
    - Pack with a new name (different from its ID)
    When
-   - Searching the pack in the Demsito instance.
+   - Searching the pack in the Demsito instance. text
    Then
    - Ensure the pack is found using its ID
    """
