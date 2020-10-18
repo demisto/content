@@ -1,0 +1,12 @@
+commonfields:
+  id: MLApiModule
+  version: -1
+name: MLApiModule
+script: '-'
+subtype: python3
+system: true
+timeout: '0'
+type: python
+tags:
+- infra
+- server

@@ -10,6 +10,7 @@ import uuid
 from html.parser import HTMLParser
 from html import unescape
 import pandas as pd
+
 DBOT_TEXT_FIELD = 'dbot_text'
 DBOT_PROCESSED_TEXT_FIELD = 'dbot_processed_text'
 CONTEXT_KEY = 'DBotPreProcessTextData'
@@ -103,16 +104,9 @@ def pre_process(data, source_text_field, target_text_field, remove_html_tags, pr
 
 
 def pre_process_nlp(text_data):
-    res = demisto.executeCommand('WordTokenizerNLP', {
-        'value': json.dumps(text_data),
-        'isValueJson': 'yes',
-        'tokenizationMethod': demisto.args()['tokenizationMethod'],
-        'language': demisto.args()['language']
-    })
-
-    if is_error(res):
-        return_error(get_error(res))
-    processed_text_data = res[0]['Contents']
+    tokenizer = Tokenizer(isValueJson=True, tokenizationMethod=demisto.args()['tokenizationMethod'],
+                          language=demisto.args()['language'])
+    processed_text_data = tokenizer.word_tokenize(json.dumps(text_data))
     if not isinstance(processed_text_data, list):
         processed_text_data = [processed_text_data]
     tokenized_text_data = map(lambda x: x.get('tokenizedText'), processed_text_data)
@@ -237,6 +231,8 @@ def main():
     }
     return entry
 
+
+from MLApiModule import *  # noqa: E402
 
 if __name__ in ['builtins', '__main__']:
     entry = main()
