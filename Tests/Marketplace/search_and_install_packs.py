@@ -224,7 +224,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
             pack_ids = packs_stream.readlines()
             pack_ids_to_install = [pack_id.rstrip('\n') for pack_id in pack_ids]
             pack_ids_to_install.append('DeveloperTools')
-            pack_ids_to_install.append('Developer Tools') # One of these will actually install the pack
+            pack_ids_to_install.append('Developer Tools')  # One of these will actually install the pack
         for local_pack in local_packs:
             if any(pack_id in local_pack for pack_id in pack_ids_to_install):
                 upload_zipped_packs(client=client, host=host, prints_manager=prints_manager,
