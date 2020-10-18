@@ -51,7 +51,7 @@ def main():
             "data": [
                 0
             ],
-            "name": "N\\A",
+            "name": "2020-01-01",
             "color": "#00CD33"
         }
 
