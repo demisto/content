@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: '1'
-  display: Database refresh interval (number of hours to wait between each reload)
+  display: Database refresh interval (hours)
   hidden: false
   name: fetchIntervalHours
   required: false
@@ -17,7 +17,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: PhishTank is a free community site where anyone can submit, verify, track
+description: PhishTank is a free community site where anyone can submit, verify, track,
   and share phishing data.
 display: PhishTank v2
 name: PhishTank V2
@@ -26,43 +26,43 @@ script:
   - arguments:
     - default: true
       defaultValue: ""
-      description: URL to check
+      description: A comma-separated list of URLs to check the reputation of.
       isArray: true
       name: url
       required: true
       secret: false
     deprecated: false
-    description: Check URL Reputation
+    description: Checks the reputation of the supplied URLs.
     execution: false
     name: url
     outputs:
     - contextPath: URL.Data
-      description: Bad URLs found
+      description: A list of URLs with a bad reputation.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that tagged the URL as malicious.
       type: String
     - contextPath: URL.Malicious.Description
-      description: or malicious URLs, the reason for the vendor to make the decision
+      description: For malicious URLs, the reason the vendor tagged the URL as malicious.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The URL tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
   - deprecated: false
-    description: Reload PhishTank database
+    description: Reloads the PhishTank database.
     execution: false
     name: phishtank-reload
   - deprecated: false
-    description: Show PhishTank database status
+    description: Shows the status of the PhishTank database.
     execution: false
     name: phishtank-status
   dockerimage: demisto/python3:3.8.6.12176
