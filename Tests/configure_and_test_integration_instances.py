@@ -1086,8 +1086,7 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
                 'failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)), print_error, 0)
         if not ints_to_configure_params_set:
             prints_manager.add_print_job(
-                'failed setting parameters for integrations "{}"'.format('\n'.join(integrations_to_configure)),
-                print_error, 0)
+                'failed setting parameters for integrations\n "{}"'.format(integrations_to_configure), print_error, 0)
         if not (new_ints_params_set and ints_to_configure_params_set):
             continue
         prints_manager.execute_thread_prints(0)
