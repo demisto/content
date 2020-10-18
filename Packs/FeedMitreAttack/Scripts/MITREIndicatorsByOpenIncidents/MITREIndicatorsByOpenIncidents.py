@@ -30,7 +30,7 @@ def main():
 
             })
 
-        temp = tableToMarkdown('MITRE ATT&CK techniques by open Incidents', indicators,
+        temp = tableToMarkdown('MITRE ATT&CK techniques by related Incidents', indicators,
                                headers=['Value', 'Name', 'Phase Name', 'Description'])
 
         return_outputs(temp)
