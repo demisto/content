@@ -2179,6 +2179,7 @@ def process_main():
 
 
 def main():
+    handle_proxy()
     # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
     # collector. `separate_process` flag will run the integration on a separate process that will prevent
     # memory leakage.
