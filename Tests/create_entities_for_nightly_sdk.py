@@ -71,7 +71,10 @@ def upload_to_sdk(path, *args):
     """
     print('Uploading to SDK')
     stdout, _, = run_command(f'demisto-sdk upload -i {str(path)}')
-    trimmed = re.search("SUCCESSFUL UPLOADS.*FAILED UPLOADS", stdout, flags=re.DOTALL).group()
+    try:
+        trimmed = re.search("SUCCESSFUL UPLOADS.*FAILED UPLOADS", stdout, flags=re.DOTALL).group()
+    except AttributeError:
+        raise AttributeError(f'Could not find output of the command. {stdout}')
     for arg in args:
         assert arg.split('/')[-1] in trimmed, f'Could not upload {arg}.\nstdout={stdout}'
         print(f'{arg} was uploaded to Cortex XSOAR')
