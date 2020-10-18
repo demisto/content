@@ -1,6 +1,3 @@
-import json
-import os
-
 import demisto_client
 import Tests.Marketplace.search_and_install_packs as script
 from Tests.test_content import ParallelPrintsManager
@@ -172,7 +169,7 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
     assert success is False
 
 
-def test_search_pack(mocker):
+def test_search_pack_with_id(mocker):
     """
    Given
    - Pack with a new name (different from its ID)
@@ -188,8 +185,8 @@ def test_search_pack(mocker):
         'id': 'HelloWorld',
         'version': '1.1.10'
     }
-    assert script.SUCCESS_FLAG
     assert expected_response == script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, None)
+    assert script.SUCCESS_FLAG
 
 
 def test_search_pack_with_failure(mocker):
@@ -215,4 +212,3 @@ def test_search_pack_with_failure(mocker):
     mocker.patch.object(demisto_client, 'generic_request_func', return_value=('{"id": "HelloWorld"}', 200, None))
     script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, lock)
     assert not script.SUCCESS_FLAG
-
