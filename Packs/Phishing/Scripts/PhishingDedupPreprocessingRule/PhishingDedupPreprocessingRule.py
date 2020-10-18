@@ -1,3 +1,5 @@
+import dateutil  # type: ignore
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -8,6 +10,8 @@ from numpy import dot
 from numpy.linalg import norm
 from email.utils import parseaddr
 import tldextract
+from urllib.parse import urlparse
+import re
 
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -17,7 +21,6 @@ SIMILARITY_THRESHOLD = 0.99
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
 EMAIL_HTML_FIELD = 'emailbodyhtml'
-CREATED_FIELD = 'created'
 FROM_FIELD = 'emailfrom'
 FROM_DOMAIN_FIELD = 'fromdomain'
 MERGED_TEXT_FIELD = 'mereged_text'
@@ -32,36 +35,49 @@ FROM_POLICY_EXACT = 'Exact'
 FROM_POLICY_DOMAIN = 'Domain'
 
 FROM_POLICY = FROM_POLICY_TEXT_ONLY
+URL_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
+            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
 
 def get_existing_incidents(input_args):
     global DEFAULT_ARGS
     get_incidents_args = {}
-    for arg in ['incidentTypes', 'query', 'limit']:
-        if arg in input_args:
-            get_incidents_args[arg] = input_args[arg]
-        elif arg in DEFAULT_ARGS:
-            get_incidents_args[arg] = DEFAULT_ARGS[arg]
+    get_incidents_args['limit'] = input_args.get('limit', DEFAULT_ARGS['limit'])
     if 'exsitingIncidentsLookback' in input_args:
         get_incidents_args['fromDate'] = input_args['exsitingIncidentsLookback']
     elif 'exsitingIncidentsLookback' in DEFAULT_ARGS:
         get_incidents_args['fromDate'] = DEFAULT_ARGS['exsitingIncidentsLookback']
     status_scope = input_args.get('statusScope', 'All')
+    query_components = []
+    if 'query' in input_args:
+        query_components.append(input_args['query'])
     if status_scope == 'ClosedOnly':
-        if 'query' in get_incidents_args:
-            get_incidents_args['query'] = '({}) and (status:Closed)'.format(get_incidents_args['query'])
-        else:
-            get_incidents_args['query'] = 'status:Closed'
+        query_components.append('status:closed')
     elif status_scope == 'NonClosedOnly':
-        if 'query' in get_incidents_args:
-            get_incidents_args['query'] = '({}) and (-status:Closed)'.format(get_incidents_args['query'])
-        else:
-            get_incidents_args['query'] = '-status:Closed'
+        query_components.append('-status:closed')
+    elif status_scope == 'All':
+        pass
+    else:
+        return_error('Unsupported statusScope: {}'.format(status_scope))
+    type_values = input_args.get('incidentTypes')
+    if type_values is not None and type_values != 'None':
+        type_field = input_args.get('incidentTypeFieldName', 'type')
+        type_query = generate_incident_type_query_component(type_field, type_values)
+        query_components.append(type_query)
+    if len(query_components) > 0:
+        get_incidents_args['query'] = ' and '.join('({})'.format(c) for c in query_components)
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
     incidents = json.loads(incidents_query_res[-1]['Contents'])
     return incidents
+
+
+def generate_incident_type_query_component(type_field_arg, type_values_arg):
+    type_field = type_field_arg.strip()
+    type_values = [x.strip() for x in type_values_arg.split(',')]
+    types_unions = ' '.join(f'"{t}"' for t in type_values)
+    return f'{type_field}:({types_unions})'
 
 
 def extract_domain(address):
@@ -74,7 +90,6 @@ def extract_domain(address):
 
 
 def get_text_from_html(html):
-    # todo: change to docker which supports
     soup = BeautifulSoup(html)
     # kill all script and style elements
     for script in soup(["script", "style"]):
@@ -87,6 +102,15 @@ def get_text_from_html(html):
     chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
     # drop blank lines
     text = '\n'.join(chunk for chunk in chunks if chunk)
+    return text
+
+
+def eliminate_urls_extensions(text):
+    urls_list = re.findall(URL_REGEX, text)
+    for url in urls_list:
+        parsed_uri = urlparse(url)
+        url_with_no_path = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+        text = text.replace(url, url_with_no_path)
     return text
 
 
@@ -104,7 +128,8 @@ def preprocess_text_fields(incident):
         email_body = get_text_from_html(email_html)
     if isinstance(email_subject, float):
         email_subject = ''
-    return email_subject + ' ' + email_body
+    text = eliminate_urls_extensions(email_subject + ' ' + email_body)
+    return text
 
 
 def preprocess_incidents_df(existing_incidents):
@@ -125,13 +150,29 @@ def preprocess_incidents_df(existing_incidents):
         incidents_df[FROM_FIELD] = ''
     incidents_df[FROM_FIELD] = incidents_df[FROM_FIELD].apply(lambda x: x.strip())
     incidents_df[FROM_DOMAIN_FIELD] = incidents_df[FROM_FIELD].apply(lambda address: extract_domain(address))
+    incidents_df['created'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
     return incidents_df
 
 
-def filter_out_new_incident(existing_incidents_df, new_incident):
+def incident_has_text_fields(incident):
+    text_fields = [EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_BODY_FIELD]
+    if any(field in incident for field in text_fields):
+        return True
+    elif 'CustomFields' in incident and any(field in incident['CustomFields'] for field in text_fields):
+        return True
+    return False
+
+
+def filter_out_same_incident(existing_incidents_df, new_incident):
     same_id_mask = existing_incidents_df['id'] == new_incident['id']
     existing_incidents_df = existing_incidents_df[~same_id_mask]
     return existing_incidents_df
+
+
+def filter_newer_incidents(existing_incidents_df, new_incident):
+    new_incident_datetime = dateutil.parser.parse(new_incident['created'])  # type: ignore
+    earlier_incidents_mask = existing_incidents_df['created'] < new_incident_datetime
+    return existing_incidents_df[earlier_incidents_mask]
 
 
 def vectorize(text, vectorizer):
@@ -159,40 +200,73 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
         mask = (existing_incidents_df[FROM_FIELD] != '') & \
                (existing_incidents_df[FROM_FIELD] == new_incident[FROM_FIELD])
         existing_incidents_df = existing_incidents_df[mask]
-    existing_incidents_df.sort_values(by='similarity', ascending=False, inplace=True)
+    existing_incidents_df['distance'] = existing_incidents_df['similarity'].apply(lambda x: 1 - x)
+    tie_breaker_col = 'id'
+    try:
+        existing_incidents_df['int_id'] = existing_incidents_df['id'].astype(int)
+        tie_breaker_col = 'int_id'
+    except Exception:
+        pass
+    existing_incidents_df.sort_values(by=['distance', 'created', tie_breaker_col], inplace=True)
     if len(existing_incidents_df) > 0:
         return existing_incidents_df.iloc[0], existing_incidents_df.iloc[0]['similarity']
     else:
         return None, None
 
 
+def return_entry(message, existing_incident=None):
+    if existing_incident is None:
+        similar_incident = {}
+    else:
+        similar_incident = {
+            'rawId': existing_incident['id'],
+            'id': existing_incident['id'],
+            'name': existing_incident.get('name')
+        }
+    outputs = {
+        'similarIncident': similar_incident,
+        'isSimilarIncidentFound': existing_incident is not None
+    }
+    return_outputs(message, outputs)
+
+
 def close_new_incident_and_link_to_existing(new_incident, existing_incident, similarity):
-    entries = []
-    hr_incident = {}
-    for field in [EMAIL_SUBJECT_FIELD, EMAIL_BODY_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, CREATED_FIELD, 'name', 'id']:
-        if field in new_incident:
-            hr_incident[field] = new_incident[field]
-    hr = tableToMarkdown('Duplicate Incident Details', hr_incident)
-    entries.append({'Contents': "Duplicate incident: " + new_incident['name']})
-    entries.append({"Type": entryTypes['note'],
-                    "ContentsFormat": "json",
-                    "Contents": hr_incident,
-                    "HumanReadable": hr,
-                    })
-    entries_str = json.dumps(entries)
-    demisto.executeCommand("addEntries", {"id": existing_incident["id"], "entries": entries_str})
-    res = demisto.executeCommand("linkIncidents", {
-        'linkedIncidentIDs': new_incident['id'],
-        'incidentId': existing_incident['id']})
+    res = demisto.executeCommand("CloseInvestigationAsDuplicate", {
+        'duplicateId': existing_incident['id']})
+
     if is_error(res):
         return_error(res)
-    demisto.results('Duplicate incident found: {}, {} with similarity of {:.1f}%.'.format(new_incident['id'],
-                                                                                          existing_incident['id'],
-                                                                                          similarity * 100))
+    message = 'Duplicate incidents found: #{}, #{} with similarity of {:.1f}%. '.format(new_incident['id'],
+                                                                                        existing_incident['id'],
+                                                                                        similarity * 100)
+    message += 'This incident will be closed and linked to #{}.'.format(existing_incident['id'])
+    return_entry(message, existing_incident.to_dict())
 
 
 def create_new_incident():
-    demisto.results('No duplicate incident found')
+    return_entry('This incident is not a duplicate of an existing incident.')
+
+
+def create_new_incident_low_similarity(existing_incident, similarity):
+    message = 'This incident is not a duplicate of an existing incident.\n'
+    message += 'Most similar incident found is #{} with similarity of {:.1f}%.\n'.format(existing_incident['id'],
+                                                                                         similarity * 100)
+    message += 'The threshold for considering 2 incidents as duplicate is a similarity ' \
+               'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
+    message += 'Therefore these 2 incidents will not be considered as duplicate and the current incident ' \
+               'will remain active.\n'
+    return_entry(message)
+
+
+def create_new_incident_no_text_fields():
+    text_fields = [EMAIL_BODY_FIELD, EMAIL_HTML_FIELD, EMAIL_SUBJECT_FIELD]
+    message = 'No text fields were found within this incident: {}.\n'.format(','.join(text_fields))
+    message += 'Incident will remain active.'
+    return_entry(message)
+
+
+def create_new_incident_too_short():
+    return_entry('Incident text after preprocessing is too short for deduplication. Incident will remain active.')
 
 
 def main():
@@ -204,23 +278,32 @@ def main():
     FROM_FIELD = input_args.get('emailFrom', FROM_FIELD)
     FROM_POLICY = input_args.get('fromPolicy', FROM_POLICY)
     existing_incidents = get_existing_incidents(input_args)
+    demisto.results('found {} incidents by query'.format(len(existing_incidents)))
     if len(existing_incidents) == 0:
         create_new_incident()
         return
     new_incident = demisto.incidents()[0]
+    if not incident_has_text_fields(new_incident):
+        create_new_incident_no_text_fields()
+        return
     new_incident_df = preprocess_incidents_df([new_incident])
+    if len(new_incident_df) == 0:  # len(new_incident_df)==0 means new incident is too short
+        create_new_incident_too_short()
+        return
     existing_incidents_df = preprocess_incidents_df(existing_incidents)
-    existing_incidents_df = filter_out_new_incident(existing_incidents_df, new_incident)
-
-    if len(existing_incidents_df) == 0 or len(
-            new_incident_df) == 0:  # len(new_incident_df)==0 means new incident is too short
+    existing_incidents_df = filter_out_same_incident(existing_incidents_df, new_incident)
+    existing_incidents_df = filter_newer_incidents(existing_incidents_df, new_incident)
+    if len(existing_incidents_df) == 0:
         create_new_incident()
         return
     new_incident_preprocessed = new_incident_df.iloc[0].to_dict()
     duplicate_incident_row, similarity = find_duplicate_incidents(new_incident_preprocessed,
                                                                   existing_incidents_df)
-    if duplicate_incident_row is None or similarity < SIMILARITY_THRESHOLD:
+    if duplicate_incident_row is None:
         create_new_incident()
+        return
+    if similarity < SIMILARITY_THRESHOLD:
+        create_new_incident_low_similarity(duplicate_incident_row, similarity)
     else:
         return close_new_incident_and_link_to_existing(new_incident_df.iloc[0], duplicate_incident_row, similarity)
 
