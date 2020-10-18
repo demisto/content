@@ -1,0 +1,366 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Blueliv ThreatCompass
+  version: -1
+configuration:
+- display: Server URL (e.g. https://demisto.blueliv.com/api/v2)
+  name: url
+  required: false
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: It can be found in the GUI URL. See Integration tips for more details.
+  defaultvalue: '1'
+  display: Organization ID
+  name: organization
+  required: true
+  type: 0
+- display: Module Type
+  name: type
+  options:
+  - Hacktivism
+  - MobileApps
+  - Credentials
+  - CreditCards
+  - DarkWeb
+  - MediaTracker
+  - Malware
+  - DomainProtection
+  - DataLeakage
+  required: true
+  type: 15
+- additionalinfo: It can be found in the GUI URL. See Integration tips for more details.
+  display: Module ID
+  name: module
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '50'
+  display: Fetch Limit (Max.- 200, Recommended less than 50)
+  name: fetch_limit
+  required: false
+  type: 0
+- defaultvalue: POSITIVE,NEGATIVE,INFORMATIVE,IMPORTANT
+  display: Fetch resource status (POSITIVE, NEGATIVE...)
+  name: fetch_status
+  options:
+  - IMPORTANT
+  - NOT_AVAILABLE
+  - NOT_IMPORTANT
+  - NOT_PROCESSABLE
+  - POSITIVE
+  - NEGATIVE
+  - INFORMATIVE
+  required: false
+  type: 16
+- additionalinfo: Format yyyy-mm-dd or yyyy-mm-ddThh:mm:ss
+  display: First fetch time
+  hidden: false
+  name: first_fetch_time
+  required: false
+  type: 0
+description: |-
+  Blueliv ThreatCompass systematically looks for information about companies,products, people, brands, logos, assets, technology and other information, depending on your needs. Blueliv ThreatCompass allows you to monitor and track all this information to keep your data, your
+  organization and its employees safe
+display: Blueliv ThreatCompass
+name: Blueliv ThreatCompass
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'Minimum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss'
+      isArray: false
+      name: startDate
+      required: false
+      secret: false
+    - default: false
+      description: 'Maximum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss'
+      isArray: false
+      name: finalDate
+      required: false
+      secret: false
+    - default: false
+      description: Results page to get. For each page, there are {limit} resources.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Maximum number of resources to recover
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Recovers all resources from the module.
+    execution: false
+    name: blueliv-resource-all
+    outputs:
+    - contextPath: BluelivThreatCompass
+      description: List object of recovered resources
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Keywords to search in resources text
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    - default: false
+      description: 'Comma-separated list of any combination of status: NOT_AVAILABLE,
+        NOT_IMPORTANT, NOT_PROCESSABLE, POSITIVE, NEGATIVE, INFORMATIVE, IMPORTANT'
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: 'Minimum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss'
+      isArray: false
+      name: startDate
+      required: false
+      secret: false
+    - default: false
+      description: 'Maximum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss'
+      isArray: false
+      name: finalDate
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Both
+      description: What results read status to get.
+      isArray: false
+      name: read
+      predefined:
+      - Read
+      - Unread
+      - Both
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of resources to recover
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Results page to get. For each page, there are {limit} resources.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for a specific resource.
+    execution: false
+    name: blueliv-resource-search
+    outputs:
+    - contextPath: BluelivThreatCompass
+      description: List object of recovered resources
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Resource ID
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Recovers all the information of a given resource
+    execution: false
+    name: blueliv-resource-search-by-id
+    outputs:
+    - contextPath: BluelivThreatCompass
+      description: Object with the information of the recovered resource
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Resource ID
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: New status to assign to the resource. Can be "positive", "negative", "informative", or "not_important".
+      isArray: false
+      name: status
+      predefined:
+      - positive
+      - negative
+      - informative
+      - not_important
+      required: true
+      secret: false
+    deprecated: false
+    description: Changes the status of a resource.
+    execution: false
+    name: blueliv-resource-set-status
+  - arguments:
+    - default: false
+      description: Resource ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Label ID.
+      isArray: false
+      name: labelId
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a label to the given resource.
+    execution: false
+    name: blueliv-resource-set-label
+  - arguments:
+    - default: false
+      description: Resource ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: The read status to set. Can be "true" or "false". Default is "true".
+      isArray: false
+      name: read
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Marks the result as read or not read.
+    execution: false
+    name: blueliv-resource-set-read-status
+  - arguments:
+    - default: false
+      description: Resource ID
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '1'
+      description: Rating to assign to the result. Can be a number between 1 and 5. Default is 1.
+      isArray: false
+      name: rating
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      required: false
+      secret: false
+    deprecated: false
+    description: Assigns a rating to the given result.
+    execution: false
+    name: blueliv-resource-assign-rating
+  - arguments:
+    - default: false
+      description: Resource ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: group
+      description: The new favorite status of the resource. Can be "Not", "User", "Group", or "All".
+      isArray: false
+      name: favourite
+      predefined:
+      - Not
+      - User
+      - Group
+      - All
+      required: false
+      secret: false
+    deprecated: false
+    description: Changes the favorite status of a resource.
+    execution: false
+    name: blueliv-resource-favourite
+  - arguments:
+    - default: false
+      description: Resource ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The new TLP to assign to the resource. Can be "White", "Green", "Amber", or "Red".'
+      isArray: false
+      name: tlp
+      predefined:
+      - White
+      - Green
+      - Amber
+      - Red
+      required: false
+      secret: false
+    deprecated: false
+    description: Sets a new TLP (Traffic Light Protocol) status to a given resource.
+    execution: false
+    name: blueliv-resource-set-tlp
+  - deprecated: false
+    description: Gets the label list of the module.
+    execution: false
+    name: blueliv-module-get-labels
+    outputs:
+    - contextPath: BluelivThreatCompass.Label.BackgroundColor
+      description: Hexadecimal color of the label background in the GUI.
+      type: String
+    - contextPath: BluelivThreatCompass.Label.Id
+      description: Label ID.
+      type: String
+    - contextPath: BluelivThreatCompass.Label.Name
+      description: Label name.
+      type: String
+    - contextPath: BluelivThreatCompass.Label.Protected
+      description: Whether the label is protected.
+      type: Boolean
+    - contextPath: BluelivThreatCompass.Label.TypeId
+      description: Label type ID.
+      type: Number
+    - contextPath: BluelivThreatCompass.Label.TypeName
+      description: Label type name
+      type: String
+    - contextPath: BluelivThreatCompass.Label.Prioritized
+      description: Whether the label is prioritized.
+      type: Boolean
+    - contextPath: BluelivThreatCompass.Label.TextColor
+      description: Hexadecimal color of the label text in the GUI.
+      type: String
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0

@@ -1,8 +1,8 @@
 {
     "name": "Whois",
-    "description": "This pack Provides data enrichment for domains.",
-    "support": "Cortex XSOAR",
-    "currentVersion": "1.0.1",
+    "description": "This Content Pack helps you run Whois commands as playbook tasks or real-time actions within Cortex XSOAR to obtain valuable domain metadata.",
+    "support": "xsoar",
+    "currentVersion": "1.1.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,23 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "TIM"
+    ],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "DomainTools": {
+            "mandatory": false,
+            "display_name": "DomainTools"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "JsonWhoIs": {
+            "mandatory": false,
+            "display_name": "JsonWhoIs"
+        }
+    }
 }

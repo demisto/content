@@ -28,6 +28,24 @@
                     "complex": null,
                     "simple": "sourceOperatingSystem"
                 },
+                "Illusive Networks Deception Families": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "deceptionFamilies",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Illusive Networks Events Number": {
+                    "complex": {
+                        "accessor": "Incident.eventsNumber",
+                        "filters": [],
+                        "root": "Illusive",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "Illusive Networks Has Forensics": {
                     "complex": null,
                     "simple": "hasForensics"

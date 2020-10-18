@@ -6,6 +6,9 @@ from CommonServerUserPython import *
 import requests
 import dateparser
 from typing import Dict, Any
+import warnings
+warnings.simplefilter("ignore", UserWarning)
+
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()

@@ -60,8 +60,7 @@ tasks:
       id: 92290c34-af32-4cbb-87ae-0440af5da104
       version: -1
       name: Get file reputation from TC
-      description: Check IP reputation (when information is available, returns a JSON
-        with details).  Uses all configured Threat Intelligence feeds
+      description: Check IP reputation (when information is available, returns a JSON with details).  Uses all configured Threat Intelligence feeds
       script: ReversingLabs Titanium Cloud|||file
       type: regular
       iscommand: true
@@ -105,8 +104,7 @@ tasks:
       expectedValue: {}
       fields: {}
       path:
-        simple: DBotScore(val.Indicator === '6a95d3d00267c9fd80bd42122738e726' &&
-          val.Score == 3)
+        simple: DBotScore(val.Indicator === '6a95d3d00267c9fd80bd42122738e726' && val.Score == 3)
     separatecontext: false
     view: |-
       {
@@ -161,3 +159,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

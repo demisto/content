@@ -4,12 +4,13 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 import shutil
 import sys
+from time import sleep
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client, IGNORED_FILES, PACKS_FULL_PATH
 
 from demisto_sdk.commands.common.tools import print_error, print_success, print_warning, LooseVersion, str2bool
 
-ARTIFACT_NAME = 'zipped_packs.zip'
+ARTIFACT_NAME = 'content_marketplace_packs.zip'
 MAX_THREADS = 4
 BUILD_GCP_PATH = 'content/builds'
 
@@ -39,6 +40,9 @@ def option_handler():
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
+    parser.add_argument('-pvt', '--private', type=str2bool, help='Indicates if the tools is running '
+                                                                 'on a private build.',
+                        required=False, default=False)
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
                         help='Whether to remove test playbooks from content packs or not.', default=True)
 
@@ -127,8 +131,16 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
         for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
             if pack.name in IGNORED_FILES:
                 continue
+
+            if gcp_path == BUILD_GCP_PATH:
+                pack_prefix = os.path.join(gcp_path, branch_name, circle_build, 'content', 'packs', pack.name)
+            else:
+                pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)
+
+            if not branch_name or not circle_build:
+                pack_prefix = pack_prefix.replace('/builds/content', '')
+
             # Search for the pack in the bucket
-            pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)
             blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))
             if blobs:
                 blob = get_latest_pack_zip_from_blob(pack.name, blobs)
@@ -139,9 +151,19 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
                 zipped_packs.append({pack.name: download_path})
                 print(f'Downloading pack from GCP: {pack.name}')
                 executor_submit(executor, download_path, blob)
+                sleep(1)
+                if os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/'):
+                    print(f"Copying pack from {download_path} to /home/runner/work/content-private/"
+                          f"content-private/content/artifacts/packs/{pack.name}.zip")
+                    shutil.copy(download_path,
+                                f'/home/runner/work/content-private/content-private/content/artifacts/'
+                                f'packs/{pack.name}.zip')
             else:
                 print_warning(f'Did not find a pack to download with the prefix: {pack_prefix}')
 
+    if not zipped_packs:
+        print_error('Did not find any pack to download from GCP.')
+        sys.exit(1)
     return zipped_packs
 
 
@@ -192,6 +214,17 @@ def main():
     branch_name = option.branch_name
     gcp_path = option.gcp_path
     remove_test_playbooks = option.remove_test_playbooks
+    private_build = option.private
+    if private_build:
+        packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
+        zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
+        if not os.path.exists(packs_dir):
+            print("Packs dir not found. Creating.")
+            os.mkdir(packs_dir)
+        if not os.path.exists(zip_path):
+            print("Temp dir not found. Creating.")
+            os.mkdir(zip_path)
+        artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)

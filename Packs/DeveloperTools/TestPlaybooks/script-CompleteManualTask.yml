@@ -2,10 +2,13 @@ commonfields:
   id: CompleteManualTask
   version: -1
 name: CompleteManualTask
-script: |
+script: >
   args = demisto.args()
+
   task_type = args.get('type', 'regular')
+
   task_name = args.get('name')
+
 
   search_args =  {
               "incidentId": args['id'],
@@ -14,9 +17,13 @@ script: |
           }
 
   resCmdName = demisto.executeCommand("DemistoGetIncidentTasksByState", search_args)
+
   contents = resCmdName[0].get("Contents", {})
+
   demisto.debug('found the following waiting commands on investigation {}:\n{}'.format(args['id'], contents))
+
   tasks = [i.get('id', 0) for i in contents if i.get('type', '') == task_type]
+
   if task_name:
       tasks = [i.get('id', 0) for i in contents if i.get('name') == task_name]
 
@@ -45,7 +52,7 @@ args:
   description: Name of manual task.
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

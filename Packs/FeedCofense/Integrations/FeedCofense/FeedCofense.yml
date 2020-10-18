@@ -9,7 +9,7 @@ configuration:
   type: 9
 - display: Fetch indicators
   name: feed
-  defaultvalue: true
+  defaultvalue: 'true'
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
@@ -37,6 +37,16 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
@@ -57,6 +67,12 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
@@ -116,7 +132,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: cofense-get-indicators
-  dockerimage: demisto/python3:3.8.3.8347
+  dockerimage: demisto/python3:3.8.5.10845
   feed: true
   isfetch: false
   longRunning: false

@@ -2,19 +2,22 @@ commonfields:
   id: TestCreateIncidents
   version: -1
 name: TestCreateIncidents
-script: |-
+script: >-
   NUMBER_OF_INCIDENTS = int(demisto.args()['numberOfIncidents'])
+
   incident1_template = {
       'type': 'Simulation',
       'name': 'Tag1',
       'details': 'This is a email bla bla bla',
   }
 
+
   incident2_template = {
       'type': 'Simulation',
       'name': 'Tag2',
       'details': 'This2 is2 a2 email2 bla2 bla2 bla2',
   }
+
 
   for i in range(0, NUMBER_OF_INCIDENTS):
       demisto.executeCommand("createNewIncident", incident1_template)
@@ -38,6 +41,7 @@ enabled: true
 args:
 - name: numberOfIncidents
   defaultValue: "2"
+  description: ''
 outputs:
 - contextPath: EmailSujbectKey
   description: EmailSujbectKey
@@ -49,4 +53,6 @@ outputs:
   description: IncidentsQuery
 scripttarget: 0
 runonce: false
+comment: ''
 runas: DBotWeakRole
+fromversion: 5.0.0

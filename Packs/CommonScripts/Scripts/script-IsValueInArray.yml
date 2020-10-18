@@ -2,13 +2,16 @@ commonfields:
   id: IsValueInArray
   version: -1
 name: IsValueInArray
-script: |-
+script: >-
   var array = args.array;
+
   var value = args.value;
+
 
   if (!array || !value) {
     return 'no';
   }
+
 
   if (typeof array === 'string') {
       try {
@@ -18,17 +21,22 @@ script: |-
       }
   }
 
+
   if (!Array.isArray(array)) {
     return (array === value) ? 'yes' : 'no';
   }
 
+
   var res = 'no';
+
   value = value.toString();
+
   array.forEach(function(item) {
     if (item.toString() === value) {
         res = 'yes';
     }
   });
+
 
   return res;
 type: javascript
@@ -49,3 +57,4 @@ outputs:
   description: The list does not contain the value
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

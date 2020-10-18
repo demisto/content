@@ -21,3 +21,6 @@ okta-get-group-assignments since="2019-04-30T00:00:00.000Z" limit=1
 okta-deactivate-user username=testForDocs@test.com
 okta-get-logs filter=`actor.id eq "00u66lckd7lpjidYi0h7"` query=Boardman since="2020-03-03T20:23:17.573Z" limit=1
 okta-delete-user username=testForDocs@test.com
+okta-get-zone zoneID=nzoqsmcx1qWYJ6w3355
+okta-update-zone zoneID=nzoqsmcx1qWYJ6w3355 zoneName=MyZone
+okta-list-zones

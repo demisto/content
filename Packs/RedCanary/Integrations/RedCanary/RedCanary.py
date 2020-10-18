@@ -111,21 +111,40 @@ def playbook_name_to_id(name):
 
 def get_endpoint_context(res=None, endpoint_id=None):
     if res is None:
-        res = http_get('/endpoints/{}'.format(endpoint_id))['data']
+        res = http_get('/endpoints/{}'.format(endpoint_id)).get('data', [])
 
-    # Endpoint(val.Hostname == obj.Hostname)
-    return [{
-        'Hostname': endpoint['attributes']['hostname'],
-        'ID': endpoint['id'],
-        'IPAddress': [addr['attributes']['ip_address']['attributes']['ip_address']
-                      for addr in endpoint['attributes']['endpoint_network_addresses']],
-        'MACAddress': [addr['attributes']['mac_address']['attributes']['address']
-                       for addr in endpoint['attributes']['endpoint_network_addresses']],
-        'OS': endpoint['attributes']['platform'],
-        'OSVersion': endpoint['attributes']['operating_system'],
-        'IsIsolated': endpoint['attributes']['is_isolated'],
-        'IsDecommissioned': endpoint['attributes']['is_decommissioned'],
-    } for endpoint in res]
+    endpoint_context = []
+    for endpoint in res:
+        endpoint_attributes = endpoint.get('attributes', {})
+        current_endpoint_context = {
+            'Hostname': endpoint_attributes.get('hostname'),
+            'ID': endpoint.get('id'),
+            'OS': endpoint_attributes.get('platform'),
+            'OSVersion': endpoint_attributes.get('operating_system'),
+            'IsIsolated': endpoint_attributes.get('is_isolated'),
+            'IsDecommissioned': endpoint_attributes.get('is_decommissioned'),
+        }
+        ip_addresses = []
+        mac_addresses = []
+        for address in endpoint_attributes.get('endpoint_network_addresses', []):
+            address_attributes = address.get('attributes', {})
+            if address_attributes:
+                ip_address_object = address_attributes.get('ip_address', {})
+                if ip_address_object:
+                    ip_address_attributes = ip_address_object.get('attributes', {})
+                    if ip_address_attributes:
+                        ip_addresses.append(ip_address_attributes.get('ip_address'))
+                mac_address_object = address_attributes.get('mac_address', {})
+                if mac_address_object:
+                    mac_address_attributes = mac_address_object.get('attributes', {})
+                    if mac_address_attributes:
+                        mac_addresses.append(mac_address_attributes.get('address'))
+        if ip_addresses:
+            current_endpoint_context['IPAddress'] = ip_addresses
+        if mac_addresses:
+            current_endpoint_context['MACAddress'] = mac_addresses
+        endpoint_context.append(current_endpoint_context)
+    return endpoint_context
 
 
 def get_endpoint_user_context(res=None, endpoint_user_id=None):
@@ -155,17 +174,24 @@ def get_full_timeline(detection_id, per_page=100):
     page = 1
     done = False
     activities = []  # type:ignore
+    last_data = {}  # type:ignore
+
     while not done:
         res = http_get('/detections/{}/timeline'.format(detection_id),
                        params={
                            'page': page,
                            'per_page': per_page,
         })
+        current_data = res.get('data')
 
-        if len(res['data']) == 0:
+        # if there is no more data to get from this http request
+        # or if the request provides the same information over and over again stop the loop
+        if len(current_data) == 0 or current_data == last_data:
+            current_data = {}
             done = True
 
-        activities.extend(res['data'])
+        activities.extend(current_data)
+        last_data = current_data
         page += 1
 
     return activities
@@ -318,9 +344,9 @@ def get_unacknowledged_detections(t, per_page=50):
     while res:
         for detection in res:
             attributes = detection.get('attributes', {})
-            # If 'last_acknowledged_at' and 'last_acknowledged_by' are in attributes,
+            # If 'last_acknowledged_at' or 'last_acknowledged_by' are in attributes,
             # the detection is acknowledged and should not create a new incident.
-            if attributes.get('last_acknowledged_at') and attributes.get('last_acknowledged_by'):
+            if attributes.get('last_acknowledged_at') is None and attributes.get('last_acknowledged_by') is None:
                 yield detection
 
         page += 1
@@ -330,7 +356,6 @@ def get_unacknowledged_detections(t, per_page=50):
 @logger
 def detection_to_incident(raw_detection):
     detection = detection_to_context(raw_detection)
-    detection['Timeline'] = get_full_timeline(detection['ID'])
 
     return {
         'type': 'RedCanaryDetection',
@@ -519,26 +544,35 @@ def execute_playbook(playbook_id, detection_id):
     return res
 
 
-def fetch_incidents():
-    last_run = demisto.getLastRun()
-    if last_run and 'time' in last_run:
+def fetch_incidents(last_run):
+    last_incidents_ids = []
+
+    if last_run:
         last_fetch = last_run.get('time')
         last_fetch = datetime.strptime(last_fetch, TIME_FORMAT)
+        last_incidents_ids = last_run.get('last_event_ids')
     else:
+        # first time fetching
         last_fetch = parse_date_range(demisto.params().get('fetch_time', '3 days'), TIME_FORMAT)[0]
 
     LOG('iterating on detections, looking for more recent than {}'.format(last_fetch))
     incidents = []
+    new_incidents_ids = []
     for raw_detection in get_unacknowledged_detections(last_fetch, per_page=2):
-        LOG('found detection #{}'.format(raw_detection['id']))
+        LOG('found a new detection in RedCanary #{}'.format(raw_detection['id']))
         incident = detection_to_incident(raw_detection)
-
-        incidents.append(incident)
+        # the rawJson is a string of dictionary e.g. - ('{"ID":2,"Type":5}')
+        incident_id = json.loads(incident.get('rawJSON')).get("ID")
+        if incident_id not in last_incidents_ids:
+            # makes sure that the incident wasn't fetched before
+            incidents.append(incident)
+            new_incidents_ids.append(incident_id)
 
     if incidents:
         last_fetch = max([get_time_obj(incident['occurred']) for incident in incidents])  # noqa:F812
-        demisto.setLastRun({'time': get_time_str(last_fetch + timedelta(seconds=1))})
-    demisto.incidents(incidents)
+        last_run = {'time': get_time_str(last_fetch), 'last_event_ids': new_incidents_ids}
+
+    return last_run, incidents
 
 
 @logger
@@ -572,7 +606,10 @@ def main():
         command_func = COMMANDS.get(demisto.command())
         if command_func is not None:
             if demisto.command() == 'fetch-incidents':
-                demisto.incidents(fetch_incidents())
+                initial_last_run = demisto.getLastRun()
+                last_run, incidents = fetch_incidents(initial_last_run)
+                demisto.incidents(incidents)
+                demisto.setLastRun(last_run)
             else:
                 demisto.results(command_func())
 

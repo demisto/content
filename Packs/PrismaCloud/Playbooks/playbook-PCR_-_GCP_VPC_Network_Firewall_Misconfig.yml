@@ -21,6 +21,8 @@ description: |-
    - GCP Firewall rule allows internet traffic to NetBIOS-SSN port (139)
    - GCP Firewall rule allows internet traffic to POP3 port (110)
    - GCP Firewall rule allows internet traffic to SMTP port (25)
+   - GCP Default Firewall rule should not have any rules (except http and https)
+   - GCP Firewall with Inbound rule overly permissive to All Traffic
 starttaskid: "0"
 tasks:
   "0":
@@ -36,13 +38,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "15"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 630,
-          "y": 0
+          "y": -160
         }
       }
     note: false
@@ -90,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 670
+          "x": -490,
+          "y": 1130
         }
       }
     note: false
@@ -114,7 +116,7 @@ tasks:
       {
         "position": {
           "x": 630,
-          "y": 840
+          "y": 1300
         }
       }
     note: false
@@ -161,10 +163,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 1c48d12b-f4cf-40ea-8d06-6d3ddbd72848
+    taskid: 998f0dfe-3adb-41d8-8324-f75a10b7a6ee
     type: condition
     task:
-      id: 1c48d12b-f4cf-40ea-8d06-6d3ddbd72848
+      id: 998f0dfe-3adb-41d8-8324-f75a10b7a6ee
       version: -1
       name: Execute remediation
       description: Execute the appropriate remediation task.
@@ -174,11 +176,15 @@ tasks:
     nexttasks:
       '#default#':
       - "3"
-      common:
+      commonPorts:
       - "7"
+      overlyPermissive:
+      - "12"
+      webPorts:
+      - "11"
     separatecontext: false
     conditions:
-    - label: common
+    - label: commonPorts
       condition:
       - - operator: isEqualString
           left:
@@ -306,6 +312,28 @@ tasks:
           right:
             value:
               simple: e35ce679-e427-4e00-a9d2-44d808c694bd
+    - label: webPorts
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 3b814978-44a0-4a5b-9736-492d67ee4994
+    - label: overlyPermissive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: ff6a9cca-8bc5-4a72-9235-ec7b65c547d5
     view: |-
       {
         "position": {
@@ -330,30 +358,495 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 220,
+          "x": -490,
           "y": 500
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 027f7a25-4442-4f10-849a-61de6ed7ad96
+    type: regular
+    task:
+      id: 027f7a25-4442-4f10-849a-61de6ed7ad96
+      version: -1
+      name: Find the port number
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append: {}
+      key:
+        simple: portNumber
+      stringify: {}
+      value:
+        complex:
+          root: incident
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: rawName
+          - operator: substringFrom
+            args:
+              from:
+                value:
+                  simple: port (
+          - operator: substringTo
+            args:
+              to:
+                value:
+                  simple: )
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: a6f27574-3295-4b37-8715-8771e18b4677
+    type: condition
+    task:
+      id: a6f27574-3295-4b37-8715-8771e18b4677
+      version: -1
+      name: Check FW rule for public access to common ports
+      description: Check the firewall rule for public access.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: labels.resource
+                transformers:
+                - operator: ParseJSON
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: data
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: sourceRanges
+            iscontext: true
+          right:
+            value:
+              simple: 0.0.0.0/0
+      - - operator: inList
+          left:
+            value:
+              simple: ${portNumber}
+            iscontext: true
+          right:
+            value:
+              simple: 21, 80, 27017, 3306, 1521, 5432, 3389, 22, 23, 53, 445, 139,
+                110, 25
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: f13fa723-aae0-4c54-82e7-8b6507151987
+    type: regular
+    task:
+      id: f13fa723-aae0-4c54-82e7-8b6507151987
+      version: -1
+      name: Manually update FW rules
+      description: |-
+        1. Login to GCP Console and from Networking, select VPC network.
+        2. Go to Firewall rules and click on Ingress.
+        3. Modify, disable, or delete the offending firewall rule.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 74a304c0-9094-4d9b-8972-2d56f54c8e13
+    type: title
+    task:
+      id: 74a304c0-9094-4d9b-8972-2d56f54c8e13
+      version: -1
+      name: Default Firewall Rules
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 6eba9d9a-da40-4348-8f0a-1269d34d1a67
+    type: title
+    task:
+      id: 6eba9d9a-da40-4348-8f0a-1269d34d1a67
+      version: -1
+      name: Overly Permissive
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 41bb8983-af56-4858-856f-946ba9880276
+    type: condition
+    task:
+      id: 41bb8983-af56-4858-856f-946ba9880276
+      version: -1
+      name: Check default FW for HTTP/HTTPS rules
+      description: Check the default firewall rule for the web ports; 80 and 443.  If
+        the firewall rule contains either one, or both of these ports, manually update
+        the rule.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: labels.resource
+                transformers:
+                - operator: ParseJSON
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: name
+            iscontext: true
+          right:
+            value:
+              simple: default
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: labels.resource
+                transformers:
+                - operator: ParseJSON
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: data
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: sourceRanges
+            iscontext: true
+          right:
+            value:
+              simple: 0.0.0.0/0
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: labels.resource
+                transformers:
+                - operator: ParseJSON
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: data
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: allowed
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: ports
+            iscontext: true
+          right:
+            value:
+              simple: "80"
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: labels.resource
+                transformers:
+                - operator: ParseJSON
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: data
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: allowed
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: ports
+            iscontext: true
+          right:
+            value:
+              simple: "443"
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: e9efe2ae-22ce-4705-831c-06a0ab2b7761
+    type: condition
+    task:
+      id: e9efe2ae-22ce-4705-831c-06a0ab2b7761
+      version: -1
+      name: Check FW rule for public access to all protocols
+      description: Check the firewall rule for public access.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: labels.resource
+                transformers:
+                - operator: ParseJSON
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: data
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: sourceRanges
+            iscontext: true
+          right:
+            value:
+              simple: 0.0.0.0/0
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: labels.resource
+                transformers:
+                - operator: ParseJSON
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: data
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: allowed
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: IPProtocol
+            iscontext: true
+          right:
+            value:
+              simple: all
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: b540e8c3-4ffb-4943-8c47-16ef885bd30a
+    type: condition
+    task:
+      id: b540e8c3-4ffb-4943-8c47-16ef885bd30a
+      version: -1
+      name: Is Google Cloud Compute integration enabled?
+      description: "Is Google Cloud Compute integration enabled?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
+      "13_10_yes": 0.4,
+      "13_1_#default#": 0.4,
+      "14_10_#default#": 0.48,
+      "14_1_yes": 0.23,
       "5_3_#default#": 0.31,
-      "5_7_common": 0.53
+      "5_7_commonPorts": 0.83,
+      "9_10_#default#": 0.1,
+      "9_1_yes": 0.43
     },
     "paper": {
       "dimensions": {
-        "height": 905,
-        "width": 790,
-        "x": 220,
-        "y": 0
+        "height": 1525,
+        "width": 1500,
+        "x": -490,
+        "y": -160
       }
     }
   }

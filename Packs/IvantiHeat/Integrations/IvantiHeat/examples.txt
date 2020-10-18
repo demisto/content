@@ -1,0 +1,7 @@
+!ivanti-heat-objects-list object-type=problems search-query=email from=2011-09-01 to=2012-01-01
+!ivanti-heat-object-delete object-type=incidents rec-id=49F70C3
+!ivanti-heat-object-attachment-download attachment-id=C03CA9C6A
+!ivanti-heat-object-update fields={"Description":"desc","Priority":1} object-type=problems rec-id=5884667
+!ivanti-heat-object-create object-type=incidents fields=`{"Category":"Connectivity","ProfileLink":"1087E597","Symptom":"the description","Subject":"test incident","Service":"Desktop Service","Owner":"Dbot"}`
+!ivanti-heat-object-perform-action action=Close_Incident object-id=123ABC object-type=incidents request-data=${ivantiHeat.CloseIncidentJSON}
+!ivanti-heat-object-attachment-upload object-type=problem rec-id=0A264CE12A entry-id=1805b951

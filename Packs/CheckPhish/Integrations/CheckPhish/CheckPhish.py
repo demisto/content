@@ -101,10 +101,10 @@ def test_module():
         'urlInfo': {'url': 'https://www.google.com'}
     }
     res = http_request('POST', BASE_URL, data=json.dumps(query))
-    if res and 'message' not in res:
+    if res and 'errorMessage' not in res:
         return 'ok'
 
-    return res['message']  # the message field contains the error message
+    return res['errorMessage']  # the errorMessage field contains the error message
 
 
 def submit_to_checkphish(url):

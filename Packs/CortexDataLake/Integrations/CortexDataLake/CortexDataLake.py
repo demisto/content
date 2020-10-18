@@ -1,8 +1,5 @@
-from dateutil import parser
-
+""" IMPORTS """
 from CommonServerPython import *
-
-''' IMPORTS '''
 import os
 import requests
 import json
@@ -10,6 +7,9 @@ from pancloud import QueryService, Credentials, exceptions
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Any, List, Tuple, Callable
+from tempfile import gettempdir
+from dateutil import parser
+import demistomock as demisto
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -34,10 +34,9 @@ class Client(BaseClient):
     """
 
     def __init__(self, token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key):
-        headers = {
-            'Authorization': registration_id,
-            'Accept': 'application/json'
-        }
+        headers = get_x_content_info_headers()
+        headers['Authorization'] = registration_id
+        headers['Accept'] = 'application/json'
         super().__init__(base_url=token_retrieval_url, headers=headers, verify=use_ssl, proxy=proxy)
         self.refresh_token = refresh_token
         self.enc_key = enc_key
@@ -87,7 +86,9 @@ class Client(BaseClient):
         api_url = oproxy_response.get('url')
         refresh_token = oproxy_response.get(REFRESH_TOKEN_CONST)
         instance_id = oproxy_response.get(INSTANCE_ID_CONST)
-        expires_in = int(oproxy_response.get(EXPIRES_IN, MINUTES_60))
+        # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
+        # an empty string to an int.
+        expires_in = int(oproxy_response.get(EXPIRES_IN, MINUTES_60) or 0)
         if not access_token or not api_url or not instance_id:
             raise DemistoException(f'Missing attribute in response: access_token, instance_id or api are missing.\n'
                                    f'Oproxy response: {oproxy_response}')
@@ -266,7 +267,9 @@ def traffic_context_transformer(row_content: dict) -> dict:
         'ToZone': row_content.get('to_zone'),
         'URLCategory': row_content.get('url_category', {}).get('value'),
         'SourcePort': row_content.get('source_port'),
-        'Tunnel': row_content.get('tunnel', {}).get('value')
+        'Tunnel': row_content.get('tunnel', {}).get('value'),
+        'SourceDeviceHost': row_content.get('source_device_host'),
+        'DestDeviceHost': row_content.get('dest_device_host')
     }
 
 
@@ -322,7 +325,156 @@ def threat_context_transformer(row_content: dict) -> dict:
         'URLDomain': row_content.get('url_domain'),
         'URLCategory': row_content.get('url_category', {}).get('value'),
         'SourcePort': row_content.get('source_port'),
-        'FileSHA256': row_content.get('file_sha_256')
+        'FileSHA256': row_content.get('file_sha_256'),
+        'SourceDeviceHost': row_content.get('source_device_host'),
+        'DestDeviceHost': row_content.get('dest_device_host')
+    }
+
+
+def url_context_transformer(row_content: dict) -> dict:
+    """
+    This function retrieves data from a row of raw data into context path locations
+
+    Args:
+        row_content: a dict representing raw data of a row
+
+    Returns:
+        a dict with context paths and their corresponding value
+    """
+
+    return {
+        'SessionID': row_content.get('session_id'),
+        'Action': row_content.get('action', {}).get('value'),
+        'App': row_content.get('app'),
+        'PcapID': row_content.get('pcap_id'),
+        'DestinationPort': row_content.get('dest_port'),
+        'AppCategory': row_content.get('app_category'),
+        'AppSubcategory': row_content.get('app_sub_category'),
+        'SourceLocation': row_content.get('source_location'),
+        'DestinationLocation': row_content.get('dest_location'),
+        'ToZone': row_content.get('to_zone'),
+        'FromZone': row_content.get('from_zone'),
+        'Protocol': row_content.get('protocol', {}).get('value'),
+        'DestinationIP': row_content.get('dest_ip', {}).get('value'),
+        'SourceIP': row_content.get('source_ip', {}).get('value'),
+        'RuleMatched': row_content.get('rule_matched'),
+        'ThreatCategory': row_content.get('threat_category', {}).get('value'),
+        'ThreatName': row_content.get('threat_name'),
+        'Subtype': row_content.get('sub_type', {}).get('value'),
+        'LogTime': human_readable_time_from_epoch_time(row_content.get('log_time', 0)),
+        'LogSourceName': row_content.get('log_source_name'),
+        'Denied': row_content.get('is_url_denied'),
+        'Category': row_content.get('url_category', {}).get('value'),
+        'SourcePort': row_content.get('source_port'),
+        'URL': row_content.get('url_domain'),
+        'URI': row_content.get('uri'),
+        'ContentType': row_content.get('content_type'),
+        'HTTPMethod': row_content.get('http_method', {}).get('value'),
+        'Severity': row_content.get('severity'),
+        'UserAgent': row_content.get('user_agent'),
+        'RefererProtocol': row_content.get('referer_protocol', {}).get('value'),
+        'RefererPort': row_content.get('referer_port'),
+        'RefererFQDN': row_content.get('referer_fqdn'),
+        'RefererURL': row_content.get('referer_url_path'),
+        'SrcUser': row_content.get('source_user'),
+        'SrcUserInfo': row_content.get('source_user_info'),
+        'DstUser': row_content.get('dest_user'),
+        'DstUserInfo': row_content.get('dest_user_info'),
+        'TechnologyOfApp': row_content.get('technology_of_app'),
+        'SourceDeviceHost': row_content.get('source_device_host'),
+        'DestDeviceHost': row_content.get('dest_device_host')
+    }
+
+
+def files_context_transformer(row_content: dict) -> dict:
+    """
+    This function retrieves data from a row of raw data into context path locations
+
+    Args:
+        row_content: a dict representing raw data of a row
+
+    Returns:
+        a dict with context paths and their corresponding value
+    """
+
+    return {
+        'Action': row_content.get('action', {}).get('value'),
+        'App': row_content.get('app'),
+        'AppCategory': row_content.get('app_category'),
+        'AppSubcategory': row_content.get('app_sub_category'),
+        'CharacteristicOfApp': row_content.get('characteristics_of_app'),
+        'DestinationIP': row_content.get('dest_ip', {}).get('value'),
+        'CloudHostname': row_content.get('cloud_hostname'),
+        'CountOfRepeats': row_content.get('count_of_repeats'),
+        'CustomerID': row_content.get('customer_id'),
+        'DestinationLocation': row_content.get('dest_location'),
+        'DestinationPort': row_content.get('dest_port'),
+        'DirectionOfAttack': row_content.get('direction_of_attack', {}).get('value'),
+        'FileID': row_content.get('file_id'),
+        'FileName': row_content.get('file_name'),
+        'FileType': row_content.get('file_type'),
+        'Flags': row_content.get('flags'),
+        'FromZone': row_content.get('from_zone'),
+        'Http2Connection': row_content.get('http2_connection'),
+        'InboundIf': row_content.get('inbound_if', {}).get('value'),
+        'IngestionTime': human_readable_time_from_epoch_time(row_content.get('ingestion_time', 0)),
+        'IsCaptivePortal': row_content.get('is_captive_portal'),
+        'IsClientToServer': row_content.get('is_client_to_server'),
+        'IsContainer': row_content.get('is_container'),
+        'IsDecryptMirror': row_content.get('is_decrypt_mirror'),
+        'IsDupLog': row_content.get('is_dup_log'),
+        'IsExported': row_content.get('is_exported'),
+        'IsForwarded': row_content.get('is_forwarded'),
+        'IsMptcpOn': row_content.get('is_mptcp_on'),
+        'IsNat': row_content.get('is_nat'),
+        'IsNonStdDestPort': row_content.get('is_non_std_dest_port'),
+        'IsPacketCapture': row_content.get('is_packet_capture'),
+        'IsPhishing': row_content.get('is_phishing'),
+        'IsPrismaBranch': row_content.get('is_prisma_branch'),
+        'IsPrismaMobile': row_content.get('is_prisma_mobile'),
+        'IsProxy': row_content.get('is_proxy'),
+        'IsReconExcluded': row_content.get('is_recon_excluded'),
+        'IsSaasApp': row_content.get('is_saas_app'),
+        'IsServerToClient': row_content.get('is_server_to_client'),
+        'IsSymReturn': row_content.get('is_sym_return'),
+        'IsTransaction': row_content.get('is_transaction'),
+        'IsTunnelInspected': row_content.get('is_tunnel_inspected'),
+        'IsUrlDenied': row_content.get('is_url_denied'),
+        'LogSet': row_content.get('log_set'),
+        'LogSource': row_content.get('log_source'),
+        'LogSourceID': row_content.get('log_source_id'),
+        'LogSourceName': row_content.get('log_source_name'),
+        'LogTime': human_readable_time_from_epoch_time(row_content.get('log_time', 0)),
+        'LogType': row_content.get('log_type', {}).get('value'),
+        'NatDestination': row_content.get('nat_dest', {}).get('value'),
+        'NatSource': row_content.get('nat_source', {}).get('value'),
+        'NatDestinationPort': row_content.get('nat_dest_port'),
+        'NatSourcePort': row_content.get('nat_source_port'),
+        'OutboundIf': row_content.get('outbound_if', {}).get('value'),
+        'PcapID': row_content.get('pcap_id'),
+        'Protocol': row_content.get('protocol', {}).get('value'),
+        'RecordSize': row_content.get('record_size'),
+        'ReportID': row_content.get('report_id'),
+        'RiskOfApp': row_content.get('risk_of_app'),
+        'RuleMatched': row_content.get('rule_matched'),
+        'RuleMatchedUuid': row_content.get('rule_matched_uuid'),
+        'SanctionedStateOfApp': row_content.get('sanctioned_state_of_app'),
+        'SequenceNo': row_content.get('sequence_no'),
+        'SessionID': row_content.get('session_id'),
+        'Severity': row_content.get('severity'),
+        'SourceIP': row_content.get('source_ip', {}).get('value'),
+        'Subtype': row_content.get('sub_type', {}).get('value'),
+        'TechnologyOfApp': row_content.get('technology_of_app'),
+        'TimeGenerated': human_readable_time_from_epoch_time(row_content.get('time_generated', 0)),
+        'ToZone': row_content.get('to_zone'),
+        'Tunnel': row_content.get('tunnel', {}).get('value'),
+        'TunneledApp': row_content.get('tunneled_app'),
+        'URLCategory': row_content.get('url_category', {}).get('value'),
+        'FileSHA256': row_content.get('file_sha_256'),
+        'Vsys': row_content.get('vsys'),
+        'VsysID': row_content.get('vsys_id'),
+        'VendorName': row_content.get('vendor_name'),
+        'VendorSeverity': row_content.get('vendor_severity', {}).get('value')
     }
 
 
@@ -352,6 +504,9 @@ def records_to_human_readable_output(fields: str, table_name: str, results: list
                 'Action': result.get('action', {}).get('value'),
                 'RuleMatched': result.get('rule_matched'),
                 'TimeGenerated': human_readable_time_from_epoch_time(result.get('time_generated')),
+                'FileID': result.get('file_id'),
+                'FileName': result.get('file_name'),
+                'FileType': result.get('file_type')
             }
             filtered_results.append(filtered_result)
     else:
@@ -412,7 +567,6 @@ def build_where_clause(args: dict) -> str:
     Returns:
         A string represents the where part of a SQL query
     """
-
     args_dict = {
         'source_ip': 'source_ip.value',
         'dest_ip': 'dest_ip.value',
@@ -424,11 +578,65 @@ def build_where_clause(args: dict) -> str:
         'action': 'action.value',
         'file_sha_256': 'file_sha_256',
         'file_name': 'file_name',
+        'app': 'app',
+        'app_category': 'app_category',
+        'dest_device_port': 'dest_device_port',
+        'dest_edl': 'dest_edl',
+        'dest_dynamic_address_group': 'dest_dynamic_address_group',
+        'dest_location': 'dest_location',
+        'dest_user': 'dest_user',
+        'file_type': 'file_type',
+        'is_server_to_client': 'is_server_to_client',
+        'is_url_denied': 'is_url_denied',
+        'log_type': 'log_type',
+        'nat_dest': 'nat_dest',
+        'nat_dest_port': 'nat_dest_port',
+        'nat_source': 'nat_source',
+        'nat_source_port': 'nat_source_port',
+        'rule_matched_uuid': 'rule_matched_uuid',
+        'severity': 'severity',
+        'source_device_host': 'source_device_host',
+        'source_edl': 'source_edl',
+        'source_dynamic_address_group': 'source_dynamic_address_group',
+        'source_location': 'source_location',
+        'source_user': 'source_user',
+        'sub_type': 'sub_type.value',
+        'time_generated': 'time_generated',
+        'url_category': 'url_category',
+        'url_domain': 'url_domain'
     }
+    if args.get('ip') and (args.get('source_ip') or args.get('dest_ip')):
+        raise DemistoException('Error: "ip" argument cannot appear with either "source_ip" nor "dest_ip"')
+
+    if args.get('port') and (args.get('source_port') or args.get('dest_port')):
+        raise DemistoException('Error: "port" argument cannot appear with either "source_port" nor "dest_port"')
+
     non_string_keys = {'dest_port', 'source_port'}
     if 'query' in args:
         # if query arg is supplied than we just need to parse it and only it
         return args['query'].strip()
+
+    where_clause = ''
+    if args.get('ip'):
+        ips = argToList(args.pop('ip'))
+        # Creating a query for ip argument using source ip and dest ip
+        where_clause += '(' + ' OR '.join(f'source_ip.value = "{ip}" OR dest_ip.value = "{ip}"' for ip in ips) + ')'
+        if any(args.get(key) for key in args_dict) or args.get('port') or args.get('url'):
+            where_clause += ' AND '
+
+    if args.get('port'):
+        ports = argToList(args.pop('port'))
+        # Creating a query for port argument using source port and dest port
+        where_clause += '(' + ' OR '.join(f'source_port = {port} OR dest_port = {port}' for port in ports) + ')'
+        if any(args.get(key) for key in args_dict):
+            where_clause += ' AND '
+
+    if args.get('url'):
+        urls = argToList(args.pop('url'))
+        # Creating a query for url argument using uri and referer
+        where_clause += '(' + ' OR '.join(f'uri LIKE "%{url}%" OR referer LIKE "%{url}%"' for url in urls) + ')'
+        if any(args.get(key) for key in args_dict):
+            where_clause += ' AND '
 
     # We want to add only keys that are part of the query
     string_query_fields = {key: value for key, value in args.items() if key in args_dict and key not in non_string_keys}
@@ -443,7 +651,7 @@ def build_where_clause(args: dict) -> str:
         non_string_values_list: list = argToList(values)
         field = args_dict[key]
         or_statements.append(' OR '.join([f'{field} = {value}' for value in non_string_values_list]))
-    where_clause = ' AND '.join([f'({or_statement})' for or_statement in or_statements if or_statement])
+    where_clause += ' AND '.join([f'({or_statement})' for or_statement in or_statements if or_statement])
     return where_clause
 
 
@@ -501,9 +709,9 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
     Returns:
         SQL query that matches the arguments
     """
-    query = f'SELECT * FROM `firewall.threat` '  # guardrails-disable-line
-    query += f'WHERE (TIME(time_generated) Between TIME(TIMESTAMP("{fetch_timestamp}")) ' \
-             f'AND TIME(CURRENT_TIMESTAMP))'
+    query = 'SELECT * FROM `firewall.threat` '  # guardrails-disable-line
+    query += f'WHERE time_generated Between TIMESTAMP("{fetch_timestamp}") ' \
+             f'AND CURRENT_TIMESTAMP'
     if fetch_subtype and 'all' not in fetch_subtype:
         sub_types = [f'sub_type.value = "{sub_type}"' for sub_type in fetch_subtype]
         query += f' AND ({" OR ".join(sub_types)})'
@@ -577,9 +785,9 @@ def get_critical_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str
     """
     logs_amount = args.get('limit')
     query_start_time, query_end_time = query_timestamp(args)
-    query = f'SELECT * FROM `firewall.threat` WHERE severity = "Critical" '  # guardrails-disable-line
-    query += f'AND (TIME(time_generated) BETWEEN TIME(TIMESTAMP("{query_start_time}")) AND ' \
-             f'TIME(TIMESTAMP("{query_end_time}"))) LIMIT {logs_amount}'
+    query = 'SELECT * FROM `firewall.threat` WHERE severity = "Critical" '  # guardrails-disable-line
+    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
+             f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
 
     records, raw_results = client.query_loggings(query)
 
@@ -611,9 +819,9 @@ def get_social_applications_command(args: dict,
     """ Queries Cortex Logging according to a pre-set query """
     logs_amount = args.get('limit')
     query_start_time, query_end_time = query_timestamp(args)
-    query = f'SELECT * FROM `firewall.traffic` WHERE app_sub_category = "social-networking" '  # guardrails-disable-line
-    query += f' AND (TIME(time_generated) BETWEEN TIME(TIMESTAMP("{query_start_time}")) AND ' \
-             f'TIME(TIMESTAMP("{query_end_time}"))) LIMIT {logs_amount}'
+    query = 'SELECT * FROM `firewall.traffic` WHERE app_sub_category = "social-networking" '  # guardrails-disable-line
+    query += f' AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
+             f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
 
     records, raw_results = client.query_loggings(query)
 
@@ -635,8 +843,8 @@ def search_by_file_hash_command(args: dict, client: Client) -> Tuple[str, Dict[s
 
     query_start_time, query_end_time = query_timestamp(args)
     query = f'SELECT * FROM `firewall.threat` WHERE file_sha_256 = "{file_hash}" '  # guardrails-disable-line
-    query += f'AND (TIME(time_generated) BETWEEN TIME(TIMESTAMP("{query_start_time}")) AND ' \
-             f'TIME(TIMESTAMP("{query_end_time}"))) LIMIT {logs_amount}'
+    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
+             f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
 
     records, raw_results = client.query_loggings(query)
 
@@ -673,6 +881,26 @@ def query_threat_logs_command(args: dict, client: Client) -> Tuple[str, dict, Li
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
+def query_url_logs_command(args: dict, client: Client) -> Tuple[str, dict, List[Dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.url table
+
+        Returns: a Demisto's entry with all the parsed data
+    """
+    query_table_name: str = 'url'
+    context_transformer_function = url_context_transformer
+    table_context_path: str = 'CDL.Logging.URL'
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
+def query_file_data_command(args: dict, client: Client) -> Tuple[str, dict, List[Dict[str, Any]]]:
+
+    query_table_name: str = 'file_data'
+    context_transformer_function = files_context_transformer
+    table_context_path: str = 'CDL.Logging.File'
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
 def query_table_logs(args: dict,
                      client: Client,
                      table_name: str,
@@ -703,8 +931,8 @@ def build_query(args, table_name):
     fields = '*' if 'all' in fields else fields
     where = build_where_clause(args)
     query_start_time, query_end_time = query_timestamp(args)
-    timestamp_limitation = f'(TIME(time_generated) BETWEEN TIME(TIMESTAMP("{query_start_time}")) AND ' \
-                           f'TIME(TIMESTAMP("{query_end_time}"))) '
+    timestamp_limitation = f'time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
+                           f'TIMESTAMP("{query_end_time}") '
     limit = args.get('limit', '5')
     where += f' AND {timestamp_limitation}' if where else timestamp_limitation
     query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where} LIMIT {limit}'
@@ -741,6 +969,7 @@ def fetch_incidents(client: Client,
 
 
 def main():
+    os.environ['PAN_CREDENTIALS_DBFILE'] = os.path.join(gettempdir(), 'pancloud_credentials.json')
     params = demisto.params()
     registration_id_and_url = params.get(REGISTRATION_ID_CONST).split('@')
     if len(registration_id_and_url) != 2:
@@ -772,6 +1001,10 @@ def main():
             return_outputs(*query_traffic_logs_command(args, client))
         elif command == 'cdl-query-threat-logs':
             return_outputs(*query_threat_logs_command(args, client))
+        elif command == 'cdl-query-url-logs':
+            return_outputs(*query_url_logs_command(args, client))
+        elif command == 'cdl-query-file-data':
+            return_outputs(*query_file_data_command(args, client))
         elif command == 'fetch-incidents':
             first_fetch_timestamp = params.get('first_fetch_timestamp', '24 hours').strip()
             fetch_severity = params.get('firewall_severity')

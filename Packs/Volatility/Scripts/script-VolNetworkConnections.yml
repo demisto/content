@@ -1,9 +1,10 @@
 commonfields:
   id: VolNetworkConnections
-  version: 1
+  version: -1
 name: VolNetworkConnections
-script: |-
+script: >-
   var cmds = [];
+
   switch (args.profile) {
       case 'VistaSP0x64' :
       case 'VistaSP0x86' :
@@ -50,7 +51,9 @@ script: |-
       default:
           break;
   }
+
   var resultarr = [];
+
   for (var i = 0; i < cmds.length; i++) {
       var cmdline = cmds[i];
       if (args.profile) {
@@ -87,6 +90,7 @@ script: |-
           }
       }
   }
+
   return resultarr;
 type: javascript
 tags:
@@ -94,8 +98,7 @@ tags:
 - forensics
 - volatility
 - server
-comment: Volatility script for finding all the network connections. This script runs
-  through different commands based on the profile provided.
+comment: Volatility script for finding all the network connections. This script runs through different commands based on the profile provided.
 system: true
 args:
 - name: memdump
@@ -110,3 +113,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

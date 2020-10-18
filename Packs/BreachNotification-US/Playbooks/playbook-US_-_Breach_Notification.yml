@@ -1,8 +1,10 @@
 id: US - Breach Notification
 version: -1
 name: US - Breach Notification
-description: This playbook is triggered by a breach notification incident and then 
-  proceeds to the breach notification playbook for the relevant state.
+description: |-
+  This playbook is triggered by a breach notification incident and then proceeds to the breach notification playbook for the relevant state.
+
+  DISCLAIMER: Please consult with your legal team before implementing this playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -23,7 +25,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
+          "x": -590,
           "y": -1260
         }
       }
@@ -32,10 +34,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 41cc5b0f-cdb8-4845-83d9-ca49b0ccbf48
+    taskid: 956e5aa4-cdd8-4b5f-888e-4847f1b601ea
     type: condition
     task:
-      id: 41cc5b0f-cdb8-4845-83d9-ca49b0ccbf48
+      id: 956e5aa4-cdd8-4b5f-888e-4847f1b601ea
       version: -1
       name: Check where breach took place
       type: condition
@@ -47,6 +49,8 @@ tasks:
       - "26"
       California:
       - "3"
+      Illinois:
+      - "27"
       New York:
       - "24"
     separatecontext: false
@@ -83,10 +87,23 @@ tasks:
             value:
               simple: New York
           ignorecase: true
+    - label: Illinois
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: statewherethebreachtookplace
+            iscontext: true
+          right:
+            value:
+              simple: Illinois
+          ignorecase: true
     view: |-
       {
         "position": {
-          "x": -510,
+          "x": -590,
           "y": -240
         }
       }
@@ -112,7 +129,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -240,
+          "x": -90,
           "y": 60
         }
       }
@@ -135,7 +152,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
+          "x": 430,
           "y": 1970
         }
       }
@@ -179,7 +196,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
+          "x": -590,
           "y": -1090
         }
       }
@@ -208,7 +225,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -200,
+          "x": -300,
           "y": -920
         }
       }
@@ -234,7 +251,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
+          "x": -80,
           "y": -750
         }
       }
@@ -338,7 +355,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
+          "x": -80,
           "y": -590
         }
       }
@@ -365,7 +382,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
+          "x": -590,
           "y": -420
         }
       }
@@ -400,7 +417,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
+          "x": 430,
           "y": -420
         }
       }
@@ -426,7 +443,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
+          "x": -590,
           "y": 765
         }
       }
@@ -483,7 +500,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -240,
+          "x": -90,
           "y": 260
         }
       }
@@ -509,7 +526,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
+          "x": -590,
           "y": 1110
         }
       }
@@ -553,7 +570,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
+          "x": -590,
           "y": 1250
         }
       }
@@ -583,7 +600,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
+          "x": -590,
           "y": 1620
         }
       }
@@ -609,7 +626,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -200,
+          "x": -310,
           "y": 1440
         }
       }
@@ -645,8 +662,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
-          "y": 1780
+          "x": -590,
+          "y": 1800
         }
       }
     note: false
@@ -654,23 +671,25 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: c97dcbf7-aa8e-48cc-89e5-0091022ebe7a
+    taskid: 2ef00c3f-35db-48e2-874b-9d0032bfa796
     type: playbook
     task:
-      id: c97dcbf7-aa8e-48cc-89e5-0091022ebe7a
+      id: 2ef00c3f-35db-48e2-874b-9d0032bfa796
       version: -1
       name: Residents Notification - Breach Notification
+      description: This playbook is triggered by a breach notification playbook and
+        is responsible for the resident notification process.
       playbookName: Residents Notification - Breach Notification
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
     scriptarguments:
       AutoNotification:
-        simple: "True"
+        complex:
+          root: inputs.AutoNotification
       ContactEmailAddress:
         complex:
           root: inputs.ContactEmailAddress
@@ -700,7 +719,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
+          "x": -590,
           "y": 920
         }
       }
@@ -740,7 +759,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
+          "x": -590,
           "y": 500
         }
       }
@@ -775,8 +794,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 670
+          "x": -20,
+          "y": 680
         }
       }
     note: false
@@ -801,7 +820,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -770,
+          "x": -590,
           "y": 60
         }
       }
@@ -854,8 +873,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -770,
-          "y": 260
+          "x": -590,
+          "y": 250
         }
       }
     note: false
@@ -880,8 +899,87 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290,
+          "x": 200,
           "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 7baed65c-9cda-4341-890a-c741a2bf3f36
+    type: title
+    task:
+      id: 7baed65c-9cda-4341-890a-c741a2bf3f36
+      version: -1
+      name: Illinois Breach Notification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: e0444dbd-521c-4fcc-82a0-3015b943b3e8
+    type: playbook
+    task:
+      id: e0444dbd-521c-4fcc-82a0-3015b943b3e8
+      version: -1
+      name: Illinois - Breach Notification
+      playbookName: Illinois - Breach Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      CompanyAddress:
+        complex:
+          root: inputs.CompanyAddress
+      CompanyCity:
+        complex:
+          root: inputs.CompanyCity
+      CompanyCountry:
+        complex:
+          root: inputs.CompanyCountry
+      CompanyName:
+        complex:
+          root: inputs.CompanyName
+      ContactEmailAddress:
+        complex:
+          root: inputs.ContactEmailAddress
+      ContactName:
+        complex:
+          root: inputs.ContactName
+      ContactTelNumber:
+        complex:
+          root: inputs.ContactTelNumber
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 260
         }
       }
     note: false
@@ -893,9 +991,10 @@ view: |-
       "16_17_#default#": 0.36,
       "16_18_yes": 0.37,
       "21_11_yes": 0.61,
-      "2_24_New York": 0.39,
-      "2_26_#default#": 0.44,
-      "2_3_California": 0.37,
+      "2_24_New York": 0.78,
+      "2_26_#default#": 0.21,
+      "2_27_Illinois": 0.53,
+      "2_3_California": 0.5,
       "5_6_yes": 0.34,
       "5_9_#default#": 0.16,
       "6_7_No": 0.34,
@@ -906,8 +1005,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3295,
-        "width": 1670,
-        "x": -770,
+        "width": 1870,
+        "x": -1060,
         "y": -1260
       }
     }
@@ -944,7 +1043,15 @@ inputs:
   value: {}
   required: false
   description: In case of a breach, the company details to display in the breach report.
+- key: AutoNotification
+  value:
+    simple: "False"
+  required: true
+  description: |-
+    This input determines if the resident notification should be done automatically or manually.
+    Ture - Automatically
+    False - Manually.
 outputs: []
 fromversion: 5.0.0
 tests:
-- No test
+- No tests

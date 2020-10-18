@@ -1,11 +1,8 @@
 id: Digital Defense FrontlineVM - PAN-OS block assets
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Digital Defense FrontlineVM - PAN-OS block assets
-description: This playbook will pull Panorama queried threat logs and check for any
-  correlating assets that are found to have a minimum of high level vulnerabilities.
-  If so, it will block the the IP using Panorama's PAN-OS - Block IP and URL - External
-  Dynamic List playbook.
+description: This playbook will pull Panorama queried threat logs and check for any correlating assets that are found to have a minimum of high level vulnerabilities. If so, it will block the the IP using Panorama's PAN-OS - Block IP and URL - External Dynamic List playbook.
 starttaskid: '0'
 tasks:
   '0':
@@ -115,8 +112,7 @@ tasks:
       id: ba8ae7be-71f8-445a-83e6-bc9e78260c97
       version: -1
       name: frontline-get-vulns (pull high & critical severity vulns from threat source)
-      description: Query FrontlineVM for vulnerabilities with a minimum severity of
-        'high' found from Panorama's queried log threat source.
+      description: Query FrontlineVM for vulnerabilities with a minimum severity of 'high' found from Panorama's queried log threat source.
       script: Digital Defense FrontlineVM|||frontline-get-vulns
       type: regular
       iscommand: true
@@ -198,8 +194,7 @@ tasks:
       - '19'
     scriptarguments:
       value:
-        simple: 'Asset found to have high level and/or critical level vulnerabilities
-          within Frontline.Cloud: ${Panorama.Monitor.Logs.SourceAddress}'
+        simple: 'Asset found to have high level and/or critical level vulnerabilities within Frontline.Cloud: ${Panorama.Monitor.Logs.SourceAddress}'
     separatecontext: false
     view: |-
       {
@@ -226,8 +221,7 @@ tasks:
       brand: ''
     scriptarguments:
       value:
-        simple: 'High and/or critical level vulnerabilities not found within Frontline.Cloud
-          for given asset: ${Panorama.Monitor.Logs.SourceAddress}'
+        simple: 'High and/or critical level vulnerabilities not found within Frontline.Cloud for given asset: ${Panorama.Monitor.Logs.SourceAddress}'
     separatecontext: false
     view: |-
       {
@@ -247,7 +241,9 @@ tasks:
       id: 963529eb-2f34-4072-801f-9eed161669d1
       version: -1
       name: PAN-OS - Block IP and URL - External Dynamic List
-      description: ''
+      description: |-
+        This playbook blocks IP addresses and URLs using PAN-OS External Dynamic Lists.
+        It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook (otherwise the list will be configured), and adds the input IPs and URLs to the relevant lists.
       playbookName: PAN-OS - Block IP and URL - External Dynamic List
       type: playbook
       iscommand: false
@@ -276,7 +272,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -130,
           "y": 1790
         }
       }
@@ -407,8 +403,10 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      'Yes':
-      - '11'
+      "No":
+      - "20"
+      "Yes":
+      - "11"
     separatecontext: false
     view: |-
       {
@@ -430,15 +428,42 @@ tasks:
       methods:
       - email
       format: ''
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
       replyOptions:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: c7f0e8e6-a289-4533-8027-f11b67c15bf7
+    type: title
+    task:
+      description: Playbook is done
+      id: c7f0e8e6-a289-4533-8027-f11b67c15bf7
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -447,8 +472,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1835,
-        "width": 810,
-        "x": 50,
+        "width": 990,
+        "x": -130,
         "y": 50
       }
     }
@@ -456,4 +481,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No test - manual task
+- No test - manual task

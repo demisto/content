@@ -771,7 +771,7 @@ def update_host_fields_command():
     try:
         fields_json_dict = json.loads(fields_json)
     except json.decoder.JSONDecodeError:
-        return_error(f'Failed to parse \'fields_json\' command argument - invalid JSON format.')
+        return_error('Failed to parse \'fields_json\' command argument - invalid JSON format.')
 
     # Because the API has an error and says it deletes multiple things when it only deletes one
     # have to take care of it behind the curtains

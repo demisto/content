@@ -2,18 +2,11 @@ commonfields:
   id: carbonblackliveresponse
   version: -1
 name: carbonblackliveresponse
-display: Carbon Black Enterprise Live Response
+display: VMware Carbon Black EDR (Live Response API)
 category: Endpoint
-image: data:image/png;base64,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
-description: Collect information and take action on remote endpoints in real time
-  with Carbon Black Enterprise Live Response.
-detaileddescription: "Use Live Response for Cb Defense or Cb Response.\n\nFor Cb Defense:\nProvide
-  server URL,  'Live Response' API key and connector. \n\nFor Cb Response:\nProvide
-  server URL and API Token.\n\n\nWhen running Live Response commands (e.g. 'cb-process-kill'),
-  it is possible to pass 'wait-timeout' argument to determine the number of seconds
-  to wait for the command to be executed on Live Response side. Once the command has
-  been executed or wait-time has expired - the command information will be returned
-  to the war room. \nDefault 'wait-time' is 20 seconds.\n"
+image: data:image/png;base64,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
+description: Collect information and take action on remote endpoints in real time with VMware Carbon Black EDR (Live Response API) (formerly known as Carbon Black Enterprise Live Response).
+detaileddescription: "Use Live Response for VMware Carbon Black Endpoint Standard or VMware Carbon Black EDR (previously known as Carbon Black Defense and Carbon Black Response respectively). \n\nFor VMware Carbon Black Endpoint Standard:\nProvide server URL,  'Live Response' API key and connector. \n\nFor VMware Carbon Black EDR:\nProvide server URL and API Token.\n\n\nWhen running Live Response commands (e.g. 'cb-process-kill'), it is possible to pass 'wait-timeout' argument to determine the number of seconds to wait for the command to be executed on Live Response side. Once the command has been executed or wait-time has expired - the command information will be returned to the war room. \nDefault 'wait-time' is 20 seconds.\n"
 configuration:
 - display: Server URL
   name: serverurl
@@ -46,22 +39,34 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     "use strict";
 
+
     /// Global Vars
+
     let CB_PRODUCT;
+
     let BASE_URL;
+
     let AUTH;
+
     let COMMAND_DATA;
+
     let SLEEP_BETWEEN_RETRIES = 1000 * 5;
+
     let DEFAULT_WAIT_TIMEOUT = 1000 * 60 * 2;
+
     let ERROR_MESSAGE = 'Use Live Response for Cb Defense or Cb Response.\nFor Cb Defense: Provide \'Live Response\' API key and connector.\nFor Cb Response: Provide API Token.';
+
     //validate the credentials are provided to match only one of the products
+
     if (params.apitoken && (params.apikey || params.connector) ) {
         throw ERROR_MESSAGE;
     }
+
     //determain Cb product
+
     if (params.apitoken) {
         CB_PRODUCT = 'Response';
         BASE_URL = `${params.serverurl}/api/v1/cblr`;
@@ -100,13 +105,16 @@ script:
         throw ERROR_MESSAGE;
     }
 
+
     /// Base Functions
+
 
     function splitCamelCase(str) {
         return str
         .replace(/([a-z])([A-Z])/g, '$1 $2')
         .replace('.', ' ');
     }
+
 
     function sendRequest(path, method, requestParams, headers, ignoredStatusCodes) {
 
@@ -136,7 +144,6 @@ script:
             }
         }
         let result = http(BASE_URL + path + querystring, request, params.insecure, params.proxy);
-
         if (!ignoredStatusCodes || ignoredStatusCodes.indexOf(result.StatusCode) === -1) {
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
                 if (result.StatusCode === 404) {
@@ -147,6 +154,7 @@ script:
         }
         return result;
     }
+
 
     function sendFileRequest(path, fileId, requestParams, headers, ignoredStatusCodes) {
 
@@ -179,6 +187,7 @@ script:
         return result;
     }
 
+
     function createEntry(title, data, dataMap, contextKeys, headerTransformer) {
         let headers = dataMap.map(cn => cn.to);
         let translatedData = mapObjFunction(dataMap)(data);
@@ -199,7 +208,9 @@ script:
         };
     }
 
+
     /// Cb Live Response Session
+
 
     function testModule() {
         let res = sendRequest('/session', 'GET');
@@ -215,6 +226,7 @@ script:
         return `Test failed. Status Code: ${res.StatusCode}`
     }
 
+
     const sessionData = [
         {to: 'CbSensorID', from: 'sensor_id'},
         {to: 'CbSessionID', from: 'id'},
@@ -224,6 +236,7 @@ script:
         {to: 'SessionTimeout', from: 'session_timeout'},
         {to: 'SupportedCommands', from: 'supported_commands'}
     ];
+
 
     function getSessionsRequest(sessionId, sensorId, status) {
         let path = `/session`;
@@ -251,6 +264,7 @@ script:
         return result;
     }
 
+
     function getSessions() {
         let result = getSessionsRequest(args.session, args.sensor, args.status);
 
@@ -263,6 +277,7 @@ script:
         ];
         return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
     }
+
 
     function createSessionRequest(sensorId, commandTimeout, keepaliveTimeout) {
         let queryParams = {
@@ -283,6 +298,7 @@ script:
         }
     }
 
+
     function createSession() {
         let result = createSessionRequest(args.sensor, args['command-timeout'], args['keepalive-timeout']);
 
@@ -295,6 +311,7 @@ script:
         ];
         return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
     }
+
 
     function createSessionAndWait() {
         let result = createSessionRequest(args.sensor, args['command-timeout'], args['keepalive-timeout']);
@@ -325,6 +342,7 @@ script:
         throw `Exceeded timeout.\nNew session for sensor ${args.sensor} was created with ID: ${sessionId}.\nSession status remains '${result.status}'. Wait for session to become active (you may query for session staus with 'cb-session-info').\nIt is recomended to increase wait-timeout for this command.`;
     }
 
+
     function closeSessionRequest(sessionId) {
         let queryParams = {
             session_id: sessionId
@@ -338,6 +356,7 @@ script:
             throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
         }
     }
+
 
     function closeSession() {
         let result = closeSessionRequest(args.session);
@@ -358,6 +377,7 @@ script:
         return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
     }
 
+
     function sessionKeepaliveRequest(sessionId) {
         let response = sendRequest(`/session/${sessionId}/keepalive`, 'GET', undefined, undefined, [404]);
 
@@ -371,6 +391,7 @@ script:
             throw `Could not parse response.\nError: ${err}.\nResponse: ${response.Body}`;
         }
     }
+
 
     function sessionKeepAlive() {
         let result = sessionKeepaliveRequest(args.session);
@@ -393,6 +414,7 @@ script:
         };
     }
 
+
     function archiveSessionRequest(sessionId) {
         let response = sendRequest(`/session/${sessionId}/archive`, 'GET', undefined, undefined, [500]);
         if (response.StatusCode === 500) {  // Current bug in CBResponse returns 500 for empty sessions
@@ -400,6 +422,7 @@ script:
         }
         return response;
     }
+
 
     function archiveSession() {
         let response = archiveSessionRequest(args.session);
@@ -412,7 +435,9 @@ script:
             Contents: fileName
         };
     }
+
     /// Cb Live Response file operations
+
 
     const fileData = [
         {to: 'CbFileID', from: 'id'},
@@ -422,6 +447,7 @@ script:
         {to: 'Status', from: 'status'},
         {to: 'Delete', from: 'delete'}
     ];
+
 
     function listFilesRequest(sessionId, fileId) {
         if (!sessionId) {
@@ -440,6 +466,7 @@ script:
         }
     }
 
+
     function listFiles() {
         let result = listFilesRequest(args.session, args['file-id']);
 
@@ -453,7 +480,9 @@ script:
         return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
     }
 
+
     function downloadFileRequest(sessionId, fileId) {
+        var headers = {Accept: ['*/*']};
         if (!sessionId) {
             throw 'Session ID is required';
         }
@@ -461,13 +490,14 @@ script:
             throw 'File ID is required';
         }
         let path = `/session/${sessionId}/file/${fileId}/content`;
-        return sendRequest(path, 'GET');
+        return sendRequest(path, 'GET', null, headers);
     }
+
 
     function downloadFileEntry(sessionId, fileId) {
         let fileInfo = listFilesRequest(sessionId, fileId);
         let fileContentResponse = downloadFileRequest(sessionId, fileId);
-        let fileEntryId = saveFile(fileContentResponse.Body);
+        let fileEntryId = saveFile(fileContentResponse.Bytes);
         let fileName = fileInfo.file_name.split('\\').pop();
         return {
             Type: entryTypes.file,
@@ -477,9 +507,11 @@ script:
         };
     }
 
+
     function downloadFile() {
         return downloadFileEntry(args['session'], args['file-id']);
     }
+
 
     function uploadFileRequest(sessionId, fileId) {
         if (!sessionId) {
@@ -496,6 +528,7 @@ script:
         }
     }
 
+
     function uploadFile() {
         let result = uploadFileRequest(args.session, args['file-id']);
 
@@ -509,6 +542,7 @@ script:
         return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
     }
 
+
     function deleteFileRequest(sessionId, fileId) {
         if (!sessionId) {
             throw 'Session ID is required';
@@ -520,6 +554,7 @@ script:
         let response = sendRequest(path, 'DELETE').Body;
     }
 
+
     function deleteFile() {
         deleteFileRequest(args.session, args['file-id']);
         return {
@@ -529,9 +564,12 @@ script:
         };
     }
 
+
     /// Cb Live Response Commands
 
+
     //generic  function to create a new command
+
     function createCommandRequest(sessionId, name, timeout, object, compress, wait, workingDir, outputFile, valueData,
                                   valueType, overwrite, offset, getCount) {
         let queryParams = {
@@ -580,7 +618,9 @@ script:
         }
     }
 
+
     //TODO: Spec for commands interface
+
     function createCommand() {
         let result = createCommandRequest(args.session, args.name, args.timeout, args.object, args.compress, args.wait,
             args['working-dir'], args['output-file'], args['value-data'], args['value-type'], args.overwrite, args.offset,
@@ -595,6 +635,7 @@ script:
         return createEntry(title, command, dataMap, contextKeys, splitCamelCase);
     }
 
+
     function getCommandRequest(sessionId, commandId) {
         let path = `/session/${sessionId}/command/${commandId}`;
         let response = sendRequest(path, 'GET').Body;
@@ -605,6 +646,7 @@ script:
         }
     }
 
+
     function getCommandsRequest(sessionId) {
         let path = `/session/${sessionId}/command`;
         let response = sendRequest(path, 'GET').Body;
@@ -614,6 +656,7 @@ script:
             throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
         }
     }
+
 
     function getCommands() {
         let result = getCommandsRequest(args.session);
@@ -626,6 +669,7 @@ script:
         ];
         return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
     }
+
 
     function createCommandAndWait() {
         let result = createCommandRequest(args.session, args.name, args.timeout, args.object, args.compress, args.wait,
@@ -689,6 +733,7 @@ script:
         throw `Executing command ${commandId} timedout (${timeout / 1000} seconds), increase wait-timeout and try again`;
     }
 
+
     function cancelCommandRequest(sessionId, commandId) {
         let queryParams = {cmdid: commandId};
         let response = sendRequest(`/session/${sessionId}/command/${commandId}`, 'PUT', queryParams).Body;
@@ -698,6 +743,7 @@ script:
             throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
         }
     }
+
 
     function cancelCommand() {
         let result = cancelCommandRequest(args.session, args.command);
@@ -712,7 +758,9 @@ script:
         return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
     }
 
+
     /// Explicit Commands
+
 
     const directoryData = [
         {to: 'FileAttributes', from: 'attributes'},
@@ -723,6 +771,7 @@ script:
         {to: 'FileName', from: 'filename'},
         {to: 'AlternativeName', from:'alt_name'}
     ];
+
 
     const processesData = [
         {to: 'ProcessID', from: 'pid'},
@@ -736,10 +785,12 @@ script:
         {to: 'ParentGuid', from: 'parent_guid'}
     ];
 
+
     const processData = [
         {to: 'ProcessID', from: 'pid'},
         {to: 'ReturnCode', from: 'return_code'}
     ];
+
 
     const memdumpData = [
         {to: 'ReturnCode', from: 'return_code'},
@@ -749,17 +800,20 @@ script:
         {to: 'DumpingInProgress', from: 'dumping'}
     ];
 
+
     const regKeysData = [
         {to: 'RegKeyType', from: 'value_type'},
         {to: 'RegKeyName', from: 'value_name'},
         {to: 'RegKeyData', from: 'value_data'}
     ];
 
+
     const regKeyData = [
         {to: 'RegKeyType', from: 'value.value_type'},
         {to: 'RegKeyName', from: 'value.value_name'},
         {to: 'RegKeyData', from: 'value.value_data'}
     ];
+
 
     function collectRegistryDataToGeneralContext(data) {
         let regKey = CB_PRODUCT === 'Response' ?  data.object : data.obj.object;
@@ -774,6 +828,7 @@ script:
         }
         return RegistryKeys;
     };
+
 
     const commandEntries = {
         'directory list' : function(data) {
@@ -1080,6 +1135,7 @@ script:
         }
     };
 
+
     function getCommand() {
         let command = getCommandRequest(args.session, args.command);
         if (commandEntries[command.name]){
@@ -1102,6 +1158,7 @@ script:
         );
     }
 
+
     function getCommandInfo(sessionId, commandId, timeout, timeInterval, cancelOnPending) {
         let retries = timeout ? Math.ceil(timeout / timeInterval) : 1;
         //loop to get command info. Stop when command status is no longer 'pending' or when exeeded wait-time.
@@ -1121,6 +1178,7 @@ script:
         }
         return result;
     }
+
 
     function terminateProcess() {
         let result = createCommandRequest(args.session, 'kill', undefined, args.pid, undefined, args.wait);
@@ -1158,6 +1216,7 @@ script:
         throw `Terminating process timedout (${timeout / 1000} seconds), increase wait-timeout and try again`;
     }
 
+
     function putFileRequest(sessionId, fileId, path) {
         let queryParams = {
             name: 'put file',
@@ -1172,6 +1231,7 @@ script:
             throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
         }
     }
+
 
     function putFile() {
         let fileInfo = uploadFileRequest(args['session'], args['entry-id']);
@@ -1196,6 +1256,7 @@ script:
         return [commandEntry, fileInfoEntry];
     }
 
+
     function getFileRequest(sessionId, path, offset, bytes)   {
         let queryParams = {
             name: 'get file',
@@ -1212,6 +1273,7 @@ script:
         }
     }
 
+
     function getFile() {
         let command = directoryListRequest(args.session, args.path);
         let commandId = command.id;
@@ -1221,7 +1283,6 @@ script:
         catch(err) {
             throw "Failed to get information on the file";
         }
-        //throw JSON.stringify(fileInfo,null,'\t');
         if (command.status === 'error') {
             throw 'File not found on the endpoint';
         }
@@ -1242,6 +1303,7 @@ script:
         return [commandEntry, fileEntry];
     }
 
+
     function directoryListRequest(sessionId, path)   {
         let queryParams = {
             name: 'directory list',
@@ -1256,6 +1318,7 @@ script:
         }
     }
 
+
     function directoryList() {
         let result = directoryListRequest(args['session'], args.path);
         //wait for 1 second before trying to get command information
@@ -1264,6 +1327,7 @@ script:
         let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         return commandEntries['directory list'](command);
     }
+
 
     function processKillRequest(sessionId, pid) {
         let queryParams = {
@@ -1278,7 +1342,9 @@ script:
         }
     }
 
+
     //equivalent to 'terminateProcess' function
+
     function processKill() {
         let result = processKillRequest(args['session'], args.pid);
         //wait for 1 second before trying to get command information
@@ -1288,6 +1354,7 @@ script:
         let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         return commandEntries['kill'](command);
     }
+
 
     function processExecRequeste(sessionId, path, wait, workingDirectory, outputFile) {
         let queryParams = {
@@ -1312,6 +1379,7 @@ script:
         }
     }
 
+
     function processExec() {
         if (args.wait) {
             args.wait = args.wait === 'yes';
@@ -1324,6 +1392,7 @@ script:
         let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         return commandEntries['create process'](command);
     }
+
 
     function memdumpRequest(sessionId, path, compress) {
         let queryParams = {
@@ -1342,6 +1411,7 @@ script:
         }
     }
 
+
     function memdump() {
         let result = memdumpRequest(args['session'], args.path, args.compress);
         //wait for 1 second before trying to get command information
@@ -1351,6 +1421,7 @@ script:
         let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         return commandEntries['memdump'](command);
     }
+
 
     function deleteFileFromEndpointRequest(sessionId, path){
         let queryParams = {
@@ -1365,6 +1436,7 @@ script:
         }
     }
 
+
     function deleteFileFromEndpoint() {
         let result = deleteFileFromEndpointRequest(args['session'], args.path);
         //wait for 1 second before trying to get command information
@@ -1374,6 +1446,7 @@ script:
         let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         return commandEntries['delete file'](command);
     }
+
 
     function regEnumKeyRequest(sessionId, path){
         let queryParams = {
@@ -1388,6 +1461,7 @@ script:
         }
     }
 
+
     function regEnumKey() {
         let result = regEnumKeyRequest(args.session, args.path);
         //wait for 1 second before trying to get command information
@@ -1397,6 +1471,7 @@ script:
         let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         return commandEntries['reg enum key'](command);
     }
+
 
     function regQueryValueRequest(sessionId, path){
         let queryParams = {
@@ -1411,6 +1486,7 @@ script:
         }
     }
 
+
     function regQueryValue() {
         let result = regQueryValueRequest(args.session, args.path);
         //wait for 1 second before trying to get command information
@@ -1420,6 +1496,7 @@ script:
         let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         return commandEntries['reg query value'](command);
     }
+
 
     function regCreateRequest(sessionId, path){
         let queryParams = {
@@ -1434,6 +1511,7 @@ script:
         }
     }
 
+
     function regCreate() {
         let result = regCreateRequest(args.session, args.path, args.timeout);
         //wait for 1 second before trying to get command information
@@ -1443,6 +1521,7 @@ script:
         let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         return commandEntries['reg create key'](command);
     }
+
 
     function regDeleteKeyRequest(sessionId, path){
         let queryParams = {
@@ -1457,6 +1536,7 @@ script:
         }
     }
 
+
     function regDeleteKey() {
         let result = regDeleteKeyRequest(args.session, args.path);
         //wait for 1 second before trying to get command information
@@ -1466,6 +1546,7 @@ script:
         let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         return commandEntries['reg delete key'](command);
     }
+
 
     function regDeleteValueRequest(sessionId, path){
         let queryParams = {
@@ -1480,6 +1561,7 @@ script:
         }
     }
 
+
     function regDeleteValue() {
         let result = regDeleteValueRequest(args.session, args.path);
         //wait for 1 second before trying to get command information
@@ -1489,6 +1571,7 @@ script:
         let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         return commandEntries['reg delete value'](command);
     }
+
 
     function regSetValueRequest(sessionId, path, data, type, overwrite){
         let queryParams = {
@@ -1508,6 +1591,7 @@ script:
         }
     }
 
+
     function regSetValue() {
         if (args.type = 'REG_MULTI_SZ') {
             args.data = args.data.split(',');
@@ -1524,6 +1608,7 @@ script:
         return commandEntries['reg set value'](command);
     }
 
+
     function listProcessesRequest(sessionId, path){
         let queryParams = {
             name: 'process list'
@@ -1536,6 +1621,7 @@ script:
         }
     }
 
+
     function listProcesses() {
         let result = listProcessesRequest(args['session'], args.path);
         //wait for 1 second before trying to get command information
@@ -1545,7 +1631,9 @@ script:
         return commandEntries['process list'](command);
     }
 
+
     /// Execution
+
 
     try {
         switch (command) {
@@ -1603,8 +1691,11 @@ script:
         };
     }
 
+
     // execute Cb commands
+
     let closeSessionAfterExecution = false;
+
     try {
         //validate either sensor or session was passed
         if ((!args.session && !args.sensor) || (args.session && args.sensor)) {
@@ -1669,7 +1760,9 @@ script:
         }
     }
 
+
     /// Util methods
+
 
     function sleep(ms) {
         var start = new Date().getTime();
@@ -1687,8 +1780,7 @@ script:
       required: true
       default: true
       description: Session ID to return the archive of
-    description: Archive the given session (If the session has no content it will
-      fail)
+    description: Archive the given session (If the session has no content it will fail)
   - name: cb-command-cancel
     deprecated: true
     arguments:
@@ -1712,8 +1804,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: The Command ID
     - contextPath: CbLiveResponse.Commands.OperandObject
-      description: 'Object argument for the CbLive command - e.g. for ''directory
-        list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
+      description: 'Object argument for the CbLive command - e.g. for ''directory list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
     - contextPath: CbLiveResponse.Commands.CreateTime
       description: Command create time
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
@@ -1850,8 +1941,7 @@ script:
       - timeout
       - inactive
       - close
-      description: 'Status to filter by (One of: active, pending, timeout, inactive,
-        close)'
+      description: 'Status to filter by (One of: active, pending, timeout, inactive, close)'
       isArray: true
     outputs:
     - contextPath: CbLiveResponse.Sessions.CbSensorID
@@ -1893,11 +1983,9 @@ script:
       default: true
       description: Sensor ID to create session for
     - name: command-timeout
-      description: Session timeout (If a command will not be issued after this time
-        the session will be closed)
+      description: Session timeout (If a command will not be issued after this time the session will be closed)
     - name: keepalive-timeout
-      description: ' the timeout (in seconds) that a device should wait between commands.
-        If no command is issued over this timeout the device will quit.'
+      description: ' the timeout (in seconds) that a device should wait between commands. If no command is issued over this timeout the device will quit.'
     outputs:
     - contextPath: CbLiveResponse.Sessions.Status
       description: Session Status
@@ -1919,11 +2007,9 @@ script:
       default: true
       description: Sensor ID to create session for
     - name: command-timeout
-      description: Session timeout (If a command will not be issued after this time
-        the session will be closed)
+      description: Session timeout (If a command will not be issued after this time the session will be closed)
     - name: keepalive-timeout
-      description: Session keepalive timeout (If a keepalive is not issued after this
-        time, the session will close)
+      description: Session keepalive timeout (If a keepalive is not issued after this time, the session will close)
     - name: wait-timeout
       description: Time in seconds to wait for session to be active
       defaultValue: "20"
@@ -1940,8 +2026,7 @@ script:
       description: Session Timeout
     - contextPath: CbLiveResponse.Sessions.WaitTimeout
       description: Sensor wait timeout
-    description: Create a new CarbonBlack session for a given sensor and wait for
-      it to be active
+    description: Create a new CarbonBlack session for a given sensor and wait for it to be active
   - name: cb-session-info
     arguments:
     - name: session
@@ -1965,14 +2050,12 @@ script:
   - name: cb-process-kill
     arguments:
     - name: session
-      description: 'Session ID. Provide the session ID to run the command with an
-        existing session. '
+      description: 'Session ID. Provide the session ID to run the command with an existing session. '
     - name: pid
       required: true
       description: Process ID to terminate
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -1981,16 +2064,14 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2002,11 +2083,9 @@ script:
       description: The session ID.
     - name: path
       required: true
-      description: Path for the directory (e.g. "c:\\Users\\"). Note to end with double
-        backslash.
+      description: Path for the directory (e.g. "c:\\Users\\"). Note to end with double backslash.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
@@ -2014,16 +2093,14 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.DirectoryList.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2046,8 +2123,7 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: the path and command line of the executable
@@ -2056,15 +2132,13 @@ script:
       predefined:
       - "yes"
       - "no"
-      description: An optional parameter to specify whether to wait for the process
-        to complete execution before reporting the result.
+      description: An optional parameter to specify whether to wait for the process to complete execution before reporting the result.
     - name: working-directory
       description: An optional parameter to specify the working directory of the executable.
     - name: output-file
       description: An option file that STDERR and STDOUT will be redirected to.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
@@ -2077,8 +2151,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2089,22 +2162,19 @@ script:
       description: The pid of the executed process.
     description: Run executable on the endpoint.
   - name: cb-memdeump
+    deprecated: true
     arguments:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
-      description: 'The full path, including file name, to save the resulting memory dump on the endpoint
-      (example - c:\\temp\\dump_file.dmp).'
+      description: The full path, including file name, to save the resulting memory dump on the endpoint (example - c:\\temp\\dump_file.dmp).
     - name: compress
-      description: An optional parameter to specify whether to compress resulting
-        memory dump.
+      description: An optional parameter to specify whether to compress resulting memory dump.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
@@ -2117,8 +2187,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2134,7 +2203,6 @@ script:
     - contextPath: CbLiveResponse.Commands.DumpingInProgress
       description: Boolean flag indicating if memory dump is in progress.
     description: Deprecated - use cb-memdump instead.
-    deprecated: true
   - name: cb-command-create
     deprecated: true
     arguments:
@@ -2161,11 +2229,9 @@ script:
     - name: timeout
       description: Command timeout
     - name: object
-      description: the object the command operates on. This is specific to the command
-        but has meaning in a generic way for logging, and display purposes
+      description: the object the command operates on. This is specific to the command but has meaning in a generic way for logging, and display purposes
     - name: compress
-      description: '"true" or "false" - an optional parameter to specify whether to
-        compress resulting memory dump'
+      description: '"true" or "false" - an optional parameter to specify whether to compress resulting memory dump'
     - name: working-dir
       description: An optional parameter to specify the working directory of the executable
     - name: output-file
@@ -2173,11 +2239,9 @@ script:
     - name: value-data
       description: the data associated with the registry value
     - name: value-type
-      description: the string representation of the registry value type (ie REG_DWORD,
-        REG_QWORD, ….)
+      description: the string representation of the registry value type (ie REG_DWORD, REG_QWORD, ….)
     - name: overwrite
-      description: “true” or “false”. An optional parameter to specify whether to
-        overwrite the value if it already exists (default value is “false”)
+      description: “true” or “false”. An optional parameter to specify whether to overwrite the value if it already exists (default value is “false”)
     - name: offset
       description: a byte offset to start getting the file. Supports a partial get.
     - name: get-count
@@ -2199,8 +2263,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: The Command ID
     - contextPath: CbLiveResponse.Commands.OperandObject
-      description: 'Object argument for the CbLive command - e.g. for ''directory
-        list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
+      description: 'Object argument for the CbLive command - e.g. for ''directory list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
     - contextPath: CbLiveResponse.Commands.CreateTime
       description: Command create time
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
@@ -2238,11 +2301,9 @@ script:
     - name: timeout
       description: Command timeout
     - name: object
-      description: the object the command operates on. This is specific to the command
-        but has meaning in a generic way for logging, and display purposes
+      description: the object the command operates on. This is specific to the command but has meaning in a generic way for logging, and display purposes
     - name: compress
-      description: '"true" or "false" - an optional parameter to specify whether to
-        compress resulting memory dump'
+      description: '"true" or "false" - an optional parameter to specify whether to compress resulting memory dump'
     - name: working-dir
       description: An optional parameter to specify the working directory of the executable
     - name: output-file
@@ -2250,11 +2311,9 @@ script:
     - name: value-data
       description: the data associated with the registry value
     - name: value-type
-      description: the string representation of the registry value type (ie REG_DWORD,
-        REG_QWORD, ….)
+      description: the string representation of the registry value type (ie REG_DWORD, REG_QWORD, ….)
     - name: overwrite
-      description: “true” or “false”. An optional parameter to specify whether to
-        overwrite the value if it already exists (default value is “false”)
+      description: “true” or “false”. An optional parameter to specify whether to overwrite the value if it already exists (default value is “false”)
     - name: offset
       description: a byte offset to start getting the file. Supports a partial get.
     - name: get-count
@@ -2284,14 +2343,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The source path of the object to delete.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -2305,8 +2362,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2317,14 +2373,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The path of the key to query
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -2338,8 +2392,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2358,14 +2411,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The path of the key + the path of the value (e.g. HKEY_LOCAL_MACHINE\blah\key\value).
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -2379,8 +2430,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2399,14 +2449,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The key path to create.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -2420,8 +2468,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2432,14 +2479,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The key path to delete.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -2453,8 +2498,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2465,14 +2509,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The path of the key + the path of the value.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -2486,8 +2528,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2498,30 +2539,24 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The path of the key + the path of the value.
     - name: data
       required: true
-      description: The data to set for the value. Note if the value type ‘REG_MULTI_SZ’
-        then multiple values should be separated by a comma (e.g. value1, value2,
-        value3).
+      description: The data to set for the value. Note if the value type ‘REG_MULTI_SZ’ then multiple values should be separated by a comma (e.g. value1, value2, value3).
     - name: type
       required: true
-      description: One of common registry value types (REG_DWORD, REG_QWORD, REG_SZ
-        etc).
+      description: One of common registry value types (REG_DWORD, REG_QWORD, REG_SZ etc).
     - name: overwrite
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: An optional parameter to specify whether to overwrite the value
-        if it already exists (default value is ’no’).
+      description: An optional parameter to specify whether to overwrite the value if it already exists (default value is ’no’).
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -2535,8 +2570,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2547,11 +2581,9 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: cancel-on-timeout
       auto: PREDEFINED
@@ -2565,8 +2597,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.Processes.ProcessID
@@ -2591,14 +2622,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
       description: The source path of the file.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
@@ -2606,8 +2635,7 @@ script:
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2640,27 +2668,23 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: entry-id
       required: true
       description: The file entry ID.
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+      description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: path
       required: true
-      description: The destination path of the file. Include file name and type (e.g.
-        "c:\\Users\\USER\\Desktop\\log.txt").
+      description: The destination path of the file. Include file name and type (e.g. "c:\\Users\\USER\\Desktop\\log.txt").
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2671,12 +2695,10 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provide the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provide the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
-      description: 'The full path, including file name, to save the resulting memory dump on the endpoint, for example,
-      c:\\temp\\dump_file.dmp).'
+      description: The full path, including file name, to save the resulting memory dump on the endpoint, for example, c:\\temp\\dump_file.dmp).
     - name: compress
       auto: PREDEFINED
       predefined:
@@ -2684,8 +2706,7 @@ script:
       - "false"
       description: Whether to compress resulting memory dump. Can be "rue" or "false".
     - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from "pending" to "in-progress" or "complete").
+      description: Time to wait (in seconds) for Cb command to be executed (change status from "pending" to "in-progress" or "complete").
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
@@ -2719,5 +2740,5 @@ script:
     description: Executes an endpoint memory dump.
   runonce: false
 tests:
-  - Carbon Black Live Response Test
-fromversion: 3.6.1
+- Carbon Black Live Response Test
+fromversion: 5.0.0

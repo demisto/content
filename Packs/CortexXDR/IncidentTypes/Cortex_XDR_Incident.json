@@ -11,7 +11,7 @@
 	"id": "Cortex XDR Incident",
 	"locked": false,
 	"name": "Cortex XDR Incident",
-	"playbookId": "Cortex XDR Incident Sync",
+	"playbookId": "Cortex XDR incident handling v3",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,
@@ -20,5 +20,6 @@
 	"version": -1,
 	"weeks": 0,
 	"weeksR": 0,
-	"fromVersion": "5.0.0"
+	"fromVersion": "6.0.0",
+	"layout": "Cortex XDR Incident"
 }

@@ -393,8 +393,7 @@ tasks:
       id: f3e1040d-3606-4f1c-8c82-ff3dd7dc73c3
       version: -1
       name: fd-list-contacts
-      description: List all contacts matching the specified filters. If no filters
-        are provided then all unblocked and undeleted contacts will be returned.
+      description: List all contacts matching the specified filters. If no filters are provided then all unblocked and undeleted contacts will be returned.
       script: Freshdesk|||fd-list-contacts
       type: regular
       iscommand: true
@@ -911,8 +910,7 @@ tasks:
       id: 62ea25dc-e337-4bc3-8954-9b39faebc25d
       version: -1
       name: fd-create-ticket-note
-      description: Create a note for a specified ticket. By default any note you add
-        will be private unless you set the 'private' command argument to False.
+      description: Create a note for a specified ticket. By default any note you add will be private unless you set the 'private' command argument to False.
       script: '|||fd-create-ticket-note'
       type: regular
       iscommand: true
@@ -1089,8 +1087,7 @@ tasks:
       id: 23183a3c-3c13-4879-860d-04de50716eb1
       version: -1
       name: fd-list-agents
-      description: List agents that match the criteria of the filters entered as command
-        arguments.
+      description: List agents that match the criteria of the filters entered as command arguments.
       script: Freshdesk|||fd-list-agents
       type: regular
       iscommand: true
@@ -1378,3 +1375,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

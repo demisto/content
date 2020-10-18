@@ -52,6 +52,15 @@
 							},
 							{
 								"endCol": 2,
+								"fieldId": "expansebusinessunit",
+								"height": 22,
+								"id": "cfae0370-af4a-11ea-af3d-1b2598e4d95e",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
 								"fieldId": "severity",
 								"height": 24,
 								"id": "incident-severity-field",
@@ -272,6 +281,15 @@
 						"items": [
 							{
 								"endCol": 2,
+								"fieldId": "expanserawjsonevent",
+								"height": 53,
+								"id": "d3e655f0-af4a-11ea-af3d-1b2598e4d95e",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
 								"fieldId": "details",
 								"height": 24,
 								"id": "incident-details-field",
@@ -317,5 +335,6 @@
 		"version": -1
 	},
 	"typeId": "Expanse Appearance",
-	"version": -1
+	"version": -1,
+	"toVersion": "5.9.9"
 }

@@ -2,8 +2,9 @@ commonfields:
   id: LCMHosts
   version: -1
 name: LCMHosts
-script: |
+script: >
   args = demisto.args()
+
   if demisto.get(args, 'ip') and demisto.get(args, 'name'):
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'You cannot specify both name and IP. Pick one way to find the host you need.' } )
 
@@ -15,6 +16,7 @@ script: |
       cmd = 'lcm-hosts'
 
   resp = demisto.executeCommand(cmd, args)
+
   if isError(resp[0]):
       demisto.results(resp)
   else:
@@ -29,8 +31,7 @@ type: python
 subtype: python2
 tags:
 - lightcyber
-comment: Shows hosts from LightCyber Magna. If looking for a specific host, specify
-  either a name or an IP. Otherwise all hosts will be listed.
+comment: Deprecated. This script is deprecated. LightCyber Magna is no longer available.
 args:
 - name: name
   default: true
@@ -46,3 +47,4 @@ dependson:
   - lcm-hostbyip
 timeout: 0s
 system: true
+fromversion: 5.0.0

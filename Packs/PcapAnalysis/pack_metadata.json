@@ -1,0 +1,217 @@
+{
+    "name": "PCAP Analysis",
+    "description": "Don't miss out on critical forensic data! This Content Pack automates PCAP file analysis such as parsing, searching, extracting indicators, and more.",
+    "support": "xsoar",
+    "currentVersion": "2.3.5",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Pcap",
+        "Network",
+        "Forensics"
+    ],
+    "created": "2020-05-14T06:21:02Z",
+    "updated": "2020-05-14T06:21:02Z",
+    "beta": false,
+    "deprecated": false,
+    "useCases": [
+        "PCAP Analysis"
+    ],
+    "keywords": [
+        "Mine"
+    ],
+    "dependencies": {
+        "Anomali_ThreatStream": {
+            "mandatory": false,
+            "display_name": "Anomali ThreatStream"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "EclecticIQ": {
+            "mandatory": false,
+            "display_name": "EclecticIQ Platform"
+        },
+        "OpenPhish": {
+            "mandatory": false,
+            "display_name": "OpenPhish"
+        },
+        "ipinfo": {
+            "mandatory": false,
+            "display_name": "ipinfo"
+        },
+        "Recorded_Future": {
+            "mandatory": false,
+            "display_name": "Recorded Future"
+        },
+        "TruSTAR": {
+            "mandatory": false,
+            "display_name": "TruSTAR"
+        },
+        "VirusTotal": {
+            "mandatory": false,
+            "display_name": "VirusTotal"
+        },
+        "Expanse": {
+            "mandatory": false,
+            "display_name": "Expanse"
+        },
+        "HelloWorld": {
+            "mandatory": false,
+            "display_name": "HelloWorld"
+        },
+        "TCPIPUtils": {
+            "mandatory": false,
+            "display_name": "TCPIPUtils"
+        },
+        "IsItPhishing": {
+            "mandatory": false,
+            "display_name": "IsItPhishing"
+        },
+        "PassiveTotal": {
+            "mandatory": false,
+            "display_name": "PassiveTotal"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "AbuseDB": {
+            "mandatory": false,
+            "display_name": "AbuseIPDB"
+        },
+        "Flashpoint": {
+            "mandatory": false,
+            "display_name": "Flashpoint"
+        },
+        "XFE": {
+            "mandatory": false,
+            "display_name": "IBM X-Force Exchange"
+        },
+        "GoogleChronicleBackstory": {
+            "mandatory": false,
+            "display_name": "Chronicle"
+        },
+        "AlienVault_OTX": {
+            "mandatory": false,
+            "display_name": "AlienVault OTX"
+        },
+        "Ipstack": {
+            "mandatory": false,
+            "display_name": "Ipstack"
+        },
+        "Zscaler": {
+            "mandatory": false,
+            "display_name": "Zscaler"
+        },
+        "PolySwarm": {
+            "mandatory": false,
+            "display_name": "PolySwarm"
+        },
+        "ThreatQ": {
+            "mandatory": false,
+            "display_name": "ThreatQ"
+        },
+        "MISP": {
+            "mandatory": false,
+            "display_name": "MISP"
+        },
+        "AwakeSecurity": {
+            "mandatory": false,
+            "display_name": "Awake Security"
+        },
+        "Pwned": {
+            "mandatory": false,
+            "display_name": "Pwned"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "UrlScan": {
+            "mandatory": false,
+            "display_name": "urlscan.io"
+        },
+        "Symantec_Deepsight": {
+            "mandatory": false,
+            "display_name": "Symantec Deepsight Intelligence (Beta)"
+        },
+        "illuminate": {
+            "mandatory": false,
+            "display_name": "illuminate"
+        },
+        "Shodan": {
+            "mandatory": false,
+            "display_name": "Shodan"
+        },
+        "Pipl": {
+            "mandatory": false,
+            "display_name": "Pipl"
+        },
+        "iDefense": {
+            "mandatory": false,
+            "display_name": "iDefense"
+        },
+        "URLHaus": {
+            "mandatory": false,
+            "display_name": "URLhaus"
+        },
+        "ThreatExchange": {
+            "mandatory": false,
+            "display_name": "ThreatExchange"
+        },
+        "ThreatConnect": {
+            "mandatory": false,
+            "display_name": "ThreatConnect"
+        },
+        "XForceExchange": {
+            "mandatory": false,
+            "display_name": "IBM X-Force Exchange"
+        },
+        "GoogleSafeBrowsing": {
+            "mandatory": false,
+            "display_name": "Google Safe Browsing"
+        },
+        "MaxMind_GeoIP2": {
+            "mandatory": false,
+            "display_name": "MaxMind GeoIP2"
+        },
+        "CrowdStrikeIntel": {
+            "mandatory": false,
+            "display_name": "CrowdStrike Falcon Intel"
+        },
+        "SlashNextPhishingIncidentResponse": {
+            "mandatory": false,
+            "display_name": "SlashNext Phishing Incident Response"
+        },
+        "ThreatMiner": {
+            "mandatory": false,
+            "display_name": "ThreatMiner"
+        },
+        "Cofense-Intelligence": {
+            "mandatory": false,
+            "display_name": "Cofense Intelligence"
+        },
+        "PhishTank": {
+            "mandatory": false,
+            "display_name": "PhishTank"
+        },
+        "APIVoid": {
+            "mandatory": false,
+            "display_name": "APIVoid"
+        },
+        "isight": {
+            "mandatory": false,
+            "display_name": "FireEye iSIGHT"
+        },
+        "Maltiverse": {
+            "mandatory": false,
+            "display_name": "Maltiverse"
+        }
+    }
+}

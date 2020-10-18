@@ -1,5 +1,6 @@
 from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
-    verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command
+    verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
+    get_zone_command, list_zones_command, update_zone_command
 import pytest
 
 
@@ -511,6 +512,47 @@ logs = [
         ]
     }]
 
+okta_zone = {
+    "_links": {
+        "deactivate": {
+            "hints": {
+                "allow": [
+                    "POST"
+                ]
+            },
+            "href": "https://dev-530328.oktapreview.com/api/v1/zones/nzoqsmcx1qWYJ6wYF7q0/lifecycle/deactivate"
+        },
+        "self": {
+            "hints": {
+                "allow": [
+                    "GET",
+                    "PUT",
+                    "DELETE"
+                ]
+            },
+            "href": "https://dev-530328.oktapreview.com/api/v1/zones/nzoqsmcx1qWYJ6wYF7q0"
+        }
+    },
+    "created": "2020-04-06T22:23:12.000Z",
+    "gateways": [
+        {
+            "type": "CIDR",
+            "value": "4.5.3.2/16"
+        },
+        {
+            "type": "CIDR",
+            "value": "1.2.1.2/32"
+        }
+    ],
+    "id": "nzoqsmcx1qWYJ6wYF7q0",
+    "lastUpdated": "2020-05-15T05:13:06.000Z",
+    "name": "Test Zone",
+    "proxies": None,
+    "status": "ACTIVE",
+    "system": False,
+    "type": "IP"
+}
+
 
 @pytest.mark.parametrize(
     # Write and define the expected
@@ -618,6 +660,40 @@ def test_get_logs_command(mocker):
     assert logs == outputs.get('Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)')
     assert 'Unknown browser on Unknown OS Unknown device' in readable
     assert 'Chrome on Windows Computer' in readable
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({'zoneID': 'nzoqsmcx1qWYJ6wYF7q0'})
+    ])
+def test_get_zone_command(mocker, args):
+    mocker.patch.object(client, 'get_zone', return_value=okta_zone)
+    readable, outputs, _ = get_zone_command(client, args)
+    assert 'Test Zone' in readable
+    assert 'nzoqsmcx1qWYJ6wYF7q0' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '')
+
+
+def test_list_zones_command(mocker):
+    mocker.patch.object(client, 'list_zones', return_value=okta_zone)
+    readable, outputs, _ = list_zones_command(client, {})
+    assert 'Test Zone' in readable
+    assert 'nzoqsmcx1qWYJ6wYF7q0' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '')
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({'zoneID': 'nzoqsmcx1qWYJ6wYF7q0', 'zoneName': 'NewZoneName'})
+    ])
+def test_update_zone_command(mocker, args):
+    my_okta_zone = okta_zone
+    my_okta_zone['name'] = 'NewZoneName'
+    mocker.patch.object(client, 'get_zone', return_value=okta_zone)
+    mocker.patch.object(client, 'update_zone', return_value=my_okta_zone)
+    readable, outputs, _ = update_zone_command(client, args)
+    assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
+
 
 # #
 # #

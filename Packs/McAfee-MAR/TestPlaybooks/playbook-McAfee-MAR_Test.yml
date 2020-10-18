@@ -130,8 +130,7 @@ tasks:
       id: 37da63cf-c285-4793-88db-b7e8baee04ac
       version: -1
       name: mar-search with filter
-      description: '!mar-search collector=Processes filter-by=name filter-operator=Equals
-        filter-value=SYSTEM outputs=user_id,name,uptime'
+      description: '!mar-search collector=Processes filter-by=name filter-operator=Equals filter-value=SYSTEM outputs=user_id,name,uptime'
       script: McAfee Active Response|||mar-search
       type: regular
       iscommand: true
@@ -205,8 +204,7 @@ tasks:
       id: fa73b2c9-2813-4fa4-82a5-16b457d65d05
       version: -1
       name: mar-search-multiple
-      description: '!mar-search-multiple collectors=HostInfo,Processes filter_collector=HostInfo
-        filter-by=hostname filter-operator=Equals filter-value=ADMIN-PC'
+      description: '!mar-search-multiple collectors=HostInfo,Processes filter_collector=HostInfo filter-by=hostname filter-operator=Equals filter-value=ADMIN-PC'
       script: McAfee Active Response|||mar-search-multiple
       type: regular
       iscommand: true
@@ -338,3 +336,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

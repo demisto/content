@@ -553,7 +553,7 @@ def upload_sample():
     if res.get('name') == 'Failed':
         ec = None
     else:
-        ec = {f"MISP.UploadedSample": {filename: event_id}}
+        ec = {"MISP.UploadedSample": {filename: event_id}}
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -891,7 +891,7 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
             }
             md += tableToMarkdown(f'Event ID: {md_event.get("ID")}', event_highlights)
             if md_event.get('Galaxy'):
-                md += tableToMarkdown(f'Galaxy:', md_event.get('Galaxy'))
+                md += tableToMarkdown('Galaxy:', md_event.get('Galaxy'))
 
             demisto.results({
                 'Type': entryTypes['note'],
@@ -1039,8 +1039,7 @@ def add_object(event_id: str, obj: MISPObject):
         errors = extract_error(response["errors"])
         error_string = str()
         for err in errors:
-            error_string += f'' \
-                            f'\n\tError code: {err["code"]} ' \
+            error_string += f'\n\tError code: {err["code"]} ' \
                             f'\n\tMessage: {err["message"]}' \
                             f'\n\tErrors: {err["errors"]}\n'
         return_error(f'Error in `{command}` command: {error_string}')
@@ -1077,7 +1076,7 @@ def add_domain_object():
     """
     template = 'domain-ip'
     args = [
-        'text'
+        'text',
         'creation_date',
         'first_seen',
         'last_seen'

@@ -64,7 +64,7 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
         if res.status_code not in (200, 204):
             if res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE and num_of_seconds_to_wait <= MAX_SECONDS_TO_WAIT:
                 random_num_of_seconds = random.randint(num_of_seconds_to_wait, num_of_seconds_to_wait + 3)
-                time.sleep(random_num_of_seconds)
+                time.sleep(random_num_of_seconds)  # pylint: disable=sleep-exists
                 return http_request(method, url_suffix, data, headers=headers,
                                     num_of_seconds_to_wait=num_of_seconds_to_wait + 3)
             else:
@@ -334,8 +334,10 @@ def get_whitelist():
     return json.loads(result.content)
 
 
-def url_lookup(url):
-    response = lookup_request(url)
+def url_lookup(args):
+    url = args.get('url', '')
+    multiple = args.get('multiple', 'true').lower() == 'true'
+    response = lookup_request(url, multiple)
     hr = json.loads(response.content)
     if hr:
         data = hr[0]
@@ -353,6 +355,7 @@ def url_lookup(url):
             data['urlClassificationsWithSecurityAlert'] = ''
         else:
             data['urlClassificationsWithSecurityAlert'] = ''.join(data['urlClassificationsWithSecurityAlert'])
+            ioc_context['urlClassificationsWithSecurityAlert'] = data['urlClassificationsWithSecurityAlert']
             if data['urlClassificationsWithSecurityAlert'] in suspicious_categories:
                 score = 2
             else:
@@ -444,9 +447,13 @@ def ip_lookup(ip):
     return entry
 
 
-def lookup_request(ioc):
+def lookup_request(ioc, multiple=True):
     cmd_url = '/urlLookup'
-    ioc_list = ioc.split(',')
+    if multiple:
+        ioc_list = ioc.split(',')
+    else:
+        ioc_list = [ioc]
+    ioc_list = [url.replace('https://', '').replace('http://', '') for url in ioc_list]
     json_data = json.dumps(ioc_list)
     response = http_request('POST', cmd_url, json_data, DEFAULT_HEADERS)
     return response
@@ -502,7 +509,7 @@ def category_add_ip(category_id, ip):
             found_category = True
             break
     if found_category:
-        ip_list = ip.split(',')
+        ip_list = argToList(ip)
         all_ips = ip_list[:]
         all_ips.extend(category_data['urls'])
         category_data['urls'] = all_ips
@@ -740,7 +747,7 @@ def main():
             http_request('GET', '/authenticatedSession', None, DEFAULT_HEADERS)
             demisto.results('ok')
         elif demisto.command() == 'url':
-            demisto.results(url_lookup(demisto.args()['url']))
+            demisto.results(url_lookup(demisto.args()))
         elif demisto.command() == 'ip':
             demisto.results(ip_lookup(demisto.args()['ip']))
         elif demisto.command() == 'zscaler-blacklist-url':

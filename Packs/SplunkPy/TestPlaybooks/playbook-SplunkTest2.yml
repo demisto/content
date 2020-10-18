@@ -212,8 +212,7 @@ tasks:
       id: 410552ef-2a04-49b2-85ed-65d37b7722f6
       version: -1
       name: DumpJSON
-      description: Dumps a json from context key input, and returns a json object
-        string result
+      description: Dumps a json from context key input, and returns a json object string result
       scriptName: DumpJSON
       type: regular
       iscommand: false
@@ -507,14 +506,7 @@ tasks:
       key:
         simple: rawEvent
       value:
-        simple: 1531041382, search_name="0 - Azure AD-Concurrent Access From Different
-          GEO", logon_ip="xx.xx.xx.xx", logon_ip="xx.xx.xx.xx", logon_ip="xx.xx.xx.xx",
-          logon_source_Country="Egypt", logon_source_Country="Germany", logon_source_info="Potentially_unauthorized",
-          logon_source_info="VPN", timestamps="2018-07-08T08:22:41", timestamps="2018-07-08T08:28:50",
-          timestamps="2018-07-08T08:35:31", country_count="2", country_in_AD="United
-          Arab Emirates", info_max_time="+Infinity", info_min_time="0.000", muid="xx.xx.xx.xx",
-          service="AzureActiveDirectory", user="xx.xx.xx.xx", user_type="A regular
-          user", users_bunit="xx.xx.xx.xx"
+        simple: 1531041382, search_name="0 - Azure AD-Concurrent Access From Different GEO", logon_ip="xx.xx.xx.xx", logon_ip="xx.xx.xx.xx", logon_ip="xx.xx.xx.xx", logon_source_Country="Egypt", logon_source_Country="Germany", logon_source_info="Potentially_unauthorized", logon_source_info="VPN", timestamps="2018-07-08T08:22:41", timestamps="2018-07-08T08:28:50", timestamps="2018-07-08T08:35:31", country_count="2", country_in_AD="United Arab Emirates", info_max_time="+Infinity", info_min_time="0.000", muid="xx.xx.xx.xx", service="AzureActiveDirectory", user="xx.xx.xx.xx", user_type="A regular user", users_bunit="xx.xx.xx.xx"
     separatecontext: false
     view: |-
       {
@@ -642,3 +634,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

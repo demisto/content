@@ -1,9 +1,9 @@
 id: block_indicators_-_generic
 version: -1
 name: Block Indicators - Generic
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: |
-  Deprecated - We recommend using the 'Block Indicators - Generic v2' playbook instead.
+  Deprecated. We recommend using the 'Block Indicators - Generic v2' playbook instead.
   This playbook blocks malicious indicators using all integrations that are enabled.
 
   Supported integrations for this playbook:
@@ -14,6 +14,7 @@ description: |
   * Zscaler
   * Carbon Black Enterprise Response
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -387,21 +388,15 @@ outputs:
 - contextPath: CheckpointFWRule.DestinationNegate
   description: True if negate is set for destination.
 - contextPath: CheckpointFWRule.Action
-  description: Accept, Drop, Apply Layer, Ask, Info. The level of detail returned
-    depends on the details-level field of the request. This table shows the level
-    of detail shown when details-level is set to standard.
+  description: Accept, Drop, Apply Layer, Ask, Info. The level of detail returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard.
 - contextPath: CheckpointFWRule.Destination
-  description: Collection of Network objects identified by the name or UID. The level of detail
-    depends on the details-level field of the request. This table
-    shows the level of detail shown when details-level is set to standard.
+  description: Collection of Network objects identified by the name or UID. The level of detail depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard.
 - contextPath: CheckpointFWRule.ActionSetting
   description: Action settings.
 - contextPath: CheckpointFWRule.CustomFields
   description: Custom fields.
 - contextPath: CheckpointFWRule.Data
-  description: The level of detail returned depends on the details-level field of
-    the request. This table shows the level of detail shown when details-level is
-    set to standard.
+  description: The level of detail returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard.
 - contextPath: CheckpointFWRule.DataDirection
   description: On which direction the file types processing is applied.
 - contextPath: CheckpointFWRule.DataNegate
@@ -438,4 +433,4 @@ outputs:
 - contextPath: CheckpointFWRule.Hits.Value
   description: Value of hits.
 tests:
-  - block_indicators_-_generic_-_test
+- block_indicators_-_generic_-_test

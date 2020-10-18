@@ -779,7 +779,7 @@ def main():
         # return detonate(3, args.url, args.timeout, args.format, args.threshold);
         # submit type for url-download is 3
 
-    except Exception, ex:
+    except Exception as ex:
         return_error(ex)
 
     finally:

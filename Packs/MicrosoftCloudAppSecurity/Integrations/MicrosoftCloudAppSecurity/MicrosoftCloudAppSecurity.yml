@@ -1,0 +1,848 @@
+category: Authentication
+commonfields:
+  id: MicrosoftCloudAppSecurity
+  version: -1
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: User's key to access the API
+  name: token
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident severity
+  hidden: false
+  name: severity
+  options:
+  - Low
+  - Medium
+  - High
+  - All
+  required: false
+  type: 16
+- display: Maximum alerts to fetch
+  hidden: false
+  defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  display: First fetch time
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- display: Incident resolution status
+  hidden: false
+  name: resolution_status
+  options:
+  - Open
+  - Dismissed
+  - Resolved
+  - All
+  required: false
+  type: 16
+- additionalinfo: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. For more information about filter syntax, see the (Microsoft documentation)[https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters].'
+  display: Custom Filter
+  hidden: false
+  name: custom_filter
+  required: false
+  type: 0
+description: Microsoft Cloud App Security is a multimode Cloud Access Security Broker (CASB). It provides rich visibility, control over data travel, and sophisticated analytics to identify and combat cyber threats across all your cloud services. Use the integration to view and resolve alerts, view activities, view files, and view user accounts.
+display: Microsoft Cloud App Security
+name: MicrosoftCloudAppSecurity
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: |-
+        Multiple alerts matching the specified filters.
+        The alert_id should appear similar to "55af7415f8a0a7a29eef2e1f".
+        Mandatory, unless you use a custom filter.
+      isArray: true
+      name: alert_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, see the (Microsoft documentation)[https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters].'
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    - default: false
+      description: A comment explaining why the alerts are being dismissed.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Dismisses multiple alerts (bulk dismiss) that match the specified filters.
+    execution: false
+    name: microsoft-cas-alert-dismiss-bulk
+  - arguments:
+    - default: false
+      description: Skips the specified number of records.
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of records to return. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The severity of the alert. Possible values are: "Low", "Medium", and "High".'
+      isArray: false
+      name: severity
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The alert resolution status. Possible values are: "Open", "Dismissed", and "Resolved".'
+      isArray: false
+      name: resolution_status
+      predefined:
+      - Open
+      - Dismissed
+      - Resolved
+      required: false
+      secret: false
+    - default: false
+      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, see the (Microsoft documentation)[https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters].'
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    - default: false
+      description: The alert ID.
+      isArray: false
+      name: alert_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of alerts that match the specified filters.
+    execution: false
+    name: microsoft-cas-alerts-list
+    outputs:
+    - contextPath: MicrosoftCloudAppSecurity.Alerts._id
+      description: The alert ID.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.timestamp
+      description: The time the alert was created.
+      type: Date
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policyRule.id
+      description: The ID of the rule that triggered the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policyRule.label
+      description: The label of the rule that triggered the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policyRule.type
+      description: The type of rule that triggered the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policyRule.policyType
+      description: The policy type of the rule that triggered the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.service.id
+      description: The cloud service ID.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.service.label
+      description: The cloud service name.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.service.type
+      description: The cloud service type.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.file.id
+      description: The ID of the alert file.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.file.label
+      description: THe label of the alert file.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.file.type
+      description: The alert file type.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.user.id
+      description: The ID of the user who received the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.user.label
+      description: The label of the user who received the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.user.type
+      description: The type of the user who received the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.country.id
+      description: The country ID where the alert originated.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.country.label
+      description: The country label where the alert originated.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.country.type
+      description: The country type where the alert originated.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.ip.id
+      description: The IP address where the alert came.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.ip.label
+      description: The IP label where the alert came.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.ip.type
+      description: The IP type where the alert came.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.ip.triggeredAlert
+      description: Whether this IP address triggered the alert.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.id
+      description: The ID of the account that received the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.label
+      description: The label of the account that received the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.type
+      description: The type of the account that received the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.inst
+      description: The instance of the account that received the alert.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.saas
+      description: The service of the account that received the alert.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.pa
+      description: The email of the account that received the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.entityType
+      description: The entity type of the account that received the alert.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.title
+      description: The title of the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.description
+      description: The description of the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.id
+      description: The ID of the reason (policy) that explains why the alert was triggered.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.label
+      description: The label of the reason (policy) that explains why the alert was triggered.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.policyType
+      description: The policy type of the reason (policy) that explains why the alert was triggered.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.threatScore
+      description: The threat score of the alert.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.isSystemAlert
+      description: Whether it is a system alert.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.statusValue
+      description: The status value of the alert.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.severityValue
+      description: The severity value of the alert.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.handledByUser
+      description: The user who handled the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.comment
+      description: The comment relating to the alert.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.resolveTime
+      description: The date/time that the alert was resolved.
+      type: Date
+  - arguments:
+    - default: false
+      description: |-
+        Multiple alerts matching the specified filters.
+        Alert_id should appear similar to - "1234567890abcdefg".
+        Mandatory, unless you use a custom filter.
+      isArray: true
+      name: alert_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, see the (Microsoft documentation)[https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters].'
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    - default: false
+      description: Comment describing why the alerts were dismissed.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Resolves multiple alerts (bulk resolve) that match the specified filters. Filters include origin IP address, IP subnet category, action taken on the activity, source type, or a custom filter.
+    execution: false
+    name: microsoft-cas-alert-resolve-bulk
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The number of records to skip. Default is 50.
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of records returned to the user.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The origin of the specified IP address.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The subnet categories. Valid values are: "Corporate", "Administrative", "Risky", "VPN", "Cloud_provider", and "Other".'
+      isArray: false
+      name: ip_category
+      predefined:
+      - Corporate
+      - Administrative
+      - Risky
+      - VPN
+      - Cloud_provider
+      - Other
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The actions taken on activities. Valid values are: "block", "proxy", "BypassProxy", "encrypt", "decrypt", "verified", "encryptionFailed", "protect", "verify", and "null".'
+      isArray: false
+      name: taken_action
+      predefined:
+      - block
+      - proxy
+      - BypassProxy
+      - encrypt
+      - decrypt
+      - verified
+      - encryptionFailed
+      - protect
+      - verify
+      - 
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The source type. Valid values are: "Access_control", "Session_control", "App_connector", "App_connector_analysis", "Discovery", and "MDATP".'
+      isArray: false
+      name: source
+      predefined:
+      - Access_control
+      - Session_control
+      - App_connector
+      - App_connector_analysis
+      - Discovery
+      - MDATP
+      required: false
+      secret: false
+    - default: false
+      description: 'A custom filter by which to filter the returned activities. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, see the (Microsoft documentation)[https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters].'
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the activity.
+      isArray: false
+      name: activity_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of activities that match the specified filters.
+    execution: false
+    name: microsoft-cas-activities-list
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities._id
+      description: The ID of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.saasId
+      description: The ID of the cloud service.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Activities.timestamp
+      description: The time the activity occurred.
+      type: Date
+    - contextPath: MicrosoftCloudAppSecurity.Activities.instantiation
+      description: The instantiation of the activity.
+      type: Date
+    - contextPath: MicrosoftCloudAppSecurity.Activities.created
+      description: The time the activity was created.
+      type: Date
+    - contextPath: MicrosoftCloudAppSecurity.Activities.eventTypeValue
+      description: The event type of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.device.clientIP
+      description: The device client IP address of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.device.userAgent
+      description: The user agent of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.device.countryCode
+      description: The country code (name) of the device.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.location.countryCode
+      description: The country code (name) of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.location.city
+      description: The city of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.location.region
+      description: The region of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.location.longitude
+      description: The longitude of the activity.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Activities.location.latitude
+      description: The latitude of the activity.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Activities.location.categoryValue
+      description: The category value of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.user.userName
+      description: The username associated with the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.family
+      description: The family of the system in which the activity occurred.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.name
+      description: The name of the system in which the activity occurred.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.operatingSystem.name
+      description: The name of the operating system in which the activity occurred.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.operatingSystem.family
+      description: The family of the operating system in which the activity occurred.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.type
+      description: The type of the system in which the activity occurred.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.typeName
+      description: The name of the type of the system in which the activity occurred.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.version
+      description: The version of the system in which the activity occurred.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.deviceType
+      description: The device type of the system in which the activity occurred.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.nativeBrowser
+      description: The native browser type of the system in which the activity occurred.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.os
+      description: The operating system in which the activity occurred.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.browser
+      description: The browser in which the activity occurred.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.mainInfo.eventObjects.instanceId
+      description: The ID of the instance of the event objects.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Activities.mainInfo.eventObjects.saasId
+      description: The ID of the cloud service of the event objects.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Activities.mainInfo.eventObjects.id
+      description: The ID of the event objects.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.mainInfo.activityResult.isSuccess
+      description: Whether the activities were successful.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.Activities.mainInfo.type
+      description: The type of activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.confidenceLevel
+      description: The confidence level of the activity.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Activities.resolvedActor.id
+      description: The user ID of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.resolvedActor.saasId
+      description: The user cloud service ID of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.resolvedActor.instanceId
+      description: The user instance ID of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.resolvedActor.name
+      description: The username of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.eventTypeName
+      description: The event that triggered the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.classifications
+      description: The classifications of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.entityData.displayName
+      description: The display name of entity activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.entityData.id.id
+      description: The ID of the entity activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.entityData.resolved
+      description: Whether the entity was resolved.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.Activities.description
+      description: The description of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.genericEventType
+      description: The generic event type of the activity.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Activities.severity
+      description: The severity of the activity.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Skips the specified number of records.
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of records to return. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The file type. Valid value are: Other, Document, Spreadsheet, Presentation, Text, Image, Folder.'
+      isArray: false
+      name: file_type
+      predefined:
+      - Other
+      - Document
+      - Spreadsheet
+      - Presentation
+      - Text
+      - Image
+      - Folder
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Filter files with the specified sharing levels. Valid values are: Private, Internal, External, Public, Public_Internet.'
+      isArray: false
+      name: sharing
+      predefined:
+      - Private
+      - Internal
+      - External
+      - Public
+      - Public_Internet
+      required: false
+      secret: false
+    - default: false
+      description: Filter files by the specified file extension.
+      isArray: false
+      name: extension
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Filter by whether the file is quarantined. Valid values are: "True" or "False".'
+      isArray: false
+      name: quarantined
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, see the (Microsoft documentation)[https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters].'
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    - default: false
+      description: Filter by the file ID.
+      isArray: false
+      name: file_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of files that match the specified filters. Filters include file type, file share value, file extension, file quarantine status, and a custom filter. If you pass the custom_filter argument it will override the other filters in this command.
+    execution: false
+    name: microsoft-cas-files-list
+    outputs:
+    - contextPath: MicrosoftCloudAppSecurity.Files._id
+      description: The ID of the file.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.saasId
+      description: The cloud service ID of the file.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Files.instId
+      description: The instance ID of the file.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Files.fileSize
+      description: The size of the file.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Files.createdDate
+      description: The date the file was created.
+      type: Date
+    - contextPath: MicrosoftCloudAppSecurity.Files.modifiedDate
+      description: The date the file was last modified.
+      type: Date
+    - contextPath: MicrosoftCloudAppSecurity.Files.parentId
+      description: The parent ID of the file.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.ownerName
+      description: The name of the file owner.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.isFolder
+      description: Whether the file is a folder.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.Files.fileType
+      description: The file type.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.name
+      description: The name of the file.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.isForeign
+      description: Whether the file is foreign.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.Files.noGovernance
+      description: Whether the file is no governance.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.Files.fileAccessLevel
+      description: The access level of the file.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.ownerAddress
+      description: The email address of the file owner.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.externalShares
+      description: The external shares of the file.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.domains
+      description: The domains of the file.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.mimeType
+      description: The mime type of the file.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.ownerExternal
+      description: Whether the owner of this file is external.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.Files.fileExtension
+      description: The file extension.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.groupIds
+      description: The group IDs of the file.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.groups
+      description: The group the file belongs to.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.collaborators
+      description: The collaborators of the file.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.fileStatus
+      description: The status of the file.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.appName
+      description: The name of the app.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.actions.task_name
+      description: The name of the task.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Files.actions.type
+      description: The type of actions taken on the file.
+      type: String
+  - arguments:
+    - default: false
+      description: The number of records to skip.
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of records to return. Default is 50.
+      isArray: false
+      name: limit
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: The type by which to filter the information about the user accounts.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: The group ID by which to filter the information about the user accounts.
+      name: group_id
+      required: false
+      secret: false
+    - default: false
+      description: Filter the user accounts that are defined as admins.
+      isArray: false
+      name: is_admin
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The affiliation of the user accounts. Valid values are: "External", "Internal", and "No_value".'
+      isArray: false
+      name: is_external
+      predefined:
+      - External
+      - Internal
+      - No_value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The status by which to filter the information about the user accounts. Valid values are: "N/A", "Staged", "Active", "Suspended", and "Deleted".'
+      isArray: false
+      name: status
+      predefined:
+      - N/A
+      - Staged
+      - Active
+      - Suspended
+      - Deleted
+      required: false
+      secret: false
+    - default: false
+      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, see the (Microsoft documentation)[https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters].'
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of user accounts that match the specified filters. Filters include user account type, group ID, external/internal, user account status, and custom filter. The accounts object schema includes information about how users and accounts use your organization's cloud apps.
+    execution: false
+    name: microsoft-cas-users-accounts-list
+    outputs:
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.displayName
+      description: The display name of the user account.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.id
+      description: The ID of the user account in the product.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts._id
+      description: The ID of the user account.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.isAdmin
+      description: Whether the user account has admin privileges.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.isExternal
+      description: Whether the user account is external.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.email
+      description: The email address of the user account.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.role
+      description: The role of the user account.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.organization
+      description: The organization to which the user account belongs.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.lastSeen
+      description: The date the user account was last active.
+      type: Unknown
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.domain
+      description: The domain of the user account.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.threatScore
+      description: The threat score of the user account.
+      type: Unknown
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.idType
+      description: The ID type (number) of the user account.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.isFake
+      description: Whether the user account is marked as fake.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.username
+      description: The username of the user account.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.actions.task_name
+      description: The task name of the action of the user account.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.actions.type
+      description: The type of action of the user account.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts._id
+      description: The account ID of the user account.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.inst
+      description: The number of instances of the user account.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.saas
+      description: The cloud services of the user account.
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.dn
+      description: The domain name of the cloud services of the user accounts.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.aliases
+      description: The user account aliases.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.isFake
+      description: Whether the user account is marked as fake.
+      type: Boolean
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.em
+      description: The email address of the user account.
+      type: Unknown
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.actions.task_name
+      description: The task name of the action.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.actions.type
+      description: The type of the action.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups._id
+      description: The ID of the user group for the user account.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.id
+      description: The ID of the user group in the product.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.name
+      description: The name of the user group.
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
+      description: The number of users in the user group.
+      type: Number
+  dockerimage: demisto/python3:3.8.5.11789
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- MicrosoftCloudAppSecurity-Test
+fromversion: 5.0.0

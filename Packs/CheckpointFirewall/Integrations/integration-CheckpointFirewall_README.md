@@ -787,11 +787,6 @@
 <td style="width: 531px;">The base name for added rules inside Check Point DB.</td>
 <td style="width: 73px;">Required</td>
 </tr>
-<tr>
-<td style="width: 136px;">ipname</td>
-<td style="width: 531px;">The base name for added IP addresses/hosts inside Check Point DB.</td>
-<td style="width: 73px;">Required</td>
-</tr>
 </tbody>
 </table>
 </div>

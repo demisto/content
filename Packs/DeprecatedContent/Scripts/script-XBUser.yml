@@ -2,10 +2,13 @@ commonfields:
   id: XBUser
   version: -1
 name: XBUser
-script: |-
+script: >-
   import time
+
   res = '## Exabeam User Info'
+
   entry = demisto.executeCommand('xb-userinfo', {'username': demisto.args()['username']})[0]
+
   if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
       info = demisto.get(entry, 'Contents.userInfo.info')
       if info:
@@ -39,7 +42,7 @@ tags:
 - server
 - analytics
 - exabeam
-comment: Retrieve user info from Exabeam
+comment: Deprecated. This script is deprecated. Use the Exabeam integration instead.
 system: true
 deprecated: true
 args:
@@ -52,3 +55,4 @@ dependson:
   must:
   - xb-user
 timeout: 0s
+fromversion: 5.0.0

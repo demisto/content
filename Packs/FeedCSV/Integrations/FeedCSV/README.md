@@ -17,6 +17,7 @@ Fetch indicators from a CSV feed. The integration allows a great amount of user 
     * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
     * __Fetch Interval__: Interval of the fetches.
     * __Reliability__: Reliability of the feed. 
+    * __Traffic Light Protocol Color__: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp
     * __Username + Password__ - Credentials to access feeds that require basic authentication. 
 These fields also support the use of API key headers. To use API key headers, specify the header name and value in the following format:
 `_header:<header_name>` in the **Username** field and the header value in the **Password** field.
@@ -71,7 +72,7 @@ We can use `Set up a new classification rule` using actual data from the feed.
 ## Demo Video
 ---
 <video controls>
-    <source src="https://github.com/demisto/content/raw/938ae7b509fa9ccd7d9b293d612c33a731908618/Packs/FeedCSV/Integrations/FeedCSV/doc_files/CSVFeed_Video.mp4"
+    <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedCSV/CSVFeed_Video.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/blob/938ae7b509fa9ccd7d9b293d612c33a731908618/Packs/FeedCSV/Integrations/FeedCSV/doc_files/CSVFeed_Video.mp4 
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedCSV/CSVFeed_Video.mp4 
 </video>

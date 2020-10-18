@@ -3,7 +3,7 @@ version: -1
 name: DBot Indicator Enrichment - Generic
 description: Get indicators internal Dbot score
 starttaskid: "0"
-fromversion: 3.5.0
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
@@ -71,8 +71,7 @@ tasks:
       id: b1bed29a-6cbe-4238-8c4d-3203457bdc73
       version: -1
       name: Get MD5 internal Dbot score
-      description: Query DBot for indicators' pre-existing reputation. If exist, the
-        score will be added to the incident's context
+      description: Query DBot for indicators' pre-existing reputation. If exist, the score will be added to the incident's context
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -152,8 +151,7 @@ tasks:
       id: c84e302e-2844-414f-8b19-71f7b3e0fd18
       version: -1
       name: Get Email address internal Dbot score
-      description: Query DBot for indicators' pre-existing reputation. If exist, the
-        score will be added to the incident's context
+      description: Query DBot for indicators' pre-existing reputation. If exist, the score will be added to the incident's context
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -214,8 +212,7 @@ tasks:
       id: 47908ce9-33ad-4e39-835b-246f3cdfbe53
       version: -1
       name: Get URL internal Dbot score
-      description: Query DBot for indicators' pre-existing reputation. If exist, the
-        score will be added to the incident's context
+      description: Query DBot for indicators' pre-existing reputation. If exist, the score will be added to the incident's context
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -276,8 +273,7 @@ tasks:
       id: 2efb0c7e-9166-4646-8ad1-041fd257a55c
       version: -1
       name: Get IP internal Dbot score
-      description: Query DBot for indicators' pre-existing reputation. If exist, the
-        score will be added to the incident's context
+      description: Query DBot for indicators' pre-existing reputation. If exist, the score will be added to the incident's context
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -362,8 +358,7 @@ tasks:
       id: 102eceb6-41fb-4b97-8279-c4ebfeb5bc63
       version: -1
       name: Get SHA256 internal Dbot score
-      description: Query DBot for indicators' pre-existing reputation. If exist, the
-        score will be added to the incident's context
+      description: Query DBot for indicators' pre-existing reputation. If exist, the score will be added to the incident's context
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -424,8 +419,7 @@ tasks:
       id: 4168a3e7-0f00-4e0a-8517-7dde46cf63db
       version: -1
       name: Get SHA256 internal Dbot score
-      description: Query DBot for indicators' pre-existing reputation. If exist, the
-        score will be added to the incident's context
+      description: Query DBot for indicators' pre-existing reputation. If exist, the score will be added to the incident's context
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -505,4 +499,4 @@ outputs:
   description: The DBot score
   type: number
 tests:
-  - no test
+- no test

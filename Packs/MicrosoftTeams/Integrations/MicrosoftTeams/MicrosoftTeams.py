@@ -35,6 +35,7 @@ ENTITLEMENT_REGEX: str = \
     r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 MENTION_REGEX = r'^@([^@;]+);| @([^@;]+);'
 ENTRY_FOOTER: str = 'From Microsoft Teams'
+INCIDENT_NOTIFICATIONS_CHANNEL = 'incidentNotificationChannel'
 
 MESSAGE_TYPES: dict = {
     'mirror_entry': 'mirrorEntry',
@@ -87,6 +88,7 @@ def translate_severity(severity: str) -> int:
     :return: Demisto integer severity
     """
     severity_dictionary = {
+        'Unknown': 0,
         'Low': 1,
         'Medium': 2,
         'High': 3,
@@ -436,7 +438,8 @@ def get_graph_access_token() -> str:
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
         raise ValueError(
-            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.'
+            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
+            'See https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting for more information'
         )
     url: str = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
     data: dict = {
@@ -1064,7 +1067,8 @@ def send_message():
         return
     channel_name: str = demisto.args().get('channel', '')
 
-    if not channel_name and message_type in {MESSAGE_TYPES['status_changed'], MESSAGE_TYPES['incident_opened']}:
+    if (not channel_name and message_type in {MESSAGE_TYPES['status_changed'], MESSAGE_TYPES['incident_opened']}) \
+            or channel_name == INCIDENT_NOTIFICATIONS_CHANNEL:
         # Got a notification from server
         channel_name = demisto.params().get('incident_notifications_channel', 'General')
         severity: int = int(demisto.args().get('severity'))
@@ -1216,8 +1220,8 @@ def channel_mirror_loop():
     """
     while True:
         found_channel_to_mirror: bool = False
+        integration_context = demisto.getIntegrationContext()
         try:
-            integration_context = demisto.getIntegrationContext()
             teams: list = json.loads(integration_context.get('teams', '[]'))
             for team in teams:
                 mirrored_channels = team.get('mirrored_channels', [])
@@ -1528,7 +1532,8 @@ def ring_user():
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
         raise ValueError(
-            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.'
+            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
+            'See https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting for more information'
         )
     # get user to call name and id
     username_to_call = demisto.args().get('username')
@@ -1627,10 +1632,11 @@ def long_running_loop():
                 demisto.info('Starting HTTP Server')
 
             server = WSGIServer(('0.0.0.0', port), APP, **ssl_args)
+            demisto.updateModuleHealth('')
             server.serve_forever()
         except Exception as e:
             error_message = str(e)
-            demisto.error(f'An error occurred in long running loop: {error_message}')
+            demisto.error(f'An error occurred in long running loop: {error_message} - {format_exc()}')
             demisto.updateModuleHealth(f'An error occurred: {error_message}')
         finally:
             if certificate_path:

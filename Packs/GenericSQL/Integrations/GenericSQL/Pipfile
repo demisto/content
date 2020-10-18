@@ -5,14 +5,17 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-pytest = "==5.0.1"
+pytest = "*"
 pytest-mock = "*"
 requests-mock = "*"
 pytest-asyncio = "*"
+flake8 = "*"
 
 [packages]
-pytest = "*"
 requests = "*"
+expiringdict = "*"
+sqlalchemy = "*"
+pymysql = "*"
 
 [requires]
 python_version = "3.7"

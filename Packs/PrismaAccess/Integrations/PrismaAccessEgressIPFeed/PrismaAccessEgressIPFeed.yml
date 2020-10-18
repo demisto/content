@@ -79,6 +79,16 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
@@ -115,6 +125,11 @@ configuration:
   name: proxy
   type: 8
   required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 script:
   script: ''
   type: python
@@ -132,7 +147,7 @@ script:
       description: Prisma Access Egress IP zone
       type: string
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.5.10845
   feed: true
   runonce: false
   subtype: python3

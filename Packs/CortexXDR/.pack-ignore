@@ -1,0 +1,5 @@
+[file:CortexXDR]
+ignore=PA116
+
+[file:PaloAltoNetworks_XDR.yml]
+ignore=IN126

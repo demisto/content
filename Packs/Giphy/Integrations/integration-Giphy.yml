@@ -23,7 +23,7 @@ configuration:
   type: 4
   required: true
 script:
-  script: |-
+  script: >-
     var sendRequest = function(tag) {
         var serverUrl = params.url;
         if (serverUrl[serverUrl.length - 1] === '/') {
@@ -41,7 +41,9 @@ script:
         return JSON.parse(res.Body);
     };
 
+
     // The command input arg holds the command sent from the user.
+
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
@@ -86,4 +88,5 @@ script:
       description: Returns the response as JSON
     description: Display random GIF in the War Room (e.g. !giphy hello)
 tests:
-  - No tests
+- No tests
+fromversion: 5.0.0

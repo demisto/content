@@ -2,9 +2,11 @@ commonfields:
   id: LCMPathFinderScanHost
   version: -1
 name: LCMPathFinderScanHost
-script: |
+script: >
   args = demisto.args()
+
   resp = demisto.executeCommand("lcm-pathfinder-scan", args)
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -18,14 +20,7 @@ type: python
 subtype: python2
 tags:
 - lightcyber
-comment: "Scan a host using LightCyber Magna's \"PathFinder\" agent (\"Pathfinder
-  OnDemand\").\nThis is the equivalent of pressing the Pathfinder OnDemand button
-  in the Magna UI. \n\nOnDemand pathfinder scans are typically performed after a host
-  is suspected (this is done automatically by Magna, but a reason external to Magna
-  can cause suspicion in this case). After pathfinder is launched the following is
-  achieved:\n* As a result of the scan pathfinder can find Malware or Riskware\n*
-  Suspicious artifacts (a list of rare and suspicious executables) can be used for
-  further investigation"
+comment: Deprecated. This script is deprecated. LightCyber Magna is no longer available.
 system: true
 args:
 - name: id
@@ -38,3 +33,4 @@ dependson:
   must:
   - lcm-pathfinder-scan
 timeout: 0s
+fromversion: 5.0.0

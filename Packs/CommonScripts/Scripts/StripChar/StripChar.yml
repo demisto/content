@@ -30,3 +30,4 @@ subtype: python3
 runonce: false
 tests:
 - stripChars - Test
+fromversion: 5.0.0

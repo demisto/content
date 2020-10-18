@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import os
+import sys
 from os.path import isdir
 from os.path import isfile
 from subprocess import Popen, PIPE
@@ -22,7 +23,12 @@ def get_zip_path(args):
         for entry in entries:
             fn = demisto.get(entry, 'File')
 
-            is_text = type(fn) in [unicode, str]
+            # We check the python version to prevent encoding issues. Effects Demisto 4.5+
+            if sys.version_info > (3, 0):
+                is_text = type(fn) is str
+            else:
+                is_text = type(fn) in [unicode, str]  # pylint: disable=E0602
+
             is_correct_file = args.get('fileName', '').lower() == fn.lower()
             is_zip = fn.lower().endswith('.zip')
 
@@ -63,10 +69,10 @@ def get_zip_path(args):
         })
         sys.exit(0)
 
-    return res[0]['Contents']['path']
+    return res[0]['Contents']
 
 
-def extract(file_path, dir_path, password=None):
+def extract(file_info, dir_path, password=None):
     """
     :param file_path: the zip file path.
     :param dir_path: directory  that the file will be extract to
@@ -76,16 +82,31 @@ def extract(file_path, dir_path, password=None):
         excluded_files: the excludedfiles which are in dir_path
     """
     # remembering which files and dirs we currently have so we add them later as newly extracted files.
+    file_path = file_info['path']
+    file_name = file_info['name']
     excluded_files = [f for f in os.listdir('.') if isfile(f)]
     excluded_dirs = [d for d in os.listdir('.') if isdir(d)]
     # extracting the zip file
-    cmd = '7z x -p{} -o{} {}'.format(password, dir_path, file_path)
+    """
+    We check the python version to ensure the docker image contains the necessary packages. 4.5+
+    use the new docker image.
+    """
+    if '.rar' in file_name and sys.version_info > (3, 0):
+        if password:
+            cmd = 'unrar x -p {} {} {}'.format(password, file_path, dir_path)
+        else:
+            cmd = 'unrar x -p- {} {}'.format(file_path, dir_path)
+    else:
+        cmd = '7z x -p{} -o{} {}'.format(password, dir_path, file_path)
     process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
     # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
-    if stderr:
-        return_error(str(stderr))
     stdout = str(stdout)
+    if stderr:
+        if 'Incorrect password' in str(stderr):
+            return_error("The .rar file provided requires a password.")
+        else:
+            return_error(str(stderr))
     if 'Wrong password?' in stdout:
         demisto.debug(stdout)
         return_error("Data Error in encrypted file. Wrong password?")
@@ -146,8 +167,8 @@ def main():
     dir_path = mkdtemp()
     try:
         args = demisto.args()
-        file_path = get_zip_path(args)
-        excluded_dirs, excluded_files = extract(file_path=file_path, dir_path=dir_path, password=args.get('password'))
+        file_info = get_zip_path(args)
+        excluded_dirs, excluded_files = extract(file_info=file_info, dir_path=dir_path, password=args.get('password'))
         upload_files(excluded_dirs, excluded_files, dir_path)
 
     except Exception as e:

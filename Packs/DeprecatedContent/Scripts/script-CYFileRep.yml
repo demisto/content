@@ -2,12 +2,17 @@ commonfields:
   id: CYFileRep
   version: -1
 name: CYFileRep
-script: |-
+script: >-
   # Retrieve file entry reputation using Cylance
+
   # First, get the file entry, check with Cylance if the file is known and if not, upload the file, wait 5 seconds and check again
+
   import time
+
   e = demisto.args()['entry']
+
   fileEntry = demisto.executeCommand('getEntry', {'id': e})
+
   if fileEntry and len(fileEntry) == 1 and fileEntry[0]['Type'] != entryTypes['error']:
       fe = fileEntry[0]
       if fe['File'] and demisto.get(fe, 'FileMetadata.md5'):
@@ -47,7 +52,7 @@ tags:
 - threat-intel
 - cylance
 - file
-comment: Retrieve file reputation and upload the file if required for analysis
+comment: Deprecated. This script is deprecated. Use the Cylance integration instead.
 system: true
 deprecated: true
 args:
@@ -81,4 +86,5 @@ dependson:
   - cy-upload
 timeout: 0s
 tests:
-  - No test - no instance
+- No test - no instance
+fromversion: 5.0.0

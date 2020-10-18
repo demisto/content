@@ -65,11 +65,7 @@ script:
       secret: false
     - default: false
       defaultValue: w7x64
-      description: 'Operating System to run analysis on(comma separated). possible
-        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
-        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
-        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
-        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      description: 'Operating System to run analysis on(comma separated). possible values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
       isArray: false
       name: systems
       required: false
@@ -162,11 +158,7 @@ script:
       secret: false
     - default: false
       defaultValue: w7x64
-      description: 'Operating System to run analysis on(comma separated). possible
-        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
-        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
-        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
-        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      description: 'Operating System to run analysis on(comma separated). possible values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
       isArray: false
       name: systems
       required: false
@@ -406,11 +398,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Operating System to run analysis on(comma separated). possible
-        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
-        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
-        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
-        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      description: 'Operating System to run analysis on(comma separated). possible values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
       isArray: false
       name: systems
       required: false
@@ -510,8 +498,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Download a resource belonging to a report. This can be the full report,
-      dropped binaries, etc.
+    description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc.
     execution: false
     name: joe-download-report
     outputs:
@@ -553,11 +540,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Operating System to run analysis on(comma separated). possible
-        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
-        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
-        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
-        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      description: 'Operating System to run analysis on(comma separated). possible values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
       isArray: false
       name: systems
       required: false
@@ -637,8 +620,7 @@ script:
       type: string
   - arguments:
     - default: true
-      description: 'Search string which will search in the following fields only:
-        webid, md5, sha1, sha256, filename, URL, comments.'
+      description: 'Search string which will search in the following fields only: webid, md5, sha1, sha256, filename, URL, comments.'
       isArray: false
       name: query
       required: true
@@ -713,8 +695,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Download the sample file of an analysis. for security reasons, the
-      extension will be "dontrun"
+    description: Download the sample file of an analysis. for security reasons, the extension will be "dontrun"
     execution: false
     name: joe-download-sample
     outputs:
@@ -756,3 +737,4 @@ script:
 tests:
 - JoeSecurityTestPlaybook
 - JoeSecurityTestDetonation
+fromversion: 5.0.0

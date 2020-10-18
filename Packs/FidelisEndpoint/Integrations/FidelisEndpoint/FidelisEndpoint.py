@@ -683,7 +683,7 @@ def list_alerts_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
     alerts = response.get('data', {}).get('entities', [])
     if not alerts:
-        return f'No alerts were found.', {}, {}
+        return 'No alerts were found.', {}, {}
 
     for alert in alerts:
         contents.append({
@@ -737,7 +737,7 @@ def host_info_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     host = args.get('host', '')
 
     if not host and not ip_address:
-        raise Exception(f'You must provide either ip_address or host')
+        raise Exception('You must provide either ip_address or host')
 
     contents = []
     context_standards = []
@@ -748,11 +748,11 @@ def host_info_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         raise Exception(response.get('error'))
     hosts = response.get('data', {})
     if not hosts:
-        return f'No hosts was found', {}, {}
+        return 'No hosts was found', {}, {}
 
     host_info = hosts.get('entities', [])
     if not host_info:
-        return f'No entities were found for the host', {}, {}
+        return 'No entities were found for the host', {}, {}
     for host in host_info:
         contents.append({
             'Hostname': host.get('hostName'),
@@ -853,7 +853,7 @@ def file_search_reasult_metadata(client: Client, args: dict) -> Tuple[str, Dict,
 
     response = client.file_search_results_metadata(job_id, job_result_id)
     if not response.get('success'):
-        return f'Could not find results for this job ID.', {}, {}
+        return 'Could not find results for this job ID.', {}, {}
     data = response.get('data', {}).get('jobResultInfos', [])
     if not data:
         return 'No results found.\nCheck the job status, it might be still running.', {}, {}
@@ -1547,7 +1547,7 @@ def query_by_source_ip(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
-        return f'No events were found', {}, {}
+        return 'No events were found', {}, {}
 
     for event in events:
         contents.append({
@@ -1622,7 +1622,7 @@ def query_events_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
-        return f'No events were found', {}, {}
+        return 'No events were found', {}, {}
 
     for event in events:
         contents.append({

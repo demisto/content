@@ -35,7 +35,7 @@
 <li class="has-line-data" data-line-start="29" data-line-end="30"><a href="#h_0e8d08a7-25b5-469b-ba35-27160350e04f" target="_self">Get a threat summary: sentinelone-threat-summary</a></li>
 <li class="has-line-data" data-line-start="30" data-line-end="31"><a href="#h_36d71e47-7c93-47e3-857f-01521ededa58" target="_self">Mark suspicious threats: sentinelone-mark-as-threat</a></li>
 <li class="has-line-data" data-line-start="31" data-line-end="32"><a href="#h_6255110c-9ff9-478e-afca-5a982802ac17" target="_self">Mitigate threats: sentinelone-mitigate-threat</a></li>
-<li class="has-line-data" data-line-start="32" data-line-end="33"><a href="Resolve%20threats:%20sentinelone-resolve-threat" target="_self">Resolve threats: sentinelone-resolve-threat</a></li>
+<li class="has-line-data" data-line-start="32" data-line-end="33"><a href="#9_sentineloneresolvethreat_788" target="_self">Resolve threats: sentinelone-resolve-threat</a></li>
 <li class="has-line-data" data-line-start="33" data-line-end="34"><a href="#h_e4744817-ad70-417e-a772-8c2926087277" target="_self">Get agent details: sentinelone-get-agent</a></li>
 <li class="has-line-data" data-line-start="34" data-line-end="35"><a href="#h_c5e1149a-ccf8-429d-aaf8-3f55a4f190d8" target="_self">Get a list of sites: sentinelone-get-sites</a></li>
 <li class="has-line-data" data-line-start="35" data-line-end="36"><a href="#h_7a21d365-5e9f-4bfc-8244-57f65a169794" target="_self">Get a site list: sentinelone-get-site</a></li>
@@ -198,7 +198,7 @@
             "NetworkStatus": "connected", 
             "EncryptedApplications": true, 
             "ThreatCount": 0, 
-            "ComputerName": "Prasens-MacBook-Pro", 
+            "ComputerName": "Bills-MacBook-Pro", 
             "IsActive": false, 
             "OSName": "OS X", 
             "SiteName": "demisto", 
@@ -305,7 +305,7 @@
 <tbody>
 <tr>
 <td>2.6.3.2538</td>
-<td>Prasens-MacBook-Pro</td>
+<td>Bills-MacBook-Pro</td>
 <td>2018-12-02T08:48:37.792682Z</td>
 <td>local</td>
 <td>true</td>
@@ -586,7 +586,7 @@
 <pre>{
     "SentinelOne.Exclusions": [
         {
-            "UserName": "Chris Goodman", 
+            "UserName": "John Roe", 
             "UserID": "433273625970238486", 
             "Value": "MDF", 
             "Source": "user", 
@@ -626,7 +626,7 @@
 <td>file_type</td>
 <td>2018-11-05T18:48:49.070978Z</td>
 <td>433273625970238486</td>
-<td>Chris Goodman</td>
+<td>John Roe</td>
 <td>MDF</td>
 </tr>
 </tbody>
@@ -1972,7 +1972,7 @@
         {
             "UnlimitedLicenses": true, 
             "Name": "demisto", 
-            "Creator": "Chris Goodman", 
+            "Creator": "John Roe", 
             "AccountName": "SentinelOne", 
             "State": "active", 
             "HealthStatus": true, 
@@ -2014,7 +2014,7 @@
 <td>SentinelOne</td>
 <td>5</td>
 <td>2018-10-19T00:58:41.644879Z</td>
-<td>Chris Goodman</td>
+<td>John Roe</td>
 <td>true</td>
 <td>475482421366727779</td>
 <td>demisto</td>
@@ -2153,7 +2153,7 @@
             "IsDefault": false, 
             "UnlimitedLicenses": true, 
             "Name": "demisto", 
-            "Creator": "Chris Goodman", 
+            "Creator": "John Roe", 
             "AccountName": "SentinelOne", 
             "State": "active", 
             "HealthStatus": true, 
@@ -2199,7 +2199,7 @@
 <td>433241117337583618</td>
 <td>5</td>
 <td>2018-10-19T00:58:41.644879Z</td>
-<td>Chris Goodman</td>
+<td>John Roe</td>
 <td>true</td>
 <td>475482421366727779</td>
 <td>false</td>
@@ -2504,13 +2504,13 @@
             "UserID": "433273625970238486", 
             "Comments": null, 
             "ID": "475482421492556909", 
-            "PrimaryDescription": "The management user Chris Goodman created demisto site.", 
+            "PrimaryDescription": "The management user John Roe created demisto site.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-10-19T00:58:41.660287Z", 
             "AgentID": null, 
             "Data": {
                 "siteName": "demisto", 
-                "username": "Chris Goodman", 
+                "username": "John Roe", 
                 "siteId": 475482421366727800
             }, 
             "GroupID": null, 
@@ -2520,20 +2520,20 @@
             "OsFamily": null, 
             "AgentUpdatedVersion": null, 
             "Hash": null, 
-            "Description": "Chris Goodman", 
+            "Description": "John Roe", 
             "ThreatID": null, 
             "SecondaryDescription": null, 
             "ActivityType": 23, 
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "475482955955938476", 
-            "PrimaryDescription": "The management user Chris Goodman added user Neelima Rustagi as admin.", 
+            "PrimaryDescription": "The management user John Roe added user Jane Doe as admin.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-10-19T00:59:45.373592Z", 
             "AgentID": null, 
             "Data": {
-                "byUser": "Chris Goodman", 
-                "username": "Neelima Rustagi", 
+                "byUser": "John Roe", 
+                "username": "Jane Doe", 
                 "role": "admin"
             }, 
             "GroupID": null, 
@@ -2550,12 +2550,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "475553388201878769", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-10-19T03:19:41.551249Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -2573,12 +2573,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "476162850050648822", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-10-19T23:30:35.062505Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -2596,12 +2596,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "476162850092591864", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-10-19T23:30:35.068827Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -2619,12 +2619,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "478078612361294941", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-10-22T14:56:51.726777Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -2642,12 +2642,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "478078815793427551", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-10-22T14:57:15.978615Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -2665,12 +2665,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "499090543532554580", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-11-20T14:43:49.115665Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -2688,12 +2688,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "500911232606524037", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-11-23T03:01:12.166753Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -2711,12 +2711,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "504856083882582151", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-11-28T13:38:55.085497Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -2734,12 +2734,12 @@
             "UserID": null, 
             "Comments": null, 
             "ID": "507609080257599870", 
-            "PrimaryDescription": "Prasens-MBP subscribed and joined the group Default Group.", 
+            "PrimaryDescription": "Bills-MBP subscribed and joined the group Default Group.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-02T08:48:37.826824Z", 
             "AgentID": "507609079972387179", 
             "Data": {
-                "computerName": "Prasens-MBP", 
+                "computerName": "Bills-MBP", 
                 "group": "Default Group", 
                 "optionalGroups": []
             }, 
@@ -2757,13 +2757,13 @@
             "UserID": null, 
             "Comments": null, 
             "ID": "507609080626698626", 
-            "PrimaryDescription": "System initiated a full disk scan to the agent: Prasens-MBP (98.234.105.153).", 
+            "PrimaryDescription": "System initiated a full disk scan to the agent: Bills-MBP (98.234.105.153).", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-02T08:48:37.871144Z", 
             "AgentID": "507609079972387179", 
             "Data": {
                 "externalIp": "98.234.105.153", 
-                "computerName": "Prasens-MBP", 
+                "computerName": "Bills-MBP", 
                 "system": true, 
                 "uuid": "9A532F6E-0F87-5F8E-B6AB-C0206599C568"
             }, 
@@ -2781,13 +2781,13 @@
             "UserID": null, 
             "Comments": null, 
             "ID": "507609341168474555", 
-            "PrimaryDescription": "Agent Prasens-MBP started full disk scan at Sun, 02 Dec 2018, 08:49:08 UTC.", 
+            "PrimaryDescription": "Agent Bills-MBP started full disk scan at Sun, 02 Dec 2018, 08:49:08 UTC.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-02T08:49:08.929672Z", 
             "AgentID": "507609079972387179", 
             "Data": {
                 "status": "started", 
-                "computerName": "Prasens-MBP", 
+                "computerName": "Bills-MBP", 
                 "createdAt": "2018-12-02T08:49:08.908384Z"
             }, 
             "GroupID": "475482421375116388", 
@@ -2804,13 +2804,13 @@
             "UserID": null, 
             "Comments": null, 
             "ID": "508159023422660725", 
-            "PrimaryDescription": "Agent Prasens-MBP completed full disk scan at Mon, 03 Dec 2018, 03:01:16 UTC.", 
+            "PrimaryDescription": "Agent Bills-MBP completed full disk scan at Mon, 03 Dec 2018, 03:01:16 UTC.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-03T03:01:16.160715Z", 
             "AgentID": "507609079972387179", 
             "Data": {
                 "status": "finished", 
-                "computerName": "Prasens-MBP", 
+                "computerName": "Bills-MBP", 
                 "createdAt": "2018-12-03T03:01:16.153462Z"
             }, 
             "GroupID": "475482421375116388", 
@@ -2822,7 +2822,7 @@
             "Hash": null, 
             "Description": null, 
             "ThreatID": "509259775582960700", 
-            "SecondaryDescription": "/Users/prasenshelar/.Trash/eicar.com.txt", 
+            "SecondaryDescription": "/Users/bill/.Trash/eicar.com.txt", 
             "ActivityType": 18, 
             "UserID": null, 
             "Comments": null, 
@@ -2833,9 +2833,9 @@
             "AgentID": "507609079972387179", 
             "Data": {
                 "username": null, 
-                "computerName": "Prasens-MBP", 
+                "computerName": "Bills-MBP", 
                 "threatClassificationSource": "Engine", 
-                "filePath": "/Users/prasenshelar/.Trash/eicar.com.txt", 
+                "filePath": "/Users/bill/.Trash/eicar.com.txt", 
                 "threatClassification": "OSX.Malware", 
                 "fileContentHash": "3395856ce81f2b7382dee72602f798b642f14140", 
                 "fileDisplayName": "eicar.com.txt"
@@ -2849,19 +2849,19 @@
             "Hash": null, 
             "Description": null, 
             "ThreatID": "509259775582960700", 
-            "SecondaryDescription": "/Users/prasenshelar/.Trash/eicar.com.txt", 
+            "SecondaryDescription": "/Users/bill/.Trash/eicar.com.txt", 
             "ActivityType": 2004, 
             "UserID": null, 
             "Comments": null, 
             "ID": "509259776623148097", 
-            "PrimaryDescription": "The agent Prasens-MBP successfully quarantined the threat: eicar.com.txt.", 
+            "PrimaryDescription": "The agent Bills-MBP successfully quarantined the threat: eicar.com.txt.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-04T15:28:16.168238Z", 
             "AgentID": "507609079972387179", 
             "Data": {
-                "computerName": "Prasens-MBP", 
+                "computerName": "Bills-MBP", 
                 "threatClassificationSource": "Engine", 
-                "filePath": "/Users/prasenshelar/.Trash/eicar.com.txt", 
+                "filePath": "/Users/bill/.Trash/eicar.com.txt", 
                 "threatClassification": "OSX.Malware", 
                 "fileContentHash": "3395856ce81f2b7382dee72602f798b642f14140", 
                 "fileDisplayName": "eicar.com.txt"
@@ -2903,12 +2903,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "510432832787879335", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into the management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into the management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-06T06:18:55.360302Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -2926,12 +2926,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "510434401356912041", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged out of the management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged out of the management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-06T06:22:02.348128Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "role": "admin"
             }, 
             "GroupID": null, 
@@ -2948,12 +2948,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "512980043203657099", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into the management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into the management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-09T18:39:46.504215Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -2971,12 +2971,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "513485626755302270", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into the management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into the management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-10T11:24:16.759935Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -2987,19 +2987,19 @@
             "OsFamily": null, 
             "AgentUpdatedVersion": null, 
             "Hash": null, 
-            "Description": "Neelima Rustagi", 
+            "Description": "Jane Doe", 
             "ThreatID": null, 
             "SecondaryDescription": null, 
             "ActivityType": 23, 
             "UserID": "513488018280334208", 
             "Comments": null, 
             "ID": "513488018364220290", 
-            "PrimaryDescription": "The management user Neelima Rustagi added user Yarden Sade as admin.", 
+            "PrimaryDescription": "The management user Jane Doe added user Yarden Sade as admin.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-10T11:29:01.861735Z", 
             "AgentID": null, 
             "Data": {
-                "byUser": "Neelima Rustagi", 
+                "byUser": "Jane Doe", 
                 "username": "Yarden Sade", 
                 "role": "admin"
             }, 
@@ -3017,12 +3017,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "513489064113259396", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged out of the management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged out of the management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-10T11:31:06.525318Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "role": "admin"
             }, 
             "GroupID": null, 
@@ -3107,12 +3107,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "513504203889755456", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into the management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into the management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-10T12:01:11.326905Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -3694,12 +3694,12 @@
             "UserID": "475482955872052394", 
             "Comments": null, 
             "ID": "514803118157132740", 
-            "PrimaryDescription": "The management user Neelima Rustagi logged into the management console.", 
+            "PrimaryDescription": "The management user Jane Doe logged into the management console.", 
             "SiteID": "475482421366727779", 
             "UpdatedAt": "2018-12-12T07:01:53.974164Z", 
             "AgentID": null, 
             "Data": {
-                "username": "Neelima Rustagi", 
+                "username": "Jane Doe", 
                 "source": "mgmt", 
                 "role": "admin"
             }, 
@@ -3728,8 +3728,8 @@
 <tbody>
 <tr style="height: 65px;">
 <td style="width: 161.667px; height: 65px;">475482421492556909</td>
-<td style="width: 164.333px; height: 65px;">The management user Chris Goodman created demisto site.</td>
-<td style="width: 658px; height: 65px;">siteId: 475482421366727779&lt;br&gt;siteName: demisto&lt;br&gt;username: Chris Goodman</td>
+<td style="width: 164.333px; height: 65px;">The management user John Roe created demisto site.</td>
+<td style="width: 658px; height: 65px;">siteId: 475482421366727779&lt;br&gt;siteName: demisto&lt;br&gt;username: John Roe</td>
 <td style="width: 160px; height: 65px;">433273625970238486</td>
 <td style="width: 160px; height: 65px;">2018-10-19T00:58:41.660278Z</td>
 <td style="width: 160px; height: 65px;">2018-10-19T00:58:41.660287Z</td>
@@ -3737,8 +3737,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">475482955955938476</td>
-<td style="width: 164.333px; height: 87px;">The management user Chris Goodman added user Neelima Rustagi as admin.</td>
-<td style="width: 658px; height: 87px;">byUser: Chris Goodman&lt;br&gt;role: admin&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user John Roe added user Jane Doe as admin.</td>
+<td style="width: 658px; height: 87px;">byUser: John Roe&lt;br&gt;role: admin&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-10-19T00:59:45.373584Z</td>
 <td style="width: 160px; height: 87px;">2018-10-19T00:59:45.373592Z</td>
@@ -3746,8 +3746,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">475553388201878769</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-10-19T03:19:41.551236Z</td>
 <td style="width: 160px; height: 87px;">2018-10-19T03:19:41.551249Z</td>
@@ -3755,8 +3755,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">476162850050648822</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-10-19T23:30:35.062484Z</td>
 <td style="width: 160px; height: 87px;">2018-10-19T23:30:35.062505Z</td>
@@ -3764,8 +3764,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">476162850092591864</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-10-19T23:30:35.068812Z</td>
 <td style="width: 160px; height: 87px;">2018-10-19T23:30:35.068827Z</td>
@@ -3773,8 +3773,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">478078612361294941</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-10-22T14:56:51.726762Z</td>
 <td style="width: 160px; height: 87px;">2018-10-22T14:56:51.726777Z</td>
@@ -3782,8 +3782,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">478078815793427551</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-10-22T14:57:15.978605Z</td>
 <td style="width: 160px; height: 87px;">2018-10-22T14:57:15.978615Z</td>
@@ -3791,8 +3791,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">499090543532554580</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-11-20T14:43:49.115657Z</td>
 <td style="width: 160px; height: 87px;">2018-11-20T14:43:49.115665Z</td>
@@ -3800,8 +3800,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">500911232606524037</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-11-23T03:01:12.166743Z</td>
 <td style="width: 160px; height: 87px;">2018-11-23T03:01:12.166753Z</td>
@@ -3809,8 +3809,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">504856083882582151</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-11-28T13:38:55.085488Z</td>
 <td style="width: 160px; height: 87px;">2018-11-28T13:38:55.085497Z</td>
@@ -3818,8 +3818,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">507609080257599870</td>
-<td style="width: 164.333px; height: 87px;">Prasens-MBP subscribed and joined the group Default Group.</td>
-<td style="width: 658px; height: 87px;">computerName: Prasens-MBP&lt;br&gt;group: Default Group&lt;br&gt;optionalGroups:</td>
+<td style="width: 164.333px; height: 87px;">Bills-MBP subscribed and joined the group Default Group.</td>
+<td style="width: 658px; height: 87px;">computerName: Bills-MBP&lt;br&gt;group: Default Group&lt;br&gt;optionalGroups:</td>
 <td style="width: 160px; height: 87px;"> </td>
 <td style="width: 160px; height: 87px;">2018-12-02T08:48:37.826816Z</td>
 <td style="width: 160px; height: 87px;">2018-12-02T08:48:37.826824Z</td>
@@ -3827,8 +3827,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">507609080626698626</td>
-<td style="width: 164.333px; height: 87px;">System initiated a full disk scan to the agent: Prasens-MBP (98.234.105.153).</td>
-<td style="width: 658px; height: 87px;">computerName: Prasens-MBP&lt;br&gt;externalIp: 98.234.105.153&lt;br&gt;system: true&lt;br&gt;uuid: 9A532F6E-0F87-5F8E-B6AB-C0206599C568</td>
+<td style="width: 164.333px; height: 87px;">System initiated a full disk scan to the agent: Bills-MBP (98.234.105.153).</td>
+<td style="width: 658px; height: 87px;">computerName: Bills-MBP&lt;br&gt;externalIp: 98.234.105.153&lt;br&gt;system: true&lt;br&gt;uuid: 9A532F6E-0F87-5F8E-B6AB-C0206599C568</td>
 <td style="width: 160px; height: 87px;"> </td>
 <td style="width: 160px; height: 87px;">2018-12-02T08:48:37.871136Z</td>
 <td style="width: 160px; height: 87px;">2018-12-02T08:48:37.871144Z</td>
@@ -3836,8 +3836,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">507609341168474555</td>
-<td style="width: 164.333px; height: 87px;">Agent Prasens-MBP started full disk scan at Sun, 02 Dec 2018, 08:49:08 UTC.</td>
-<td style="width: 658px; height: 87px;">computerName: Prasens-MBP&lt;br&gt;createdAt: 2018-12-02T08:49:08.908384Z&lt;br&gt;status: started</td>
+<td style="width: 164.333px; height: 87px;">Agent Bills-MBP started full disk scan at Sun, 02 Dec 2018, 08:49:08 UTC.</td>
+<td style="width: 658px; height: 87px;">computerName: Bills-MBP&lt;br&gt;createdAt: 2018-12-02T08:49:08.908384Z&lt;br&gt;status: started</td>
 <td style="width: 160px; height: 87px;"> </td>
 <td style="width: 160px; height: 87px;">2018-12-02T08:49:08.929660Z</td>
 <td style="width: 160px; height: 87px;">2018-12-02T08:49:08.929672Z</td>
@@ -3845,8 +3845,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">508159023422660725</td>
-<td style="width: 164.333px; height: 87px;">Agent Prasens-MBP completed full disk scan at Mon, 03 Dec 2018, 03:01:16 UTC.</td>
-<td style="width: 658px; height: 87px;">computerName: Prasens-MBP&lt;br&gt;createdAt: 2018-12-03T03:01:16.153462Z&lt;br&gt;status: finished</td>
+<td style="width: 164.333px; height: 87px;">Agent Bills-MBP completed full disk scan at Mon, 03 Dec 2018, 03:01:16 UTC.</td>
+<td style="width: 658px; height: 87px;">computerName: Bills-MBP&lt;br&gt;createdAt: 2018-12-03T03:01:16.153462Z&lt;br&gt;status: finished</td>
 <td style="width: 160px; height: 87px;"> </td>
 <td style="width: 160px; height: 87px;">2018-12-03T03:01:16.160707Z</td>
 <td style="width: 160px; height: 87px;">2018-12-03T03:01:16.160715Z</td>
@@ -3855,7 +3855,7 @@
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">509259775683623999</td>
 <td style="width: 164.333px; height: 87px;">Threat detected, name: eicar.com.txt.</td>
-<td style="width: 658px; height: 87px;">computerName: Prasens-MBP&lt;br&gt;fileContentHash: 3395856ce81f2b7382dee72602f798b642f14140&lt;br&gt;fileDisplayName: eicar.com.txt&lt;br&gt;filePath: /Users/prasenshelar/.Trash/eicar.com.txt&lt;br&gt;threatClassification: OSX.Malware&lt;br&gt;threatClassificationSource: Engine&lt;br&gt;username: null</td>
+<td style="width: 658px; height: 87px;">computerName: Bills-MBP&lt;br&gt;fileContentHash: 3395856ce81f2b7382dee72602f798b642f14140&lt;br&gt;fileDisplayName: eicar.com.txt&lt;br&gt;filePath: /Users/bill/.Trash/eicar.com.txt&lt;br&gt;threatClassification: OSX.Malware&lt;br&gt;threatClassificationSource: Engine&lt;br&gt;username: null</td>
 <td style="width: 160px; height: 87px;"> </td>
 <td style="width: 160px; height: 87px;">2018-12-04T15:28:16.055815Z</td>
 <td style="width: 160px; height: 87px;">2018-12-04T15:28:16.055823Z</td>
@@ -3863,8 +3863,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">509259776623148097</td>
-<td style="width: 164.333px; height: 87px;">The agent Prasens-MBP successfully quarantined the threat: eicar.com.txt.</td>
-<td style="width: 658px; height: 87px;">computerName: Prasens-MBP&lt;br&gt;fileContentHash: 3395856ce81f2b7382dee72602f798b642f14140&lt;br&gt;fileDisplayName: eicar.com.txt&lt;br&gt;filePath: /Users/prasenshelar/.Trash/eicar.com.txt&lt;br&gt;threatClassification: OSX.Malware&lt;br&gt;threatClassificationSource: Engine</td>
+<td style="width: 164.333px; height: 87px;">The agent Bills-MBP successfully quarantined the threat: eicar.com.txt.</td>
+<td style="width: 658px; height: 87px;">computerName: Bills-MBP&lt;br&gt;fileContentHash: 3395856ce81f2b7382dee72602f798b642f14140&lt;br&gt;fileDisplayName: eicar.com.txt&lt;br&gt;filePath: /Users/bill/.Trash/eicar.com.txt&lt;br&gt;threatClassification: OSX.Malware&lt;br&gt;threatClassificationSource: Engine</td>
 <td style="width: 160px; height: 87px;"> </td>
 <td style="width: 160px; height: 87px;">2018-12-04T15:28:16.168216Z</td>
 <td style="width: 160px; height: 87px;">2018-12-04T15:28:16.168238Z</td>
@@ -3881,8 +3881,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">510432832787879335</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into the management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into the management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-12-06T06:18:55.360294Z</td>
 <td style="width: 160px; height: 87px;">2018-12-06T06:18:55.360302Z</td>
@@ -3890,8 +3890,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">510434401356912041</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged out of the management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged out of the management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-12-06T06:22:02.348116Z</td>
 <td style="width: 160px; height: 87px;">2018-12-06T06:22:02.348128Z</td>
@@ -3899,8 +3899,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">512980043203657099</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into the management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into the management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-12-09T18:39:46.504206Z</td>
 <td style="width: 160px; height: 87px;">2018-12-09T18:39:46.504215Z</td>
@@ -3908,8 +3908,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">513485626755302270</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into the management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into the management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-12-10T11:24:16.759925Z</td>
 <td style="width: 160px; height: 87px;">2018-12-10T11:24:16.759935Z</td>
@@ -3917,8 +3917,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">513488018364220290</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi added user Yarden Sade as admin.</td>
-<td style="width: 658px; height: 87px;">byUser: Neelima Rustagi&lt;br&gt;role: admin&lt;br&gt;username: Yarden Sade</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe added user Yarden Sade as admin.</td>
+<td style="width: 658px; height: 87px;">byUser: Jane Doe&lt;br&gt;role: admin&lt;br&gt;username: Yarden Sade</td>
 <td style="width: 160px; height: 87px;">513488018280334208</td>
 <td style="width: 160px; height: 87px;">2018-12-10T11:29:01.861727Z</td>
 <td style="width: 160px; height: 87px;">2018-12-10T11:29:01.861735Z</td>
@@ -3926,8 +3926,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">513489064113259396</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged out of the management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged out of the management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-12-10T11:31:06.525307Z</td>
 <td style="width: 160px; height: 87px;">2018-12-10T11:31:06.525318Z</td>
@@ -3962,8 +3962,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">513504203889755456</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into the management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into the management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-12-10T12:01:11.326896Z</td>
 <td style="width: 160px; height: 87px;">2018-12-10T12:01:11.326905Z</td>
@@ -4169,8 +4169,8 @@
 </tr>
 <tr style="height: 87px;">
 <td style="width: 161.667px; height: 87px;">514803118157132740</td>
-<td style="width: 164.333px; height: 87px;">The management user Neelima Rustagi logged into the management console.</td>
-<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Neelima Rustagi</td>
+<td style="width: 164.333px; height: 87px;">The management user Jane Doe logged into the management console.</td>
+<td style="width: 658px; height: 87px;">role: admin&lt;br&gt;source: mgmt&lt;br&gt;username: Jane Doe</td>
 <td style="width: 160px; height: 87px;">475482955872052394</td>
 <td style="width: 160px; height: 87px;">2018-12-12T07:01:53.974154Z</td>
 <td style="width: 160px; height: 87px;">2018-12-12T07:01:53.974164Z</td>
@@ -4334,7 +4334,7 @@
         {
             "inherits": true, 
             "name": "Default Group", 
-            "creator": "Chris Goodman", 
+            "creator": "John Roe", 
             "filterName": null, 
             "updatedAt": "2019-07-25T07:23:58.622476Z", 
             "filterId": null, 
@@ -4371,7 +4371,7 @@
 <td>475482421375116388</td>
 <td>Default Group</td>
 <td>static</td>
-<td>Chris Goodman</td>
+<td>John Roe</td>
 <td>433273625970238486</td>
 <td>2018-10-19T00:58:41.646045Z</td>
 </tr>

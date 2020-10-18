@@ -124,13 +124,17 @@ def prepare_args(command, args):
     :rtype: ``dict``
     """
     if command in ['msgraph-mail-create-draft', 'send-mail']:
+        if args.get('htmlBody', None):
+            email_body = args.get('htmlBody')
+        else:
+            email_body = args.get('body', '')
         return {
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
             'subject': args.get('subject', ''),
-            'body': args.get('body', ''),
-            'body_type': args.get('body_type', 'text'),
+            'body': email_body,
+            'body_type': args.get('body_type', 'html'),
             'flag': args.get('flag', 'notFlagged'),
             'importance': args.get('importance', 'Low'),
             'internet_message_headers': argToList(args.get('headers')),
@@ -303,10 +307,17 @@ class MsGraphClient:
         :rtype: ``list`` and ``list``
         """
         target_modified_time = add_second_to_str_date(last_fetch)  # workaround to Graph API bug
-        suffix_endpoint = (f"users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
-                           f"?$filter=lastModifiedDateTime ge {target_modified_time}"
-                           f"&$orderby=lastModifiedDateTime &$top={self._emails_fetch_limit}&select=*")
-        fetched_emails = self.ms_client.http_request('GET', suffix_endpoint).get('value', [])[:self._emails_fetch_limit]
+        suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
+        params = {
+            "$filter": f"receivedDateTime gt {target_modified_time}",
+            "$orderby": "receivedDateTime asc",
+            "$select": "*",
+            "$top": self._emails_fetch_limit
+        }
+
+        fetched_emails = self.ms_client.http_request(
+            'GET', suffix_endpoint, params=params
+        ).get('value', [])[:self._emails_fetch_limit]
 
         if exclude_ids:  # removing emails in order to prevent duplicate incidents
             fetched_emails = [email for email in fetched_emails if email.get('id') not in exclude_ids]
@@ -719,7 +730,7 @@ class MsGraphClient:
 
         message_content.pop('attachments', None)
         message_content.pop('internet_message_headers', None)
-        human_readable = tableToMarkdown(f'Email was sent successfully.', message_content)
+        human_readable = tableToMarkdown('Email was sent successfully.', message_content)
         ec = {self.CONTEXT_SENT_EMAIL_PATH: message_content}
 
         return human_readable, ec

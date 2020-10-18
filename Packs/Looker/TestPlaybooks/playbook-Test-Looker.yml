@@ -103,8 +103,7 @@ tasks:
       id: 7366f700-e412-4300-8d18-7202aeb326ae
       version: -1
       name: looker-run-look
-      description: Run a given look's query and return the results in the requested
-        format.
+      description: Run a given look's query and return the results in the requested format.
       script: Looker|||looker-run-look
       type: regular
       iscommand: true
@@ -213,8 +212,7 @@ tasks:
       id: 678b6c89-2b6c-42fb-82b8-587adffcc0f7
       version: -1
       name: looker-run-inline-query
-      description: Run a query by defining it in the command arguments, rather than
-        a saved query in looker.
+      description: Run a query by defining it in the command arguments, rather than a saved query in looker.
       script: '|||looker-run-inline-query'
       type: regular
       iscommand: true
@@ -262,3 +260,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

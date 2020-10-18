@@ -63,12 +63,12 @@ def test_module() -> None:
         supported_langs = list_languages()
         conf_langs = argToList(demisto.getParam('langs'))
         if conf_langs:
-            for l in conf_langs:
-                if l not in supported_langs:
-                    demisto.results('Unsupported language configured: {}'.format(l))
+            for language in conf_langs:
+                if language not in supported_langs:
+                    demisto.results('Unsupported language configured: {}'.format(language))
         demisto.results('ok')
-    except Exception as ex:
-        demisto.results('Failed testing {}: {}'.format(TESSERACT_EXE, str(ex)))
+    except Exception as exception:
+        demisto.results('Failed testing {}: {}'.format(TESSERACT_EXE, str(exception)))
 
 
 def main():

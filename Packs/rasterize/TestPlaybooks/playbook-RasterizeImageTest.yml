@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 68de2c2c-6c0d-4167-83e7-20d0bc09f48a
+    taskid: 77fb7cb0-2107-46df-8304-23ab3dbd906e
     type: start
     task:
-      id: 68de2c2c-6c0d-4167-83e7-20d0bc09f48a
+      id: 77fb7cb0-2107-46df-8304-23ab3dbd906e
       version: -1
       name: ""
       iscommand: false
@@ -21,17 +21,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 250330ca-f4af-42b2-8184-e905b8ec493c
+    taskid: cb5d4074-31f9-41ca-86a7-2b80e4428c1c
     type: regular
     task:
-      id: 250330ca-f4af-42b2-8184-e905b8ec493c
+      id: cb5d4074-31f9-41ca-86a7-2b80e4428c1c
       version: -1
       name: Generate File
       scriptName: GenerateImageFileEntry
@@ -45,17 +49,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 858d11de-d159-4b08-880d-dc93f68bdcd6
+    taskid: 6fcb729b-74c5-4f90-822a-39d510cac8a7
     type: regular
     task:
-      id: 858d11de-d159-4b08-880d-dc93f68bdcd6
+      id: 6fcb729b-74c5-4f90-822a-39d510cac8a7
       version: -1
       name: Clear Context
       scriptName: DeleteContext
@@ -76,17 +84,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 3df4c118-611d-48bf-8d8d-a49b2c49fe74
+    taskid: 79b62c23-aae6-4e01-84e6-5f32da300ac9
     type: regular
     task:
-      id: 3df4c118-611d-48bf-8d8d-a49b2c49fe74
+      id: 79b62c23-aae6-4e01-84e6-5f32da300ac9
       version: -1
       name: Rasterize
       script: '|||rasterize-image'
@@ -104,78 +116,131 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 550
+          "x": 265,
+          "y": 545
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 807c3513-5fa8-44b5-8e6e-3272b790c24d
+    taskid: 085c5eec-b270-4cab-87f3-1cb7709a2d20
     type: condition
     task:
-      id: 807c3513-5fa8-44b5-8e6e-3272b790c24d
+      id: 085c5eec-b270-4cab-87f3-1cb7709a2d20
       version: -1
       name: Check file
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
+      '#default#':
+      - "6"
+      "Yes":
       - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "Yes"
       condition:
-      - - operator: greaterThan
+      - - operator: isExists
           left:
             value:
-              simple: InfoFile.Size
+              complex:
+                root: InfoFile
+                filters:
+                - - operator: greaterThan
+                    left:
+                      value:
+                        simple: InfoFile.Size
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "0"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: InfoFile.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: pdf
+                accessor: Size
             iscontext: true
-          right:
-            value:
-              simple: "0"
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 27764f12-bf79-4f42-85ee-b775ac78439e
-    type: regular
+    taskid: 50de363b-6c3c-4292-83c8-2d578c44cc4f
+    type: title
     task:
-      id: 27764f12-bf79-4f42-85ee-b775ac78439e
+      id: 50de363b-6c3c-4292-83c8-2d578c44cc4f
       version: -1
-      name: Close
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
+      name: Succeed
+      type: title
+      iscommand: false
       brand: Builtin
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      id: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a3208c0f-c964-40c7-8d01-a858dea9d402
+    type: regular
+    task:
+      id: a3208c0f-c964-40c7-8d01-a858dea9d402
+      version: -1
+      name: Not PDF - Print error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Could not validate that the file exists and is pdf.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
           "y": 895
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 940,
-        "width": 380,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -183,3 +248,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

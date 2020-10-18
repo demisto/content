@@ -1,10 +1,12 @@
 commonfields:
   id: VolMalfind
-  version: 1
+  version: -1
 name: VolMalfind
-script: |-
+script: >-
   var cmdline = 'malfind -p ' + args.pid;
+
   var out = executeCommand('Volatility', {memdump:args.memdump, profile:args.profile, system: args.system, cmd:cmdline});
+
   return out;
 type: javascript
 tags:
@@ -29,3 +31,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

@@ -14,6 +14,7 @@ import socket
 import sys
 import time
 import traceback
+from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
@@ -26,9 +27,12 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
+    from typing import Optional, List, Any
 except Exception:
-    pass
-
+    if sys.version_info[0] < 3:
+        # in python 2 an exception in the imports might still be raised even though it is caught.
+        # for more info see https://cosmicpercolator.com/2016/01/13/exception-leaks-in-python-2-and-3/
+        sys.exc_clear()
 
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
@@ -39,7 +43,7 @@ if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
 else:
-    STRING_TYPES = (str, unicode)  # type: ignore
+    STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
 
@@ -64,6 +68,8 @@ entryTypes = {
 class EntryType(object):
     """
     Enum: contains all the entry types (e.g. NOTE, ERROR, WARNING, FILE, etc.)
+    :return: None
+    :rtype: ``None``
     """
     NOTE = 1
     DOWNLOAD_AGENT = 2
@@ -77,6 +83,18 @@ class EntryType(object):
     WARNING = 11
     MAP_ENTRY_TYPE = 15
     WIDGET = 17
+
+
+class IncidentStatus(object):
+    """
+    Enum: contains all the incidents status types (e.g. pending, active, done, archive)
+    :return: None
+    :rtype: ``None``
+    """
+    PENDING = 0
+    ACTIVE = 1
+    DONE = 2
+    ARCHIVE = 3
 
 
 # DEPRECATED - use EntryFormat enum instead
@@ -142,6 +160,7 @@ class DBotScoreType(object):
     DBotScoreType.FILE
     DBotScoreType.DOMAIN
     DBotScoreType.URL
+    DBotScoreType.CVE
     :return: None
     :rtype: ``None``
     """
@@ -301,8 +320,11 @@ def auto_detect_indicator_type(indicator_value):
     if re.match(cveRegex, indicator_value):
         return FeedIndicatorType.CVE
 
+    if re.match(sha512Regex, indicator_value):
+        return FeedIndicatorType.File
+
     try:
-        no_cache_extract = tldextract.TLDExtract(cache_file=False,suffix_list_urls=None)
+        no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
         if no_cache_extract(indicator_value).suffix:
             if '*' in indicator_value:
                 return FeedIndicatorType.DomainGlob
@@ -314,25 +336,8 @@ def auto_detect_indicator_type(indicator_value):
     return None
 
 
-# ===== Fix fetching credentials from vault instances =====
-# ====================================================================================
-try:
-    for k, v in demisto.params().items():
-        if isinstance(v, dict):
-            if 'credentials' in v:
-                vault = v['credentials'].get('vaultInstanceId')
-                if vault:
-                    v['identifier'] = v['credentials'].get('user')
-                break
-
-except Exception:
-    pass
-
-
-# ====================================================================================
-
-
-def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True, insecure_param_name=None):
+def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
+                 insecure_param_name=None):
     """
         Handle logic for routing traffic through the system proxy.
         Should usually be called at the beginning of the integration, depending on proxy checkbox state.
@@ -370,7 +375,7 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
         if insecure_param_name is None:
             param_names = ('insecure', 'unsecure')
         else:
-            param_names = (insecure_param_name, )
+            param_names = (insecure_param_name,)  # type: ignore[assignment]
         for p in param_names:
             if demisto.params().get(p, False):
                 for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
@@ -837,7 +842,7 @@ def encode_string_results(text):
         return text
     try:
         return str(text)
-    except UnicodeEncodeError as exception:
+    except UnicodeEncodeError:
         return text.encode("utf8", "replace")
 
 
@@ -854,7 +859,8 @@ def safe_load_json(json_object):
     safe_json = None
     if isinstance(json_object, dict) or isinstance(json_object, list):
         return json_object
-    if (json_object.startswith('{') and json_object.endswith('}')) or (json_object.startswith('[') and json_object.endswith(']')):
+    if (json_object.startswith('{') and json_object.endswith('}')) or (
+            json_object.startswith('[') and json_object.endswith(']')):
         try:
             safe_json = json.loads(json_object)
         except ValueError as e:
@@ -943,6 +949,19 @@ def aws_table_to_markdown(response, table_header):
     return human_readable
 
 
+def stringUnEscape(st):
+    """
+       Unescape newline chars in the given string.
+
+       :type st: ``str``
+       :param st: The string to be modified (required).
+
+       :return: A modified string.
+       :rtype: ``str``
+    """
+    return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -983,6 +1002,7 @@ class IntegrationLogger(object):
     def encode(self, message):
         try:
             res = str(message)
+            res = stringUnEscape(res)
         except UnicodeEncodeError as exception:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
@@ -1193,7 +1213,7 @@ def argToList(arg, separator=','):
         if arg[0] == '[' and arg[-1] == ']':
             return json.loads(arg)
         return [s.strip() for s in arg.split(separator)]
-    return arg
+    return [arg]
 
 
 def argToBoolean(value):
@@ -1250,7 +1270,7 @@ def appendContext(key, data, dedup=False):
 
         elif isinstance(existing, dict):
             if isinstance(data, dict):
-                new_val = [existing, data]
+                new_val = [existing, data]  # type: ignore[assignment]
             else:
                 new_val = data + existing  # will raise a self explanatory TypeError
 
@@ -1259,10 +1279,10 @@ def appendContext(key, data, dedup=False):
                 existing.extend(data)
             else:
                 existing.append(data)
-            new_val = existing
+            new_val = existing  # type: ignore[assignment]
 
         else:
-            new_val = [existing, data]
+            new_val = [existing, data]  # type: ignore[assignment]
 
         if dedup and isinstance(new_val, list):
             new_val = list(set(new_val))
@@ -1339,7 +1359,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if t and len(headers) > 0:
         newHeaders = []
         if headerTransform is None:  # noqa
-            headerTransform = lambda s: s  # noqa
+            def headerTransform(s): return s  # noqa
         for header in headers:
             newHeaders.append(headerTransform(header))
         mdResult += '|'
@@ -1391,7 +1411,7 @@ def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
     """
     res = {}  # type: dict
     if keyTransform is None:
-        keyTransform = lambda s: s  # noqa
+        def keyTransform(s): return s  # noqa
     keys = obj.keys()
     for key in keys:
         if removeNull and obj[key] in ('', None, [], {}):
@@ -1475,7 +1495,7 @@ def fileResult(filename, data, file_type=None):
         file_type = entryTypes['file']
     temp = demisto.uniqueFile()
     # pylint: disable=undefined-variable
-    if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore
+    if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore # noqa: F821
         data = data.encode('utf-8')
     # pylint: enable=undefined-variable
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
@@ -1632,7 +1652,6 @@ def formatTimeColumns(data, timeColumnNames):
 
 
 def strip_tag(tag):
-    strip_ns_tag = tag
     split_array = tag.split('}')
     if len(split_array) > 1:
         strip_ns_tag = split_array[1]
@@ -1797,6 +1816,8 @@ def get_hash_type(hash_file):
         return 'sha1'
     elif (hash_len == 64):
         return 'sha256'
+    elif (hash_len == 128):
+        return 'sha512'
     else:
         return 'Unknown'
 
@@ -1878,6 +1899,7 @@ class Common(object):
         """
         interface class
         """
+
         @abstractmethod
         def to_context(self):
             pass
@@ -1910,7 +1932,7 @@ class Common(object):
         BAD = 3
 
         CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor ' \
-            '&& val.Type == obj.Type)'
+                       '&& val.Type == obj.Type)'
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
@@ -1986,7 +2008,7 @@ class Common(object):
         :param positive_engines: The number of engines that positively detected the indicator as malicious.
 
         :type dbot_score: ``DBotScore``
-        :param dbot_score:
+        :param dbot_score: If IP has a score then create and set a DBotScore object.
 
         :return: None
         :rtype: ``None``
@@ -2312,6 +2334,9 @@ class Common(object):
         :type positive_detections: ``int``
         :param positive_detections: The number of engines that positively detected the indicator as malicious.
 
+        :type category: ``str``
+        :param category: The category associated with the indicator.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
 
@@ -2320,10 +2345,11 @@ class Common(object):
         """
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None):
+        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
+            self.category = category
 
             self.dbot_score = dbot_score
 
@@ -2337,6 +2363,9 @@ class Common(object):
 
             if self.positive_detections:
                 url_context['PositiveDetections'] = self.positive_detections
+
+            if self.category:
+                url_context['Category'] = self.category
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 url_context['Malicious'] = {
@@ -2352,7 +2381,6 @@ class Common(object):
                 ret_value.update(self.dbot_score.to_context())
 
             return ret_value
-
 
     class Domain(Indicator):
         """ ignore docstring
@@ -2389,7 +2417,6 @@ class Common(object):
             self.admin_email = admin_email
             self.admin_phone = admin_phone
             self.admin_country = admin_country
-
 
             self.domain_status = domain_status
             self.name_servers = name_servers
@@ -2552,6 +2579,52 @@ class Common(object):
             return ret_value
 
 
+class IndicatorsTimeline:
+    """
+    IndicatorsTimeline class - use to return Indicator Timeline object to be used in CommandResults
+
+    :type indicators: ``list``
+    :param indicators: expects a list of indicators.
+
+    :type category: ``str``
+    :param category: indicator category.
+
+    :type message: ``str``
+    :param message: indicator message.
+
+    :return: None
+    :rtype: ``None``
+    """
+    def __init__(self, indicators=None, category=None, message=None):
+        # type: (list, str, str) -> None
+        if indicators is None:
+            indicators = []
+
+        # check if we are running from an integration or automation
+        try:
+            _ = demisto.params()
+            default_category = 'Integration Update'
+        except AttributeError:
+            default_category = 'Automation Update'
+
+        timelines = []
+        timeline = {}
+        for indicator in indicators:
+            timeline['Value'] = indicator
+
+            if category:
+                timeline['Category'] = category
+            else:
+                timeline['Category'] = default_category
+
+            if message:
+                timeline['Message'] = message
+
+            timelines.append(timeline)
+
+        self.indicators_timeline = timelines
+
+
 class CommandResults:
     """
     CommandResults class - use to return results to warroom
@@ -2560,9 +2633,10 @@ class CommandResults:
     :param outputs_prefix: should be identical to the prefix in the yml contextPath in yml file. for example:
             CortexXDR.Incident
 
-    :type outputs_key_field: ``str``
+    :type outputs_key_field: ``str`` or ``list[str]``
     :param outputs_key_field: primary key field in the main object. If the command returns Incidents, and of the
-            properties of Incident is incident_id, then outputs_key_field='incident_id'
+            properties of Incident is incident_id, then outputs_key_field='incident_id'. If object has multiple
+            unique keys, then list of strings is supported outputs_key_field=['id1', 'id2']
 
     :type outputs: ``list`` or ``dict``
     :param outputs: the data to be returned and will be set to context
@@ -2578,26 +2652,50 @@ class CommandResults:
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
         raw response from the 3rd party service (originally Contents)
 
+    :type indicators_timeline: ``IndicatorsTimeline``
+    :param indicators_timeline: must be an IndicatorsTimeline. used by the server to populate an indicator's timeline.
+
     :return: None
     :rtype: ``None``
     """
-    def __init__(self, outputs_prefix, outputs_key_field, outputs, indicators=None, readable_output=None,
-                 raw_response=None):
 
-        # type: (str, str, object, list, str, object) -> None
+    def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
+                 raw_response=None, indicators_timeline=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline) -> None
+        if raw_response is None:
+            raw_response = outputs
+
         self.indicators = indicators
 
         self.outputs_prefix = outputs_prefix
+
+        # this is public field, it is used by a lot of unit tests, so I don't change it
         self.outputs_key_field = outputs_key_field
+
+        self._outputs_key_field = None  # type: Optional[List[str]]
+        if not outputs_key_field:
+            self._outputs_key_field = None
+        elif isinstance(outputs_key_field, STRING_TYPES):
+            self._outputs_key_field = [outputs_key_field]
+        elif isinstance(outputs_key_field, list):
+            self._outputs_key_field = outputs_key_field
+        else:
+            raise TypeError('outputs_key_field must be of type str or list')
+
         self.outputs = outputs
 
         self.raw_response = raw_response
         self.readable_output = readable_output
+        self.indicators_timeline = indicators_timeline
 
     def to_context(self):
         outputs = {}  # type: dict
-        human_readable = None
-        raw_response = None
+        if self.readable_output:
+            human_readable = self.readable_output
+        else:
+            human_readable = None  # type: ignore[assignment]
+        raw_response = None  # type: ignore[assignment]
+        indicators_timeline = []  # type: ignore[assignment]
 
         if self.indicators:
             for indicator in self.indicators:
@@ -2612,33 +2710,36 @@ class CommandResults:
         if self.raw_response:
             raw_response = self.raw_response
 
-        if self.outputs:
+        if self.indicators_timeline:
+            indicators_timeline = self.indicators_timeline.indicators_timeline
+
+        if self.outputs is not None:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
-            else:
-                human_readable = self.readable_output
-
-            if not self.raw_response:
-                raw_response = self.outputs
-
-            if self.outputs_prefix and self.outputs_key_field:
+            if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
-                outputs_key = '{0}(val.{1} == obj.{1})'.format(self.outputs_prefix, self.outputs_key_field)
+                formatted_outputs_key = ' && '.join(['val.{0} == obj.{0}'.format(key_field)
+                                                     for key_field in self._outputs_key_field])
+                outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
                 outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
-                outputs = self.outputs
-                human_readable = self.readable_output  # prefix and key field not provided, human readable should
+                outputs = self.outputs  # type: ignore[assignment]
+
+        content_format = EntryFormat.JSON
+        if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
+            content_format = EntryFormat.TEXT
 
         return_entry = {
             'Type': EntryType.NOTE,
-            'ContentsFormat': EntryFormat.JSON,
+            'ContentsFormat': content_format,
             'Contents': raw_response,
             'HumanReadable': human_readable,
-            'EntryContext': outputs
+            'EntryContext': outputs,
+            'IndicatorTimeline': indicators_timeline,
         }
 
         return return_entry
@@ -2648,8 +2749,8 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict``
-    :param results:
+    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget``
+    :param results: A result object to return as a War-Room entry.
 
     :return: None
     :rtype: ``None``
@@ -2663,6 +2764,18 @@ def return_results(results):
         demisto.results(results.to_context())
         return
 
+    if isinstance(results, BaseWidget):
+        demisto.results(results.to_display())
+        return
+
+    if isinstance(results, GetMappingFieldsResponse):
+        demisto.results(results.extract_mapping())
+        return
+
+    if isinstance(results, GetRemoteDataResponse):
+        demisto.results(results.extract_for_local())
+        return
+
     demisto.results(results)
 
 
@@ -2673,14 +2786,14 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
 
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
-    :type readable_output: ``str``
+    :type readable_output: ``str`` | ``int``
     :param readable_output: markdown string that will be presented in the warroom, should be human readable -
         (HumanReadable)
 
     :type outputs: ``dict``
     :param outputs: the outputs that will be returned to playbook/investigation context (originally EntryContext)
 
-    :type raw_response: ``dict`` | ``list``
+    :type raw_response: ``dict`` | ``list`` | ``str``
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
         raw response from the 3rd party service (originally Contents)
 
@@ -2704,7 +2817,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
-        "ContentsFormat": formats["json"],
+        "ContentsFormat": formats["text"] if isinstance(raw_response, STRING_TYPES) else formats['json'],
         "Contents": raw_response,
         "EntryContext": outputs,
         'IgnoreAutoExtract': ignore_auto_extract,
@@ -2873,9 +2986,9 @@ regexFlags = re.M  # Multi line matching
 # else, use re.match({regex_format},str)
 
 ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b([^\/]|$)'
-ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'
-ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'
-ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'
+ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'  # noqa: E501
+ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa: E501
+ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa: E501
 emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
@@ -2884,6 +2997,7 @@ cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
 sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
+sha512Regex = re.compile(r'\b[0-9a-fA-F]{128}\b', regexFlags)
 
 pascalRegex = re.compile('([A-Z]?[a-z]+)')
 
@@ -3015,14 +3129,24 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
       :return: The parsed date range.
       :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
     """
-    range_split = date_range.split(' ')
+    range_split = date_range.strip().split(' ')
     if len(range_split) != 2:
         return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, '
                      'etc.)')
 
-    number = int(range_split[0])
-    if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
-        return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
+    try:
+        number = int(range_split[0])
+    except ValueError:
+        return_error('The time value is invalid. Must be an integer.')
+
+    unit = range_split[1].lower()
+    if unit not in ['minute', 'minutes',
+                    'hour', 'hours',
+                    'day', 'days',
+                    'month', 'months',
+                    'year', 'years',
+                    ]:
+        return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years.')
 
     if not isinstance(timezone, (int, float)):
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
@@ -3034,7 +3158,6 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         end_time = datetime.now() + timedelta(hours=timezone)
         start_time = datetime.now() + timedelta(hours=timezone)
 
-    unit = range_split[1]
     if 'minute' in unit:
         start_time = end_time - timedelta(minutes=number)
     elif 'hour' in unit:
@@ -3055,7 +3178,7 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
     return start_time, end_time
 
 
-def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
+def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z", is_utc=False):
     """
       Parses timestamp (milliseconds) to a date string in the provided date format (by default: ISO 8601 format)
       Examples: (1541494441222, 1541495441000, etc.)
@@ -3066,9 +3189,15 @@ def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
       :type date_format: ``str``
       :param date_format: The date format the timestamp should be parsed to. (optional)
 
+      :type is_utc: ``bool``
+      :param is_utc: Should the string representation of the timestamp use UTC time or the local machine time
+
       :return: The parsed timestamp in the date_format
       :rtype: ``str``
     """
+    use_utc_time = is_utc or date_format.endswith('Z')
+    if use_utc_time:
+        return datetime.utcfromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
     return datetime.fromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
 
 
@@ -3148,34 +3277,64 @@ def assign_params(keys_to_ignore=None, values_to_ignore=None, **kwargs):
     }
 
 
-def get_demisto_version():
-    """Returns the Demisto version and build number.
+class GetDemistoVersion:
+    """
+    Callable class to replace get_demisto_version function
+    """
 
-    :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
+    def __init__(self):
+        self._version = None
+
+    def __call__(self):
+        """Returns the Demisto version and build number.
+
+        :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
+        :rtype: ``dict``
+        """
+        if self._version is None:
+            if hasattr(demisto, 'demistoVersion'):
+                self._version = demisto.demistoVersion()
+            else:
+                raise AttributeError('demistoVersion attribute not found.')
+        return self._version
+
+
+get_demisto_version = GetDemistoVersion()
+
+
+def get_demisto_version_as_str():
+    """Get the Demisto Server version as a string <version>-<build>. If unknown will return: 'Unknown'.
+    Meant to be use in places where we want to display the version. If you want to perform logic based upon vesrion
+    use: is_demisto_version_ge.
+
+    :return: Demisto version as string
     :rtype: ``dict``
     """
-    if getattr(get_demisto_version, '_version', None):
-        return get_demisto_version._version
-    if hasattr(demisto, 'demistoVersion'):
-        version = demisto.demistoVersion()
-        get_demisto_version._version = version
-        return version
-    else:
-        raise AttributeError('demistoVersion attribute not found.')
+    try:
+        ver_obj = get_demisto_version()
+        return '{}-{}'.format(ver_obj.get('version', 'Unknown'),
+                              ver_obj.get("buildNumber", 'Unknown'))
+    except AttributeError:
+        return "Unknown"
 
 
-def is_demisto_version_ge(version):
+def is_demisto_version_ge(version, build_number=''):
     """Utility function to check if current running integration is at a server greater or equal to the passed version
 
     :type version: ``str``
     :param version: Version to check
+
+    :type build_number: ``str``
+    :param build_number: Build number to check
 
     :return: True if running within a Server version greater or equal than the passed version
     :rtype: ``bool``
     """
     try:
         server_version = get_demisto_version()
-        return server_version.get('version') >= version
+        return \
+            server_version.get('version') >= version and \
+            (not build_number or server_version.get('buildNumber') >= build_number)
     except AttributeError:
         # demistoVersion was added in 5.0.0. We are currently running in 4.5.0 and below
         if version >= "5.0.0":
@@ -3267,7 +3426,8 @@ class DebugLogger(object):
         """
         Utility function to log start of debug mode logging
         """
-        msg = "debug-mode started.\nhttp client print found: {}.\nEnv {}.".format(self.http_client_print is not None, os.environ)
+        msg = "debug-mode started.\nhttp client print found: {}.\nEnv {}.".format(self.http_client_print is not None,
+                                                                                  os.environ)
         if hasattr(demisto, 'params'):
             msg += "\nParams: {}.".format(demisto.params())
         self.int_logger.write(msg)
@@ -3575,8 +3735,9 @@ if 'requests' in sys.modules:
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
-                          return_empty_response = False, retries=0, status_list_to_retry=None,
-                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False, **kwargs):
+                          return_empty_response=False, retries=0, status_list_to_retry=None,
+                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                          error_handler=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -3663,6 +3824,10 @@ if 'requests' in sys.modules:
                 whether we should raise an exception, or return a response,
                 if status falls in ``status_forcelist`` range and retries have
                 been exhausted.
+
+            :type error_handler ``callable``
+            :param error_handler: Given an error entery, the error handler outputs the
+                new formatted error message.
             """
             try:
                 # Replace params if supplied
@@ -3686,16 +3851,19 @@ if 'requests' in sys.modules:
                 )
                 # Handle error responses gracefully
                 if not self._is_status_code_valid(res, ok_codes):
-                    err_msg = 'Error in API call [{}] - {}' \
-                        .format(res.status_code, res.reason)
-                    try:
-                        # Try to parse json error response
-                        error_entry = res.json()
-                        err_msg += '\n{}'.format(json.dumps(error_entry))
-                        raise DemistoException(err_msg)
-                    except ValueError:
-                        err_msg += '\n{}'.format(res.text)
-                        raise DemistoException(err_msg)
+                    if error_handler:
+                        error_handler(res)
+                    else:
+                        err_msg = 'Error in API call [{}] - {}' \
+                            .format(res.status_code, res.reason)
+                        try:
+                            # Try to parse json error response
+                            error_entry = res.json()
+                            err_msg += '\n{}'.format(json.dumps(error_entry))
+                            raise DemistoException(err_msg)
+                        except ValueError:
+                            err_msg += '\n{}'.format(res.text)
+                            raise DemistoException(err_msg)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
@@ -3739,11 +3907,10 @@ if 'requests' in sys.modules:
             except requests.exceptions.RetryError as exception:
                 try:
                     reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
-                except:
+                except Exception:
                     reason = ''
                 err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
                 raise DemistoException(err_msg, exception)
-
 
         def _is_status_code_valid(self, response, ok_codes=None):
             """If the status code is OK, return 'True'.
@@ -3786,5 +3953,620 @@ def batch(iterable, batch_size=1):
         not_batched = not_batched[batch_size:]
 
 
+def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None, raise_return_type=True):
+    """Recursive safe get query (for nested dicts and lists), If keys found return value otherwise return None or default value.
+    Example:
+    >>> dict = {"something" : {"test": "A"}}
+    >>> dict_safe_get(dict,['something', 'test'])
+    >>> 'A'
+    >>> dict_safe_get(dict,['something', 'else'],'default value')
+    >>> 'default value'
+
+    :type dict_object: ``dict``
+    :param dict_object: dictionary to query.
+
+    :type keys: ``list``
+    :param keys: keys for recursive get.
+
+    :type default_return_value: ``object``
+    :param default_return_value: Value to return when no key available.
+
+    :type return_type: ``object``
+    :param return_type: Excepted return type.
+
+    :type raise_return_type: ``bool``
+    :param raise_return_type: Whether to raise an error when the value didn't match the expected return type.
+
+    :rtype: ``object``
+    :return:: Value from nested query.
+    """
+    return_value = dict_object
+
+    for key in keys:
+        try:
+            return_value = return_value[key]
+        except (KeyError, TypeError, IndexError, AttributeError):
+            return_value = default_return_value
+            break
+
+    if return_type and not isinstance(return_value, return_type):
+        if raise_return_type:
+            raise TypeError("Safe get Error:\nDetails: Return Type Error Excepted return type {0},"
+                            " but actual type from nested dict/list is {1} with value {2}.\n"
+                            "Query: {3}\nQueried object: {4}".format(return_type, type(return_value),
+                                                                     return_value, keys, dict_object))
+        return_value = default_return_value
+
+    return return_value
+
+
+CONTEXT_UPDATE_RETRY_TIMES = 3
+MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
+
+
+def merge_lists(original_list, updated_list, key):
+    """
+    Replace values in a list with those in an updated list.
+    Example:
+    >>> original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}, {'id': '11', 'updated': 'n'}]
+    >>> updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}, {'id': '11', 'updated': 'n',
+    >>>                                                                                             'remove': True}]
+    >>> result = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
+
+    :type original_list: ``list``
+    :param original_list: The original list.
+
+    :type updated_list: ``list``
+    :param updated_list: The updated list.
+
+    :type key: ``str``
+    :param key: The key to replace elements by.
+
+    :rtype: ``list``
+    :return: The merged list.
+
+    """
+
+    original_dict = {element[key]: element for element in original_list}
+    updated_dict = {element[key]: element for element in updated_list}
+    original_dict.update(updated_dict)
+
+    removed = [obj for obj in original_dict.values() if obj.get('remove', False) is True]
+    for r in removed:
+        demisto.debug('Removing from integration context: {}'.format(str(r)))
+
+    merged_list = [obj for obj in original_dict.values() if obj.get('remove', False) is False]
+
+    return merged_list
+
+
+def set_integration_context(context, sync=True, version=-1):
+    """
+    Sets the integration context.
+
+    :type context: ``dict``
+    :param context: The context to set.
+
+    :type sync: ``bool``
+    :param sync: Whether to save the context directly to the DB.
+
+    :type version: ``int``
+    :param version: The version of the context to set.
+
+    :rtype: ``dict``
+    :return: The new integration context
+    """
+    demisto.debug('Setting integration context {}:'.format(str(context)))
+    if is_versioned_context_available():
+        context['version'] = str(version + 1)
+        demisto.debug('Updating integration context to version {}. Sync: {}'.format(version + 1, sync))
+        return demisto.setIntegrationContextVersioned(context, version, sync)
+    else:
+        return demisto.setIntegrationContext(context)
+
+
+def get_integration_context(sync=True, with_version=False):
+    """
+    Gets the integration context.
+
+    :type sync: ``bool``
+    :param sync: Whether to get the integration context directly from the DB.
+
+    :type with_version: ``bool``
+    :param with_version: Whether to return the version.
+
+    :rtype: ``dict``
+    :return: The integration context.
+    """
+    if is_versioned_context_available():
+        integration_context = demisto.getIntegrationContextVersioned(sync)
+
+        if with_version:
+            return integration_context
+        else:
+            return integration_context.get('context', {})
+    else:
+        return demisto.getIntegrationContext()
+
+
+def is_versioned_context_available():
+    """
+    Determines whether versioned integration context is available according to the server version.
+
+    :rtype: ``bool``
+    :return: Whether versioned integration context is available
+    """
+    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
+
+
+def set_to_integration_context_with_retries(context, object_keys=None, sync=True,
+                                            max_retry_times=CONTEXT_UPDATE_RETRY_TIMES):
+    """
+    Update the integration context with a dictionary of keys and values with multiple attempts.
+    The function supports merging the context keys using the provided object_keys parameter.
+    If the version is too old by the time the context is set,
+    another attempt will be made until the limit after a random sleep.
+
+    :type context: ``dict``
+    :param context: A dictionary of keys and values to set.
+
+    :type object_keys: ``dict``
+    :param object_keys: A dictionary to map between context keys and their unique ID for merging them.
+
+    :type sync: ``bool``
+    :param sync: Whether to save the context directly to the DB.
+
+    :type max_retry_times: ``int``
+    :param max_retry_times: The maximum number of attempts to try.
+
+    :rtype: ``None``
+    :return: None
+    """
+    attempt = 0
+
+    # do while...
+    while True:
+        if attempt == max_retry_times:
+            raise Exception('Failed updating integration context. Max retry attempts exceeded.')
+
+        # Update the latest context and get the new version
+        integration_context, version = update_integration_context(context, object_keys, sync)
+
+        demisto.debug('Attempting to update the integration context with version {}.'.format(version))
+
+        # Attempt to update integration context with a version.
+        # If we get a ValueError (DB Version), then the version was not updated and we need to try again.
+        attempt += 1
+        try:
+            set_integration_context(integration_context, sync, version)
+            demisto.debug('Successfully updated integration context. New version is {}.'
+                          ''.format(version + 1 if version != -1 else version))
+            break
+        except ValueError as ve:
+            demisto.debug('Failed updating integration context with version {}: {} Attempts left - {}'
+                          ''.format(version, str(ve), CONTEXT_UPDATE_RETRY_TIMES - attempt))
+            # Sleep for a random time
+            time_to_sleep = randint(1, 100) / 1000
+            time.sleep(time_to_sleep)
+
+
+def get_integration_context_with_version(sync=True):
+    """
+    Get the latest integration context with version, if available.
+
+    :type sync: ``bool``
+    :param sync: Whether to get the context directly from the DB.
+
+    :rtype: ``tuple``
+    :return: The latest integration context with version.
+    """
+    latest_integration_context_versioned = get_integration_context(sync, with_version=True)
+    version = -1
+    if is_versioned_context_available():
+        integration_context = latest_integration_context_versioned.get('context', {})
+        if sync:
+            version = latest_integration_context_versioned.get('version', 0)
+    else:
+        integration_context = latest_integration_context_versioned
+
+    return integration_context, version
+
+
+def update_integration_context(context, object_keys=None, sync=True):
+    """
+    Update the integration context with a given dictionary after merging it with the latest integration context.
+
+    :type context: ``dict``
+    :param context: The keys and values to update in the integration context.
+
+    :type object_keys: ``dict``
+    :param object_keys: A dictionary to map between context keys and their unique ID for merging them
+    with the latest context.
+
+    :type sync: ``bool``
+    :param sync: Whether to use the context directly from the DB.
+
+    :rtype: ``tuple``
+    :return: The updated integration context along with the current version.
+
+    """
+    integration_context, version = get_integration_context_with_version(sync)
+    if not object_keys:
+        object_keys = {}
+
+    for key, _ in context.items():
+        latest_object = json.loads(integration_context.get(key, '[]'))
+        updated_object = context[key]
+        if key in object_keys:
+            merged_list = merge_lists(latest_object, updated_object, object_keys[key])
+            integration_context[key] = json.dumps(merged_list)
+        else:
+            integration_context[key] = json.dumps(updated_object)
+
+    return integration_context, version
+
+
 class DemistoException(Exception):
     pass
+
+
+class GetRemoteDataArgs:
+    """get-remote-data args parser
+    :type args: ``dict``
+    :param args: arguments for the command of the command.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, args):
+        self.remote_incident_id = args['id']
+        self.last_update = args['lastUpdate']
+
+
+class UpdateRemoteSystemArgs:
+    """update-remote-system args parser
+    :type args: ``dict``
+    :param args: arguments for the command of the command.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, args):
+        self.data = args.get('data')  # type: ignore
+        self.entries = args.get('entries')
+        self.incident_changed = args.get('incidentChanged')
+        self.remote_incident_id = args.get('remoteId')
+        self.inc_status = args.get('status')
+        self.delta = args.get('delta')
+
+
+class GetRemoteDataResponse:
+    """get-remote-data response parser
+    :type mirrored_object: ``dict``
+    :param mirrored_object: The object you are mirroring, in most cases the incident.
+
+    :type entries: ``list``
+    :param entries: The entries you want to add to the war room.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, mirrored_object, entries):
+        self.mirrored_object = mirrored_object
+        self.entries = entries
+
+    def extract_for_local(self):
+        """Extracts the response into the mirrored incident.
+
+        :return: List of details regarding the mirrored incident.
+        :rtype: ``list``
+        """
+        if self.mirrored_object:
+            demisto.info('Updating object {}'.format(self.mirrored_object["id"]))
+            return [self.mirrored_object] + self.entries
+
+
+class SchemeTypeMapping:
+    """Scheme type mappings builder.
+
+    :type type_name: ``str``
+    :param type_name: The name of the remote incident type.
+
+    :type fields: ``dict``
+    :param fields: The dict of fields to their description.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, type_name='', fields=None):
+        self.type_name = type_name
+        self.fields = fields if fields else {}
+
+    def add_field(self, name, description=''):
+        """Adds a field to the incident type mapping.
+
+        :type name: ``str``
+        :param name: The name of the field.
+
+        :type description: ``str``
+        :param description: The description for that field.a
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        self.fields.update({
+            name: description
+        })
+
+    def extract_mapping(self):
+        """Extracts the mapping into XSOAR mapping screen.
+
+        :return: the mapping object for the current field.
+        :rtype: ``dict``
+        """
+        return {
+            self.type_name: self.fields
+        }
+
+
+class GetMappingFieldsResponse:
+    """Handler for the mapping fields object.
+
+    :type scheme_types_mapping: ``list``
+    :param scheme_types_mapping: List of all the mappings in the remote system.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, scheme_types_mapping=None):
+        self.scheme_types_mappings = scheme_types_mapping if scheme_types_mapping else []
+
+    def add_scheme_type(self, scheme_type_mapping):
+        """Add another incident type mapping.
+
+        :type scheme_type_mapping: ``dict``
+        :param scheme_type_mapping: mapping of a singular field.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        self.scheme_types_mappings.append(scheme_type_mapping)
+
+    def extract_mapping(self):
+        """Extracts the mapping into XSOAR mapping screen.
+
+        :return: the mapping object for the current field.
+        :rtype: ``dict``
+        """
+        all_mappings = []
+        for scheme_types_mapping in self.scheme_types_mappings:
+            all_mappings.append(scheme_types_mapping.extract_mapping())
+
+        return all_mappings
+
+
+def get_x_content_info_headers():
+    """Get X-Content-* headers to send in outgoing requests to use when performing requests to
+    external services such as oproxy.
+
+    :return: headers dict
+    :rtype: ``dict``
+    """
+    calling_context = demisto.callingContext.get('context', {})
+    brand_name = calling_context.get('IntegrationBrand', '')
+    instance_name = calling_context.get('IntegrationInstance', '')
+    headers = {
+        'X-Content-Version': CONTENT_RELEASE_VERSION,
+        'X-Content-Name': brand_name or instance_name or 'Name not found',
+        'X-Content-LicenseID': demisto.getLicenseID(),
+        'X-Content-Branch': CONTENT_BRANCH_NAME,
+        'X-Content-Server-Version': get_demisto_version_as_str(),
+    }
+    return headers
+
+
+class BaseWidget:
+    @abstractmethod
+    def to_display(self):
+        pass
+
+
+class TextWidget(BaseWidget):
+    """Text Widget representation
+
+    :type text: ``str``
+    :param text: The text for the widget to display
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, text):
+        # type: (str) -> None
+        self.text = text
+
+    def to_display(self):
+        """Text Widget representation
+
+        :type text: ``str``
+        :param text: The text for the widget to display
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        return self.text
+
+
+class TrendWidget(BaseWidget):
+    """Trend Widget representation
+
+    :type current_number: ``int``
+    :param current_number: The Current number in the trend.
+
+    :type previous_number: ``int``
+    :param previous_number: The previous number in the trend.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, current_number, previous_number):
+        # type: (int, int) -> None
+        self.current_number = current_number
+        self.previous_number = previous_number
+
+    def to_display(self):
+        return json.dumps({
+            'currSum': self.current_number,
+            'prevSum': self.previous_number
+        })
+
+
+class NumberWidget(BaseWidget):
+    """Number Widget representation
+
+    :type number: ``int``
+    :param number: The number for the widget to display.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, number):
+        # type: (int) -> None
+        self.number = number
+
+    def to_display(self):
+        return self.number
+
+
+class BarColumnPieWidget(BaseWidget):
+    """Bar/Column/Pie Widget representation
+
+    :type categories: ``list``
+    :param categories: a list of categories to display(Better use the add_category function to populate the data.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, categories=None):
+        # type: (list) -> None
+        self.categories = categories if categories else []  # type: List[dict]
+
+    def add_category(self, name, number):
+        """Add a category to widget.
+
+        :type name: ``str``
+        :param name: the name of the category to add.
+
+        :type number: ``int``
+        :param number: the number value of the category.
+
+        :return: No data returned.
+        :rtype: ``None``
+        """
+        self.categories.append({
+            'name': name,
+            'data': [number]
+        })
+
+    def to_display(self):
+        return json.dumps(self.categories)
+
+
+class LineWidget(BaseWidget):
+    """Line Widget representation
+
+    :type categories: ``Any``
+    :param categories: a list of categories to display(Better use the add_category function to populate the data.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, categories=None):
+        # type: (list) -> None
+        self.categories = categories if categories else []  # type: List[dict]
+
+    def add_category(self, name, number, group):
+        """Add a category to widget.
+
+        :type name: ``str``
+        :param name: the name of the category to add.
+
+        :type number: ``int``
+        :param number: the number value of the category.
+
+        :type group: ``str``
+        :param group: the name of the relevant group.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        self.categories.append({
+            'name': name,
+            'data': [number],
+            'groups': [
+                {
+                    'name': group,
+                    'data': [number]
+                },
+            ]
+        })
+
+    def to_display(self):
+        processed_names = []  # type: List[str]
+        processed_categories = []  # type: List[dict]
+        for cat in self.categories:
+            if cat['name'] in processed_names:
+                for processed_category in processed_categories:
+                    if cat['name'] == processed_category['name']:
+                        processed_category['data'] = [processed_category['data'][0] + cat['data'][0]]
+                        processed_category['groups'].extend(cat['groups'])
+                        break
+
+            else:
+                processed_categories.append(cat)
+                processed_names.append(cat['name'])
+
+        return json.dumps(processed_categories)
+
+
+class TableOrListWidget(BaseWidget):
+    """Table/List Widget representation
+
+    :type data: ``Any``
+    :param data: a list of data to display(Better use the add_category function to populate the data.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, data=None):
+        # type: (Any) -> None
+        self.data = data if data else []
+        if not isinstance(self.data, list):
+            self.data = [data]
+
+    def add_row(self, data):
+        """Add a row to the widget.
+
+        :type data: ``Any``
+        :param data: the data to add to the list/table.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        self.data.append(data)
+
+    def to_display(self):
+        return json.dumps({
+            'total': len(self.data),
+            'data': self.data
+        })

@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
   required: false
 - display: Indicator Reputation
@@ -33,6 +33,16 @@ configuration:
     - E - Unreliable
     - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
@@ -69,6 +79,12 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
 description: Use the AlienVault Reputation feed integration to fetch indicators from
     the feed.
 display: AlienVault Reputation Feed
@@ -93,7 +109,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: alienvault-get-indicators
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.5.10845
   feed: true
   isfetch: false
   longRunning: false

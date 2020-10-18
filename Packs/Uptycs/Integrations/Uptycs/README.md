@@ -40,7 +40,7 @@ In order to create an instance of the integration, you need to download a user A
     * __Name__: a textual name for the integration instance.
     * __API key__
     * __API secret__
-    * __API domain__
+    * __API domain__: the domain found in your API key file as well as the Top Level Domain for your Uptycs stack (example: if your Uptycs' stack URL is "mystack.uptycs.io" then your API key file will say "mystack" in the domain field.  You would then put "mystack.uptycs.io" in the API domain field when configuring your integration instance).
     * __API customer_id__
     * __Fetch incidents__
     * __Incident type__
@@ -1254,7 +1254,7 @@ Sets a tag on a particular asset
 | --- | --- | --- |
 | asset_id | Uptycs asset id for the asset that the tag should be set on | Required | 
 | tag_key | Tag key that will be set on the asset | Required | 
-| tag_value | Tag value that will be set on the asset | Required | 
+| tag_value | Tag value that will be set on the asset | Optional | 
 
 
 ##### Context Output
@@ -2009,7 +2009,7 @@ There is no context output for this command.
 ### Uptycs Threat Sources
 |name|description|url|enabled|custom|createdAt|lastDownload|
 |---|---|---|---|---|---|---|
-|Debian Linux vulnerabilities|Debian Linux vulnerabilities|https://vulners.com/api/v3/archive/collection/?type=debian|true|false|2018-09-14T18:43:54.832Z||
+|Debian Linux vulnerabilities|Debian Linux vulnerabilities|`https://vulners.com/api/v3/archive/collection/?type=debian`|true|false|2018-09-14T18:43:54.832Z||
 
 
 ### 25. uptycs-get-process-events

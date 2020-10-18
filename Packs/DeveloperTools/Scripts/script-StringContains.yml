@@ -2,10 +2,13 @@ commonfields:
   id: StringContains
   version: -1
 name: StringContains
-script: |
+script: >
   var str = args.string;
+
   var substring = args.substring;
+
   var substringSeperator = args.substringSeperator;
+
 
   if (Array.isArray(substring) || substringSeperator) {
       var arr = Array.isArray(substring) ? substring : substring.split(substringSeperator);
@@ -19,18 +22,13 @@ script: |
           return 'yes';
       }
   }
+
   return 'no';
 type: javascript
 tags:
 - Condition
 - Utility
-comment: |
-  Checks whether substring is within string. Returns:
-  yes - string contains substring.
-  no - string does not contain substring.
-  If stringSeperator is provided, the substring will be split using the separator, and each item will be checked.
-  If one of the items will be found in the string, the srcipt will return yes.
-  This script is deprecated. The StringContainsArray filter implements the exact functionality.
+comment: Deprecated. Checks whether substring is within string. Returns - yes - string contains substring. no - string does not contain substring. If stringSeperator is provided, the substring will be split using the separator, and each item will be checked. If one of the items will be found in the string, the srcipt will return yes. This script is deprecated. The StringContainsArray filter implements the exact functionality.
 enabled: true
 deprecated: true
 args:
@@ -50,4 +48,5 @@ outputs:
   description: if string does not contain substring
 scripttarget: 0
 tests:
-  - No test - deprecated, didn't have a test prior
+- No test - deprecated, didn't have a test prior
+fromversion: 5.0.0

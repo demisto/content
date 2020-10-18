@@ -1,16 +1,149 @@
-import demistomock as demisto
+from typing import Optional, Dict, Tuple, List, Union
 from CommonServerPython import *
-from CommonServerUserPython import *
+import urllib3
 from dateutil.parser import parse
+from requests import Response
 
 # Disable insecure warnings
-
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 APP_NAME = 'ms-defender-atp'
 
 ''' HELPER FUNCTIONS '''
+
+SEVERITY_TO_NUMBER = {
+    'Informational': 0,
+    'Low': 1,
+    'MediumLow': 2,
+    'MediumHigh': 3,
+    'High': 4
+}
+
+NUMBER_TO_SEVERITY = {
+    0: 'Informational',
+    1: 'Low',
+    2: 'MediumLow',
+    3: 'MediumHigh',
+    4: 'High',
+    5: 'Informational'
+}
+
+
+def file_standard(observable: Dict) -> Common.File:
+    """Gets a file observable and returns a context key
+
+    Args:
+        observable: APT's file observable
+
+    Returns:
+        Context standard
+    """
+    file_obj = Common.File(
+        Common.DBotScore.NONE,
+        name=observable.get('fileName'),
+        size=observable.get('fileSize'),
+        path=observable.get('filePath')
+    )
+    hash_type = observable.get('fileHashType', '').lower()
+    if hash_type:
+        if hash_type in INDICATOR_TYPE_TO_CONTEXT_KEY:
+            hash_value = observable.get('fileHashValue')
+            if hash_type == 'md5':
+                file_obj.md5 = hash_value
+            elif hash_type == 'sha256':
+                file_obj.sha256 = hash_value
+            elif hash_type == 'sha1':
+                file_obj.sha1 = hash_value
+    return file_obj
+
+
+def network_standard(observable: Dict) -> Optional[Union[Common.Domain, Common.IP, Common.URL]]:
+    """Gets a network observable and returns a context key
+
+    Args:
+        observable: APT's network observable
+
+    Returns:
+        Context standard or None of not supported
+    """
+    domain_name = observable.get('domainName')
+    url = observable.get('url')
+    ip = observable.get('networkIPv4', observable.get('networkIPv6'))
+    if domain_name:
+        return Common.Domain(domain_name, Common.DBotScore.NONE)
+    elif ip:
+        return Common.IP(ip, Common.DBotScore(ip, DBotScoreType.IP, 'Microsoft Defender Advanced Threat Protection', 0))
+    elif url:
+        return Common.URL(url, Common.DBotScore.NONE)
+    return None
+
+
+def standard_output(observable: Dict) -> Optional[Union[Common.Domain, Common.IP, Common.URL, Common.File]]:
+    """Gets an observable and returns a context standard object.
+
+    Args:
+        observable: File or network observable from API.
+
+    Links:
+        File observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---file  # noqa: E501
+        Network observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---network  # noqa: E501
+
+    Returns:
+        File, IP, URL or Domain object. If observable is not supported, will return None.
+    """
+    file_keys = {
+        'fileHashType', 'fileHashValue', 'fileName', 'filePath', 'fileSize', 'fileType'
+    }
+    # Must be file key
+    if any(key in observable for key in file_keys):
+        return file_standard(observable)
+    # Else it's a network
+    return network_standard(observable)
+
+
+def build_std_output(indicators: Union[Dict, List]) -> Dict:
+    """
+
+    Args:
+        indicators: Network or File observable
+
+    Returns:
+        Dict of standard outputs.
+    """
+    if isinstance(indicators, dict):
+        indicators = [indicators]
+    outputs = dict()
+    for indicator in indicators:
+        output = standard_output(indicator)
+        if output:
+            for key, value in output.to_context().items():
+                if key not in outputs:
+                    outputs[key] = [value]
+                else:
+                    outputs[key].append(value)
+    return outputs
+
+
+def get_future_time(expiration_time: str) -> str:
+    """ Gets a time and returns a string of the future time of it.
+
+    Args:
+        expiration_time: (3 days, 1 hour etc)
+
+    Returns:
+        time now + the expiration time
+
+    Examples:
+        time now: 20:00
+        function get expiration_time=1 hour
+        returns: 21:00 (format '%Y-%m-%dT%H:%M:%SZ')
+    """
+    start, end = parse_date_range(
+        expiration_time
+    )
+    future_time: datetime = end + (end - start)
+    return future_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 def alert_to_incident(alert, alert_creation_time):
@@ -32,10 +165,19 @@ class MsClient:
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed)
+            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
+            scope='https://securitycenter.onmicrosoft.com/windowsatpservice/.default')
         self.alert_severities_to_fetch = alert_severities_to_fetch,
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
+        # TODO: Replace with v1 endpoint when out.
+        self.indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
+
+    def indicators_http_request(self, *args, **kwargs):
+        """ Wraps the ms_client.http_request with scope=Scopes.graph
+        """
+        kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
+        return self.ms_client.http_request(*args, **kwargs)
 
     def isolate_machine(self, machine_id, comment, isolation_type):
         """Isolates a machine from accessing external network.
@@ -233,7 +375,7 @@ class MsClient:
             dict. Related IPs
         """
         cmd_url = f'/alerts/{alert_id}/ips'
-        return self.ms_client.http_request(method='GET', urk_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
     def get_alert_related_user(self, alert_id):
         """Retrieves the User related to a specific alert.
@@ -553,6 +695,102 @@ class MsClient:
         """
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def list_indicators(self, indicator_id: Optional[str] = None) -> List:
+        """Lists indicators. if indicator_id supplied, will get only that indicator.
+
+        Args:
+            indicator_id: if provided, will get only this specific id.
+
+        Returns:
+            List of responses.
+        """
+        cmd_url = urljoin(self.indicators_endpoint, indicator_id) if indicator_id else self.indicators_endpoint
+        # For getting one indicator
+        # TODO: check in the future if the filter is working. Then remove the filter function.
+        # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
+        resp = self.indicators_http_request(
+            'GET', full_url=cmd_url, url_suffix=None, timeout=1000,
+            ok_codes=(200, 204, 206, 404), resp_type='response'
+        )
+        # 404 - No indicators found, an empty list.
+        if resp.status_code == 404:
+            return []
+        resp = resp.json()
+        # If 'value' is in the response, should filter and limit. The '@odata.context' key is in the root which we're
+        # not returning
+        if 'value' in resp:
+            resp['value'] = list(
+                filter(lambda item: item.get('targetProduct') == 'Microsoft Defender ATP', resp.get('value', []))
+            )
+            resp = resp['value']
+        # If a single object - should remove the '@odata.context' key.
+        else:
+            resp.pop('@odata.context')
+            resp = [resp]
+        return [assign_params(values_to_ignore=[None], **item) for item in resp]
+
+    def create_indicator(self, body: Dict) -> Dict:
+        """Creates indicator from the given body.
+
+        Args:
+            body: Body represents an indicator.
+
+        Returns:
+            A response from the API.
+        """
+        resp = self.indicators_http_request(
+            'POST', full_url=self.indicators_endpoint, json_data=body, url_suffix=None
+        )
+        # A single object - should remove the '@odata.context' key.
+        resp.pop('@odata.context')
+        return assign_params(values_to_ignore=[None], **resp)
+
+    def update_indicator(
+            self, indicator_id: str, expiration_date_time: str,
+            description: Optional[str], severity: Optional[str]
+    ) -> Dict:
+        """Updates a given indicator
+
+        Args:
+            indicator_id: ID of the indicator to update
+            expiration_date_time: Expiration time of the indicator
+            description: A Brief description of the indicator
+            severity: The severity of the indicator
+
+        Returns:
+            A response from the API.
+        """
+        cmd_url = urljoin(self.indicators_endpoint, indicator_id)
+        header = {'Prefer': 'return=representation'}
+        body = {
+            'targetProduct': 'Microsoft Defender ATP',
+            'expirationDateTime': expiration_date_time
+        }
+        body.update(assign_params(
+            description=description,
+            severity=severity
+        ))
+        resp = self.indicators_http_request(
+            'PATCH', full_url=cmd_url, json_data=body, url_suffix=None, headers=header
+        )
+        # A single object - should remove the '@odata.context' key.
+        resp.pop('@odata.context')
+        return assign_params(values_to_ignore=[None], **resp)
+
+    def delete_indicator(self, indicator_id: str) -> Response:
+        """Deletes a given indicator
+
+        Args:
+            indicator_id: ID of the indicator to delete
+
+        Returns:
+            A response from the API.
+        """
+        cmd_url = urljoin(self.indicators_endpoint, indicator_id)
+        return self.indicators_http_request(
+            'DELETE', None, full_url=cmd_url, ok_codes=(204, ), resp_type='response'
+        )
 
 
 ''' Commands '''
@@ -1774,12 +2012,270 @@ def get_last_alert_fetched_time(last_run, alert_time_to_fetch):
     return last_alert_fetched_time
 
 
-def test_module(client: MsClient):
+def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str, Optional[Dict], Optional[List]]:
+    """
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR. May include 'indicator_id'
+
+    Returns:
+        human_readable, outputs.
+    """
+    raw_response = client.list_indicators(args.get('indicator_id'))
+    limit = int(args.get('limit', 50))
+    raw_response = raw_response[:limit]
+    if raw_response:
+        indicators = list()
+        for item in raw_response:
+            item['severity'] = NUMBER_TO_SEVERITY.get(item['severity'])
+            indicators.append(item)
+
+        human_readable = tableToMarkdown(
+            'Microsoft Defender ATP Indicators:',
+            indicators,
+            headers=[
+                'id',
+                'action',
+                'threatType',
+                'severity',
+                'fileName',
+                'fileHashType',
+                'fileHashValue',
+                'domainName',
+                'networkIPv4',
+                'url'
+            ],
+            removeNull=True
+        )
+        outputs = {'MicrosoftATP.Indicators(val.id == obj.id)': indicators}
+        std_outputs = build_std_output(indicators)
+        outputs.update(std_outputs)
+        return human_readable, outputs, indicators
+    else:
+        return 'No indicators found', None, None
+
+
+def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) -> Dict:
+    """Adds required arguments to indicator (arguments that must be in every create call).
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+            Must include the following keys:
+            - action
+            - description
+            - expiration_time
+            - threat_type
+        specific_args: file, email or network object.
+
+    Returns:
+        A response from API.
+
+    Raises:
+        AssertionError: For some arguments.
+
+    Documentation:
+    https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#properties
+    """
+    action = args.get('action', '')
+    description = args.get('description', '')
+    assert 1 <= len(description) <= 100, 'The description argument must contain at' \
+                                         ' least 1 character and not more than 100'
+    expiration_time = get_future_time(args.get('expiration_time', ''))
+    threat_type = args.get('threat_type', '')
+    tlp_level = args.get('tlp_level', '')
+    confidence = args.get('confidence', None)
     try:
-        client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
-    except Exception:
-        raise DemistoException(
-            f"API call to Windows Advanced Threat Protection failed. \n Please check authentication related parameters")
+        if confidence is not None:
+            confidence = int(confidence)
+            assert 0 <= confidence <= 100, 'The confidence argument must be between 0 and 100'
+    except ValueError:
+        raise DemistoException('The confidence argument must be an integer.')
+    severity = NUMBER_TO_SEVERITY.get(args.get('severity', 'Informational'))
+    tags = argToList(args.get('tags'))
+    body = assign_params(
+        action=action,
+        description=description,
+        expirationDateTime=expiration_time,
+        targetProduct='Microsoft Defender ATP',
+        threatType=threat_type,
+        tlpLevel=tlp_level,
+        confidence=confidence,
+        severity=severity,
+        tags=tags
+    )
+    body.update(specific_args)
+    return client.create_indicator(body)
+
+
+def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Creates a file indicator
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+            Should contain a file observable:
+            - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---file
+
+    Returns:
+        human readable, outputs, raw response
+
+    Raises:
+        AssertionError: If no file arguments.
+    """
+    file_object = assign_params(
+        fileCompileDateTime=args.get('file_compile_date_time'),
+        fileCreatedDateTime=args.get('file_created_date_time'),
+        fileHashType=args.get('file_hash_type'),
+        fileHashValue=args.get('file_hash_value'),
+        fileMutexName=args.get('file_mutex_name'),
+        fileName=args.get('file_name'),
+        filePacker=args.get('file_packer'),
+        filePath=args.get('file_path'),
+        fileSize=args.get('file_size'),
+        fileType=args.get('file_type')
+    )
+    assert file_object, 'Must supply at least one file attribute.'
+    raw_response = create_indicator_command(client, args, file_object)
+    indicator = raw_response.copy()
+    indicator['severity'] = NUMBER_TO_SEVERITY.get(indicator['severity'])
+    human_readable = tableToMarkdown(
+        f'Indicator {indicator.get("id")} was successfully created:',
+        indicator,
+        headers=[
+            'id',
+            'action',
+            'threatType',
+            'severity',
+            'fileName',
+            'fileHashType',
+            'fileHashValue',
+            'domainName',
+            'networkIPv4',
+            'url'
+        ],
+        removeNull=True
+    )
+    outputs = {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
+    std_outputs = build_std_output(indicator)
+    outputs.update(std_outputs)
+    return human_readable, outputs, raw_response
+
+
+def create_network_indicator_command(client, args) -> Tuple[str, Dict, Dict]:
+    """Creates a network indicator
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+            Should contain a a network observable:
+            - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-betaindicator-observables---network  # noqa: E501
+    Returns:
+        human readable, outputs, raw response
+
+    Raises:
+        AssertionError: If no file arguments.
+    """
+    network_object = assign_params(
+        domainName=args.get('domain_name'),
+        networkCidrBlock=args.get('network_cidr_block'),
+        networkDestinationAsn=args.get('network_destination_asn'),
+        networkDestinationCidrBlock=args.get('network_destination_cidr_block'),
+        networkDestinationIPv4=args.get('network_destination_ipv4'),
+        networkDestinationIPv6=args.get('network_destination_ipv6'),
+        networkDestinationPort=args.get('network_destination_port'),
+        networkIPv4=args.get('network_ipv4'),
+        networkIPv6=args.get('network_ipv6'),
+        networkPort=args.get('network_port'),
+        networkProtocol=args.get('network_protocol'),
+        networkSourceAsn=args.get('network_source_asn'),
+        networkSourceCidrBlock=args.get('network_source_cidr_block'),
+        networkSourceIPv4=args.get('network_source_ipv4'),
+        networkSourceIPv6=args.get('network_source_ipv6'),
+        networkSourcePort=args.get('network_source_port'),
+        userAgent=args.get('user_agent'),
+        url=args.get('url')
+    )
+    assert network_object, 'Must supply at least one network attribute.'
+    raw_response = create_indicator_command(client, args, network_object)
+    indicator = raw_response.copy()
+    indicator['severity'] = NUMBER_TO_SEVERITY.get(indicator['severity'])
+    human_readable = tableToMarkdown(
+        f'Indicator {indicator.get("id")} was successfully created:',
+        indicator,
+        headers=[
+            'id',
+            'action',
+            'threatType',
+            'severity',
+            'fileName',
+            'fileHashType',
+            'fileHashValue',
+            'domainName',
+            'networkIPv4',
+            'url'
+        ],
+        removeNull=True
+    )
+    outputs = {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
+    std_outputs = build_std_output(indicator)
+    outputs.update(std_outputs)
+    return human_readable, outputs, raw_response
+
+
+def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict, Dict]:
+    """Updates an indicator
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+            Must contains 'indicator_id' and 'expiration_time'
+    Returns:
+        human readable, outputs
+    """
+    indicator_id = args.get('indicator_id', '')
+    severity = NUMBER_TO_SEVERITY.get(args.get('severity', 'Informational'))
+    expiration_time = get_future_time(args.get('expiration_time', ''))
+    description = args.get('description')
+    if description is not None:
+        assert 1 <= len(
+            description) <= 100, 'The description argument must contain at least 1 character and not more than 100'
+
+    raw_response = client.update_indicator(
+        indicator_id=indicator_id, expiration_date_time=expiration_time,
+        description=description, severity=severity
+    )
+    indicator = raw_response.copy()
+    indicator['severity'] = NUMBER_TO_SEVERITY.get(indicator['severity'])
+    human_readable = tableToMarkdown(
+        f'Indicator ID: {indicator_id} was updated successfully.',
+        indicator,
+        removeNull=True
+    )
+    outputs = {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
+    std_outputs = build_std_output(indicator)
+    outputs.update(std_outputs)
+    return human_readable, outputs, raw_response
+
+
+def delete_indicator_command(client: MsClient, args: dict) -> str:
+    """Deletes an indicator
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+            Must contains 'indicator_id'
+    Returns:
+        human readable
+    """
+    indicator_id = args.get('indicator_id', '')
+    client.delete_indicator(indicator_id)
+    return f'Indicator ID: {indicator_id} was successfully deleted'
+
+
+def test_module(client: MsClient):
+    client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
     demisto.results('ok')
 
 
@@ -1800,115 +2296,126 @@ def main():
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
     last_run = demisto.getLastRun()
 
-    LOG('command is %s' % (demisto.command()))
-
+    command = demisto.command()
+    args = demisto.args()
+    LOG(f'command is {command}')
     try:
         client = MsClient(
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch)
-
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             test_module(client)
 
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             fetch_incidents(client, last_run)
 
-        elif demisto.command() == 'microsoft-atp-isolate-machine':
-            return_outputs(*isolate_machine_command(client, demisto.args()))
+        elif command == 'microsoft-atp-isolate-machine':
+            return_outputs(*isolate_machine_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-unisolate-machine':
-            return_outputs(*unisolate_machine_command(client, demisto.args()))
+        elif command == 'microsoft-atp-unisolate-machine':
+            return_outputs(*unisolate_machine_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-machines':
-            return_outputs(*get_machines_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-machines':
+            return_outputs(*get_machines_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-file-related-machines':
-            return_outputs(*get_file_related_machines_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-file-related-machines':
+            return_outputs(*get_file_related_machines_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-machine-details':
-            return_outputs(*get_machine_details_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-machine-details':
+            return_outputs(*get_machine_details_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-run-antivirus-scan':
-            return_outputs(*run_antivirus_scan_command(client, demisto.args()))
+        elif command == 'microsoft-atp-run-antivirus-scan':
+            return_outputs(*run_antivirus_scan_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-list-alerts':
-            return_outputs(*list_alerts_command(client, demisto.args()))
+        elif command == 'microsoft-atp-list-alerts':
+            return_outputs(*list_alerts_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-update-alert':
-            return_outputs(*update_alert_command(client, demisto.args()))
+        elif command == 'microsoft-atp-update-alert':
+            return_outputs(*update_alert_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-advanced-hunting':
-            return_outputs(*get_advanced_hunting_command(client, demisto.args()))
+        elif command == 'microsoft-atp-advanced-hunting':
+            return_outputs(*get_advanced_hunting_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-create-alert':
-            return_outputs(*create_alert_command(client, demisto.args()))
+        elif command == 'microsoft-atp-create-alert':
+            return_outputs(*create_alert_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-alert-related-user':
-            return_outputs(*get_alert_related_user_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-alert-related-user':
+            return_outputs(*get_alert_related_user_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-alert-related-files':
-            return_outputs(*get_alert_related_files_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-alert-related-files':
+            return_outputs(*get_alert_related_files_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-alert-related-ips':
-            return_outputs(*get_alert_related_ips_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-alert-related-ips':
+            return_outputs(*get_alert_related_ips_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-alert-related-domains':
-            return_outputs(*get_alert_related_domains_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-alert-related-domains':
+            return_outputs(*get_alert_related_domains_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-list-machine-actions-details':
-            return_outputs(*get_machine_action_by_id_command(client, demisto.args()))
+        elif command == 'microsoft-atp-list-machine-actions-details':
+            return_outputs(*get_machine_action_by_id_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-collect-investigation-package':
-            return_outputs(*get_machine_investigation_package_command(client, demisto.args()))
+        elif command == 'microsoft-atp-collect-investigation-package':
+            return_outputs(*get_machine_investigation_package_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-investigation-package-sas-uri':
-            return_outputs(*get_investigation_package_sas_uri_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-investigation-package-sas-uri':
+            return_outputs(*get_investigation_package_sas_uri_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-restrict-app-execution':
-            return_outputs(*restrict_app_execution_command(client, demisto.args()))
+        elif command == 'microsoft-atp-restrict-app-execution':
+            return_outputs(*restrict_app_execution_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-remove-app-restriction':
-            return_outputs(*remove_app_restriction_command(client, demisto.args()))
+        elif command == 'microsoft-atp-remove-app-restriction':
+            return_outputs(*remove_app_restriction_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-stop-and-quarantine-file':
-            return_outputs(*stop_and_quarantine_file_command(client, demisto.args()))
+        elif command == 'microsoft-atp-stop-and-quarantine-file':
+            return_outputs(*stop_and_quarantine_file_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-list-investigations':
-            return_outputs(*get_investigations_by_id_command(client, demisto.args()))
+        elif command == 'microsoft-atp-list-investigations':
+            return_outputs(*get_investigations_by_id_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-start-investigation':
-            return_outputs(*start_investigation_command(client, demisto.args()))
+        elif command == 'microsoft-atp-start-investigation':
+            return_outputs(*start_investigation_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-domain-statistics':
-            return_outputs(*get_domain_statistics_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-domain-statistics':
+            return_outputs(*get_domain_statistics_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-domain-alerts':
-            return_outputs(*get_domain_alerts_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-domain-alerts':
+            return_outputs(*get_domain_alerts_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-domain-machines':
-            return_outputs(*get_domain_machine_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-domain-machines':
+            return_outputs(*get_domain_machine_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-file-statistics':
-            return_outputs(*get_file_statistics_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-file-statistics':
+            return_outputs(*get_file_statistics_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-file-alerts':
-            return_outputs(*get_file_alerts_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-file-alerts':
+            return_outputs(*get_file_alerts_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-ip-statistics':
-            return_outputs(*get_ip_statistics_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-ip-statistics':
+            return_outputs(*get_ip_statistics_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-ip-alerts':
-            return_outputs(*get_ip_alerts_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-ip-alerts':
+            return_outputs(*get_ip_alerts_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-user-alerts':
-            return_outputs(*get_user_alerts_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-user-alerts':
+            return_outputs(*get_user_alerts_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-user-machines':
-            return_outputs(*get_user_machine_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-user-machines':
+            return_outputs(*get_user_machine_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-add-remove-machine-tag':
-            return_outputs(*add_remove_machine_tag_command(client, demisto.args()))
+        elif command == 'microsoft-atp-add-remove-machine-tag':
+            return_outputs(*add_remove_machine_tag_command(client, args))
+
+        elif command in ('microsoft-atp-indicator-list', 'microsoft-atp-indicator-get-by-id'):
+            return_outputs(*list_indicators_command(client, args))
+        elif command == 'microsoft-atp-indicator-create-file':
+            return_outputs(*create_file_indicator_command(client, args))
+        elif command == 'microsoft-atp-indicator-create-network':
+            return_outputs(*create_network_indicator_command(client, args))
+        elif command == 'microsoft-atp-indicator-update':
+            return_outputs(*update_indicator_command(client, args))
+        elif command == 'microsoft-atp-indicator-delete':
+            return_outputs(delete_indicator_command(client, args))
     except Exception as err:
         return_error(str(err))
 

@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-fromversion: 4.5.0
+fromversion: 5.0.0
 commonfields:
   id: Expanse
   version: -1
@@ -45,14 +45,12 @@ configuration:
   name: minimum_severity
   required: false
   type: 15
+  defaultvalue: WARNING
   options:
   - ROUTINE
   - WARNING
   - CRITICAL
-description: The Expanse App for Demisto leverages the Expander API to retrieve network
-  exposures and risky flows to create incidents in Demisto.  This application also allows for IP,
-  Domain, Certificate, Behavior, and Exposure enrichment, retrieving assets and exposures information drawn from Expanse’s
-  unparalleled view of the Internet.
+description: The Expanse App for Demisto leverages the Expander API to retrieve network exposures and risky flows to create incidents in Demisto.  This application also allows for IP, Domain, Certificate, Behavior, and Exposure enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
 display: Expanse
 name: Expanse
 script:
@@ -73,8 +71,7 @@ script:
       description: The IP address.
       type: String
     - contextPath: IP.Geo.Location
-      description: 'The geolocation where the IP address is located, in the format:
-        latitude:longitude.'
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
       type: String
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
@@ -113,12 +110,10 @@ script:
       description: The number of IP addresses in the IP network this IP address belongs to.
       type: Number
     - contextPath: Expanse.IP.IPRange.ResponsiveIPCount
-      description: Number of responsive IP addresses in IP network this IP address
-        belongs to.
+      description: Number of responsive IP addresses in IP network this IP address belongs to.
       type: Number
     - contextPath: Expanse.IP.IPRange.RangeIntroduced
-      description: Date the IP network this IP address belongs to was introduced to
-        Expanse.
+      description: Date the IP network this IP address belongs to was introduced to Expanse.
       type: Date
     - contextPath: Expanse.IP.IPRange.AttributionReasons
       description: The reason why this IP belongs to the IP range.
@@ -145,8 +140,7 @@ script:
       description: Customer defined Notes from Expanse related to this IP range.
       type: String
     - contextPath: Expanse.IP.Annotations.PointsOfContact
-      description: Customer defined Points of Contact from Expanse related to this
-        IP range.
+      description: Customer defined Points of Contact from Expanse related to this IP range.
       type: String
     - contextPath: Expanse.IP.SeverityCounts.CRITICAL
       description: The number of CRITICAL Events for this IP address.
@@ -655,7 +649,31 @@ script:
     - contextPath: Expanse.Exposures.Exposures.Provider
       description: Provider details of the Exposure
       type: Unknown
-  dockerimage: demisto/python3:3.8.2.6981
+  - arguments:
+    - default: true
+      description: The certificate common name. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host"
+      isArray: false
+      name: common_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns all domains which have been seen with the specified certificate.
+    execution: false
+    name: expanse-get-domains-for-certificate
+    outputs:
+    - contextPath: Expanse.IPDomains.SearchTerm
+      description: The common name that was searched.
+      type: String
+    - contextPath: Expanse.IPDomains.TotalDomainCount
+      description: The number of domains found matching the specified certificate.
+      type: Number
+    - contextPath: Expanse.IPDomains.FlatDomainList
+      description: An array of all domain names found. This is truncated at 50.
+      type: Unknown
+    - contextPath: Expanse.IPDomains.DomainList
+      description: An array of domain objects. This is truncated at 50.
+      type: Unknown
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false

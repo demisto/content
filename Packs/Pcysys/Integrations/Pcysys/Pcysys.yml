@@ -44,8 +44,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Run a specific template by its name. Please add the template name
-      in the parameters
+    description: Run a specific template by its name. Please add the template name in the parameters
     execution: false
     name: pentera-run-template-by-name
     outputs:
@@ -128,15 +127,13 @@ script:
       description: The duration of the action in milliseconds
       type: Number
     - contextPath: Pentera.TaskRun.FullActionReport.OperationType
-      description: 'The type of the action that ran; e.g.: "Scanning hosts", "Malware
-        injected to host", etc.'
+      description: 'The type of the action that ran; e.g.: "Scanning hosts", "Malware injected to host", etc.'
       type: String
     - contextPath: Pentera.TaskRun.FullActionReport.Techniques
       description: The MITRE technique(s) used with the relevant MITRE ID
       type: String
     - contextPath: Pentera.TaskRun.FullActionReport.Parameters
-      description: 'The relevant parameters of the action; e.g.: List of hosts IP
-        addresses'
+      description: 'The relevant parameters of the action; e.g.: List of hosts IP addresses'
       type: String
     - contextPath: Pentera.TaskRun.FullActionReport.Status
       description: 'The status of the action. Can be: success, failed, canceled, no_results'
@@ -150,3 +147,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0

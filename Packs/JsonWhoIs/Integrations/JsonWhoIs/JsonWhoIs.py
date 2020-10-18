@@ -1,16 +1,11 @@
-''' IMPORTS '''
-# std py packages
+import urllib3
 
-# 3-rd party py packages
-import requests
-
-# local py packages
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 # Parameters received from the user
@@ -32,22 +27,34 @@ HEADERS = {
 USE_SSL = not PARAMS.get('insecure', False)
 
 ''' HELPER FUNCTIONS '''
+
+
 @logger
 def http_request(method, url_suffix, params=None, max_retry=3):
-    res = None
-    for trial in range(max_retry):
+    for _ in range(max_retry):
         res = requests.request(
             method,
-            BASE_URL + url_suffix,
+            urljoin(BASE_URL, url_suffix),
             verify=USE_SSL,
             params=params,
             headers=HEADERS
         )
-        if res.status_code == 200:  # type: ignore
+        if res.status_code == 200:
             break
-        if trial == max_retry:  # type: ignore
-            raise Exception(f'Error enrich url with JsonWhoIS API, status code {res.status_code}')  # type: ignore
-    return res.json()  # type: ignore
+    else:
+        if 'res' in locals():
+            raise DemistoException(f'Error enrich url with JsonWhoIS API. Status code: {res.status_code}')
+        else:
+            raise DemistoException('Error enrich url with JsonWhoIS API.')
+    if res is None:
+        raise DemistoException('Error from JsonWhoIs: Could not get a result from the API.')
+    try:
+        raw = res.json()
+    except ValueError:
+        raise DemistoException(f'Error from JsonWhoIs: Could not parse JSON from response. {res.text}')
+    if 'error' in raw:
+        raise DemistoException(f'Error from JsonWhoIs: {raw["error"]}')
+    return raw
 
 
 def dict_by_ec(cur_dict: dict):
@@ -94,7 +101,6 @@ def whois(url: str) -> tuple:
     raw = http_request(method='GET',
                        url_suffix='/api/v1/whois',
                        params=params)
-
     # Build all ec
     ec = {
         'DomainStatus': raw.get('status'),

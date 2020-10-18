@@ -2,7 +2,7 @@
 <p>Vectra is a detection product that alerts on suspicious network behavior. It can recognize certain known attacks and suspicious interactions on the network level (e.g. Reverse Shell, Port Scans, etc)</p>
 <p>Demisto supports fetching detections directly from Vectra. These are set to trigger incidents in Demisto.</p>
 <p>Commands start with !Vectra and can be viewed by clicking <strong>Show commands </strong>in the Settings/Integrations page.</p>
-<p>For additional information check out also the solution brief at <a href="https://www.vectranetworks.com/assets/sb_demisto_0411171.pdf">https://www.vectranetworks.com/assets/sb_demisto_0411171.pdf</a></p>
+<p>For additional information check out also the solution brief at <a href="https://content.vectra.ai/rs/748-MCE-447/images/ProductIntegration_2017_Integrating_Cognito_with_Demisto_English.pdf">Integrating_Cognito_with_Demisto_English.pdf</a></p>
 <h3>To set up the integration on Demisto:</h3>
 <ol>
 <li>Go to ‘Settings &gt; Integrations &gt; Servers &amp; Services’</li>

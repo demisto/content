@@ -1,5 +1,6 @@
 id: test_servicenow_scripts
 version: -1
+fromversion: 5.0.0
 name: Test ServiceNow Scripts
 starttaskid: "0"
 tasks:

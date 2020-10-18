@@ -1,0 +1,3 @@
+## Google Kubernetes Engine
+- The Google Kubernetes Engine integration is used for building and managing container based applications in Google Cloud Platform (GCP), powered by the open source Kubernetes technology.
+- In order to get the *credentials.json* file required for this integration, Checkout the following docs [Google documentation](https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred).

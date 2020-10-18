@@ -4,12 +4,13 @@ This playbook uses several sub playbooks to process and tag indicators, which is
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* TIM - Process Indicators Against Business Partners Domains List
-* TIM - Process Indicators Against Approved Hash List
-* TIM - Process Indicators Against Business Partners IP List
-* TIM - Process CIDR Indicators By Size
-* TIM - Process Indicators Against Business Partners URL List
 * TIM - Process File Indicators With File Hash Type
+* TIM - Process Indicators Against Business Partners Domains List
+* TIM - Process CIDR Indicators By Size
+* TIM - Process Domains With Whois
+* TIM - Process Indicators Against Business Partners URL List
+* TIM - Process Indicators Against Business Partners IP List
+* TIM - Process Indicators Against Approved Hash List
 * TIM - Process Indicators Against Organizations External IP List
 
 ### Integrations
@@ -34,4 +35,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![Playbook Image](https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Indicator_Auto_Processing.png)
+![TIM - Indicator Auto Processing](https://raw.githubusercontent.com/demisto/content/af0957a7f2d6633bfd8e0083d70809463313ca66/Packs/TIM_Processing/doc_files/TIM_-_Indicator_Auto_Processing.png)

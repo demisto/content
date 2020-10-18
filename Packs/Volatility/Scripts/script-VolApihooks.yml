@@ -1,10 +1,12 @@
 commonfields:
   id: VolApihooks
-  version: 1
+  version: -1
 name: VolApihooks
-script: |-
+script: >-
   var cmdline = 'apihooks -p ' + args.pid;
+
   var out = executeCommand('Volatility', {memdump:args.memdump, profile:args.profile, system: args.system, cmd:cmdline});
+
   return out;
 type: javascript
 tags:
@@ -28,3 +30,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

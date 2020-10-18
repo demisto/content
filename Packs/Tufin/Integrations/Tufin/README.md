@@ -69,7 +69,7 @@ Search the Tufin Topology Map
 ```!tufin-search-topology destination=10.2.2.0/24 source=192.168.60.0/24```
 
 ##### Human Readable Output
-![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-search-topology.png)
+![image](https://raw.githubusercontent.com/demisto/content/02e1aa1b9ec01b73d5c6d1c15584271a4f0e3fa6/Packs/Tufin/doc_files/tufin-search-topology.png)
 
 ### 2. tufin-search-topology-image
 ---
@@ -96,7 +96,7 @@ There is no context output for this command.
 ```!tufin-search-topology-image destination=10.2.2.0/24 source=192.168.60.0/24```
 
 ##### Human Readable Output
-![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-search-topology-image.png)
+![image](https://raw.githubusercontent.com/demisto/content/02e1aa1b9ec01b73d5c6d1c15584271a4f0e3fa6/Packs/Tufin/doc_files/tufin-search-topology-image.png)
 
 ### 3. tufin-object-resolve
 ---
@@ -123,7 +123,7 @@ Resolve IP address to Network Object
 ```!tufin-object-resolve ip=10.3.3.3```
 
 ##### Human Readable Output
-![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-object-resolve.png)
+![image](https://raw.githubusercontent.com/demisto/content/02e1aa1b9ec01b73d5c6d1c15584271a4f0e3fa6/Packs/Tufin/doc_files/tufin-resolve-object.png)
 
 ### 4. tufin-policy-search
 ---
@@ -150,7 +150,7 @@ Search the policies of all devices managed by Tufin
 ```!tufin-policy-search search="source:192.168.1.1"```
 
 ##### Human Readable Output
-![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-policy-search.png)
+![image](https://raw.githubusercontent.com/demisto/content/02e1aa1b9ec01b73d5c6d1c15584271a4f0e3fa6/Packs/Tufin/doc_files/tufin-search-policies.png)
 
 ### 5. tufin-get-zone-for-ip
 ---
@@ -178,7 +178,7 @@ Match the IP address to the assigned Tufin Zone
 ```!tufin-get-zone-for-ip ip=10.10.12.1```
 
 ##### Human Readable Output
-![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-get-zone-for-ip.png)
+![image](https://raw.githubusercontent.com/demisto/content/02e1aa1b9ec01b73d5c6d1c15584271a4f0e3fa6/Packs/Tufin/doc_files/tufin-get-zone-for-ip.png)
 
 ### 6. tufin-submit-change-request
 ---
@@ -213,7 +213,7 @@ Submit a change request to SecureChange
 ```!tufin-submit-change-request request-type="Decommission Request" priority=High source=192.168.1.1 subject="This host is infected with ransomware"```
 
 ##### Human Readable Output
-![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-submit-change-request.png)
+![image](https://raw.githubusercontent.com/demisto/content/02e1aa1b9ec01b73d5c6d1c15584271a4f0e3fa6/Packs/Tufin/doc_files/tufin-submit-change-request.png)
 
 ### 7. tufin-search-devices
 ---
@@ -247,7 +247,7 @@ Search SecureTrack devices
 ```!tufin-search-devices vendor=Cisco```
 
 ##### Human Readable Output
-![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-search-devices.png)
+![image](https://raw.githubusercontent.com/demisto/content/02e1aa1b9ec01b73d5c6d1c15584271a4f0e3fa6/Packs/Tufin/doc_files/tufin-search-devices.png)
 
 ### 8. tufin-get-change-info
 ---
@@ -281,7 +281,7 @@ Get information on a SecureChange Ticket (Ticket ID retrieved from Tufin UI)
 ```!tufin-get-change-info ticket-id=250```
 
 ##### Human Readable Output
-![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-get-change-info.png)
+![image](https://raw.githubusercontent.com/demisto/content/02e1aa1b9ec01b73d5c6d1c15584271a4f0e3fa6/Packs/Tufin/doc_files/tufin-get-change-info.png)
 
 ### 9. tufin-search-applications
 ---
@@ -314,7 +314,7 @@ Search SecureApp applications
 ```!tufin-search-applications name="3Rivers"```
 
 ##### Human Readable Output
-![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-search-applications.png)
+![image](https://raw.githubusercontent.com/demisto/content/02e1aa1b9ec01b73d5c6d1c15584271a4f0e3fa6/Packs/Tufin/doc_files/tufin-search-applications.png)
 
 ### 10. tufin-search-application-connections
 ---
@@ -353,7 +353,7 @@ Get SecureApp application connections
 ```!tufin-search-application-connections app_id=215```
 
 ##### Human Readable Output
-![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-search-application-connections.png)
+![image](https://raw.githubusercontent.com/demisto/content/02e1aa1b9ec01b73d5c6d1c15584271a4f0e3fa6/Packs/Tufin/doc_files/tufin-search-application-connections.png)
 
 ## Additional Information
 ---

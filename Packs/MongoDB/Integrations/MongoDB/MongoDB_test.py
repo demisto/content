@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from bson.objectid import ObjectId
 
-from MongoDB import convert_id_to_object_id, convert_object_id_to_str, convert_str_to_datetime, Client, search_query
+from MongoDB import convert_id_to_object_id, convert_object_id_to_str, convert_str_to_datetime, Client, search_query, format_sort
 
 id_to_obj_inputs = [
     (
@@ -13,6 +13,10 @@ id_to_obj_inputs = [
     (
         {"_id": "5e4412f230c5b8f63a7356ba"},
         {"_id": ObjectId("5e4412f230c5b8f63a7356ba")},
+    ),
+    (
+        {"_id": {"$gte": "5e4412f230c5b8f63a7356ba"}},
+        {"_id": {"$gte": ObjectId("5e4412f230c5b8f63a7356ba")}},
     ),
     ({}, {}),
     ({"id": 1}, {"id": 1}),
@@ -48,7 +52,7 @@ class TestConvertStrToDatetime:
         {"testing": 123, "time": "ISODate('2020-06-12T08:23:07.000Z')"},
         pytest.param(
             {"testing": 123, "time": "ISODate('2018-06-12T08:23:07.000')"},
-            marks=pytest.mark.xfail),
+            marks=pytest.mark.xfail)
     ]
 
     @pytest.mark.parametrize("func_input", dict_inputs)
@@ -60,6 +64,22 @@ class TestConvertStrToDatetime:
         inputs = {1: 2}
         res = convert_str_to_datetime(inputs)
         assert isinstance(res[1], int)
+
+    def test_nested_dict(self):
+        """
+        Given:
+        A nested dict with a timestamp
+
+        When:
+        Running a query or insert
+
+        Then:
+        Validating all keys in the dict are there and the timestamp is valid
+
+        """
+        func_input = {"k": {"$gte": "ISODate('2020-06-12T08:23:07.000Z')"}}
+        res = convert_str_to_datetime(func_input)
+        assert isinstance(res["k"]["$gte"], datetime)
 
 
 class TestDatetimeToStr:
@@ -180,3 +200,27 @@ def test_query(mocker):
     _id = raw_response[0]['_id']
     assert isinstance(_id, str)
     assert isinstance(time, str)
+
+
+class TestFormatSort:
+    def test_format_sort_correctly(self):
+        """
+        Given:
+            a sort string in the correct format
+        Then:
+            Format the string in the correct format to be used in `pymongo.sort()`
+        """
+        assert format_sort("field1:asc,field2:desc") == [('field1', 1), ('field2', -1)]
+        assert format_sort("field1:asc") == [('field1', 1)]
+
+    def test_format_sort_raises_error(self):
+        """
+            Given:
+            a sort string in the wrong format
+        Then:
+            raise a ValueError
+        """
+        with pytest.raises(ValueError):
+            format_sort("Wrong:Type")
+        with pytest.raises(ValueError):
+            format_sort("WrongType")

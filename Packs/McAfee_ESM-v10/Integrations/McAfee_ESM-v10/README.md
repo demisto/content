@@ -560,7 +560,7 @@
 <th>Alert.DstPort</th>
 <th>Alert.Protocol</th>
 <th>Alert.LastTime</th>
-<th><a href="http://action.name/">Action.Name</a></th>
+<th>Action.Name</th>
 </tr>
 </thead>
 <tbody>

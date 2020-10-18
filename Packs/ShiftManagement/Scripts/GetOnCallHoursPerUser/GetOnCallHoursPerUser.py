@@ -33,7 +33,7 @@ def main():
     else:
         hours_per_user: Dict[str, int] = {}
         get_users_response: List = demisto.executeCommand('getUsers', {})
-        if is_error(get_roles_response):
+        if is_error(get_users_response):
             demisto.error(f'Failed to get users: {str(get_error(get_users_response))}')
         else:
             users = get_users_response[0]['Contents']
@@ -53,11 +53,11 @@ def main():
                     else:
                         hours_per_user[username] = role_on_call_hours
 
-        data = [
-            {'name': user, 'data': [number_of_hours], 'groups': [{'name': user, 'data': [number_of_hours]}]}
-            for user, number_of_hours in hours_per_user.items()
-        ]
-        demisto.results(json.dumps(data))
+        line_widget = LineWidget()
+        for user, number_of_hours in hours_per_user.items():
+            line_widget.add_category(name=user, number=number_of_hours, group=user)
+
+        return_results(line_widget)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

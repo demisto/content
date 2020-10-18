@@ -2,16 +2,21 @@ commonfields:
   id: XBNotable
   version: -1
 name: XBNotable
-script: |-
+script: >-
   import time
+
   rows = '100'
+
   if demisto.args().has_key('rows'):
       rows = demisto.args()['rows']
   days = '1'
+
   if demisto.args().has_key('days'):
       days = demisto.args()['days']
   res = '## Exabeam notable users'
+
   entry = demisto.executeCommand('xb-notable', {'numberOfResults': rows, 'num': days})[0]
+
   if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
       users = demisto.get(entry, 'Contents.users')
       if users:
@@ -47,7 +52,7 @@ tags:
 - server
 - analytics
 - exabeam
-comment: Retrieve notable Exabeam users
+comment: Deprecated. This script is deprecated. Use the Exabeam integration instead.
 system: true
 deprecated: true
 args:
@@ -60,3 +65,4 @@ dependson:
   must:
   - xb-notable
 timeout: 0s
+fromversion: 5.0.0

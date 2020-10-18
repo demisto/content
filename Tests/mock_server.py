@@ -1,4 +1,6 @@
 from __future__ import print_function
+
+import ast
 import os
 import json
 import signal
@@ -7,7 +9,7 @@ import time
 import unicodedata
 import urllib3
 import demisto_client.demisto_api
-from subprocess import call, Popen, PIPE, check_call, check_output, CalledProcessError
+from subprocess import call, Popen, PIPE, check_call, check_output, CalledProcessError, STDOUT
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
     LOG_COLORS
 
@@ -187,28 +189,41 @@ class MITMProxy:
 
         self.process = None
         self.empty_files = []
+        self.failed_tests_count = 0
+        self.successful_tests_count = 0
+        self.successful_rerecord_count = 0
+        self.failed_rerecord_count = 0
+        self.failed_rerecord_tests = []
         self.rerecorded_tests = []
-
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
-    def configure_proxy_in_demisto(self, demisto_api_key, server, proxy=''):
-        client = demisto_client.configure(base_url=server, api_key=demisto_api_key,
-                                          verify_ssl=False)
+    @staticmethod
+    def configure_proxy_in_demisto(username, password, server, proxy=''):
+        client = demisto_client.configure(base_url=server, username=username,
+                                          password=password, verify_ssl=False)
+
+        system_conf_response = demisto_client.generic_request_func(
+            self=client,
+            path='/system/config',
+            method='GET'
+        )
+        system_conf = ast.literal_eval(system_conf_response[0]).get('sysConf', {})
+
         http_proxy = https_proxy = proxy
         if proxy:
             http_proxy = 'http://' + proxy
             https_proxy = 'http://' + proxy
+        system_conf.update({
+            'http_proxy': http_proxy,
+            'https_proxy': https_proxy
+        })
         data = {
-            'data':
-                {
-                    'http_proxy': http_proxy,
-                    'https_proxy': https_proxy
-                },
+            'data': system_conf,
             'version': -1
         }
         response = demisto_client.generic_request_func(self=client, path='/system/config',
                                                        method='POST', body=data)
-        # client.api_client.pool.close()
+
         return response
 
     def get_mock_file_size(self, filepath):
@@ -249,6 +264,9 @@ class MITMProxy:
             self.empty_files.append(playbook_id)
         else:
             # Move to repo folder
+            prints_manager.add_print_job(
+                'Moving "{}" files to "{}" directory'.format(src_files, dst_folder), print, thread_index
+            )
             self.ami.call(['mkdir', '--parents', dst_folder])
             self.ami.call(['mv', src_files, dst_folder])
 
@@ -264,11 +282,6 @@ class MITMProxy:
             prints_manager.add_print_job(err_msg, print_error, thread_index)
             return
         problem_keys = json.loads(self.ami.check_output(['cat', problem_keys_filepath]))
-        prints_manager.add_print_job(
-            f'Test "{playbook_id}" problem_keys: \n{json.dumps(problem_keys, indent=4)}',
-            print,
-            thread_index
-        )
 
         # is there data in problematic_keys.json that needs whitewashing?
         prints_manager.add_print_job('checking if there is data to whitewash', print, thread_index)
@@ -295,17 +308,14 @@ class MITMProxy:
             split_command = command.split()
             prints_manager.add_print_job('Let\'s try and clean the mockfile from timestamp data!', print, thread_index)
             try:
-                clean_cmd_output = check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'))
-                prints_manager.add_print_job(
-                    f'clean_cmd_output.decode()={clean_cmd_output.decode()}',
-                    print,
-                    thread_index
-                )
+                check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'), stderr=STDOUT)
             except CalledProcessError as e:
                 cleaning_err_msg = 'There may have been a problem when filtering timestamp data from the mock file.'
                 prints_manager.add_print_job(cleaning_err_msg, print_error, thread_index)
                 err_msg = f'command `{command}` exited with return code [{e.returncode}]'
                 err_msg = f'{err_msg} and the output of "{e.output}"' if e.output else err_msg
+                if e.stderr:
+                    err_msg += f'STDERR: {e.stderr}'
                 prints_manager.add_print_job(err_msg, print_error, thread_index)
             else:
                 prints_manager.add_print_job('Success!', print_color, thread_index, LOG_COLORS.GREEN)
@@ -363,16 +373,17 @@ class MITMProxy:
         repo_problem_keys_filepath = os.path.join(
             self.repo_folder, get_folder_path(playbook_id), 'problematic_keys.json'
         )
-        prints_manager.add_print_job(f'repo_problem_keys_filepath={repo_problem_keys_filepath}', print, thread_index)
         current_problem_keys_filepath = os.path.join(path, get_folder_path(playbook_id), 'problematic_keys.json')
-        prints_manager.add_print_job(
-            f'current_problem_keys_filepath={current_problem_keys_filepath}', print, thread_index
-        )
+
+        # when recording, copy the `problematic_keys.json` for the test to current temporary directory if it exists
+        # that way previously recorded or manually added keys will only be added upon and not wiped with an overwrite
+        if record:
+            silence_output(
+                self.ami.call, ['mv', repo_problem_keys_filepath, current_problem_keys_filepath], stdout='null'
+            )
 
         script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
-        prints_manager.add_print_job(f'script_filepath={script_filepath}', print, thread_index)
         remote_script_path = self.ami.copy_file(script_filepath)
-        prints_manager.add_print_job(f'remote_script_path={remote_script_path}', print, thread_index)
 
         # if recording
         # record with detect_timestamps and then rewrite mock file
@@ -399,7 +410,6 @@ class MITMProxy:
         command = "source .bash_profile && mitmdump --ssl-insecure --verbose --listen-port {} {} {}{}".format(
             self.PROXY_PORT, actions, os.path.join(path, get_mock_file_path(playbook_id)), debug_opt
         )
-        prints_manager.add_print_job(f'mitm command: "{command}"', print, thread_index)
         command = command.split()
 
         # Start proxy server
@@ -417,10 +427,23 @@ class MITMProxy:
             time.sleep(PROXY_PROCESS_INIT_INTERVAL)
             seconds_since_init += PROXY_PROCESS_INIT_INTERVAL
         if not log_file_exists:
-            self.stop()
+            self.stop(thread_index, prints_manager)
             raise Exception("Proxy process took to long to go up.")
         proxy_up_message = 'Proxy process up and running. Took {} seconds'.format(seconds_since_init)
         prints_manager.add_print_job(proxy_up_message, print, thread_index)
+
+        # verify that mitmdump process is listening on port 9997
+        try:
+            prints_manager.add_print_job('verifying that mitmdump is listening on port 9997', print, thread_index)
+            lsof_cmd = ['sudo', 'lsof', '-iTCP:9997', '-sTCP:LISTEN']
+            lsof_cmd_output = self.ami.check_output(lsof_cmd).decode().strip()
+            prints_manager.add_print_job(f'lsof_cmd_output={lsof_cmd_output}', print, thread_index)
+        except CalledProcessError as e:
+            cleaning_err_msg = 'No process listening on port 9997'
+            prints_manager.add_print_job(cleaning_err_msg, print_error, thread_index)
+            err_msg = f'command `{command}` exited with return code [{e.returncode}]'
+            err_msg += f'{err_msg} and the output of "{e.output}"' if e.output else err_msg
+            prints_manager.add_print_job(err_msg, print_error, thread_index)
 
     def stop(self, thread_index=0, prints_manager=None):
         if not self.process:

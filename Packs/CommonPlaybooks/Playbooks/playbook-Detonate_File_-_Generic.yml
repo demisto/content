@@ -1,7 +1,6 @@
 id: Detonate File - Generic
 version: -1
 name: Detonate File - Generic
-fromversion: 4.0.0
 description: Detonate file through active integrations that support file detonation
 starttaskid: "0"
 tasks:
@@ -41,6 +40,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "3":
     id: "3"
     taskid: 2a8f5bbb-7692-4ece-8abe-9801c7b05c3c
@@ -64,6 +65,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "8":
     id: "8"
     taskid: f6627718-5952-4240-8fba-104c1350e79b
@@ -101,6 +104,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -111,6 +115,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "9":
     id: "9"
     taskid: c04567fa-641d-4b51-8c94-561516554b3d
@@ -163,6 +169,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -173,6 +180,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "10":
     id: "10"
     taskid: e82f2557-2a9d-4e13-81b1-ad3f4d685f3d
@@ -201,7 +210,6 @@ tasks:
         simple: "1"
       playbook:
         simple: default
-      private: {}
       source: {}
       tags: {}
       timeout:
@@ -212,6 +220,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -222,6 +231,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "11":
     id: "11"
     taskid: f1c56438-d1b6-4848-8608-c6292f3905b9
@@ -258,6 +269,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -268,6 +280,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "13":
     id: "13"
     taskid: 0a805640-8d5e-46d4-87f2-04a0781a6ca5
@@ -300,6 +314,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -310,6 +325,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "14":
     id: "14"
     taskid: d8093197-7aa9-4b18-8774-563225e8c72b
@@ -342,6 +359,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -352,6 +370,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "15":
     id: "15"
     taskid: 0e879eba-0377-44bf-81c4-83468555fec4
@@ -376,6 +396,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -386,6 +407,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "16":
     id: "16"
     taskid: e69051d8-12bd-440c-85de-3f3c713d1556
@@ -415,6 +438,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -425,6 +449,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "17":
     id: "17"
     taskid: 8bcf20e7-7f82-434b-8b21-200f3423a0ce
@@ -452,6 +478,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "18":
     id: "18"
     taskid: 11d549c4-31e9-4cd9-8983-9e1a1c7c4baf
@@ -479,6 +507,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "19":
     id: "19"
     taskid: 3727eda2-2c84-4730-8739-b54bc07a36c3
@@ -508,6 +538,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -518,6 +549,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "20":
     id: "20"
     taskid: 77b7e144-a6a2-4e93-8e69-1160f9921573
@@ -556,6 +589,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -566,6 +600,9 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -586,12 +623,14 @@ inputs:
       accessor: EntryID
   required: false
   description: Entry ID of file to be detonated
+  playbookInputQuery:
 - key: File
   value:
     complex:
       root: File
   required: false
   description: File object of file to be detonated
+  playbookInputQuery:
 outputs:
 - contextPath: Joe.Analysis.Status
   description: Analysis Status
@@ -1018,5 +1057,6 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
+fromversion: 5.0.0
 tests:
 - Detonate File - Generic Test

@@ -1,0 +1,20 @@
+{
+  "command_args": {
+        "endpoint_id_list":[123],
+        "dist_name":"123",
+        "gte_first_seen":"123",
+        "gte_last_seen":"123",
+        "lte_first_seen":"123",
+        "lte_last_seen":"123",
+        "ip_list":"123",
+        "group_name":"123",
+        "platform":"windows",
+        "alias":"123",
+        "isolate":"true",
+        "hostname":"123"
+  },
+    "api_response": {
+    "reply":
+    {"action_id": 123}
+  }
+}

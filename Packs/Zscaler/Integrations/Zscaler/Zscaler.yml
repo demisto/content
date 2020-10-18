@@ -4,8 +4,7 @@ commonfields:
 name: Zscaler
 display: Zscaler
 category: Network Security
-description: Zscaler is a cloud security solution built for performance and flexible
-  scalability.
+description: Zscaler is a cloud security solution built for performance and flexible scalability.
 configuration:
 - display: Cloud Name (i.e. https://admin.zscalertwo.net)
   name: cloud
@@ -51,6 +50,14 @@ script:
       required: false
       default: true
       description: URL to search for
+    - name: multiple
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether multiple URLs are being submitted. If "true", the value entered for the "url" command argument is interpreted as a CSV list of URLs. If you want to submit a URL that has commas in it, you can set this value to "false" and enter the singular URL for the value of the "url" command argument.
+      defaultValue: "true"
     outputs:
     - contextPath: URL.Data
       description: The URL that was searched
@@ -82,8 +89,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    description: Look up the categorization of the given set of URLs, e.g., abc.com,xyz.com.
-      Up to 100 URLs can be looked up per request, and a URL cannot exceed 1024 characters.
+    description: Look up the categorization of the given set of URLs, e.g., abc.com,xyz.com. Up to 100 URLs can be looked up per request, and a URL cannot exceed 1024 characters.
   - name: ip
     arguments:
     - name: ip
@@ -104,8 +110,7 @@ script:
       description: For malicious IP addresses, the vendor that made the decision
       type: string
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason for the vendor to make the
-        decision
+      description: For malicious IP addresses, the reason for the vendor to make the decision
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -119,16 +124,13 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    description: Look up the categorization of the given set of IP addresses, e.g.,
-      8.8.8.8,1.2.3.4. Up to 100 URLs can be looked up per request, and a IP cannot
-      exceed 1024 characters.
+    description: Look up the categorization of the given set of IP addresses, e.g., 8.8.8.8,1.2.3.4. Up to 100 URLs can be looked up per request, and a IP cannot exceed 1024 characters.
   - name: zscaler-undo-blacklist-url
     arguments:
     - name: url
       required: true
       default: true
-      description: 'URL to be  removed from blacklist. Should be comma separated (i.e.
-        snapchat.com,tinder.com) '
+      description: 'URL to be  removed from blacklist. Should be comma separated (i.e. snapchat.com,tinder.com) '
     description: Removes URL from the blacklist.
     execution: true
   - name: zscaler-whitelist-url
@@ -144,8 +146,7 @@ script:
     - name: url
       required: true
       default: true
-      description: 'URL to be  removed from whitelist. Should be comma separated (i.e.
-        snapchat.com,tinder.com) '
+      description: 'URL to be  removed from whitelist. Should be comma separated (i.e. snapchat.com,tinder.com) '
     description: Removes URL from the whitelist.
     execution: true
   - name: zscaler-undo-whitelist-ip
@@ -153,8 +154,7 @@ script:
     - name: ip
       required: true
       default: true
-      description: 'IP address to be  removed from whitelist. Should be comma separated
-        (i.e. 8.8.8.8,1.2.3.4) '
+      description: 'IP address to be  removed from whitelist. Should be comma separated (i.e. 8.8.8.8,1.2.3.4) '
     description: Removes IP from the whitelist.
     execution: true
   - name: zscaler-whitelist-ip
@@ -162,8 +162,7 @@ script:
     - name: ip
       required: true
       default: true
-      description: 'IP address to be whitelisted. Should be comma separated (i.e.
-        8.8.8.8,1.2.3.4) '
+      description: 'IP address to be whitelisted. Should be comma separated (i.e. 8.8.8.8,1.2.3.4) '
     description: Adds IP address to the whitelist.
     execution: true
   - name: zscaler-undo-blacklist-ip
@@ -171,26 +170,24 @@ script:
     - name: ip
       required: true
       default: true
-      description: 'IP address to be  removed from blacklist. Should be comma separated
-        (i.e. 8.8.8.8,1.2.3.4) '
+      description: 'IP address to be  removed from blacklist. Should be comma separated (i.e. 8.8.8.8,1.2.3.4) '
     description: Removes IP address from the blacklist.
   - name: zscaler-blacklist-ip
     arguments:
     - name: ip
       required: true
       default: true
-      description: 'IP address to be blacklisted. Should be comma separated (i.e.
-        8.8.8.8,1.2.3.4) '
+      description: 'IP address to be blacklisted. Should be comma separated (i.e. 8.8.8.8,1.2.3.4) '
     description: Adds IP address to the blacklist.
     execution: true
   - name: zscaler-category-add-url
     arguments:
     - name: category-id
       required: true
-      description: Category ID to add URL to, e.g. RADIO_STATIONS (Could be retreived
-        by running the command zscaler-get-categories)
+      description: Category ID to add URL to, e.g. RADIO_STATIONS (Could be retreived by running the command zscaler-get-categories)
     - name: url
       required: true
+      isArray: true
       description: URL address to add. Comma separated values supported, e.g. pandora.com,spotify.com
     outputs:
     - contextPath: Zscaler.Category.CustomCategory
@@ -210,10 +207,10 @@ script:
     arguments:
     - name: category-id
       required: true
-      description: Category ID to add URL to, e.g. RADIO_STATIONS (Could be retreived
-        by running the command zscaler-get-categories)
+      description: Category ID to add URL to, e.g. RADIO_STATIONS (Could be retreived by running the command zscaler-get-categories)
     - name: ip
       required: true
+      isArray: true
       description: IP address to add. Comma separated values supported, e.g. 1.2.3.4,8.8.8.8
     outputs:
     - contextPath: Zscaler.Category.CustomCategory
@@ -233,8 +230,7 @@ script:
     arguments:
     - name: category-id
       required: true
-      description: Category ID to remove URL from, e.g. RADIO_STATIONS (Could be retreived
-        by running the command zscaler-get-categories)
+      description: Category ID to remove URL from, e.g. RADIO_STATIONS (Could be retreived by running the command zscaler-get-categories)
     - name: url
       required: true
       description: URL address to remove. Comma separated values supported, e.g. pandora.com,spotify.com
@@ -256,8 +252,7 @@ script:
     arguments:
     - name: category-id
       required: true
-      description: Category ID to remove IP from, e.g. RADIO_STATIONS (Could be retreived
-        by running the command zscaler-get-categories)
+      description: Category ID to remove IP from, e.g. RADIO_STATIONS (Could be retreived by running the command zscaler-get-categories)
     - name: ip
       required: true
       description: IP address to remove. Comma separated values supported, e.g. 1.2.3.4,8.8.8.8
@@ -355,8 +350,8 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-    description: Get a full or summary detail report for an MD5 hash of a file that
-      was analyzed by Sandbox.
+    description: Get a full or summary detail report for an MD5 hash of a file that was analyzed by Sandbox.
   runonce: false
 tests:
 - Zscaler Test
+fromversion: 5.0.0

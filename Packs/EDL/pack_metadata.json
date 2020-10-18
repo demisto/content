@@ -2,7 +2,7 @@
     "name": "Palo Alto Networks PAN-OS EDL Service",
     "description": "This integration provides External Dynamic List (EDL) as a service for the system indicators (Outbound feed).",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,11 +11,7 @@
     ],
     "tags": [],
     "created": "2020-04-14T00:00:00Z",
-    "updated": "2020-03-14T00:00:00Z",
-    "beta": false,
-    "deprecated": false,
     "useCases": [],
     "keywords": [],
-    "dependencies": {},
-    "displayedImages": []
+    "dependencies": {}
 }

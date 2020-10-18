@@ -586,7 +586,7 @@ def get_correct_ip_order(low_ip_address, high_ip_address):
     }
 
 
-def build_scan(low_ip_address, high_ip_address, scan_policy):
+def build_scan(low_ip_address, high_ip_address, scan_policy, scan_name):
     ''' Prepare scan data payload for POST request. '''
 
     # check order of given ip address and assign accordingly
@@ -608,10 +608,12 @@ def build_scan(low_ip_address, high_ip_address, scan_policy):
     scan = {}   # type: Dict[str, Any]
 
     # Scan name will change if user is scanning range (low ip address not equal to high ip address)
-    if low_ip_address == high_ip_address:
-        scan['name'] = ("Demisto Scan " + " [" + str(low_ip_address) + "]")
+    if scan_name is not None:
+        scan['name'] = str(scan_name)[:100]
+    elif low_ip_address == high_ip_address:
+        scan['name'] = ("Cortex XSOAR Scan " + " [" + str(low_ip_address) + "]")
     else:
-        scan['name'] = ("Demisto Scan " + "[" + str(low_ip_address) + "-" + str(high_ip_address) + "]")
+        scan['name'] = ("Cortex XSOAR Scan " + "[" + str(low_ip_address) + "-" + str(high_ip_address) + "]")
 
     scan['description'] = "New network device auto scan launch from Demisto."
 
@@ -660,7 +662,7 @@ def build_scan(low_ip_address, high_ip_address, scan_policy):
     return scan
 
 
-def scan_asset(ip_address, scan_policy, ip_range_start, ip_range_end):
+def scan_asset(ip_address, scan_policy, scan_name, ip_range_start, ip_range_end):
     ''' Build scan payload and make POST request to perform scan. '''
     try:
         if ip_address:
@@ -677,7 +679,7 @@ def scan_asset(ip_address, scan_policy, ip_range_start, ip_range_end):
             msg = "Inputting a single \'ip_address\' and a range of addresses will yield to the single ip_address to scan"
             demisto.debug("FrontlineVM scan_asset -- " + msg)
 
-        scan_payload = build_scan(low_ip_address, high_ip_address, scan_policy)
+        scan_payload = build_scan(low_ip_address, high_ip_address, scan_policy, scan_name)
         header = {}
         header['Authorization'] = 'Token ' + str(API_TOKEN)
         header['Content-Type'] = "application/json;charset=utf-8"
@@ -727,13 +729,14 @@ def scan_asset_command():
     ''' Peform scan on Frontline.Cloud '''
     ip_address = demisto.args().get('ip_address')
     policy_name = str(demisto.args().get('scan_policy'))
+    scan_name = demisto.args().get('scan_name')
     ip_range_start = demisto.args().get('ip_range_start')
     ip_range_end = demisto.args().get('ip_range_end')
     if not scan_policy_exists(policy_name):
         return_error("Error: Scan Policy entered '" + policy_name + "' does not exist.")
 
     try:
-        scan_response = scan_asset(ip_address, policy_name, ip_range_start, ip_range_end)
+        scan_response = scan_asset(ip_address, policy_name, scan_name, ip_range_start, ip_range_end)
         # Gather IP addresses from scan response data:
         ip_addresses = get_ip_addresses_from_scan_data(scan_response)
         low_ip = ip_addresses.get('low')

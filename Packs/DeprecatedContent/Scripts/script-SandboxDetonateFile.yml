@@ -2,19 +2,26 @@ commonfields:
   id: SandboxDetonateFile
   version: -1
 name: SandboxDetonateFile
-script: |-
+script: >-
   from time import sleep
+
   res = []
+
   timeout = 600
+
   if 'timeout' in demisto.args():
       timeout = int(demisto.args()['timeout'])
   interval = 10
+
   if 'interval' in demisto.args():
       interval = int(demisto.args()['interval'])
 
   sandblastDone = False
+
   cuckooDone = False
+
   wildfireDone = False
+
   if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'WildFire'})[0]['Contents'] != 'yes':
       wildfireDone = True
       #demisto.log('WildFire not available.')
@@ -27,6 +34,7 @@ script: |-
           #demisto.log('Sandblast not available.')
 
   usingBrand = demisto.get(demisto.args(), 'using-brand')
+
   if usingBrand:
       if 'wildfire' not in usingBrand.lower():
           wildfireDone = True
@@ -35,7 +43,9 @@ script: |-
       if 'check point sandblast' not in usingBrand.lower():
           sandblastDone = True
   # Get the file's hash
+
   resFileEntry = demisto.executeCommand('getEntry',{'id': demisto.args()['entryID']})
+
   if isError(resFileEntry[0]):
       demisto.results(resFileEntry)
       sys.exit()
@@ -44,7 +54,9 @@ script: |-
 
 
   ############ Hash check stage ############
+
   # Wildfire
+
   if not wildfireDone:
       resCheckWildfire = demisto.executeCommand("wildfire-report", {"md5": fileMd5})
       if isError(resCheckWildfire[0]):
@@ -58,6 +70,7 @@ script: |-
           wildfireDone = True
 
   # Sandblast
+
   if not sandblastDone:
       resCheckSB = demisto.executeCommand("sandblast-query", {"md5": fileMd5})
       if isError(resCheckSB[0]):
@@ -72,7 +85,9 @@ script: |-
 
 
   ############ Submit stage ############
+
   # Wildfire
+
   if not wildfireDone:
       resWFUpload = demisto.executeCommand("wildfire-upload", {"upload": demisto.args()["entryID"]})
       if isError(resWFUpload[0]):
@@ -83,6 +98,7 @@ script: |-
               res += resWFUpload
 
   # Sandblast
+
   if not sandblastDone:
       resSBUpload = demisto.executeCommand("sandblast-upload", {"file_id": demisto.args()["entryID"], "file_name" : demisto.args()["entryID"]})
       if isError(resSBUpload[0]):
@@ -93,7 +109,9 @@ script: |-
           res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Sandblast Error: {0}".format(str(demisto.get(resSBUpload[0], 'Contents.response.status.message'))) } )
 
   # Cuckoo
+
   ckTaskId = -1
+
   if not cuckooDone:
       resCk = demisto.executeCommand("CuckooDetonateFile", {"entryID": demisto.args()["entryID"]})
 
@@ -103,7 +121,9 @@ script: |-
 
 
   ############ Poll stage ############
+
   sec = 0
+
   while (sec < timeout):
       # Sandblast
       if not sandblastDone:
@@ -178,7 +198,7 @@ tags:
 - sandbox
 - enhancement
 - file
-comment: Detonate the file in available sandboxes.
+comment: Deprecated. This script is deprecated. Use the available generic file detonation playbooks instead.
 enabled: true
 args:
 - name: entryID
@@ -201,4 +221,5 @@ deprecated: true
 timeout: 86.4µs
 runonce: false
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

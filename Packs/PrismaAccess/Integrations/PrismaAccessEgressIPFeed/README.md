@@ -1,4 +1,4 @@
-Dynamically retrieve and whitelist IPs Prisma Access uses to egress traffic to the internet and SaaS apps.
+Dynamically retrieve and allow IPs Prisma Access uses to egress traffic to the internet and SaaS apps.
 This integration was integrated and tested with version xx of Prisma Access Egress IP feed
 ## Configure Prisma Access Egress IP feed on Demisto
 
@@ -16,6 +16,7 @@ This integration was integrated and tested with version xx of Prisma Access Egre
 | location | Location | False |
 | feedReputation | Indicator Reputation | False |
 | feedReliability | Source Reliability | True |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
 | feedExpirationPolicy |  | False |
 | feedExpirationInterval |  | False |
 | feedFetchInterval | Feed Fetch Interval | False |

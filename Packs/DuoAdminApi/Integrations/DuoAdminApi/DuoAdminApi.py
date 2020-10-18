@@ -84,8 +84,12 @@ def create_api_call():
             host=HOST,
             ca_certs='DISABLE'
         )
+    try:
+        client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body, headers)
 
-    client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body, headers)
+    except Exception as e:
+        demisto.error("Error making request - failed to create client: {}".format(e))
+        raise Exception
 
     return client
 
@@ -97,11 +101,15 @@ def set_proxy():
             host, port = get_host_port_from_proxy_settings(proxy_settings)
 
             if USE_PROXY:
-                admin_api.set_proxy(host=host, port=port)
+                admin_api.set_proxy(host=host.strip(':'), port=port)
 
     # if no proxy settings have been set
     except ValueError:
         admin_api.set_proxy(host=None, port=None, proxy_type=None)
+
+    except Exception as e:
+        demisto.error('Error setting proxy: {}'.format(e))
+        raise Exception
 
 
 def get_host_port_from_proxy_settings(proxy_settings):
@@ -177,23 +185,23 @@ def get_user_id(username):
 # Duo client return 2 different known structures of error messages
 def test_instance():
     try:
-        admin_api.get_info_summary()
+        admin_api.get_users()
         demisto.results('ok')
 
     except Exception as e:
         if hasattr(e, 'data'):
             # error data for 40103 is not informative enough so we write our own
             if e.__getattribute__('data')['code'] == 40103:
-                demisto.results('Invalid secret key in request credentials')
+                raise Exception('Invalid secret key in request credentials')
 
             else:
-                demisto.results(e.__getattribute__('data')['message'])
+                raise Exception(e.__getattribute__('data')['message'])
 
         elif hasattr(e, 'strerror'):
-            demisto.results(e.__getattribute__('strerror'))
+            raise Exception(e.__getattribute__('strerror'))
 
         else:
-            demisto.results('Unknown error: ' + str(e))
+            raise Exception('Unknown error: ' + str(e))
 
 
 def get_all_users():
@@ -355,5 +363,6 @@ try:
         delete_u2f_token(demisto.getArg('token_id'))
 
 except Exception as e:
+    demisto.error("Duo Admin failed on: {} on this command {}".format(e, demisto.command))
     return_error(e.message)
 sys.exit(0)

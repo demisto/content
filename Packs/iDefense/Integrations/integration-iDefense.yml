@@ -15,7 +15,7 @@ configuration:
 - display: API Token
   name: api_token
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
@@ -28,9 +28,11 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     // handle '/' at the end of the url
+
     var base_url = params.url.slice(0, params.url.length - params.url.match('/*$')[0].length) + '/rest/';
+
 
     function sendRequest(method, url_suffix, headers, body) {
         headers = headers || {};
@@ -63,6 +65,7 @@ script:
         return res.Body.length !== 0 ? JSON.parse(res.Body) : {};
     }
 
+
     function calculate_dbot_score(severity) {
         // Calculate score based on severity
         // Dbot Score   | severity
@@ -84,6 +87,7 @@ script:
         return dbot_score;
     }
 
+
     function get_full_data(cmd_url, query, result_threshold) {
         result_threshold = result_threshold || 300;
         query = query || {};
@@ -103,6 +107,7 @@ script:
 
         return results;
     }
+
 
     function check_threats(type, value, uniq_field, results) {
         if (!results) {
@@ -162,6 +167,7 @@ script:
 
         };
     }
+
     function sort_threats(results) {
         var domains = [], urls = [], ips = [], others = [];
 
@@ -198,12 +204,14 @@ script:
 
     }
 
+
     function get_threats(max_results) {
         var cmd_url = 'threatindicator/v0/';
         var results = get_full_data(cmd_url, {}, max_results);
 
         return sort_threats(results);
     }
+
 
     function get_domain(domain) {
         var threats_info = check_threats('Domain', domain, 'Name');
@@ -219,6 +227,7 @@ script:
             EntryContext : mergeForeignObjects([threats_info.context, {DBotScore : threats_info.scores}])
         };
     }
+
 
     function get_ip(ip) {
         if (!isValidIP(ip)) {
@@ -240,6 +249,7 @@ script:
         };
     }
 
+
     function get_url(url) {
         var threats_info = check_threats('URL', url, 'Data');
         if (threats_info.results.length === 0) {
@@ -256,6 +266,7 @@ script:
         };
     }
 
+
     function get_uuid(uuid) {
         var cmd_url = 'threatindicator/v0/' + uuid;
         var res = sendRequest('GET', cmd_url);
@@ -263,8 +274,11 @@ script:
         return sort_threats([res]);
     }
 
+
     // The command input arg holds the command sent from the user.
+
     logDebug('entering with command: ' + command);
+
     switch (command) {
         case 'idefense-general':
             // still having issues with this command.
@@ -423,3 +437,4 @@ script:
       description: The actual score.
     description: Get specific indicator reputation
   runonce: false
+fromversion: 5.0.0

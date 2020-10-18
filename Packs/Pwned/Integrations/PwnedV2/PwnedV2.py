@@ -1,6 +1,4 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
@@ -29,7 +27,6 @@ DEFAULT_DBOT_SCORE_EMAIL = 2 if demisto.params().get('default_dbot_score_email')
 DEFAULT_DBOT_SCORE_DOMAIN = 2 if demisto.params().get('default_dbot_score_domain') == 'SUSPICIOUS' else 3
 
 SUFFIXES = {
-    "test": '/breaches?domain=demisto.com',
     "email": '/breachedaccount/',
     "domain": '/breaches?domain=',
     "username": '/breachedaccount/',
@@ -38,7 +35,6 @@ SUFFIXES = {
     "domain_truncate_verified": '&truncateResponse=false&includeUnverified=true',
     "username_truncate_verified": '?truncateResponse=false&includeUnverified=true'
 }
-
 
 RETRIES_END_TIME = datetime.min
 
@@ -66,15 +62,19 @@ def http_request(method, url_suffix, params=None, data=None):
         wait_regex = re.search(r'\d+', res.json()['message'])
         if wait_regex:
             wait_amount = wait_regex.group()
-
-            if datetime.now() + timedelta(seconds=int(wait_amount)) > RETRIES_END_TIME:
-                return_error('Max retry time has exceeded.')
-
-            time.sleep(int(wait_amount))
+        else:
+            demisto.error('failed extracting wait time will use default (5). Res body: {}'.format(res.text))
+            wait_amount = 5
+        if datetime.now() + timedelta(seconds=int(wait_amount)) > RETRIES_END_TIME:
+            return_error('Max retry time has exceeded.')
+        time.sleep(int(wait_amount))
 
     if res.status_code == 404:
         return None
     if not res.status_code == 200:
+        if not res.status_code == 401:
+            demisto.error(
+                'Error in API call to Pwned Integration [%d]. Full text: %s' % (res.status_code, res.text))
         return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
         return None
 
@@ -222,10 +222,9 @@ def set_retry_end_time():
 def test_module(args_dict):
     """
     If the http request was successful the test will return OK
-    :param args_dict: needed in order to keep the commands convention.
     :return: 3 arrays of outputs
     """
-    http_request('GET', SUFFIXES.get("test"))
+    http_request('GET', SUFFIXES.get("username", '') + 'test')
     return ['ok'], [None], [None]
 
 

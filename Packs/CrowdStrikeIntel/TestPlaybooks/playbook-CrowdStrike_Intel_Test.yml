@@ -263,11 +263,7 @@ tasks:
       id: d9ae6ec4-2d15-41aa-895e-b3aecc0580e5
       version: -1
       name: Search known actors
-      description: Search known actors based on the given parameters. Dates are formatted
-        as YYYY-MM-DD. Max date is taken automatically looking at end-of-day time.
-        Origins, targetCountries, targetIndustries and motivations can all receive
-        multiple values separated by ",". Offset is 0 based. Sort is field_name.order,
-        field_name.order where order is either asc or desc.
+      description: Search known actors based on the given parameters. Dates are formatted as YYYY-MM-DD. Max date is taken automatically looking at end-of-day time. Origins, targetCountries, targetIndustries and motivations can all receive multiple values separated by ",". Offset is 0 based. Sort is field_name.order, field_name.order where order is either asc or desc.
       script: '|||cs-actors'
       type: regular
       iscommand: true
@@ -349,8 +345,7 @@ tasks:
       id: 758d2d76-0d38-4750-80a7-1f07ec164d1d
       version: -1
       name: Query CrowdStrike intelligence publications
-      description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
-        publications.
+      description: The Falcon Intel Reports API allows to query CrowdStrike intelligence publications.
       script: '|||cs-reports'
       type: regular
       iscommand: true
@@ -493,3 +488,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

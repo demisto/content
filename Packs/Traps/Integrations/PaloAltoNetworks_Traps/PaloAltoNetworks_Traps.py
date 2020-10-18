@@ -107,7 +107,7 @@ def extract_and_validate_http_response(response, operation_err_message, test=Fal
                 err_obj = json.loads(xml2json(response.text))
                 err_message = demisto.get(err_obj, 'Error.Message')
             except Exception:
-                err_message = f'Could not parse error'
+                err_message = 'Could not parse error'
         return_error(f'{operation_err_message}: \n{err_message}')
 
 
@@ -138,7 +138,7 @@ def http_request(method, url_suffix, plain_url=False, params=None, data=None, op
             headers=create_headers(with_auth),
         )
     except requests.exceptions.ConnectionError:
-        return_error(f'Error connecting to Traps server. Please check your connection and you server address')
+        return_error('Error connecting to Traps server. Please check your connection and you server address')
     if parse_response:
         result = extract_and_validate_http_response(result, operation_err, plain_url)
     return result
@@ -278,7 +278,7 @@ def update_event_status(event_ids, status):
     Returns:
         API response.
     """
-    path = f'events/status'
+    path = 'events/status'
     data = {
         "guids": event_ids,
         "status": status
@@ -381,7 +381,7 @@ def hashes_blacklist_status(hash_ids):
     Returns:
         Hashes and blacklisting data.
     """
-    path = f'hashes/blacklist-status'
+    path = 'hashes/blacklist-status'
     data = {
         'hashes': hash_ids
     }
@@ -471,7 +471,7 @@ def endpoint_isolate_status(operation_id):
     Returns:
         endpoint status, operation ID
     """
-    status, _ = sam_operation(operation_id, f'Could not get endpoint isolate status')
+    status, _ = sam_operation(operation_id, 'Could not get endpoint isolate status')
     return {'Status': status, 'OperationID': operation_id}
 
 
@@ -484,7 +484,7 @@ def event_quarantine_result(operation_id):
     Returns:
         quarantine data.
     """
-    status, additional_data = sam_operation(operation_id, f'Could not get event quarantine status')
+    status, additional_data = sam_operation(operation_id, 'Could not get event quarantine status')
     quarantine_data = parse_data_from_response(additional_data.get('quarantineData'),
                                                'event_quarantine_result') if additional_data else {}
     quarantine_data['Status'] = status
@@ -501,12 +501,12 @@ def endpoint_files_retrieve_result(operation_id):
     Returns:
         file as an entry, status, operation_id.
     """
-    status, additional_data = sam_operation(operation_id, f'Failed to get file retrieve results')
+    status, additional_data = sam_operation(operation_id, 'Failed to get file retrieve results')
     if status == 'finished':
         file_info = additional_data.get('uploadData')
         file_name = file_info.get('fileName')
         url = file_info.get('downloadUrl')
-        data = http_request('GET', url, plain_url=True, operation_err=f'Unable to download file.', with_auth=False)
+        data = http_request('GET', url, plain_url=True, operation_err='Unable to download file.', with_auth=False)
         demisto.results(fileResult(filename=file_name, data=data))
     return {'Status': status, 'OperationID': operation_id}
 
@@ -601,7 +601,7 @@ def endpoint_scan_result_command():
     args = demisto.args()
     operation_id = args.get('operation_id')
     status_obj = endpoint_scan_result(operation_id)
-    context = {f'Traps.ScanResult(val.OperationID == obj.OperationID)': status_obj}
+    context = {'Traps.ScanResult(val.OperationID == obj.OperationID)': status_obj}
     human_readable = tableToMarkdown(f'Status of scan operation: {operation_id}', status_obj,
                                      headerTransform=pascalToSpace)
     return_outputs(human_readable, context, status_obj)
@@ -665,7 +665,7 @@ def event_quarantine_result_command():
     args = demisto.args()
     operation_id = args.get('operation_id')
     status_obj = event_quarantine_result(operation_id)
-    context = {f'Traps.QuarantineResult(val.OperationID == obj.OperationID)': status_obj}
+    context = {'Traps.QuarantineResult(val.OperationID == obj.OperationID)': status_obj}
     human_readable = tableToMarkdown(f'Status of quarantine operation: {operation_id}',
                                      status_obj, headerTransform=pascalToSpace)
     return_outputs(human_readable, context, status_obj)
@@ -758,7 +758,7 @@ def endpoint_isolate_status_command():
     operation_id = args.get('operation_id')
     isolate_status = endpoint_isolate_status(operation_id)
     human_readable = f'### Isolate status is: {isolate_status.get("Status")}'
-    context = {f'Traps.IsolateResult(val.OperationID == obj.OperationID)': isolate_status}
+    context = {'Traps.IsolateResult(val.OperationID == obj.OperationID)': isolate_status}
     return_outputs(human_readable, context, isolate_status)
 
 

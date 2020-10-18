@@ -2,10 +2,11 @@ id: PAN-OS - Block IP and URL - External Dynamic List
 version: -1
 name: PAN-OS - Block IP and URL - External Dynamic List
 description: |-
-  This playbook blocks IP addresses and URLs using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
+  Deprecated. Use "PAN-OS - Block IP and URL - External Dynamic List v2" playbook instead. This playbook blocks IP addresses and URLs using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
   It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook (otherwise the list will be configured), and adds the input IPs and URLs to the relevant lists.
-fromversion: 4.0.0
+fromversion: 5.0.0
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -40,8 +41,7 @@ tasks:
       id: e22b070d-665b-4617-8c22-b9c70dd9d9e3
       version: -1
       name: PAN OS - Update IP EDL
-      description: Updates the instance context with the specified list name and list
-        items, and overrides the path of the remote file with the internal list.
+      description: Updates the instance context with the specified list name and list items, and overrides the path of the remote file with the internal list.
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
@@ -178,8 +178,7 @@ tasks:
       id: 4030a77b-b3b2-4a4f-87c6-e43217117f37
       version: -1
       name: PAN OS - Update URL EDL
-      description: Updates the instance context with the specified list name and list
-        items, and overrides the path of the remote file with the internal list.
+      description: Updates the instance context with the specified list name and list items, and overrides the path of the remote file with the internal list.
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
@@ -757,8 +756,7 @@ inputs:
   value:
     simple: Demisto Remediation - IP EDL
   required: false
-  description: IP address list from the instance context with which to override the
-    remote file.
+  description: IP address list from the instance context with which to override the remote file.
 - key: IP
   value:
     complex:
@@ -793,8 +791,7 @@ inputs:
   value:
     simple: Demisto Remediation - URL EDL
   required: false
-  description: URL list from the instance context with which to override the remote
-    file.
+  description: URL list from the instance context with which to override the remote file.
 - key: LogForwarding
   value: {}
   required: false
@@ -852,4 +849,4 @@ inputs:
   description: The device group to work on. Exists only in panorama!
 outputs: []
 tests:
-  - No test
+- No test

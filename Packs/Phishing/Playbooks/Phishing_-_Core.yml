@@ -1,6 +1,5 @@
 id: Phishing - Core
 version: -1
-fromversion: 4.5.0
 name: Phishing - Core
 description: |-
   Provides a basic response to phishing incidents. Playbook features:
@@ -13,15 +12,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7bd69024-bbe7-4712-8144-eed5dd7f8f21
+    taskid: 86854b0b-87ed-4b88-8f38-bb3adf91d7a8
     type: start
     task:
-      id: 7bd69024-bbe7-4712-8144-eed5dd7f8f21
+      id: 86854b0b-87ed-4b88-8f38-bb3adf91d7a8
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -37,16 +36,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 4088078f-6c08-43c2-8410-3b87ca001645
+    taskid: 5f36e515-65e9-429d-8301-d92fa6213b44
     type: regular
     task:
-      id: 4088078f-6c08-43c2-8410-3b87ca001645
+      id: 5f36e515-65e9-429d-8301-d92fa6213b44
       version: -1
       name: Acknowledge email
-      description: Sends an email to the user who reported the phishing email, inoforming
-        them that the email was received and is being investigated.
+      description: Sends an email to the user who reported the phishing email, inoforming them that the email was received and is being investigated.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -87,55 +87,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 039f7bf6-391a-4ce0-865c-6db56f2d87e2
-    type: condition
-    task:
-      id: 039f7bf6-391a-4ce0-865c-6db56f2d87e2
-      version: -1
-      name: Is there a URL?
-      description: Checks if there is at least one URL involved in the incident.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "8"
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: URL
-                transformers:
-                - operator: uniq
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 930
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: ad30e977-22d9-42e1-8b54-ebd88ef609e7
+    taskid: db01be5f-cbab-4682-8e89-2f831e1aaa32
     type: regular
     task:
-      id: ad30e977-22d9-42e1-8b54-ebd88ef609e7
+      id: db01be5f-cbab-4682-8e89-2f831e1aaa32
       version: -1
       name: Get screenshots of URLs
-      description: Uses the Rasterize integration to create screenshots (images) of
-        the URLs involved in the incident.
+      description: Uses the Rasterize integration to create screenshots (images) of the URLs involved in the incident.
+      tags:
+      - url_screenshots
       script: '|||rasterize'
       type: regular
       iscommand: true
@@ -145,6 +109,7 @@ tasks:
       - "8"
     scriptarguments:
       height: {}
+      max_page_load_time: {}
       type: {}
       url:
         complex:
@@ -152,6 +117,7 @@ tasks:
           accessor: Data
           transformers:
           - operator: uniq
+      wait_time: {}
       width: {}
     reputationcalc: 1
     continueonerror: true
@@ -159,23 +125,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1330
+          "x": 180,
+          "y": 1100
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 7880d264-1c2e-4d82-8cce-6b0474677d25
+    taskid: 7035c9c1-4160-4192-8824-aa88c65b6f24
     type: condition
     task:
-      id: 7880d264-1c2e-4d82-8cce-6b0474677d25
+      id: 7035c9c1-4160-4192-8824-aa88c65b6f24
       version: -1
-      name: Can we take URL screenshots?
-      description: Checks whether the user opted to get screenshots of URLs in the
-        playbook's "GetURLScreenshots" input. Checks whether the Rasterize integration is enabled.
+      name: Can URL screenshots be taken?
+      description: Checks whether URLs exist in context, whether the user opted to get screenshots of URLs in the playbook's "GetURLScreenshots" input, and whether the Rasterize integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -221,22 +188,29 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 1140
+          "y": 920
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 1812b1ae-cb94-49ff-886a-f6b0a20fa922
+    taskid: 8f974bbb-ecc3-420a-8843-6f3d211d2816
     type: condition
     task:
-      id: 1812b1ae-cb94-49ff-886a-f6b0a20fa922
+      id: 8f974bbb-ecc3-420a-8843-6f3d211d2816
       version: -1
       name: Are there indicators with scores?
       description: Checks whether there is at least one indicator with a DBotScore.
@@ -264,18 +238,20 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1490
+          "y": 1270
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: af3568f6-5f42-490d-8062-00993786a378
+    taskid: d2d03a4b-2f05-4779-852c-5ab55e6bd437
     type: condition
     task:
-      id: af3568f6-5f42-490d-8062-00993786a378
+      id: d2d03a4b-2f05-4779-852c-5ab55e6bd437
       version: -1
       name: How severe is the incident?
       description: |-
@@ -360,18 +336,20 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1700
+          "y": 1500
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: a7d60152-f753-45f2-8dea-9937f5be9885
+    taskid: 00bdfe51-d590-4c7f-8500-1c9fc9d90a4f
     type: regular
     task:
-      id: a7d60152-f753-45f2-8dea-9937f5be9885
+      id: 00bdfe51-d590-4c7f-8500-1c9fc9d90a4f
       version: -1
       name: Set incident severity to "low"
       description: Sets the incident severity to "low".
@@ -523,18 +501,20 @@ tasks:
       {
         "position": {
           "x": -20,
-          "y": 1980
+          "y": 1760
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 63db02c9-0632-488f-89b4-cc9c3c83da58
+    taskid: ef829abf-fbf5-4e73-894f-4cf9c89d3d4d
     type: regular
     task:
-      id: 63db02c9-0632-488f-89b4-cc9c3c83da58
+      id: ef829abf-fbf5-4e73-894f-4cf9c89d3d4d
       version: -1
       name: Set incident severity to "medium"
       description: Sets the incident severity to "medium".
@@ -686,18 +666,20 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1980
+          "y": 1760
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: cb522e09-996a-47b5-8fdc-5da898788702
+    taskid: 98b10f75-163a-4fa3-8f18-84f0c5c63322
     type: regular
     task:
-      id: cb522e09-996a-47b5-8fdc-5da898788702
+      id: 98b10f75-163a-4fa3-8f18-84f0c5c63322
       version: -1
       name: Set incident severity to "high"
       description: Sets the incident severity to "high".
@@ -849,18 +831,20 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 1980
+          "y": 1760
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: f2f75cd9-b60b-4884-862e-7cf58e61d3a5
+    taskid: 7a672d8e-c040-4735-8885-b0bea150d5b6
     type: regular
     task:
-      id: f2f75cd9-b60b-4884-862e-7cf58e61d3a5
+      id: 7a672d8e-c040-4735-8885-b0bea150d5b6
       version: -1
       name: Manually investigate the incident
       description: Pauses the playbook so the analyst can investigate the incdent, and manually resume the playbook when necessary.
@@ -875,22 +859,23 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2150
+          "y": 1930
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: 1ce7d809-989d-4089-866b-61b187f69f23
+    taskid: c175a884-7f18-4e6a-85ee-d2ad13a0fc2d
     type: condition
     task:
-      id: 1ce7d809-989d-4089-866b-61b187f69f23
+      id: c175a884-7f18-4e6a-85ee-d2ad13a0fc2d
       version: -1
       name: Is the email malicious or benign?
-      description: Pauses the playbook so the analyst can decides whether the investigated email is
-        malicious or benign.
+      description: Pauses the playbook so the analyst can decides whether the investigated email is malicious or benign.
       type: condition
       iscommand: false
       brand: ""
@@ -904,22 +889,23 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2320
+          "y": 2100
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 9b0470e1-8c93-485d-8b77-eaf1dc682487
+    taskid: 3d5a299b-7128-4113-8fd2-702db6b0b2f9
     type: regular
     task:
-      id: 9b0470e1-8c93-485d-8b77-eaf1dc682487
+      id: 3d5a299b-7128-4113-8fd2-702db6b0b2f9
       version: -1
       name: Update user that the email is malicious
-      description: Sends an email to the user who reported the phishing email, informing
-        them that the email is malicious.
+      description: Sends an email to the user who reported the phishing email, informing them that the email is malicious.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -954,22 +940,23 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 2510
+          "y": 2290
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 53b80e1f-66a2-4e48-8265-3f27e8676545
+    taskid: 37203136-b3d7-4ede-831f-b71660e02078
     type: regular
     task:
-      id: 53b80e1f-66a2-4e48-8265-3f27e8676545
+      id: 37203136-b3d7-4ede-831f-b71660e02078
       version: -1
       name: Update user that the email is benign
-      description: Sends an email to the user who reported the phishing email, informing
-        them that the email is benign.
+      description: Sends an email to the user who reported the phishing email, informing them that the email is benign.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -999,22 +986,23 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": 2510
+          "y": 2290
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: aeef0938-0752-477d-8b54-d4a3cfdaefc1
+    taskid: f0dbc4bc-78d2-4d92-8d7c-78a9ca37fbad
     type: regular
     task:
-      id: aeef0938-0752-477d-8b54-d4a3cfdaefc1
+      id: f0dbc4bc-78d2-4d92-8d7c-78a9ca37fbad
       version: -1
       name: Manually remediate the incident
-      description: Pauses the playbook so the analyst can manually remediate the
-        incident, and manually resume the playbook.
+      description: Pauses the playbook so the analyst can manually remediate the incident, and manually resume the playbook.
       tags:
       - manual
       type: regular
@@ -1028,18 +1016,20 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 2690
+          "y": 2470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 67d2318c-bad7-4e5b-812b-e1f18c9a300f
+    taskid: 69e68557-84c7-418d-876f-1b9d55d99b7f
     type: regular
     task:
-      id: 67d2318c-bad7-4e5b-812b-e1f18c9a300f
+      id: 69e68557-84c7-418d-876f-1b9d55d99b7f
       version: -1
       name: Close investigation
       description: Closes the current incident.
@@ -1061,28 +1051,43 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2880
+          "y": 2660
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: a5999ec8-500c-408d-818c-2517e0c1cc15
+    taskid: 518db03b-4d9a-4dd2-8dcd-a07e78d630ef
     type: playbook
     task:
-      id: a5999ec8-500c-408d-818c-2517e0c1cc15
+      id: 518db03b-4d9a-4dd2-8dcd-a07e78d630ef
       version: -1
       name: Extract Indicators From File - Generic v2
-      description: ""
+      description: |-
+        Extracts indicators from a file.
+        Supported file types:
+        - CSV
+        - PDF
+        - TXT
+        - HTM, HTML
+        - DOC, DOCX
+        - PPT
+        - PPTX
+        - RTF
+        - XLS
+        - XLSX
+        - XML
       playbookName: Extract Indicators From File - Generic v2
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "7"
     scriptarguments:
       File:
         complex:
@@ -1094,6 +1099,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -1104,16 +1110,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: 5636d972-b561-4920-8856-70dbc728ac0d
+    taskid: c27037e6-3bbc-4a1c-8859-19285b0fc806
     type: playbook
     task:
-      id: 5636d972-b561-4920-8856-70dbc728ac0d
+      id: c27037e6-3bbc-4a1c-8859-19285b0fc806
       version: -1
       name: Process Email - Core
-      description: Add email details to the relevant context entities and handle the
-        case where original emails are attached.
+      description: Add email details to the relevant context entities and handle the case where original emails are attached.
       playbookName: Process Email - Core
       type: playbook
       iscommand: false
@@ -1162,6 +1169,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -1172,15 +1180,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 4e524f5b-4560-424e-82f9-46edc37e1c97
+    taskid: 56e057ee-35bc-4385-8747-456e80ca7fa9
     type: condition
     task:
-      id: 4e524f5b-4560-424e-82f9-46edc37e1c97
+      id: 56e057ee-35bc-4385-8747-456e80ca7fa9
       version: -1
-      name: Is there an HTML label in the email?
-      description: Checks if the email that was received is HTML-formatted.
+      name: Can an image of the email be rendered?
+      description: Checks if the email that was received is HTML-formatted, and whether the Rasterize integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1200,6 +1210,29 @@ tasks:
                 root: Email
                 accessor: HTML
             iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Rasterize
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
     view: |-
       {
         "position": {
@@ -1210,12 +1243,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 6be72da0-8b9c-4807-8e85-5b58bc837225
+    taskid: 1f4908fc-2741-41a7-8ef3-98a3496f81d6
     type: regular
     task:
-      id: 6be72da0-8b9c-4807-8e85-5b58bc837225
+      id: 1f4908fc-2741-41a7-8ef3-98a3496f81d6
       version: -1
       name: Render HTML to an image
       description: Creates a visual image of the email, if the email is HTML-formatted.
@@ -1249,20 +1284,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "23_21_#default#": 0.34,
       "23_24_yes": 0.3,
-      "5_7_yes": 0.52,
-      "5_8_#default#": 0.51,
       "7_6_yes": 0.44,
       "7_8_#default#": 0.51,
       "8_11_#default#": 0.73
     },
     "paper": {
       "dimensions": {
-        "height": 2925,
+        "height": 2705,
         "width": 1320,
         "x": -20,
         "y": 50
@@ -1274,9 +1310,9 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether the user wants the Rasterize integration to produce
-    images of URLs that are involved in the incident. If "True", screenshots
-    will be taken.
+  description: Whether the user wants the Rasterize integration to produce images of URLs that are involved in the incident. If "True", screenshots will be taken.
+  playbookInputQuery:
 outputs: []
+fromversion: 5.0.0
 tests:
-  - Phishing - Core - Test
+- Phishing - Core - Test - Incident Starter

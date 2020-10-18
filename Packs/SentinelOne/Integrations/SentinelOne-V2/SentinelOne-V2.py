@@ -7,6 +7,7 @@ from CommonServerUserPython import *
 import json
 import requests
 from distutils.util import strtobool
+from dateutil.parser import parse
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -40,15 +41,15 @@ def http_request(method, url_suffix, params={}, data=None):
             errors = ''
             for error in res.json().get('errors'):
                 errors = '\n' + errors + error.get('detail')
-            raise ValueError(
+            raise Exception(
                 f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}] \n'
                 f'Error details: [{errors}]'
             )
-        except Exception:
-            raise ValueError(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}]')
+        except Exception as error:
+            raise error
     try:
         return res.json()
-    except ValueError:
+    except Exception:
         return None
 
 
@@ -1756,7 +1757,8 @@ def fetch_incidents():
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
         if rank >= FETCH_THREAT_RANK:
             incident = threat_to_incident(threat)
-            incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            date_occurred_dt = parse(incident['occurred'])
+            incident_date = date_to_timestamp(date_occurred_dt, '%Y-%m-%dT%H:%M:%S.%fZ')
             # update last run
             if incident_date > last_fetch:
                 incidents.append(incident)

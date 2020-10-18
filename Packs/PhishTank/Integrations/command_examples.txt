@@ -1,0 +1,3 @@
+!phishtank-reload
+!phishtank-status
+!url url=http://komonghjpl[.]000webhostapp.com

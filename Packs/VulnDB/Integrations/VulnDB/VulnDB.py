@@ -319,7 +319,7 @@ def vulndb_get_vendor_command(args: dict, client: Client):
     elif vendor_name:
         res = client.http_request(f'/vendors/by_name?vendor_name={vendor_name}', max_size)
     else:
-        res = client.http_request(f'/vendors', max_size)
+        res = client.http_request('/vendors', max_size)
 
     vulndb_vendor_results_to_demisto_results(res)
 

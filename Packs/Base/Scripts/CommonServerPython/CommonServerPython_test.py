@@ -15,7 +15,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers
 
 try:
     from StringIO import StringIO
@@ -44,8 +44,7 @@ def clear_version_cache():
     Clear the version cache at end of the test (in case we mocked demisto.serverVersion)
     """
     yield
-    if hasattr(get_demisto_version, '_version'):
-        delattr(get_demisto_version, '_version')
+    get_demisto_version._version = None
 
 
 def test_xml():
@@ -134,9 +133,9 @@ def test_tbl_to_md_multiline():
     expected_table = '''### tableToMarkdown test with multiline
 |header_1|header_2|header_3|
 |---|---|---|
-| a1 | b1.1<br>b1.2 | c1\|1 |
-| a2 | b2.1<br>b2.2 | c2\|1 |
-| a3 | b3.1<br>b3.2 | c3\|1 |
+| a1 | b1.1<br>b1.2 | c1\\|1 |
+| a2 | b2.1<br>b2.2 | c2\\|1 |
+| a3 | b3.1<br>b3.2 | c3\\|1 |
 '''
     assert table == expected_table
 
@@ -460,11 +459,18 @@ def test_argToList():
     test2 = 'a,b,c'
     test3 = '["a","b","c"]'
     test4 = 'a;b;c'
+    test5 = 1
+    test6 = '1'
+    test7 = True
 
     results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
 
     for result in results:
         assert expected == result, 'argToList test failed, {} is not equal to {}'.format(str(result), str(expected))
+
+    assert argToList(test5) == [1]
+    assert argToList(test6) == ['1']
+    assert argToList(test7) == [True]
 
 
 def test_remove_nulls():
@@ -640,6 +646,9 @@ def test_logger_replace_strs(mocker):
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
 
 
+TEST_SSH_KEY = '-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
+               'AAAAdzc2gtcn\n-----END OPENSSH PRIVATE KEY-----'
+
 SENSITIVE_PARAM = {
     'app': None,
     'authentication': {
@@ -651,7 +660,7 @@ SENSITIVE_PARAM = {
             'name': '',
             'password': 'cred_pass',
             'sortValues': None,
-            'sshkey': 'ssh_key_secret',
+            'sshkey': TEST_SSH_KEY,
             'sshkeyPass': 'ssh_key_secret_pass',
             'user': '',
             'vaultInstanceId': '',
@@ -670,7 +679,7 @@ def test_logger_replace_strs_credentials(mocker):
     ilog = IntegrationLogger()
     # log some secrets
     ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh pass: ssh_key_secret_pass. ident: ident_pass:')
-    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass'):
+    for s in ('cred_pass', TEST_SSH_KEY, 'ssh_key_secret_pass', 'ident_pass'):
         assert s not in ilog.messages[0]
 
 
@@ -818,15 +827,32 @@ def test_get_demisto_version(mocker, clear_version_cache):
     assert is_demisto_version_ge('5.0.0')
     assert is_demisto_version_ge('4.5.0')
     assert not is_demisto_version_ge('5.5.0')
+    assert get_demisto_version_as_str() == '5.0.0-50000'
 
 
-def test_is_demisto_version_ge_4_5(mocker):
+def test_is_demisto_version_ge_4_5(mocker, clear_version_cache):
     get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
     get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
     assert not is_demisto_version_ge('5.0.0')
     assert not is_demisto_version_ge('6.0.0')
     with raises(AttributeError, match='simulate missing demistoVersion'):
         is_demisto_version_ge('4.5.0')
+
+
+def test_is_demisto_version_build_ge(mocker):
+    mocker.patch.object(
+        demisto,
+        'demistoVersion',
+        return_value={
+            'version': '6.0.0',
+            'buildNumber': '50000'
+        }
+    )
+    assert is_demisto_version_ge('6.0.0', '49999')
+    assert is_demisto_version_ge('6.0.0', '50000')
+    assert not is_demisto_version_ge('6.0.0', '50001')
+    assert not is_demisto_version_ge('6.1.0', '49999')
+    assert not is_demisto_version_ge('5.5.0', '50001')
 
 
 def test_assign_params():
@@ -915,7 +941,96 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
-    def test_return_command_results(self):
+    def test_multiple_outputs_keys(self):
+        """
+        Given
+        - File has 3 unique keys. sha256, md5 and sha1
+
+        When
+        - creating CommandResults with outputs_key_field=[sha1, sha256, md5]
+
+        Then
+        - entrycontext DT expression contains all 3 unique fields
+        """
+        from CommonServerPython import CommandResults
+
+        files = [
+            {
+                'sha256': '111',
+                'sha1': '111',
+                'md5': '111'
+            },
+            {
+                'sha256': '222',
+                'sha1': '222',
+                'md5': '222'
+            }
+        ]
+        results = CommandResults(outputs_prefix='File', outputs_key_field=['sha1', 'sha256', 'md5'], outputs=files)
+
+        assert list(results.to_context()['EntryContext'].keys())[0] == \
+               'File(val.sha1 == obj.sha1 && val.sha256 == obj.sha256 && val.md5 == obj.md5)'
+
+    def test_output_prefix_includes_dt(self):
+        """
+        Given
+        - Returning File with only outputs_prefix which includes DT in it
+        - outputs key fields are not provided
+
+        When
+        - creating CommandResults
+
+        Then
+        - EntryContext key should contain only the outputs_prefix
+        """
+        from CommonServerPython import CommandResults
+
+        files = []
+        results = CommandResults(outputs_prefix='File(val.sha1 == obj.sha1 && val.md5 == obj.md5)',
+                                 outputs_key_field='', outputs=files)
+
+        assert list(results.to_context()['EntryContext'].keys())[0] == \
+               'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
+
+
+    def test_readable_only_context(self):
+        """
+        Given:
+        - Markdown entry to CommandResults
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate HumanReadable exists
+        """
+        from CommonServerPython import CommandResults
+        markdown = '## Something'
+        context = CommandResults(readable_output=markdown).to_context()
+        assert context.get('HumanReadable') == markdown
+
+    def test_empty_outputs(self):
+        """
+        Given:
+        - Empty outputs
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate EntryContext key value
+
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs_prefix='FoundIndicators',
+            outputs_key_field='value',
+            outputs=[]
+        )
+        context = res.to_context()
+        assert {'FoundIndicators(val.value == obj.value)': []} == context.get('EntryContext')
+
+    def test_return_command_results(self, clear_version_cache):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
 
         dbot_score = Common.DBotScore(
@@ -967,10 +1082,11 @@ class TestCommandResults:
                         'Type': 'ip'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': []
         }
 
-    def test_multiple_indicators(self):
+    def test_multiple_indicators(self, clear_version_cache):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
         dbot_score1 = Common.DBotScore(
             indicator='8.8.8.8',
@@ -1050,10 +1166,11 @@ class TestCommandResults:
                         'Type': 'ip'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': []
         }
 
-    def test_return_list_of_items(self):
+    def test_return_list_of_items(self, clear_version_cache):
         from CommonServerPython import CommandResults, EntryFormat, EntryType
         tickets = [
             {
@@ -1078,7 +1195,8 @@ class TestCommandResults:
             'HumanReadable': tableToMarkdown('Results', tickets),
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
-            }
+            },
+            'IndicatorTimeline': []
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1102,15 +1220,16 @@ class TestCommandResults:
             raw_response=tickets
         )
 
-        assert results.to_context() == {
+        assert sorted(results.to_context()) == sorted({
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': tickets,
             'HumanReadable': None,
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
-            }
-        }
+            },
+            'IndicatorTimeline': []
+        })
 
     def test_create_dbot_score_with_invalid_score(self):
         from CommonServerPython import Common, DBotScoreType
@@ -1252,8 +1371,64 @@ class TestCommandResults:
                         'Type': 'domain'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': []
         }
+
+    def test_indicator_timeline_with_list_of_indicators(self):
+        """
+       Given:
+           -  a list of an indicator
+       When
+           - creating an IndicatorTimeline object
+           - creating a CommandResults objects using the IndicatorTimeline object
+       Then
+           - the IndicatorTimeline receives the appropriate category and message
+       """
+        from CommonServerPython import CommandResults, IndicatorsTimeline
+
+        indicators = ['8.8.8.8']
+        timeline = IndicatorsTimeline(indicators=indicators, category='test', message='message')
+
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs=None,
+            raw_response=indicators,
+            indicators_timeline=timeline
+        )
+
+        assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
+            {'Value': '8.8.8.8', 'Category': 'test', 'Message': 'message'}
+        ])
+
+    def test_indicator_timeline_running_from_an_integration(self, mocker):
+        """
+       Given:
+           -  a list of an indicator
+       When
+           - mocking the demisto.params()
+           - creating an IndicatorTimeline object
+           - creating a CommandResults objects using the IndicatorTimeline object
+       Then
+           - the IndicatorTimeline receives the appropriate category and message
+       """
+        from CommonServerPython import CommandResults, IndicatorsTimeline
+        mocker.patch.object(demisto, 'params', return_value={'insecure': True})
+        indicators = ['8.8.8.8']
+        timeline = IndicatorsTimeline(indicators=indicators)
+
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs=None,
+            raw_response=indicators,
+            indicators_timeline=timeline
+        )
+
+        assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
+            {'Value': '8.8.8.8', 'Category': 'Integration Update'}
+        ])
 
 
 class TestBaseClient:
@@ -1267,6 +1442,7 @@ class TestBaseClient:
         'post'
     ]
 
+    @pytest.mark.skip(reason="Test - too long, only manual")
     @pytest.mark.parametrize('method', RETRIES_POSITIVE_TEST)
     def test_http_requests_with_retry_sanity(self, method):
         """
@@ -1291,9 +1467,9 @@ class TestBaseClient:
         ('get', 400), ('get', 401), ('get', 500),
         ('put', 400), ('put', 401), ('put', 500),
         ('post', 400), ('post', 401), ('post', 500),
-
     ]
 
+    @pytest.mark.skip(reason="Test - too long, only manual")
     @pytest.mark.parametrize('method, status', RETRIES_NEGATIVE_TESTS_INPUT)
     def test_http_requests_with_retry_negative_sanity(self, method, status):
         """
@@ -1506,18 +1682,86 @@ def test_http_client_debug(mocker):
     assert debug_log is not None
 
 
-def test_parse_date_range():
-    utc_now = datetime.utcnow()
-    utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
-    # testing UTC date time and range of 2 days
-    assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
-    assert abs(utc_start_time - utc_end_time).days == 2
+class TestParseDateRange:
+    @staticmethod
+    def test_utc_time_sanity():
+        utc_now = datetime.utcnow()
+        utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
+        # testing UTC date time and range of 2 days
+        assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+        assert abs(utc_start_time - utc_end_time).days == 2
 
-    local_now = datetime.now()
-    local_start_time, local_end_time = parse_date_range('73 minutes', utc=False)
-    # testing local datetime and range of 73 minutes
-    assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
-    assert abs(local_start_time - local_end_time).seconds / 60 == 73
+    @staticmethod
+    def test_local_time_sanity():
+        local_now = datetime.now()
+        local_start_time, local_end_time = parse_date_range('73 minutes', utc=False)
+        # testing local datetime and range of 73 minutes
+        assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
+        assert abs(local_start_time - local_end_time).seconds / 60 == 73
+
+    @staticmethod
+    def test_with_trailing_spaces():
+        utc_now = datetime.utcnow()
+        utc_start_time, utc_end_time = parse_date_range('2 days   ', utc=True)
+        # testing UTC date time and range of 2 days
+        assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+        assert abs(utc_start_time - utc_end_time).days == 2
+
+    @staticmethod
+    def test_case_insensitive():
+        utc_now = datetime.utcnow()
+        utc_start_time, utc_end_time = parse_date_range('2 Days', utc=True)
+        # testing UTC date time and range of 2 days
+        assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+        assert abs(utc_start_time - utc_end_time).days == 2
+
+    @staticmethod
+    def test_error__invalid_input_format(mocker):
+        mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
+        demisto_results = mocker.spy(demisto, 'results')
+
+        try:
+            parse_date_range('2 Days ago', utc=True)
+        except Exception as exp:
+            assert str(exp) == 'mock exit'
+        results = demisto.results.call_args[0][0]
+        assert 'date_range must be "number date_range_unit"' in results['Contents']
+
+    @staticmethod
+    def test_error__invalid_time_value_not_a_number(mocker):
+        mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
+        demisto_results = mocker.spy(demisto, 'results')
+
+        try:
+            parse_date_range('ten Days', utc=True)
+        except Exception as exp:
+            assert str(exp) == 'mock exit'
+        results = demisto.results.call_args[0][0]
+        assert 'The time value is invalid' in results['Contents']
+
+    @staticmethod
+    def test_error__invalid_time_value_not_an_integer(mocker):
+        mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
+        demisto_results = mocker.spy(demisto, 'results')
+
+        try:
+            parse_date_range('1.5 Days', utc=True)
+        except Exception as exp:
+            assert str(exp) == 'mock exit'
+        results = demisto.results.call_args[0][0]
+        assert 'The time value is invalid' in results['Contents']
+
+    @staticmethod
+    def test_error__invalid_time_unit(mocker):
+        mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
+        demisto_results = mocker.spy(demisto, 'results')
+
+        try:
+            parse_date_range('2 nights', utc=True)
+        except Exception as exp:
+            assert str(exp) == 'mock exit'
+        results = demisto.results.call_args[0][0]
+        assert 'The unit of date_range is invalid' in results['Contents']
 
 
 def test_encode_string_results():
@@ -1544,6 +1788,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
 
@@ -1566,6 +1811,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert outputs == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
 
@@ -1580,6 +1826,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
         assert timeline == results['IndicatorTimeline']
@@ -1595,6 +1842,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
         assert 'Category' in results['IndicatorTimeline'][0].keys()
@@ -1611,9 +1859,21 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
         assert ignore_auto_extract == results['IgnoreAutoExtract']
+
+    def test_return_outputs_text_raw_response(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        raw_response = 'string'
+        return_outputs(md, raw_response=raw_response)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert raw_response == results['Contents']
+        assert 'text' == results['ContentsFormat']
 
 
 def test_argToBoolean():
@@ -1845,7 +2105,8 @@ INDICATOR_VALUE_AND_TYPE = [
     ('2001:db8:0000:0000:0000:0000:0000:0000', 'IPv6'),
     ('112.126.94.107', 'IP'),
     ('a', None),
-    ('*castaneda-thornton.com', 'DomainGlob')
+    ('*castaneda-thornton.com', 'DomainGlob'),
+    ('53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b', 'File')
 ]
 
 
@@ -1884,3 +2145,375 @@ def test_handle_proxy(mocker):
     mocker.patch.object(demisto, 'params', return_value={'unsecure': True})
     handle_proxy()
     assert os.getenv('REQUESTS_CA_BUNDLE') is None
+
+
+@pytest.mark.parametrize(argnames="dict_obj, keys, expected, default_return_value",
+                         argvalues=[
+                             ({'a': '1'}, ['a'], '1', None),
+                             ({'a': {'b': '2'}}, ['a', 'b'], '2', None),
+                             ({'a': {'b': '2'}}, ['a', 'c'], 'test', 'test'),
+                         ])
+def test_safe_get(dict_obj, keys, expected, default_return_value):
+    from CommonServerPython import dict_safe_get
+    assert expected == dict_safe_get(dict_object=dict_obj,
+                                     keys=keys,
+                                     default_return_value=default_return_value)
+
+
+MIRRORS = '''
+   [{
+     "channel_id":"GKQ86DVPH",
+     "channel_name": "incident-681",
+     "channel_topic": "incident-681",
+     "investigation_id":"681",
+     "mirror_type":"all",
+     "mirror_direction":"both",
+     "mirror_to":"group",
+     "auto_close":true,
+     "mirrored":true
+  },
+  {
+     "channel_id":"GKB19PA3V",
+     "channel_name": "group2",
+     "channel_topic": "cooltopic",
+     "investigation_id":"684",
+     "mirror_type":"all",
+     "mirror_direction":"both",
+     "mirror_to":"group",
+     "auto_close":true,
+     "mirrored":true
+  },
+  {
+     "channel_id":"GKB19PA3V",
+     "channel_name": "group2",
+     "channel_topic": "cooltopic",
+     "investigation_id":"692",
+     "mirror_type":"all",
+     "mirror_direction":"both",
+     "mirror_to":"group",
+     "auto_close":true,
+     "mirrored":true
+  },
+  {
+     "channel_id":"GKNEJU4P9",
+     "channel_name": "group3",
+     "channel_topic": "incident-713",
+     "investigation_id":"713",
+     "mirror_type":"all",
+     "mirror_direction":"both",
+     "mirror_to":"group",
+     "auto_close":true,
+     "mirrored":true
+  },
+  {
+     "channel_id":"GL8GHC0LV",
+     "channel_name": "group5",
+     "channel_topic": "incident-734",
+     "investigation_id":"734",
+     "mirror_type":"all",
+     "mirror_direction":"both",
+     "mirror_to":"group",
+     "auto_close":true,
+     "mirrored":true
+  }]
+'''
+
+CONVERSATIONS = '''[{
+    "id": "C012AB3CD",
+    "name": "general",
+    "is_channel": true,
+    "is_group": false,
+    "is_im": false,
+    "created": 1449252889,
+    "creator": "U012A3CDE",
+    "is_archived": false,
+    "is_general": true,
+    "unlinked": 0,
+    "name_normalized": "general",
+    "is_shared": false,
+    "is_ext_shared": false,
+    "is_org_shared": false,
+    "pending_shared": [],
+    "is_pending_ext_shared": false,
+    "is_member": true,
+    "is_private": false,
+    "is_mpim": false,
+    "topic": {
+        "value": "Company-wide announcements and work-based matters",
+        "creator": "",
+        "last_set": 0
+    },
+    "purpose": {
+        "value": "This channel is for team-wide communication and announcements. All team members are in this channel.",
+        "creator": "",
+        "last_set": 0
+    },
+    "previous_names": [],
+    "num_members": 4
+},
+{
+    "id": "C061EG9T2",
+    "name": "random",
+    "is_channel": true,
+    "is_group": false,
+    "is_im": false,
+    "created": 1449252889,
+    "creator": "U061F7AUR",
+    "is_archived": false,
+    "is_general": false,
+    "unlinked": 0,
+    "name_normalized": "random",
+    "is_shared": false,
+    "is_ext_shared": false,
+    "is_org_shared": false,
+    "pending_shared": [],
+    "is_pending_ext_shared": false,
+    "is_member": true,
+    "is_private": false,
+    "is_mpim": false,
+    "topic": {
+        "value": "Non-work banter and water cooler conversation",
+        "creator": "",
+        "last_set": 0
+    },
+    "purpose": {
+        "value": "A place for non-work-related flimflam.",
+        "creator": "",
+        "last_set": 0
+    },
+    "previous_names": [],
+    "num_members": 4
+}]'''
+
+OBJECTS_TO_KEYS = {
+    'mirrors': 'investigation_id',
+    'questions': 'entitlement',
+    'users': 'id'
+}
+
+
+def set_integration_context_versioned(integration_context, version=-1, sync=False):
+    global INTEGRATION_CONTEXT_VERSIONED
+
+    try:
+        if not INTEGRATION_CONTEXT_VERSIONED:
+            INTEGRATION_CONTEXT_VERSIONED = {'context': '{}', 'version': 0}
+    except NameError:
+        INTEGRATION_CONTEXT_VERSIONED = {'context': '{}', 'version': 0}
+
+    current_version = INTEGRATION_CONTEXT_VERSIONED['version']
+    if version != -1 and version <= current_version:
+        raise ValueError('DB Insert version {} does not match version {}'.format(current_version, version))
+
+    INTEGRATION_CONTEXT_VERSIONED = {'context': integration_context, 'version': current_version + 1}
+
+
+def get_integration_context_versioned(refresh=False):
+    return INTEGRATION_CONTEXT_VERSIONED
+
+
+def test_merge_lists():
+    from CommonServerPython import merge_lists
+
+    # Set
+    original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}, {'id': '11', 'updated': 'n'}]
+    updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}, {'id': '11', 'updated': 'n', 'remove': True}]
+    expected = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
+
+    # Arrange
+    result = merge_lists(original, updated, 'id')
+
+    # Assert
+    assert len(result) == len(expected)
+    for obj in result:
+        assert obj in expected
+
+
+@pytest.mark.parametrize('version, expected',
+                         [
+                             ({'version': '5.5.0'}, False),
+                             ({'version': '6.0.0'}, True),
+                         ]
+                         )
+def test_is_versioned_context_available(mocker, version, expected):
+    from CommonServerPython import is_versioned_context_available
+    # Set
+    mocker.patch.object(demisto, 'demistoVersion', return_value=version)
+
+    # Arrange
+    result = is_versioned_context_available()
+    get_demisto_version._version = None
+
+    # Assert
+    assert expected == result
+
+
+def test_update_context_merge(mocker):
+    import CommonServerPython
+
+    # Set
+    set_integration_context_versioned({
+        'mirrors': MIRRORS,
+        'conversations': CONVERSATIONS
+    })
+
+    mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
+    mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
+    mocker.patch.object(CommonServerPython, 'is_versioned_context_available', return_value=True)
+
+    new_mirror = {
+        'channel_id': 'new_group',
+        'channel_name': 'incident-999',
+        'channel_topic': 'incident-999',
+        'investigation_id': '999',
+        'mirror_type': 'all',
+        'mirror_direction': 'both',
+        'mirror_to': 'group',
+        'auto_close': True,
+        'mirrored': False
+    }
+
+    mirrors = json.loads(MIRRORS)
+    mirrors.extend([new_mirror])
+
+    # Arrange
+    context, version = CommonServerPython.update_integration_context({'mirrors': [new_mirror]}, OBJECTS_TO_KEYS, True)
+    new_mirrors = json.loads(context['mirrors'])
+
+    # Assert
+    assert len(mirrors) == len(new_mirrors)
+    for mirror in mirrors:
+        assert mirror in new_mirrors
+
+    assert version == get_integration_context_versioned()['version']
+
+
+def test_update_context_no_merge(mocker):
+    import CommonServerPython
+
+    # Set
+    set_integration_context_versioned({
+        'mirrors': MIRRORS,
+        'conversations': CONVERSATIONS
+    })
+
+    mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
+    mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
+    mocker.patch.object(CommonServerPython, 'is_versioned_context_available', return_value=True)
+
+    new_conversation = {
+        'id': 'A0123456',
+        'name': 'general'
+    }
+
+    conversations = json.loads(CONVERSATIONS)
+    conversations.extend([new_conversation])
+
+    # Arrange
+    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS, True)
+    new_conversations = json.loads(context['conversations'])
+
+    # Assert
+    assert conversations == new_conversations
+    assert version == get_integration_context_versioned()['version']
+
+
+@pytest.mark.parametrize('versioned_available', [True, False])
+def test_get_latest_integration_context(mocker, versioned_available):
+    import CommonServerPython
+
+    # Set
+    set_integration_context_versioned({
+        'mirrors': MIRRORS,
+        'conversations': CONVERSATIONS
+    })
+
+    mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
+    mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
+    mocker.patch.object(CommonServerPython, 'is_versioned_context_available', return_value=versioned_available)
+    mocker.patch.object(demisto, 'getIntegrationContext',
+                        return_value={'mirrors': MIRRORS, 'conversations': CONVERSATIONS})
+
+    # Arrange
+    context, ver = CommonServerPython.get_integration_context_with_version(True)
+
+    # Assert
+    assert context == get_integration_context_versioned()['context']
+    assert ver == get_integration_context_versioned()['version'] if versioned_available else -1
+
+
+def test_set_latest_integration_context(mocker):
+    import CommonServerPython
+
+    # Set
+    set_integration_context_versioned({
+        'mirrors': MIRRORS,
+        'conversations': CONVERSATIONS,
+    })
+
+    mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
+    mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
+    int_context = get_integration_context_versioned()
+    mocker.patch.object(CommonServerPython, 'update_integration_context',
+                        side_effect=[(int_context['context'], int_context['version']),
+                                     (int_context['context'], int_context['version'] + 1)])
+    mocker.patch.object(CommonServerPython, 'set_integration_context', side_effect=[ValueError, int_context['context']])
+
+    # Arrange
+    CommonServerPython.set_to_integration_context_with_retries({}, OBJECTS_TO_KEYS)
+    int_context_calls = CommonServerPython.set_integration_context.call_count
+    int_context_args_1 = CommonServerPython.set_integration_context.call_args_list[0][0]
+    int_context_args_2 = CommonServerPython.set_integration_context.call_args_list[1][0]
+
+    # Assert
+    assert int_context_calls == 2
+    assert int_context_args_1 == (int_context['context'], True, int_context['version'])
+    assert int_context_args_2 == (int_context['context'], True, int_context['version'] + 1)
+
+
+def test_set_latest_integration_context_fail(mocker):
+    import CommonServerPython
+
+    # Set
+    set_integration_context_versioned({
+        'mirrors': MIRRORS,
+        'conversations': CONVERSATIONS,
+    })
+
+    mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
+    mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
+    int_context = get_integration_context_versioned()
+    mocker.patch.object(CommonServerPython, 'update_integration_context', return_value=(
+        int_context['context'], int_context['version']
+    ))
+    mocker.patch.object(CommonServerPython, 'set_integration_context', side_effect=ValueError)
+
+    # Arrange
+    with pytest.raises(Exception):
+        CommonServerPython.set_to_integration_context_with_retries({}, OBJECTS_TO_KEYS)
+
+    int_context_calls = CommonServerPython.set_integration_context.call_count
+
+    # Assert
+    assert int_context_calls == CommonServerPython.CONTEXT_UPDATE_RETRY_TIMES
+
+
+def test_get_x_content_info_headers(mocker):
+    test_license = 'TEST_LICENSE_ID'
+    test_brand = 'TEST_BRAND'
+    mocker.patch.object(
+        demisto,
+        'getLicenseID',
+        return_value=test_license
+    )
+    mocker.patch.object(
+        demisto,
+        'callingContext',
+        new_callable=mocker.PropertyMock(return_value={'context': {
+            'IntegrationBrand': test_brand,
+            'IntegrationInstance': 'TEST_INSTANCE',
+        }})
+    )
+    headers = get_x_content_info_headers()
+    assert headers['X-Content-LicenseID'] == test_license
+    assert headers['X-Content-Name'] == test_brand

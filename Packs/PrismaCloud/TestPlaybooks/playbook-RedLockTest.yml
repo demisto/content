@@ -1,0 +1,845 @@
+id: RedLockTest
+version: -1
+name: RedLockTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5d8ffb2e-b39d-461d-8f33-0a53f7d4c8d4
+    type: start
+    task:
+      id: 5d8ffb2e-b39d-461d-8f33-0a53f7d4c8d4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: fbfde3f9-74c2-46b4-8a91-fd30de35ac1e
+    type: regular
+    task:
+      id: fbfde3f9-74c2-46b4-8a91-fd30de35ac1e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -35
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 48bb2da7-70c3-4e95-8494-27efb29699e0
+    type: regular
+    task:
+      id: 48bb2da7-70c3-4e95-8494-27efb29699e0
+      version: -1
+      name: Retrieve All Alerts from Last 6 hours
+      description: Search alerts on the RedLock platform
+      script: '|||redlock-search-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      alert-id: {}
+      alert-rule-name: {}
+      alert-status:
+        simple: resolved
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
+      policy-compliance-standard: {}
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
+      resource-id: {}
+      resource-name: {}
+      resource-type: {}
+      risk-grade: {}
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit:
+        simple: day
+      time-range-value:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: a890b4cf-1126-41e6-8c85-c250c1848349
+    type: regular
+    task:
+      id: a890b4cf-1126-41e6-8c85-c250c1848349
+      version: -1
+      name: Get Most Recent Alert Details
+      script: '|||redlock-get-alert-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      alert-id:
+        simple: ${RedLockID}
+      detailed: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: e75c9e62-38e2-4d71-8b05-0096699e6edf
+    type: condition
+    task:
+      id: e75c9e62-38e2-4d71-8b05-0096699e6edf
+      version: -1
+      name: Change Alert Status
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      already open:
+      - "28"
+      resolved:
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: already open
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${RedLockStatus}
+          right:
+            value:
+              simple: open
+    - label: resolved
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${RedLockStatus}
+            iscontext: true
+          right:
+            value:
+              simple: resolved
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: fccd641e-b424-4519-809f-31f05a7d3913
+    type: condition
+    task:
+      id: fccd641e-b424-4519-809f-31f05a7d3913
+      version: -1
+      name: Check for response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Redlock
+                accessor: Alert
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: c7b8e3fa-8f9c-435e-8d81-3900072604bb
+    type: title
+    task:
+      id: c7b8e3fa-8f9c-435e-8d81-3900072604bb
+      version: -1
+      name: Test Completed
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 48c2bd10-b9e7-4dbe-8263-68180d86559f
+    type: regular
+    task:
+      id: 48c2bd10-b9e7-4dbe-8263-68180d86559f
+      version: -1
+      name: Open the Alert
+      description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
+      script: '|||redlock-reopen-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      alert-id:
+        simple: ${RedLockID}
+      alert-rule-name: {}
+      alert-status: {}
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
+      policy-compliance-standard: {}
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
+      resource-id: {}
+      resource-name: {}
+      resource-type: {}
+      risk-grade: {}
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 3d398a52-a40c-4bf6-87de-0af29dfe7e73
+    type: regular
+    task:
+      id: 3d398a52-a40c-4bf6-87de-0af29dfe7e73
+      version: -1
+      name: Store Recent Alert ID
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      append: {}
+      key:
+        simple: RedLockID
+      stringify: {}
+      value:
+        simple: ${Redlock.Alert.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 412b1117-95cb-4384-8ebe-63bbef697511
+    type: regular
+    task:
+      id: 412b1117-95cb-4384-8ebe-63bbef697511
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: RedLockID
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: bbda63e8-3913-46ae-8327-364bfd699e79
+    type: regular
+    task:
+      id: bbda63e8-3913-46ae-8327-364bfd699e79
+      version: -1
+      name: Dismiss Alert
+      description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
+      script: '|||redlock-dismiss-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      alert-id:
+        simple: ${RedLockID}
+      alert-rule-name: {}
+      alert-status: {}
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
+      dismissal-note:
+        simple: Testing
+      policy-compliance-standard: {}
+      policy-id: {}
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
+      resource-id: {}
+      resource-name: {}
+      resource-type: {}
+      risk-grade: {}
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: d2fe7668-df2d-4b08-888b-6e6886a81c90
+    type: condition
+    task:
+      id: d2fe7668-df2d-4b08-888b-6e6886a81c90
+      version: -1
+      name: Verify Alert Status Change
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "34"
+      resolved:
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: ${Redlock
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ${Redlock.Alert.ID}
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${RedlockID}
+                      iscontext: true
+                accessor: Alert.Status}
+            iscontext: true
+          right:
+            value:
+              simple: ${RedLockStatus}
+            iscontext: true
+    - label: resolved
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${RedLockStatus}
+            iscontext: true
+          right:
+            value:
+              simple: resolved
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 8f4ef273-dab0-4fe5-84de-5a1a7d5beb61
+    type: regular
+    task:
+      id: 8f4ef273-dab0-4fe5-84de-5a1a7d5beb61
+      version: -1
+      name: Return alert To Open State
+      description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
+      script: '|||redlock-reopen-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      alert-id:
+        simple: ${RedLockID}
+      alert-rule-name: {}
+      alert-status:
+        simple: open
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
+      policy-compliance-standard: {}
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
+      resource-id: {}
+      resource-name: {}
+      resource-type: {}
+      risk-grade: {}
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 43c4c79c-d5f4-4502-86ce-ded9cdd3e550
+    type: regular
+    task:
+      id: 43c4c79c-d5f4-4502-86ce-ded9cdd3e550
+      version: -1
+      name: Store Recent Alert Status
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      append: {}
+      key:
+        simple: RedLockStatus
+      stringify: {}
+      value:
+        complex:
+          root: Redlock
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Redlock.Alert.ID
+                iscontext: true
+              right:
+                value:
+                  simple: RedLockID
+                iscontext: true
+          accessor: Alert.Status
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 1d482a77-d906-4e5c-86de-ff23076f3fbb
+    type: regular
+    task:
+      id: 1d482a77-d906-4e5c-86de-ff23076f3fbb
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: RedLockStatus,RedLockID
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 900b5aef-bc7b-4904-8b3a-2876f4ad7f0b
+    type: regular
+    task:
+      id: 900b5aef-bc7b-4904-8b3a-2876f4ad7f0b
+      version: -1
+      name: Get Alert Details
+      description: Get remediation details for a given alert
+      script: '|||redlock-get-remediation-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      alert-id:
+        simple: ${RedLockID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: aaf33fc3-ac3e-459e-8fac-098b93bf8503
+    type: condition
+    task:
+      id: aaf33fc3-ac3e-459e-8fac-098b93bf8503
+      version: -1
+      name: Return to original state
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      open:
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: open
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${RedLockStatus}
+            iscontext: true
+          right:
+            value:
+              simple: open
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 9f3d69c7-426a-48de-843f-17d10e35bea6
+    type: regular
+    task:
+      id: 9f3d69c7-426a-48de-843f-17d10e35bea6
+      version: -1
+      name: Return alert To Dismissed State
+      description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
+      script: '|||redlock-dismiss-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      alert-id:
+        simple: ${RedLockID}
+      alert-rule-name: {}
+      alert-status:
+        simple: dismissed
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
+      dismissal-note:
+        simple: Testing
+      policy-compliance-standard: {}
+      policy-id: {}
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
+      resource-id: {}
+      resource-name: {}
+      resource-type: {}
+      risk-grade: {}
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: b89a65b8-9cac-42c2-8d9c-82c14c7b98db
+    type: regular
+    task:
+      id: b89a65b8-9cac-42c2-8d9c-82c14c7b98db
+      version: -1
+      name: Get Remediation Details
+      description: Get remediation details for a given alert
+      script: '|||redlock-get-remediation-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      alert-id:
+        simple: ${RedLockID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: b71629af-3593-473a-8ae2-e397e57a99ce
+    type: regular
+    task:
+      id: b71629af-3593-473a-8ae2-e397e57a99ce
+      version: -1
+      name: List Alert Filters
+      description: List the acceptable filters and values for alerts
+      script: '|||redlock-list-alert-filters'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_28_already open": 0.57,
+      "13_32_resolved": 0.48,
+      "21_24_yes": 0.53,
+      "29_34_Yes": 0.58,
+      "29_36_resolved": 0.85,
+      "34_30_open": 0.59,
+      "34_35_#default#": 0.77
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3045,
+        "width": 1060,
+        "x": -70,
+        "y": -160
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

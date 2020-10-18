@@ -1,0 +1,19 @@
+{
+    "name": "DeepInstinct",
+    "description": "At Deep Instinct, we prevent what others can't find.",
+    "support": "partner",
+    "currentVersion": "1.0.2",
+    "author": "Deep Instinct",
+    "url": "",
+    "email": "support@deepinstinct.com",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "created": "2020-04-13T09:41:59Z",
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "asiadeepinstinct"
+    ]
+}

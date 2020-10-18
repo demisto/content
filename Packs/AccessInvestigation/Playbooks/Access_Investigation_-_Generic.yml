@@ -1,7 +1,6 @@
 id: access_investigation_-_generic
 version: -1
 name: Access Investigation - Generic
-fromversion: 3.6.0
 description: |-
   This playbook investigates an access incident by gathering user and IP information.
 
@@ -10,19 +9,18 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9191bc70-1a40-4150-83d9-66731d89243f
+    taskid: 88c75720-f352-4a1e-8fea-91e4664c6f2e
     type: start
     task:
-      id: 9191bc70-1a40-4150-83d9-66731d89243f
+      id: 88c75720-f352-4a1e-8fea-91e4664c6f2e
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -31,83 +29,55 @@ tasks:
           "y": 50
         }
       }
-  "3":
-    id: "3"
-    taskid: c4b25dd8-ef84-429f-8edc-a162b3dbf000
-    type: playbook
-    task:
-      id: c4b25dd8-ef84-429f-8edc-a162b3dbf000
-      version: -1
-      name: Account Enrichment - Generic
-      description: Enrich Accounts using one or more integrations
-      playbookName: Account Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      Username:
-        complex:
-          root: inputs.Username
-          transformers:
-          - operator: general.uniq
-    reputationcalc: 0
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 485
-        }
-      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: e0ffa563-92e4-428b-81ed-c0fe3eeeb2f7
+    taskid: 809b9809-6cf2-43f5-82ec-26935d8e6334
     type: title
     task:
-      id: e0ffa563-92e4-428b-81ed-c0fe3eeeb2f7
+      id: 809b9809-6cf2-43f5-82ec-26935d8e6334
       version: -1
       name: Interact with the user
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1010
+          "x": 597.5,
+          "y": 890
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 343205d4-9062-4954-8d57-ac3ab134d5f6
+    taskid: d8ca792a-0f62-4afa-82c1-3f0deee8cf95
     type: title
     task:
-      id: 343205d4-9062-4954-8d57-ac3ab134d5f6
+      id: d8ca792a-0f62-4afa-82c1-3f0deee8cf95
       version: -1
       name: Enrich indicators
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "8"
       - "9"
       - "10"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -116,84 +86,73 @@ tasks:
           "y": 195
         }
       }
-  "8":
-    id: "8"
-    taskid: faf6fad5-f040-47b2-8802-73c06b1ef6d2
-    type: title
-    task:
-      id: faf6fad5-f040-47b2-8802-73c06b1ef6d2
-      version: -1
-      name: Enrich source IP
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1022.5,
-          "y": 675
-        }
-      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: f4690b1b-98cd-4309-82be-53e760d502ee
+    taskid: 86527ce8-4449-4f5f-8828-3f6b0940e43a
     type: title
     task:
-      id: f4690b1b-98cd-4309-82be-53e760d502ee
+      id: 86527ce8-4449-4f5f-8828-3f6b0940e43a
       version: -1
-      name: Enrich destination IP
-      description: ""
+      name: Source & Destination IP Enrichment
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "20"
-    reputationcalc: 0
+      - "31"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 675
-        }
-      }
-  "10":
-    id: "10"
-    taskid: f68c6b42-4b24-426c-81e0-417984626f2a
-    type: title
-    task:
-      id: f68c6b42-4b24-426c-81e0-417984626f2a
-      version: -1
-      name: Enrich source user
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
+          "x": 880,
           "y": 340
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 9d762933-5ea0-4a4a-8ce7-f03af038e32a
+    type: title
+    task:
+      id: 9d762933-5ea0-4a4a-8ce7-f03af038e32a
+      version: -1
+      name: Source User Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 7b6dfef6-28ec-4daf-8b44-e0d813674886
+    taskid: d7b6d1d4-1fc7-4c5f-89e5-87a8c5f16644
     type: condition
     task:
-      id: 7b6dfef6-28ec-4daf-8b44-e0d813674886
+      id: d7b6d1d4-1fc7-4c5f-89e5-87a8c5f16644
       version: -1
       name: Does the source user account have an email address?
       description: Verify that the source user account has an associated email address.
@@ -205,18 +164,17 @@ tasks:
       - "12"
       "yes":
       - "13"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: Account
                 filters:
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: Account.Username
@@ -228,46 +186,54 @@ tasks:
                     ignorecase: true
                 accessor: Email.Address
                 transformers:
-                - operator: general.uniq
+                - operator: uniq
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1155
+          "x": 597.5,
+          "y": 1035
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 7a5f3223-0418-418a-8872-ca221ab74c5a
+    taskid: 6a801695-72c6-4eec-8b39-5954c6807564
     type: title
     task:
-      id: 7a5f3223-0418-418a-8872-ca221ab74c5a
+      id: 6a801695-72c6-4eec-8b39-5954c6807564
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2505
+          "x": 270,
+          "y": 2400
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 0e9d5518-3755-4d4b-8254-631b021ad18a
+    taskid: f5306f35-038d-480e-8b59-7833c7cb230d
     type: regular
     task:
-      id: 0e9d5518-3755-4d4b-8254-631b021ad18a
+      id: f5306f35-038d-480e-8b59-7833c7cb230d
       version: -1
       name: Request user to confirm account activity
-      description: Send an email to the source user email address to confirm whether
-        they recognize the suspicious activity.
+      description: Send an email to the source user email address to confirm whether they recognize the suspicious activity.
       scriptName: EmailAskUser
       type: regular
       iscommand: false
@@ -287,7 +253,7 @@ tasks:
         complex:
           root: Account
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: Account.Username
@@ -299,13 +265,9 @@ tasks:
               ignorecase: true
           accessor: Email.Address
           transformers:
-          - operator: general.uniq
+          - operator: uniq
       message:
-        simple: "Hi ${incident.srcuser},\n\nWe identified unexpected activity on your
-          account. \n\nStarting on ${incident.occurred}, there were suspicious log-in
-          attempts from the ${incident.src} IP address.\n\nPlease confirm whether
-          or not you recognize this activity.\nReply \"Yes\" to confirm this activity.
-          \nReply \"No\" otherwise.\n\nRegards,\nYour friendly security team."
+        simple: "Hi ${incident.srcuser},\n\nWe identified unexpected activity on your account. \n\nStarting on ${incident.occurred}, there were suspicious log-in attempts from the ${incident.src} IP address.\n\nPlease confirm whether or not you recognize this activity.\nReply \"Yes\" to confirm this activity. \nReply \"No\" otherwise.\n\nRegards,\nYour friendly security team."
       option1:
         simple: "yes"
       option2:
@@ -319,21 +281,25 @@ tasks:
         simple: Unexpected account activity
       task:
         simple: AccessQ1
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 1330
+          "x": 710,
+          "y": 1210
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: cf2e6c57-c2cb-41cb-822d-eb13f2658fee
+    taskid: d542d6b9-8ef6-4356-8d60-a400b14f8b1a
     type: condition
     task:
-      id: cf2e6c57-c2cb-41cb-822d-eb13f2658fee
+      id: d542d6b9-8ef6-4356-8d60-a400b14f8b1a
       version: -1
       name: Get user response
       description: Use the user response (yes or no) to direct the playbook.
@@ -347,223 +313,81 @@ tasks:
       - "23"
       "yes":
       - "22"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 1505
+          "x": 710,
+          "y": 1385
         }
       }
-  "17":
-    id: "17"
-    taskid: 10c28bdf-caae-47d7-8c1b-c5a7198b2349
-    type: condition
-    task:
-      id: 10c28bdf-caae-47d7-8c1b-c5a7198b2349
-      version: -1
-      name: Was the manager's ID returned?
-      description: Verify that the manager ID (DN) of the source user account was
-        returned in context.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "19"
-    reputationcalc: 0
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: Account
-                accessor: Manager
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 660
-        }
-      }
-  "19":
-    id: "19"
-    taskid: 6ba49d12-a2e7-40bb-85d2-2a7849adc774
-    type: regular
-    task:
-      id: 6ba49d12-a2e7-40bb-85d2-2a7849adc774
-      version: -1
-      name: Get manager's info
-      description: Retrieve the AD account information for the manager of the source
-        user account.
-      scriptName: ADGetUser
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      attributes: {}
-      customFieldData: {}
-      customFieldType: {}
-      dn:
-        complex:
-          root: Account
-          accessor: Manager
-          transformers:
-          - operator: general.uniq
-      email: {}
-      extend-context:
-        simple: ManagerEmailAddress=mail
-      headers: {}
-      limit: {}
-      name: {}
-      nestedSearch: {}
-      userAccountControlOut: {}
-      username: {}
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 835
-        }
-      }
-  "20":
-    id: "20"
-    taskid: 160c3d44-9b6f-4207-8df9-69f7c6ac3eb7
-    type: playbook
-    task:
-      id: 160c3d44-9b6f-4207-8df9-69f7c6ac3eb7
-      version: -1
-      name: IP Enrichment - Generic
-      playbookName: IP Enrichment - Generic
-      description: ""
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      IP:
-        complex:
-          root: inputs.DstIP
-      InternalRange: {}
-      ResolveIP:
-        simple: "True"
-    reputationcalc: 0
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 835
-        }
-      }
-  "21":
-    id: "21"
-    taskid: 74b00019-68dc-4e52-8b6e-8eb97721b8cb
-    type: playbook
-    task:
-      id: 74b00019-68dc-4e52-8b6e-8eb97721b8cb
-      version: -1
-      name: IP Enrichment - Generic
-      description: ""
-      playbookName: IP Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      IP:
-        complex:
-          root: inputs.SrcIP
-      InternalRange: {}
-      ResolveIP:
-        simple: "True"
-    reputationcalc: 0
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 1022.5,
-          "y": 835
-        }
-      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: e0dc594d-6a63-47e7-85d1-cadb733f3544
+    taskid: a9846347-7756-4b70-894d-8480140f90f5
     type: title
     task:
-      id: e0dc594d-6a63-47e7-85d1-cadb733f3544
+      id: a9846347-7756-4b70-894d-8480140f90f5
       version: -1
       name: User confirmed account activity
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 2015
+          "x": 495,
+          "y": 1895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: d78f9aeb-aaab-47c1-8359-4518d529c00a
+    taskid: 3ec0bffb-db20-4112-8808-ecf72d0555ee
     type: title
     task:
-      id: d78f9aeb-aaab-47c1-8359-4518d529c00a
+      id: 3ec0bffb-db20-4112-8808-ecf72d0555ee
       version: -1
       name: User denied account activity
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 1680
+          "x": 925,
+          "y": 1560
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 7201e19f-4202-41ec-8b24-246679d7621f
+    taskid: 16ba7ef2-9920-4c65-886a-c689239186a8
     type: regular
     task:
-      id: 7201e19f-4202-41ec-8b24-246679d7621f
+      id: 16ba7ef2-9920-4c65-886a-c689239186a8
       version: -1
       name: Set severity to low
       description: Set the incident severity to low.
@@ -662,21 +486,25 @@ tasks:
       vendorid: {}
       vendorproduct: {}
       vulnerabilitycategory: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 2175
+          "x": 495,
+          "y": 2055
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: eb5afea3-4cbc-4ec6-82f5-d9b80ac4ed1b
+    taskid: 01042d15-0cae-40f8-8ee4-c920f865092a
     type: regular
     task:
-      id: eb5afea3-4cbc-4ec6-82f5-d9b80ac4ed1b
+      id: 01042d15-0cae-40f8-8ee4-c920f865092a
       version: -1
       name: Close Investigation
       description: Close the investigation.
@@ -696,21 +524,25 @@ tasks:
       importantfield: {}
       test2: {}
       timefield1: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 2350
+          "x": 710,
+          "y": 2230
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 38e9a862-18da-401c-88e7-9ed6e2b0e9a4
+    taskid: 64df8fe6-98e4-4364-812e-1f0b3aa146a0
     type: regular
     task:
-      id: 38e9a862-18da-401c-88e7-9ed6e2b0e9a4
+      id: 64df8fe6-98e4-4364-812e-1f0b3aa146a0
       version: -1
       name: Set severity to high
       description: Set the incident severity to high.
@@ -809,21 +641,25 @@ tasks:
       vendorid: {}
       vendorproduct: {}
       vulnerabilitycategory: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 1825
+          "x": 925,
+          "y": 1705
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: b914ceed-2615-4c1b-8d64-74b2a8da5cd0
+    taskid: fc1a3a27-1849-4965-8815-94cd27e18982
     type: regular
     task:
-      id: b914ceed-2615-4c1b-8d64-74b2a8da5cd0
+      id: fc1a3a27-1849-4965-8815-94cd27e18982
       version: -1
       name: Assign to analyst
       description: |
@@ -845,51 +681,183 @@ tasks:
         complex:
           root: inputs.Role
       username: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 2000
+          "x": 925,
+          "y": 1880
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: 8ae1ca42-1f1d-4ae7-883e-814705b8aae2
+    taskid: a762c9b2-95c6-459a-8fe0-398d9721ce0b
     type: regular
     task:
-      id: 8ae1ca42-1f1d-4ae7-883e-814705b8aae2
+      id: a762c9b2-95c6-459a-8fe0-398d9721ce0b
       version: -1
       name: Manually remediate  the incident
-      description: "Review the incident to determine if the account activity is malicious.\n\nIf
-        malicious, consider the following:\n* Quarantine the account/ endpoint \n*
-        Revoke the account password\n* Query the account/ IPs logs in the SIEM\n*
-        Block the external IPs in the firewall/ proxy\n* Check the account's privileges
-        and change if needed"
+      description: "Review the incident to determine if the account activity is malicious.\n\nIf malicious, consider the following:\n* Quarantine the account/ endpoint \n* Revoke the account password\n* Query the account/ IPs logs in the SIEM\n* Block the external IPs in the firewall/ proxy\n* Check the account's privileges and change if needed"
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "25"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 2175
+          "x": 925,
+          "y": 2055
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 05185a2c-da2e-4ebd-8ee1-065bdaf64237
+    type: playbook
+    task:
+      id: 05185a2c-da2e-4ebd-8ee1-065bdaf64237
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 7b32be50-0650-4319-81d4-86b65225d07c
+    type: playbook
+    task:
+      id: 7b32be50-0650-4319-81d4-86b65225d07c
+      version: -1
+      name: Active Directory - Get User Manager Details
+      description: Takes an email address or a username of a user account in Active Directory, and returns the email address of the user's manager.
+      playbookName: Active Directory - Get User Manager Details
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      UserEmail: {}
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: eee39e39-e016-4a06-8b99-2e9457281933
+    type: playbook
+    task:
+      id: eee39e39-e016-4a06-8b99-2e9457281933
+      version: -1
+      name: IP Enrichment - Generic v2
+      playbookName: IP Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.SrcIP
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.DstIP
+                iscontext: true
+          - operator: uniq
+      InternalRange: {}
+      ResolveIP:
+        simple: "True"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2520,
-        "width": 1352.5,
-        "x": 50,
+        "height": 2415,
+        "width": 1035,
+        "x": 270,
         "y": 50
       }
     }
@@ -902,6 +870,7 @@ inputs:
       accessor: src
   required: false
   description: The source IP address from which the incident originated.
+  playbookInputQuery:
 - key: DstIP
   value:
     complex:
@@ -909,6 +878,7 @@ inputs:
       accessor: dest
   required: false
   description: The target IP address that was accessed.
+  playbookInputQuery:
 - key: Username
   value:
     complex:
@@ -916,16 +886,19 @@ inputs:
       accessor: srcuser
   required: false
   description: The username of the account that was used to access the DstIP.
+  playbookInputQuery:
 - key: Role
   value:
     simple: Administrator
   required: true
   description: The default role to assign the incident to.
+  playbookInputQuery:
 - key: OnCall
   value:
-    simple: false
+    simple: "false"
   required: false
   description: Set to true to assign only the users that are currently on shift. Requires Cortex XSOAR v5.5 or later.
+  playbookInputQuery:
 outputs:
 - contextPath: Account.Email.Address
   description: The email address object associated with the Account
@@ -986,5 +959,6 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
+fromversion: 5.0.0
 tests:
-  - No test
+- No tests (auto formatted)

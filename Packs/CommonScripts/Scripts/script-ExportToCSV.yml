@@ -2,7 +2,7 @@ commonfields:
   id: ExportToCSV
   version: -1
 name: ExportToCSV
-script: |-
+script: >-
   function valueToValidString(value) {
       if (typeof value === 'number' || typeof value === 'boolean' ) {
           value = value.toString();
@@ -16,6 +16,7 @@ script: |-
       }
       return value;
   }
+
 
   function extractHeaders(objArray) {
       var headersInOrder = [];
@@ -34,6 +35,7 @@ script: |-
 
       return headersInOrder;
   }
+
 
   function convertToCSV(objArray, headers) {
       // if objArray is an array of strings then return a single line of values
@@ -79,7 +81,9 @@ script: |-
       return fileContent;
   }
 
+
   // string was passed as input
+
   if (typeof args.csvArray === 'string') {
       // add array brackets if missing from string
       args.csvArray = args.csvArray[0] == '[' ? args.csvArray : '[' + args.csvArray + ']'
@@ -94,17 +98,23 @@ script: |-
           };
       }
   }
+
   // json object passed as input
+
   if (!Array.isArray(args.csvArray)) {
       //wrap in an array
       args.csvArray = [args.csvArray];
   }
+
   if (args.headers && !Array.isArray(args.headers)){
       args.headers = args.headers.split(',');
   }
 
+
   var csvString = convertToCSV(args.csvArray, args.headers);
+
   var createdFileID = saveFile(csvString);
+
 
   return {
       Type: 3,
@@ -128,8 +138,8 @@ args:
   description: Array to export
   isArray: true
 - name: headers
-  description: Array to hold the file headers in order.  Also excepts a comma separated
-    list.
+  description: Array to hold the file headers in order.  Also excepts a comma separated list.
   isArray: true
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

@@ -28,8 +28,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Checks file reputation of the given hash, supports SHA256, SHA1 and
-      MD5
+    description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5
     execution: false
     name: intezer-analyze-by-hash
     outputs:
@@ -88,8 +87,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Check the analysis status and get analysis result, support file and
-      endpoint analysis
+    description: Check the analysis status and get analysis result, support file and endpoint analysis
     execution: false
     name: intezer-get-analysis-result
     outputs:
@@ -112,19 +110,17 @@ script:
       description: The actual score
       type: number
     - contextPath: File.Metadata
-      description: Metadata returned from Intezer analysis (analysis id, analysis
-        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
-        retuned only for supported files.
+      description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metedata will be retuned only for supported files.
       type: Unknown
     - contextPath: Endpoint.Metadata
-      description: Metadata returned from Intezer analysis (endpoint analysis id,
-        endpoint analysis url, families,  verdict, host_name)
+      description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name)
       type: Unknown
-  dockerimage: demisto/python3:3.7.3.286
+  dockerimage: demisto/python3:3.8.3.8715
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
 tests:
-  - Intezer Testing v2
+- Intezer Testing v2
+fromversion: 5.0.0

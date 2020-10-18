@@ -1898,3 +1898,341 @@ There is no context output for this command.
 
 ##### Human Readable Output
 ### User session was cleared for: 00ui5brmwtJpMdoZZ0h7
+
+
+### okta-list-zones
+***
+Get an Okta Zone object
+
+
+#### Base Command
+
+`okta-list-zones`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Okta.Zone.created | Date | Zone creation timestamp, in the format 2020\-04\-06T22:23:12.000Z. | 
+| Okta.Zone.gateways.type | String | Gateways IP entry type, e.g., CIDR. | 
+| Okta.Zone.gateways.value | String | Gateways IP entry value, e.g., 1.2.1.2/32. | 
+| Okta.Zone.id | String | Zone ID, e.g., nzoqsmcx1qWYJ6wY33h7. | 
+| Okta.Zone.lastUpdated | Date | Zone last update timestamp, e.g., 2020\-04\-06T22:23:12.000Z. | 
+| Okta.Zone.name | String | Zone name. | 
+| Okta.Zone.proxies.type | String | Proxies IP entry type e.g. CIDR | 
+| Okta.Zone.proxies.value | Unknown | Proxies IP entry value, e.g., 1.2.1.2/32. | 
+| Okta.Zone.status | String | Zone status, e.g., ACTIVE. | 
+| Okta.Zone.system | Number | True if this is a system zone, false if user\-created. | 
+| Okta.Zone.type | String | Zone type, e.g., IP. | 
+
+
+#### Command Example
+```!okta-list-zones```
+
+#### Context Example
+```
+{
+    "Okta": {
+        "Zone": [
+            {
+                "_links": {
+                    "deactivate": {
+                        "hints": {
+                            "allow": [
+                                "POST"
+                            ]
+                        },
+                        "href": "https://dev-950355.oktapreview.com/api/v1/zones/nzo9rbw8evGOFV1VE0h7/lifecycle/deactivate"
+                    },
+                    "self": {
+                        "hints": {
+                            "allow": [
+                                "GET",
+                                "PUT",
+                                "DELETE"
+                            ]
+                        },
+                        "href": "https://dev-950355.oktapreview.com/api/v1/zones/nzo9rbw8evGOFV1VE0h7"
+                    }
+                },
+                "created": "2017-03-03T22:05:24.000Z",
+                "gateways": [
+                    {
+                        "type": "CIDR",
+                        "value": "2.2.2.2/32"
+                    }
+                ],
+                "id": "nzo9rbw8evGOFV1VE0h7",
+                "lastUpdated": "2020-04-23T08:58:55.000Z",
+                "name": "LegacyIpZone",
+                "proxies": null,
+                "status": "ACTIVE",
+                "system": true,
+                "type": "IP"
+            },
+            {
+                "_links": {
+                    "deactivate": {
+                        "hints": {
+                            "allow": [
+                                "POST"
+                            ]
+                        },
+                        "href": "https://dev-950355.oktapreview.com/api/v1/zones/nzoqsmcx1qWYJ6wY33h7/lifecycle/deactivate"
+                    },
+                    "self": {
+                        "hints": {
+                            "allow": [
+                                "GET",
+                                "PUT",
+                                "DELETE"
+                            ]
+                        },
+                        "href": "https://dev-950355.oktapreview.com/api/v1/zones/nzoqsmcx1qWYJ6wY33h7"
+                    }
+                },
+                "created": "2020-04-06T22:23:12.000Z",
+                "gateways": [
+                    {
+                        "type": "CIDR",
+                        "value": "1.1.1.2/32"
+                    },
+                    {
+                        "type": "CIDR",
+                        "value": "1.1.1.3/32"
+                    },
+                    {
+                        "type": "CIDR",
+                        "value": "2.2.2.2/32"
+                    },
+                    {
+                        "type": "CIDR",
+                        "value": "2.2.2.3/32"
+                    }
+                ],
+                "id": "nzoqsmcx1qWYJ6wY33h7",
+                "lastUpdated": "2020-06-05T08:57:57.000Z",
+                "name": "MyZone",
+                "proxies": null,
+                "status": "ACTIVE",
+                "system": false,
+                "type": "IP"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Okta Zones
+>|name|id|gateways|status|system|lastUpdated|created|
+>|---|---|---|---|---|---|---|
+>| LegacyIpZone | nzo9rbw8evGOFV1VE0h7 | {'type': 'CIDR', 'value': '2.2.2.2/32'} | ACTIVE | true | 2020-04-23T08:58:55.000Z | 2017-03-03T22:05:24.000Z |
+>| MyZone | nzoqsmcx1qWYJ6wY33h7 | {'type': 'CIDR', 'value': '3.3.3.4/32'},<br/>{'type': 'CIDR', 'value': '5.5.5.3/32'},<br/>{'type': 'CIDR', 'value': '3.3.3.1/32'},<br/>{'type': 'CIDR', 'value': '2.2.2.3/32'} | ACTIVE | false | 2020-06-05T08:57:57.000Z | 2020-04-06T22:23:12.000Z |
+
+
+### okta-update-zone
+***
+Update an Okta Zone
+
+
+#### Base Command
+
+`okta-update-zone`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| zoneID | Zone ID to update, e.g., nzoqsmcx1qWYJ6wY33h7. | Required | 
+| zoneName | Updates the zone name. | Optional | 
+| gatewayIPs | Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
+| proxyIPs | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Okta.Zone.created | Date | Zone creation timestamp, e.g., 2020\-04\-06T22:23:12.000Z. | 
+| Okta.Zone.gateways.type | String | Gateways IP entry type, e.g., CIDR. | 
+| Okta.Zone.gateways.value | String | Gateways IP entry value, e.g., 1.2.1.2/32. | 
+| Okta.Zone.id | String | Okta Zone ID, e.g., nzoqsmcx1qWYJ6wY33h7. | 
+| Okta.Zone.lastUpdated | Date | Zone last update timestamp, in the format 2020\-04\-06T22:23:12.000Z. | 
+| Okta.Zone.name | String | Zone name. | 
+| Okta.Zone.proxies.type | String | Proxies IP entry type, e.g., CIDR. | 
+| Okta.Zone.proxies.value | Unknown | Proxies IP entry value, e.g., 1.2.1.2/32. | 
+| Okta.Zone.status | String | Zone status, e.g., ACTIVE. | 
+| Okta.Zone.system | Number | True if this is a system zone, false if user\-created. | 
+| Okta.Zone.type | String | Zone type, e.g., IP. | 
+
+
+#### Command Example
+```!okta-update-zone zoneID=nzoqsmcx1qWYJ6wY33h7 zoneName=MyZone```
+
+#### Context Example
+```
+{
+    "Okta": {
+        "Zone": {
+            "_links": {
+                "deactivate": {
+                    "hints": {
+                        "allow": [
+                            "POST"
+                        ]
+                    },
+                    "href": "https://dev-950355.oktapreview.com/api/v1/zones/nzoqsmcx1qWYJ6wY33h7/lifecycle/deactivate"
+                },
+                "self": {
+                    "hints": {
+                        "allow": [
+                            "GET",
+                            "PUT",
+                            "DELETE"
+                        ]
+                    },
+                    "href": "https://dev-950355.oktapreview.com/api/v1/zones/nzoqsmcx1qWYJ6wY33h7"
+                }
+            },
+            "created": "2020-04-06T22:23:12.000Z",
+            "gateways": [
+                {
+                    "type": "CIDR",
+                    "value": "1.1.3.5/32"
+                },
+                {
+                    "type": "CIDR",
+                    "value": "5.3.143.103/32"
+                },
+                {
+                    "type": "CIDR",
+                    "value": "5.3.246.228/32"
+                },
+                {
+                    "type": "CIDR",
+                    "value": "5.3.246.229/32"
+                }
+            ],
+            "id": "nzoqsmcx1qWYJ6wY33h7",
+            "lastUpdated": "2020-06-05T08:57:57.000Z",
+            "name": "MyZone",
+            "proxies": null,
+            "status": "ACTIVE",
+            "system": false,
+            "type": "IP"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Okta Zones
+>|name|id|gateways|status|system|lastUpdated|created|
+>|---|---|---|---|---|---|---|
+>| MyZone | nzoqsmcx1qWYJ6wY33h7 | {'type': 'CIDR', 'value': '1.3.1.5/32'},<br/>{'type': 'CIDR', 'value': '1.3.1.5/32'},<br/>{'type': 'CIDR', 'value': '1.3.1.5/32'},<br/>{'type': 'CIDR', 'value': '1.3.1.5/32'} | ACTIVE | false | 2020-06-05T08:57:57.000Z | 2020-04-06T22:23:12.000Z |
+
+
+### okta-get-zone
+***
+Get a Zone by its ID
+
+
+#### Base Command
+
+`okta-get-zone`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| zoneID | Zone ID to get, e.g., nzoqsmcx1qWYJ6wY33h7 | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Okta.Zone.created | Date | Zone creation timestamp, in the format 2020\-04\-06T22:23:12.000Z. | 
+| Okta.Zone.gateways.type | String | Gateways IP entry type, e.g., CIDR. | 
+| Okta.Zone.gateways.value | String | Gateways IP entry value, e.g., 1.2.1.2/32. | 
+| Okta.Zone.id | String | Okta Zone ID, e.g., nzoqsmcx1qWYJ6wY33h7. | 
+| Okta.Zone.lastUpdated | Date | Zone last update timestamp, in the format 2020\-04\-06T22:23:12.000Z. | 
+| Okta.Zone.name | String | Zone name. | 
+| Okta.Zone.proxies.type | String | Proxies IP entry type, e.g., CIDR. | 
+| Okta.Zone.proxies.value | Unknown | Proxies IP entry value, e.g., 1.2.1.2/32. | 
+| Okta.Zone.status | String | Zone status, e.g,. ACTIVE. | 
+| Okta.Zone.system | Number | True if this is a system zone, false if user\-created. | 
+| Okta.Zone.type | String | Zone type, e.g., IP. | 
+
+
+#### Command Example
+```!okta-get-zone zoneID=nzoqsmcx1qWYJ6wY33h7```
+
+#### Context Example
+```
+{
+    "Okta": {
+        "Zone": {
+            "_links": {
+                "deactivate": {
+                    "hints": {
+                        "allow": [
+                            "POST"
+                        ]
+                    },
+                    "href": "https://dev-950355.oktapreview.com/api/v1/zones/nzoqsmcx1qWYJ6wY33h7/lifecycle/deactivate"
+                },
+                "self": {
+                    "hints": {
+                        "allow": [
+                            "GET",
+                            "PUT",
+                            "DELETE"
+                        ]
+                    },
+                    "href": "https://dev-950355.oktapreview.com/api/v1/zones/nzoqsmcx1qWYJ6wY33h7"
+                }
+            },
+            "created": "2020-04-06T22:23:12.000Z",
+            "gateways": [
+                {
+                    "type": "CIDR",
+                    "value": "1.3.1.3/32"
+                },
+                {
+                    "type": "CIDR",
+                    "value": "3.5.146.103/32"
+                },
+                {
+                    "type": "CIDR",
+                    "value": "3.5.1.228/32"
+                },
+                {
+                    "type": "CIDR",
+                    "value": "3.5.1.229/32"
+                }
+            ],
+            "id": "nzoqsmcx1qWYJ6wY33h7",
+            "lastUpdated": "2020-06-05T08:57:57.000Z",
+            "name": "MyZone",
+            "proxies": null,
+            "status": "ACTIVE",
+            "system": false,
+            "type": "IP"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Okta Zones
+>|name|id|gateways|status|system|lastUpdated|created|
+>|---|---|---|---|---|---|---|
+>| MyZone | nzoqsmcx1qWYJ6wY33h7 | {'type': 'CIDR', 'value': '1.3.1.3/32'},<br/>{'type': 'CIDR', 'value': '3.5.146.103/32'},<br/>{'type': 'CIDR', 'value': '3.5.1.228/32'},<br/>{'type': 'CIDR', 'value': '3.5.1.229/32'} | ACTIVE | false | 2020-06-05T08:57:57.000Z | 2020-04-06T22:23:12.000Z |

@@ -1,0 +1,1718 @@
+{
+  "event": {
+    "id": "1e0e6e83-421b-4f2f-af7f-be8ac9624c54",
+    "alert_id": "f4ff20e8-259f-462e-bd1c-9ea0a51a3119",
+    "category": "C2",
+    "sub_category": "DNS_TUNNELING",
+    "severity": 1000,
+    "confidence": 1,
+    "created": "2020-02-04T21:13:50.257133Z",
+    "updated": "2020-02-04T21:13:51.542457Z",
+    "start_time": "2019-07-09T03:16:11.000Z",
+    "end_time": "2019-07-09T03:58:30.000Z",
+    "iron_dome_shared_time": "2020-02-04T21:13:50.000Z",
+    "is_whitelisted": false,
+    "is_blacklisted": false,
+    "src_ip": "172.31.128.2",
+    "dst_ip": "200.200.200.79",
+    "dst_port": "53",
+    "app_domains": [
+      "windowsdefender.win"
+    ],
+    "primary_app_protocol": "DNS",
+    "secondary_app_protocol": null,
+    "bytes_in": "312",
+    "bytes_out": "256",
+    "total_bytes": "568",
+    "url": null,
+    "raw_data_formats": [
+      "RDF_TAP"
+    ],
+    "src_entity_attribute": "",
+    "src_entity_attribute_type": "",
+    "dst_entity_attribute": "",
+    "dst_entity_attribute_type": "",
+    "vue_url": "https://10.40.15.117/event?uuid=1e0e6e83421b4f2faf7fbe8ac9624c54"
+  },
+  "context": [
+    {
+      "name": "query_type_ratios",
+      "columns": [
+        {
+          "name": "ratio",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0.26666666666666666
+                },
+                {
+                  "double_value": 0.3333333333333333
+                },
+                {
+                  "double_value": 0.3333333333333333
+                },
+                {
+                  "double_value": 0.06666666666666667
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "query_type",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "MX"
+                },
+                {
+                  "string_value": "AAAA"
+                },
+                {
+                  "string_value": "SRV"
+                },
+                {
+                  "string_value": "TXT"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flows",
+      "columns": [
+        {
+          "name": "domain_registered_period",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "365"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dst_ip_enterprise",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dns_response_ip_enterprise",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tld_check",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dst_port",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "53"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "fqdn_domain_with_suffix",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "windowsdefender.win"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tld_domain_indegree",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dns_response_ip",
+          "values": [
+            {
+              "data": [
+                {
+                  "ip_value": "2001:4860:2a00::8888"
+                },
+                {
+                  "ip_value": "3335:317e:c804:875e:71ec:8ec8:42d0:bab9"
+                },
+                {
+                  "ip_value": "3433:377e:752f:a5b8:b313:b3cb:2de9:c45f"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "app_domains_is_enterprise",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "days_since_domain_updated",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "26"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "primary_app_proto",
+          "values": [
+            {
+              "data": [
+                {
+                  "app_protocol_value": "DNS"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "app_domains",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "windowsdefender.win"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "majestic_tdurs_rank",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "threat_intel_domain_match",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "domain_registrar",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "NameCheap, Inc."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "src_port",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "53451"
+                },
+                {
+                  "long_value": "50857"
+                },
+                {
+                  "long_value": "51598"
+                },
+                {
+                  "long_value": "57057"
+                },
+                {
+                  "long_value": "52881"
+                },
+                {
+                  "long_value": "64250"
+                },
+                {
+                  "long_value": "58693"
+                },
+                {
+                  "long_value": "64455"
+                },
+                {
+                  "long_value": "51614"
+                },
+                {
+                  "long_value": "59335"
+                },
+                {
+                  "long_value": "59164"
+                },
+                {
+                  "long_value": "62088"
+                },
+                {
+                  "long_value": "63513"
+                },
+                {
+                  "long_value": "62314"
+                },
+                {
+                  "long_value": "51630"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "fqdn",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "314-853-0.windowsdefender.win"
+                },
+                {
+                  "string_value": "314-853-5871-mMT0AwnfEmNOnQUc1F0IEg1Y7IF5RYeVCeBT.windowsdefender.win"
+                },
+                {
+                  "string_value": "314-0vpX.windowsdefender.win"
+                },
+                {
+                  "string_value": "314-384-5291-if4g2MjlAwgLjjIwvMCw4y9MDsAu6Nzel8qM.windowsdefender.win"
+                },
+                {
+                  "string_value": "314-oehX.windowsdefender.win"
+                },
+                {
+                  "string_value": "314-950-5791-xofD9F85MTvAw4fEtNO4QU31FsIEm1Y1IFi.windowsdefender.win"
+                },
+                {
+                  "string_value": "314-870-1981-nIw8MC74y1MDcAucMj0AwcLj5c57LWyth2.windowsdefender.win"
+                },
+                {
+                  "string_value": "314-pp9X.windowsdefender.win"
+                },
+                {
+                  "string_value": "314-758-0.windowsdefender.win"
+                },
+                {
+                  "string_value": "314-877-4981-lutZGk93sc2xRluZmoVulZGtVynLn5dp2biu4gm.windowsdefender.win"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "src_ip",
+          "values": [
+            {
+              "data": [
+                {
+                  "ip_value": "172.31.128.2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tld_enterprise_rank",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "days_until_domain_expires",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "fqdn_is_enterprise",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tld_domain_norm_indegree",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "app_domains_domain_with_suffix",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "windowsdefender.win"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "domain_name_servers",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "dns101.registrar-servers.com"
+                },
+                {
+                  "string_value": "dns102.registrar-servers.com"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dns_tld_domain_indegree",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "domain_is_advertiser",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "domain_is_ip",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "days_since_domain_created",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "391"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dns_tld_domain_norm_indegree",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "src_ip_enterprise",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "is_domain_dynamic",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dst_ip",
+          "values": [
+            {
+              "data": [
+                {
+                  "ip_value": "200.200.200.79"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "trans_protocol",
+          "values": [
+            {
+              "data": [
+                {
+                  "trans_protocol_value": "UDP"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "umbrella_tdurs_rank",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "subdomain_stats",
+      "columns": [
+        {
+          "name": "max_total_bytes",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "281"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "data_rate",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0.11047541274164896
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "fqdn_labels",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "314"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "num_subdomains_count",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "num_subdomains_all_std",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "num_dashes_mode",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "3"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "stdev_subdomain_length",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 20.41424117957494
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "average_subdomain_common_chars",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 5.733333333333333
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "non_an_structure_count",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "3"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "num_subdomains",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "3"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "encoding_type",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "base64"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "num_subdomains_all",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "common_label_fraction",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0.06410256410256411
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "num_dashes_std",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0.9119095061289915
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "average_subdomain_length",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 24.933333333333334
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "non_an_structure_all",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "--"
+                },
+                {
+                  "string_value": "---"
+                },
+                {
+                  "string_value": "-"
+                },
+                {
+                  "string_value": "---"
+                },
+                {
+                  "string_value": "-"
+                },
+                {
+                  "string_value": "---"
+                },
+                {
+                  "string_value": "---"
+                },
+                {
+                  "string_value": "-"
+                },
+                {
+                  "string_value": "---"
+                },
+                {
+                  "string_value": "---"
+                },
+                {
+                  "string_value": "--"
+                },
+                {
+                  "string_value": "---"
+                },
+                {
+                  "string_value": "--"
+                },
+                {
+                  "string_value": "---"
+                },
+                {
+                  "string_value": "-"
+                },
+                {
+                  "string_value": "-"
+                },
+                {
+                  "string_value": "-"
+                },
+                {
+                  "string_value": "-"
+                },
+                {
+                  "string_value": "--"
+                },
+                {
+                  "string_value": "---"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "num_subdomains_all_mode",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "3"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "num_dots_mode",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "stdev_subdomain_common_chars",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 1.7915143899851347
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "anomaly_score",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "num_dashes",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "2"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "1"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "1"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "1"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "2"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "2"
+                },
+                {
+                  "long_value": "3"
+                },
+                {
+                  "long_value": "1"
+                },
+                {
+                  "long_value": "1"
+                },
+                {
+                  "long_value": "1"
+                },
+                {
+                  "long_value": "1"
+                },
+                {
+                  "long_value": "2"
+                },
+                {
+                  "long_value": "3"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "num_dots_std",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "unique_subdomains",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "15"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ratio_unique_subdomains",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0.25
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "non_an_structure",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "--"
+                },
+                {
+                  "string_value": "---"
+                },
+                {
+                  "string_value": "-"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "num_dots",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                },
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "non_enterprise_ips",
+      "columns": [
+        {
+          "name": "outbound_ip_coi",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "outbound_normalized_ip_coi",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "asn_netblock_size",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 1.9807040628566084e+28
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "coi_window_hours",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "is_tor",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ip",
+          "values": [
+            {
+              "data": [
+                {
+                  "ip_value": "172.31.128.2"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "ip_value": "200.200.200.79"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "ip_value": "2001:4860:2a00::8888"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "ip_value": "3335:317e:c804:875e:71ec:8ec8:42d0:bab9"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "ip_value": "3433:377e:752f:a5b8:b313:b3cb:2de9:c45f"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "inbound_coi",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "asn_desc",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "Google LLC"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "asn_number",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "AS15169"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "asn_is_cloud_storage",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "asn_subnet",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "34"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "is_public_proxy",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "asn_is_av_vendor",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "inbound_normalized_ip_coi",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            },
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "non_enterprise_domain_tpd",
+      "columns": [
+        {
+          "name": "http_coi_norm_indegree",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dns_coi_norm_indegree",
+          "values": [
+            {
+              "data": [
+                {
+                  "double_value": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "http_coi_indegree",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "threat_intel_match",
+          "values": [
+            {
+              "data": [
+                {
+                  "bool_value": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "registered_period",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "365"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "name_servers",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "dns101.registrar-servers.com"
+                },
+                {
+                  "string_value": "dns102.registrar-servers.com"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "days_since_created",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "391"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "days_until_expires",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "registrar",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "NameCheap, Inc."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "days_since_updated",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "26"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "domain",
+          "values": [
+            {
+              "data": [
+                {
+                  "string_value": "windowsdefender.win"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "http_coi_rank",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dns_coi_indegree",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dns_coi_rank",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "majestic_rank",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "umbrella_rank",
+          "values": [
+            {
+              "data": [
+                {
+                  "long_value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

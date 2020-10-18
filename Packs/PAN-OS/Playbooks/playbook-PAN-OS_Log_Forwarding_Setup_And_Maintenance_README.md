@@ -1,6 +1,13 @@
 Sets up and maintains log forwarding for the Panorama rulebase.
 It can be run when setting up a new instance, or as a periodic job to enforce log forwarding policy.
 You can either update all rules and override previous profiles, or update only rules that do not have a log forwarding profile configured.
+​
+## Description & Playbook Flow
+---
+The playbook lists all of the rules (either pre-rulebase or post-rulebase). 
+If the analyst wishes to override the log-forwarding profile for all rules, it updates all the rules with the given profile.
+If the analyst wishes to update only rules with missing profiles, it will update only those rules.
+In the end, the playbook will commit to PAN-OS (either auto-commit or manual commit by the analyst).
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -9,7 +16,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * PAN-OS Commit Configuration
 
 ### Integrations
-This playbook does not use any integrations.
+* Palo Alto Networks PAN-OS
 
 ### Scripts
 * Set
@@ -33,6 +40,11 @@ This playbook does not use any integrations.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
+
+## Known Limitations
+---
+The log forwarding profile needs to be configured manually and provided to this playbook as an input. [link](https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/forward-logs-to-cortex-data-lake)
+In the future, we’ll support auto-creation of Cortex Data Lake log forwarding profiles.
 
 ## Playbook Image
 ---

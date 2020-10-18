@@ -805,7 +805,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="/hc/article_attachments/360010053094/mceclip0.png" width="751" height="416"></p>
+<p><img src="https://github.com/demisto/content/raw/f1905b0493aa2a06c0ad0306a77e6fb0e0e5214f/Packs/DeprecatedContent/Integrations/PaloAltoNetworksCortex/doc_files/mceclip0.png" width="751" height="416"></p>
 <h3 id="h_547af28f-01d1-4315-ba00-bea07c0dc286">5. Query traffic logs</h3>
 <hr>
 <p>Searches the Cortex panw.traffic table, which is the traffic logs table for PAN-OS and Panorama.</p>

@@ -11,7 +11,7 @@
 <li>Manage Slack channels (create, edit, invite, kick, close).</li>
 </ul><h2>Detailed Description</h2>
 <ul>
-<li>To allow us access to Slack, the Cortex XSOAR app has to be added to the relevant workspace. Do so by clicking on the following [link](https://oproxy.demisto.ninja/slack).</li>
+<li>To allow us access to Slack, the Cortex XSOAR app has to be added to the relevant workspace. Do so by clicking on the following <a href="https://oproxy.demisto.ninja/slack">link</a>.</li>
 <li> After adding the Cortex XSOAR app, you will get an Access Token and Bot Token, which should be inserted in the integration instance configuration's corresponding fields.</li>
 </ul>
 <h2>Configure SlackV2 on Cortex XSOAR</h2>
@@ -732,16 +732,22 @@ Channel renamed successfully.
 
 </p>
 <h2>Additional Information</h2>
+<h3>Change the name of the Cortex XSOAR App</h3>
+<p>You can change the name and icon of the Cortex XSOAR app in direct messages using the integration configuration settings (parameters). In order to change the name of the application itself, do the following:</p>
+<ul>
+<li>Go to the app in the **Apps** section in Slack<img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-apps.png"/></li>
+<li> In the app, go to **About > Settings**: <img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-app-about.png"/></li>
+<li>Scroll down and click the pencil icon to change the name. <img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-app-name.png"/></li>
+</ul>
 <h3>Direct messages</h3>
-<p>You may send direct messages to the Cortex XSOAR app on Slack using the following commands:</p>
-<pre>
-list incidents [page x]
-list my incidents [page x]
-list my tasks
-list closed incidents
-new incident [details]
-mirror incident-id
-</pre>
+<p>You can send direct messages to the Cortex XSOAR app on Slack using the following commands:</p>
+<p><strong>list incidents [page x]</strong> - lists the current incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>list my incidents [page x]</strong> - lists the current incidents assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>list my tasks [page x]</strong> - lists the current tasks assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>list closed incidents</strong> - lists the closed incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>new incident [details]</strong> - creates a new incident in Cortex XSOAR. Requires user permissions in Cortex XSOAR, or that the `Allow external users to create incidents via DM` parameter is enabled.</p>
+<p><strong>mirror [incident-id]</strong> - mirrors an incident in Cortex XSOAR to a Slack channel. Requires user permissions in Cortex XSOAR for the specified incident.</p>
+
 <h3>Notifications</h3>
 <p>The integration sends notifications as they are configured in the notification settings (User Preferences in Cortex XSOAR), and to the dedicated channel configured for incident notifications (according to the integration configuration).
 If a dedicated channel for incident notifications is configured, the following notifications will be sent there:</p>
@@ -753,8 +759,8 @@ If a dedicated channel for incident notifications is configured, the following n
 <li>Incident SLA changed</li>
 <li>Task completed</li>
 </ul>
-<h3>Blocks and interactve components</h3>
-<span>The integration supports sending "blocks" to Slack. Blocks are a series of components that can be combined to create visually rich and compellingly interactive messages. In the integration, they can be sent as an array of JSON. More infortmation about that <a href="https://api.slack.com/reference/block-kit/blocks">here.</a> You can experiment with and build your own blocks <a href="https://api.slack.com/tools/block-kit-builder">here.</a>
+<h3>Blocks and interactive components</h3>
+<span>The integration supports sending "blocks" to Slack. Blocks are a series of components that can be combined to create visually rich and compellingly interactive messages. In the integration, they can be sent as an array of JSON. More information about that <a href="https://api.slack.com/reference/block-kit/blocks">here.</a> You can experiment with and build your own blocks <a href="https://api.slack.com/tools/block-kit-builder">here.</a>
 The integration also allows some level of interactivity. When a user interacts with an element in a Slack message, Slack sends a request with the relevant information. 
 This request is processed and stored by a dedicated endpoint outside of Cortex XSOAR in the address: <code>https://oproxy.demisto.ninja</code>
 The integration allows polling this endpoint for user interactions that contain entitlement strings, which are used to perform actions in Cortex XSOAR by external users. See the <a href="https://github.com/demisto/content/tree/master/Packs/Slack/Scripts/SlackAsk">SlackAsk</a> script for an example.
@@ -783,6 +789,6 @@ The following information is sent to the dedicated endpoint in the request:
 </ul>
 <h2>Troubleshooting</h2>
 <p>If messages are not mirrored in Cortex XSOAR, or direct messages are not handled properly, check the integration status on the integration page:</p>
-<img alt="" src="https://user-images.githubusercontent.com/35098543/66030151-6dbbc780-e509-11e9-9c21-c5c7ceb1f039.png"/>
+<img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-health.png"/>
 <br>
 <span>If you're having further issues, contact us at <a href="mailto:support@demisto.com">support@demisto.com</a> and attach the server logs.</span>

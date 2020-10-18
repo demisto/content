@@ -1,0 +1,32 @@
+{
+ "id": "incident_riskiqassetname",
+ "version": -1,
+ "modified": "2020-07-13T01:39:36.967139517+05:30",
+ "name": "RiskIQ Asset Name",
+ "ownerOnly": false,
+ "placeholder": "The name of the asset.",
+ "description": "The name of the asset. This field supports a single value only.",
+ "cliName": "riskiqassetname",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "RiskIQ Asset Management"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}

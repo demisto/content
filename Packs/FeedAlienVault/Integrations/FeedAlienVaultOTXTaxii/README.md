@@ -13,6 +13,7 @@ This integration can only fetch indicators from **active** collections. Active c
 | feed | The fetch indicators. | False |
 | feedReputation | The indicator reputation. | False |
 | feedReliability | The source's reliability. | True |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
 | feedExpirationPolicy | The feed's expiration policy. | False |
 | feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | The feed fetch interval. | False |
@@ -69,7 +70,7 @@ There is no context output for this command.
 
 ## Video Demo
 <video controls>
-    <source src="https://github.com/demisto/content/raw/d5f1b70b15f7a41f451ed3f795c3bdb731e5a97d/Packs/FeedAlienVault/Integrations/FeedAlienVaultOTXTaxii/doc_files/AlienVault_OTX_Feed_Demo.mp4"
+    <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedAlienVault/AlienVault_OTX_Feed_Demo.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/d5f1b70b15f7a41f451ed3f795c3bdb731e5a97d/Packs/FeedAlienVault/Integrations/FeedAlienVaultOTXTaxii/doc_files/AlienVault_OTX_Feed_Demo.mp4
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedAlienVault/AlienVault_OTX_Feed_Demo.mp4
 </video>

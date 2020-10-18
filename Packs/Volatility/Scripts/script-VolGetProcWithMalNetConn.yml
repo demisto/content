@@ -1,15 +1,20 @@
 commonfields:
   id: VolGetProcWithMalNetConn
-  version: 1
+  version: -1
 name: VolGetProcWithMalNetConn
-script: |-
+script: >-
   // get all the network connections
+
   // use the ip address in the connections
+
   var reputationthreshold = 4;
+
   if (args.repthreshold) {
       reputationthreshold = args.repthreshold;
   }
+
   var cmds = [];
+
   switch (args.profile) {
       case 'VistaSP0x64' :
       case 'VistaSP0x86' :
@@ -54,8 +59,11 @@ script: |-
       default:
           break;
   }
+
   var resultarr = [];
+
   var ipaddrarr = [];
+
   for (var i = 0; i < cmds.length; i++) {
       var cmdline = cmds[i];
       if (args.profile) {
@@ -79,6 +87,7 @@ script: |-
         }
       }
   }
+
   for (var i = 0; i < ipaddrarr.length; i++) {
     var repscript = 'DataIPReputation';
     if (args.repscript){
@@ -96,10 +105,15 @@ script: |-
       }
     }
   }
+
   var result = {};
+
   result.Contents = resultarr;
+
   result.ContentsFormat = formats.table;
+
   result.Type = entryTypes.note;
+
   return result;
 type: javascript
 tags:
@@ -107,8 +121,7 @@ tags:
 - forensics
 - volatility
 - server
-comment: Volatility script for getting the list of processes that have connections
-  to ip address with bad reputation.
+comment: Volatility script for getting the list of processes that have connections to ip address with bad reputation.
 system: true
 args:
 - name: memdump
@@ -121,10 +134,10 @@ args:
   required: true
   description: Volatility profile to use
 - name: repthreshold
-  description: Reputation threshold - any IP addresses up to and including this score
-    are considered malicious
+  description: Reputation threshold - any IP addresses up to and including this score are considered malicious
 - name: repscript
   description: Reputation script to use for checking IP addresses
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

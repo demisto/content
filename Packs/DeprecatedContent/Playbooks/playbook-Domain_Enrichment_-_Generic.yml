@@ -1,14 +1,14 @@
 id: domain_enrichment_generic
 version: -1
 name: Domain Enrichment - Generic
-fromversion: 3.6.0
+fromversion: 5.0.0
 description: |-
-  Enrich Domain using one or more integrations.
-
+  Deprecated. Use "Domain Enrichment - Generic v2" playbook instead. Enrich Domain using one or more integrations.
   Domain enrichment includes:
   * Domain reputation
   * Threat information
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -129,8 +129,7 @@ tasks:
       id: 5acde632-6023-47ed-8e24-44a22d0f313b
       version: -1
       name: Should we get the Domain Reputation?
-      description: "Should the system retrieve the domain reputation from all of the
-        relevant integration?\nDefault: True\n "
+      description: "Should the system retrieve the domain reputation from all of the relevant integration?\nDefault: True\n "
       type: condition
       iscommand: false
       brand: ""
@@ -169,8 +168,7 @@ tasks:
       id: 5e53200b-ffd1-47f3-8cf1-1cb125623f98
       version: -1
       name: Is Virus Total Private API enabled?
-      description: Checks if there is an active instance of the Virus Total Private
-        API enabled.
+      description: Checks if there is an active instance of the Virus Total Private API enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -329,4 +327,4 @@ outputs:
   description: Indicator, Score, Type, Vendor
   type: unknown
 tests:
-  - No test (test is old and uses virustotal which has quota problems. The v2 playbook has a better test)
+- No test (test is old and uses virustotal which has quota problems. The v2 playbook has a better test)

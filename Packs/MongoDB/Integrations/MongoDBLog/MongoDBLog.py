@@ -19,7 +19,7 @@ USE_SSL = demisto.params().get('use_ssl', False)
 INSECURE = demisto.params().get('insecure', False)
 TIMEOUT = 5000
 if INSECURE and not USE_SSL:
-    raise DemistoException(f'"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
+    raise DemistoException('"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
 if not INSECURE and not USE_SSL:
     # Connect to MongoDB - Need to add credentials and lock down MongoDB (add auth)
     CLIENT = MongoClient(URI, username=USERNAME, password=PASSWORD, authSource=DATABASE, authMechanism='SCRAM-SHA-1',

@@ -10,7 +10,7 @@
 <ul>
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Cisco ISE server URL (e.g.,<span> </span><a href="https://123.123.123.65/" rel="nofollow">https://123.123.123.65</a>)</strong></li>
+<li><strong>Cisco ISE server URL (e.g., https://123.123.123.65 )</strong></li>
 <li><strong>Server port (e.g., 9060)</strong></li>
 <li><strong>Cisco ISE username</strong></li>
 <li><strong>Use system proxy settings</strong></li>

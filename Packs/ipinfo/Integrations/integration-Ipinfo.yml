@@ -19,8 +19,16 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use HTTPS connections
+  name: use_https
+  type: 8
+  required: false
 script:
-  script: |-
+  script: >-
     var sendRequest = function(url, json) {
         var res = http(
                 url,
@@ -28,6 +36,7 @@ script:
                     Method: 'GET',
                 },
                 false,
+                params.insecure,
                 params.proxy
             );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -36,9 +45,13 @@ script:
         return json && res.Body ? JSON.parse(res.Body) : res.Body;
     }
 
-    var base = 'http://ipinfo.io/';
+
+    var base = params.use_https ? 'https://ipinfo.io/' : 'http://ipinfo.io/';
+
     var token = params.token ? '?token=' + params.token : '';
+
     var jsonSuffix = '/json' + token;
+
     switch (command) {
         case 'test-module':
             if (sendRequest(base+'8.8.8.8'+jsonSuffix, true)) {
@@ -80,8 +93,7 @@ script:
       description: The IP country
     - contextPath: IP.Geo.Description
       description: The IP location as <City, Region, Postal Code, Country>
-    description: Check IP reputation (when information is available, returns a JSON
-      with details).  Uses all configured Threat Intelligence feeds
+    description: Check IP reputation (when information is available, returns a JSON with details).  Uses all configured Threat Intelligence feeds
   - name: ipinfo_field
     arguments:
     - name: ip
@@ -104,4 +116,5 @@ script:
     description: Retrieve value for a specific field from the IP address information
   runonce: false
 tests:
-  - IPInfoTest
+- IPInfoTest
+fromversion: 5.0.0

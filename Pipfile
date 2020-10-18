@@ -6,9 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-pytest = "*"
-pylint = "*"
+pytest-parametrized = "*"
 
 [requires]
-# python_version = "3.7"
-
+python_version = "3.8"

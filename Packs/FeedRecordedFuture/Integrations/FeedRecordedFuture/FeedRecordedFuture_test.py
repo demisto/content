@@ -1,6 +1,6 @@
 import pytest
 from collections import OrderedDict
-from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client
+from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command
 
 GET_INDICATOR_TYPE_INPUTS = [
     ('ip', OrderedDict([('Name', '192.168.1.1'), ('Risk', '89'), ('RiskString', '5/12'),
@@ -113,3 +113,43 @@ def test_calculate_dbot_score(risk_from_feed, threshold, expected_score):
     client = Client(indicator_type='ip', api_token='123', services=['fusion'], threshold=threshold)
     score = client.calculate_indicator_score(risk_from_feed)
     assert score == expected_score
+
+
+def test_fetch_indicators_command(mocker):
+    """
+    Given:
+     - Recorded Future Feed client initialized with ip indicator type
+     - Iterator which returns entry of IP object with name only
+
+    When:
+     - Fetching indicators
+
+    Then:
+     - Verify the fetch runs successfully.
+    """
+    indicator_type = 'ip'
+    client = Client(indicator_type=indicator_type, api_token='dummytoken', services='fusion')
+    mocker.patch(
+        'FeedRecordedFuture.Client.build_iterator',
+        return_value=[{'Name': '192.168.1.1'}]
+    )
+    fetch_indicators_command(client, indicator_type)
+
+
+@pytest.mark.parametrize('tags', (['tag1', 'tag2'], []))
+def test_feed_tags(mocker, tags):
+    """
+    Given:
+    - tags parameters
+    When:
+    - Executing any command on feed
+    Then:
+    - Validate the tags supplied exists in the indicators
+    """
+    client = Client(indicator_type='ip', api_token='dummytoken', services='fusion', tags=tags)
+    mocker.patch(
+        'FeedRecordedFuture.Client.build_iterator',
+        return_value=[{'Name': '192.168.1.1'}]
+    )
+    indicators = fetch_indicators_command(client, 'ip')
+    assert tags == indicators[0]['fields']['tags']

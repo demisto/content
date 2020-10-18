@@ -390,7 +390,7 @@ def remedy_create_ticket_command():
 
 
 def remedy_update_ticket_command():
-    demisto.log('TODO')
+    raise DemistoException("This is a deprecated command")
 
 
 ''' EXECUTION CODE '''
@@ -406,7 +406,7 @@ try:
     elif demisto.command() == 'remedy-create-ticket':
         remedy_create_ticket_command()
 
-    elif demisto.command() == 'remedy-create-ticket':
+    elif demisto.command() == 'remedy-update-ticket':
         remedy_update_ticket_command()
 
 except Exception as e:

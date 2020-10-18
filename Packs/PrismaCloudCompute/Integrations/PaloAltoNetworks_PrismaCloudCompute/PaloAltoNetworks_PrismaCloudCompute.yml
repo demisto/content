@@ -52,4 +52,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

@@ -28,8 +28,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Akamai WAF integration to manage common sets of lists used by
-  various Akamai security products and features.
+description: Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products and features.
 display: Akamai WAF
 name: Akamai WAF
 script:
@@ -37,8 +36,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The network list type by which to filter the results. Can be "IP"
-        or "GEO".
+      description: The network list type by which to filter the results. Can be "IP" or "GEO".
       isArray: false
       name: list_type
       predefined:
@@ -53,8 +51,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of all network lists available for an authenticated
-      user who belongs to a group.
+    description: Returns a list of all network lists available for an authenticated user who belongs to a group.
     execution: false
     name: akamai-get-network-lists
     outputs:
@@ -223,8 +220,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The environment type to activate the network list. Can be "STAGING"
-        OR 'PRODUCTION".
+      description: The environment type to activate the network list. Can be "STAGING" OR 'PRODUCTION".
       isArray: false
       name: env
       predefined:
@@ -290,8 +286,7 @@ script:
     name: akamai-remove-element-from-network-list
   - arguments:
     - default: false
-      description: ' A comma-separated list of network list IDs for which to get the activation status. For example: 
-        (support list - list1,list2).'
+      description: ' A comma-separated list of network list IDs for which to get the activation status. For example: (support list - list1,list2).'
       isArray: true
       name: network_list_ids
       required: true
@@ -320,7 +315,7 @@ script:
     - contextPath: Akamai.NetworkLists.ActivationStatus.ProductionStatus
       description: The network list environment activation status.
       type: String
-  dockerimage: demisto/akamai:1.0.0.5063
+  dockerimage: demisto/akamai:1.0.0.8883
   feed: false
   isfetch: false
   longRunning: false
@@ -331,3 +326,4 @@ script:
   type: python
 tests:
 - Akamai_WAF-Test
+fromversion: 5.0.0

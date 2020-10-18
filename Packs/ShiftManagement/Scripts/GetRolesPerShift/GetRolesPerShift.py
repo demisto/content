@@ -65,16 +65,13 @@ def main():
                             break
                 shifts_table[hour][DAY_NUM_TO_DAY_HEADER[day]] = ', '.join(collected_roles)
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': tableToMarkdown(
-                name='Roles Per Shift',
-                t=shifts_table,
-                headers=[HOURS_DAYS_HEADER, SUNDAY_HEADER, MONDAY_HEADER, TUESDAY_HEADER,  # disable-secrets-detection
-                         WEDNESDAY_HEADER, THURSDAY_HEADER, FRIDAY_HEADER, SATURDAY_HEADER]
-            )
-        })
+        widget = TextWidget(text=tableToMarkdown(
+            name='Roles Per Shift',
+            t=shifts_table,
+            headers=[HOURS_DAYS_HEADER, SUNDAY_HEADER, MONDAY_HEADER, TUESDAY_HEADER,  # disable-secrets-detection
+                     WEDNESDAY_HEADER, THURSDAY_HEADER, FRIDAY_HEADER, SATURDAY_HEADER]
+        ))
+        return_results(widget)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

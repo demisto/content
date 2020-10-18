@@ -24,13 +24,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "11"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -160
         }
       }
     note: false
@@ -322,19 +322,79 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: c3d9c341-1e4b-4025-846d-dd4c45929670
+    type: condition
+    task:
+      id: c3d9c341-1e4b-4025-846d-dd4c45929670
+      version: -1
+      name: Is AWS - CloudTrail integration enabled?
+      description: Is AWS - CloudTrail integration enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - CloudTrail
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
+      "11_3_#default#": 0.81,
       "8_3_#default#": 0.26,
       "8_7_logValid": 0.48,
       "8_9_allRegions": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 875,
+        "height": 1085,
         "width": 970,
         "x": 160,
-        "y": 50
+        "y": -160
       }
     }
   }

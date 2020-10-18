@@ -1,0 +1,25 @@
+{
+    "name": "Palo Alto Networks IoT",
+    "description": "Palo Alto Networks IoT",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-05-20T23:14:27Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "iot",
+        "netsec",
+        "netops",
+        "networksecurity",
+        "paloaltonetworks",
+        "zingbox"
+    ],
+    "useCases": [
+        "Incident response for Palo Alto Networks IoT Security"
+    ],
+    "keywords": []
+}

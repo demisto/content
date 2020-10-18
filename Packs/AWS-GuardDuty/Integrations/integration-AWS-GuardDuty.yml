@@ -41,17 +41,26 @@ configuration:
   type: 0
   required: false
 script:
-  script: |+
+  script: >+
     import boto3
+
     import json
+
     import datetime
 
+
     AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
+
     AWS_roleArn = demisto.params()['roleArn']
+
     AWS_roleSessionName = demisto.params()['roleSessionName']
+
     AWS_roleSessionDuration = demisto.params()['sessionDuration']
+
     AWS_rolePolicy = None
+
     AWS_GD_SEVERITY = demisto.params()['gs_severity']
+
 
     def aws_session(service='guardduty',region=None,roleArn=None,roleSessionName=None,roleSessionDuration=None,rolePolicy=None):
         kwargs = {}
@@ -698,6 +707,7 @@ script:
             return raise_error(e)
 
     # The command demisto.command() holds the command sent from the user.
+
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         result = test_function()
@@ -770,6 +780,7 @@ script:
         sys.exit(0)
 
     demisto.results(result)
+
     sys.exit(0)
 
   type: python
@@ -792,15 +803,12 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.DetectorId
       description: The unique ID of the created detector.
       type: string
-    description: Create an AWS Guard Duty Detector on the integration instance specified
-      aws account.
+    description: Create an AWS Guard Duty Detector on the integration instance specified aws account.
   - name: aws-gd-delete-detector
     arguments:
     - name: detectorId
@@ -813,9 +821,7 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     description: Deletes a Amazon GuardDuty detector specified by the detector ID.
   - name: aws-gd-get-detector
     arguments:
@@ -829,9 +835,7 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.DetectorId
       description: The unique ID of the created detector.
@@ -860,8 +864,7 @@ script:
       predefined:
       - "True"
       - "False"
-      description: Updated boolean value for the detector that specifies whether the
-        detector is enabled.
+      description: Updated boolean value for the detector that specifies whether the detector is enabled.
       defaultValue: "True"
     - name: region
       description: The AWS Region, if not specified the default region will be used.
@@ -870,9 +873,7 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     description: Updates an Amazon GuardDuty detector specified by the detectorId.
   - name: aws-gd-create-ip-set
     arguments:
@@ -881,8 +882,7 @@ script:
       predefined:
       - "True"
       - "False"
-      description: A boolean value that indicates whether GuardDuty is to start using
-        the uploaded IPSet.
+      description: A boolean value that indicates whether GuardDuty is to start using the uploaded IPSet.
       defaultValue: "True"
     - name: detectorId
       required: true
@@ -901,9 +901,7 @@ script:
     - name: location
       description: The URI of the file that contains the IPSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key)
     - name: name
-      description: The user friendly name to identify the IPSet. This name is displayed
-        in all findings that are triggered by activity that involves IP addresses
-        included in this IPSet.
+      description: The user friendly name to identify the IPSet. This name is displayed in all findings that are triggered by activity that involves IP addresses included in this IPSet.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -911,20 +909,16 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.IPSet.IpSetId
       description: The unique identifier for an IP Set.
-    description: A list of trusted IP addresses that have been whitelisted for secure
-      communication with AWS infrastructure and applications.
+    description: A list of trusted IP addresses that have been whitelisted for secure communication with AWS infrastructure and applications.
   - name: aws-gd-delete-ip-set
     arguments:
     - name: detectorId
       required: true
-      description: The detectorID that specifies the GuardDuty service whose IPSet
-        you want to delete.
+      description: The detectorID that specifies the GuardDuty service whose IPSet you want to delete.
     - name: ipSetId
       required: true
       description: The unique ID that specifies the IPSet that you want to delete.
@@ -935,9 +929,7 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     description: Deletes the IPSet specified by the IPSet ID.
   - name: aws-gd-list-detectors
     arguments:
@@ -948,9 +940,7 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.DetectorId
       description: The unique identifier for a detector.
@@ -963,18 +953,15 @@ script:
       predefined:
       - "True"
       - "False"
-      description: The updated boolean value that specifies whether the IPSet is active
-        or not.
+      description: The updated boolean value that specifies whether the IPSet is active or not.
     - name: detectorId
       required: true
-      description: The detectorID that specifies the GuardDuty service whose IPSet
-        you want to update.
+      description: The detectorID that specifies the GuardDuty service whose IPSet you want to update.
     - name: ipSetId
       required: true
       description: The unique ID that specifies the IPSet that you want to update.
     - name: location
-      description: The updated URI of the file that contains the IPSet. For example
-        (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
+      description: The updated URI of the file that contains the IPSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
     - name: name
       description: The user friendly name to identify the IPSet.
     - name: region
@@ -984,16 +971,13 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     description: Updates the IPSet specified by the IPSet ID.
   - name: aws-gd-get-ip-set
     arguments:
     - name: detectorId
       required: true
-      description: The detectorID that specifies the GuardDuty service whose IPSet
-        you want to retrieve.
+      description: The detectorID that specifies the GuardDuty service whose IPSet you want to retrieve.
     - name: ipSetId
       required: true
       description: The unique ID that specifies the IPSet that you want to describe.
@@ -1004,9 +988,7 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.IPSet.IpSetId
       description: The unique ID for the IPSet.
@@ -1036,14 +1018,11 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.IPSet.IpSetId
       description: The unique identifier for an IP Set
-    description: Lists the IPSets of the GuardDuty service specified by the detector
-      ID.
+    description: Lists the IPSets of the GuardDuty service specified by the detector ID.
   - name: aws-gd-create-threatintel-set
     arguments:
     - name: activate
@@ -1052,8 +1031,7 @@ script:
       predefined:
       - "True"
       - "False"
-      description: A boolean value that indicates whether GuardDuty is to start using
-        the uploaded ThreatIntelSet.
+      description: A boolean value that indicates whether GuardDuty is to start using the uploaded ThreatIntelSet.
       defaultValue: "True"
     - name: detectorId
       required: true
@@ -1071,12 +1049,10 @@ script:
       description: The format of the file that contains the ThreatIntelSet.
     - name: location
       required: true
-      description: The URI of the file that contains the ThreatIntelSet. For example
-        (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
+      description: The URI of the file that contains the ThreatIntelSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
     - name: name
       required: true
-      description: A user-friendly ThreatIntelSet name that is displayed in all finding
-        generated by activity that involves IP addresses included in this ThreatIntelSet.
+      description: A user-friendly ThreatIntelSet name that is displayed in all finding generated by activity that involves IP addresses included in this ThreatIntelSet.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -1084,25 +1060,20 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.ThreatIntelSetId
       description: The unique identifier for an threat intel set.
       type: string
-    description: Create a new ThreatIntelSet. ThreatIntelSets consist of known malicious
-      IP addresses. GuardDuty generates findings based on ThreatIntelSets.
+    description: Create a new ThreatIntelSet. ThreatIntelSets consist of known malicious IP addresses. GuardDuty generates findings based on ThreatIntelSets.
   - name: aws-gd-delete-threatintel-set
     arguments:
     - name: detectorId
       required: true
-      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
-        you want to delete.
+      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet you want to delete.
     - name: threatIntelSetId
       required: true
-      description: The unique ID that specifies the ThreatIntelSet that you want to
-        delete.
+      description: The unique ID that specifies the ThreatIntelSet that you want to delete.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -1110,20 +1081,16 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     description: Deletes ThreatIntelSet specified by the ThreatIntelSet ID.
   - name: aws-gd-get-threatintel-set
     arguments:
     - name: detectorId
       required: true
-      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
-        you want to describe.
+      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet you want to describe.
     - name: threatIntelSetId
       required: true
-      description: The unique ID that specifies the ThreatIntelSet that you want to
-        describe.
+      description: The unique ID that specifies the ThreatIntelSet that you want to describe.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -1131,9 +1098,7 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.ThreatIntelSetId
       description: The unique ID that specifies the ThreatIntelSet.
@@ -1150,14 +1115,12 @@ script:
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.Status
       description: The status of threatIntelSet file uploaded.
       type: string
-    description: Retrieves the ThreatIntelSet that is specified by the ThreatIntelSet
-      ID.
+    description: Retrieves the ThreatIntelSet that is specified by the ThreatIntelSet ID.
   - name: aws-gd-list-threatintel-sets
     arguments:
     - name: detectorId
       required: true
-      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSets
-        you want to list.
+      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSets you want to list.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -1165,34 +1128,27 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.ThreatIntelSetId
       description: The unique identifier for an threat intel set
       type: string
-    description: Lists the ThreatIntelSets of the GuardDuty service specified by the
-      detector ID.
+    description: Lists the ThreatIntelSets of the GuardDuty service specified by the detector ID.
   - name: aws-gd-update-threatintel-set
     arguments:
     - name: detectorId
       required: true
-      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
-        you want to update.
+      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet you want to update.
     - name: threatIntelSetId
-      description: The unique ID that specifies the ThreatIntelSet that you want to
-        update.
+      description: The unique ID that specifies the ThreatIntelSet that you want to update.
     - name: activate
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
-      description: The updated boolean value that specifies whether the ThreateIntelSet
-        is active or not.
+      description: The updated boolean value that specifies whether the ThreateIntelSet is active or not.
     - name: location
-      description: The updated URI of the file that contains the ThreateIntelSet.
-        For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
+      description: The updated URI of the file that contains the ThreateIntelSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
     - name: name
       description: The user-friendly ThreatIntelSet name.
     - name: region
@@ -1202,16 +1158,13 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     description: Updates the ThreatIntelSet specified by ThreatIntelSet ID.
   - name: aws-gd-list-findings
     arguments:
     - name: detectorId
       required: true
-      description: The ID of the detector that specifies the GuardDuty service whose
-        findings you want to list.
+      description: The ID of the detector that specifies the GuardDuty service whose findings you want to list.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -1219,9 +1172,7 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     outputs:
     - contextPath: AWS.GuardDuty.Findings.FindingId
       description: The unique identifier for the Finding
@@ -1231,8 +1182,7 @@ script:
     arguments:
     - name: detectorId
       required: true
-      description: The ID of the detector that specifies the GuardDuty service whose
-        findings you want to retrieve.
+      description: The ID of the detector that specifies the GuardDuty service whose findings you want to retrieve.
     - name: findingIds
       required: true
       description: IDs of the findings that you want to retrieve.
@@ -1243,9 +1193,7 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     description: Describes Amazon GuardDuty findings specified by finding IDs.
   - name: aws-gd-create-sample-findings
     arguments:
@@ -1253,8 +1201,7 @@ script:
       required: true
       description: The ID of the detector to create sample findings for.
     - name: findingTypes
-      description: Types of sample findings that you want to generate. Separated by
-        comma.
+      description: Types of sample findings that you want to generate. Separated by comma.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -1262,18 +1209,13 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
-    description: Generates example findings of types specified by the list of finding
-      types. If 'NULL' is specified for findingTypes, the API generates example findings
-      of all supported finding types.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+    description: Generates example findings of types specified by the list of finding types. If 'NULL' is specified for findingTypes, the API generates example findings of all supported finding types.
   - name: aws-gd-archive-findings
     arguments:
     - name: detectorId
       required: true
-      description: The ID of the detector that specifies the GuardDuty service whose
-        findings you want to archive.
+      description: The ID of the detector that specifies the GuardDuty service whose findings you want to archive.
     - name: findingIds
       description: IDs of the findings that you want to archive. Separated by comma.
     - name: region
@@ -1283,27 +1225,21 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
-    description: Archives Amazon GuardDuty findings specified by the list of finding
-      IDs.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+    description: Archives Amazon GuardDuty findings specified by the list of finding IDs.
   - name: aws-gd-unarchive-findings
     arguments:
     - name: detectorId
       required: true
-      description: The ID of the detector that specifies the GuardDuty service whose
-        findings you want to unarchive.
+      description: The ID of the detector that specifies the GuardDuty service whose findings you want to unarchive.
     - name: findingIds
       description: IDs of the findings that you want to unarchive.
-    description: Unarchives Amazon GuardDuty findings specified by the list of finding
-      IDs.
+    description: Unarchives Amazon GuardDuty findings specified by the list of finding IDs.
   - name: aws-gd-update-findings-feedback
     arguments:
     - name: detectorId
       required: true
-      description: The ID of the detector that specifies the GuardDuty service whose
-        findings you want to mark as useful or not useful.
+      description: The ID of the detector that specifies the GuardDuty service whose findings you want to mark as useful or not useful.
     - name: findingIds
       description: IDs of the findings that you want to mark as useful or not useful.
     - name: comments
@@ -1321,13 +1257,11 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     description: Marks specified Amazon GuardDuty findings as useful or not useful.
   dockerimage: demisto/boto3:1.9.55
-  dockerimage45: demisto/boto3
   isfetch: true
   runonce: false
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

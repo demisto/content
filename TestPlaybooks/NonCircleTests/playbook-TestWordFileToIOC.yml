@@ -1,0 +1,221 @@
+id: TestWordFileToIOC
+version: -1
+fromversion: 5.0.0
+name: TestWordFileToIOC
+description: Creates a test docx word file, parses it and runs various IOC extraction
+  tasks.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5652fc24-bb4f-42d9-8132-1ab0983f12b2
+    type: start
+    task:
+      id: 5652fc24-bb4f-42d9-8132-1ab0983f12b2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+  "4":
+    id: "4"
+    taskid: e5dc1e98-c3e4-4acb-8974-4067b5e9b137
+    type: regular
+    task:
+      id: e5dc1e98-c3e4-4acb-8974-4067b5e9b137
+      version: -1
+      name: CreateWordTestFile
+      description: Downloads a test file to parse
+      scriptName: TestCreateWordFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      name:
+        simple: test.docx
+      text:
+        simple: 'These are some IP''s: 127.0.0.1, 127.0.0.8, Awesome!'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 227
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 00dec68f-5b6c-44cd-8bc5-b6502b2748f1
+    type: regular
+    task:
+      id: 00dec68f-5b6c-44cd-8bc5-b6502b2748f1
+      version: -1
+      name: RunParseWordDoc
+      description: Parses word files to text file
+      scriptName: ParseWordDoc
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 86be2b34-acf0-4bc6-8d81-2c88dac06509
+    type: regular
+    task:
+      id: 86be2b34-acf0-4bc6-8d81-2c88dac06509
+      version: -1
+      name: ExtractIPsFromFile
+      scriptName: ExtractIP
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      extend-context: {}
+      report: {}
+      text:
+        simple: ${FileData}
+      url: {}
+      urlRegex: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 4ce81084-a5fa-4305-8934-3a1ad156058f
+    type: regular
+    task:
+      id: 4ce81084-a5fa-4305-8934-3a1ad156058f
+      version: -1
+      name: ReadFileContentsToContext
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action: {}
+      contextKey: {}
+      data: {}
+      destpath: {}
+      enforce_timeout: {}
+      entry: {}
+      entryID:
+        simple: ${File.[1].EntryID}
+      entryId: {}
+      entryid: {}
+      file: {}
+      fileNames: {}
+      filename: {}
+      hostname: {}
+      ip: {}
+      issueId: {}
+      machine: {}
+      max_file_size: {}
+      maxFileSize: {}
+      memory: {}
+      options: {}
+      package: {}
+      path: {}
+      paths: {}
+      pathtype: {}
+      platform: {}
+      profiles: {}
+      system: {}
+      tags: {}
+      timeout: {}
+      upload: {}
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 4a14ebb6-92e0-4adc-856a-a907d134639e
+    type: regular
+    task:
+      id: 4a14ebb6-92e0-4adc-856a-a907d134639e
+      version: -1
+      name: CheckExtractedIPsExistInContext
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '["127.0.0.1", "127.0.0.8"]'
+      extend-context: {}
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
+      fields: {}
+      path:
+        simple: IP.Address
+      value:
+        simple: ${IP.Address}
+      value1: {}
+      value2: {}
+      value3: {}
+      value4: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 955,
+        "width": 380,
+        "x": 50,
+        "y": 65
+      }
+    }
+  }
+inputs: []
+outputs: []

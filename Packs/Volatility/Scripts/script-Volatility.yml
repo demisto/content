@@ -1,13 +1,16 @@
 commonfields:
   id: Volatility
-  version: 1
+  version: -1
 name: Volatility
-script: |-
+script: >-
   var cmdline = args.cmd;
+
   if (args.profile) {
       cmdline = cmdline + ' --profile=' + args.profile;
   }
+
   var out = executeCommand('VolJson', {file:args.memdump, system: args.system, cmd:cmdline});
+
   if (out) {
       var mapper = function(columns) {
           return function(val) {
@@ -43,8 +46,7 @@ tags:
 - forensics
 - volatility
 - server
-comment: Execute volatility with command and return tabular output. Incase where proper
-  json output is not supported, scripts returns error. User should use raw command.
+comment: Execute volatility with command and return tabular output. Incase where proper json output is not supported, scripts returns error. User should use raw command.
 system: true
 args:
 - name: cmd
@@ -61,3 +63,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

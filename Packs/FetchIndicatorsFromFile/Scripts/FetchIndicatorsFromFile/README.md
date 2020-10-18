@@ -1,4 +1,14 @@
 Fetches indicators from a file.
+
+## Supported File Types
+- TXT
+- XLS, XLSX
+- CSV
+- DOC, DOCX
+
+If an Excel file is supplied (XLS, XLSX, CSV), you need to specify the *column_number* argument, which defines the column to fetch from.
+
+
 ## Script Data
 ---
 
@@ -31,6 +41,7 @@ Fetches indicators from a file.
 ---
 
 Indicators from indicator.csv:
+
 |value|type|
 |---|---|
 | demisto.com | Domain |

@@ -1,0 +1,5 @@
+[file:playbook-Search_Endpoints_By_Hash_-_CrowdStrike.yml]
+ignore=BA101
+
+[file:playbook-CrowdStrike_Endpoint_Enrichment.yml]
+ignore=BA101

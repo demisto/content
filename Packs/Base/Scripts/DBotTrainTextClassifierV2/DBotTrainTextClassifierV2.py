@@ -5,11 +5,7 @@ from typing import List, Dict
 from collections import defaultdict, Counter
 from sklearn.model_selection import StratifiedKFold
 from CommonServerPython import *
-
-try:
-    import demisto_ml
-except Exception:
-    a = 1
+import demisto_ml
 
 ALL_LABELS = "*"
 GENERAL_SCORES = {
@@ -106,6 +102,9 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
         else:
             if original_label in labels_mapping:
                 row[tag_field] = labels_mapping[original_label]
+            elif original_label.lower() in labels_mapping:
+                original_label = original_label.lower()
+                row[tag_field] = labels_mapping[original_label]
             else:
                 missing_labels_counter[original_label] += 1
                 continue
@@ -129,7 +128,6 @@ def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, t
                                                    'modelOverride': model_override
                                                    # 'modelExtraInfo': {'threshold': threshold}
                                                    })
-
     if is_error(res):
         return_error(get_error(res))
     confusion_matrix_no_all = {k: v for k, v in confusion_matrix.items() if k != 'All'}
@@ -239,6 +237,12 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
         if labels_mapping != ALL_LABELS:
             err += ['The given mapped labels are: {}.'.format(', '.join(labels_mapping.keys()))]
         return_error('\n'.join(err))
+    if len(exist_labels_counter) == 0:
+        err = ['Did not found any incidents with labels of the labels mapping.']
+        if len(missing_labels_counter) > 0:
+            err += ['The following labels were found: {}'.format(', '.join(k for k in missing_labels_counter))]
+            err += ['Please include these labels at the mapping, or change the query to include your relevant labels']
+        return_error('\n'.join(err))
     if len(missing_labels_counter) > 0:
         human_readable = tableToMarkdown("Skip labels - did not match any of specified labels", missing_labels_counter)
         entry = {
@@ -345,7 +349,6 @@ def main():
     keyword_min_score = float(demisto.args()['keywordMinScore'])
     return_predictions_on_test_set = demisto.args().get('returnPredictionsOnTestSet', 'false') == 'true'
     original_text_fields = demisto.args().get('originalTextFields', '')
-
     if input_type.endswith("filename"):
         data = read_files_by_name(input, input_type.split("_")[0].strip())
     else:
@@ -387,10 +390,8 @@ def main():
         target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
     else:
         target_recall = 0
-
     [threshold_metrics_entry, per_class_entry] = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall,
                                                                          detailed=True)
-
     demisto.results(per_class_entry)
     # show results for the threshold found - last result so it will appear first
     confusion_matrix = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
