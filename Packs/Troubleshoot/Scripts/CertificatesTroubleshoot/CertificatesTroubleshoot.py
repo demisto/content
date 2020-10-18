@@ -29,19 +29,20 @@ def parse_certificate_object_identifier_name(certificate: x509.Name, oid: x509.O
 
 def parse_certificate_object_identifier_extentions(certificate: x509.Extensions, oid: x509.ObjectIdentifier) -> \
         Optional[List[str]]:
-    """ Get attribute from decoded certificate.
+    """ Get attribute from decoded certificate extension.
 
     Args:
         certificate: Certificate as x509.Certificate .
-        oid: Enum value from x509.NameOID .
+        oid: Enum value from x509.ExtentionOID .
 
     Returns:
         list: Decoded values.
     """
     try:
-        attributes = [item.value for item in certificate.get_extension_for_oid(oid).value]
+        values = certificate.get_extension_for_oid(oid).value
+        attributes = [item.value for item in values]    # type: ignore
     except ExtensionNotFound:
-        attributes = None
+        attributes = []
 
     return attributes if attributes else None
 
@@ -68,8 +69,9 @@ def certificate_to_ec(certificate_name: x509.Name) -> dict:
                                                                             x509.NameOID.JURISDICTION_COUNTRY_NAME),
         "JurisdictionLocalityName": parse_certificate_object_identifier_name(certificate_name,
                                                                              x509.NameOID.JURISDICTION_LOCALITY_NAME),
-        "JurisdictionStateOrProvinceName": parse_certificate_object_identifier_name(certificate_name,
-                                                                                    x509.NameOID.JURISDICTION_STATE_OR_PROVINCE_NAME),
+        "JurisdictionStateOrProvinceName": parse_certificate_object_identifier_name(
+            certificate_name,
+            x509.NameOID.JURISDICTION_STATE_OR_PROVINCE_NAME),
         "PostalAddress": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.POSTAL_ADDRESS),
         "PostalCode": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.POSTAL_CODE),
         "StreetAddress": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.STREET_ADDRESS),
@@ -102,10 +104,12 @@ def certificate_extentions_to_ec(certificate_ext: x509.Extensions) -> dict:
         dict: Corresponding enrty context.
     """
     return {
-            "IssuerAlternativeName": parse_certificate_object_identifier_extentions(certificate_ext,
-                                                                                    x509.ExtensionOID.ISSUER_ALTERNATIVE_NAME),
-            "SubjectAlternativeName": parse_certificate_object_identifier_extentions(certificate_ext,
-                                                                                     x509.ExtensionOID.SUBJECT_ALTERNATIVE_NAME),
+        "IssuerAlternativeName": parse_certificate_object_identifier_extentions(
+            certificate_ext,
+            x509.ExtensionOID.ISSUER_ALTERNATIVE_NAME),
+        "SubjectAlternativeName": parse_certificate_object_identifier_extentions(
+            certificate_ext,
+            x509.ExtensionOID.SUBJECT_ALTERNATIVE_NAME),
     }
 
 
@@ -218,13 +222,13 @@ def build_human_readable(entry_context: dict) -> str:
     engine_vars = engine.get('ShellVariables')
     human_readable += tableToMarkdown(name="Enviorment variables", t=engine_vars)
     human_readable += tableToMarkdown(name="General", t=engine_cer_general,
-                                      headers=['NotValidBefore', 'NotValidAfter', 'Version'])\
+                                      headers=['NotValidBefore', 'NotValidAfter', 'Version']) \
         if engine_cer_extentions else ''
-    human_readable += tableToMarkdown(name="Issuer", t=engine_cer_issuer, removeNull=True)\
+    human_readable += tableToMarkdown(name="Issuer", t=engine_cer_issuer, removeNull=True) \
         if engine_cer_issuer else ''
-    human_readable += tableToMarkdown(name="Subject", t=engine_cer_subjects, removeNull=True)\
+    human_readable += tableToMarkdown(name="Subject", t=engine_cer_subjects, removeNull=True) \
         if engine_cer_subjects else ''
-    human_readable += tableToMarkdown(name="Extentions", t=engine_cer_extentions, removeNull=True)\
+    human_readable += tableToMarkdown(name="Extentions", t=engine_cer_extentions, removeNull=True) \
         if engine_cer_extentions else ''
     # Endpoint
     endpoint: dict = entry_context.get('Endpoint', {}).get('SSL/TLS', {})
