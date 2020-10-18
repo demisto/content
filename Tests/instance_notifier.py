@@ -65,8 +65,8 @@ def test_instances(secret_conf_path, server, username, password):
 
         if has_integration:
             instance_id, failure_message, _ = __create_integration_instance(
-                server, username, password, integration_name, integration_instance_name, integration_params, is_byoi, prints_manager,
-                validate_test=validate_test)
+                server, username, password, integration_name, integration_instance_name,
+                integration_params, is_byoi, prints_manager, validate_test=validate_test)
             if failure_message == 'No configuration':
                 prints_manager.add_print_job(
                     "Warning: skipping {} as it exists in content-test-conf conf.json but not in content repo\n".format(

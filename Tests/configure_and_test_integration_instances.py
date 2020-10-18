@@ -1022,10 +1022,13 @@ def nightly_install_packs(build, threads_print_manager, install_method=install_a
 
 def install_nightly_pack(build, prints_manager):
     threads_print_manager = ParallelPrintsManager(len(build.servers))
-    # nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs)
+    if build.is_nightly:
+        nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs)
     create_nightly_test_pack()
-    nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs,
-                          pack_path=f'/home/runner/work/content-private/content-private/content/test_pack.zip')
+    pack_path = f'{Build.test_pack_target}/test_pack.zip'
+    if build.is_private:
+        pack_path = f'/home/runner/work/content-private/content-private/content/test_pack.zip'
+    nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs, pack_path=pack_path)
 
     prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0, include_timestamp=True)
     prints_manager.execute_thread_prints(0)
@@ -1165,7 +1168,7 @@ def disable_instances(build: Build, all_module_instances, prints_manager):
 
 
 def create_nightly_test_pack():
-    test_pack_zip(Build.content_path, Build.test_pack_target)
+    test_pack_zip(Build)
 
 
 def test_files(content_path):
@@ -1222,10 +1225,16 @@ def test_pack_metadata():
     return json.dumps(metadata, indent=4)
 
 
-def test_pack_zip(content_path, target):
-    with zipfile.ZipFile(f'/home/runner/work/content-private/content-private/content/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
+def test_pack_zip(build: Build):
+    if build.is_private:
+        content_path = '/home/runner/work/content-private/content-private/content'
+        target = f'/home/runner/work/content-private/content-private/content/test_pack.zip'
+    else:
+        content_path = build.content_path
+        target = build.test_pack_target
+    with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
-        for test_path, test in test_files('/home/runner/work/content-private/content-private/content'):
+        for test_path, test in test_files(content_path):
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
@@ -1268,9 +1277,6 @@ def main():
 
     configure_servers_and_restart(build, prints_manager)
     installed_content_packs_successfully = False
-    # if build.is_private:
-    #     install_nightly_pack(build, prints_manager)
-    #     installed_content_packs_successfully = True
     if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
         if build.is_nightly:
             install_nightly_pack(build, prints_manager)

@@ -322,9 +322,10 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
     )
 
 
-def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks, integrations, playbook_id,
-                   succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url, demisto_user, demisto_pass,
-                   build_name, prints_manager, thread_index=0, is_mock_run=False):
+def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks,
+                   integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
+                   circle_ci, build_number, server_url, demisto_user, demisto_pass, build_name,
+                   prints_manager, thread_index=0, is_mock_run=False):
     if not tests_settings.is_private:
         with acquire_test_lock(integrations,
                                test_options.get('timeout'),
@@ -332,7 +333,8 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, faile
                                thread_index,
                                tests_settings) as lock:
             if lock:
-                status, inc_id = test_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager, test_options,
+                status, inc_id = test_integration(c, server_url, demisto_user, demisto_pass, integrations,
+                                                  playbook_id, prints_manager, test_options,
                                                   is_mock_run, thread_index=thread_index)
                 # c.api_client.pool.close()
                 if status == PB_Status.COMPLETED:
@@ -393,19 +395,24 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, faile
 
 
 # run the test using a real instance, record traffic.
-def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks, integrations,
-                   playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                   server_url, build_name, prints_manager, thread_index=0):
+def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks,
+                   integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
+                   circle_ci, build_number, server_url, demisto_user, demisto_pass, build_name,
+                   prints_manager, thread_index=0):
     proxy.set_tmp_folder()
     proxy.start(playbook_id, record=True, thread_index=thread_index, prints_manager=prints_manager)
-    succeed = run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks, integrations,
-                             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                             server_url, demisto_user, demisto_pass, build_name, prints_manager, thread_index=thread_index, is_mock_run=True)
+    succeed = run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks,
+                             integrations, playbook_id, succeed_playbooks, test_message, test_options,
+                             slack, circle_ci, build_number, server_url, demisto_user, demisto_pass,
+                             build_name, prints_manager, thread_index=thread_index, is_mock_run=True)
     proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
     if succeed:
+        proxy.successful_rerecord_count += 1
         proxy.clean_mock_file(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         proxy.move_mock_file_to_repo(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
-
+    else:
+        proxy.failed_rerecord_count += 1
+        proxy.failed_rerecord_tests.append(playbook_id)
     proxy.set_repo_folder()
     return succeed
 
@@ -425,6 +432,7 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
         # use results
         proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
         if status == PB_Status.COMPLETED:
+            proxy.successful_tests_count += 1
             succeed_message = 'PASS: {} succeed'.format(test_message)
             prints_manager.add_print_job(succeed_message, print_color, thread_index, LOG_COLORS.GREEN)
             succeed_playbooks.append(playbook_id)
@@ -447,7 +455,7 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
             end_mock_message = f'------ Test {test_message} end ------\n'
             prints_manager.add_print_job(end_mock_message, print, thread_index, include_timestamp=True)
             return
-
+        proxy.failed_tests_count += 1
         mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
         prints_manager.add_print_job(mock_failed_message, print, thread_index)
         rerecord = True
@@ -459,8 +467,9 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
     c = demisto_client.configure(base_url=c.api_client.configuration.host,
                                  api_key=c.api_client.configuration.api_key, verify_ssl=False)
     succeed = run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks,
-                             integrations, playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
-                             build_number, server_url, demisto_user, demisto_pass, build_name, prints_manager, thread_index=thread_index)
+                             integrations, playbook_id, succeed_playbooks, test_message, test_options,
+                             slack, circle_ci, build_number, server_url, demisto_user, demisto_pass,
+                             build_name, prints_manager, thread_index=thread_index)
 
     if rerecord and succeed:
         proxy.rerecorded_tests.append(playbook_id)
@@ -500,7 +509,8 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
     if not is_private:
         mock_run(conf_json_test_details, tests_queue, tests_settings, client, proxy, failed_playbooks, integrations,
                  playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                 server_url, demisto_user, demisto_pass, build_name, start_message, prints_manager, thread_index=thread_index)
+                 server_url, demisto_user, demisto_pass, build_name, start_message, prints_manager,
+                 thread_index=thread_index)
 
 
 def http_request(url, params_dict=None):
@@ -794,8 +804,7 @@ def get_server_numeric_version(ami_env, is_local_run=False):
 
     env_json = load_env_results_json()
     if not env_json:
-        print_warning(
-            f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
+        print_warning(f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
         return default_version
 
     instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}
@@ -984,6 +993,39 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
             comment = 'The following integrations are skipped and critical for the test:\n {}'. \
                 format('\n- '.join(playbook_skipped_integration))
             add_pr_comment(comment)
+        if not is_private:
+            # Sending proxy metrics to GCP
+            try:
+                storage_client = storage.Client()
+                now = datetime.datetime.now().replace(microsecond=0).isoformat()
+                # each log line will be comprised of the following metrics:
+                # - Date
+                # - Count of successful tests
+                # - Count of failed tests
+                # - Count of successful rerecords
+                # - Count of failed rerecords
+                # - IDs of the playbooks that were rerecorded successfully
+                # - Ids of the playbooks that have failed rerecording
+                new_proxy_line = f'{now},' \
+                                 f'{proxy.successful_tests_count},' \
+                                 f'{proxy.failed_tests_count},' \
+                                 f'{proxy.successful_rerecord_count},' \
+                                 f'{proxy.failed_rerecord_count},' \
+                                 f'{";".join(proxy.rerecorded_tests)},' \
+                                 f'{";".join(proxy.failed_rerecord_tests)}\n'
+                bucket = storage_client.bucket(BUCKET_NAME)
+                # Google storage objects are immutable and there is no way to append to them.
+                # The workaround is to create a new temp file and then compose the log file with
+                # the new created file
+                # see here for more info
+                # https://cloud.google.com/storage/docs/json_api/v1/objects/compose
+                new_file_blob = bucket.blob(f'{LOCKS_PATH}/{WORKFLOW_ID}.txt')
+                new_file_blob.upload_from_string(new_proxy_line)
+                current_file_blob = bucket.blob(f'{LOCKS_PATH}/{PROXY_LOG_FILE_NAME}')
+                current_file_blob.compose([current_file_blob, new_file_blob])
+                new_file_blob.delete()
+            except Exception:
+                prints_manager.add_print_job("Failed to save proxy metrics", print, thread_index)
 
 
 def update_round_set_and_sleep_if_round_completed(executed_in_current_round: set,
@@ -1238,7 +1280,7 @@ def safe_unlock_integrations(prints_manager: ParallelPrintsManager, integrations
     """
     try:
         # executing the test could take a while, re-instancing the storage client
-        storage_client = init_storage_client(test_settings.service_account)
+        storage_client = storage.Client()
         unlock_integrations(integrations_details, prints_manager, storage_client, thread_index)
     except Exception as e:
         prints_manager.add_print_job(f'attempt to unlock integration failed for unknown reason.\nError: {e}',
@@ -1276,7 +1318,7 @@ def safe_lock_integrations(test_timeout: int,
         print_msg = 'No integrations to lock'
     prints_manager.add_print_job(print_msg, print, thread_index, include_timestamp=True)
     try:
-        storage_client = init_storage_client(test_settings.service_account)
+        storage_client = storage.Client()
         locked = lock_integrations(filtered_integrations_details, test_timeout, storage_client, prints_manager, thread_index)
     except Exception as e:
         prints_manager.add_print_job(f'attempt to lock integration failed for unknown reason.\nError: {e}',
