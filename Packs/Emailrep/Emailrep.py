@@ -37,22 +37,24 @@ class Client(BaseClient):
                                   timestamp: Optional[int], expires: Optional[int]) -> Dict[str, Any]:
         """Report email reputation using the '/report' API endpoint"""
         request_params: Dict[str, Any] = {}
-        request_params['email'] = email
-        request_params['tags'] = tags
+        request_params["email"] = email
+        request_params["tags"] = tags
 
         if description:
-            request_params['description'] = description
+            request_params["description"] = description
 
         if timestamp:
-            request_params['timestamp'] = timestamp
+            request_params["timestamp"] = timestamp
 
         if expires:
-            request_params['expires'] = expires
+            request_params["expires"] = expires
+
+        demisto.debug(f"DDDD:  {request_params}")
 
         return self._http_request(
             method='POST',
             url_suffix='/report',
-            params=request_params
+            json_data=request_params
         )
 
 
@@ -183,14 +185,17 @@ def report_email_address_command(client: Client, args: Dict[str, Any]) -> Comman
     """Report email address to EmailRep"""
 
     email_address = args.get('email_address')
-    if email_address == '':
+    if email_address is None:
         raise ValueError('Email(s) not specified')
     tags = argToList(args.get('tags'))
     if len(tags) == 0:
         raise ValueError('Tag(s) not specified')
+    double_quoted_tags = []
     for tag in tags:
         if tag not in ACCEPTED_TAGS:
             raise ValueError(f'Tag \'{tag}\' not in accepted tag list: {ACCEPTED_TAGS}')
+        #double_quoted_tags.append(str(tag).replace("'", '"'))
+        #double_quoted_tags.append(repr(str(tag)))
 
     description = args.get('description')
     timestamp = args.get('timestamp')
@@ -201,7 +206,7 @@ def report_email_address_command(client: Client, args: Dict[str, Any]) -> Comman
     if expires is not None:
         expires = int(args.get('expires'))
 
-    result = client.post_email_address_report(email_address, tags, description, timestamp, expires)
+    result = client.post_email_address_report(email=email_address, tags=tags, description=description, timestamp=timestamp, expires=expires)
 
     readable_output = tableToMarkdown('Email Report Response', result)
 

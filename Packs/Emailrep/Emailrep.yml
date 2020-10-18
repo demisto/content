@@ -178,7 +178,7 @@ script:
     - default: false
       description: Email address being reported.
       isArray: false
-      name: email
+      name: email_address
       required: true
       secret: false
     - auto: PREDEFINED
