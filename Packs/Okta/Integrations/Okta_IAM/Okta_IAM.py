@@ -105,7 +105,6 @@ class Client(BaseClient):
         body = {
             "profile": user_data
         }
-        demisto.log(str(body))
         uri = f"users/{user_id}"
         res = self._http_request(
             method='POST',
@@ -234,10 +233,9 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
                 okta_profile = user_profile.map_object(mapper_out)
                 if not okta_profile.get('login'):
                     okta_profile['login'] = okta_profile.get('email')
-                demisto.log('update_user - after map_object: ' + str(okta_profile))
                 created_user = client.create_user(okta_profile)
                 # user_profile.set_id(created_user.get('id'))
-                iam_command_success(user_profile, okta_user)
+                iam_command_success(user_profile, created_user)
 
         except DemistoException as e:
             iam_command_failure(user_profile, e)
@@ -255,7 +253,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
                 okta_profile = user_profile.map_object(mapper_out)  # todo: fix mapper
                 updated_user = client.update_user(user_id, okta_profile)
                 # user_profile.set_id(updated_user.get('id'))
-                iam_command_success(user_profile, okta_user)
+                iam_command_success(user_profile, updated_user)
             else:
                 if args.get('create-if-not-exists').lower() == 'true':
                     user_profile.set_command_name('create')
