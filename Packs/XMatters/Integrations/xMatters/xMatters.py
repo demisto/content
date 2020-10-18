@@ -370,7 +370,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
             incident_created_time = alert.get('created')
 
             # If no name is present it will throw an exception
-            if ("name" in alert):
+            if "name" in alert:
                 incident_name = alert['name']
             else:
                 incident_name = "No Message Subject"
@@ -618,7 +618,7 @@ def test_module(from_xm: Client, to_xm: Client, user: str) -> str:
             raise e
 
     try:
-        from_xm.xm_get_user(user='rando')
+        from_xm.xm_get_user(user=user)
 
     except DemistoException as e:
         if 'Forbidden' in str(e):

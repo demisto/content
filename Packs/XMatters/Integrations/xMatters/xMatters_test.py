@@ -1,7 +1,6 @@
-
-from xMatters import Client
-from typing import Any, Dict, Tuple, List, Optional, cast
-import unittest
+# from xMatters import Client
+# from typing import Any, Dict, Tuple, List, Optional, cast
+# import unittest
 
 
 def test_xm_trigger_workflow_command(requests_mock):
@@ -12,7 +11,6 @@ def test_xm_trigger_workflow_command(requests_mock):
     """
     from xMatters import Client, xm_trigger_workflow_command
 
-    hostname = 'https://acme.xmatters.com/api/integration/1/functions/UUID/triggers'
     # '7a161a3f-8d53-42de-80cd-92fb017c5a12'
     mock_response = {
         'requestId': 'I GOT ONE!'
@@ -128,7 +126,7 @@ def test_xm_get_events_command(requests_mock):
     assert results.readable_output == "Retrieved Events from xMatters."
 
 
-def test_xm_get_event_command( requests_mock):
+def test_xm_get_event_command(requests_mock):
     from xMatters import Client, xm_get_event_command
 
     hostname = 'https://acme.xmatters.com'
