@@ -4,6 +4,7 @@ commonfields:
   version: -1
 configuration:
 - display: Long running instance
+  defaultvalue: 'true'
   name: longRunning
   type: 8
   required: false
