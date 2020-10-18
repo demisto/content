@@ -1553,7 +1553,93 @@ script:
       description: The total number of file paths that have been observed, by this
         organization, for this file.
       type: Number
-  dockerimage: demisto/python3:3.8.3.9324
+  - arguments:
+      - default: false
+        description: The process name to search.
+        isArray: true
+        name: process_name
+        required: false
+        secret: false
+      - default: false
+        description: The process hash to search.
+        isArray: true
+        name: process_hash
+        required: false
+        secret: false
+      - default: false
+        description: The event id to search.
+        isArray: false
+        name: event_id
+        required: false
+        secret: false
+      - default: false
+        description: The maximum number of rows to return.
+        isArray: false
+        name: limit
+        required: false
+        secret: false
+      - default: false
+        description: A free-style query.
+        isArray: false
+        name: query
+        required: false
+        secret: false
+    deprecated: false
+    description: Creates a process search job.
+    execution: false
+    name: cb-eedr-process-search
+  - arguments:
+      - default: false
+        description: The process guid to search.
+        isArray: false
+        name: process_guid
+        required: false
+        secret: false
+      - default: false
+        description: The event type to search.
+        isArray: false
+        name: event_type
+        required: false
+        secret: false
+      - default: false
+        description: The maximum number of rows to return.
+        isArray: false
+        name: limit
+        required: false
+        secret: false
+      - default: false
+        description: A free-style query.
+        isArray: false
+        name: query
+        required: false
+        secret: false
+    deprecated: false
+    description: Fetch the events associated with a given process.
+    execution: false
+    name: cb-eedr-events-by-process-search
+  - arguments:
+      - default: false
+        description: The job_id to search.
+        isArray: false
+        name: job_id
+        required: true
+        secret: false
+    deprecated: false
+    description: Retrieves the process search results for a given job ID.
+    execution: false
+    name: cb-eedr-process-search-results
+  - arguments:
+      - default: false
+        description: The job_id to search.
+        isArray: true
+        name: job_id
+        required: true
+        secret: false
+    deprecated: false
+    description: Retrieves the process search status for a given job ID.
+    execution: false
+    name: cb-eedr-process-search-check-status
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
   longRunning: false
