@@ -116,6 +116,7 @@ def search_pack(client, prints_manager, pack_display_name, pack_id, thread_index
         client (demisto_client): The configured client to use.
         prints_manager (ParallelPrintsManager): Print manager object.
         pack_display_name (string): The pack display name.
+        pack_id (string): The pack ID.
         thread_index (int): the thread index.
         lock (Lock): A lock object.
     Returns:
@@ -132,30 +133,34 @@ def search_pack(client, prints_manager, pack_display_name, pack_id, thread_index
 
         if 200 <= status_code < 300:
             result_object = ast.literal_eval(response_data)
-            pack_data = {
-                'id': result_object.get('id'),
-                'version': result_object.get('currentVersion')
-            }
 
-            if pack_data:
-                print_msg = 'Found pack {} in bucket!\n'.format(pack_display_name)
+            if result_object:
+                print_msg = 'Found pack: {} by its ID: {} in bucket!\n'.format(pack_display_name, pack_id)
                 prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.GREEN)
                 prints_manager.execute_thread_prints(thread_index)
+
+                pack_data = {
+                    'id': result_object.get('id'),
+                    'version': result_object.get('currentVersion')
+                }
                 return pack_data
 
             else:
-                print_msg = 'Did not find pack {} in bucket.\n'.format(pack_display_name)
+                print_msg = 'Did not find pack: {} by its ID: {} in bucket.\n'.format(pack_display_name, pack_id)
                 prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.RED)
                 prints_manager.execute_thread_prints(thread_index)
                 raise Exception(print_msg)
         else:
             result_object = ast.literal_eval(response_data)
             msg = result_object.get('message', '')
-            err_msg = 'Pack {} search request failed - with status code {}\n{}'.format(pack_display_name,
-                                                                                       status_code, msg)
+            err_msg = 'Search request for pack: {} with ID: {}, failed with status code {}\n{}'.format(
+                pack_display_name,
+                pack_id, status_code,
+                msg)
             raise Exception(err_msg)
     except Exception as e:
-        err_msg = 'The request to search pack {} has failed. Reason:\n{}'.format(pack_display_name, str(e))
+        err_msg = 'Search request for pack: {} with ID: {}, failed. Reason:\n{}'.format(pack_display_name, pack_id,
+                                                                                        str(e))
         prints_manager.add_print_job(err_msg, print_color, thread_index, LOG_COLORS.RED)
 
         lock.acquire()

@@ -8,16 +8,14 @@ from Tests.test_content import ParallelPrintsManager
 BASE_URL = 'http://123-fake-api.com'
 API_KEY = 'test-api-key'
 
-hello_world_response_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data",
-                                         "hello_world_search_response.json")
-azure_sentinel_response_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data",
-                                            "azure_sentinel_search_response.json")
-
-with open(hello_world_response_path, 'r') as hello_world_response:
-    MOCK_HELLOWORLD_SEARCH_RESULTS = json.dumps(json.load(hello_world_response))
-with open(azure_sentinel_response_path, 'r') as azure_sentinel_response:
-    MOCK_AZURESENTINEL_SEARCH_RESULTS = json.dumps(json.load(azure_sentinel_response))
-
+MOCK_HELLOWORLD_SEARCH_RESULTS = """{
+    "id": "HelloWorld",
+    "currentVersion": "1.1.10"
+}"""
+MOCK_AZURESENTINEL_SEARCH_RESULTS = """{
+    "id": "AzureSentinel",
+    "currentVersion": "1.0.2"
+}"""
 MOCK_PACKS_INSTALLATION_RESULT = """[
     {
         "id": "HelloWorld",
