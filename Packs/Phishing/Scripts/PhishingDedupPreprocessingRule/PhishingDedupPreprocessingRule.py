@@ -16,7 +16,7 @@ import re
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 pd.options.mode.chained_assignment = None  # default='warn'
 
-SIMILARITY_THRESHOLD = 0.99
+SIMILARITY_THRESHOLD = float(demisto.args().get('threshold', 0.99))
 
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
@@ -231,14 +231,15 @@ def return_entry(message, existing_incident=None):
 
 
 def close_new_incident_and_link_to_existing(new_incident, existing_incident, similarity):
-    res = demisto.executeCommand("CloseInvestigationAsDuplicate", {
-        'duplicateId': existing_incident['id']})
+    if demisto.args().get('closeAsDuplicate', 'true') == 'true':
+        res = demisto.executeCommand("CloseInvestigationAsDuplicate", {
+            'duplicateId': existing_incident['id']})
 
-    if is_error(res):
-        return_error(res)
-    message = 'Duplicate incidents found: #{}, #{} with similarity of {:.1f}%. '.format(new_incident['id'],
-                                                                                        existing_incident['id'],
-                                                                                        similarity * 100)
+        if is_error(res):
+            return_error(res)
+    formatted_incident = format_similar_incident(existing_incident, similarity)
+    message = tableToMarkdown("Duplicate incident found with similarity {:.1f}%".format(similarity * 100),
+                              formatted_incident)
     message += 'This incident will be closed and linked to #{}.'.format(existing_incident['id'])
     return_entry(message, existing_incident.to_dict())
 
@@ -247,10 +248,20 @@ def create_new_incident():
     return_entry('This incident is not a duplicate of an existing incident.')
 
 
-def create_new_incident_low_similarity(existing_incident, similarity):
-    message = 'This incident is not a duplicate of an existing incident.\n'
-    message += 'Most similar incident found is #{} with similarity of {:.1f}%.\n'.format(existing_incident['id'],
-                                                                                         similarity * 100)
+def format_similar_incident(incident, similairy):
+    return {'Id': "[%s](#/Details/%s)" % (incident['id'], incident['id']),
+            'Name': incident['name'],
+            'Closed': incident.get('closed') != "0001-01-01T00:00:00Z",
+            'Time': str(incident['created']),
+            'Email from': incident.get(demisto.args().get('emailFrom')),
+            'Text Similarity': "{:.1f}%".format(similairy * 100),
+            }
+
+
+def create_new_incident_low_similarity(existing_incident, new_incident, similarity):
+    message = '# This incident is not a duplicate of an existing incident.\n'
+    formatted_incident = format_similar_incident(existing_incident, similarity)
+    message += tableToMarkdown("Most similar incident found", formatted_incident)
     message += 'The threshold for considering 2 incidents as duplicate is a similarity ' \
                'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
     message += 'Therefore these 2 incidents will not be considered as duplicate and the current incident ' \
@@ -278,7 +289,7 @@ def main():
     FROM_FIELD = input_args.get('emailFrom', FROM_FIELD)
     FROM_POLICY = input_args.get('fromPolicy', FROM_POLICY)
     existing_incidents = get_existing_incidents(input_args)
-    demisto.results('found {} incidents by query'.format(len(existing_incidents)))
+    demisto.debug('found {} incidents by query'.format(len(existing_incidents)))
     if len(existing_incidents) == 0:
         create_new_incident()
         return
@@ -303,7 +314,7 @@ def main():
         create_new_incident()
         return
     if similarity < SIMILARITY_THRESHOLD:
-        create_new_incident_low_similarity(duplicate_incident_row, similarity)
+        create_new_incident_low_similarity(duplicate_incident_row, new_incident, similarity)
     else:
         return close_new_incident_and_link_to_existing(new_incident_df.iloc[0], duplicate_incident_row, similarity)
 
