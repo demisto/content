@@ -186,7 +186,6 @@ def test_search_pack_with_id(mocker):
         'version': '1.1.10'
     }
     assert expected_response == script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, None)
-    assert script.SUCCESS_FLAG
 
 
 def test_search_pack_with_failure(mocker):
