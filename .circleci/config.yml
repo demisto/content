@@ -252,6 +252,7 @@ references:
       command: |
         python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
         python3 -m pytest ./Tests/Marketplace/Tests/ -v
+        python3 -m pytest ./Utils/tests/old_content_branch_test.py -v
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
           ./Tests/scripts/sdk_pylint_check.sh
