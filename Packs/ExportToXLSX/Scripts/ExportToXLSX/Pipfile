@@ -8,6 +8,8 @@ pylint = "*"
 pytest = "==5.0.1"
 flake8 = "*"
 pytest-mock = "*"
+
+[packages]
 xlsxwriter = "*"
 
 [requires]

@@ -50,7 +50,7 @@ commonfields:
   id: ExportToXLSX
   version: -1
 enabled: true
-name: ExportToXLSX1
+name: ExportToXLSX
 script: '-'
 subtype: python3
 system: false

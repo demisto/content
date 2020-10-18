@@ -1,10 +1,10 @@
-import demistomock as demisto
-import xlsxwriter
-import traceback
-from xlsxwriter import Workbook
-from CommonServerPython import *
-from xlsxwriter.format import Format
 from typing import List, Optional, Union
+from CommonServerPython import *
+import demistomock as demisto
+import traceback
+
+from xlsxwriter import Workbook
+from xlsxwriter.format import Format
 
 
 def write_data(sheet: str, data_item: Union[dict, list], data_headers: Optional[list], workbook: Workbook, bold: Format,
@@ -24,13 +24,17 @@ def write_data(sheet: str, data_item: Union[dict, list], data_headers: Optional[
         col += 1
 
     for item in data_item:
-        if item:
+        if item and isinstance(item, dict):
             col = 0
             row += 1
-            for value in data_headers:
-                if item.get(value):
-                    worksheet.write(row, col, item.get(value), border)
-                    col += 1
+            for header in data_headers:
+                item_value = item.get(header)
+                if item_value:
+                    if isinstance(item_value, list):
+                        worksheet.write(row, col, ', '.join(item_value), border)
+                    else:
+                        worksheet.write(row, col, str(item_value), border)
+                        col += 1
                 else:
                     col += 1
 
@@ -79,7 +83,7 @@ def main():
         else:
             headers_list = None
 
-        with xlsxwriter.Workbook(file_name) as workbook:
+        with Workbook(file_name) as workbook:
 
             bold, border = prepare_bold_and_border(workbook, is_bold, is_border)
 
