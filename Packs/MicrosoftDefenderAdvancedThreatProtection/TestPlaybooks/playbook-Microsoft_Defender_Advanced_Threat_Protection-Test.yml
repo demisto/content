@@ -179,7 +179,8 @@ tasks:
       id: 233e1eda-117f-4372-8b57-17be17e2803a
       version: -1
       name: Get machines by health status
-      description: Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+      description: Retrieves a collection of machines that have communicated with
+        WDATP cloud on the last 30 days
       script: '|||microsoft-atp-get-machines'
       type: regular
       iscommand: true
@@ -607,7 +608,8 @@ tasks:
       id: 5de1b894-9f4c-409e-8acc-2e949c42462e
       version: -1
       name: Get machine action data
-      description: Return the machine's actions. If you set an action id it will return the info on the specific action
+      description: Return the machine's actions. If you set an action id it will return
+        the info on the specific action
       script: '|||microsoft-atp-list-machine-actions-details'
       type: regular
       iscommand: true
@@ -783,10 +785,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 83aeba04-bebf-47dd-8505-535eb143b9ea
+    taskid: 02e4f822-68e9-4775-8cfb-a71f994e95ec
     type: regular
     task:
-      id: 83aeba04-bebf-47dd-8505-535eb143b9ea
+      id: 02e4f822-68e9-4775-8cfb-a71f994e95ec
       version: -1
       name: Add machine tag
       description: Adds or remove tag to a specific Machine.
@@ -801,7 +803,15 @@ tasks:
       action:
         simple: Add
       machine_id:
-        simple: ${MicrosoftATP.MachineAction.[0].MachineID}
+        complex:
+          root: MicrosoftATP.FileMachine.Machines
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
       retry-count:
         simple: "3"
       tag:

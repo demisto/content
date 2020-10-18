@@ -331,7 +331,7 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
             Returns:
                 List[Dict] -- List of insights from SafeBreach
             """
-    limit: int = int(args.get('limit') or demisto.params().get('indicatorLimit'))
+    limit: int = int(args.get('limit') or demisto.params().get('indicatorLimit', 1000))
     indicators: List[Dict] = []
     count: int = 0
     # These variable be filled directly from the integration configuration or as arguments.
@@ -733,7 +733,7 @@ def get_test_status_command(client: Client, args: Dict):
             'Status': response['status'],
             'Start Time': response['startTime'],
             'End Time': response['endTime'],
-            'Total Simulation Number': response['blocked'] + response['notBlocked'] + response['internalFail']
+            'Total Simulation Number': response['blocked'] + response['notBlocked']
         }
         readable_output = tableToMarkdown(name='Test Status', t=t, headers=list(t.keys()), removeNull=True)
         safebreach_context = {

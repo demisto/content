@@ -236,7 +236,6 @@ script:
       description: The ID of the record's user.
       type: string
   dockerimage: demisto/pyjwt3:1.0.0.10828
-  dockerimage45: demisto/pyjwt3:1.0.0.8871
   feed: false
   isfetch: true
   longRunning: false
@@ -247,4 +246,4 @@ script:
   type: python
 tests:
 - No test
-fromversion: 4.1.0
+fromversion: 5.0.0
