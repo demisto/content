@@ -6,7 +6,7 @@ import requests
 import itertools
 import traceback
 import urllib.parse
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional, List, Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -403,7 +403,7 @@ def main():
             indicators = fetch_indicators_command(client, client.indicator_type)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
-                non_duplicates_dict = dict()
+                non_duplicates_dict: Dict[str, Dict] = dict()
                 for indicator in b:
                     if indicator_value := indicator.get("value"):
                         # each value is added to the dict only ones
