@@ -1,5 +1,7 @@
+> <i>Note:</i> This integration should be used along with our IAM premium pack. For further details, visit our IAM pack documentation.
+
 Integrate with Okta's Identity Access Management service to streamline users' lifecycle processes.
-This integration was integrated and tested with version v1 of Okta IAM
+This integration was integrated and tested with version v1 of Okta.
 ## Configure Okta IAM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
