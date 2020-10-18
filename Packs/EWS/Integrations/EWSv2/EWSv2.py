@@ -342,7 +342,8 @@ def exchangelib_cleanup():
                 protocol.thread_pool.terminate()
                 del protocol.__dict__["thread_pool"]
             else:
-                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+                demisto.info(
+                    'Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
         except Exception as ex:
             demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
 
@@ -1136,7 +1137,8 @@ def parse_incident_from_item(item, is_fetch):
                                         and header.name != 'Content-Type':
                                     attached_email.add_header(header.name, header.value)
 
-                        file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attached_email.as_string())
+                        file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
+                                                 attached_email.as_string())
 
                     if file_result:
                         # check for error
@@ -2114,7 +2116,15 @@ def sub_main():
 
             error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
                 if AUTH_METHOD_STR.lower() == 'ntlm' else ''
-        if "Status code: 503" in debug_log:
+
+        if "SSL: CERTIFICATE_VERIFY_FAILED" in debug_log:
+            # same status code (503) but different error.
+            error_message_simple = "Certificate verification failed - This error may happen if the server " \
+                                   "certificate cannot be validated or as a result of a proxy that is doing SSL/TLS " \
+                                   "termination. It is possible to bypass certificate validation by checking " \
+                                   "'Trust any certificate' in the instance settings."
+
+        elif "Status code: 503" in debug_log:
             error_message_simple = "Got timeout from the server. " \
                                    "Probably the server is not reachable with the current settings. " \
                                    "Check proxy parameter. If you are using server URL - change to server IP address. "
