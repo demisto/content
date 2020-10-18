@@ -753,17 +753,17 @@ class ExtFilter:
         if optype == "is filtered by":
             if path:
                 conds = {
-                    "matches custom conditions of": self.parse_conds_json(conds) if isinstance(conds, str) else conds
+                    "matches conditions of": self.parse_conds_json(conds) if isinstance(conds, str) else conds
                 }
                 return self.filter_conditions(root, conds, path) if isinstance(root, dict) else None
             else:
-                return self.filter_value(root, "matches custom conditions of", conds)
+                return self.filter_value(root, "matches conditions of", conds)
 
         if optype == "value is filtered by":
             conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
             if path:
                 conds = {
-                    "value matches conditions of": conds
+                    "value matches expressions of": conds
                 }
                 if isinstance(root, dict):
                     return Value({k: v for k, f, v in [(k, self.filter_conditions(v, conds, path), v) for k, v in root.items()] if f and f.value})
@@ -801,22 +801,22 @@ class ExtFilter:
                 return None
             return Value({k: v for k, v in root.items() if k not in conds})
 
-        elif optype == "matches conditions of":
+        elif optype == "matches expressions of":
             conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
             return self.filter_conditions(root, conds)
 
-        elif optype == "matches custom conditions of":
+        elif optype == "matches conditions of":
             conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
             return self.filter_custom_conditions(root, conds)
 
-        elif optype == "value matches conditions of":
+        elif optype == "value matches expressions of":
             conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
             if isinstance(root, dict):
                 return Value({k: v.value for k, v in {k: self.filter_conditions(v, conds) for k, v in root.items()}.items() if v})
             else:
                 return self.filter_conditions(root, conds)
 
-        elif optype == "value matches custom conditions of":
+        elif optype == "value matches conditions of":
             conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
             if isinstance(root, dict):
                 return Value({k: v.value for k, v in {k: self.filter_custom_conditions(v, conds) for k, v in root.items()}.items() if v})
