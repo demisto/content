@@ -268,7 +268,7 @@ def create_new_incident_low_similarity(existing_incident, similarity):
                    'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
         message += 'Therefore these 2 incidents will not be considered as duplicate and the current incident ' \
                    'will remain active.\n'
-        return_entry(message)
+    return_entry(message)
 
 
 def create_new_incident_no_text_fields():
