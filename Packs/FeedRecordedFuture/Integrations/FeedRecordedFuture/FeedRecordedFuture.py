@@ -403,7 +403,14 @@ def main():
             indicators = fetch_indicators_command(client, client.indicator_type)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
+                non_duplicates_dict = dict()
+                for indicator in b:
+                    if indicator_value := indicator.get("value"):
+                        # each value is added to the dict only ones
+                        if not non_duplicates_dict.get(str(indicator_value).lower()):
+                            non_duplicates_dict[str(indicator_value.lower())] = indicator
+                unique_indicators_list = list(non_duplicates_dict.values())
+                demisto.createIndicators(unique_indicators_list)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
             return_outputs(readable_output, outputs, raw_response)
