@@ -136,9 +136,12 @@ outputs:
   - contextPath: similarIncident
     description: Similar incident.
     type: unknown
-- contextPath: similarIncident.name
-  description: Similar incident name.
-  type: string
+  - contextPath: similarIncident.name
+    description: Similar incident name.
+    type: string
+  - contextPath: similarIncident.rawId
+    description: Similar incident ID.
+    type: Unknown
 script: '-'
 subtype: python3
 system: false
