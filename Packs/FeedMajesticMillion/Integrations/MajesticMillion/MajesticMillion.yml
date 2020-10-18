@@ -9,7 +9,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+    reputation.
   defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
@@ -20,7 +20,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
@@ -40,7 +40,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+    fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -98,7 +98,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return. The default value is 50
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
@@ -119,3 +119,4 @@ script:
 fromversion: 5.5.0
 tests:
 - Majestic Million Test Playbook
+
