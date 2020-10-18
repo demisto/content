@@ -345,6 +345,12 @@ outputs:
   description: The domain name qualifier of the authority that issued the endpoint
     SSL certificate.
   type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.IssuerAlternativeName
+  description: Issuer Alternative names.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.SubjectAlternativeName
+  description: Subject Alternative names.
+  type: String
 - contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore
   description: Representing the beginning of the validity period for the certificate
     in UTC.

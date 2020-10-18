@@ -132,7 +132,7 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 
 #### Command Example
 
-```CertificatesTroubleshoot endpoint=test.compute.amazonaws.com port=5443```
+```CertificatesTroubleshoot endpoint=google.com port=443```
 
 #### Context Example
 
@@ -316,8 +316,11 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
                 "Identifier": "test.compute.amazonaws.com",
                 "NotValidBefore": "2020-09-22 11:37:45",
                 "NotValidAfter": "2025-09-21 11:37:45",
-                "Version": 0
-
+                "Version": 0,
+                "Extentions: {
+                    "IssuerAlternativeName": [*.google.com, *.appengine.google.com],
+                    "SubjectAlternativeName": [*.google.com, *.appengine.google.com]
+                }
             }
         }
     }
@@ -358,6 +361,10 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 > |CommonName|CountryName|EmailAddress|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|
 > | ec2-54-220-131-136.eu-west-1.compute.amazonaws.com | IL | test@gmail.com | Content | Test | Demisto |
+> ### Extentions
+> |IssuerAlternativeName|
+> |---|
+> | *.google.com,<br>*.android.com,<br>*.appengine.google.com,<br>*.bdn.dev,<br>*.cloud.google.com<br> |
 
 
  
