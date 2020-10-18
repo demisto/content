@@ -55,11 +55,8 @@ def main():
 
     if linked_incident:
         main_integration_grid, main_incident_grid = create_grids(custom_fields, linked_incident)
-
-        all_rows_have_date = all('creationdate' in row for row in main_incident_grid)
-        if all_rows_have_date:
-            main_incident_grid.sort(key=lambda incident_dict: incident_dict['creationdate'], reverse=True)
-            # sort incident grid by creation date
+        main_incident_grid.sort(key=lambda incident_dict: incident_dict.get('creationdate'),
+                                reverse=True)  # sort incident grid by creation date
 
         demisto.executeCommand("setIncident", {'customFields': {'integrationstestgrid': main_integration_grid}})
         demisto.executeCommand("setIncident", {'customFields': {'playbooktaskserrors': main_incident_grid}})
