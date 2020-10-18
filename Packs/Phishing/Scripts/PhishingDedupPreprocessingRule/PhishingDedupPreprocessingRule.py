@@ -17,6 +17,7 @@ no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 pd.options.mode.chained_assignment = None  # default='warn'
 
 SIMILARITY_THRESHOLD = float(demisto.args().get('threshold', 0.99))
+CLOSE_TO_SIMILAR_DISTANCE = 0.2
 
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
@@ -231,16 +232,15 @@ def return_entry(message, existing_incident=None):
 
 
 def close_new_incident_and_link_to_existing(new_incident, existing_incident, similarity):
-    if demisto.args().get('closeAsDuplicate', 'true') == 'true':
-        res = demisto.executeCommand("CloseInvestigationAsDuplicate", {
-            'duplicateId': existing_incident['id']})
-
-        if is_error(res):
-            return_error(res)
     formatted_incident = format_similar_incident(existing_incident, similarity)
     message = tableToMarkdown("Duplicate incident found with similarity {:.1f}%".format(similarity * 100),
                               formatted_incident)
-    message += 'This incident will be closed and linked to #{}.'.format(existing_incident['id'])
+    if demisto.args().get('closeAsDuplicate', 'true') == 'true':
+        res = demisto.executeCommand("CloseInvestigationAsDuplicate", {
+            'duplicateId': existing_incident['id']})
+        if is_error(res):
+            return_error(res)
+        message += 'This incident will be closed and linked to #{}.'.format(existing_incident['id'])
     return_entry(message, existing_incident.to_dict())
 
 
@@ -258,15 +258,17 @@ def format_similar_incident(incident, similairy):
             }
 
 
-def create_new_incident_low_similarity(existing_incident, new_incident, similarity):
+def create_new_incident_low_similarity(existing_incident, similarity):
     message = '# This incident is not a duplicate of an existing incident.\n'
-    formatted_incident = format_similar_incident(existing_incident, similarity)
-    message += tableToMarkdown("Most similar incident found", formatted_incident)
-    message += 'The threshold for considering 2 incidents as duplicate is a similarity ' \
-               'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
-    message += 'Therefore these 2 incidents will not be considered as duplicate and the current incident ' \
-               'will remain active.\n'
-    return_entry(message)
+
+    if similarity > SIMILARITY_THRESHOLD - CLOSE_TO_SIMILAR_DISTANCE:
+        formatted_incident = format_similar_incident(existing_incident, similarity)
+        message += tableToMarkdown("Most similar incident found", formatted_incident)
+        message += 'The threshold for considering 2 incidents as duplicate is a similarity ' \
+                   'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
+        message += 'Therefore these 2 incidents will not be considered as duplicate and the current incident ' \
+                   'will remain active.\n'
+        return_entry(message)
 
 
 def create_new_incident_no_text_fields():
@@ -314,7 +316,7 @@ def main():
         create_new_incident()
         return
     if similarity < SIMILARITY_THRESHOLD:
-        create_new_incident_low_similarity(duplicate_incident_row, new_incident, similarity)
+        create_new_incident_low_similarity(duplicate_incident_row, similarity)
     else:
         return close_new_incident_and_link_to_existing(new_incident_df.iloc[0], duplicate_incident_row, similarity)
 

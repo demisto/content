@@ -103,7 +103,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'true'
+  defaultValue: 'false'
   description: Wheter to close or not the current incident if duplicate incident found
   isArray: false
   name: closeAsDuplicate
