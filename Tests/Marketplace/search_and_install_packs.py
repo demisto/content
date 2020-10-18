@@ -138,7 +138,7 @@ def search_pack(client: Server, prints_manager: ParallelPrintsManager, pack_disp
             result_object = ast.literal_eval(response_data)
 
             if result_object and result_object.get('currentVersion'):
-                print_msg = 'Found pack "{}" by its ID "{}" in bucket!\n'.format(pack_display_name, pack_id)
+                print_msg = f'Found pack "{pack_display_name}" by its ID "{pack_id}" in bucket!\n'
                 prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.GREEN)
                 prints_manager.execute_thread_prints(thread_index)
 
@@ -149,19 +149,17 @@ def search_pack(client: Server, prints_manager: ParallelPrintsManager, pack_disp
                 return pack_data
 
             else:
-                print_msg = 'Did not find pack "{}" by its ID "{}" in bucket.\n'.format(pack_display_name, pack_id)
+                print_msg = f'Did not find pack "{pack_display_name}" by its ID "{pack_id}" in bucket.\n'
                 prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.RED)
                 prints_manager.execute_thread_prints(thread_index)
                 raise Exception(print_msg)
         else:
             result_object = ast.literal_eval(response_data)
             msg = result_object.get('message', '')
-            err_msg = 'Search request for pack "{}" with ID "{}", failed with status code {}\n{}'.format(
-                pack_display_name, pack_id, status_code, msg)
+            err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed with status code {status_code}\n{msg}'
             raise Exception(err_msg)
     except Exception as e:
-        err_msg = 'Search request for pack "{}" with ID "{}", failed. Reason:\n{}'.format(pack_display_name, pack_id,
-                                                                                          str(e))
+        err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed. Reason:\n{str(e)}'
         prints_manager.add_print_job(err_msg, print_color, thread_index, LOG_COLORS.RED)
 
         lock.acquire()
