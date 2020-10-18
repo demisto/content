@@ -1698,7 +1698,7 @@ script:
     - contextPath: Gmail.Role.Privilege.Name
       description: The name of the privilege.
       type: String
-  dockerimage: demisto/google-api:1.0.0.11655
+  dockerimage: demisto/google-api:1.0.0.11841
   isfetch: true
   longRunning: false
   longRunningPort: false
