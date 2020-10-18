@@ -115,6 +115,16 @@ RELATED_INDICATOR_OBJECTS_PACK = [
 
 @pytest.mark.parametrize('value, type_, description, expected_output', RELATED_INDICATOR_OBJECTS_PACK)
 def test_create_related_indicator_object(value, type_, description, expected_output):
+    """
+        Given:
+            - value (str): Value of feed related indicator.
+            - type_ (str): Type of feed related indicator.
+            - description (str): Description(s) of feed related indicator.
+        When:
+            - Processing data to show in widget.
+        Then:
+            - Verify that description is being processed at it should.
+        """
     from FeedRelatedIndicatorsWidget import create_related_indicator_object
 
     assert create_related_indicator_object(value, type_, description) == expected_output
