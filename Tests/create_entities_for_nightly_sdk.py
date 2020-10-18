@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def run_command(cmd):
-    return subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, encoding='utf-8').communicate()
+    return subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8').communicate()
 
 
 def create_incident_field(path, layout):
@@ -70,13 +70,13 @@ def upload_to_sdk(path, *args):
         so we process the output to see that all files created are succeeded.
     """
     print('Uploading to SDK')
-    stdout, _, = run_command(f'demisto-sdk upload -i {str(path)}')
+    stdout, stderr, = run_command(f'demisto-sdk upload -i {str(path)}')
     try:
         trimmed = re.search("SUCCESSFUL UPLOADS.*FAILED UPLOADS", stdout, flags=re.DOTALL).group()
     except AttributeError:
-        raise AttributeError(f'Could not find output of the command. {stdout}')
+        raise AttributeError(f'Could not find output of the command. \nstdout={stdout}\nstderr={stderr}')
     for arg in args:
-        assert arg.split('/')[-1] in trimmed, f'Could not upload {arg}.\nstdout={stdout}'
+        assert arg.split('/')[-1] in trimmed, f'Could not upload {arg}.\nstdout={stdout}\nstderr={stderr}'
         print(f'{arg} was uploaded to Cortex XSOAR')
 
 
