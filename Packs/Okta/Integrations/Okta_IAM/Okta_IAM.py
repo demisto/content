@@ -14,17 +14,11 @@ requests.packages.urllib3.disable_warnings()
 '''CONSTANTS'''
 
 DEPROVISIONED_STATUS = 'DEPROVISIONED'
-
 USER_IS_DISABLED_ERROR = 'E0000007'
-USER_DOES_NOT_EXIST_ERROR = '404'
-USER_ALREADY_EXISTS_ERROR = '409'
 ERROR_CODES_TO_SKIP = [
     'E0000016',  # user is already enabled
     USER_IS_DISABLED_ERROR
 ]
-
-USER_DOES_NOT_EXIST = 'user does not exist'
-USER_ALREADY_EXISTS = 'user already exists'
 
 '''CLIENT CLASS'''
 
@@ -123,21 +117,19 @@ class Client(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
-def iam_command_failure(user_profile, e=None, error_code=None, error_message=None, skip_command=False):
+def iam_command_failure(user_profile, e=None, iam_error=None, skip_command=False):
     """ Handles failed responses from Okta API by preparing the User Profile object with the failure data.
 
     Args:
         user_profile (￿IAMUserProfile): The User Profile object.
         e (DemistoException): The exception error that holds the response json (optional).
-        error_code (str): The error code (optional).
-        error_message (str): The error message (optional).
-        skip_command (bool): False the command should fail, otherwise - skipped.
+        iam_error (IAMErrors): An IAMErrors enum object that indicates the error reason (optional).
+        skip_command (bool): If false then the command should fail, otherwise - should be skipped.
     """
-
-    if not error_code:
+    if iam_error:
+        error_code, error_message = iam_error
+    else:
         error_code = e.res.get('errorCode')
-
-    if not error_message:
         error_message = get_error_details(e.res)
         if error_code == USER_IS_DISABLED_ERROR:
             error_message = 'Deactivation failed because the user is already disabled'
@@ -153,6 +145,12 @@ def iam_command_failure(user_profile, e=None, error_code=None, error_message=Non
 
 
 def iam_command_success(user_profile, okta_user):
+    """ Handles successful responses from Okta API by preparing the User Profile object with the user data.
+
+    Args:
+        user_profile (￿IAMUserProfile): The User Profile object.
+        okta_user (dict): The data retrieved from Okta.
+    """
     if demisto.command() == 'disable-user':
         active = False
     elif demisto.command() == 'enable-user':
@@ -171,6 +169,14 @@ def iam_command_success(user_profile, okta_user):
 
 
 def get_error_details(res):
+    """ Parses the error details retrieved from Okta and outputs the resulted string.
+
+    Args:
+        res (dict): The data retrieved from Okta.
+
+    Returns:
+        (str) The parsed error details.
+    """
     error_msg = f'{res.get("errorSummary")}. '
     causes = ''
     for idx, cause in enumerate(res.get('errorCauses', []), 1):
@@ -193,7 +199,7 @@ def get_user_command(client, args, mapper_in):
     try:
         okta_user = client.get_user(user_profile.email)
         if not okta_user:
-            iam_command_failure(user_profile, error_code=USER_DOES_NOT_EXIST_ERROR, error_message=USER_DOES_NOT_EXIST)
+            iam_command_failure(user_profile, iam_error=IAMErrors.USER_DOES_NOT_EXIST)
         else:
             user_profile.update_with_app_data(okta_user, mapper_in)
             iam_command_success(user_profile, okta_user)
@@ -205,92 +211,92 @@ def get_user_command(client, args, mapper_in):
 
 
 def enable_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled):
-    if is_command_enabled:
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-        try:
-            okta_user = client.get_user(user_profile.email)
-            if not okta_user:
-                if args.get('create-if-not-exists').lower() == 'true':
-                    user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled,
-                                                       set_command_name=True)
-                else:
-                    iam_command_failure(user_profile, error_code=USER_DOES_NOT_EXIST_ERROR,
-                                        error_message=USER_DOES_NOT_EXIST, skip_command=True)
+    if not is_command_enabled:
+        return None
+
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    try:
+        okta_user = client.get_user(user_profile.email)
+        if not okta_user:
+            if args.get('create-if-not-exists').lower() == 'true':
+                user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled,
+                                                   set_command_name=True)
             else:
-                client.activate_user(okta_user.get('id'))
-                iam_command_success(user_profile, okta_user)
+                iam_command_failure(user_profile, iam_error=IAMErrors.USER_DOES_NOT_EXIST, skip_command=True)
+        else:
+            client.activate_user(okta_user.get('id'))
+            iam_command_success(user_profile, okta_user)
 
-        except DemistoException as e:
-            iam_command_failure(user_profile, e)
+    except DemistoException as e:
+        iam_command_failure(user_profile, e)
 
-        return user_profile
+    return user_profile
 
 
 def disable_user_command(client, args, is_command_enabled):
-    if is_command_enabled:
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-        try:
-            okta_user = client.get_user(user_profile.email)
-            if not okta_user:
-                iam_command_failure(user_profile, error_code=USER_DOES_NOT_EXIST_ERROR,
-                                    error_message=USER_DOES_NOT_EXIST, skip_command=True)
-            else:
-                client.deactivate_user(okta_user.get('id'))
-                iam_command_success(user_profile, okta_user)
+    if not is_command_enabled:
+        return None
 
-        except DemistoException as e:
-            iam_command_failure(user_profile, e)
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    try:
+        okta_user = client.get_user(user_profile.email)
+        if not okta_user:
+            iam_command_failure(user_profile, iam_error=IAMErrors.USER_DOES_NOT_EXIST, skip_command=True)
+        else:
+            client.deactivate_user(okta_user.get('id'))
+            iam_command_success(user_profile, okta_user)
 
-        return user_profile
+    except DemistoException as e:
+        iam_command_failure(user_profile, e)
+
+    return user_profile
 
 
 def create_user_command(client, args, mapper_out, is_command_enabled, set_command_name=False):
-    if is_command_enabled:
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-        if set_command_name:
-            user_profile.set_command_name('create')
-        try:
-            okta_user = client.get_user(user_profile.email)
-            if okta_user:
-                iam_command_failure(user_profile, error_code=USER_ALREADY_EXISTS_ERROR,
-                                    error_message=USER_ALREADY_EXISTS, skip_command=True)
-            else:
-                okta_profile = user_profile.map_object(mapper_out)
-                if not okta_profile.get('login'):
-                    okta_profile['login'] = okta_profile.get('email')
-                created_user = client.create_user(okta_profile)
-                # user_profile.set_id(created_user.get('id'))
-                iam_command_success(user_profile, created_user)
+    if not is_command_enabled:
+        return None
 
-        except DemistoException as e:
-            iam_command_failure(user_profile, e)
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    if set_command_name:
+        user_profile.set_command_name('create')
+    try:
+        okta_user = client.get_user(user_profile.email)
+        if okta_user:
+            iam_command_failure(user_profile, iam_error=IAMErrors.USER_ALREADY_EXISTS, skip_command=True)
+        else:
+            okta_profile = user_profile.map_object(mapper_out)
+            created_user = client.create_user(okta_profile)
+            iam_command_success(user_profile, created_user)
 
-        return user_profile
+    except DemistoException as e:
+        iam_command_failure(user_profile, e)
+
+    return user_profile
 
 
 def update_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled):
-    if is_command_enabled:
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-        try:
-            okta_user = client.get_user(user_profile.email)
-            if okta_user:
-                user_id = okta_user.get('id')
-                okta_profile = user_profile.map_object(mapper_out)  # todo: fix mapper
-                updated_user = client.update_user(user_id, okta_profile)
-                # user_profile.set_id(updated_user.get('id'))
-                iam_command_success(user_profile, updated_user)
+    if not is_command_enabled:
+        return None
+
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    try:
+        okta_user = client.get_user(user_profile.email)
+        if okta_user:
+            user_id = okta_user.get('id')
+            okta_profile = user_profile.map_object(mapper_out)
+            updated_user = client.update_user(user_id, okta_profile)
+            iam_command_success(user_profile, updated_user)
+        else:
+            if args.get('create-if-not-exists').lower() == 'true':
+                user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled,
+                                                   set_command_name=True)
             else:
-                if args.get('create-if-not-exists').lower() == 'true':
-                    user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled,
-                                                       set_command_name=True)
-                else:
-                    iam_command_failure(user_profile, error_code=USER_DOES_NOT_EXIST_ERROR,
-                                        error_message=USER_DOES_NOT_EXIST, skip_command=True)
+                iam_command_failure(user_profile, iam_error=IAMErrors.USER_DOES_NOT_EXIST, skip_command=True)
 
-        except DemistoException as e:
-            iam_command_failure(user_profile, e)
+    except DemistoException as e:
+        iam_command_failure(user_profile, e)
 
-        return user_profile
+    return user_profile
 
 
 def main():
