@@ -4582,6 +4582,9 @@ class TableOrListWidget(BaseWidget):
 
 
 class IAMErrors(object):
+    """
+    An enum class to manually handle errors in IAM integrations.
+    """
     USER_DOES_NOT_EXIST = 404, 'User does not exist'
     USER_ALREADY_EXISTS = 409, 'User already exists'
 
@@ -4601,10 +4604,10 @@ class IAMUserProfile:
     """
 
     def __init__(self, user_profile, user_profile_delta=None):
-        """ IAMUserProfile constructor.
+        """ IAMUserProfile c'tor.
 
-        :param user_profile: The user
-        :param user_profile_delta:
+        :param user_profile: (dict) the user-profile argument.
+        :param user_profile_delta: (dict) the user-profile argument.
         """
         self._brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
         self._instance_name = demisto.callingContextget('context', {}).get('IntegrationInstance')
