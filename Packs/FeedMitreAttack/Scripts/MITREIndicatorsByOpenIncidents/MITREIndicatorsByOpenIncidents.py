@@ -31,7 +31,7 @@ def main():
             })
 
         incidents_table = tableToMarkdown('MITRE ATT&CK techniques by related Incidents', indicators,
-                               headers=['Value', 'Name', 'Phase Name', 'Description'])
+                                          headers=['Value', 'Name', 'Phase Name', 'Description'])
 
         return_outputs(incidents_table)
     except Exception:
