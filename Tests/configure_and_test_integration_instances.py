@@ -1027,7 +1027,7 @@ def install_nightly_pack(build, prints_manager):
     create_nightly_test_pack()
     pack_path = f'{Build.test_pack_target}/test_pack.zip'
     if build.is_private:
-        pack_path = f'/home/runner/work/content-private/content-private/content/test_pack.zip'
+        pack_path = '/home/runner/work/content-private/content-private/content/test_pack.zip'
     nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs, pack_path=pack_path)
 
     prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0, include_timestamp=True)
@@ -1228,7 +1228,7 @@ def test_pack_metadata():
 def test_pack_zip(build: Build):
     if build.is_private:
         content_path = '/home/runner/work/content-private/content-private/content'
-        target = f'/home/runner/work/content-private/content-private/content/test_pack.zip'
+        target = '/home/runner/work/content-private/content-private/content/test_pack.zip'
     else:
         content_path = build.content_path
         target = build.test_pack_target
