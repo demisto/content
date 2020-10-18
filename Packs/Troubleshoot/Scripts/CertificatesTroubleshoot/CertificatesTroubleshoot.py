@@ -84,7 +84,10 @@ def parse_certificate(certificate: str) -> dict:
         "Raw": certificate,
         "Decode": {
             "Issuer": certificate_to_ec(decode_certificate.issuer),
-            "Subject": certificate_to_ec(decode_certificate.subject)
+            "Subject": certificate_to_ec(decode_certificate.subject),
+            "NotValidBefore": str(decode_certificate.not_valid_before),
+            "NotValidAfter": str(decode_certificate.not_valid_after),
+            "Version": decode_certificate.version.value
         }
     }
 
@@ -164,21 +167,32 @@ def build_human_readable(entry_context: dict) -> str:
     # Engine docker container
     engine: dict = dict_safe_get(entry_context, ['Engine', 'SSL/TLS'], {}, dict)
     human_readable += "## Docker container engine - custom certificate\n"
-    readable_engine_issuer = [dict_safe_get(item, ('Decode', 'Issuer')) for item in
-                              engine.get('CustomCertificateAuthorities', {})]
-    readable_engine_subject = [dict_safe_get(item, ('Decode', 'Subject')) for item in
-                               engine.get('CustomCertificateAuthorities', {})]
+    engine_general = [dict_safe_get(item, ['Decode']) for item in
+                      engine.get('CustomCertificateAuthorities', {})]
+    engine_issuer = [dict_safe_get(item, ('Decode', 'Issuer')) for item in
+                     engine.get('CustomCertificateAuthorities', {})]
+    engine_subject = [dict_safe_get(item, ('Decode', 'Subject')) for item in
+                      engine.get('CustomCertificateAuthorities', {})]
+    # Engine variables
     readable_engine_vars = engine.get('ShellVariables')
     human_readable += tableToMarkdown(name="Enviorment variables", t=readable_engine_vars)
-    human_readable += tableToMarkdown(name="Issuer", t=readable_engine_issuer, removeNull=True)
-    human_readable += tableToMarkdown(name="Subject", t=readable_engine_subject, removeNull=True)
+    human_readable += tableToMarkdown(name="General", t=engine_general,
+                                      headers=['NotValidBefore', 'NotValidAfter', 'Version'])
+    human_readable += tableToMarkdown(name="Issuer", t=engine_issuer, removeNull=True)
+    human_readable += tableToMarkdown(name="Subject", t=engine_subject, removeNull=True)
     # Endpoint
     endpoint: dict = entry_context.get('Endpoint', {}).get('SSL/TLS', {})
-    readable_endpoint_issuer = [item.get('Decode').get('Issuer') for item in endpoint.get('Certificates', {})]
-    readable_endpoint_subject = [item.get('Decode').get('Subject') for item in endpoint.get('Certificates', {})]
+    endpoint_general = [dict_safe_get(item, ['Decode']) for item in
+                        endpoint.get('Certificates', {})]
+    endpoint_issuer = [dict_safe_get(item, ('Decode', 'Issuer')) for item in
+                       endpoint.get('Certificates', {})]
+    endpoint_subject = [dict_safe_get(item, ('Decode', 'Subject')) for item in
+                        endpoint.get('Certificates', {})]
     human_readable += f"\n\n## Endpoint certificate - {endpoint.get('Identifier')}\n"
-    human_readable += tableToMarkdown(name="Issuer", t=readable_endpoint_issuer, removeNull=True)
-    human_readable += tableToMarkdown(name="Subject", t=readable_endpoint_subject, removeNull=True)
+    human_readable += tableToMarkdown(name="General", t=endpoint_general,
+                                      headers=['NotValidBefore', 'NotValidAfter', 'Version'])
+    human_readable += tableToMarkdown(name="Issuer", t=endpoint_issuer, removeNull=True)
+    human_readable += tableToMarkdown(name="Subject", t=endpoint_subject, removeNull=True)
     human_readable += "\n"
 
     return human_readable

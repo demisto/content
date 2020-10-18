@@ -77,7 +77,10 @@
         "Title": null,
         "SerialNumber": null,
         "Pseudonym": null
-      }
+      },
+      "NotValidBefore": "2020-09-22 11:37:45",
+      "NotValidAfter": "2025-09-21 11:37:45",
+      "Version": 0
     }
   }
 ]

@@ -76,6 +76,9 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 | TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.CountryName | The country of the authority that issued the engine custom SSL certificate. | String |
 | TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.EmailAddress | The email address of the authority that issued the engine custom SSL certificate. | String |
 | TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.DomainNameQualifier | The domain name qualifier of the authority that issued the engine custom SSL certificate. | String |
+| TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore | Representing the beginning of the validity period for the certificate in UTC. | String |
+| TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidAfter | Representing the end of the validity period for the certificate in UTC. | String |
+| TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Version| The certificate version. | Number |
 | TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Raw | The raw engine custom SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.OrganizationalUnitName | The unit name of the organization that is the holder of the endpoint SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.OrganizationName | The name of the organization that is the holder of the endpoint SSL certificate. | String |
@@ -121,6 +124,9 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.CountryName | The country of the authority that issued the endpoint SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.EmailAddress | The email address of the authority that issued the endpoint SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.DomainNameQualifier | The domain name qualifier of the authority that issued the endpoint SSL certificate. | String |
+| TroubleShoot.Endpoint.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore | Representing the beginning of the validity period for the certificate in UTC. | String |
+| TroubleShoot.Endpoint.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidAfter | Representing the end of the validity period for the certificate in UTC. | String |
+| TroubleShoot.Endpoint.SSL/TLS.CustomCertificateAuthorities.Decode.Version| The certificate version. | Number |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Raw | The raw endpoint SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Identifier | The endpoint SSL identifier. | String |
 
@@ -307,7 +313,11 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
                         "Raw": "-----BEGIN CERTIFICATE-----\nxxxx\n-----END CERTIFICATE-----\n"
                     }
                 ], 
-                "Identifier": "test.compute.amazonaws.com"
+                "Identifier": "test.compute.amazonaws.com",
+                "NotValidBefore": "2020-09-22 11:37:45",
+                "NotValidAfter": "2025-09-21 11:37:45",
+                "Version": 0
+
             }
         }
     }
@@ -321,6 +331,11 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 > |CERT_FILE|SSL_CERT_FILE|
 > |---|---|
 > | /etc/custom-python-ssl/certs.pem | /etc/custom-python-ssl/certs.pem |
+>
+> ### General
+> |NotValidBefore|NotValidAfter|Version|
+> |---|---|---|
+> | 2020-09-22 15:22:19 | 2020-12-15 15:22:19 | 2 |
 > ### Issuer
 > |CommonName|CountryName|EmailAddress|LocalityName|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|---|
@@ -329,7 +344,12 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 > |CommonName|CountryName|EmailAddress|LocalityName|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|---|
 > | Demisto TLS | IL | all@paloaltonetworks.com | Tel Aviv | Demisto | Content | Hamerkaz |
+>
 > ## Endpoint certificate - ec2-54-220-131-136.eu-west-1.compute.amazonaws.com
+> ### General
+> |NotValidBefore|NotValidAfter|Version|
+> |---|---|---|
+> | 2020-09-22 15:22:19 | 2020-12-15 15:22:19 | 2 |
 > ### Issuer
 > |CommonName|CountryName|EmailAddress|LocalityName|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|---|
