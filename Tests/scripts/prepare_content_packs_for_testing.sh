@@ -22,7 +22,7 @@ echo "$GCS_MARKET_KEY" > "$KF"
 gcloud auth activate-service-account --key-file="$KF" > auth.out 2>&1
 echo "Auth loaded successfully."
 
-GCS_MARKET_BUCKET="marketplace-dist"
+GCS_MARKET_BUCKET="marketplace-dist-dev"
 GCS_BUILD_BUCKET="marketplace-ci-build"
 SOURCE_PATH="content/packs"
 BUILD_BUCKET_PATH="content/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM"
@@ -35,7 +35,7 @@ echo "Finished copying successfully."
 
 echo "Updating modified content packs in the bucket ..."
 
-if [ ! -n "${NIGHTLY}" ]; then
+if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}"]; then
     CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
     echo "Could not find file $CONTENT_PACKS_TO_INSTALL_FILE."
