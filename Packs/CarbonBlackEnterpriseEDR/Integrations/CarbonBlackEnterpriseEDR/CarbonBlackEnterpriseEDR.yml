@@ -50,9 +50,10 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and
-  incident response solution delivering continuous visibility for top security operations
-  centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter)
+description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter)
+  is an advanced threat hunting and incident response solution delivering continuous
+  visibility for top security operations centers (SOCs) and incident response (IR)
+  teams. (formerly known as ThreatHunter)
 display: VMware Carbon Black Enterprise EDR
 name: Carbon Black Enterprise EDR
 script:
@@ -1554,91 +1555,105 @@ script:
         organization, for this file.
       type: Number
   - arguments:
-      - default: false
-        description: The process name to search.
-        isArray: true
-        name: process_name
-        required: false
-        secret: false
-      - default: false
-        description: The process hash to search.
-        isArray: true
-        name: process_hash
-        required: false
-        secret: false
-      - default: false
-        description: The event id to search.
-        isArray: false
-        name: event_id
-        required: false
-        secret: false
-      - default: false
-        description: The maximum number of rows to return.
-        isArray: false
-        name: limit
-        required: false
-        secret: false
-      - default: false
-        description: A free-style query.
-        isArray: false
-        name: query
-        required: false
-        secret: false
+    - default: false
+      description: The process name to search.
+      isArray: true
+      name: process_name
+      required: false
+      secret: false
+    - default: false
+      description: The process hash to search.
+      isArray: true
+      name: process_hash
+      required: false
+      secret: false
+    - default: false
+      description: The event id to search.
+      isArray: false
+      name: event_id
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of rows to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A free-style query.
+      isArray: false
+      name: query
+      required: false
+      secret: false
     deprecated: false
     description: Creates a process search job.
     execution: false
     name: cb-eedr-process-search
+    outputs:
+    - contextPath: CarbonBlackEEDR.SearchProcess.job_id
+      description: A request job id.
+      type: String
   - arguments:
-      - default: false
-        description: The process guid to search.
-        isArray: false
-        name: process_guid
-        required: false
-        secret: false
-      - default: false
-        description: The event type to search.
-        isArray: false
-        name: event_type
-        required: false
-        secret: false
-      - default: false
-        description: The maximum number of rows to return.
-        isArray: false
-        name: limit
-        required: false
-        secret: false
-      - default: false
-        description: A free-style query.
-        isArray: false
-        name: query
-        required: false
-        secret: false
+    - default: false
+      description: The process guid to search.
+      isArray: false
+      name: process_guid
+      required: false
+      secret: false
+    - default: false
+      description: The event type to search.
+      isArray: false
+      name: event_type
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of rows to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A free-style query.
+      isArray: false
+      name: query
+      required: false
+      secret: false
     deprecated: false
     description: Fetch the events associated with a given process.
     execution: false
     name: cb-eedr-events-by-process-search
   - arguments:
-      - default: false
-        description: The job_id to search.
-        isArray: false
-        name: job_id
-        required: true
-        secret: false
+    - default: false
+      description: The job_id to search.
+      isArray: true
+      name: job_id
+      required: true
+      secret: false
     deprecated: false
     description: Retrieves the process search results for a given job ID.
     execution: false
     name: cb-eedr-process-search-results
+    outputs:
+    - contextPath: CarbonBlackEEDR.SearchProcess.device_timestamp
+      type: Unknown
   - arguments:
-      - default: false
-        description: The job_id to search.
-        isArray: true
-        name: job_id
-        required: true
-        secret: false
+    - default: false
+      description: The job_id to search.
+      isArray: true
+      name: job_id
+      required: true
+      secret: false
     deprecated: false
     description: Retrieves the process search status for a given job ID.
     execution: false
     name: cb-eedr-process-search-check-status
+    outputs:
+    - contextPath: CarbonBlackEEDR.SearchProcess.job_id
+      description: A request job id.
+      type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.status
+      description: A request job current status.
+      type: String
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true

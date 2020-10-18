@@ -1183,11 +1183,11 @@ def process_search_command(client: Client, args: Dict) -> CommandResults:
     query = args.get('query', '')
     limit = args.get('limit', '')
 
-    job_id = client.create_search_process_request(process_name=process_name, process_hash=process_hash,
-                                                  event_id=event_id, query=query, limit=limit)
-    readable_output = f"job_id is {job_id}."
-    output = {'job_id': job_id, 'status': 'In Progress'}
-    return CommandResults(outputs_prefix='CarbonBlackEEDR.Process', raw_response=job_id,
+    raw_respond = client.create_search_process_request(process_name=process_name, process_hash=process_hash,
+                                                       event_id=event_id, query=query, limit=limit)
+    readable_output = f"job_id is {raw_respond.get('job_id')}."
+    output = {'job_id': raw_respond.get('job_id'), 'status': 'In Progress'}
+    return CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess', raw_response=raw_respond,
                           outputs=output, outputs_key_field='job_id', readable_output=readable_output)
 
 
@@ -1200,18 +1200,23 @@ def event_by_process_search_command(client: Client, args: Dict) -> CommandResult
     result = client.create_search_event_by_process_request(
         process_guid=process_guid, event_type=event_type,
         query=query, limit=limit)
-    return CommandResults(outputs_prefix='CarbonBlackEEDR.Event',
+    return CommandResults(outputs_prefix='CarbonBlackEEDR.SearchEvent',
                           outputs=result.get('results'), outputs_key_field='event_guid',
                           raw_response=result)
 
 
-def process_search_get_command(client: Client, args: Dict) -> CommandResults:
-    # TODO should support many
-    job_id = args.get('job_id')
-    result = client.get_search_process_request(job_id=job_id)
-    return CommandResults(outputs_prefix='CarbonBlackEEDR.Process',
-                          outputs=result.get('results'), outputs_key_field='process_guid',
-                          raw_response=result)
+def process_search_get_command(client: Client, args: Dict) -> List[CommandResults]:
+    job_ids = argToList(args.get('job_id'))
+    job_result_list = []
+    for job in job_ids:
+        raw_result = client.get_search_process_request(job_id=job)
+        status = 'Completed' if raw_result.get('contacted') == raw_result.get('completed') else 'In Progress'
+        output = {'status': status, 'job_id': job, 'results': raw_result.get('results')}
+
+        job_result_list.append(CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess',
+                                              outputs=output, outputs_key_field='job_id',
+                                              raw_response=raw_result))
+    return job_result_list
 
 
 def process_search_check_status_command(client: Client, args: Dict) -> List[CommandResults]:
@@ -1219,13 +1224,10 @@ def process_search_check_status_command(client: Client, args: Dict) -> List[Comm
     results_list = []
     for job in job_ids:
         result = client.get_search_process_request(job_id=job)
-        if result.get('contacted') == result.get('completed'):
-            status = 'Completed'
-        else:
-            status = 'In Progress'
+        status = 'Completed' if result.get('contacted') == result.get('completed') else 'In Progress'
         output = {'status': status, 'job_id': job}
 
-        results_list.append(CommandResults(outputs_prefix='CarbonBlackEEDR.Process',
+        results_list.append(CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess',
                                            outputs=output, outputs_key_field='job_id',
                                            raw_response=result))
 
@@ -1368,7 +1370,8 @@ def main():
             return_results(process_search_command(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-process-search-results':
-            return_results(process_search_get_command(client, demisto.args()))
+            for command_result_item in process_search_get_command(client, demisto.args()):
+                return_results(command_result_item)
 
         elif demisto.command() == 'cb-eedr-process-search-check-status':
             for command_result_item in process_search_check_status_command(client, demisto.args()):
