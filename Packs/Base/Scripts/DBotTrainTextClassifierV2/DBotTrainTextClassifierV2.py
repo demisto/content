@@ -8,7 +8,7 @@ from CommonServerPython import *
 
 try:
     import demisto_ml
-except Exception as e:
+except Exception:
     a = 1
 
 ALL_LABELS = "*"

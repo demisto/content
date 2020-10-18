@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from DBotTrainTextClassifierV3 import get_phishing_map_labels, read_file, read_files_by_name, \
+from DBotTrainTextClassifierV2 import get_phishing_map_labels, read_file, read_files_by_name, \
     get_data_with_mapped_label, set_tag_field, DBOT_TAG_FIELD, ALL_LABELS
 
 
