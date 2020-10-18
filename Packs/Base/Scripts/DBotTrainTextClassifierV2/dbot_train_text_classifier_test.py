@@ -46,6 +46,14 @@ def test_get_data_with_mapped_label(mocker):
     assert exist_labels_counter['spam'] == 1
     assert missing_labels_counter['not'] == 2
 
+    mapping = get_phishing_map_labels("phishing:malicious,spam:spam")
+    data = [{"tag": "Phishing"}, {"tag": "Spam"}]
+    new_data, exist_labels_counter, missing_labels_counter = get_data_with_mapped_label(data, mapping, "tag")
+    assert new_data[0]['tag'] == 'malicious'
+    assert new_data[1]['tag'] == 'spam'
+    assert exist_labels_counter['phishing'] == 1
+    assert exist_labels_counter['spam'] == 1
+
 
 def test_set_tag_field():
     data = [{"tag": "Phishing"}, {"tag1": "malware"}, {"tag": "spam"}, {"tag2": "not"}, {"tag2": "not"}]

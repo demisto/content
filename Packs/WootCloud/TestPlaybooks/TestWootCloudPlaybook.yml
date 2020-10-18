@@ -31,13 +31,14 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: "1"
+    taskid: 10e6251b-a5c1-4a07-8110-e5bcc221b906
     type: regular
     task:
-      id: "1"
+      id: 10e6251b-a5c1-4a07-8110-e5bcc221b906
       version: -1
-      name: DeleteContext
-      script: DeleteContext
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
       type: regular
       iscommand: true
       brand: ""
