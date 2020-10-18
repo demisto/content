@@ -197,7 +197,7 @@ def test_module(client):
 def get_user_command(client, args, mapper_in):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     try:
-        okta_user = client.get_user(user_profile.email)
+        okta_user = client.get_user(user_profile.get_attribute('email'))
         if not okta_user:
             iam_command_failure(user_profile, iam_error=IAMErrors.USER_DOES_NOT_EXIST)
         else:
@@ -216,7 +216,7 @@ def enable_user_command(client, args, mapper_out, is_command_enabled, is_create_
 
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     try:
-        okta_user = client.get_user(user_profile.email)
+        okta_user = client.get_user(user_profile.get_attribute('email'))
         if not okta_user:
             if args.get('create-if-not-exists').lower() == 'true':
                 user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled,
@@ -239,7 +239,7 @@ def disable_user_command(client, args, is_command_enabled):
 
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     try:
-        okta_user = client.get_user(user_profile.email)
+        okta_user = client.get_user(user_profile.get_attribute('email'))
         if not okta_user:
             iam_command_failure(user_profile, iam_error=IAMErrors.USER_DOES_NOT_EXIST, skip_command=True)
         else:
@@ -260,7 +260,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled, set_comman
     if set_command_name:
         user_profile.set_command_name('create')
     try:
-        okta_user = client.get_user(user_profile.email)
+        okta_user = client.get_user(user_profile.get_attribute('email'))
         if okta_user:
             iam_command_failure(user_profile, iam_error=IAMErrors.USER_ALREADY_EXISTS, skip_command=True)
         else:
@@ -280,7 +280,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
 
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     try:
-        okta_user = client.get_user(user_profile.email)
+        okta_user = client.get_user(user_profile.get_attribute('email'))
         if okta_user:
             user_id = okta_user.get('id')
             okta_profile = user_profile.map_object(mapper_out)
