@@ -436,7 +436,7 @@ class Client(BaseClient):
                         f'length={min(limit, 1000)}'
 
         round_count = 0
-        while True:
+        while round_count != 10:
             headers['Authorization'] = f'Bearer {self.get_access_token()}'
 
             demisto.debug(f'Fetching indicators round {round_count}')
@@ -508,7 +508,7 @@ class Client(BaseClient):
                         f'length={min(limit, 100)}'
 
         round_count = 0
-        while True:
+        while round_count != 10:
             headers['Authorization'] = f'Bearer {self.get_access_token()}'
 
             demisto.debug(f'Fetching reports round {round_count}')
