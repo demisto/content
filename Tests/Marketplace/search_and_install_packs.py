@@ -134,7 +134,7 @@ def search_pack(client, prints_manager, pack_display_name, pack_id, thread_index
         if 200 <= status_code < 300:
             result_object = ast.literal_eval(response_data)
 
-            if result_object:
+            if result_object and result_object.get('currentVersion'):
                 print_msg = 'Found pack: {} by its ID: {} in bucket!\n'.format(pack_display_name, pack_id)
                 prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.GREEN)
                 prints_manager.execute_thread_prints(thread_index)

@@ -98,6 +98,14 @@ class MockClient:
         self.api_client = MockApiClient()
 
 
+class MockLock:
+    def acquire(self):
+        return None
+
+    def release(self):
+        return None
+
+
 def test_search_and_install_packs_and_their_dependencies(mocker):
     """
     Given
@@ -180,4 +188,31 @@ def test_search_pack(mocker):
         'id': 'HelloWorld',
         'version': '1.1.10'
     }
+    assert script.SUCCESS_FLAG
     assert expected_response == script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, None)
+
+
+def test_search_pack_with_failure(mocker):
+    """
+   Given
+   - Error when searching for pack
+   - Response with missing data
+   When
+   - Searching the pack in the Demsito instance for installation.
+   Then
+   - Ensure error is raised.
+   """
+    client = MockClient()
+    prints_manager = ParallelPrintsManager(1)
+    lock = MockLock()
+
+    # Error when searching for pack
+    mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
+    script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, lock)
+    assert not script.SUCCESS_FLAG
+
+    # Response with missing data
+    mocker.patch.object(demisto_client, 'generic_request_func', return_value=('{"id": "HelloWorld"}', 200, None))
+    script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, lock)
+    assert not script.SUCCESS_FLAG
+
