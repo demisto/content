@@ -1,6 +1,12 @@
 import argparse
 import json
+import re
+import subprocess
 from pathlib import Path
+
+
+def run_command(cmd):
+    return subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, encoding='utf-8').communicate()
 
 
 def create_incident_field(path, layout):
@@ -18,7 +24,7 @@ def create_incident_field(path, layout):
     })
     field_path = path / 'IncidentFields' / f'incidentfield-{name.replace(" ", "_")}.json'
     with open(field_path, 'w+') as stream:
-        json.dump(field, stream)
+        json.dump(field, stream, indent=4)
     return str(field_path)
 
 
@@ -37,7 +43,7 @@ def create_layout(path, name):
     })
     layout_path = path / 'Layouts' / f'layout-{name.replace(" ", "_")}.json'
     with open(layout_path, 'w+') as stream:
-        json.dump(layout, stream)
+        json.dump(layout, stream, indent=4)
     return str(layout_path)
 
 
@@ -54,8 +60,21 @@ def create_incident_type(path, layout_name):
     })
     incident_path = incident_type_path / f'incidenttype-{name.replace(" ", "_")}.json'
     with open(incident_path, 'w+') as stream:
-        json.dump(incident_type, stream)
+        json.dump(incident_type, stream, indent=4)
     return str(incident_path)
+
+
+def upload_to_sdk(path, *args):
+    """
+    For some reasons, if uploading entities one by one we will get an exception,
+        so we process the output to see that all files created are succeeded.
+    """
+    print('Uploading to SDK')
+    stdout, _, = run_command(f'demisto-sdk upload -i {str(path)}')
+    trimmed = re.search("SUCCESSFUL UPLOADS.*FAILED UPLOADS", stdout, flags=re.DOTALL).group()
+    for arg in args:
+        assert arg.split('/')[-1] in trimmed, f'Could not upload {arg}.\nstdout={stdout}'
+        print(f'{arg} was uploaded to Cortex XSOAR')
 
 
 def main():
@@ -71,6 +90,7 @@ def main():
     ]
     print("Created entities:")
     print('\n'.join(uploaded_entities))
+    upload_to_sdk(pack_path, *uploaded_entities)
 
 
 if __name__ in '__main__':
