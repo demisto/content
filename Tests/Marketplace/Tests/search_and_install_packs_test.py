@@ -106,8 +106,8 @@ class MockLock:
 def test_search_and_install_packs_and_their_dependencies(mocker):
     """
     Given
-    - Valid packs.
-    - Invalid pack.
+    - Valid pack ids.
+    - Invalid pack id.
     When
     - Running integrations configuration tests.
     Then

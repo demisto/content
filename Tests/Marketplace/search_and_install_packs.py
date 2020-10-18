@@ -10,6 +10,8 @@ from demisto_client.demisto_api.rest import ApiException
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list, print_error
 from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH, IGNORED_FILES
+from Tests.configure_and_test_integration_instances import Server
+from Tests.test_content import ParallelPrintsManager
 
 PACK_METADATA_FILE = 'pack_metadata.json'
 SUCCESS_FLAG = True
@@ -109,7 +111,8 @@ def get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock)
         lock.release()
 
 
-def search_pack(client, prints_manager, pack_display_name, pack_id, thread_index, lock):
+def search_pack(client: Server, prints_manager: ParallelPrintsManager, pack_display_name: str, pack_id: str,
+                thread_index: int, lock: Lock):
     """ Make a pack search request.
 
     Args:
@@ -154,13 +157,11 @@ def search_pack(client, prints_manager, pack_display_name, pack_id, thread_index
             result_object = ast.literal_eval(response_data)
             msg = result_object.get('message', '')
             err_msg = 'Search request for pack "{}" with ID "{}", failed with status code {}\n{}'.format(
-                pack_display_name,
-                pack_id, status_code,
-                msg)
+                pack_display_name, pack_id, status_code, msg)
             raise Exception(err_msg)
     except Exception as e:
         err_msg = 'Search request for pack "{}" with ID "{}", failed. Reason:\n{}'.format(pack_display_name, pack_id,
-                                                                                        str(e))
+                                                                                          str(e))
         prints_manager.add_print_job(err_msg, print_color, thread_index, LOG_COLORS.RED)
 
         lock.acquire()
