@@ -29,7 +29,10 @@ try:
     from urllib3.util import Retry
     from typing import Optional, List, Any
 except Exception:
-    pass
+    if sys.version_info[0] < 3:
+        # in python 2 an exception in the imports might still be raised even though it is caught.
+        # for more info see https://cosmicpercolator.com/2016/01/13/exception-leaks-in-python-2-and-3/
+        sys.exc_clear()
 
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
@@ -334,24 +337,6 @@ def auto_detect_indicator_type(indicator_value):
         pass
 
     return None
-
-
-# ===== Fix fetching credentials from vault instances =====
-# ====================================================================================
-try:
-    for k, v in demisto.params().items():
-        if isinstance(v, dict):
-            if 'credentials' in v:
-                vault = v['credentials'].get('vaultInstanceId')
-                if vault:
-                    v['identifier'] = v['credentials'].get('user')
-                break
-
-except Exception:
-    pass
-
-
-# ====================================================================================
 
 
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
