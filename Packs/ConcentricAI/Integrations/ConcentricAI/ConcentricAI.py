@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 
 import urllib3
 from CommonServerPython import *
@@ -33,6 +33,7 @@ RISK_RULES: dict
 SCROLL_ID_INCIDENT: str
 SCROLL_ID_FILE: str
 SCROLL_ID_USER_DETAIL: str
+MAX_INCIDENTS_TO_FETCH: int
 
 
 def encoding(username, password):
@@ -45,24 +46,25 @@ def encoding(username, password):
 
 
 def get_headers_for_login():
-
-    headers_for_login = {
-        'Authorization': AUTHORIZATION,
-        'X-Domain': DOMAIN,
-        'grant_type': 'client_credentials',
-        'Content-Type': 'application/json'
-       }
+    headers_for_login = \
+        {
+            'Authorization': AUTHORIZATION,
+            'X-Domain': DOMAIN,
+            'grant_type': 'client_credentials',
+            'Content-Type': 'application/json'
+        }
     return headers_for_login
 
 
 def get_headers_for_query():
-    headers_for_query = {
-        'Cookie': COOKIE,
-        'X-Domain': DOMAIN,
-        'grant_type': 'client_credentials',
-        'client_id': CLIENT_ID,
-        'Content-Type': 'application/json'
-    }
+    headers_for_query = \
+        {
+            'Cookie': COOKIE,
+            'X-Domain': DOMAIN,
+            'grant_type': 'client_credentials',
+            'client_id': CLIENT_ID,
+            'Content-Type': 'application/json'
+        }
     return headers_for_query
 
 
@@ -77,7 +79,7 @@ def initialise_scrolls_and_rules():
 
 def initialize_global_values():
 
-    global AUTH_URL, COOKIE, AUTH_HEADERS, QUERY_HEADERS, QUERY_URL,\
+    global MAX_INCIDENTS_TO_FETCH, AUTH_URL, COOKIE, AUTH_HEADERS, QUERY_HEADERS, QUERY_URL,\
         CLIENT_ID, CLIENT_SECRET, AUTH_HEADERS, DOMAIN, AUTHORIZATION
 
     CLIENT_ID = demisto.getParam('client_id')
@@ -88,6 +90,16 @@ def initialize_global_values():
     AUTHORIZATION = "Basic " + encoding(CLIENT_ID, CLIENT_SECRET)
     AUTH_HEADERS = get_headers_for_login()
     initialise_scrolls_and_rules()
+    MAX_INCIDENTS_TO_FETCH = 300
+
+
+def callAPI(queryClient, payload, loginClient):
+    res = queryClient._http_request(
+        method='POST',
+        json_data=payload,
+        url_suffix='graphql-third-party'
+    )
+    return res
 
 
 '''
@@ -102,7 +114,6 @@ class LoginClient(BaseClient):
             method='GET',
             url_suffix='api/v1/login'
         )
-
         accessToken = res['accessToken']
         return accessToken
 
@@ -115,128 +126,114 @@ This class handles all query elements.
 class QueryClient(BaseClient):
 
     def fetch_incidents(self, severity, from_time, to_time, pageIndex, loginClient: LoginClient):
+        # how do i parameterize self and send it to the object call directly ?
         global SCROLL_ID_INCIDENT
+        payload = {
+            "query": "{ allAlerts(severity: [" + severity + ", high] timerange: [" + from_time + "," + to_time + "]"
+            " pagination: { currentPage: " + pageIndex + " pageSize: 150 } _scroll_id: \"" + SCROLL_ID_INCIDENT + "\") "
+            "{ allContents{rows { cid risk_id name risk_timestamp service owner risk path } _scroll_id pagination } } }"
+        }
         try:
-            payload = {
-                "query": "{ allAlerts(severity: [" + severity + ", high] timerange: [" + from_time + "," + to_time + "] pagination: { currentPage: " + pageIndex + " pageSize: 500 } _scroll_id: \"" + SCROLL_ID_INCIDENT + "\") { allContents{rows { cid risk_id name risk_timestamp service owner risk path } _scroll_id pagination } } }"
-            }
-            res = self._http_request(
-                method='POST',
-                json_data=payload,
-                url_suffix='graphql-demisto'
-            )
-
+            res = callAPI(self, payload, loginClient)
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
-                res = self._http_request(
-                    method='POST',
-                    json_data=payload,
-                    url_suffix='graphql-demisto'
-                )
+                res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull incidents', e)
-
         return res
 
     def get_risk_rules(self, loginClient: LoginClient):
+        payload = {
+            "query": "{\n allAlerts(severity: [low, high] timerange: [0,1] pagination: { currentPage:1 pageSize: 1 }) "
+                     "{ allContents{rows { cid } } riskRules { id, risk_name} } }"
+        }
         try:
-            payload = {
-                "query": "{\n allAlerts(severity: [low, high] timerange: [0,1] pagination: { currentPage:1 pageSize: 1 }) { allContents{rows { cid } } riskRules { id, risk_name} } }"
-            }
-            res = self._http_request(
-                method='POST',
-                json_data=payload,
-                url_suffix='graphql-demisto'
-            )
-
+            res = callAPI(self, payload, loginClient)
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
-                res = self._http_request(
-                    method='POST',
-                    json_data=payload,
-                    url_suffix='graphql-demisto'
-                )
+                res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull risk-rules', e)
-
         return res
 
     def get_file_information(self, loginClient: LoginClient, path: str):
         global SCROLL_ID_FILE
+        payload = {
+            "query": "{ allContents(filter: \"{\\\"and\\\": [{\\\"in\\\": [ { \\\"var\\\": \\\"path\\\"},"
+            " [\\\"" + path + "\\\"]] }]}\" pagination: { currentPage: 1 pageSize: 500 } "
+            "_scroll_id: \"" + SCROLL_ID_FILE + "\") { allContents {rows { retrieved_class  ccc_class  name "
+            "ownerDetails { name} category subcategory service type dropped dropped_reason created_at "
+            "modified_at duplicate near_duplicate misclass size  path  url  entity_person entity_org  "
+            "entity_email entity_bank_account  entity_credit_card  entity_date_of_birth entity_driving_license "
+            "entity_health_insurance  entity_license_plate  entity_ssn  entity_tin  entity_passport  entity_address  pii "
+            "risk risk_id confidence  word_cloud  duplicate_contrib_cids  near_duplicate_contrib_cids  "
+            "misclass_contrib_cid  pii_type }  _scroll_id  pagination  }  }  }"
+        }
         try:
-            payload = {
-                "query": "{ allContents(filter: \"{\\\"and\\\": [{\\\"in\\\": [ { \\\"var\\\": \\\"path\\\"}, [\\\"" + path + "\\\"]] }]}\" pagination: { currentPage: 1 pageSize: 500 } _scroll_id: \"" + SCROLL_ID_FILE + "\") { allContents {rows {        retrieved_class        ccc_class        name        ownerDetails {          name        }        category        subcategory        service        type        dropped        dropped_reason        created_at        modified_at        duplicate        near_duplicate        misclass        size        path        url        entity_person        entity_org        entity_email        entity_bank_account        entity_credit_card        entity_date_of_birth        entity_driving_license        entity_health_insurance        entity_license_plate        entity_ssn        entity_tin        entity_passport        entity_address        pii           risk        risk_id        confidence        word_cloud        duplicate_contrib_cids        near_duplicate_contrib_cids        misclass_contrib_cid        pii_type      }  _scroll_id  pagination  }  }  }"
-            }
-            res = self._http_request(
-                method='POST',
-                json_data=payload,
-                url_suffix='graphql-demisto'
-            )
-
+            res = callAPI(self, payload, loginClient)
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
-                res = self._http_request(
-                    method='POST',
-                    json_data=payload,
-                    url_suffix='graphql-demisto'
-                )
+                res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull file-information', e)
-
         return res
 
     def get_users_overview(self, loginClient: LoginClient):
+        payload = {
+            "query": "{\n  allContents: allContents(pagination: {currentPage: 1, pageSize: 1000} , aggregate: "
+            "{fields: [ \"permitted_int_users\", \"permitted_ext_users\", \"permitted_grp_users\", \"permitted_orphans\"]})"
+            " {\n    allContents {\n  pagination\n   }\n    aggregations\n  }\n}\n"
+        }
         try:
-            payload = {
-                "query": "{\n  allContents: allContents(pagination: {currentPage: 1, pageSize: 1000} , aggregate: {fields: [ \"permitted_int_users\", \"permitted_ext_users\", \"permitted_grp_users\", \"permitted_orphans\"]}) {\n    allContents {\n  pagination\n   }\n    aggregations\n  }\n}\n"
-            }
-            res = self._http_request(
-                method='POST',
-                json_data=payload,
-                url_suffix='graphql-demisto'
-            )
-
+            res = callAPI(self, payload, loginClient)
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
-                res = self._http_request(
-                    method='POST',
-                    json_data=payload,
-                    url_suffix='graphql-demisto'
-                )
+                res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull users-overview', e)
-
         return res
 
     def get_user_details(self, loginClient: LoginClient, user: str):
         global SCROLL_ID_USER_DETAIL
+        payload = {
+            "query": "{allContents( pagination: { currentPage: 1 pageSize: 500 } "
+            "_scroll_id: \"" + SCROLL_ID_USER_DETAIL + "\" filter: \""
+            "{ \\\"and\\\": [{\\\"in\\\":[\\\"" + user + "\\\", "
+            "{\\\"var\\\":\\\"entitlement.name\\\"}]}]}\" ) { allContents{ rows "
+            "{ name, path, permitted_int_users, permitted_ext_users, permitted_grp_users,"
+            " permitted_orphans} pagination _scroll_id } aggregations } }"
+        }
         try:
-            payload = {
-                "query": "{allContents( pagination: { currentPage: 1 pageSize: 500 } _scroll_id: \"" + SCROLL_ID_USER_DETAIL + "\" filter: \"{ \\\"and\\\": [{\\\"in\\\":[\\\"" + user + "\\\", {\\\"var\\\":\\\"entitlement.name\\\"}]}]}\" ){ allContents{ rows { name, path, permitted_int_users, permitted_ext_users, permitted_grp_users, permitted_orphans} pagination _scroll_id } aggregations } }"
-            }
-
-            res = self._http_request(
-                method='POST',
-                json_data=payload,
-                url_suffix='graphql-demisto'
-            )
-
+            res = callAPI(self, payload, loginClient)
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
-                res = self._http_request(
-                    method='POST',
-                    json_data=payload,
-                    url_suffix='graphql-demisto'
-                )
+                res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull users-overview', e)
-
         return res
+
+    def get_file_names(self, loginClient: LoginClient, cid: str):
+        global SCROLL_ID_FILE
+        payload = {
+            "query": "{ allContents(filter: \"{\\\"and\\\": [{\\\"in\\\": [ { \\\"var\\\": \\\"cid\\\"},"
+            " [\\\"" + cid + "\\\"]] }]}\" pagination: { currentPage: 1 pageSize: 1 } ) "
+            "{ allContents {rows {  name path }  pagination  }  }  }"
+        }
+        try:
+            res = callAPI(self, payload, loginClient)
+        except Exception as e:
+            if str(e) == 'Error in API call [401] - Unauthorized\n':
+                fetch_token(loginClient)
+                res = callAPI(self, payload, loginClient)
+            else:
+                raise Exception('Failed to pull file-names', e)
+        if res['data']['allContents']['allContents']['rows'][0] is not None:
+            return res['data']['allContents']['allContents']['rows'][0]
 
 
 def convert_to_demisto_severity(severity: str) -> int:
@@ -246,6 +243,20 @@ def convert_to_demisto_severity(severity: str) -> int:
         'high': 3,  # high severity
         'critical': 4   # critical severity
     }[severity]
+
+
+def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+    if isinstance(arg, str):
+        if arg.isdigit():
+            return int(arg)
+        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
+    if isinstance(arg, int):
+        return arg
+    raise ValueError(f'Invalid number: "{arg_name}"')
 
 
 def fetch_token(client: LoginClient):
@@ -329,14 +340,14 @@ def transform_user_details(answer):
         target['users-group'] = answer['permitted_grp_users']
     if 'name' in answer and answer['name'] is not None:
         target['file-name'] = answer['name']
-    if 'permitted_int_users' in answer and answer['permitted_int_users'] is not None:                      
+    if 'permitted_int_users' in answer and answer['permitted_int_users'] is not None:
         target['user-internal'] = answer['permitted_int_users']
-    if 'permitted_orphans' in answer and answer['permitted_orphans'] is not None:                      
+    if 'permitted_orphans' in answer and answer['permitted_orphans'] is not None:
         target['users-orphans'] = answer['permitted_orphans']
     return target
 
 
-def transform_file_information(target: dict, risk_dict: dict):
+def transform_file_information(target: dict, risk_dict: dict, queryClient: QueryClient, loginClient: LoginClient):
 
     if target['risk_id'] is not None:
         target['risk_names'] = get_rule_names(target['risk_id'], risk_dict)
@@ -353,6 +364,17 @@ def transform_file_information(target: dict, risk_dict: dict):
     if 'ownerDetails' in target:
         if target['ownerDetails'] is not None:
             target['ownerDetails'] = target['ownerDetails']['name']
+    if 'near_duplicate_contrib_cids' in target:
+        if target['near_duplicate_contrib_cids'] is not None:
+            file_names: list = []
+            for cid in target['near_duplicate_contrib_cids']:
+                res = queryClient.get_file_names(loginClient, cid)
+                if res is not None:
+                    path = res['path']
+                    name = res['name']
+                    file_names.append(path + " --> " + name)
+            target['near_duplicate_files'] = file_names
+            target.pop('near_duplicate_contrib_cids')
     return target
 
 
@@ -362,9 +384,10 @@ def test_module(client: LoginClient):
         return 'ok'
 
 
-def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: Dict[str, int]):
-
+def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: Dict[str, int], max_results: int):
+    global SCROLL_ID_INCIDENT
     last_fetch = last_run.get('last_fetch', None)
+    scroll_id = last_run.get('scroll_id', None)
     if last_fetch is None:
         from_time = 0
         to_time = int(datetime.now().timestamp() * 1000)
@@ -374,6 +397,7 @@ def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run
         last_fetch = int(last_fetch)
         from_time = last_fetch
         to_time = int(datetime.now().timestamp() * 1000)
+        SCROLL_ID_INCIDENT = str(scroll_id)
 
     min_severity = demisto.getParam('min_severity')
     if min_severity is None:
@@ -383,11 +407,11 @@ def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run
     newAlerts = True
     pageIndex = 1
     answers: list = []
-    global SCROLL_ID_INCIDENT
+
     total_count = 0
     max_records = None
 
-    while(flag == True):
+    while flag is True:
         res = queryClient.fetch_incidents(min_severity, str(from_time), str(to_time), str(pageIndex), loginClient)
         response = res['data']['allAlerts']['allContents']['rows']
         if max_records is None:
@@ -401,14 +425,17 @@ def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run
         else:
             answers.extend(response)
             total_count = len(answers)
-            pageIndex = pageIndex+1
+            pageIndex = pageIndex + 1
             if total_count == max_records:
+                break
+            elif(total_count >= max_results):
                 break
 
     incidents: List = []
-    next_run = {'last_fetch': last_fetch}
-    SCROLL_ID_INCIDENT = ""
-    if newAlerts == False:
+    next_run = {'last_fetch': last_fetch, 'scroll_id': SCROLL_ID_INCIDENT}
+
+    if newAlerts is False:
+        SCROLL_ID_INCIDENT = ""
         return next_run, incidents
 
     risk_dict = map_risk_rules(loginClient, queryClient)
@@ -435,7 +462,7 @@ def fetch_file_information(loginClient: LoginClient, queryClient: QueryClient, p
     answers: list = []
     max_records = None
 
-    while(flag == True):
+    while flag is True:
         res = queryClient.get_file_information(loginClient, path)
         response = res['data']['allContents']['allContents']['rows']
         if max_records is None:
@@ -467,13 +494,13 @@ def fetch_file_information(loginClient: LoginClient, queryClient: QueryClient, p
             target[props] = answer[props]
 
     risk_dict = map_risk_rules(loginClient, queryClient)
-    target = transform_file_information(target, risk_dict)
+    target = transform_file_information(target, risk_dict, queryClient, loginClient)
     readable_output = tableToMarkdown('Information List', target)
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Concentric.info',
-        outputs_key_field='info',
+        outputs_prefix='ConcentricAI.FileInfo',
+        outputs_key_field='ownerDetails',
         outputs=target
     )
 
@@ -486,7 +513,7 @@ def get_users_overview(loginClient: LoginClient, queryClient: QueryClient):
     readable_output = tableToMarkdown('Users Overview', result)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Concentric.info',
+        outputs_prefix='ConcentricAI.UserInfo',
         outputs_key_field='info',
         outputs=result
     )
@@ -498,7 +525,7 @@ def get_user_details(loginClient: LoginClient, queryClient: QueryClient, user: s
     answers: list = []
     max_records = None
 
-    while(flag == True):
+    while flag is True:
         res = queryClient.get_user_details(loginClient, user)
         response = res['data']['allContents']['allContents']['rows']
         if max_records is None:
@@ -519,10 +546,14 @@ def get_user_details(loginClient: LoginClient, queryClient: QueryClient, user: s
         target = transform_user_details(answer)
         results.append(target)
 
+    # do some error handling here.
+    if results == []:
+        return_error(f'No Results found for this user while executing {demisto.command()} command')
+
     readable_output = tableToMarkdown('Users Details', results)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Concentric.info',
+        outputs_prefix='ConcentricAI.UserDetails',
         outputs_key_field='info',
         outputs=results
     )
@@ -556,8 +587,18 @@ def main() -> None:
 
         # Set and define the fetch incidents command to run after activated via integration settings.
         elif demisto.command() == 'fetch-incidents':
+            global MAX_INCIDENTS_TO_FETCH
+            # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
+            max_results = arg_to_int(
+                arg=demisto.params().get('max_fetch'),
+                arg_name='max_fetch',
+                required=True
+            )
+            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
+                max_results = MAX_INCIDENTS_TO_FETCH
+
             last_run = demisto.getLastRun()
-            next_run, incidents = fetch_incidents(loginClient, queryClient, last_run)
+            next_run, incidents = fetch_incidents(loginClient, queryClient, last_run, max_results)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 

@@ -66,9 +66,10 @@ def test_fetch_incidents(requests_mock):
     from ConcentricAI import fetch_incidents
     loginClient, queryClient = setup()
     last_run: dict = {}
+    max_results = '100'
     mock_response = util_load_json('test_data/mock_incident.json')
-    requests_mock.post('https://mock-url.com/graphql-demisto', json=mock_response['response'])
-    _, new_incidents = fetch_incidents(loginClient, queryClient, last_run)
+    requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
+    _, new_incidents = fetch_incidents(loginClient, queryClient, last_run, max_results)
     t = datetime.fromtimestamp(int('1600114903415') / 1000)
     inced_time = t.strftime('%Y-%m-%dT%H:%M:%SZ')
     rawJson = '{"cid": "8f4619ebc927276a5908db0e46be2e7da14df3bd", "rule_name": "risk1,risk3", ' \
@@ -90,10 +91,10 @@ def test_fetch_file_information(requests_mock):
     path = 'path'
     name = 'file-name-1'
     mock_response = util_load_json('test_data/mock_file_information.json')
-    requests_mock.post('https://mock-url.com/graphql-demisto', json=mock_response['response'])
+    requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
     result = fetch_file_information(loginClient, queryClient, path, name)
-    assert result.outputs_prefix == 'Concentric.info'
-    assert result.outputs_key_field == 'info'
+    assert result.outputs_prefix == 'ConcentricAI.FileInfo'
+    assert result.outputs_key_field == 'ownerDetails'
     assert result.outputs == mock_response['output']
 
 
@@ -102,9 +103,9 @@ def test_get_users_overview(requests_mock):
     from ConcentricAI import get_users_overview
     loginClient, queryClient = setup()
     mock_response = util_load_json('test_data/mock_user_overview.json')
-    requests_mock.post('https://mock-url.com/graphql-demisto', json=mock_response['response'])
+    requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
     result = get_users_overview(loginClient, queryClient)
-    assert result.outputs_prefix == 'Concentric.info'
+    assert result.outputs_prefix == 'ConcentricAI.UserInfo'
     assert result.outputs_key_field == 'info'
 
 
@@ -112,8 +113,8 @@ def test_get_user_details(requests_mock):
     from ConcentricAI import get_user_details
     loginClient, queryClient = setup()
     mock_response = util_load_json('test_data/mock_user_details.json')
-    requests_mock.post('https://mock-url.com/graphql-demisto', json=mock_response['response'])
+    requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
     user = 'joe'
     result = get_user_details(loginClient, queryClient, user)
-    assert result.outputs_prefix == 'Concentric.info'
+    assert result.outputs_prefix == 'ConcentricAI.UserDetails'
     assert result.outputs_key_field == 'info'
