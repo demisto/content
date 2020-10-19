@@ -252,11 +252,6 @@ tasks:
           right:
             value:
               simple: test@example.com
-      - - operator: isExists
-          left:
-            value:
-              simple: EmailRep.Email.details.primary_mx
-            iscontext: true
     view: |-
       {
         "position": {
@@ -464,11 +459,6 @@ tasks:
           left:
             value:
               simple: EmailRep.Email.details.valid_mx
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EmailRep.Email.details.primary_mx
             iscontext: true
       - - operator: isExists
           left:
