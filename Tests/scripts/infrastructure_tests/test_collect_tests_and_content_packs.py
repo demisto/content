@@ -247,7 +247,6 @@ class TestChangedTestPlaybook:
         assert filter_envs.get('Demisto PreGA') is True
         assert filter_envs.get('Demisto Marketplace') is True
         assert filter_envs.get('Demisto 6.0') is True
-        assert filter_envs.get('Demisto one before GA') is True
         assert filter_envs.get('Demisto GA') is True
 
     def test_get_from_version_and_to_version_from_modified_files(self):
@@ -282,7 +281,6 @@ class TestChangedTestPlaybook:
         assert filter_envs.get('Demisto PreGA') is True
         assert filter_envs.get('Demisto Marketplace') is True
         assert filter_envs.get('Demisto 6.0') is True
-        assert filter_envs.get('Demisto one before GA') is False
         assert filter_envs.get('Demisto GA') is False
 
     def test_get_from_and_to_version_from_modified_files(self):

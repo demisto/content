@@ -1,14 +1,24 @@
 args:
 - default: false
+  defaultValue: type
+  description: The name of the incident field where its type is stored. Default is "type". Change this arguement only in case you use a custom field for specifying incident type.
+  isArray: false
+  name: incidentTypeFieldName
+  required: false
+  secret: false
+- default: false
   defaultValue: Phishing
-  description: A comma-separatetd list of incident types by which to filter.
+  description: A comma-separatetd list of incident types by which to filter. Specify
+    "None" to ignore incident type from deduplication logic.
   isArray: false
   name: incidentTypes
   required: false
   secret: false
 - default: false
   defaultValue: 100 days ago
-  description: The start date by which to search for duplicated existing incidents. Date format is the same as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00 +0200").
+  description: The start date by which to search for duplicated existing incidents.
+    Date format is the same as in the incidents query page. For example, "3 days ago",
+    ""2019-01-01T00:00:00 +0200").
   isArray: false
   name: exsitingIncidentsLookback
   required: false
@@ -62,7 +72,12 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: TextOnly
-  description: Whether to take into account the email from field for deduplication. "TextOnly" - incidents will be considered as duplicated based on test similarity only, ignoring the sender's adress. "Exact" - incidents will be considered as duplicated if their text is similar and their sender is the same. "Domain" -  incidents will be considered as duplicated if their text is similar and their senders' adress has the same domain. Default is "Domain".
+  description: Whether to take into account the email from field for deduplication.
+    "TextOnly" - incidents will be considered as duplicated based on test similarity
+    only, ignoring the sender's adress. "Exact" - incidents will be considered as
+    duplicated if their text is similar and their sender is the same. "Domain" -  incidents
+    will be considered as duplicated if their text is similar and their senders' adress
+    has the same domain. Default is "Domain".
   isArray: false
   name: fromPolicy
   predefined:
@@ -74,7 +89,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: All
-  description: Whether to compare the new incident to past closed or non closed incidents only. Default is "All".
+  description: Whether to compare the new incident to past closed or non closed incidents
+    only. Default is "All".
   isArray: false
   name: statusScope
   predefined:
@@ -83,7 +99,21 @@ args:
   - NonClosedOnly
   required: false
   secret: false
-comment: An out-of-the-box deduplication preprocessing script based on a machine learning algorithm.
+outputs:
+- contextPath: similarIncident.id
+  description: Similar incident ID.
+  type: string
+- contextPath: isSimilarIncidentFound
+  description: Whether a similar incident was found ("true" or "false").
+  type: boolean
+- contextPath: similarIncident
+  description: Similar incident.
+  type: unknown
+- contextPath: similarIncident.name
+  description: Similar incident name.
+  type: string
+comment: An out-of-the-box deduplication preprocessing script based on a machine learning
+  algorithm.
 commonfields:
   id: PhishingDedupPreprocessingRule
   version: -1
@@ -93,10 +123,9 @@ script: '-'
 subtype: python3
 system: false
 tags:
-- preProcessing
 - ml
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.11262
+dockerimage: demisto/sklearn:1.0.0.12410
 fromversion: 5.0.0

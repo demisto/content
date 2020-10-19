@@ -1660,11 +1660,12 @@ def attachment_handler(message, attachments):
 
 
 def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
-              transientFile, transientFileContent, transientFileCID, additional_headers, templateParams):
-    if htmlBody and not any([entry_ids, file_names, attach_cid, body]):
+              transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
+              templateParams):
+    if htmlBody and not any([entry_ids, file_names, attach_cid, manualAttachObj, body]):
         # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
         message = MIMEText(htmlBody, 'html')  # type: ignore
-    elif body and not any([entry_ids, file_names, attach_cid, htmlBody]):
+    elif body and not any([entry_ids, file_names, attach_cid, manualAttachObj, htmlBody]):
         # if there is only body and no attachments to the mail , we would like to send it without attaching every part
         message = MIMEText(body, 'plain', 'utf-8')  # type: ignore
     else:
@@ -1678,7 +1679,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
     message['reply-to'] = header(replyTo)
 
     # if there are any attachments to the mail
-    if entry_ids or file_names or attach_cid or (body and htmlBody):
+    if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
         templateParams = template_params(templateParams)
         if templateParams is not None:
             if body is not None:
@@ -1745,6 +1746,7 @@ def send_mail_command():
     transientFile = argToList(args.get('transientFile'))
     transientFileContent = argToList(args.get('transientFileContent'))
     transientFileCID = argToList(args.get('transientFileCID'))
+    manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
     additional_headers = argToList(args.get('additionalHeader'))
     template_param = args.get('templateParams')
 
@@ -1753,7 +1755,7 @@ def send_mail_command():
 
     result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
                        replyTo, file_names, attchCID, transientFile, transientFileContent,
-                       transientFileCID, additional_headers, template_param)
+                       transientFileCID, manualAttachObj, additional_headers, template_param)
     return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
 
 

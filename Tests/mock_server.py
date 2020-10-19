@@ -416,8 +416,8 @@ class MITMProxy:
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
         self.process.poll()
         if self.process.returncode is not None:
-            raise Exception("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
-                            .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
+            print_error("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
+                        .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
         log_file_exists = False
         seconds_since_init = 0
         # Make sure process is up and running
