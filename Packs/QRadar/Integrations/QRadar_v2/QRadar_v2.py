@@ -514,18 +514,21 @@ class QRadarClient:
                     return o_type["name"]
         return offense_type_id
 
-    def upload_indicators_list_request(self, reference_name, indicators_list):
+    def upload_indicators_list_request(self, reference_name, indicators_list, source=None):
         """
             Upload indicators list to the reference set
 
             Args:
                   reference_name (str): Reference set name
                   indicators_list (list): Indicators values list
+                  source (str): Source of the indicators.
             Returns:
                 dict: Reference set object
         """
         url = f'{self._server}/api/reference_data/sets/bulk_load/{parse.quote(str(reference_name), safe="")}'
         params = {"name": reference_name}
+        if source:
+            params["source"] = source
         return self.send_request(
             "POST", url, params=params, data=json.dumps(indicators_list)
         )
@@ -1777,7 +1780,7 @@ def update_reference_set_value_command(
             date_to_timestamp(v, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for v in values
         ]
     if len(values) > 1:
-        raw_ref = client.upload_indicators_list_request(ref_name, values)
+        raw_ref = client.upload_indicators_list_request(ref_name, values, source)
     elif len(values) == 1:
         raw_ref = client.update_reference_set_value(ref_name, values[0], source)
     else:
