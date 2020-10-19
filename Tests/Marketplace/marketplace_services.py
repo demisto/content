@@ -905,7 +905,7 @@ class Pack(object):
                                                                    add_whitespaces=False, wrapper='\n')
                     else:
                         # In case where the pack is up to date, i.e. latest changelog is latest rn file
-                        with open(os.path.join(release_notes_dir, latest_release_notes.replace('.', '_'), '.md'), 'r') \
+                        with open(os.path.join(release_notes_dir, f"{latest_release_notes.replace('.', '_')}.md"), 'r')\
                                 as rn_file:
                             release_notes_lines = self._clean_release_notes(rn_file.read())
 
