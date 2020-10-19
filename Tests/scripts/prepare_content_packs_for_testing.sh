@@ -30,16 +30,6 @@ TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
 PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
-echo "starting to remove"
-gsutil -m rm -r "gs://$GCS_MARKET_BUCKET/wow"
-echo "removed successfully"
-
-echo "Copying master files at: gs://marketplace-dist/content/packs to target path: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH ..."
-gsutil -m cp -r "gs://marketplace-dist/content/packs" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH"
-echo "Finished copying successfully."
-
-exit 1
-
 echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH"
 echo "Finished copying successfully."

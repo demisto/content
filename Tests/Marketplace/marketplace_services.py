@@ -867,9 +867,9 @@ class Pack(object):
 
                 # get the latest rn version in the changelog.json file
                 changelog_rn_versions = [LooseVersion(ver) for ver in [*changelog]]
-                changelog_rn_versions.sort(reverse=True)
+                changelog_rn_versions.sort()
                 # no need to check if changelog_rn_versions isn't empty because changelog file exists
-                changelog_latest_rn_version = changelog_rn_versions[0]
+                changelog_latest_rn_version = changelog_rn_versions[-1]
 
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
                 pack_versions_dict: dict = dict()
@@ -882,8 +882,8 @@ class Pack(object):
 
                         # Aggregate all rn files that are bigger than what we have in the changelog file
                         if LooseVersion(version) > changelog_latest_rn_version:
-                            with open(os.path.join(release_notes_dir, filename), 'r') as changelog_md:
-                                rn_lines = changelog_md.read()
+                            with open(os.path.join(release_notes_dir, filename), 'r') as rn_file:
+                                rn_lines = rn_file.read()
                             pack_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
 
                         found_versions.append(LooseVersion(version))
@@ -896,10 +896,18 @@ class Pack(object):
                     print_color(f"Aggregating ReleaseNotes versions:"
                                 f" {[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} =>"
                                 f" {latest_release_notes}", LOG_COLORS.GREEN)
-                    # wrap all release notes together for one changelog entry
-                    release_notes_lines = merge_version_blocks(pack_name=self._pack_name,
-                                                               pack_versions_dict=pack_versions_dict, pack_metadata={},
-                                                               wrap_pack=False, add_whitespaces=False, wrapper='\n')
+
+                    if pack_versions_dict:
+                        # wrap all release notes together for one changelog entry
+                        release_notes_lines = merge_version_blocks(pack_name=self._pack_name,
+                                                                   pack_versions_dict=pack_versions_dict,
+                                                                   pack_metadata={}, wrap_pack=False,
+                                                                   add_whitespaces=False, wrapper='\n')
+                    else:
+                        # In case where the pack is up to date, i.e. latest changelog is latest rn file
+                        with open(os.path.join(release_notes_dir, latest_release_notes.replace('.', '_'), '.md'), 'r') \
+                                as rn_file:
+                            release_notes_lines = self._clean_release_notes(rn_file.read())
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
