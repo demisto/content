@@ -6,6 +6,7 @@ import json
 import glob
 import sys
 import demisto_client
+from time import sleep
 from demisto_client.demisto_api.rest import ApiException
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list, print_error
@@ -215,6 +216,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                 raise Exception(err_msg)
         except ApiException:
             print("Failed to upload license.")
+        sleep(480)
 
         local_packs = glob.glob("/home/runner/work/content-private/content-private/content/artifacts/packs/*.zip")
         packs_install_msg = f'Installing the following packs: {packs_to_install}'
