@@ -391,11 +391,11 @@ class Client(BaseClient):
         expires_in = response.get('expires_in')
         epoch_expiration_time = self.parse_access_token_expiration_time(expires_in)
 
-        updated_context = {
+        updated_context = update_integration_context({
             'auth_token': auth_token,
             'expiration_time': epoch_expiration_time
-        }
-        demisto.setIntegrationContext(updated_context)
+        })
+        demisto.setIntegrationContext(updated_context[0])
 
         return auth_token
 
@@ -566,11 +566,11 @@ class Client(BaseClient):
         stix_indicators = stix_processor.process_stix_entities()
         reports = stix_processor.process_reports()
 
-        updated_context = {
+        updated_context = update_integration_context({
             'last_indicators_fetch_time': self.last_indicators_fetch_time,
             'last_reports_fetch_time': self.last_reports_fetch_time
-        }
-        demisto.setIntegrationContext(updated_context)
+        })
+        demisto.setIntegrationContext(updated_context[0])
 
         return indicators + stix_indicators + reports
 
