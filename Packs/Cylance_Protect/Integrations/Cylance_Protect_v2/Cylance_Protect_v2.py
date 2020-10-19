@@ -946,7 +946,7 @@ def update_device_threats_request(device_id, threat_id, event):
 
 
 def download_threat():
-    contents = {}  # type: Dict
+    contents = {}
     context = {}
     dbot_score = 0
 
