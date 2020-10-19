@@ -1277,7 +1277,7 @@ class Client(BaseClient):
             timeout=self.timeout
         )
 
-        return reply.get('reply').get('data')
+        return reply.get('reply')
 
     def insert_simple_indicators(self, indicator, type_, severity, expiration_date: int,
                                  comment, reputation, reliability, vendor_name,
@@ -1320,6 +1320,20 @@ class Client(BaseClient):
         )
 
         return reply.get('reply')
+
+    def action_status_get(self, action_id):
+        request_data: Dict[str, Any] = {
+            'group_action_id': action_id,
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/actions/get_action_status/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply').get('data')
 
 
 def get_incidents_command(client, args):
@@ -2448,7 +2462,7 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
     product_id: list = argToList(args.get('product_id'))
     serial: list = argToList(args.get('serial'))
     hostname: list = argToList(args.get('hostname'))
-    violation_ids: list = string_to_int_array(argToList(args.get('violation_ids')))
+    violation_ids: list = string_to_int_array(argToList(args.get('violation_id_list')))
     username: list = argToList(args.get('username'))
 
     reply = client.get_endpoint_violations(
@@ -2467,12 +2481,11 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
         username=username
     )
 
-    # todo: change return
-    # table: timestamp, host name, platform, user, ip, type, guid, vendor, product, serial.
+    headers = ['timestamp', 'host_name', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product', 'serial']
     return (
-        tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), removeNull=True),
+        tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), headers=headers, removeNull=True),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations': reply.get('total_count')
+            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations': reply
         },
         reply
     )
@@ -2501,17 +2514,28 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
     )
 
 
-def retrieve_file_details_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    action_id: int = arg_to_int(arg=args.get('action_id'), arg_name='group_action_id', required=True)
+def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]:
+    action_id_list = string_to_int_array(argToList(args.get('action_id')))
 
-    data = client.retrieve_file_details(action_id)
+    result = []
+
+    for action_id in action_id_list:
+        data = client.retrieve_file_details(action_id)
+
+        for key, val in data.items():
+            obj = {
+                "endpoint_id": key
+            }
+            if val:
+                obj['file_link'] = val
+            result.append(obj)
 
     return (
-        tableToMarkdown(name='Retrieve file Details', t=data, removeNull=True),
+        tableToMarkdown(name='Retrieve file Details', t=result, removeNull=True),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.retrievedFileDetails(val.actionId == obj.actionId)': data
+            f'{INTEGRATION_CONTEXT_BRAND}.retrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
         },
-        data
+        result
     )
 
 
@@ -2644,7 +2668,7 @@ def get_script_execution_result_files_command(client: Client, args: Dict[str, st
     data = client.get_script_execution_result_files(action_id, endpoint_id)
 
     return (
-        f'Script execution data is: {str(data)}',
+        f'Script execution data is: {data}',
         {
             f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionResultFile(val.actionId == obj.actionId)': data
         },
@@ -2682,6 +2706,28 @@ def insert_simple_indicators_command(client: Client, args) -> Tuple[str, Any, An
     )
 
     return 'IOCs successfully uploaded', None, None
+
+
+def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
+    action_id_list = string_to_int_array(argToList(args.get('action_id')))
+
+    result = []
+    for action_id in action_id_list:
+        data = client.action_status_get(action_id)
+
+        for item in data:
+            result.append({
+                "endpoint_id": item,
+                "status": data.get(item)
+            })
+
+    return (
+        tableToMarkdown(name='Get Action Status', t=result, removeNull=True, headers=["endpoint_id", "status"]),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.getActionStatus(val.actionId == obj.actionId)': result
+        },
+        result
+    )
 
 
 def main():
@@ -2851,6 +2897,9 @@ def main():
 
         elif demisto.command() == 'xdr-insert-simple-indicators':
             return_outputs(*insert_simple_indicators_command(client, args))
+
+        elif demisto.command() == 'xdr-action-status-get':
+            return_outputs(*action_status_get_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':

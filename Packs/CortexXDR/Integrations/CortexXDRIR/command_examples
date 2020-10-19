@@ -31,3 +31,4 @@
 !xdr-get-script-execution-results action_id=1777
 !xdr-get-script-execution-result-files action_id=1777 endpoint_id=aeec6a2cc92e46fab3b6f621722e9916
 !xdr-insert-simple-indicators indicator=IndicatorTest severity=LOW type=DOMAIN_NAME class="Test" comment="Test this integration" reliability=C reputation=UNKNOWN expiration_date=12413524
+!xdr-action-status-get action_id="1819"

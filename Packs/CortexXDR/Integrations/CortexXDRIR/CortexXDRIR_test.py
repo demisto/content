@@ -1068,6 +1068,35 @@ def test_get_policy(requests_mock):
     assert run_script_expected_result == context
 
 
+def test_get_endpoint_violations_command(requests_mock):
+    """
+        Given:
+            - violation_id_list="100,90"
+        When:
+            -Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
+        Then:
+            - returns markdown, context data and raw response.
+        """
+    from CortexXDRIR import get_endpoint_violations_command, Client
+
+    get_endpoint_violations_reply = load_test_data('./test_data/get_endpoint_violations.json')
+    get_endpoint_violations_expected_result = {
+        'PaloAltoNetworksXDR.EndpointViolations': get_endpoint_violations_reply.get('reply')
+    }
+    requests_mock.post(f'{XDR_URL}/public_api/v1/device_control/get_violations/', json=get_endpoint_violations_reply)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'violation_id_list': '100'
+    }
+
+    _, context, _ = get_endpoint_violations_command(client, args)
+
+    assert get_endpoint_violations_expected_result == context
+
+
 def test_retrieve_files_command(requests_mock):
     """
     Given:
@@ -1104,8 +1133,16 @@ def test_retrieve_file_details_command(requests_mock):
     from CortexXDRIR import retrieve_file_details_command, Client
 
     data = load_test_data('./test_data/retrieve_file_details.json')
+
+    output = data.get('reply').get('data')
+    result = []
+    for item in output:
+        result.append({
+            "endpoint_id": item,
+            "file_link": output.get(item)
+        })
     retrieve_expected_result = {
-        'PaloAltoNetworksXDR.retrievedFileDetails(val.actionId == obj.actionId)': data.get('reply').get('data')
+        'PaloAltoNetworksXDR.retrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
     }
     requests_mock.post(f'{XDR_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
 
@@ -1310,7 +1347,7 @@ def test_get_script_code_command(requests_mock):
     from CortexXDRIR import get_script_code_command, Client
 
     get_script_code_command_reply = load_test_data('./test_data/get_script_code.json')
-    get_script_code_command_results_files_command_expected_result = {
+    get_script_code_command_expected_result = {
         'PaloAltoNetworksXDR.scriptCode(val.script_uid == obj.script_uid)':
             get_script_code_command_reply.get('reply')}
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_code/',
@@ -1324,7 +1361,7 @@ def test_get_script_code_command(requests_mock):
     }
 
     _, context, _ = get_script_code_command(client, args)
-    assert get_script_code_command_results_files_command_expected_result == context
+    assert get_script_code_command_expected_result == context
 
 
 def test_insert_simple_indicators_command(requests_mock):
@@ -1370,6 +1407,44 @@ def test_insert_simple_indicators_command(requests_mock):
 
     human_readable, _, _ = insert_simple_indicators_command(client, args)
     assert insert_simple_indicators_command_command_expected_result == human_readable
+
+
+def test_action_status_get_command(requests_mock):
+    """
+        Given:
+            -action_id
+        When:
+            Retrieve the status of the requested actions according to the action ID.
+        Then:
+            - returns markdown, context data and raw response.
+        """
+    from CortexXDRIR import action_status_get_command, Client
+
+    action_status_get_command_command_reply = load_test_data('./test_data/action_status_get.json')
+
+    data = action_status_get_command_command_reply.get('reply').get('data')
+    result = []
+    for item in data:
+        result.append({
+            "endpoint_id": item,
+            "status": data.get(item)
+        })
+    action_status_get_command_expected_result = {
+        'PaloAltoNetworksXDR.getActionStatus(val.actionId == obj.actionId)':
+            result}
+
+    requests_mock.post(f'{XDR_URL}/public_api/v1/actions/get_action_status/',
+                       json=action_status_get_command_command_reply)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'action_id': '1810'
+    }
+
+    _, context, _ = action_status_get_command(client, args)
+    assert action_status_get_command_expected_result == context
 
 
 def test_arg_to_dictionary():
