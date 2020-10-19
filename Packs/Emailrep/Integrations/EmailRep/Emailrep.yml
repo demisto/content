@@ -131,7 +131,7 @@ script:
       type: String
       description: online profiles used by the email
   - arguments:
-    - default: false
+    - default: true
       description: Email address to get reputation for
       isArray: false
       name: email
