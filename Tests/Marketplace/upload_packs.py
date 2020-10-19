@@ -734,11 +734,11 @@ def get_last_upload_commit_hash(index_folder_path):
         sys.exit(1)
     else:
         inner_index_json_file = load_json(inner_index_json_path)
-        if 'commit' not in inner_index_json_path:
+        if 'commit' in inner_index_json_file:
+            last_upload_commit_hash = inner_index_json_file['commit']
+        else:
             print_error(f"No commit field in {GCPConfig.INDEX_NAME}.json, content: {str(inner_index_json_file)}")
             sys.exit(1)
-        else:
-            last_upload_commit_hash = inner_index_json_file['commit']
 
     return last_upload_commit_hash
 
