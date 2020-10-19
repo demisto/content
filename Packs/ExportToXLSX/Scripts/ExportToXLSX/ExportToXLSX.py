@@ -34,9 +34,7 @@ def write_data(sheet: str, data_item: Union[dict, list], data_headers: Optional[
                         worksheet.write(row, col, ', '.join(item_value), border)
                     else:
                         worksheet.write(row, col, str(item_value), border)
-                        col += 1
-                else:
-                    col += 1
+                col += 1
 
 
 def parse_data(data: Union[str, dict, list], sheets: list):
