@@ -45,7 +45,7 @@ Creates a user.
 | --- | --- | --- |
 | IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Instance name for the integration. | 
+| IAM.Vendor.details | string | Gives the user information if the API is success, else error information. | 
 | IAM.Vendor.email | String | The email address of the employee. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
@@ -88,7 +88,7 @@ Updates an existing user with the data passed in the user-profile argument.
 | --- | --- | --- |
 | IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Instance name for the integration. | 
+| IAM.Vendor.details | string | Gives the user information if the API is success, else error information. | 
 | IAM.Vendor.email | String | The email address of the employee. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
@@ -130,7 +130,7 @@ Retrieves a single user resource.
 | --- | --- | --- |
 | IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Instance name for the integration. | 
+| IAM.Vendor.details | string | Gives the user information if the API is success, else error information. | 
 | IAM.Vendor.email | String | The email address of the employee. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
@@ -173,7 +173,7 @@ Disable an active user.
 | --- | --- | --- |
 | IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Instance name for the integration. | 
+| IAM.Vendor.details | string | Gives the user information if the API is success, else error information. | 
 | IAM.Vendor.email | String | The email address of the employee. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
@@ -216,7 +216,7 @@ Enable a deprovisioned user.
 | --- | --- | --- |
 | IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Instance name for the integration. | 
+| IAM.Vendor.details | string | Gives the user information if the API is success, else error information. | 
 | IAM.Vendor.email | String | The email address of the employee. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 

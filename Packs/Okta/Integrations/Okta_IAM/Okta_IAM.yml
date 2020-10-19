@@ -69,7 +69,7 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Instance name for the integration.
+      description: Gives the user information if the API is success, else error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The email address of the employee.
@@ -123,7 +123,7 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Instance name for the integration.
+      description: Gives the user information if the API is success, else error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The email address of the employee.
@@ -165,7 +165,7 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Instance name for the integration.
+      description: Gives the user information if the API is success, else error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The email address of the employee.
@@ -218,7 +218,7 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Instance name for the integration.
+      description: Gives the user information if the API is success, else error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The email address of the employee.
@@ -260,7 +260,7 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Instance name for the integration.
+      description: Gives the user information if the API is success, else error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The email address of the employee.
