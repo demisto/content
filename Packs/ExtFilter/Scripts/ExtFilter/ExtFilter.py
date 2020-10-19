@@ -572,7 +572,7 @@ class ExtFilter:
     def __init__(self, dx: ContextData):
         self.__dx = dx
 
-    def filter_conditions(self, root: Any, conds: Union[dict, list], path: Optional[str] = None) -> Optional[Value]:
+    def filter_by_expressions(self, root: Any, conds: Union[dict, list], path: Optional[str] = None) -> Optional[Value]:
         """ Filter the value by the conditions
 
           *** NOTE ***
@@ -600,7 +600,7 @@ class ExtFilter:
 
           :param self: This instance.
           :param root: The value to filter.
-          :param conds: The condition expression to filter the value.
+          :param conds: The expressions to filter the value.
           :param path: The path to apply the conditions.
           :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
         """
@@ -614,7 +614,7 @@ class ExtFilter:
                 (parent, parent_path), (child, child_name) = get_parent_child(root, path)
 
             if isinstance(child, list):
-                child = [v.value for v in [self.filter_conditions(
+                child = [v.value for v in [self.filter_by_expressions(
                     r, conds, None) for r in child] if v]
                 if parent:
                     parent[child_name] = child
@@ -650,13 +650,13 @@ class ExtFilter:
                 else:
                     val = None
                     if ok is None:
-                        val = self.filter_conditions(root, x, path)
+                        val = self.filter_by_expressions(root, x, path)
                         ok = bool(val) ^ (neg or False)
                     elif lop is None or lop == 'and':
-                        val = self.filter_conditions(root, x, path)
+                        val = self.filter_by_expressions(root, x, path)
                         ok = ok and (bool(val) ^ (neg or False))
                     elif lop == 'or':
-                        val = self.filter_conditions(root, x, path)
+                        val = self.filter_by_expressions(root, x, path)
                         ok = ok or (bool(val) ^ (neg or False))
                     else:
                         exit_error(f'Invalid logical operator: {lop}')
@@ -666,29 +666,29 @@ class ExtFilter:
         else:
             exit_error(f'Invalid condition format: {conds}')
 
-    def filter_custom_conditions(self, root: Value, conds: Union[dict, list]) -> Optional[Value]:
+    def filter_by_conditions(self, root: Value, conds: Union[dict, list]) -> Optional[Value]:
         """ Filter the value by the conditions
 
           *** NOTE ***
           expression for 'conds':
           [
             {
-              "path1": <expression> for filter_conditions(),
-              "path2": <expression> for filter_conditions()
+              "path1": <expression> for filter_by_expressions(),
+              "path2": <expression> for filter_by_expressions()
               :
             }
             'or',
             [
               'not',
               {
-                "path3": <expression> for filter_conditions(),
-                "path4": <expression> for filter_conditions()
+                "path3": <expression> for filter_by_expressions(),
+                "path4": <expression> for filter_by_expressions()
                 :
               },
               'or',
               {
-                "path5": <expression> for filter_conditions(),
-                "path6": <expression> for filter_conditions()
+                "path5": <expression> for filter_by_expressions(),
+                "path6": <expression> for filter_by_expressions()
                 :
               }
             }
@@ -702,7 +702,7 @@ class ExtFilter:
         if isinstance(conds, dict):
             # AND conditions
             for x in conds.items():
-                root = self.filter_conditions(root, x[1], x[0])
+                root = self.filter_by_expressions(root, x[1], x[0])
                 if not root:
                     return None
                 root = root.value
@@ -721,13 +721,13 @@ class ExtFilter:
                 else:
                     val = None
                     if ok is None:
-                        val = self.filter_custom_conditions(root, x)
+                        val = self.filter_by_conditions(root, x)
                         ok = bool(val) ^ (neg or False)
                     elif lop is None or lop == 'and':
-                        val = self.filter_custom_conditions(root, x)
+                        val = self.filter_by_conditions(root, x)
                         ok = ok and (bool(val) ^ (neg or False))
                     elif lop == 'or':
-                        val = self.filter_custom_conditions(root, x)
+                        val = self.filter_by_conditions(root, x)
                         ok = ok or (bool(val) ^ (neg or False))
                     else:
                         exit_error(f'Invalid logical operator: {lop}')
@@ -755,7 +755,7 @@ class ExtFilter:
                 conds = {
                     "matches conditions of": self.parse_conds_json(conds) if isinstance(conds, str) else conds
                 }
-                return self.filter_conditions(root, conds, path) if isinstance(root, dict) else None
+                return self.filter_by_expressions(root, conds, path) if isinstance(root, dict) else None
             else:
                 return self.filter_value(root, "matches conditions of", conds)
 
@@ -766,14 +766,14 @@ class ExtFilter:
                     "value matches expressions of": conds
                 }
                 if isinstance(root, dict):
-                    return Value({k: v for k, f, v in [(k, self.filter_conditions(v, conds, path), v) for k, v in root.items()] if f and f.value})
+                    return Value({k: v for k, f, v in [(k, self.filter_by_expressions(v, conds, path), v) for k, v in root.items()] if f and f.value})
                 else:
-                    return self.filter_conditions(root, conds, path)
+                    return self.filter_by_expressions(root, conds, path)
             else:
                 if isinstance(root, dict):
-                    return Value({k: v for k, f, v in [(k, self.filter_conditions(v, conds), v) for k, v in root.items()] if f and f.value})
+                    return Value({k: v for k, f, v in [(k, self.filter_by_expressions(v, conds), v) for k, v in root.items()] if f and f.value})
                 else:
-                    return self.filter_conditions(root, conds)
+                    return self.filter_by_expressions(root, conds)
 
         elif optype in ("is", "isn't"):
             filstr = conds
@@ -787,7 +787,7 @@ class ExtFilter:
             conds = {
                 optype: self.parse_conds_json(conds) if isinstance(conds, str) else conds
             }
-            return self.filter_conditions(root, conds, path) if isinstance(root, dict) else None
+            return self.filter_by_expressions(root, conds, path) if isinstance(root, dict) else None
 
         elif optype == "keeps":
             conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
@@ -803,25 +803,25 @@ class ExtFilter:
 
         elif optype == "matches expressions of":
             conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
-            return self.filter_conditions(root, conds)
+            return self.filter_by_expressions(root, conds)
 
         elif optype == "matches conditions of":
             conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
-            return self.filter_custom_conditions(root, conds)
+            return self.filter_by_conditions(root, conds)
 
         elif optype == "value matches expressions of":
             conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
             if isinstance(root, dict):
-                return Value({k: v.value for k, v in {k: self.filter_conditions(v, conds) for k, v in root.items()}.items() if v})
+                return Value({k: v.value for k, v in {k: self.filter_by_expressions(v, conds) for k, v in root.items()}.items() if v})
             else:
-                return self.filter_conditions(root, conds)
+                return self.filter_by_expressions(root, conds)
 
         elif optype == "value matches conditions of":
             conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
             if isinstance(root, dict):
-                return Value({k: v.value for k, v in {k: self.filter_custom_conditions(v, conds) for k, v in root.items()}.items() if v})
+                return Value({k: v.value for k, v in {k: self.filter_by_conditions(v, conds) for k, v in root.items()}.items() if v})
             else:
-                return self.filter_custom_conditions(root, conds)
+                return self.filter_by_conditions(root, conds)
 
         return Value(root) if match_value(root, optype, conds) else None
 

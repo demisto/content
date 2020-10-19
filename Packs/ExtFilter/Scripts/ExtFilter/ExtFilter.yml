@@ -1,6 +1,7 @@
 commonfields:
-  id: ExtFilter
-  version: -1
+  id: 257cf15c-c28a-4114-802f-1fff894c886c
+  version: 45
+vcShouldKeepItemLegacyProdMachine: false
 name: ExtFilter
 script: ''
 type: python
@@ -158,9 +159,7 @@ args:
   description: '`incident` context,  Change to `From previous tasks` and input `incident`'
 scripttarget: 0
 subtype: python3
+pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.6.12176
 runas: DBotWeakRole
-fromversion: 5.0.0
-tests:
-- No tests (auto formatted)

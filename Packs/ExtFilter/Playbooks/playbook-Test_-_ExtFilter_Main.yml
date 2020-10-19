@@ -1,16 +1,16 @@
 id: c385868a-cc48-4c9c-88b5-7e462d63ff40
-version: 2
+version: 5
 vcShouldKeepItemLegacyProdMachine: false
 name: Test - ExtFilter Main
-description: Test Suite for ExtFilter
+description: Run Test Suite for ExtFilter
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3eb49129-747d-40b1-8aff-ff09b2de5967
+    taskid: 91064668-f9fe-4388-845d-05ecec920aa7
     type: start
     task:
-      id: 3eb49129-747d-40b1-8aff-ff09b2de5967
+      id: 91064668-f9fe-4388-845d-05ecec920aa7
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: d0ec8b55-6c62-45a8-8206-f129e044c240
+    taskid: 04fb8e2a-3b92-40a4-8b48-7d72abb6f0de
     type: regular
     task:
-      id: d0ec8b55-6c62-45a8-8206-f129e044c240
+      id: 04fb8e2a-3b92-40a4-8b48-7d72abb6f0de
       version: -1
       name: Cleanup ContextData
       description: Delete field from context
@@ -69,10 +69,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: b3155d47-cb58-44c1-8d2d-77ea7ad9977e
+    taskid: 43b140f7-084a-4400-8d7b-0c01b7aa1fb9
     type: playbook
     task:
-      id: b3155d47-cb58-44c1-8d2d-77ea7ad9977e
+      id: 43b140f7-084a-4400-8d7b-0c01b7aa1fb9
       version: -1
       name: matches conditions of
       playbookName: Test - ExtFilter
@@ -196,10 +196,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: e458d6c2-2737-4a04-8b89-f54b3974c6b9
+    taskid: 19cdc401-3960-484a-8078-48a532612daf
     type: playbook
     task:
-      id: e458d6c2-2737-4a04-8b89-f54b3974c6b9
+      id: 19cdc401-3960-484a-8078-48a532612daf
       version: -1
       name: is filtered by
       playbookName: Test - ExtFilter
@@ -322,10 +322,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: e9612142-61f9-456f-8f24-4016182bbafc
+    taskid: aafba8ca-5281-40e1-89a6-30c7b15f90f7
     type: playbook
     task:
-      id: e9612142-61f9-456f-8f24-4016182bbafc
+      id: aafba8ca-5281-40e1-89a6-30c7b15f90f7
       version: -1
       name: value matches conditions of
       playbookName: Test - ExtFilter
@@ -418,10 +418,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: b5b947c1-4908-4644-8a70-1c5e76bdee2d
+    taskid: 2a3d82f9-065d-4407-86ca-def215520131
     type: playbook
     task:
-      id: b5b947c1-4908-4644-8a70-1c5e76bdee2d
+      id: 2a3d82f9-065d-4407-86ca-def215520131
       version: -1
       name: Filter for nested array
       playbookName: Test - ExtFilter
@@ -521,10 +521,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 477f467c-906a-4746-8ded-363076cac2c4
+    taskid: adc14456-a5fb-4cbc-882f-919b5075ea8b
     type: playbook
     task:
-      id: 477f467c-906a-4746-8ded-363076cac2c4
+      id: adc14456-a5fb-4cbc-882f-919b5075ea8b
       version: -1
       name: Wildcard Filter
       playbookName: Test - ExtFilter
@@ -617,10 +617,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: b97d71b5-d274-4924-84dd-341a76c56799
+    taskid: 07a66e20-d984-40b5-8861-58d337c1e0d4
     type: playbook
     task:
-      id: b97d71b5-d274-4924-84dd-341a76c56799
+      id: 07a66e20-d984-40b5-8861-58d337c1e0d4
       version: -1
       name: Regex Filter
       playbookName: Test - ExtFilter
@@ -713,10 +713,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: c3d4d0e8-f792-47e7-8f4b-efbf6242115f
+    taskid: 44ee4110-be89-4fb5-8975-b4832ccf61c8
     type: playbook
     task:
-      id: c3d4d0e8-f792-47e7-8f4b-efbf6242115f
+      id: 44ee4110-be89-4fb5-8975-b4832ccf61c8
       version: -1
       name: Complex Filters 1
       playbookName: Test - ExtFilter
@@ -969,10 +969,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 8c9cdc1a-102a-4d3b-8e63-0a601f5cfaba
+    taskid: f72cdee8-cd8b-4ba7-814e-738db6802e05
     type: playbook
     task:
-      id: 8c9cdc1a-102a-4d3b-8e63-0a601f5cfaba
+      id: f72cdee8-cd8b-4ba7-814e-738db6802e05
       version: -1
       name: Filter by incident fields
       playbookName: Test - ExtFilter

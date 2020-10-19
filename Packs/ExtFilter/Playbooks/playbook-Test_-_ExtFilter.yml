@@ -1,16 +1,16 @@
 id: d9d715b7-2600-4535-8bfd-0978ff593976
-version: 55
+version: 57
 vcShouldKeepItemLegacyProdMachine: false
 name: Test - ExtFilter
-description: Test ExtFilter transformer
+description: Run ExtFilter for a test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e7c37eb4-69a2-4ad8-87f4-e125e9ff73a9
+    taskid: 3c681cc8-8dab-4ffd-8000-61fc881d3525
     type: start
     task:
-      id: e7c37eb4-69a2-4ad8-87f4-e125e9ff73a9
+      id: 3c681cc8-8dab-4ffd-8000-61fc881d3525
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 4478210f-e4d9-4b11-8615-6c51e984ffea
+    taskid: 9d0bd9f1-a193-41b4-8b67-63d64c28078e
     type: regular
     task:
-      id: 4478210f-e4d9-4b11-8615-6c51e984ffea
+      id: 9d0bd9f1-a193-41b4-8b67-63d64c28078e
       version: -1
       name: Set Input Source
       description: Set a value in context under the key you entered.
@@ -73,10 +73,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: dbbacd7f-0f9d-4414-8961-e32cb97c82c5
+    taskid: faca8871-03aa-44eb-8df2-8f7c8e6f6386
     type: regular
     task:
-      id: dbbacd7f-0f9d-4414-8961-e32cb97c82c5
+      id: faca8871-03aa-44eb-8df2-8f7c8e6f6386
       version: -1
       name: Run ExtFilter
       description: Set a value in context under the key you entered.
@@ -141,10 +141,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: e5ea1d43-7fde-4bd4-8747-a7fe41e78afc
+    taskid: 51c70733-40a9-4dc4-893e-caeaeb109f87
     type: condition
     task:
-      id: e5ea1d43-7fde-4bd4-8747-a7fe41e78afc
+      id: 51c70733-40a9-4dc4-893e-caeaeb109f87
       version: -1
       name: Verify Result
       description: Prints text to war room (Markdown supported)
@@ -187,10 +187,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 4203749f-44e9-4091-807c-303b131c8d2e
+    taskid: e44d9d92-2ef1-4185-8bf5-644c204fd908
     type: title
     task:
-      id: 4203749f-44e9-4091-807c-303b131c8d2e
+      id: e44d9d92-2ef1-4185-8bf5-644c204fd908
       version: -1
       name: Done
       type: title
@@ -211,10 +211,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 8867eb64-a619-407c-8944-cdd344edb3a3
+    taskid: 5ab39cc7-a765-4265-8958-e38ec4cfe1e9
     type: regular
     task:
-      id: 8867eb64-a619-407c-8944-cdd344edb3a3
+      id: 5ab39cc7-a765-4265-8958-e38ec4cfe1e9
       version: -1
       name: Set Expected Output
       description: Set a value in context under the key you entered.
@@ -248,10 +248,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: b0e064ef-7f45-4889-8136-0e2ffe835d22
+    taskid: 045da835-5545-4195-857f-5fa17c77d306
     type: regular
     task:
-      id: b0e064ef-7f45-4889-8136-0e2ffe835d22
+      id: 045da835-5545-4195-857f-5fa17c77d306
       version: -1
       name: Set ExtFilterFilter
       description: Set a value in context under the key you entered.
@@ -286,10 +286,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: e1d9b996-ac38-48c1-8f34-596a561f8cfd
+    taskid: 3a6375ee-0a8b-457e-8b51-03dd386beb97
     type: regular
     task:
-      id: e1d9b996-ac38-48c1-8f34-596a561f8cfd
+      id: 3a6375ee-0a8b-457e-8b51-03dd386beb97
       version: -1
       name: Parse ExtFilterFilter
       description: Set a value in context under the key you entered.
