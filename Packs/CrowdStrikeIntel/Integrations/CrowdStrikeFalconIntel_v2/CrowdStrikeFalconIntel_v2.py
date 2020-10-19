@@ -353,7 +353,7 @@ def cs_actors_command(client: Client, args: Dict[str, str]) -> CommandResults:
     outputs: List[Dict[str, Any]] = list()
     md_outputs: List[Dict[str, Any]] = list()
     md: str = str()
-    title: str = 'Falcon Intel Actor search:'
+    title: str = 'Falcon Intel Actor search:WOW'
 
     if resources:
         for r in resources:
