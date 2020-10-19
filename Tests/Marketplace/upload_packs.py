@@ -111,7 +111,6 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
             print_error(f"Failed creating {GCPConfig.INDEX_NAME} folder with extracted data.")
             sys.exit(1)
 
-        print(os.listdir(index_folder_path))
         os.remove(download_index_path)
         print(f"Finished downloading and extracting {GCPConfig.INDEX_NAME} file to {extract_destination_path}")
 
@@ -728,20 +727,16 @@ def get_last_upload_commit_hash(index_folder_path):
     Returns: The commit hash
 
     """
-    last_upload_commit_hash = str()
 
-    # TODO: Unzip
     inner_index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
     if not os.path.exists(inner_index_json_path):
-        # will happen only in init bucket run
         print_error(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
-        # TODO: what to do when index json file doesn't exist
-        pass
+        sys.exit(1)
     else:
         inner_index_json_file = load_json(inner_index_json_path)
         if 'commit' not in inner_index_json_path:
-            # TODO: what to do when no commit field in index file
-            pass
+            print_error(f"No commit field in {GCPConfig.INDEX_NAME}.json, content: {str(inner_index_json_file)}")
+            sys.exit(1)
         else:
             last_upload_commit_hash = inner_index_json_file['commit']
 
