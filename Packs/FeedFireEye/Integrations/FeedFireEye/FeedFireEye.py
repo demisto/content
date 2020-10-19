@@ -319,8 +319,8 @@ def parse_timestamp(next_url_to_extract_timestamp_from):
         timestamp_in_seconds = math.floor(timestamp_in_micro_seconds / 1000000)
         return timestamp_in_seconds
     except Exception:
-        # 946768556 is 2000-01-01
-        return 946768556
+        # 1539942216 is 2018-10-19
+        return 1539942216
 
 
 class Client(BaseClient):
@@ -347,9 +347,9 @@ class Client(BaseClient):
         self.tlp_color = tlp_color
 
         integration_context = demisto.getIntegrationContext()
-        # 946768556 is 2000-01-01
-        self.last_indicators_fetch_time = integration_context.get('last_indicators_fetch_time', 946768556)
-        self.last_reports_fetch_time = integration_context.get('last_reports_fetch_time', 946768556)
+        # 1539942216 is 2018-10-19
+        self.last_indicators_fetch_time = integration_context.get('last_indicators_fetch_time', 1539942216)
+        self.last_reports_fetch_time = integration_context.get('last_reports_fetch_time', 1539942216)
 
     @staticmethod
     def parse_access_token_expiration_time(expires_in: str) -> int:
@@ -391,12 +391,11 @@ class Client(BaseClient):
         expires_in = response.get('expires_in')
         epoch_expiration_time = self.parse_access_token_expiration_time(expires_in)
 
-        demisto.setIntegrationContext(
-            {
-                'auth_token': auth_token,
-                'expiration_time': epoch_expiration_time
-            }
-        )
+        updated_context = {
+            'auth_token': auth_token,
+            'expiration_time': epoch_expiration_time
+        }
+        demisto.setIntegrationContext(updated_context)
 
         return auth_token
 
@@ -567,10 +566,11 @@ class Client(BaseClient):
         stix_indicators = stix_processor.process_stix_entities()
         reports = stix_processor.process_reports()
 
-        demisto.setIntegrationContext({
+        updated_context = {
             'last_indicators_fetch_time': self.last_indicators_fetch_time,
             'last_reports_fetch_time': self.last_reports_fetch_time
-        })
+        }
+        demisto.setIntegrationContext(updated_context)
 
         return indicators + stix_indicators + reports
 
