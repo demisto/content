@@ -7,9 +7,11 @@ import io
 
 TEST_EMAIL_ADDRESS = 'test@example.com'
 
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
 
 def test_email_reputation_get(requests_mock):
     """Test emailrep-email-reputation-get command"""
@@ -22,8 +24,8 @@ def test_email_reputation_get(requests_mock):
         base_url='https://emailrep.io',
         verify=False,
         headers={
-        'Key': 'testkey',
-        'User-Agent': f'{INTEGRATION_NAME}-unittest'
+            'Key': 'testkey',
+            'User-Agent': f'{INTEGRATION_NAME}-unittest'
         }
     )
 
@@ -36,38 +38,38 @@ def test_email_reputation_get(requests_mock):
     assert response.outputs_prefix == f'{INTEGRATION_NAME}.Email'
     assert response.outputs_key_field == 'email'
     assert response.outputs == [{
-    "details": {
-        "blacklisted": True,
-        "malicious_activity": True,
-        "malicious_activity_recent": True,
-        "credentials_leaked": True,
-        "credentials_leaked_recent": False,
-        "data_breach": True,
-        "first_seen": "07/01/2008",
-        "last_seen": "10/18/2020",
-        "domain_exists": True,
-        "domain_reputation": "n/a",
-        "new_domain": False,
-        "days_since_domain_creation": 9197,
-        "suspicious_tld": False,
-        "spam": True,
-        "free_provider": True,
-        "disposable": False,
-        "deliverable": False,
-        "accept_all": False,
-        "valid_mx": True,
-        "primary_mx": "",
-        "spoofable": True,
-        "spf_strict": True,
-        "dmarc_enforced": False,
-        "profiles": [
-            "twitter"
-        ]
-    },
-    "email": f"{TEST_EMAIL_ADDRESS}",
-    "reputation": "none",
-    "suspicious": True,
-    "references": 143
+        "details": {
+            "blacklisted": True,
+            "malicious_activity": True,
+            "malicious_activity_recent": True,
+            "credentials_leaked": True,
+            "credentials_leaked_recent": False,
+            "data_breach": True,
+            "first_seen": "07/01/2008",
+            "last_seen": "10/18/2020",
+            "domain_exists": True,
+            "domain_reputation": "n/a",
+            "new_domain": False,
+            "days_since_domain_creation": 9197,
+            "suspicious_tld": False,
+            "spam": True,
+            "free_provider": True,
+            "disposable": False,
+            "deliverable": False,
+            "accept_all": False,
+            "valid_mx": True,
+            "primary_mx": "",
+            "spoofable": True,
+            "spf_strict": True,
+            "dmarc_enforced": False,
+            "profiles": [
+                "twitter"
+            ]
+        },
+        "email": f"{TEST_EMAIL_ADDRESS}",
+        "reputation": "none",
+        "suspicious": True,
+        "references": 143
     }]
 
     # Assert mandatory fields check
@@ -75,12 +77,13 @@ def test_email_reputation_get(requests_mock):
         email_reputation_command(client, {})
     assert 'Email(s) not specified' in str(error_info.value)
 
+
 def test_report_email_address(requests_mock):
     """Test emailrep-email-address-report command"""
     from EmailRep import INTEGRATION_NAME, Client, report_email_address_command
 
     mock_response = {
-    "status": "success"
+        "status": "success"
     }
 
     requests_mock.post(f'https://emailrep.io/report', json=mock_response)
@@ -89,8 +92,8 @@ def test_report_email_address(requests_mock):
         base_url='https://emailrep.io',
         verify=False,
         headers={
-        'Key': 'testkey',
-        'User-Agent': f'{INTEGRATION_NAME}-unittest'
+            'Key': 'testkey',
+            'User-Agent': f'{INTEGRATION_NAME}-unittest'
         }
     )
 
@@ -104,7 +107,7 @@ def test_report_email_address(requests_mock):
     assert response.outputs_prefix == f'{INTEGRATION_NAME}.Report'
     assert response.outputs_key_field == 'status'
     assert response.outputs == {
-    "status": "success"
+        "status": "success"
     }
 
     # Assert tag checking.
@@ -143,8 +146,8 @@ def test_email(requests_mock):
         base_url='https://emailrep.io',
         verify=False,
         headers={
-        'Key': 'testkey',
-        'User-Agent': f'{INTEGRATION_NAME}-unittest'
+            'Key': 'testkey',
+            'User-Agent': f'{INTEGRATION_NAME}-unittest'
         }
     )
 
@@ -158,38 +161,38 @@ def test_email(requests_mock):
     assert response.outputs_prefix == f'{INTEGRATION_NAME}.EmailScore'
     assert response.outputs_key_field == 'email'
     assert response.outputs == [{
-    "details": {
-        "blacklisted": True,
-        "malicious_activity": True,
-        "malicious_activity_recent": True,
-        "credentials_leaked": True,
-        "credentials_leaked_recent": False,
-        "data_breach": True,
-        "first_seen": "07/01/2008",
-        "last_seen": "10/18/2020",
-        "domain_exists": True,
-        "domain_reputation": "n/a",
-        "new_domain": False,
-        "days_since_domain_creation": 9197,
-        "suspicious_tld": False,
-        "spam": True,
-        "free_provider": True,
-        "disposable": False,
-        "deliverable": False,
-        "accept_all": False,
-        "valid_mx": True,
-        "primary_mx": "",
-        "spoofable": True,
-        "spf_strict": True,
-        "dmarc_enforced": False,
-        "profiles": [
-            "twitter"
-        ]
-    },
-    "email": "test@example.com",
-    "reputation": "none",
-    "suspicious": True,
-    "references": 143
+        "details": {
+            "blacklisted": True,
+            "malicious_activity": True,
+            "malicious_activity_recent": True,
+            "credentials_leaked": True,
+            "credentials_leaked_recent": False,
+            "data_breach": True,
+            "first_seen": "07/01/2008",
+            "last_seen": "10/18/2020",
+            "domain_exists": True,
+            "domain_reputation": "n/a",
+            "new_domain": False,
+            "days_since_domain_creation": 9197,
+            "suspicious_tld": False,
+            "spam": True,
+            "free_provider": True,
+            "disposable": False,
+            "deliverable": False,
+            "accept_all": False,
+            "valid_mx": True,
+            "primary_mx": "",
+            "spoofable": True,
+            "spf_strict": True,
+            "dmarc_enforced": False,
+            "profiles": [
+                "twitter"
+            ]
+        },
+        "email": "test@example.com",
+        "reputation": "none",
+        "suspicious": True,
+        "references": 143
     }]
 
     # Assert SUSPICIOUS dbot score
@@ -234,10 +237,9 @@ def test_email(requests_mock):
     response = email_command(client, args)
     assert response.indicators[0].dbot_score.score == Common.DBotScore.BAD
     assert response.indicators[0].dbot_score.malicious_description == \
-           'EmailRep returned malicious_activity_recent credentials_leaked_recent'
+        'EmailRep returned malicious_activity_recent credentials_leaked_recent'
 
     # Assert mandatory fields check
     with pytest.raises(ValueError) as error_info:
         email_command(client, {})
     assert 'Email(s) not specified' in str(error_info.value)
-
