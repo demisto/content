@@ -276,7 +276,7 @@ script:
     description: Report email address to EmailRep
     execution: false
     name: emailrep-email-address-report
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false
   longRunning: false
@@ -287,4 +287,4 @@ script:
   type: python
 defaultmapperin: HelloWorld-mapper
 defaultclassifier: HelloWorld
-fromversion: 5.0.0
+fromversion: 1.0.0
