@@ -152,7 +152,7 @@ Describes one or more of your instances.
                                 "AttachTime": "2020-04-26T15:49:18",
                                 "DeleteOnTermination": true,
                                 "Status": "attached",
-                                "VolumeId": "vol-069b74d27f761107c"
+                                "VolumeId": "vol-1"
                             }
                         }
                     ],
@@ -199,7 +199,7 @@ Describes one or more of your instances.
                                 }
                             ],
                             "Ipv6Addresses": [],
-                            "MacAddress": "02:09:dd:90:fa:10",
+                            "MacAddress": "add",
                             "NetworkInterfaceId": "eni",
                             "OwnerId": "some_id",
                             "PrivateDnsName": "name",
@@ -245,7 +245,7 @@ Describes one or more of your instances.
                         "Message": "Client.UserInitiatedShutdown: User initiated shutdown"
                     },
                     "StateTransitionReason": "User initiated (2020-04-26 18:28:48 GMT)",
-                    "SubnetId": "subnet-5362572a",
+                    "SubnetId": "subnet-1",
                     "Tags": [
                         {
                             "Key": "stack-id",
@@ -266,8 +266,8 @@ Describes one or more of your instances.
 >### AWS Instances
 >|ImageId|InstanceId|KeyName|LaunchDate|Monitoring|Name|PublicDNSName|PublicIPAddress|Region|State|Type|aws:cloudformation:logical-id|aws:cloudformation:stack-id|aws:cloudformation:stack-name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| ami-1 | i-0b6abefdf061a1322 | Aqua | 2020-04-26T15:49:17Z | enabled | Receiver-gs-aqua-receiver |  |  | us-west-2 | stopped | m5.4xlarge | ReceiverInstance | arn1 | name1 |
->| ami-2 | i-0f31cb599b484fe5c |  | 2020-08-19T11:23:48Z | disabled | flask-env | some_server | 1.2.3.4 | us-west-2 | running | t2.micro | AWSEBAutoScalingGroup | arn2 | name2 |
+>| ami-1 | i-1 | Aqua | 2020-04-26T15:49:17Z | enabled | Receiver-gs-aqua-receiver |  |  | us-west-2 | stopped | m5.4xlarge | ReceiverInstance | arn1 | name1 |
+>| ami-2 | i-2 |  | 2020-08-19T11:23:48Z | disabled | flask-env | some_server | 1.2.3.4 | us-west-2 | running | t2.micro | AWSEBAutoScalingGroup | arn2 | name2 |
 
 
 ### aws-ec2-describe-images
