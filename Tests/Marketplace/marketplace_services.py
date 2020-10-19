@@ -882,18 +882,19 @@ class Pack(object):
 
                         # Aggregate all rn files that are bigger than what we have in the changelog file
                         if LooseVersion(version) > changelog_latest_rn_version:
-                            rn_path = os.path.join(release_notes_dir, _version + '.md')
-                            with open(rn_path, 'r') as changelog_md:
+                            with open(os.path.join(release_notes_dir, filename), 'r') as changelog_md:
                                 rn_lines = changelog_md.read()
                             pack_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
 
-                        found_versions.append(LooseVersion(version))
+                            found_versions.append(LooseVersion(version))
                     found_versions.sort(reverse=True)
                     latest_release_notes_version = found_versions[0]
                     latest_release_notes = latest_release_notes_version.vstring
 
                     print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
 
+                    print_color(f"Aggregating ReleaseNotes versions: {[lv.vstring for lv in found_versions]} =>"
+                                f" {latest_release_notes}", LOG_COLORS.GREEN)
                     # wrap all release notes together for one changelog entry
                     release_notes_lines = merge_version_blocks(pack_name=self._pack_name,
                                                                pack_versions_dict=pack_versions_dict, pack_metadata={},

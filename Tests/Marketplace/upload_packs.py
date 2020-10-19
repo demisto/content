@@ -736,6 +736,8 @@ def get_last_upload_commit_hash(index_folder_path):
         inner_index_json_file = load_json(inner_index_json_path)
         if 'commit' in inner_index_json_file:
             last_upload_commit_hash = inner_index_json_file['commit']
+            print_color(f"Retrieved the last commit that was uploaded to production: {last_upload_commit_hash}",
+                        LOG_COLORS.GREEN)
         else:
             print_error(f"No commit field in {GCPConfig.INDEX_NAME}.json, content: {str(inner_index_json_file)}")
             sys.exit(1)
@@ -773,7 +775,6 @@ def main():
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, last_upload_commit_hash = get_recent_commits_data(content_repo, index_folder_path)
-    print(f'***** curr={current_commit_hash}, prev={last_upload_commit_hash}')
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs)
