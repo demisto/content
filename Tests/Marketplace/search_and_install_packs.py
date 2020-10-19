@@ -10,7 +10,6 @@ from demisto_client.demisto_api.rest import ApiException
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list, print_error
 from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH, IGNORED_FILES
-from Tests.configure_and_test_integration_instances import Server
 from Tests.test_content import ParallelPrintsManager
 
 PACK_METADATA_FILE = 'pack_metadata.json'
@@ -111,7 +110,7 @@ def get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock)
         lock.release()
 
 
-def search_pack(client: Server, prints_manager: ParallelPrintsManager, pack_display_name: str, pack_id: str,
+def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, pack_display_name: str, pack_id: str,
                 thread_index: int, lock: Lock):
     """ Make a pack search request.
 
