@@ -1,11 +1,11 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
-
 import spacy
 import string
 from html.parser import HTMLParser
 from html import unescape
 from re import compile as _Re
+import pandas as pd
 
 
 def handle_long_text(t, input_length):
@@ -205,3 +205,33 @@ class Tokenizer:
         if len(result) == 1:
             result = result[0]  # type: ignore
         return result
+
+
+class FileReader:
+    @staticmethod
+    def read_file(input_data, input_type):
+        data = []  # type: ignore
+        if not input_data:
+            return data
+        if input_type.endswith("string"):
+            if 'b64' in input_type:
+                input_data = base64.b64decode(input_data)
+                file_content = input_data.decode("utf-8")
+            else:
+                file_content = input_data
+        else:
+            res = demisto.getFilePath(input_data)
+            if not res:
+                return_error("Entry {} not found".format(input_data))
+            file_path = res['path']
+            if input_type.startswith('json'):
+                with open(file_path, 'r') as f:
+                    file_content = f.read()
+        if input_type.startswith('csv'):
+            return pd.read_csv(file_path).fillna('').to_dict(orient='records')
+        elif input_type.startswith('json'):
+            return json.loads(file_content)
+        elif input_type.startswith('pickle'):
+            return pd.read_pickle(file_path, compression=None)
+        else:
+            return_error("Unsupported file type %s" % input_type)
