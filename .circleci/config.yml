@@ -1202,5 +1202,7 @@ workflows:
             - Create Instances
       - Upload Packs:
           requires:
+            - Run Unit Testing And Lint
+            - Run Validations
             - Install Packs in Demisto 6_0
             - Install Packs in Demisto Marketplace - Master
