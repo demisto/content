@@ -166,6 +166,13 @@ def str_to_list(string: str) -> list:
     return string.strip().split(",") if string else None
 
 
+def str_to_dict(string: str) -> dict:
+    if not string:
+        return None
+    lst = str_to_list(string)
+    return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
+
+
 def pretty_print_case_metadata(
     result: dict, title: str = None
 ) -> str:  # TODO improve: markdownify
@@ -667,7 +674,7 @@ def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
     result = find_aggregated_events(
         skipFutureEvents=args.get("skip_future_events", None),
         exclude=args.get("exclude", None),
-        eventIdentifier=str_to_list(args.get("event_identifier", None)),
+        eventIdentifier=str_to_list(args.get("event_identifier", None)), # TODO fix
         locationID=str_to_list(args.get("location_id", None)),
         severity=str_to_list(args.get("severity", None)),
         customer=str_to_list(args.get("customer", None)),
@@ -676,7 +683,7 @@ def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
         sourceGeoCountry=str_to_list(args.get("source_geo_country", None)),
         destinationGeoCountry=str_to_list(args.get("destination_geo_country", None)),
         geoCountry=str_to_list(args.get("geo_country", None)),
-        properties=build_tags_from_list(str_to_list(args.get("properties", None))),
+        properties=str_to_dict(args.get("properties", None)),
         exactMatchProperties=args.get("exact_match_properties", None),
         subCriteria=str_to_list(args.get("sub_criteria", None)),
         signature=str_to_list(args.get("signature", None)),
@@ -774,7 +781,50 @@ def get_pcap_command(args: Dict[str, Any]) -> fileResult:
 
 
 def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    result = find_n_i_d_s_events(
+        skipFutureEvents=args.get("skip_future_events", None),
+        exclude=args.get("exclude", None),
+        eventIdentifier=str_to_list(args.get("event_identifier", None)),
+        locationID=str_to_list(args.get("location_id", None)),
+        severity=str_to_list(args.get("severity", None)),
+        customer=str_to_list(args.get("customer", None)),
+        alarmID=str_to_list(args.get("alarm_id", None)),
+        attackCategoryID=str_to_list(args.get("attack_category_id", None)),
+        sourceGeoCountry=str_to_list(args.get("source_geo_country", None)),
+        destinationGeoCountry=str_to_list(args.get("destination_geo_country", None)),
+        geoCountry=str_to_list(args.get("geo_country", None)),
+        properties=str_to_dict(args.get("properties", None)),
+        exactMatchProperties=args.get("exact_match_properties", None),
+        sensorID=str_to_list(args.get("sensor_id", None)),
+        subCriteria=str_to_list(args.get("sub_criteria", None)),
+        signature=str_to_list(args.get("signature", None)),
+        lastUpdatedTimestamp=args.get("last_updated_timestamp", None),
+        indexStartTime=args.get("index_start_time", None),
+        indexEndTime=args.get("index_end_time", None),
+        destinationIP=str_to_list(args.get("destination_ip", None)),
+        sourceIP=str_to_list(args.get("source_ip", None)),
+        ip=str_to_list(args.get("ip", None)),
+        destinationPort=str_to_list(args.get("destination_port", None)),
+        sourcePort=str_to_list(args.get("source_port", None)),
+        port=str_to_list(args.get("port", None)),
+        minSeverity=args.get("min_severity", None),
+        maxSeverity=args.get("max_severity", None),
+        limit=args.get("limit", 25),
+        offset=args.get("offset", None),
+        includeDeleted=args.get("include_deleted", None),
+        startTimestamp=args.get("start_timestamp", "-24hours"),
+        endTimestamp=args.get("end_timestamp", "now"),
+        sortBy=str_to_list(args.get("sort_by", None)),
+        includeFlags=str_to_list(args.get("include_flags", None)),
+        excludeFlags=str_to_list(args.get("exclude_flags", None)),
+    )
+    readable_output = f"# Find NIDS Events\n"
+    readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
+    readable_output += tableToMarkdown("Events", result["data"])
+    outputs = {"Argus.Event.NIDS(val.id === obj.id)": result["data"]}
+    return CommandResults(
+        readable_output=readable_output, outputs=outputs, raw_response=result
+    )
 
 
 def list_nids_events_command(args: Dict[str, Any]) -> CommandResults:
