@@ -232,9 +232,10 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         response_data, status_code, _ = client.api_client.call_api(
             resource_path='/contentpacks/installed/delete',
             method='POST',
-            header_params=header_params,
             body=packs_to_reinstall_body,
-            accept='application/json')
+            accept='application/json',
+            _request_timeout=request_timeout
+        )
         if 200 <= status_code < 300:
             message = 'Packs were successfully uninstalled!\n'
             prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
