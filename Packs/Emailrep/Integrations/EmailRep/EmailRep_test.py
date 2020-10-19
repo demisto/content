@@ -24,6 +24,7 @@ def emailrep_client():
         }
     )
 
+
 def test_email_reputation_get(requests_mock):
     """Test emailrep-email-reputation-get command"""
     from EmailRep import INTEGRATION_NAME, email_reputation_command
@@ -77,7 +78,7 @@ def test_email_reputation_get(requests_mock):
 
 def test_input_email_reputation_get():
     """Test emailrep-email-reputation-get command"""
-    from EmailRep import INTEGRATION_NAME, Client, email_reputation_command
+    from EmailRep import email_reputation_command
 
     client = emailrep_client()
     with pytest.raises(ValueError) as error_info:
@@ -87,7 +88,7 @@ def test_input_email_reputation_get():
 
 def test_report_email_address(requests_mock):
     """Test emailrep-email-address-report command"""
-    from EmailRep import INTEGRATION_NAME, Client, report_email_address_command
+    from EmailRep import INTEGRATION_NAME, report_email_address_command
 
     mock_response = {
         "status": "success"
@@ -109,7 +110,7 @@ def test_report_email_address(requests_mock):
 
 def test_input_invalid_tags_report_email_address():
     """Test emailrep-email-address-report command"""
-    from EmailRep import INTEGRATION_NAME, Client, report_email_address_command
+    from EmailRep import report_email_address_command
 
     client = emailrep_client()
     args = {
@@ -123,7 +124,7 @@ def test_input_invalid_tags_report_email_address():
 
 def test_input_tags_report_email_address():
     """Test emailrep-email-address-report command"""
-    from EmailRep import INTEGRATION_NAME, Client, report_email_address_command
+    from EmailRep import report_email_address_command
 
     client = emailrep_client()
     args = {
@@ -136,7 +137,7 @@ def test_input_tags_report_email_address():
 
 def test_input_email_report_email_address():
     """Test emailrep-email-address-report command"""
-    from EmailRep import INTEGRATION_NAME, Client, report_email_address_command
+    from EmailRep import report_email_address_command
 
     client = emailrep_client()
     args = {
@@ -149,7 +150,7 @@ def test_input_email_report_email_address():
 
 def test_email(requests_mock):
     """Test email command"""
-    from EmailRep import INTEGRATION_NAME, Client, email_command
+    from EmailRep import INTEGRATION_NAME, email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
@@ -223,7 +224,7 @@ def test_email_score_good(requests_mock):
 
 def test_email_score_suspicious(requests_mock):
     """Test emailrep-email-address-report command"""
-    from EmailRep import INTEGRATION_NAME, Client, email_command
+    from EmailRep import email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
@@ -262,7 +263,7 @@ def test_email_score_bad_malicious_activity_recent(requests_mock):
 
 def test_email_score_bad_credentials_leaked_recent(requests_mock):
     """Test emailrep-email-address-report command"""
-    from EmailRep import INTEGRATION_NAME, Client, email_command
+    from EmailRep import email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
@@ -303,7 +304,7 @@ def test_email_score_bad_malicious_activity_and_credentials_leaked_recent(reques
 
 def test_input_email():
     """Test emailrep-email-address-report command"""
-    from EmailRep import INTEGRATION_NAME, Client, email_command
+    from EmailRep import email_command
 
     client = emailrep_client()
     with pytest.raises(ValueError) as error_info:
