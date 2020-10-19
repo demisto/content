@@ -4,7 +4,7 @@
 Integration Overview Manage Check Point Firewall. Read information and to send commands to the Check Point Firewall server. 
 This integration was integrated and tested with version R80.30 of CheckPoint SmartConsole.
 
-Product Name: CheckPoint Firewall  
+Product Name: Check Point Firewall  
 Product Type: Network Security  
 Product Version: R80.30  
 
