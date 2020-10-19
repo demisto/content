@@ -134,7 +134,7 @@ script:
     - default: false
       description: Email address to get reputation for
       isArray: false
-      name: email_address
+      name: email
       required: true
       secret: false
     deprecated: false
@@ -307,6 +307,4 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultmapperin: HelloWorld-mapper
-defaultclassifier: HelloWorld
 fromversion: 5.0.0

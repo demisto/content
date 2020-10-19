@@ -157,7 +157,7 @@ def test_email(requests_mock):
 
     client = emailrep_client()
     args = {
-        'email_address': f'{TEST_EMAIL_ADDRESS}'
+        'email': f'{TEST_EMAIL_ADDRESS}'
     }
     response = email_command(client, args)
 
@@ -214,7 +214,7 @@ def test_email_score_good(requests_mock):
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     client = emailrep_client()
     args = {
-        'email_address': f'{TEST_EMAIL_ADDRESS}'
+        'email': f'{TEST_EMAIL_ADDRESS}'
     }
     mock_response["suspicious"] = False
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
@@ -230,7 +230,7 @@ def test_email_score_suspicious(requests_mock):
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     client = emailrep_client()
     args = {
-        'email_address': f'{TEST_EMAIL_ADDRESS}'
+        'email': f'{TEST_EMAIL_ADDRESS}'
     }
     mock_response["suspicious"] = True
     mock_response["details.malicious_activity_recent"] = False
@@ -249,7 +249,7 @@ def test_email_score_bad_malicious_activity_recent(requests_mock):
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     client = emailrep_client()
     args = {
-        'email_address': f'{TEST_EMAIL_ADDRESS}'
+        'email': f'{TEST_EMAIL_ADDRESS}'
     }
     mock_response["suspicious"] = True
     mock_response["details.malicious_activity_recent"] = True
@@ -269,7 +269,7 @@ def test_email_score_bad_credentials_leaked_recent(requests_mock):
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     client = emailrep_client()
     args = {
-        'email_address': f'{TEST_EMAIL_ADDRESS}'
+        'email': f'{TEST_EMAIL_ADDRESS}'
     }
     mock_response["suspicious"] = True
     mock_response["details.malicious_activity_recent"] = False
@@ -289,7 +289,7 @@ def test_email_score_bad_malicious_activity_and_credentials_leaked_recent(reques
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     client = emailrep_client()
     args = {
-        'email_address': f'{TEST_EMAIL_ADDRESS}'
+        'email': f'{TEST_EMAIL_ADDRESS}'
     }
     mock_response["suspicious"] = True
     mock_response["details.malicious_activity_recent"] = True

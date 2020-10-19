@@ -82,7 +82,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Suspicious: Suspicious = true and not malicious
     """
 
-    emails = argToList(args.get('email_address'))
+    emails = argToList(args.get('email'))
     if len(emails) == 0 or emails is None:
         raise ValueError('Email(s) not specified')
 
