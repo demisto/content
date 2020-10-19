@@ -238,11 +238,6 @@ tasks:
           - - operator: isExists
               left:
                 value:
-                  simple: CrowdStrike.Environment.VMs_total
-                iscontext: true
-          - - operator: isExists
-              left:
-                value:
                   simple: CrowdStrike.Environment.VMs_busy
                 iscontext: true
           - - operator: isExists

@@ -4,6 +4,7 @@ import sys
 import shutil
 import json
 import argparse
+from zipfile import ZipFile
 from contextlib import contextmanager
 from datetime import datetime
 from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS
@@ -163,8 +164,31 @@ def release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
     os.remove(LOCK_FILE_PATH)
 
 
-def main():
+def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
+    downloaded_dummy_index_path = 'current_dummy_index.zip'
+    extracted_dummy_index_path = 'dummy_index'
+    dummy_index_json_path = os.path.join(extracted_dummy_index_path, 'index', 'index.json')
+    dummy_index_blob.download_to_filename(downloaded_dummy_index_path)
+    os.mkdir(extracted_dummy_index_path)
+    if os.path.exists(downloaded_dummy_index_path):
+        with ZipFile(downloaded_dummy_index_path, 'r') as index_zip:
+            index_zip.extractall(extracted_dummy_index_path)
 
+    with open(dummy_index_json_path) as index_file:
+        index_json = json.load(index_file)
+        packs_from_dummy_index = index_json.get('packs', [])
+        for pack in private_packs:
+            is_pack_in_dummy_index = any(
+                [pack['id'] == dummy_index_pack['id'] for dummy_index_pack in packs_from_dummy_index])
+            if not is_pack_in_dummy_index:
+                packs_from_dummy_index.append(pack)
+
+    os.remove(downloaded_dummy_index_path)
+    shutil.rmtree(extracted_dummy_index_path)
+    return packs_from_dummy_index
+
+
+def main():
     upload_config = option_handler()
     service_account = upload_config.service_account
     build_number = upload_config.ci_build_number
@@ -200,6 +224,7 @@ def main():
                                                                                                extract_destination_path,
                                                                                                public_index_folder_path,
                                                                                                changed_pack, True)
+        private_packs = add_private_packs_from_dummy_index(private_packs, dummy_index_blob)
         upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
                               private_packs)
 
