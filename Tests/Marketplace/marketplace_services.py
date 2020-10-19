@@ -886,14 +886,15 @@ class Pack(object):
                                 rn_lines = changelog_md.read()
                             pack_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
 
-                            found_versions.append(LooseVersion(version))
-                    found_versions.sort(reverse=True)
-                    latest_release_notes_version = found_versions[0]
+                        found_versions.append(LooseVersion(version))
+                    found_versions.sort()
+                    latest_release_notes_version = found_versions[-1]
                     latest_release_notes = latest_release_notes_version.vstring
 
                     print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
 
-                    print_color(f"Aggregating ReleaseNotes versions: {[lv.vstring for lv in found_versions]} =>"
+                    print_color(f"Aggregating ReleaseNotes versions:"
+                                f" {[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} =>"
                                 f" {latest_release_notes}", LOG_COLORS.GREEN)
                     # wrap all release notes together for one changelog entry
                     release_notes_lines = merge_version_blocks(pack_name=self._pack_name,

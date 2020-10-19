@@ -519,7 +519,7 @@ def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
             md_outputs.append(md_output)
 
     else:
-        md = 'No reports found.WOW'
+        md = 'No reports found.'
 
     results: CommandResults = CommandResults(
         outputs_prefix='FalconIntel.Report',
