@@ -133,6 +133,143 @@ Describes one or more of your instances.
 | AWS.EC2.Instances.VirtualizationType | string | The virtualization type of the instance. | 
 
 
+#### Command Example
+```!aws-ec2-describe-instances```
+
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "Instances": [
+                {
+                    "AmiLaunchIndex": 0,
+                    "Architecture": "x86_64",
+                    "BlockDeviceMappings": [
+                        {
+                            "DeviceName": "/dev/dev_name",
+                            "Ebs": {
+                                "AttachTime": "2020-04-26T15:49:18",
+                                "DeleteOnTermination": true,
+                                "Status": "attached",
+                                "VolumeId": "vol-069b74d27f761107c"
+                            }
+                        }
+                    ],
+                    "CapacityReservationSpecification": {
+                        "CapacityReservationPreference": "open"
+                    },
+                    "ClientToken": "some_token",
+                    "CpuOptions": {
+                        "CoreCount": 8,
+                        "ThreadsPerCore": 2
+                    },
+                    "EbsOptimized": false,
+                    "EnaSupport": true,
+                    "HibernationOptions": {
+                        "Configured": false
+                    },
+                    "Hypervisor": "xen",
+                    "IamInstanceProfile": {
+                        "Arn": "some_arn",
+                        "Id": "id"
+                    },
+                    "ImageId": "ami-id",
+                    "InstanceId": "i-id",
+                    "InstanceType": "m5.4xlarge",
+                    "KeyName": "Aqua",
+                    "LaunchTime": "2020-04-26T15:49:17",
+                    "Monitoring": {
+                        "State": "enabled"
+                    },
+                    "NetworkInterfaces": [
+                        {
+                            "Attachment": {
+                                "AttachTime": "2020-04-26T15:49:28",
+                                "AttachmentId": "eni-attach",
+                                "DeleteOnTermination": false,
+                                "DeviceIndex": 1,
+                                "Status": "attached"
+                            },
+                            "Description": "Floating network interface providing a fixed IP address for AWS Ground Station to connect to.",
+                            "Groups": [
+                                {
+                                    "GroupId": "sg",
+                                    "GroupName": "some_group_name"
+                                }
+                            ],
+                            "Ipv6Addresses": [],
+                            "MacAddress": "02:09:dd:90:fa:10",
+                            "NetworkInterfaceId": "eni",
+                            "OwnerId": "some_id",
+                            "PrivateDnsName": "name",
+                            "PrivateIpAddress": "1.1.1.1",
+                            "PrivateIpAddresses": [
+                                {
+                                    "Primary": true,
+                                    "PrivateDnsName": "name",
+                                    "PrivateIpAddress": "1.1.1.1"
+                                }
+                            ],
+                            "SourceDestCheck": true,
+                            "Status": "in-use",
+                            "SubnetId": "subnet",
+                            "VpcId": "vpc"
+                        }
+                    ],
+                    "Placement": {
+                        "AvailabilityZone": "us-west-2a",
+                        "GroupName": "name",
+                        "Tenancy": "dedicated"
+                    },
+                    "PrivateDnsName": "dns_name",
+                    "PrivateIpAddress": "1.1.1.1",
+                    "ProductCodes": [],
+                    "PublicDnsName": "",
+                    "Region": "us-west-2",
+                    "RootDeviceName": "/dev/dev_name",
+                    "RootDeviceType": "ebs",
+                    "SecurityGroups": [
+                        {
+                            "GroupId": "sg",
+                            "GroupName": "name"
+                        }
+                    ],
+                    "SourceDestCheck": true,
+                    "State": {
+                        "Code": 80,
+                        "Name": "stopped"
+                    },
+                    "StateReason": {
+                        "Code": "Client.UserInitiatedShutdown",
+                        "Message": "Client.UserInitiatedShutdown: User initiated shutdown"
+                    },
+                    "StateTransitionReason": "User initiated (2020-04-26 18:28:48 GMT)",
+                    "SubnetId": "subnet-5362572a",
+                    "Tags": [
+                        {
+                            "Key": "stack-id",
+                            "Value": "some_info"
+                        }
+                    ],
+                    "VirtualizationType": "hvm",
+                    "VpcId": "vpc"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Instances
+>|ImageId|InstanceId|KeyName|LaunchDate|Monitoring|Name|PublicDNSName|PublicIPAddress|Region|State|Type|aws:cloudformation:logical-id|aws:cloudformation:stack-id|aws:cloudformation:stack-name|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| ami-1 | i-0b6abefdf061a1322 | Aqua | 2020-04-26T15:49:17Z | enabled | Receiver-gs-aqua-receiver |  |  | us-west-2 | stopped | m5.4xlarge | ReceiverInstance | arn1 | name1 |
+>| ami-2 | i-0f31cb599b484fe5c |  | 2020-08-19T11:23:48Z | disabled | flask-env | some_server | 1.2.3.4 | us-west-2 | running | t2.micro | AWSEBAutoScalingGroup | arn2 | name2 |
+
+
 ### aws-ec2-describe-images
 ***
 Describes one or more of the images (AMIs, AKIs, and ARIs) available to you. Images available to you include public images, private images that you own, and private images owned by other AWS accounts but for which you have explicit launch permissions.
@@ -224,6 +361,36 @@ Describes one or more regions that are currently available to you.
 | AWS.Regions.RegionName | string | The name of the region. | 
 
 
+#### Command Example
+```!aws-ec2-describe-regions```
+
+#### Context Example
+```json
+{
+    "AWS": {
+        "Regions": [
+            {
+                "Endpoint": "ec2.eu-north-1.amazonaws.com",
+                "RegionName": "eu-north-1"
+            },
+            {
+                "Endpoint": "ec2.ap-south-1.amazonaws.com",
+                "RegionName": "ap-south-1"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Regions
+>|Endpoint|RegionName|
+>|---|---|
+>| ec2.eu-north-1.amazonaws.com | eu-north-1 |
+>| ec2.ap-south-1.amazonaws.com | ap-south-1 |
+
+
 ### aws-ec2-describe-addresses
 ***
 Describes one or more of your Elastic IP addresses.
@@ -260,6 +427,48 @@ Describes one or more of your Elastic IP addresses.
 | AWS.EC2.ElasticIPs.Region | string | The aws region were the elastic ip is located. | 
 | AWS.EC2.ElasticIPs.Tags.Key | string | The key of the tag. | 
 | AWS.EC2.ElasticIPs.Tags.Value | string | The value of the tag. | 
+
+
+#### Command Example
+```!aws-ec2-describe-addresses```
+
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "ElasticIPs": [
+                {
+                    "AllocationId": "eipalloc-1",
+                    "Domain": "vpc",
+                    "PublicIp": "1.1.1.1",
+                    "PublicIpv4Pool": "amazon",
+                    "Region": "us-west-2"
+                },
+                {
+                    "AllocationId": "eipalloc-2",
+                    "AssociationId": "eipassoc-2",
+                    "Domain": "vpc",
+                    "InstanceId": "i-1",
+                    "NetworkInterfaceId": "eni-1",
+                    "NetworkInterfaceOwnerId": "id",
+                    "PrivateIpAddress": "1.2.3.4",
+                    "PublicIp": "3.4.5.6",
+                    "PublicIpv4Pool": "amazon"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS EC2 ElasticIPs
+>|AllocationId|Domain|PublicIp|Region|
+>|---|---|---|---|
+>| eipalloc-1 | vpc | 1.1.1.1 | us-west-2 |
+>| eipalloc-2 | vpc | 1.2.3.4 | us-west-2 |
 
 
 ### aws-ec2-describe-snapshots
@@ -342,6 +551,36 @@ Describes one or more launch templates.
 | AWS.EC2.LaunchTemplates.Region | string | The aws region where the template is located | 
 
 
+#### Command Example
+```!aws-ec2-describe-launch-templates```
+
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "LaunchTemplates": {
+                "CreateTime": "2019-04-21T07:54:50",
+                "CreatedBy": "some_user",
+                "DefaultVersionNumber": 1,
+                "LatestVersionNumber": 1,
+                "LaunchTemplateId": "lt-1",
+                "LaunchTemplateName": "sample_launch_template",
+                "Region": "us-west-2"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS EC2 LaunchTemplates
+>|CreateTime|CreatedBy|DefaultVersionNumber|LatestVersionNumber|LaunchTemplateId|LaunchTemplateName|Region|
+>|---|---|---|---|---|---|---|
+>| 2019-04-21T07:54:50Z | some_user | 1 | 1 | lt-1 | sample_launch_template | us-west-2 |
+
+
 ### aws-ec2-describe-key-pairs
 ***
 Describes one or more of your key pairs.
@@ -369,6 +608,40 @@ Describes one or more of your key pairs.
 | AWS.EC2.KeyPairs.KeyFingerprint | Unknown | If you used CreateKeyPair to create the key pair, this is the SHA-1 digest of the DER encoded private key. If you used ImportKeyPair to provide AWS the public key, this is the MD5 public key fingerprint as specified in section 4 of RFC4716. | 
 | AWS.EC2.KeyPairs.KeyName | Unknown | The name of the key pair. | 
 | AWS.EC2.KeyPairs.Region | Unknown | The aws region where the key pair is located | 
+
+
+#### Command Example
+```!aws-ec2-describe-key-pairs```
+
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "KeyPairs": [
+                {
+                    "KeyFingerprint": "fp1",
+                    "KeyName": "Aqua",
+                    "Region": "us-west-2"
+                },
+                {
+                    "KeyFingerprint": "fp2",
+                    "KeyName": "Test Keys",
+                    "Region": "us-west-2"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS EC2 Key Pairs
+>|KeyFingerprint|KeyName|Region|
+>|---|---|---|
+>| fp1 | Aqua | us-west-2 |
+>| fp2 | Test Keys | us-west-2 |
 
 
 ### aws-ec2-describe-volumes
@@ -414,6 +687,73 @@ Describes the specified EBS volumes.
 | AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. | 
 
 
+#### Command Example
+```!aws-ec2-describe-volumes```
+
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "Volumes": [
+                {
+                    "Attachments": [
+                        {
+                            "AttachTime": "2019-04-29T13:05:57",
+                            "DeleteOnTermination": true,
+                            "Device": "/dev/dev_name",
+                            "InstanceId": "i-1",
+                            "State": "attached",
+                            "VolumeId": "vol-1"
+                        }
+                    ],
+                    "AvailabilityZone": "us-west-2b",
+                    "CreateTime": "2019-04-29T13:05:57",
+                    "Encrypted": false,
+                    "Iops": 100,
+                    "Region": "us-west-2",
+                    "Size": 8,
+                    "SnapshotId": "snap-1",
+                    "State": "in-use",
+                    "VolumeId": "vol-1",
+                    "VolumeType": "gp2"
+                },
+                {
+                    "Attachments": [
+                        {
+                            "AttachTime": "2020-08-19T11:22:07",
+                            "DeleteOnTermination": true,
+                            "Device": "/dev/dev_name",
+                            "InstanceId": "i-1",
+                            "State": "attached",
+                            "VolumeId": "vol-1"
+                        }
+                    ],
+                    "AvailabilityZone": "us-west-2b",
+                    "CreateTime": "2020-08-19T11:22:07",
+                    "Encrypted": false,
+                    "Iops": 100,
+                    "Size": 8,
+                    "SnapshotId": "snap-1",
+                    "State": "in-use",
+                    "VolumeId": "vol-1",
+                    "VolumeType": "gp2"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS EC2 Volumes
+>|AvailabilityZone|CreateTime|Encrypted|State|VolumeId|VolumeType|
+>|---|---|---|---|---|---|
+>| us-west-2b | 2019-04-29T13:05:57Z | false | in-use | vol-1 | gp2 |
+>| us-west-2b | 2020-08-19T11:22:07Z | false | in-use | vol-2 | gp2 |
+
+
 ### aws-ec2-describe-vpcs
 ***
 Describes one or more of your VPCs.
@@ -456,6 +796,46 @@ Describes one or more of your VPCs.
 | AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. | 
 
 
+#### Command Example
+```!aws-ec2-describe-vpcs```
+
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "Vpcs": {
+                "CidrBlock": "1.1.1.1/16",
+                "CidrBlockAssociationSet": [
+                    {
+                        "AssociationId": "vpc",
+                        "CidrBlock": "1.1.1.1/16",
+                        "CidrBlockState": {
+                            "State": "associated"
+                        }
+                    }
+                ],
+                "DhcpOptionsId": "dopt-1",
+                "InstanceTenancy": "default",
+                "IsDefault": true,
+                "OwnerId": "id",
+                "Region": "us-west-2",
+                "State": "available",
+                "VpcId": "vpc-1"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS EC2 Vpcs
+>|CidrBlock|DhcpOptionsId|InstanceTenancy|IsDefault|Region|State|VpcId|
+>|---|---|---|---|---|---|---|
+>| 1.1.1.1/16 | dopt-1 | default | true | us-west-2 | available | vpc-1 |
+
+
 ### aws-ec2-describe-subnets
 ***
 Describes one or more of your subnets.
@@ -495,6 +875,46 @@ Describes one or more of your subnets.
 | AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. | 
 | AWS.EC2.Subnets.Tags.Key | string | The key of the tag. | 
 | AWS.EC2.Subnets.Tags.Value | string | The value of the tag. | 
+
+
+#### Command Example
+```!aws-ec2-describe-subnets```
+
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "Subnets": [
+                {
+                    "AssignIpv6AddressOnCreation": false,
+                    "AvailabilityZone": "us-west-2d",
+                    "AvailabilityZoneId": "zone_id",
+                    "AvailableIpAddressCount": 4091,
+                    "CidrBlock": "1.1.1.1/20",
+                    "DefaultForAz": true,
+                    "Ipv6CidrBlockAssociationSet": [],
+                    "MapPublicIpOnLaunch": true,
+                    "OwnerId": "id",
+                    "Region": "us-west-2",
+                    "State": "available",
+                    "SubnetArn": "arn",
+                    "SubnetId": "subnet-1",
+                    "VpcId": "vpc-1"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS EC2 Subnets
+>|AvailabilityZone|AvailableIpAddressCount|CidrBlock|DefaultForAz|Region|State|SubnetId|VpcId|
+>|---|---|---|---|---|---|---|---|
+>| us-west-2d | 4091 | 1.1.1.1/20 | true | us-west-2 | available | subnet-1 | vpc-1 |
+>| us-west-2c | 4090 | 2.2.2.2/20 | true | us-west-2 | available | subnet-2 | vpc-2 |
 
 
 ### aws-ec2-describe-security-groups
@@ -561,6 +981,104 @@ Describes one or more of your security groups.
 | AWS.EC2.SecurityGroups.VpcId | string | The ID of the VPC for the security group. | 
 | AWS.EC2.SecurityGroups.Tags.Key | string | The key of the tag. | 
 | AWS.EC2.SecurityGroups.Tags.Value | string | The value of the tag. | 
+
+
+#### Command Example
+```!aws-ec2-describe-security-groups```
+
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "SecurityGroups": [
+                {
+                    "Description": "AWS Ground Station receiver instance security group.",
+                    "GroupId": "sg-1",
+                    "GroupName": "gs-name",
+                    "IpPermissions": [
+                        {
+                            "FromPort": 80,
+                            "IpProtocol": "tcp",
+                            "IpRanges": [
+                                {
+                                    "CidrIp": "0.0.0.0/0"
+                                }
+                            ],
+                            "Ipv6Ranges": [
+                                {
+                                    "CidrIpv6": "::/0"
+                                }
+                            ],
+                            "PrefixListIds": [],
+                            "ToPort": 80,
+                            "UserIdGroupPairs": []
+                        },
+                        {
+                            "FromPort": 22,
+                            "IpProtocol": "tcp",
+                            "IpRanges": [
+                                {
+                                    "CidrIp": "10.0.0.0/16"
+                                }
+                            ],
+                            "Ipv6Ranges": [],
+                            "PrefixListIds": [],
+                            "ToPort": 22,
+                            "UserIdGroupPairs": []
+                        },
+                        {
+                            "FromPort": 55888,
+                            "IpProtocol": "udp",
+                            "IpRanges": [],
+                            "Ipv6Ranges": [],
+                            "PrefixListIds": [],
+                            "ToPort": 55888,
+                            "UserIdGroupPairs": [
+                                {
+                                    "Description": "AWS Ground Station Downlink Stream",
+                                    "GroupId": "sg-1",
+                                    "UserId": "id"
+                                }
+                            ]
+                        }
+                    ],
+                    "IpPermissionsEgress": [
+                        {
+                            "IpProtocol": "-1",
+                            "IpRanges": [
+                                {
+                                    "CidrIp": "0.0.0.0/0"
+                                }
+                            ],
+                            "Ipv6Ranges": [],
+                            "PrefixListIds": [],
+                            "UserIdGroupPairs": []
+                        }
+                    ],
+                    "OwnerId": "id",
+                    "Region": "us-west-2",
+                    "Tags": [
+                        {
+                            "Key": "aws:key",
+                            "Value": "InstanceSecurityGroup"
+                        }
+                    ],
+                    "VpcId": "vpc-1"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS EC2 SecurityGroups
+>|Description|GroupId|GroupName|OwnerId|Region|VpcId|aws:cloudformation:logical-id|aws:cloudformation:stack-id|aws:cloudformation:stack-name|
+>|---|---|---|---|---|---|---|---|---|
+>| AWS Ground Station receiver instance security group. | sg-1 | gs-name | id | us-west-2 | vpc-1 | InstanceSecurityGroup | arn| gs-aqua-receiver |
+>| Demisto-PlaybookTest | sg-2 | Demisto-PlaybookTest | id | us-west-2 | vpc-2 |  |  |  |
 
 
 ### aws-ec2-allocate-address
