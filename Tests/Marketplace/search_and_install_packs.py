@@ -155,7 +155,8 @@ def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, p
         else:
             result_object = ast.literal_eval(response_data)
             msg = result_object.get('message', '')
-            err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed with status code {status_code}\n{msg}'
+            err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed with status code ' \
+                      f'{status_code}\n{msg}'
             raise Exception(err_msg)
     except Exception as e:
         err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed. Reason:\n{str(e)}'
