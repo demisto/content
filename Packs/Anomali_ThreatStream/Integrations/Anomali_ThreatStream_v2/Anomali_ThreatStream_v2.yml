@@ -552,63 +552,39 @@ script:
       name: import_value
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'no'
-      description: Whether to include IP mapping.
-        Default is "no".
+    - default: false
+      description: 'Indicator type to assign if a specific type is not associated with an observable.
+        This is a global setting that applies to any imported IP-type observable when an explicit itype is not specified for it.'
       isArray: false
       name: ip_mapping
-      predefined:
-      - 'yes'
-      - 'no'
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'no'
-      description: Whether to include domain mapping.
-        Default is "no".
+    - default: false
+      description: 'Indicator type to assign if a specific type is not associated with an observable.
+      This is a global setting that applies to any imported domain-type observable when an explicit itype is not specified for it.'
       isArray: false
       name: domain_mapping
-      predefined:
-      - 'yes'
-      - 'no'
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'no'
-      description: Whether to include url mapping. Default is "no".
+    - default: false
+      description: 'Indicator type to assign if a specific type is not associated with an observable.
+        This is a global setting that applies to any imported URL-type observable when an explicit itype is not specified for it.'
       isArray: false
       name: url_mapping
-      predefined:
-      - 'yes'
-      - 'no'
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'no'
-      description: Whether to include email mapping.
-        Default is "no".
+    - default: false
+      description: 'Indicator type to assign if a specific type is not associated with an observable.
+                    This is a global setting that applies to any imported email-type observable when an explicit itype is not specified for it.'
       isArray: false
       name: email_mapping
-      predefined:
-      - 'yes'
-      - 'no'
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'no'
-      description: Whether to include MD5 mapping.
-        Default is "no".
+    - default: false
+      description: 'Indicator type to assign if a specific type is not associated with an observable.
+                    This is a global setting that applies to any imported MD5-type observable when an explicit itype is not specified for it.'
       isArray: false
       name: md5_mapping
-      predefined:
-      - 'yes'
-      - 'no'
       required: false
       secret: false
     deprecated: false

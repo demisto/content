@@ -1,12 +1,13 @@
-import pickle
-import re
-import uuid
-from datetime import datetime, timedelta
-from dateutil import parser
-
 from CommonServerPython import *
 
+import pickle
+import uuid
+
+from dateutil import parser
+
 PREFIXES_TO_REMOVE = ['incident.']
+PAGE_SIZE = int(demisto.args().get('pageSize', 500))
+PYTHON_MAGIC = "$$##"
 
 
 def parse_datetime(datetime_str):
@@ -49,7 +50,7 @@ def build_incidents_query(extra_query, incident_types, time_field, from_date, to
     if extra_query:
         query_parts.append(extra_query)
     if incident_types:
-        types_part = "type:(%s)" % " ".join(map(lambda x: '"%s"' % x.strip(), incident_types.split(",")))
+        types_part = "type:({})".format(' '.join('"{}"'.format(x.strip()) for x in incident_types.split(",")))
         query_parts.append(types_part)
     if from_date:
         from_part = '%s:>="%s"' % (time_field, parse_datetime(from_date))
@@ -58,17 +59,52 @@ def build_incidents_query(extra_query, incident_types, time_field, from_date, to
         to_part = '%s:<"%s"' % (time_field, parse_datetime(to_date))
         query_parts.append(to_part)
     if len(non_empty_fields) > 0:
-        non_empty_fields_part = " and ".join(map(lambda x: "%s:*" % x, non_empty_fields))
+        non_empty_fields_part = " and ".join("{}:*".format(x) for x in non_empty_fields)
         query_parts.append(non_empty_fields_part)
     if len(query_parts) == 0:
-        return_error("Incidents query is empty - please fill one of the arguments")
-    query = " and ".join(map(lambda x: "(%s)" % x, query_parts))
-
+        raise Exception("Incidents query is empty - please fill one of the arguments")
+    query = " and ".join('({})'.format(x) for x in query_parts)
     return query
 
 
-def get_incidents(query, time_field, size, from_date):
-    args = {"query": query, "size": size, "sort": time_field}
+def handle_incident(inc, fields_to_populate, include_context):
+    # we flat the custom field to the incident structure, like in the context
+    custom_fields = inc.get('CustomFields', {}) or {}
+    inc.update(custom_fields)
+    if fields_to_populate and len(fields_to_populate) > 0:
+        inc = {k: v for k, v in inc.items() if k in fields_to_populate}
+    if include_context:
+        inc['context'] = get_context(inc['id'])
+    return inc
+
+
+def is_incident_contains_python_magic(inc):
+    return PYTHON_MAGIC in json.dumps(inc)
+
+
+def get_incidents_by_page(args, page, fields_to_populate, include_context):
+    args['page'] = page
+    res = demisto.executeCommand("getIncidents", args)
+    if res[0]['Contents'].get('data') is None:
+        return []
+    if is_error(res):
+        error_message = get_error(res)
+        raise Exception("Failed to get incidents by query args: %s error: %s" % (args, error_message))
+    incidents = res[0]['Contents'].get('data') or []
+
+    parsed_incidents = []
+    for inc in incidents:
+        new_incident = handle_incident(inc, fields_to_populate, include_context)
+        if is_incident_contains_python_magic(new_incident):
+            demisto.debug("Warning: skip incident [id:%s] that contains python magic" % str(inc['id']))
+            continue
+        parsed_incidents.append(new_incident)
+    return parsed_incidents
+
+
+def get_incidents(query, time_field, size, from_date, fields_to_populate, include_context):
+    query_size = min(PAGE_SIZE, size)
+    args = {"query": query, "size": query_size, "sort": time_field}
     if time_field == "created" and from_date:
         from_datetime = None
         try:
@@ -79,12 +115,15 @@ def get_incidents(query, time_field, size, from_date):
             from_datetime = parse_relative_time(from_date)
         if from_datetime:
             args['from'] = from_datetime.isoformat()
-    res = demisto.executeCommand("getIncidents", args)
-    if res[0]['Type'] == entryTypes['error']:
-        error_message = str(res[0]['Contents'])
-        return_error("Failed to get incidents by query: %s error: %s" % (query, error_message))
-    incident_list = res[0]['Contents'].get('data') or []
-    return incident_list
+    incident_list = []  # type: ignore
+    page = 0
+    while len(incident_list) < size:
+        incidents = get_incidents_by_page(args, page, fields_to_populate, include_context)
+        if not incidents:
+            break
+        incident_list += incidents
+        page += 1
+    return incident_list[:size]
 
 
 def get_comma_sep_list(value):
@@ -103,63 +142,55 @@ def preprocess_incidents_fields_list(incidents_fields):
 
 
 def main():
-    # fetch query
-    d_args = dict(demisto.args())
-    for arg_name in ['NonEmptyFields', 'populateFields']:
-        split_argument_list = get_comma_sep_list(d_args.get(arg_name, ''))
-        split_argument_list = [x for x in split_argument_list if len(x) > 0]
-        d_args[arg_name] = preprocess_incidents_fields_list(split_argument_list)
-    query = build_incidents_query(d_args.get('query'),
-                                  d_args.get('incidentTypes'),
-                                  d_args['timeField'],
-                                  d_args.get('fromDate'),
-                                  d_args.get('toDate'),
-                                  d_args.get('NonEmptyFields'))
-    incident_list = get_incidents(query, d_args['timeField'],
+    try:
+        # fetch query
+        d_args = dict(demisto.args())
+        for arg_name in ['NonEmptyFields', 'populateFields']:
+            split_argument_list = get_comma_sep_list(d_args.get(arg_name, ''))
+            split_argument_list = [x for x in split_argument_list if len(x) > 0]
+            d_args[arg_name] = preprocess_incidents_fields_list(split_argument_list)
+        query = build_incidents_query(d_args.get('query'),
+                                      d_args.get('incidentTypes'),
+                                      d_args['timeField'],
+                                      d_args.get('fromDate'),
+                                      d_args.get('toDate'),
+                                      d_args.get('NonEmptyFields'))
+        fields_to_populate = d_args.get('populateFields')  # type: ignore
+        if len(fields_to_populate) > 0:  # type: ignore
+            fields_to_populate += d_args['NonEmptyFields']
+            fields_to_populate.append('id')
+            fields_to_populate = set([x for x in fields_to_populate if x])  # type: ignore
+        include_context = d_args['includeContext'] == 'true'
+        incidents = get_incidents(query, d_args['timeField'],
                                   int(d_args['limit']),
-                                  d_args.get('fromDate'))
-    fields_to_populate = d_args.get('populateFields')   # type: ignore
-    if len(fields_to_populate) > 0:  # type: ignore
-        fields_to_populate += d_args['NonEmptyFields']
-        fields_to_populate = set([x for x in fields_to_populate if x])  # type: ignore
-    include_context = d_args['includeContext'] == 'true'
-    # extend incidents fields \ context
-    new_incident_list = []
-    for i in incident_list:
-        # we flat the custom field to the incident structure, like in the context
-        custom_fields = i.get('CustomFields', {}) or {}
-        i.update(custom_fields)
-        if include_context:
-            i['context'] = get_context(i['id'])
+                                  d_args.get('fromDate'),
+                                  fields_to_populate,
+                                  include_context)
 
-        if fields_to_populate and len(fields_to_populate) > 0:
-            i = {k: v for k, v in i.items() if k in fields_to_populate}
-        new_incident_list.append(i)
+        # output
+        file_name = str(uuid.uuid4())
+        output_format = d_args['outputFormat']
+        if output_format == 'pickle':
+            data_encoded = pickle.dumps(incidents, protocol=2)
+        elif output_format == 'json':
+            data_encoded = json.dumps(incidents)  # type: ignore
+        else:
+            raise Exception("Invalid output format: %s" % output_format)
 
-    incident_list = new_incident_list
-
-    # output
-    file_name = str(uuid.uuid4())
-
-    output_format = d_args['outputFormat']
-    if output_format == 'pickle':
-        data_encoded = pickle.dumps(incident_list)
-    elif output_format == 'json':
-        data_encoded = json.dumps(incident_list)
-    else:
-        return_error("Invalid output format: %s" % output_format)
-    entry = fileResult(file_name, data_encoded)
-    entry['Contents'] = incident_list
-    entry['HumanReadable'] = "Fetched %d incidents successfully by the query: %s" % (len(incident_list), query)
-    entry['EntryContext'] = {
-        'GetIncidentsByQuery': {
-            'Filename': file_name,
-            'FileFormat': output_format,
+        entry = fileResult(file_name, data_encoded)
+        entry['Contents'] = incidents
+        entry['HumanReadable'] = "Fetched %d incidents successfully by the query: %s" % (len(incidents), query)
+        entry['EntryContext'] = {
+            'GetIncidentsByQuery': {
+                'Filename': file_name,
+                'FileFormat': output_format,
+            }
         }
-    }
-    return entry
+        return entry
+    except Exception as e:
+        return_error(str(e))
 
 
-if __name__ in ['__builtin__', '__main__']:
+if __name__ in ['builtins', '__main__']:
     entry = main()
     demisto.results(entry)

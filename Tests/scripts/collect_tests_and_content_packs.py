@@ -18,7 +18,14 @@ from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
-coloredlogs.install(level=logging.DEBUG, fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s')
+coloredlogs.install(level=logging.DEBUG,
+                    fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s',
+                    level_styles={
+                        'critical': {'bold': True, 'color': 'red'},
+                        'debug': {'color': 'cyan'},
+                        'error': {'color': 'red'},
+                        'info': {},
+                        'warning': {'color': 'yellow'}})
 
 
 class TestConf(object):
@@ -1191,11 +1198,22 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
+    # remove tests that were skipped via the pack-ignore
+    ignored_tests_set = set()
+    for pack in packs_to_install:
+        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
+    if ignored_tests_set:
+        readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
+        logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
+        tests.difference_update(ignored_tests_set)
+
     return tests, packs_to_install
 
 
 def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id_set: dict) -> Tuple[str, str]:
-    """Computes the lowest from version of the modified files and the highest to version of the modified files
+    """Computes the lowest from version of the modified files, the highest from version and the highest to version of
+    the modified files.
+    In case that max_from_version is higher than max to version - to version will be the the highest default.
     Args:
         all_modified_files_paths: All modified files
         id_set: the content of the id.set_json
@@ -1206,6 +1224,7 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
     """
     max_to_version = LooseVersion('0.0.0')
     min_from_version = LooseVersion('99.99.99')
+    max_from_version = LooseVersion('0.0.0')
     for artifacts in id_set.values():
         for artifact_dict in artifacts:
             for artifact_details in artifact_dict.values():
@@ -1214,14 +1233,16 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
                     to_version = artifact_details.get('toversion')
                     if from_version:
                         min_from_version = min(min_from_version, LooseVersion(from_version))
+                        max_from_version = max(max_from_version, LooseVersion(from_version))
                     if to_version:
                         max_to_version = max(max_to_version, LooseVersion(to_version))
-    if max_to_version.vstring == '0.0.0':
+    if max_to_version.vstring == '0.0.0' or max_to_version < max_from_version:
         max_to_version = LooseVersion('99.99.99')
     if min_from_version.vstring == '99.99.99':
         min_from_version = LooseVersion('0.0.0')
     logging.debug(f'modified files are {all_modified_files_paths}')
     logging.debug(f'lowest from version found is {min_from_version}')
+    logging.debug(f'highest from version found is {max_from_version}')
     logging.debug(f'highest to version found is {max_to_version}')
     return min_from_version.vstring, max_to_version.vstring
 
@@ -1229,7 +1250,6 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
 def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=None, one_before_ga=None, ga=None):
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
-    two_before_ga = two_before_ga or AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
     one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
     ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
     """
@@ -1240,7 +1260,6 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
     envs_to_test = {
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
-        'Demisto one before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
         'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
         'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
