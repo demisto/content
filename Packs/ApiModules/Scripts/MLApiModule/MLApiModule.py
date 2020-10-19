@@ -133,7 +133,7 @@ class Tokenizer:
     def tokenize_text_spacy(self, text):
         if self.nlp is None or self.spacy_count % self.spacy_reset_count == 0:
             self.init_spacy_model(self.language)
-        doc = self.nlp(text)
+        doc = self.nlp(text)  # type: ignore
         self.spacy_count += 1
         original_text_indices_to_words = map_indices_to_words(text)
         tokens_list = []
@@ -153,7 +153,7 @@ class Tokenizer:
                 tokens_list.append(self.number_pattern)
             elif self.remove_non_alpha and not word.is_alpha:
                 continue
-            elif self.remove_non_english and word.text not in self.nlp.vocab:
+            elif self.remove_non_english and word.text not in self.nlp.vocab:  # type: ignore
                 continue
             else:
                 if self.lemma and word.lemma_ != '-PRON-':

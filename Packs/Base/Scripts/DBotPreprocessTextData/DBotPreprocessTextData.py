@@ -9,7 +9,6 @@ import pickle
 import uuid
 from html.parser import HTMLParser
 from html import unescape
-import pandas as pd
 
 DBOT_TEXT_FIELD = 'dbot_text'
 DBOT_PROCESSED_TEXT_FIELD = 'dbot_processed_text'
@@ -202,6 +201,7 @@ def main():
         }
     }
     return entry
+
 
 from MLApiModule import *  # noqa: E402
 
