@@ -48,12 +48,14 @@ def main():
         data = parse_data(list_content)
     else:
         data = {
+            {
             "data": [
                 0
             ],
             "name": "2020-01-01",
             "color": "#00CD33"
-        }
+        },
+    }
 
     demisto.results(json.dumps(data))
 

@@ -43,12 +43,14 @@ def main():
 
     else:
         data = {
+            {
             "data": [
                 0
             ],
             "name": "N\A",
             "color": "#00CD33"
-        }
+        },
+    }
 
     demisto.results(json.dumps(data))
 
