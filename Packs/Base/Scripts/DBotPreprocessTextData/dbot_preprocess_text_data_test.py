@@ -1,5 +1,3 @@
-import pytest
-
 from CommonServerPython import *
 from DBotPreprocessTextData import clean_html, remove_line_breaks, hash_word, \
     concat_text_fields, whitelist_dict_fields, remove_short_text, remove_duplicate_by_indices, pre_process, main
