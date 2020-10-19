@@ -19,7 +19,6 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
-from enum import Enum
 
 import demistomock as demisto
 
