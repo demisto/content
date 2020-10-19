@@ -1277,7 +1277,7 @@ def main():
     configure_servers_and_restart(build, prints_manager)
     installed_content_packs_successfully = False
     if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
-        if build.is_nightly or build.is_private:
+        if build.is_nightly:
             install_nightly_pack(build, prints_manager)
             installed_content_packs_successfully = True
         else:
@@ -1299,6 +1299,7 @@ def main():
     elif not build.is_nightly:
         set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
         installed_content_packs_successfully = install_packs(build, prints_manager) and installed_content_packs_successfully
+        install_nightly_pack(build, prints_manager)
 
     all_module_instances.extend(brand_new_integrations)
     successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, prints_manager, pre_update=False)
