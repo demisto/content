@@ -472,20 +472,22 @@ def get_user_iam(default_base_dn, page_size, args):
         if not entries.get('flat'):
             iam_user_profile.set_result(success=False, error_message="No user was found")
         else:
-            account = entries.get('flat')[0]
-            user_account_control = account.get('userAccountControl') not in INACTIVE_LIST_OPTIONS
-            account["userAccountControl"] = user_account_control
+            ad_user = entries.get('flat')[0]
+            user_account_control = ad_user.get('userAccountControl') not in INACTIVE_LIST_OPTIONS
+            ad_user["userAccountControl"] = user_account_control
 
             iam_user_profile.set_result(success=True,
-                                         email=account.get('email'),
-                                         username=account.get('name'),
-                                         details=account,
+                                         email=ad_user.get('email'),
+                                         username=ad_user.get('name'),
+                                         details=ad_user,
                                          active=user_account_control)
+
+            user_profile.update_with_app_data(ad_user, INCOMING_MAPPER)
 
         return_results(iam_user_profile)
 
     except Exception as e:
-        iam_user_profile.set_result(success=False, error_message=e)
+        iam_user_profile.set_result(success=False, error_message=str(e))
         return_results(iam_user_profile)
 
 
@@ -729,16 +731,18 @@ def update_user_iam(default_base_dn, default_page_size, args):
         elif user_exists:
             dn = user_dn(sam_account_name, default_base_dn)
 
-            #  removing fields that can't be modified
+            #  remove fields that can't be modified
+            # notice that we are changing the ou and that effects the dn and cn
             if ad_user.get("dn"):
                 ad_user.pop("dn")
-            ad_user.pop("samaccountname")
-            ad_user.pop("cn")
+            if ad_user.get("samaccountname"):
+                ad_user.pop("samaccountname")
+            if ad_user.get("cn"):
+                ad_user.pop("cn")
 
             fail_to_modify = []
 
             for key in ad_user:
-                #need to be changes
                 modification = {key: [('MODIFY_REPLACE', ad_user.get(key))]}
                 success = conn.modify(dn, modification)
                 if not success:
@@ -1047,15 +1051,15 @@ def enable_user_iam(default_base_dn, default_page_size, group, args):
             else:
                 active = ad_user.get('userAccountControl') not in INACTIVE_LIST_OPTIONS
                 iam_user_profile.set_result(success=True,
-                           email=ad_user.get('email'),
-                           username=ad_user.get('name'),
-                           details=ad_user,
-                           active=active)
+                                            email=ad_user.get('email'),
+                                            username=ad_user.get('name'),
+                                            details=ad_user,
+                                            active=active)
 
         return_results(iam_user_profile)
 
     except Exception as e:
-        iam_user_profile.set_result(success=False, error_message=e)
+        iam_user_profile.set_result(success=False, error_message=str(e))
         return_results(iam_user_profile)
 
 
@@ -1067,8 +1071,6 @@ def disable_user_iam(default_base_dn, default_page_size, group, args):
     iam_user_profile.set_command_name(demisto.command().split('-')[0])
     ad_user = iam_user_profile.map_object(mapper_name=OUTGOING_MAPPER)
 
-
-    # if there there is a user to disable
     sam_account_name = ad_user.get("samaccountname")
     user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
     if not user_exists:
@@ -1102,7 +1104,7 @@ def disable_user_iam(default_base_dn, default_page_size, group, args):
         return_results(iam_user_profile)
 
     except Exception as e:
-        iam_user_profile.set_result(success=False, error_message=e)
+        iam_user_profile.set_result(success=False, error_message=str(e))
         return_results(iam_user_profile)
 
 

@@ -1,6 +1,7 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Use the Active Directory Query integration to access and manage Active Directory objects (users, contacts, and computers) and run AD queries.</p>
+<p>Use the Active Directory Query integration to access and manage Active Directory objects (users, contacts, and computers) and run AD queries.<p>
+<p>This integration can be used along with our IAM premium pack. For further details, visit our IAM pack documentation.</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="use-cases">Use Cases</h2>
@@ -56,6 +57,14 @@
 </li>
 </ul>
 </div>
+<div class="cl-preview-section">
+<h5 id="iam-premium-pack-uses">IAM premium pack uses</h5>
+</div>
+<div class="cl-preview-section">
+<ul>
+<li>Create of modify Active Directory users.</li>
+<li>Manage users accounts and their status</li>
+</ul>
 <div class="cl-preview-section">
 <h2 id="configure-active-directory-query-v2-on-demisto">Configure Active Directory Query v2 on Demisto</h2>
 </div>
@@ -118,6 +127,11 @@
 <li><a href="#get-information-for-an-ad-user-account" target="_self">Get information for an AD user account: ad-get-user</a></li>
 <li><a href="#get-information-for-a-computer-account" target="_self">Get information for a computer account: ad-get-computer</a></li>
 <li><a href="#get-a-list-of-users-or-computers-for-a-group" target="_self">Get a list of users or computers for a group: ad-get-group-members</a></li>
+<li><a href="#iam-get-user" target="_self">Get an AD user, used in the IAM premium pack: get-user</a></li>
+<li><a href="#iam-create-user" target="_self">Create an AD user, used in the IAM premium pack: create-user</a></li>
+<li><a href="#iam-update-user" target="_self">Update an AD user, used in the IAM premium pack: update-user</a></li>
+<li><a href="#giam-enable-user" target="_self">Enable an AD user, used in the IAM premium pack: enable-user</a></li>
+<li><a href="#iam-diable-user" target="_self">Diable an AD user, used in the IAM premium pack: disable-user</a></li>
 </ol>
 </div>
 <div class="cl-preview-section">
@@ -1717,6 +1731,117 @@
 </div>
 </div>
 <p> </p>
+<div class="cl-preview-section">
+<h3 id="get-an-ad-user">18. Get an AD user</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Get an Active Directory user.</p>
+<p>This command is used in the IAM premium pack.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>get-user</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 167px;"><strong>Argument Name</strong></th>
+<th style="width: 484px;"><strong>Description</strong></th>
+<th style="width: 89px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 167px;">user-profile</td>
+<td style="width: 484px;">User Profile indicator details..</td>
+<td style="width: 89px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output-2">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 244px;"><strong>Path</strong></th>
+<th style="width: 70px;"><strong>Type</strong></th>
+<th style="width: 426px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 244px;">IAM.Vendor.active</td>
+<td style="width: 70px;">Boolean</td>
+<td style="width: 426px;">If true the employee's status is active, otherwise false.</td>
+</tr>
+<tr>
+<td style="width: 244px;">IAM.Vendor.brand</td>
+<td style="width: 70px;">String</td>
+<td style="width: 426px;">Name of the integration.</td>
+</tr>
+<tr>
+<td style="width: 244px;">IAM.Vendor.details</td>
+<td style="width: 70px;">String</td>
+<td style="width: 426px;">Gives the user information if the API is success else error information.</td>
+</tr>
+<tr>
+<td style="width: 244px;">IAM.Vendor.email</td>
+<td style="width: 70px;">String</td>
+<td style="width: 426px;">The email address of the employee.</td>
+</tr>
+<tr>
+<td style="width: 244px;">IAM.Vendor.errorCode</td>
+<td style="width: 70px;">Number</td>
+<td style="width: 426px;">￿Error response code.</td>
+</tr>
+<tr>
+<td style="width: 244px;">IAM.Vendor.errorMessage</td>
+<td style="width: 70px;">String</td>
+<td style="width: 426px;">Reason why the API failed.</td>
+</tr>
+<tr>
+<td style="width: 244px;">IAM.Vendor.id</td>
+<td style="width: 70px;">String</td>
+<td style="width: 426px;">The employee's user ID in the app.</td>
+</tr>
+<tr>
+<td style="width: 244px;">IAM.Vendor.instanceName</td>
+<td style="width: 70px;">String</td>
+<td style="width: 426px;">Name of the integration instance</td>
+</tr>
+<tr>
+<td style="width: 244px;">IAM.Vendor.success</td>
+<td style="width: 70px;">Boolean</td>
+<td style="width: 426px;">If true, the command was executed successfully, otherwise false.</td>
+</tr>
+<tr>
+<td style="width: 244px;">IAM.Vendor.username</td>
+<td style="width: 70px;">String</td>
+<td style="width: 426px;">The employee's username in the app.</td>
+</tr>
+<tr>
+<td style="width: 244px;">IAM.UserProfile</td>
+<td style="width: 70px;">Any</td>
+<td style="width: 426px;">The User Profile indicator.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="cl-preview-section">
 <h2 id="additional-information">Additional Information</h2>
 </div>
