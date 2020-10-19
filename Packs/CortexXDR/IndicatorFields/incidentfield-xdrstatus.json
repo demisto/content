@@ -15,7 +15,7 @@
   "ownerOnly": false,
   "placeholder": "",
   "description": "The indicator status in XDR.",
-  "cliName": "xdrstatus",
+  "cliName": "xdrstatuss",
   "type": "singleSelect",
   "closeForm": false,
   "editForm": true,
