@@ -302,7 +302,19 @@ def test_list_aggregated_events_command(requests_mock):
 
 
 def test_get_event(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import get_event_command
+    from argus_json import argus_event_data
+
+    event_type = "NIDS"
+    timestamp = "some-timestamp"
+    customer_id = 5381
+    event_id = "some-hash"
+    method_url = f"/events/v1/{event_type}/{timestamp}/{customer_id}/{event_id}"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT)
+    args = {"type": event_type, "timestamp": timestamp, "customer_id": customer_id, "event_id": event_id}
+    result = get_event_command(args)
+    assert result.raw_response == argus_event_data.ARGUS_EVENT
 
 
 def test_get_payload_command(requests_mock):

@@ -1262,7 +1262,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Payoad type.
+      description: Event type.
       isArray: false
       name: type
       predefined:
@@ -1293,6 +1293,65 @@ script:
     description: Fetch specified event payload
     execution: false
     name: argus_get_payload
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Event type.
+      isArray: false
+      name: type
+      predefined:
+      - NIDS
+      - AGGR
+      - AGGRATTACK
+      required: true
+      secret: false
+    - default: false
+      description: Timestamp of event
+      isArray: false
+      name: timestamp
+      required: true
+      secret: false
+    - default: false
+      description: ID of customer
+      isArray: false
+      name: customer_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of related event
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch specified event payload as PCAP.
+    execution: false
+    name: argus_get_pcap
+  - arguments:
+    - default: false
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: timestamp
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: customer_id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: event_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch specified event.
+    execution: false
+    name: argus_get_event
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true

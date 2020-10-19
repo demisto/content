@@ -141,3 +141,38 @@ ARGUS_EVENT_PAYLOAD = {
     ],
     "data": {"id": "string", "type": "ethernet", "payload": "string"},
 }
+
+ARGUS_EVENT = {
+    "responseCode": 0,
+    "limit": 0,
+    "offset": 0,
+    "count": 0,
+    "size": 0,
+    "metaData": {},
+    "messages": [
+        {
+            "message": "string",
+            "messageTemplate": "string",
+            "type": "FIELD_ERROR",
+            "field": "string",
+            "parameter": {},
+            "timestamp": 0,
+        }
+    ],
+    "data": {
+        "timestamp": 0,
+        "flags": 0,
+        "customerID": 0,
+        "aggregationKey": "string",
+        "sourceType": "string",
+        "customerInfo": {
+            "id": 0,
+            "name": "string",
+            "shortName": "string",
+            "domain": {"id": 0, "name": "string"},
+        },
+        "update": True,
+        "aggregated": True,
+        "encodedFlags": ["ESTABLISHED"],
+    },
+}

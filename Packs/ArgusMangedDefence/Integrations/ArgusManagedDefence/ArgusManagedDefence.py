@@ -32,6 +32,7 @@ from argus_api.api.cases.v2.case import (
     update_case,
 )
 
+from argus_api.api.events.v1 import get_event_by_path
 from argus_api.api.events.v1.case.case import get_events_for_case
 from argus_api.api.events.v1.aggregated import find_aggregated_events, list_aggregated_events
 from argus_api.api.events.v1.payload import get_payload
@@ -621,6 +622,29 @@ def update_case_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def get_event_command(args: Dict[str, Any]) -> CommandResults:
+    event_type = args.get("type", None)
+    timestamp = args.get("timestamp", None)
+    customer_id = args.get("customer_id", None)
+    event_id = args.get("event_id", None)
+    if not event_type:
+        raise ValueError("event type not specified")
+    if not timestamp:
+        raise ValueError("timestamp not specified")
+    if not customer_id:
+        raise ValueError("customer id not specified")
+    if not event_id:
+        raise ValueError("event id not specified")
+
+    result = get_event_by_path(type=event_type, timestamp=timestamp, customerID=customer_id, eventID=event_id)
+    readable_output = f"# Event: {event_id}"
+    readable_output += tableToMarkdown("Metadata", result['data'])
+    outputs = {"Argus.Event(val.id === obj.id)": result['data']}
+    return CommandResults(
+        readable_output=readable_output, outputs=outputs, raw_response=result
+    )
+
+
 def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", None)
     if not case_id:
@@ -841,6 +865,9 @@ def main() -> None:
 
         elif demisto.command() == "argus_update_case":
             return_results(update_case_command(demisto.args()))
+
+        elif demisto.command() == "argus_get_event":
+            return_results(get_event_command(demisto.args()))
 
         elif demisto.command() == "argus_get_events_for_case":
             return_results(get_events_for_case_command(demisto.args()))
