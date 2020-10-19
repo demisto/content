@@ -121,3 +121,23 @@ ARGUS_EVENTS_FOR_CASE = {
         }
     ],
 }
+
+ARGUS_EVENT_PAYLOAD = {
+    "responseCode": 0,
+    "limit": 0,
+    "offset": 0,
+    "count": 0,
+    "size": 0,
+    "metaData": {},
+    "messages": [
+        {
+            "message": "string",
+            "messageTemplate": "string",
+            "type": "FIELD_ERROR",
+            "field": "string",
+            "parameter": {},
+            "timestamp": 0,
+        }
+    ],
+    "data": {"id": "string", "type": "ethernet", "payload": "string"},
+}

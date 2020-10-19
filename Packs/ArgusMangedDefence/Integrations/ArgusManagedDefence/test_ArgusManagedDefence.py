@@ -301,12 +301,43 @@ def test_list_aggregated_events_command(requests_mock):
     assert result.raw_response == argus_event_data.ARGUS_EVENTS_FOR_CASE
 
 
-def test_get_payload_command(requests_mock):
+def test_get_event(requests_mock):
     raise NotImplementedError
+
+
+def test_get_payload_command(requests_mock):
+    from ArgusManagedDefence import get_payload_command
+    from argus_json import argus_event_data
+
+    event_type = "NIDS"
+    timestamp = "some-timestamp"
+    customer_id = 5381
+    event_id = "some-hash"
+    method_url = f"/events/v1/{event_type}/{timestamp}/{customer_id}/{event_id}/payload"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_PAYLOAD)
+    args = {"type": event_type, "timestamp": timestamp, "customer_id": customer_id, "event_id": event_id}
+    result = get_payload_command(args)
+    assert result.raw_response == argus_event_data.ARGUS_EVENT_PAYLOAD
 
 
 def test_get_pcap_command(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import get_pcap_command
+    from argus_json import argus_event_data
+
+    with open("argus_json/argus_case_data.py", "rb") as file:
+        content = file.read()
+
+    event_type = "NIDS"
+    timestamp = "some-timestamp"
+    customer_id = 5381
+    event_id = "some-hash"
+    method_url = f"/events/v1/{event_type}/{timestamp}/{customer_id}/{event_id}/pcap"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", content=content)
+    args = {"type": event_type, "timestamp": timestamp, "customer_id": customer_id, "event_id": event_id}
+    result = get_pcap_command(args)
+    assert result['File'] == f"{event_id}_pcap"
 
 
 def test_search_records_command(requests_mock):
@@ -318,4 +349,12 @@ def test_fetch_observations_for_domain_command(requests_mock):
 
 
 def test_fetch_observations_for_i_p_command(requests_mock):
+    raise NotImplementedError
+
+
+def test_find_n_ids_events(requests_mock):
+    raise NotImplementedError
+
+
+def test_list_n_ids_events(requests_mock):
     raise NotImplementedError

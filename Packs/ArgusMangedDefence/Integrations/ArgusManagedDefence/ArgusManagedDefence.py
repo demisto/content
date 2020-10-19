@@ -706,12 +706,46 @@ def list_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
         readable_output=readable_output, outputs=outputs, raw_response=result
     )
 
+
 def get_payload_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    event_type = args.get("type", None)
+    timestamp = args.get("timestamp", None)
+    customer_id = args.get("customer_id", None)
+    event_id = args.get("event_id", None)
+    if not event_type:
+        raise ValueError("event type not specified")
+    if not timestamp:
+        raise ValueError("timestamp not specified")
+    if not customer_id:
+        raise ValueError("customer id not specified")
+    if not event_id:
+        raise ValueError("event id not specified")
+    result = get_payload(type=event_type, timestamp=timestamp, customerID=customer_id, eventID=event_id)
+    readable_output = f"# Event payload\n"
+    readable_output += f"Event: {event_id}, type: {result['data']['type']}\n"
+    readable_output += result['data']['payload']
+    outputs = {"Argus.Event.Payload(val.id === obj.id)": result['data']}
+    return CommandResults(
+        readable_output=readable_output, outputs=outputs, raw_response=result
+    )
 
 
-def get_pcap_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+def get_pcap_command(args: Dict[str, Any]) -> fileResult:
+    event_type = args.get("type", None)
+    timestamp = args.get("timestamp", None)
+    customer_id = args.get("customer_id", None)
+    event_id = args.get("event_id", None)
+    if not event_type:
+        raise ValueError("event type not specified")
+    if not timestamp:
+        raise ValueError("timestamp not specified")
+    if not customer_id:
+        raise ValueError("customer id not specified")
+    if not event_id:
+        raise ValueError("event id not specified")
+    result = get_pcap(type=event_type, timestamp=timestamp, customerID=customer_id, eventID=event_id)
+
+    return fileResult(f"{event_id}_pcap", result.content)
 
 
 def search_records_command(args: Dict[str, Any]) -> CommandResults:

@@ -1259,6 +1259,40 @@ script:
       doc)'
     execution: false
     name: argus_find_aggregated_events
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Payoad type.
+      isArray: false
+      name: type
+      predefined:
+      - NIDS
+      - AGGR
+      - AGGRATTACK
+      required: true
+      secret: false
+    - default: false
+      description: Timestamp of event
+      isArray: false
+      name: timestamp
+      required: true
+      secret: false
+    - default: false
+      description: ID of customer
+      isArray: false
+      name: customer_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of related event
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch specified event payload
+    execution: false
+    name: argus_get_payload
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true
