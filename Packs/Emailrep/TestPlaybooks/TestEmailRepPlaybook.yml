@@ -1,5 +1,6 @@
 id: TestEmailRepPlaybook
 version: 9
+fromversion: 5.0.0
 vcShouldKeepItemLegacyProdMachine: false
 name: TestEmailRepPlaybook
 starttaskid: "0"
