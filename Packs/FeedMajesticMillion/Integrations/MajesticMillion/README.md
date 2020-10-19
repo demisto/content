@@ -1,8 +1,9 @@
 Majestic Million
 
 ## Troubleshooting
-Ingesting a Million indicators might cause performance issues.
-The suggested default value is 100k. Upon encountering performance issues, please consider lowing the limit. 
+
+Ingesting a million indicators may cause performance issues.
+The default value is 100k. If you encounter performance issues, consider decreasing the limit.
 
 ## Configure Majestic Million on Cortex XSOAR
 
@@ -24,11 +25,10 @@ The suggested default value is 100k. Upon encountering performance issues, pleas
 | feedTags | Tags | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
-| feed | Fetch indicators | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### majesticmillion-get-indicators
 ***
@@ -42,7 +42,7 @@ Gets the feed indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 50. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -66,4 +66,3 @@ There is no context output for this command.
 >| google.com | Domain | domainname: google.com<br/>domainreferringsubnets: 496082<br/>domainreferringips: 2743820<br/>idndomain: google.com<br/>tags:  |
 >| youtube.com | Domain | domainname: youtube.com<br/>domainreferringsubnets: 451680<br/>domainreferringips: 2401931<br/>idndomain: youtube.com<br/>tags:  |
 >| twitter.com | Domain | domainname: twitter.com<br/>domainreferringsubnets: 443003<br/>domainreferringips: 2369579<br/>idndomain: twitter.com<br/>tags:  |
-
