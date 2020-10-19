@@ -231,8 +231,10 @@ def main():
     }
     return entry
 
-
-from MLApiModule import *  # noqa: E402
+try:
+    from MLApiModule import *  # noqa: E402
+except Exception as e:
+    demisto.log('could not import MLApiModule')
 
 if __name__ in ['builtins', '__main__']:
     entry = main()

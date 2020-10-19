@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
@@ -44,30 +43,30 @@ def hash_word(word, hash_seed):
 
 
 class Tokenizer:
-    def __init__(self, clean_html=True, removeLineBreaks=True, hashWordWithSeed=None, removeNonEnglishWords=True,
-                 removeStopWords=True, removePunctuation=True, removeNonAlphaWords=True, replaceEmails=True,
-                 replaceNumbers=True, useLemmatization=True, replaceUrls=True,
-                 isValueJson=True, language='English', tokenizationMethod='byWords'):
-        self.NUMBER_PATTERN = "NUMBER_PATTERN"
-        self.URL_PATTERN = "URL_PATTERN"
-        self.EMAIL_PATTERN = "EMAIL_PATTERN"
-        self.reserved_tokens = set([self.NUMBER_PATTERN, self.URL_PATTERN, self.EMAIL_PATTERN])
-        self.cleanHtml = clean_html
-        self.removeLineBreaks = removeLineBreaks
-        self.hashWordWithSeed = hashWordWithSeed
-        self.removeNonEnglishWords = removeNonEnglishWords
-        self.removeStopWords = removeStopWords
-        self.removePunctuation = removePunctuation
-        self.removeNonAlphaWords = removeNonAlphaWords
-        self.replaceEmails = replaceEmails
-        self.replaceUrls = replaceUrls
-        self.replaceNumbers = replaceNumbers
-        self.useLemmatization = useLemmatization
-        self.isValueJson = isValueJson
+    def __init__(self, clean_html=True, remove_new_lines=True, hash_seed=None, remove_non_english=True,
+                 remove_stop_words=True, remove_punct=True, remove_non_alpha=True, replace_emails=True,
+                 replace_numbers=True, lemma=True, replace_urls=True,
+                 is_json=True, language='English', tokenization_method='byWords'):
+        self.number_pattern = "NUMBER_PATTERN"
+        self.url_pattern = "URL_PATTERN"
+        self.email_pattern = "EMAIL_PATTERN"
+        self.reserved_tokens = set([self.number_pattern, self.url_pattern, self.email_pattern])
+        self.clean_html = clean_html
+        self.remove_new_lines = remove_new_lines
+        self.hash_seed = hash_seed
+        self.remove_non_english = remove_non_english
+        self.remove_stop_words = remove_stop_words
+        self.remove_punct = remove_punct
+        self.remove_non_alpha = remove_non_alpha
+        self.replace_emails = replace_emails
+        self.replace_urls = replace_urls
+        self.replace_numbers = replace_numbers
+        self.lemma = lemma
+        self.is_json = is_json
         self.language = language
-        self.tokenizationMethod = tokenizationMethod
-        self.MAX_TEXT_LENGTH = 10 ** 5
-        self.HTML_PATTERNS = [
+        self.tokenization_method = tokenization_method
+        self.max_text_length = 10 ** 5
+        self.html_patterns = [
             re.compile(r"(?is)<(script|style).*?>.*?(</\1>)"),
             re.compile(r"(?s)<!--(.*?)-->[\n]?"),
             re.compile(r"(?s)<.*?>"),
@@ -77,7 +76,7 @@ class Tokenizer:
         self.nlp = None
         self.html_parser = HTMLParser()
         self._unicode_chr_splitter = _Re('(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)').split
-        self.LANGUAGES_TO_MODEL_NAMES = {'English': 'en_core_web_sm',
+        self.languages_to_model_names = {'English': 'en_core_web_sm',
                                          'German': 'de_core_news_sm',
                                          'French': 'fr_core_news_sm',
                                          'Spanish': 'es_core_news_sm',
@@ -88,23 +87,23 @@ class Tokenizer:
         self.spacy_count = 0
         self.spacy_reset_count = 500
 
-    def clean_html(self, text):
+    def clean_html_from_text(self, text):
         cleaned = text
-        for pattern in self.HTML_PATTERNS:
+        for pattern in self.html_patterns:
             cleaned = pattern.sub(" ", cleaned)
         return unescape(cleaned).strip()
 
     def tokenize_text(self, text):
         language = self.language
-        if language in self.LANGUAGES_TO_MODEL_NAMES:
+        if language in self.languages_to_model_names:
             original_words_to_tokens, tokens_list = self.tokenize_text_spacy(text)
         else:
             original_words_to_tokens, tokens_list = self.tokenize_text_other(text)
         hashed_tokens_list = []
-        if self.hashWordWithSeed is not None:
-            seed = self.hashWordWithSeed
+        if self.hash_seed is not None:
+            seed = self.hash_seed
             for word in tokens_list:
-                word_hashed = hash_word(word)
+                word_hashed = hash_word(word, seed)
                 hashed_tokens_list.append(word_hashed)
             hashed_words_to_tokens = {word: [hash_word(t, seed) for t in tokens_list] for word, tokens_list in
                                       original_words_to_tokens.items()}
@@ -115,7 +114,7 @@ class Tokenizer:
 
     def tokenize_text_other(self, text):
         tokens_list = []
-        tokenization_method = self.tokenizationMethod
+        tokenization_method = self.tokenization_method
         if tokenization_method == 'byWords':
             original_words_to_tokens = {}
             for t in text.split():
@@ -125,7 +124,7 @@ class Tokenizer:
                     original_words_to_tokens[token_without_punct] = t
         elif tokenization_method == 'byLetters':
             for t in text:
-                tokens_list += [chr for chr in self._unicode_chr_splitter(t) if chr]
+                tokens_list += [chr for chr in self._unicode_chr_splitter(t) if chr and chr != ' ']
                 original_words_to_tokens = {c: t for c in tokens_list}
         else:
             return_error('Unsupported tokenization method: when language is "Other" ({})'.format(tokenization_method))
@@ -142,22 +141,22 @@ class Tokenizer:
         for word in doc:
             if word.is_space:
                 continue
-            elif self.removeStopWords and word.is_stop:
+            elif self.remove_stop_words and word.is_stop:
                 continue
-            elif self.removePunctuation and word.is_punct:
+            elif self.remove_punct and word.is_punct:
                 continue
-            elif self.replaceEmails and '@' in word.text:
-                tokens_list.append(self.EMAIL_PATTERN)
-            elif self.replaceUrls and word.like_url:
-                tokens_list.append(self.URL_PATTERN)
-            elif self.replaceNumbers and (word.like_num or word.pos_ == 'NUM'):
-                tokens_list.append(self.NUMBER_PATTERN)
-            elif self.removeNonAlphaWords and not word.is_alpha:
+            elif self.replace_emails and '@' in word.text:
+                tokens_list.append(self.email_pattern)
+            elif self.replace_urls and word.like_url:
+                tokens_list.append(self.url_pattern)
+            elif self.replace_numbers and (word.like_num or word.pos_ == 'NUM'):
+                tokens_list.append(self.number_pattern)
+            elif self.remove_non_alpha and not word.is_alpha:
                 continue
-            elif self.removeNonEnglishWords and word.text not in self.nlp.vocab:
+            elif self.remove_non_english and word.text not in self.nlp.vocab:
                 continue
             else:
-                if self.useLemmatization and word.lemma_ != '-PRON-':
+                if self.lemma and word.lemma_ != '-PRON-':
                     token_to_add = word.lemma_
                 else:
                     token_to_add = word.lower_
@@ -169,10 +168,10 @@ class Tokenizer:
         return original_words_to_tokens, tokens_list
 
     def init_spacy_model(self, language):
-        self.nlp = spacy.load(self.LANGUAGES_TO_MODEL_NAMES[language], disable=['tagger', 'parser', 'ner', 'textcat'])
+        self.nlp = spacy.load(self.languages_to_model_names[language], disable=['tagger', 'parser', 'ner', 'textcat'])
 
     def word_tokenize(self, text):
-        if self.isValueJson:
+        if self.is_json:
             try:
                 text = json.loads(text)
             except Exception:
@@ -183,12 +182,12 @@ class Tokenizer:
         result = []
         for t in text:
             original_text = t
-            if self.removeLineBreaks:
+            if self.remove_new_lines:
                 t = remove_line_breaks(t)
-            if self.cleanHtml:
-                t = self.clean_html(t)
+            if self.clean_html:
+                t = self.clean_html_from_text(t)
             t = remove_multiple_whitespaces(t)
-            if len(t) < self.MAX_TEXT_LENGTH:
+            if len(t) < self.max_text_length:
                 tokenized_text, hash_tokenized_text, original_words_to_tokens, words_to_hashed_tokens = \
                     self.tokenize_text(t)
             else:
