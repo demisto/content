@@ -699,12 +699,15 @@ class Pack(object):
             return task_status
 
     def encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
-
+        print(f"Output of ls: {subprocess.call('ls', shell=True)}")
+        print("trying to copy tool")
         shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
+        print("Trying to chmod tool")
         os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
         current_working_dir = os.getcwd()
         os.chdir(extract_destination_path)
         output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
+        print("Calling process")
         subprocess.call('chmod +x ./encryptor', shell=True)
         full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
         subprocess.call(full_command, shell=True)
