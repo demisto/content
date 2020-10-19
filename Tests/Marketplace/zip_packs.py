@@ -152,12 +152,12 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
                 print(f'Downloading pack from GCP: {pack.name}')
                 executor_submit(executor, download_path, blob)
                 sleep(1)
-                if os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/'):
-                    print(f"Copying pack from {download_path} to /home/runner/work/content-private/"
-                          f"content-private/content/artifacts/packs/{pack.name}.zip")
-                    shutil.copy(download_path,
-                                f'/home/runner/work/content-private/content-private/content/artifacts/'
-                                f'packs/{pack.name}.zip')
+                # if os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/'):
+                #     print(f"Copying pack from {download_path} to /home/runner/work/content-private/"
+                #           f"content-private/content/artifacts/packs/{pack.name}.zip")
+                #     shutil.copy(download_path,
+                #                 f'/home/runner/work/content-private/content-private/content/artifacts/'
+                #                 f'packs/{pack.name}.zip')
             else:
                 print_warning(f'Did not find a pack to download with the prefix: {pack_prefix}')
 
