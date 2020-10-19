@@ -8,12 +8,6 @@ category: Case Management
 description: Use the Jira integration to manage issues and create Demisto incidents
   from projects, From version XSOAR 6.0 and above mirror issues to existing issue incidents in demisto.
 configuration:
-- defaultvalue: 'false'
-  display: Mirror incoming incidents
-  hidden: false
-  name: incoming_mirror
-  required: false
-  type: 8
 - display: 'Jira URL, for example: https://demisto.atlassian.net/'
   name: url
   defaultvalue: ""
@@ -79,6 +73,12 @@ configuration:
   name: isFetch
   type: 8
   required: false
+- defaultvalue: 'false'
+  display: Mirror incoming incidents
+  hidden: false
+  name: incoming_mirror
+  required: false
+  type: 8
 - display: Incident type
   name: incidentType
   type: 13
