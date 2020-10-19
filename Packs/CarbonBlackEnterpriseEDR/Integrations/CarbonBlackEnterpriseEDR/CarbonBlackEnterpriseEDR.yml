@@ -1622,6 +1622,55 @@ script:
       description: Fetch the events associated with a given process.
       execution: false
       name: cb-eedr-events-by-process-search
+      outputs:
+        - contextPath: CarbonBlackEEDR.SearchEvent.backend_timestamp
+          description: timestamp for when the process was ingested by the backend.
+          type: Date
+        - contextPath: CarbonBlackEEDR.SearchEvent.created_timestamp
+          description: timestamp for when the event document was created.
+          type: Date
+        - contextPath: CarbonBlackEEDR.SearchEvent.event_guid
+          description: a globally unique identifier for this event document.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.event_hash
+          description: ''
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.event_timestamp
+          description: timestamp of the event on the device.
+          type: Date
+        - contextPath: CarbonBlackEEDR.SearchEvent.event_type
+          description: 'event type, one of: filemod, netconn, regmod, modload, crossproc, childproc.'
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.legacy
+          description: true if this event comes from the CbD data stream.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_action
+          description: 'action associated with the modload operation, for now can only be: ACTION_LOAD_MODULE'
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_effective_reputation
+          description: ''
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_md5
+          description: md5 for the modules loaded.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_name
+          description: modules loaded by this event.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_publisher
+          description: publisher that signed this module, if any.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_publisher_state
+          description: Set of states associated with the publisher of the module. Can be combination of FILE_SIGNATURE_STATE_INVALID, FILE_SIGNATURE_STATE_SIGNED, FILE_SIGNATURE_STATE_VERIFIED, FILE_SIGNATURE_STATE_NOT_SIGNED, FILE_SIGNATURE_STATE_UNKNOWN, FILE_SIGNATURE_STATE_CHAINED, FILE_SIGNATURE_STATE_TRUSTED, FILE_SIGNATURE_STATE_OS, FILE_SIGNATURE_STATE_CATALOG_SIGNED.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_sha256
+          description: sha256 for the modules loaded.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.process_guid
+          description: process guid representing the process that this event belongs to.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.process_pid
+          description: ''
+          type: Number
     - arguments:
         - default: false
           description: The job_id to search.
