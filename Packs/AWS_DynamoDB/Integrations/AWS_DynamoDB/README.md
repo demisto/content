@@ -940,7 +940,7 @@ Gives a description of the Time to Live (TTL) status on the specified table.
 | --- | --- | --- |
 | AWS-DynamoDB.TimeToLiveDescription.TimeToLiveStatus | unknown |  The TTL status for the table. | 
 | AWS-DynamoDB.TimeToLiveDescription.AttributeName | unknown |  The name of the TTL attribute for items in the table. | 
-| AWS-DynamoDB.TimeToLiveDescription | unknown |  | 
+| AWS-DynamoDB.TimeToLiveDescription | unknown | Time to Live settings on the table when the backup was created. | 
 
 
 ### aws-dynamodb-get-item
@@ -1027,6 +1027,50 @@ List backups associated with an AWS account. To list backups for a given table, 
 | AWS-DynamoDB.LastEvaluatedBackupArn | unknown |  The ARN of the backup last evaluated when the current page of results was returned, inclusive of the current page of results. This value may be specified as the ExclusiveStartBackupArn of a new ListBackups operation in order to fetch the next page of results.   If LastEvaluatedBackupArn is empty, then the last page of results has been processed and there are no more results to be retrieved.   If LastEvaluatedBackupArn is not empty, this may or may not indicate that there is more data to be returned. All results are guaranteed to have been returned if and only if no value for LastEvaluatedBackupArn is returned.  | 
 
 
+#### Command Example
+```!aws-dynamodb-list-backups```
+
+#### Context Example
+```json
+{
+    "AWS-DynamoDB": {
+        "BackupSummaries": [
+            {
+                "BackupArn": "arn:table/Demisto_Test_Table",
+                "BackupCreationDateTime": "2020-01-05 15:22:10.981000+00:00",
+                "BackupName": "TestBackup",
+                "BackupSizeBytes": 0,
+                "BackupStatus": "AVAILABLE",
+                "BackupType": "USER",
+                "TableArn": "arn:table/Demisto_Test_Table",
+                "TableId": "1",
+                "TableName": "Demisto_Test_Table"
+            },
+            {
+                "BackupArn": "arn:table/Demisto_Test_Table",
+                "BackupCreationDateTime": "2020-01-13 14:00:16.905000+00:00",
+                "BackupName": "TestBackup2",
+                "BackupSizeBytes": 0,
+                "BackupStatus": "AVAILABLE",
+                "BackupType": "USER",
+                "TableArn": "arn:table/Demisto_Test_Table",
+                "TableId": "2",
+                "TableName": "Demisto_Test_Table"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS DynamoDB ListBackups
+>|BackupArn|BackupCreationDateTime|BackupName|BackupSizeBytes|BackupStatus|BackupType|TableArn|TableId|TableName|
+>|---|---|---|---|---|---|---|---|---|
+>| arn:table/Demisto_Test_Table | 2020-01-05 15:22:10.981000+00:00 | TestBackup | 0 | AVAILABLE | USER | arn:table/Demisto_Test_Table | 1 | Demisto_Test_Table |
+>| arn:table/Demisto_Test_Table | 2020-01-13 14:00:16.905000+00:00 | TestBackup2 | 0 | AVAILABLE | USER | arn:table/Demisto_Test_Table | 2 | Demisto_Test_Table |
+
+
 ### aws-dynamodb-list-global-tables
 ***
 Lists all global tables that have a replica in the specified Region.
@@ -1085,6 +1129,28 @@ Returns an array of table names associated with the current account and endpoint
 | --- | --- | --- |
 | AWS-DynamoDB.TableNames | unknown | The names of the tables associated with the current account at the current endpoint. The maximum size of this array is 100. If LastEvaluatedTableName also appears in the output, you can use this value as the ExclusiveStartTableName parameter in a subsequent ListTables request and obtain the next page of results. | 
 | AWS-DynamoDB.LastEvaluatedTableName | unknown | The name of the last table in the current page of results. Use this value as the ExclusiveStartTableName in a new request to obtain the next page of results, until all the table names are returned. If you do not receive a LastEvaluatedTableName value in the response, this means that there are no more table names to be retrieved. | 
+
+#### Command Example
+```!aws-dynamodb-list-tables```
+
+#### Context Example
+```json
+{
+    "AWS-DynamoDB": {
+        "TableNames": [
+            "Demisto_Test_Table",
+            "Items2"
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS DynamoDB ListTables
+>|TableNames|
+>|---|
+>| Demisto_Test_Table,<br/>Items2 |
 
 
 ### aws-dynamodb-list-tags-of-resource

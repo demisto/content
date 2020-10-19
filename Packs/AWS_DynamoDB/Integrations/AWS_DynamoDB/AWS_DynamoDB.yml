@@ -1340,7 +1340,7 @@ script:
     - contextPath: AWS-DynamoDB.TimeToLiveDescription.AttributeName
       description: ' The name of the TTL attribute for items in the table.'
     - contextPath: AWS-DynamoDB.TimeToLiveDescription
-      description: ''
+      description: 'Time to Live settings on the table when the backup was created.'
   - arguments:
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -2980,7 +2980,7 @@ script:
       description: The name of the TTL attribute used to store the expiration time for items in the table.
     - contextPath: AWS-DynamoDB.TimeToLiveSpecification
       description: Represents the output of an UpdateTimeToLive operation.
-  dockerimage: demisto/boto3py3:1.0.0.12410
+  dockerimage: demisto/boto3py3:1.0.0.12514
   runonce: false
   script: ''
   subtype: python3
