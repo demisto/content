@@ -131,7 +131,7 @@ def parse_certificate(certificate: str) -> dict:
             "Extentions": certificate_extentions_to_ec(decode_certificate.extensions),
             "NotValidBefore": str(decode_certificate.not_valid_before),
             "NotValidAfter": str(decode_certificate.not_valid_after),
-            "Version": decode_certificate.version.value
+            "Version": decode_certificate.version.value,
         }
     }
 
