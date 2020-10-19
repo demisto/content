@@ -2,9 +2,9 @@
   "name": "illuminate",
   "description": "This integration utilizes AnalystPlatform's illuminate system to enrich Demisto indicators with data provided by the illuminate REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.",
   "support": "partner",
-  "currentVersion": "1.0.2",
+  "currentVersion": "1.0.3",
   "author": "Analyst Platform",
-  "url": "https://www.paloaltonetworks.com/cortex",
+  "url": "",
   "email": "support@analystplatform.com",
   "created": "2020-04-14T00:00:00Z",
   "categories": [
