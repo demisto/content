@@ -1076,13 +1076,10 @@ jobs:
             demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
       - run:
           name: Format the entities
+          shell: /bin/bash
           command: |
-            { # try
-            yes | demisto-sdk format -i Packs/HelloWorld/ -nv -ud
-            } || { # catch
-                # TODO: remove it after fixing format command
+                demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
                 echo "format exit status: $?"  # DO NOT DELETE THIS LINE. format sometimes will exit with the odd exist statuses.
-            }
       - run:
           name: Run validate
           command: demisto-sdk validate -i Packs/HelloWorld/
