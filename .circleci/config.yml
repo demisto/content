@@ -42,6 +42,9 @@ parameters:
   packs_to_upload:
     type: string
     default: ""
+  bucket_upload:
+    type: string
+    default: ""
 
 references:
   environment: &environment
@@ -65,6 +68,7 @@ references:
       DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
       FORCE_PACK_UPLOAD_PARAMETER: << pipeline.parameters.force_pack_upload >>
       PACKS_TO_UPLOAD_PARAMETER: << pipeline.parameters.packs_to_upload >>
+      BUCKET_UPLOAD_PARAMETER: << pipeline.parameters.bucket_upload >>
 
   container_config: &container_config
     docker:
@@ -124,6 +128,10 @@ references:
         if [ -n "${PACKS_TO_UPLOAD_PARAMETER}" ];
         then
             echo "export PACKS_TO_UPLOAD=$PACKS_TO_UPLOAD_PARAMETER" >> $BASH_ENV
+        fi
+        if [ -n "${BUCKET_UPLOAD_PARAMETER}" ];
+        then
+            echo "export BUCKET_UPLOAD=$BUCKET_UPLOAD_PARAMETER" >> $BASH_ENV
         fi
 
         echo "=== sourcing $BASH_ENV ==="
@@ -326,6 +334,7 @@ references:
                 REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
                 python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO
+
   comment_on_contrib_pr: &comment_on_contrib_pr
     when:
       condition: << pipeline.parameters.contrib_branch >>
@@ -337,6 +346,54 @@ references:
               # Demisto Marketplace refers to Server Master
               SERVER_URL=$(jq -r 'select(.[].Role == "Demisto Marketplace") | .[].InstanceDNS' ./env_results.json)
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
+
+  upload_packs_to_marketplace_storage: &upload_packs_to_marketplace_storage
+    run:
+      name: Upload Packs To Marketplace Storage
+      command: |
+        EXTRACT_FOLDER=$(mktemp -d)
+        PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+        PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+        ID_SET=$CIRCLE_ARTIFACTS/id_set.json
+        GCS_PATH=$(mktemp)
+        echo $GCS_MARKET_KEY > $GCS_PATH
+
+        GCS_BUILD_BUCKET="marketplace-dist-dev"
+        SOURCE_PATH="content/packs"
+        BUILD_BUCKET_PATH="wow"
+        TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
+
+        python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -sb $TARGET_PATH
+        rm $GCS_PATH
+      when: on_success
+
+  force_upload_packs_to_marketplace_storage: &force_upload_packs_to_marketplace_storage
+    run:
+      name: Upload Packs To Marketplace Storage
+      command: |
+        EXTRACT_FOLDER=$(mktemp -d)
+        PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+        PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+        ID_SET=$CIRCLE_ARTIFACTS/id_set.json
+        GCS_PATH=$(mktemp)
+        echo $GCS_MARKET_KEY > $GCS_PATH
+        python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o
+        rm $GCS_PATH
+      when: on_success
+
+  wait_until_server_ready: &wait_until_server_ready
+    run:
+      name: Wait until server ready
+      shell: /bin/bash
+      when: always
+      command: |
+        if ./Tests/scripts/is_ami.sh ;
+          then
+            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
+        else
+            python3 ./Tests/scripts/wait_until_server_ready.py "master"
+        fi
+
 jobs:
   Setup Environment:
     <<: *container_config
@@ -539,6 +596,9 @@ jobs:
                       elif [ -n "${CONTRIB_BRANCH}" ] ;
                         then
                           export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
+                      elif [ -n "${BUCKET_UPLOAD}" ] ;
+                        then
+                          export IFRA_ENV_TYPE="Bucket-Upload" # disable-secrets-detection
                       else
                         export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                       fi
@@ -754,24 +814,6 @@ jobs:
                   cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                   exit $RETVAL
             - run:
-                name: Upload Packs To Marketplace Storage
-                command: |
-                  # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
-                  if [[ $CIRCLE_BRANCH != master ]]; then
-                    echo "Skipping packs uploading on non master branch"
-                    exit 0
-                  fi
-
-                  EXTRACT_FOLDER=$(mktemp -d)
-                  PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-                  PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-                  ID_SET=$CIRCLE_ARTIFACTS/id_set.json
-                  GCS_PATH=$(mktemp)
-                  echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
-                  rm $GCS_PATH
-                when: on_success
-            - run:
                 name: Slack Notifier
                 shell: /bin/bash
                 command: |
@@ -779,6 +821,7 @@ jobs:
                 when: always
             - *destroy_instances
             - *store_artifacts
+
   Server Master:
     <<: *container_config
     resource_class: medium
@@ -848,6 +891,7 @@ jobs:
             - *comment_on_contrib_pr
             - *destroy_instances
             - *store_artifacts
+  
   Force Pack Upload:
     <<: *container_config
     resource_class: medium
@@ -869,18 +913,19 @@ jobs:
                 echo "User '${CIRCLE_USERNAME}' is allowed to force pack uploads."
             fi
 
-      - run:
-          name: Upload Packs To Marketplace Storage
-          command: |
-            EXTRACT_FOLDER=$(mktemp -d)
-            PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-            PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-            ID_SET=$CIRCLE_ARTIFACTS/id_set.json
-            GCS_PATH=$(mktemp)
-            echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o
-            rm $GCS_PATH
-          when: on_success
+      - *force_upload_packs_to_marketplace_storage
+      - *destroy_instances
+      - *store_artifacts
+
+  Upload Packs:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - *upload_packs_to_marketplace_storage
       - *destroy_instances
       - *store_artifacts
 
@@ -949,11 +994,77 @@ jobs:
             ./Tests/scripts/slack_notifier.sh 'sdk_faild_steps' ./env_results.json
           when: always
 
+  Install Packs in Demisto 6_0:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - *wait_until_server_ready
+      - run:
+          name: Install Packs
+          shell: /bin/bash
+          when: always
+          no_output_timeout: 5h
+          command: |
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto 6.0"')
+            echo "Demisto 6.0 filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
+                exit 0
+            fi
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
+            else
+              echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
+            fi
+            source $BASH_ENV
+            ./Tests/scripts/install_packs.sh "$INSTANCE_ROLE"
+            exit $RETVAL
+
+  Install Packs in Demisto Marketplace - Master:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - *wait_until_server_ready
+      - run:
+          name: Install Packs
+          shell: /bin/bash
+          when: always
+          no_output_timeout: 5h
+          command: |
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
+            echo "Demisto Marketplace filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
+                exit 0
+            fi
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
+            else
+              echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
+            fi
+            source $BASH_ENV
+            ./Tests/scripts/install_packs.sh "$INSTANCE_ROLE"
+            exit $RETVAL
 
 workflows:
   version: 2
   commit:
-    unless: << pipeline.parameters.force_pack_upload >>
+    unless:
+      or:
+        - << pipeline.parameters.force_pack_upload >>
+        - << pipeline.parameters.bucket_upload >>
     jobs:
       - Setup Environment
       - Create Instances:
@@ -1071,3 +1182,27 @@ workflows:
     jobs:
       - Demisto SDK Nightly:
           context: sdk_nightly_env
+
+  bucket_upload:
+    when: << pipeline.parameters.bucket_upload >>
+    jobs:
+      - Setup Environment
+      - Create Instances
+      - Run Unit Testing And Lint:
+          requires:
+            - Setup Environment
+      - Run Validations:
+          requires:
+            - Setup Environment
+      - Install Packs in Demisto 6_0:
+          requires:
+            - Create Instances
+      - Install Packs in Demisto Marketplace - Master:
+          requires:
+            - Create Instances
+      - Upload Packs:
+          requires:
+            - Run Unit Testing And Lint
+            - Run Validations
+            - Install Packs in Demisto 6_0
+            - Install Packs in Demisto Marketplace - Master

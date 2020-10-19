@@ -18,6 +18,7 @@ from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS
+from Utils.release_notes_generator import merge_version_blocks
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
@@ -35,7 +36,7 @@ class GCPConfig(object):
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
-    PRODUCTION_BUCKET = "marketplace-dist"
+    PRODUCTION_BUCKET = "marketplace-dist-dev"
     PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
     CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
     BASE_PACK = "Base"  # base pack name
@@ -857,32 +858,47 @@ class Pack(object):
         not_updated_build = False
 
         try:
-            if os.path.exists(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)):
+            # load changelog from downloaded index
+            changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+            if os.path.exists(changelog_index_path):
                 print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
-                # load changelog from downloaded index
-                changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
                 with open(changelog_index_path, "r") as changelog_file:
                     changelog = json.load(changelog_file)
 
+                # get the latest rn version in the changelog.json file
+                changelog_rn_versions = [LooseVersion(ver) for ver in [*changelog]]
+                changelog_rn_versions.sort(reverse=True)
+                # no need to check if changelog_rn_versions isn't empty because changelog file exists
+                changelog_latest_rn_version = changelog_rn_versions[0]
+
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
+                pack_versions_dict: dict = dict()
 
                 if os.path.exists(release_notes_dir):
                     found_versions = []
                     for filename in os.listdir(release_notes_dir):
                         _version = filename.replace('.md', '')
                         version = _version.replace('_', '.')
-                        found_versions.append(LooseVersion(version))
+
+                        # Aggregate all rn files that are bigger than what we have in the changelog file
+                        if LooseVersion(version) > changelog_latest_rn_version:
+                            with open(os.path.join(release_notes_dir, filename), 'r') as changelog_md:
+                                rn_lines = changelog_md.read()
+                            pack_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
+
+                            found_versions.append(LooseVersion(version))
                     found_versions.sort(reverse=True)
-                    latest_release_notes = found_versions[0].vstring
+                    latest_release_notes_version = found_versions[0]
+                    latest_release_notes = latest_release_notes_version.vstring
 
                     print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
-                    # load latest release notes
-                    latest_rn_file = latest_release_notes.replace('.', '_')
-                    latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
 
-                    with open(latest_rn_path, 'r') as changelog_md:
-                        release_notes_lines = changelog_md.read()
-                    release_notes_lines = self._clean_release_notes(release_notes_lines)
+                    print_color(f"Aggregating ReleaseNotes versions: {[lv.vstring for lv in found_versions]} =>"
+                                f" {latest_release_notes}", LOG_COLORS.GREEN)
+                    # wrap all release notes together for one changelog entry
+                    release_notes_lines = merge_version_blocks(pack_name=self._pack_name,
+                                                               pack_versions_dict=pack_versions_dict, pack_metadata={},
+                                                               wrap_pack=False, add_whitespaces=False, wrapper='\n')
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions

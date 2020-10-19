@@ -91,10 +91,12 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
     index_generation = 0  # Setting to 0 makes the operation succeed only if there are no live versions of the blob
 
     if not os.path.exists(extract_destination_path):
+        print_error('extract_destination_path does not exist')
         os.mkdir(extract_destination_path)
 
     if not index_blob.exists():
         os.mkdir(index_folder_path)
+        print_error('index_folder_path does not exist, blob does not exist')
         return index_folder_path, index_blob, index_generation
 
     index_blob.reload()
@@ -521,7 +523,7 @@ def get_content_git_client(content_repo_path):
     return git.Repo(content_repo_path)
 
 
-def get_recent_commits_data(content_repo):
+def get_recent_commits_data(content_repo, index_folder_path):
     """ Returns recent commits hashes (of head and remote master)
 
     Args:
@@ -531,10 +533,10 @@ def get_recent_commits_data(content_repo):
         str: last commit hash of head.
         str: previous commit of origin/master (origin/master~1)
     """
-    return content_repo.head.commit.hexsha, content_repo.commit('origin/master~1').hexsha
+    return content_repo.head.commit.hexsha, get_last_upload_commit_hash(index_folder_path)
 
 
-def check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
+def check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, last_upload_commit_hash,
                               storage_bucket):
     """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
     added/modified/deleted, all other steps are not performed.
@@ -543,7 +545,7 @@ def check_if_index_is_updated(index_folder_path, content_repo, current_commit_ha
         index_folder_path (str): index folder full path.
         content_repo (git.repo.base.Repo): content repo object.
         current_commit_hash (str): last commit hash of head.
-        remote_previous_commit_hash (str): previous commit of origin/master (origin/master~1)
+        last_upload_commit_hash (str): last origin/master commit hash that was uploaded to the bucket
         storage_bucket: public storage bucket.
 
     """
@@ -554,18 +556,8 @@ def check_if_index_is_updated(index_folder_path, content_repo, current_commit_ha
             print("Skipping index update check in non production bucket")
             return
 
-        if not os.path.exists(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")):
-            # will happen only in init bucket run
-            print_warning(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
-            return
-
-        with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as index_file:
-            index_json = json.load(index_file)
-
-        index_commit_hash = index_json.get('commit', remote_previous_commit_hash)
-
         try:
-            index_commit = content_repo.commit(index_commit_hash)
+            index_commit = content_repo.commit(last_upload_commit_hash)
         except Exception as e:
             # not updated build will receive this exception because it is missing more updated commit
             print_warning(f"Index is already updated. Additional info:\n {e}")
@@ -726,6 +718,33 @@ def handle_github_response(response):
     return res_dict
 
 
+def get_last_upload_commit_hash(index_folder_path):
+    """
+    Returns the last origin/master commit hash that was uploaded to the bucket
+    Args:
+        index_folder_path: The path to the index folder
+
+    Returns: The commit hash
+
+    """
+
+    inner_index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    if not os.path.exists(inner_index_json_path):
+        print_error(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
+        sys.exit(1)
+    else:
+        inner_index_json_file = load_json(inner_index_json_path)
+        if 'commit' in inner_index_json_file:
+            last_upload_commit_hash = inner_index_json_file['commit']
+            print_color(f"Retrieved the last commit that was uploaded to production: {last_upload_commit_hash}",
+                        LOG_COLORS.GREEN)
+        else:
+            print_error(f"No commit field in {GCPConfig.INDEX_NAME}.json, content: {str(inner_index_json_file)}")
+            sys.exit(1)
+
+    return last_upload_commit_hash
+
+
 def main():
     option = option_handler()
     packs_artifacts_path = option.artifacts_path
@@ -746,12 +765,16 @@ def main():
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
-    # content repo client initialized
-    content_repo = get_content_git_client(CONTENT_ROOT_PATH)
-    current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo)
-
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
+
+    # download and extract index from public bucket
+    index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
+                                                                                 extract_destination_path)
+
+    # content repo client initialized
+    content_repo = get_content_git_client(CONTENT_ROOT_PATH)
+    current_commit_hash, last_upload_commit_hash = get_recent_commits_data(content_repo, index_folder_path)
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs)
@@ -759,12 +782,8 @@ def main():
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
-    # download and extract index from public bucket
-    index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
-                                                                                 extract_destination_path)
-
     if not option.override_all_packs:
-        check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
+        check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, last_upload_commit_hash,
                                   storage_bucket)
 
     # google cloud bigquery client initialized
@@ -849,7 +868,7 @@ def main():
             continue
 
         task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
-                                                              remote_previous_commit_hash)
+                                                              last_upload_commit_hash)
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
