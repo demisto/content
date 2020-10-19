@@ -225,8 +225,28 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
             pack_ids_to_install = [pack_id.rstrip('\n') for pack_id in pack_ids]
             pack_ids_to_install.append('DeveloperTools')
             pack_ids_to_install.append('Developer Tools')  # One of these will actually install the pack
+
+        packs_to_reinstall_body = {
+            'ids': pack_ids_to_install
+        }
+        response_data, status_code, _ = client.api_client.call_api(
+            resource_path='/contentpacks/installed/delete',
+            method='POST',
+            header_params=header_params,
+            body=packs_to_reinstall_body,
+            accept='application/json')
+        if 200 <= status_code < 300:
+            message = 'Packs were successfully uninstalled!\n'
+            prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                         include_timestamp=True)
+        else:
+            message = 'Everything is broken, just call it a night!\n'
+            prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                         include_timestamp=True)
         for local_pack in local_packs:
             if any(pack_id in local_pack for pack_id in pack_ids_to_install):
+                #  Uninstall packs and reinstall the new ones.
+
                 upload_zipped_packs(client=client, host=host, prints_manager=prints_manager,
                                     thread_index=thread_index, pack_path=local_pack)
     else:
