@@ -115,7 +115,7 @@ def upload_to_sdk(path: Union[Path, str], *args: str, debug: bool = False):
         if "FAILED UPLOADS" in stdout:
             searched_re = re.search("SUCCESSFUL UPLOADS.*FAILED UPLOADS", stdout, flags=re.DOTALL)
             if searched_re is None:
-                raise AttributeError(f'Could not find output of the command.')
+                raise AttributeError('Could not find output of the command.')
             trimmed = searched_re.group()
             for arg in args:
                 assert arg.split('/')[-1] in trimmed, f'Could not upload {arg}.'
