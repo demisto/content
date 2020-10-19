@@ -216,7 +216,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                 raise Exception(err_msg)
         except ApiException:
             print("Failed to upload license.")
-        sleep(480)
+        # sleep(480)
 
         local_packs = glob.glob("/home/runner/work/content-private/content-private/content/artifacts/packs/*.zip")
         packs_install_msg = f'Installing the following packs: {packs_to_install}'
@@ -235,7 +235,6 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
             resource_path='/contentpacks/installed/delete',
             method='POST',
             body=packs_to_reinstall_body,
-            accept='application/json',
             _request_timeout=request_timeout
         )
         if 200 <= status_code < 300:
