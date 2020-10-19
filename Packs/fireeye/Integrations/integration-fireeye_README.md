@@ -19,7 +19,7 @@
 <p>1. Go to ‘Settings &gt; Integrations &gt; Servers &amp; Services’</p>
 <p>2. Locate the FireEye (AX Series) integration by searching for ‘FireEye’ using the search box on the top of the page.</p>
 <p>3. Click ‘Add instance’ to create and configure a new integration. You should configure the following FireEye and Demisto-specific settings:</p>
-<p class="wysiwyg-indent2"><strong>Name</strong>: A textual name for the integration instance.<br> <strong>Server URL</strong>: The hostname or IP address of the FireEye’ application. Make sure the URL is reachable with respect to IP address and port.<br> <strong>Credentials and Password</strong>: Your FireEye username and password.<br> <strong>Do not validate server certificate</strong>: Select to avoid server certification validation. You may want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate)<br> <strong>Use system proxy settings</strong> – Mark this option.
+<p class="wysiwyg-indent2"><strong>Name</strong>: A textual name for the integration instance.<br> <strong>Server URL</strong>: The hostname or IP address of the FireEye’ application. Make sure the URL is reachable with respect to IP address and port.<br> <strong>Credentials and Password</strong>: Your FireEye username and password.<br> <strong>Do not validate server certificate</strong>: Select to avoid server certification validation. You may want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate)<br> <strong>Use system proxy settings</strong> – Mark this option.</p>
 <p>4. Press the ‘Test’ button to validate connection.</p>
 <p>5. After completing the test successfully, press the ‘Done’ button.</p>
 <h3>Commands:</h3>
