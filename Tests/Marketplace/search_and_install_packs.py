@@ -4,6 +4,7 @@ import os
 import ast
 import json
 import glob
+import sys
 import demisto_client
 from demisto_client.demisto_api.rest import ApiException
 from threading import Thread, Lock
@@ -99,6 +100,11 @@ def get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock)
                 prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN)
                 prints_manager.execute_thread_prints(thread_index)
             return dependencies_data
+        if status_code == 400:
+            err_msg = f"Unable to find dependencies for {pack_id}."
+            prints_manager.add_print_job(err_msg, print_color, thread_index, LOG_COLORS.RED)
+            prints_manager.execute_thread_prints(thread_index)
+            return []
         else:
             result_object = ast.literal_eval(response_data)
             msg = result_object.get('message', '')
@@ -211,8 +217,14 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
             print("Failed to upload license.")
 
         local_packs = glob.glob("/home/runner/work/content-private/content-private/content/artifacts/packs/*.zip")
+        packs_install_msg = f'Installing the following packs: {packs_to_install}'
+        prints_manager.add_print_job(packs_install_msg, print_color, thread_index, LOG_COLORS.GREEN,
+                                     include_timestamp=True)
+        with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+            pack_ids = packs_stream.readlines()
+            pack_ids_to_install = [pack_id.rstrip('\n') for pack_id in pack_ids]
         for local_pack in local_packs:
-            if any(pack_to_install['id'] in local_pack for pack_to_install in packs_to_install):
+            if any(pack_id in local_pack for pack_id in pack_ids_to_install):
                 upload_zipped_packs(client=client, host=host, prints_manager=prints_manager,
                                     thread_index=thread_index, pack_path=local_pack)
     else:
@@ -269,17 +281,22 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
         lock (Lock): A lock object.
     """
     pack_data = []
-
     if pack_id not in packs_to_install:
         pack_display_name = get_pack_display_name(pack_id)
         if pack_display_name:
             pack_data = search_pack(client, prints_manager, pack_display_name, thread_index, lock)
+        if pack_data is None:
+            pack_data = {
+                'id': pack_id,
+                'version': '1.0.0'
+            }
 
     if pack_data:
         dependencies = get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock)
 
         current_packs_to_install = [pack_data]
-        current_packs_to_install.extend(dependencies)
+        if dependencies:
+            current_packs_to_install.extend(dependencies)
 
         lock.acquire()
         for pack in current_packs_to_install:
@@ -345,8 +362,13 @@ def upload_zipped_packs(client, host, prints_manager, thread_index, pack_path):
             err_msg = 'Failed to install packs - with status code {}\n{}\n'.format(status_code, message)
             raise Exception(err_msg)
     except Exception as e:
-        err_msg = 'The request to install packs has failed. Reason:\n{}\n'.format(str(e))
-        raise Exception(err_msg)
+        if e.__class__ == ApiException:
+            err_msg = 'The request to install packs has failed. Reason:\n{}\n'.format(str(e.body))
+        else:
+            err_msg = 'The request to install packs has failed. Reason:\n{}\n'.format(str(e))
+        prints_manager.add_print_job(err_msg, print_color, thread_index, LOG_COLORS.GREEN)
+        prints_manager.execute_thread_prints(thread_index)
+        sys.exit(1)
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager, is_private, thread_index=0):
@@ -363,7 +385,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
     """
     host = client.api_client.configuration.host
 
-    msg = 'Starting to search and install packs in server: {}\n'.format(host)
+    msg = f'Starting to search and install packs in server: {host}'
     prints_manager.add_print_job(msg, print_color, thread_index, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(thread_index)
 

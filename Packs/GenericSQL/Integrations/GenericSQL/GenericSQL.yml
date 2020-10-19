@@ -170,7 +170,7 @@ script:
     description: Running a sql query
     execution: false
     name: sql-command
-  dockerimage: demisto/genericsql:1.1.0.9726
+  dockerimage: demisto/genericsql:1.1.0.11281
   feed: false
   isfetch: false
   longRunning: false
@@ -179,7 +179,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - generic-sql
-
-fromversion: 5.0.0

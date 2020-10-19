@@ -25,7 +25,7 @@ def update_content(content_zip_path, server=None, username=None, password=None, 
     Args:
         server (str): URL of the demisto server instance.
         username (str): Username to login to the demisto instance.
-        password (str): Password of the associated username to login to the demisto insatnce.
+        password (str): Password of the associated username to login to the demisto instance.
         content_zip_path (str): The path to the zip file containing content files.
         client (demisto_client): The configured client to use.
     """

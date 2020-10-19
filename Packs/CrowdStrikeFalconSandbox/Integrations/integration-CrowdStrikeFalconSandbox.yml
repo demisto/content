@@ -38,31 +38,22 @@ configuration:
   type: 8
   required: false
 script:
-  script: >+
+  script: |+
     var apiKey = params.apiKey;
-
     var secretKey = params.secretKey;
-
     var serverUrl = params.serverUrl;
-
     var insecure = params.insecure;
-
     var proxy = params.proxy;
-
     var version = params.version;
-
     if (version === undefined) {
         version = 'v1';
     }
-
     if (version === 'v1' && !secretKey) {
         return 'No API secret key was provided.';
     }
-
     var HEADERS = {
         'User-Agent': ['Falcon Sandbox']
     };
-
     if (version === 'v1') {
         HEADERS['Authorization'] = ['Basic ' + Base64.encode(apiKey + ':' + secretKey)];
     } else { // API Version is v2
@@ -70,22 +61,33 @@ script:
         HEADERS['accept'] = ['application/json'];
     }
 
-
     // handle '/' at the end of serverUrl
-
     if (serverUrl[serverUrl.length - 1] === '/') {
         serverUrl = serverUrl.substring(0, serverUrl.length - 1);
     }
 
+    // Add `contains` to String prototype.
+
+    if (!('contains' in String.prototype))
+        String.prototype.contains = function(str, startIndex) {
+            return -1 !== String.prototype.indexOf.call(this, str, startIndex);
+        };
+
+    function argToBool(arg){
+        switch (typeof arg){
+            case 'boolean': return arg;
+            case 'string': return (arg === 'true');
+            case 'undefined': return false;
+        }
+
+    }
 
     function entryError(errorCode, text) {
         var error = 'Falcon Sandbox returned an error (' + errorCode + ') - ' + text;
         return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: error};
     }
 
-
     // return a function that maps object keys by mapper (or capitlize keys if key is not exists in mapper)
-
     function mapObject(mapper) {
         return function(obj) {
             var res = {};
@@ -98,7 +100,6 @@ script:
         };
     }
 
-
     function createTableEntry(name, rawResponse, table, context, headers) {
         return {
             Type: entryTypes.note,
@@ -109,7 +110,6 @@ script:
             EntryContext: context
         };
     }
-
 
     function sendRequest(method, endpoint, body) {
         var requestUrl = serverUrl + endpoint;
@@ -136,7 +136,6 @@ script:
         return responseBody;
     }
 
-
     function scan(hash) {
         if (version === 'v1'){
             return sendRequest('GET', '/api/scan/' + hash);
@@ -146,7 +145,6 @@ script:
         }
 
     }
-
     function scanToEntry(res, hash) {
         if (version === 'v1' && res.response_code !== 0) {
             return entryError(res.response_code, res.response.error);
@@ -219,7 +217,6 @@ script:
         return createTableEntry('Scan Results:', response, table, context);
     }
 
-
     function getEnvironments() {
         var res = sendRequest('GET', '/system/state');
         if (res.response_code !== 0) {
@@ -230,7 +227,6 @@ script:
         return response;
 
     }
-
 
     function tableFromEnvironments(response) {
         var environments;
@@ -264,7 +260,6 @@ script:
 
         return createTableEntry('All Environments:', response, table, context, ['ID', 'description', 'architecture', 'total VMS', 'busy VMS', 'analysis mode', 'group icon']);
     }
-
 
     function submitFile(entryId, environmentId) {
         var requestUrl = version === 'v1' ? serverUrl + '/api/submit' : serverUrl + '/api/v2/submit/file';
@@ -323,7 +318,6 @@ script:
         return fileResult;
     }
 
-
     function submitFileEntry(file) {
         var resMessage = 'File submitted successfully';
         var fileContext = {}
@@ -365,7 +359,6 @@ script:
             EntryContext: context
         };
     }
-
 
     function searchQuery() {
         var res;
@@ -480,7 +473,6 @@ script:
         return createTableEntry('Search results:', result, table, context);
     }
 
-
     function translateVerdict(verdict) {
         var verdictNumber;
         switch (verdict) {
@@ -503,7 +495,6 @@ script:
         return verdictNumber;
     }
 
-
     function csResultCmd(hash, environmentId, fileType, jobID) {
         var res = csResult(hash, environmentId, fileType, jobID);
 
@@ -519,7 +510,6 @@ script:
         }
     }
 
-
     function csResult(hash, environmentId, fileType, jobID) {
         var csID;
         if (version === 'v2') {
@@ -534,7 +524,6 @@ script:
         var cmdUrl = (version === 'v1') ? '/api/result/' + hash + '?type=json&environmentId=' + args.environmentId : '/api/v2/report/' + csID + '/file/' + fileType;
         return sendRequest('GET', cmdUrl);
     }
-
 
     function resultEntry(result, fileType, scan) {
         var currentTime = new Date();
@@ -574,7 +563,6 @@ script:
         };
     }
 
-
     function translateScore(score) {
         /* Translates CS threat level to DBot Score */
         var scoreObject = {
@@ -589,7 +577,6 @@ script:
             return 0;
         }
     }
-
 
     function detonateFile(entryId, delay, timeout) {
         var environmentId;
@@ -635,12 +622,20 @@ script:
         throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
     }
 
-
-    function submitUrlCmd(url, environmentID) {
+    function submitUrlCmd(url, environmentID, dontThrowErrorOnFileDetonation) {
         if (version === 'v1') {
             throw 'This command is supported only in API v2.'
         }
-        var response = submitUrl(url, environmentID);
+        try {
+          var response = submitUrl(url, environmentID);
+        } catch (exception) {
+              var notSupported = 'The provided URL resolves to a file.'
+              if (dontThrowErrorOnFileDetonation && exception.contains(notSupported)){
+                  return 'The file format is not supported, use the command "crowdstrike-submit-file-by-url" instead.';
+              } else {
+                  throw exception;
+              }
+        }
         var context = {
             'File(val.hash && val.hash === obj.hash)': {
                 'SHA256': response['sha256'],
@@ -655,14 +650,12 @@ script:
         return createTableEntry(title, response, response, context);
     }
 
-
     function submitUrl(url, environmentID) {
         var cmdUrl = '/api/v2/submit/url-for-analysis';
         var body = 'url=' + encodeURIComponent(url) + '&environment_id=' + environmentID;
         HEADERS['Content-Type'] = ['application/x-www-form-urlencoded'];
         return sendRequest('POST', cmdUrl, body);
     }
-
 
     function getScreenshotsCmd(file, environmentID, jobID) {
         if (version === 'v1') {
@@ -682,7 +675,6 @@ script:
         return images
     }
 
-
     function getScreenshots(file, environmentID, jobID) {
         var csID;
         if (file && environmentID){
@@ -696,13 +688,11 @@ script:
         return sendRequest('GET', cmdUrl);
     }
 
-
     function file(hash) {
         args.context = hash;
         delete args.file;
         return searchQuery();
     }
-
 
     function detonateUrl(url, delay, timeout, fileType) {
         if (version === 'v1') {
@@ -750,7 +740,6 @@ script:
         throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
     }
 
-
     function submitFileByUrlCommad(url, environmentID) {
         if (version === 'v1') {
             throw 'This command is supported only in API v2.'
@@ -769,14 +758,12 @@ script:
         return createTableEntry(title, response, response, context);
     }
 
-
     function submitFileByUrl(url, environmentID) {
         var cmdUrl = '/api/v2/submit/url-to-file';
         var body = 'url=' + url + '&environment_id=' + environmentID;
         HEADERS['Content-Type'] = ['application/x-www-form-urlencoded'];
         return sendRequest('POST', cmdUrl, body);
     }
-
 
     switch (command) {
         case 'test-module':
@@ -828,7 +815,7 @@ script:
         case 'crowdstrike-detonate-file':
             return detonateFile(args.entryId, args.delay, args.timeout);
         case 'crowdstrike-submit-url':
-            return submitUrlCmd(args.url, args.environmentID);
+            return submitUrlCmd(args.url, args.environmentID, argToBool(args.dontThrowErrorOnFileDetonation));
         case 'crowdstrike-get-screenshots':
             return getScreenshotsCmd(args.file, args.environmentID, args.JobID);
         case 'file':
@@ -897,7 +884,8 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
       type: string
-    description: Get summary information for a given MD5, SHA1 or SHA256 and all the reports generated for any environment ID
+    description: Get summary information for a given MD5, SHA1 or SHA256 and all the
+      reports generated for any environment ID
   - name: crowdstrike-scan
     arguments:
     - name: file
@@ -971,7 +959,8 @@ script:
     - contextPath: File.state
       description: The state of the file test
       type: string
-    description: Get summary information for a given MD5, SHA1 or SHA256 and all the reports generated for any environment ID
+    description: Get summary information for a given MD5, SHA1 or SHA256 and all the
+      reports generated for any environment ID
   - name: vx-get-environments
     deprecated: true
     arguments: []
@@ -1060,7 +1049,8 @@ script:
     - name: query
       required: true
       default: true
-      description: Falcon Sandbox query syntax (see `<server url>/faq#advanced-search-options` for more details). examples -  url:google, host:95.181.53.78
+      description: Falcon Sandbox query syntax (see `<server url>/faq#advanced-search-options`
+        for more details). examples -  url:google, host:95.181.53.78
     outputs:
     - contextPath: VX.Search.SHA256
       description: SHA256 of search result
@@ -1097,7 +1087,9 @@ script:
     arguments:
     - name: query
       default: true
-      description: Falcon Sandbox query syntax, e.g. url:google,host:95.181.53.78. This argument integrates all other arguments to one, and cannot be given along with the other arguments.
+      description: Falcon Sandbox query syntax, e.g. url:google,host:95.181.53.78.
+        This argument integrates all other arguments to one, and cannot be given along
+        with the other arguments.
     - name: filename
       description: Filename e.g. invoice.exe
     - name: filetype
@@ -1203,7 +1195,8 @@ script:
       default: true
       description: File hash (MD5, SHA1 or SHA256) - Mandatory in v1
     - name: environmentId
-      description: environment ID to submit file to (get all via crowdstrike-get-environments)  - Mandatory in v1.
+      description: environment ID to submit file to (get all via crowdstrike-get-environments)  -
+        Mandatory in v1.
       defaultValue: "100"
     - name: file-type
       auto: PREDEFINED
@@ -1241,7 +1234,8 @@ script:
       required: true
       description: War-room entry ID of sample file
     - name: environmentID
-      description: environment ID to submit file to(get all via crowdstrike-get-environments). Default is 100, or other WINDOWS ID
+      description: environment ID to submit file to(get all via crowdstrike-get-environments).
+        Default is 100, or other WINDOWS ID
     - name: delay
       description: Delay wait time between calls (in seconds)
       defaultValue: "3"
@@ -1256,7 +1250,8 @@ script:
       required: true
       description: War-room entry ID of sample file
     - name: environmentID
-      description: environment ID to submit file to(get all via crowdstrike-get-environments). Default is 100, or other WINDOWS ID
+      description: environment ID to submit file to(get all via crowdstrike-get-environments).
+        Default is 100, or other WINDOWS ID
     - name: delay
       description: Delay wait time between calls (in seconds)
       defaultValue: "3"
@@ -1334,6 +1329,13 @@ script:
       required: true
       description: Environment ID to submit URL to
       defaultValue: "100"
+    - name: dontThrowErrorOnFileDetonation
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Not throwing an error when sending a URL, which points to a file.
+      defaultValue: "false"
     outputs:
     - contextPath: File.SHA256
       description: File SHA256
@@ -1407,7 +1409,8 @@ script:
       required: true
       description: 'URL address to be submitted '
     - name: environmentID
-      description: Environment ID to submit URL to (get all via crowdstrike-get-environments). Default is 100, or other WINDOWS ID
+      description: Environment ID to submit URL to (get all via crowdstrike-get-environments).
+        Default is 100, or other WINDOWS ID
       defaultValue: "100"
     - name: delay
       description: Delay wait time between calls (in seconds)
@@ -1441,7 +1444,8 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-    description: "(Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate URL playbook instead) Detonates URL address through Falcon Sandbox (supported only in v2)"
+    description: "(Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate URL playbook instead)
+    Detonates URL address through Falcon Sandbox (supported only in v2)"
   - name: crowdstrike-submit-file-by-url
     arguments:
     - name: environmentID

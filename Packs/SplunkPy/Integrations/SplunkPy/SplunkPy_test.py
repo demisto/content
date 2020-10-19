@@ -456,3 +456,33 @@ data_test_get_splunk_query = [
 def test_get_splunk_query(params, expected_query):
     output = splunk.get_splunk_query(params)
     assert output == expected_query, 'get_splunk_query({})\n\treturns:\n\t{}\n\tinstead:{}'.format(params, output, expected_query)
+
+
+SPLUNK_RESULTS = [
+    {
+        "rawJSON":
+            '{"source": "This is the alert type", "field_name1": "field_val1", "field_name2": "field_val2"}',
+        "details": "Endpoint - High Or Critical Priority Host With Malware - Rule",
+        "labels": [
+            {
+                "type": "security_domain",
+                "value": "Endpoint - High Or Critical Priority Host With Malware - Rule"
+            }
+        ],
+    }
+]
+
+
+EXPECTED_OUTPUT = {
+    'This is the alert type': {
+        "source": "This is the alert type",
+        "field_name1": "field_val1",
+        "field_name2": "field_val2"
+    }
+
+}
+
+
+def test_create_mapping_dict():
+    mapping_dict = splunk.create_mapping_dict(SPLUNK_RESULTS, type_field='source')
+    assert mapping_dict == EXPECTED_OUTPUT

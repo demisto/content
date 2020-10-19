@@ -255,6 +255,9 @@ tasks:
               getField:
                 value:
                   simple: Address
+              stringify:
+                value:
+                  simple: "true"
           - operator: uniq
       limit: {}
       name: {}

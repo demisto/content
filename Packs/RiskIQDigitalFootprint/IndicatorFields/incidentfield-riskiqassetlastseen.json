@@ -1,0 +1,31 @@
+{
+ "id": "indicator_riskiqassetlastseen",
+ "version": -1,
+ "modified": "2020-07-08T19:36:26.358111753+05:30",
+ "name": "RiskIQAsset Last Seen",
+ "ownerOnly": false,
+ "description": "Date and Time when the asset was most recently observed on RiskIQ Digital Footprint.",
+ "cliName": "riskiqassetlastseen",
+ "type": "date",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "RiskIQAsset"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}

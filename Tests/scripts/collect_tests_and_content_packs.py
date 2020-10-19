@@ -18,7 +18,14 @@ from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
-coloredlogs.install(level=logging.DEBUG, fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s')
+coloredlogs.install(level=logging.DEBUG,
+                    fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s',
+                    level_styles={
+                        'critical': {'bold': True, 'color': 'red'},
+                        'debug': {'color': 'cyan'},
+                        'error': {'color': 'red'},
+                        'info': {},
+                        'warning': {'color': 'yellow'}})
 
 
 class TestConf(object):
@@ -270,7 +277,7 @@ def get_modified_files_for_testing(files_string):
                     re.match(PACKS_INDICATOR_TYPE_JSON_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
-            elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
+            elif checked_type(file_path, JSON_ALL_INDICATOR_FIELDS_REGEXES):
                 is_indicator_json = True
 
             # conf.json
@@ -1048,14 +1055,14 @@ def is_test_uses_active_integration(integration_ids, conf=deepcopy(CONF)):
 
 def get_random_tests(tests_num, rand, conf=deepcopy(CONF), id_set=deepcopy(ID_SET), server_version='0'):
     """Gets runnable tests for the server version"""
-    tests = set([])
-    test_ids = conf.get_test_playbook_ids()
+    all_test_ids = conf.get_test_playbook_ids()
+    runnable_test_ids = [test_id for test_id in all_test_ids if is_test_runnable(test_id, id_set, conf, server_version)]
+    if len(runnable_test_ids) <= tests_num:
+        random_test_ids_to_run = runnable_test_ids
+    else:
+        random_test_ids_to_run = rand.sample(runnable_test_ids, k=tests_num)
 
-    while len(tests) < tests_num:
-        test = rand.choice(test_ids)
-        if is_test_runnable(test, id_set, conf, server_version):
-            tests.add(test)
-    return tests
+    return set(random_test_ids_to_run)
 
 
 def get_tests_for_pack(pack_path):
@@ -1114,7 +1121,8 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
-def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=deepcopy(CONF),
+def get_test_list_and_content_packs_to_install(files_string, branch_name, minimum_server_version='0',
+                                               conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
 
@@ -1159,7 +1167,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if not tests:
         rand = random.Random(branch_name)
         tests = get_random_tests(
-            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
+            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=minimum_server_version)
         packs_to_install = get_content_pack_name_of_test(tests, id_set)
         if changed_common:
             logging.debug('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
@@ -1168,9 +1176,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
         else:
             logging.debug("Running Sanity check only")
 
-            tests.add('TestCommonPython')  # test with no integration configured
-            tests.add('HelloWorld-Test')  # test with integration configured
-            packs_to_install.add("HelloWorld")
+        tests.add('TestCommonPython')  # test with no integration configured
+        tests.add('HelloWorld-Test')  # test with integration configured
+        packs_to_install.add("HelloWorld")
 
     if changed_common:
         tests.add('TestCommonPython')
@@ -1190,11 +1198,22 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
+    # remove tests that were skipped via the pack-ignore
+    ignored_tests_set = set()
+    for pack in packs_to_install:
+        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
+    if ignored_tests_set:
+        readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
+        logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
+        tests.difference_update(ignored_tests_set)
+
     return tests, packs_to_install
 
 
 def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id_set: dict) -> Tuple[str, str]:
-    """Computes the lowest from version of the modified files and the highest to version of the modified files
+    """Computes the lowest from version of the modified files, the highest from version and the highest to version of
+    the modified files.
+    In case that max_from_version is higher than max to version - to version will be the the highest default.
     Args:
         all_modified_files_paths: All modified files
         id_set: the content of the id.set_json
@@ -1205,6 +1224,7 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
     """
     max_to_version = LooseVersion('0.0.0')
     min_from_version = LooseVersion('99.99.99')
+    max_from_version = LooseVersion('0.0.0')
     for artifacts in id_set.values():
         for artifact_dict in artifacts:
             for artifact_details in artifact_dict.values():
@@ -1213,14 +1233,16 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
                     to_version = artifact_details.get('toversion')
                     if from_version:
                         min_from_version = min(min_from_version, LooseVersion(from_version))
+                        max_from_version = max(max_from_version, LooseVersion(from_version))
                     if to_version:
                         max_to_version = max(max_to_version, LooseVersion(to_version))
-    if max_to_version.vstring == '0.0.0':
+    if max_to_version.vstring == '0.0.0' or max_to_version < max_from_version:
         max_to_version = LooseVersion('99.99.99')
     if min_from_version.vstring == '99.99.99':
         min_from_version = LooseVersion('0.0.0')
     logging.debug(f'modified files are {all_modified_files_paths}')
     logging.debug(f'lowest from version found is {min_from_version}')
+    logging.debug(f'highest from version found is {max_from_version}')
     logging.debug(f'highest to version found is {max_to_version}')
     return min_from_version.vstring, max_to_version.vstring
 
@@ -1228,7 +1250,6 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
 def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=None, one_before_ga=None, ga=None):
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
-    two_before_ga = two_before_ga or AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
     one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
     ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
     """
@@ -1239,7 +1260,6 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
     envs_to_test = {
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
-        'Demisto one before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
         'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
         'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
@@ -1291,9 +1311,10 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
-        two_before_ga = AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
+        minimum_server_version = AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
 
-        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga)
+        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
+                                                                             minimum_server_version)
         tests_string = '\n'.join(tests)
         packs_to_install_string = '\n'.join(packs_to_install)
 

@@ -46,9 +46,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.9.1"
+      CONTENT_VERSION: "20.10.0"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "46fde7a4345e0c25aa496854447104b22684a3cc" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "8a93f9ad1328fc1f2e4ed75aec24d10159d68312" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -69,6 +69,9 @@ references:
   container_config: &container_config
     docker:
       - image: devdemisto/content-build:3.0.0.7332  # disable-secrets-detection
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
 
   workspace_root: &workspace_root
     /home/circleci/
@@ -557,67 +560,6 @@ jobs:
                   fi
             - *store_artifacts
       - *persist_to_workspace
-  Server 4_5:
-    <<: *container_config
-    resource_class: medium
-    <<: *environment
-    steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - run:
-                name: Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
-      - unless:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - *attach_workspace
-            - *add_ssh_keys
-            - *prepare_environment
-            - run:
-                name: Wait until server ready
-                shell: /bin/bash
-                when: always
-                command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto one before GA"
-            - run:
-                name: Run Tests - Server 4.5
-                shell: /bin/bash
-                when: always
-                command: |
-                  echo 'export INSTANCE_ROLE="Demisto one before GA"' >> $BASH_ENV
-                  source $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
-                  echo "Demisto one before GA filter=$TEMP"
-                  if [[ "$TEMP" == "false" ]];
-                    then
-                      echo "Skipping - instance was not setup"
-                      exit 0
-                  fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-
-                    else
-                      echo "Not AMI run, can't run on this version"
-                      exit 0
-                  fi
-            - *destroy_instances
-            - *store_artifacts
   Server 5_0:
     <<: *container_config
     resource_class: medium
@@ -919,7 +861,7 @@ jobs:
           command: |
             CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
             LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
-            LEADER_NAMES+=( "content-bot" )
+            LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
             if [[ -z "${CIRCLE_USERNAME}" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`" ]]; then
                 echo -e "User '${CIRCLE_USERNAME}' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
                 exit 1
@@ -985,6 +927,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
+      - setup_remote_docker
       - *restore_cache
       - *prepare_environment
       - *secrets
@@ -1023,12 +966,6 @@ workflows:
       - Run Validations:
           requires:
             - Setup Environment
-      - Server 4_5:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
       - Server 5_0:
           filters:
             branches:

@@ -1,15 +1,16 @@
 id: Cortex Data Lake Test
 version: -1
 name: Cortex Data Lake Test
-description: The Palo Alto Networks Cortex Test playbook tests Cortex Data Lake main usecases
+description: The Palo Alto Networks Cortex Test playbook tests Cortex Data Lake main
+  usecases
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 63da380f-41d4-4b8a-8b88-e660a35df4cd
+    taskid: 6a7468f0-3c02-401a-8d1b-44837e7506c7
     type: start
     task:
-      id: 63da380f-41d4-4b8a-8b88-e660a35df4cd
+      id: 6a7468f0-3c02-401a-8d1b-44837e7506c7
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 120f3088-1651-40d1-8d6d-4a6faa57b38d
+    taskid: b6562244-6b46-4594-8aa3-7b6d239ed139
     type: regular
     task:
-      id: 120f3088-1651-40d1-8d6d-4a6faa57b38d
+      id: b6562244-6b46-4594-8aa3-7b6d239ed139
       version: -1
       name: Query Logs
       description: Runs a query on the Cortex logging service.
@@ -65,10 +66,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 9c3b712e-9b16-4bbd-8e2f-8bca5e9327cb
+    taskid: 792c55d0-b304-4af8-82d0-b0256bad7305
     type: condition
     task:
-      id: 9c3b712e-9b16-4bbd-8e2f-8bca5e9327cb
+      id: 792c55d0-b304-4af8-82d0-b0256bad7305
       version: -1
       name: Verify Query Logs Outputs
       description: Verify Query Logs Outputs
@@ -126,10 +127,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: d5daefa7-efae-4837-8237-f62e278be936
+    taskid: 59439316-3233-4717-8ad1-1b847e65bcee
     type: title
     task:
-      id: d5daefa7-efae-4837-8237-f62e278be936
+      id: 59439316-3233-4717-8ad1-1b847e65bcee
       version: -1
       name: Success
       description: Query Cortex Logging service according to pre-set queries
@@ -141,7 +142,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2015
         }
       }
     note: false
@@ -151,10 +152,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: c447ccb2-c846-4bea-8c4f-8ca8ca51b32b
+    taskid: 67c79548-9039-4bd1-84a7-2da6f3c733c5
     type: regular
     task:
-      id: c447ccb2-c846-4bea-8c4f-8ca8ca51b32b
+      id: 67c79548-9039-4bd1-84a7-2da6f3c733c5
       version: -1
       name: Fetch events
       description: Execute FetchIncident for a given instance
@@ -164,7 +165,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "12"
     scriptarguments:
       add_to_context: {}
       brand_name:
@@ -188,10 +189,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 6326099c-cab1-4729-88b5-8692612aed85
+    taskid: e52565d4-3dfa-4620-89f8-f4cf4a303238
     type: regular
     task:
-      id: 6326099c-cab1-4729-88b5-8692612aed85
+      id: e52565d4-3dfa-4620-89f8-f4cf4a303238
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -224,10 +225,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 34e02456-9d76-41ab-8a96-9d3adbbea838
+    taskid: 046bef0e-87d5-486b-8662-a3cc05a6f962
     type: condition
     task:
-      id: 34e02456-9d76-41ab-8a96-9d3adbbea838
+      id: 046bef0e-87d5-486b-8662-a3cc05a6f962
       version: -1
       name: Verify Query Threat Logs Outputs
       description: Verify Query Threat Logs Outputs
@@ -276,10 +277,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 40b34124-63f2-4514-8843-ae952d321f37
+    taskid: 66a1d2e2-04e1-45b6-840e-bd700f30a0ec
     type: regular
     task:
-      id: 40b34124-63f2-4514-8843-ae952d321f37
+      id: 66a1d2e2-04e1-45b6-840e-bd700f30a0ec
       version: -1
       name: cdl-query-traffic-logs
       description: Searches the Cortex firewall.traffic table. Traffic logs contain entries for the end of each network session
@@ -322,10 +323,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 042a7bbf-c090-49fc-83fc-3cfbf9e7b605
+    taskid: 337df9d9-1137-4fb9-83b0-0bfeadfc44b9
     type: condition
     task:
-      id: 042a7bbf-c090-49fc-83fc-3cfbf9e7b605
+      id: 337df9d9-1137-4fb9-83b0-0bfeadfc44b9
       version: -1
       name: Verify Query Traffic Logs Outputs
       description: Verify Query Traffic Logs Outputs
@@ -374,10 +375,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: c7bde997-bbb9-4c2d-8042-36aec730c77e
+    taskid: dd4cfff2-a9c3-49d4-8fba-0a484e792353
     type: regular
     task:
-      id: c7bde997-bbb9-4c2d-8042-36aec730c77e
+      id: dd4cfff2-a9c3-49d4-8fba-0a484e792353
       version: -1
       name: cdl-query-threat-logs
       description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
@@ -420,12 +421,126 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "12":
+    id: "12"
+    taskid: 1ee0cb39-9fe3-48fc-84da-1d0521ad06fb
+    type: regular
+    task:
+      id: 1ee0cb39-9fe3-48fc-84da-1d0521ad06fb
+      version: -1
+      name: cdl-query-file-data
+      description: Searches the Cortex firewall.file_data table.
+      script: '|||cdl-query-file-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      action: {}
+      app:
+        simple: web-browsing
+      app_category: {}
+      dest_device_host: {}
+      dest_dynamic_address_group: {}
+      dest_edl: {}
+      dest_ip: {}
+      dest_location: {}
+      dest_port: {}
+      dest_user: {}
+      end_time: {}
+      file_name: {}
+      file_sha_256: {}
+      file_type: {}
+      from_zone: {}
+      is_server_to_client: {}
+      is_url_denied: {}
+      limit:
+        simple: "1"
+      log_type: {}
+      nat_dest: {}
+      nat_dest_port: {}
+      nat_source: {}
+      nat_source_port: {}
+      rule_matched: {}
+      rule_matched_uuid: {}
+      severity: {}
+      source_device_host: {}
+      source_dynamic_address_group: {}
+      source_edl: {}
+      source_ip: {}
+      source_location: {}
+      source_port: {}
+      source_user: {}
+      start_time: {}
+      sub_type: {}
+      time_range:
+        simple: 1 year
+      url_category: {}
+      url_domain: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 4881978e-2bd7-4058-87cc-9ac964e173eb
+    type: condition
+    task:
+      id: 4881978e-2bd7-4058-87cc-9ac964e173eb
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CDL.Logging.File.App
+            iscontext: true
+          right:
+            value:
+              simple: web-browsing
+      - - operator: isExists
+          left:
+            value:
+              simple: CDL.Logging.File.SourceIP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
+        "height": 2030,
         "width": 380,
         "x": 50,
         "y": 50

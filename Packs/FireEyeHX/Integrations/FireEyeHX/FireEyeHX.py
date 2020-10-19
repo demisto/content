@@ -1062,12 +1062,20 @@ def containment_request(agent_id):
         'state': 'contain'
     }
 
-    http_request(
-        'POST',
-        url,
-        body=body,
-        headers=POST_HEADERS
-    )
+    api_version = VERSION[-1]
+    if api_version > 3:
+        http_request(
+            'POST',
+            url,
+            headers=POST_HEADERS
+        )
+    else:
+        http_request(
+            'POST',
+            url,
+            body=body,
+            headers=POST_HEADERS
+        )
     # no exception raised - successful request
 
 
@@ -2005,7 +2013,7 @@ def start_search():
         pending = search_info.get('stats', {}).get('search_state', {}).get('PENDING', 0)
         if search_info.get('state') == 'STOPPED' or matched >= limit or pending == 0:
             break
-        time.sleep(60)
+        time.sleep(60)  # pylint: disable=sleep-exists
 
     results = get_search_results_request(search_id)
     md_entries = [host_results_md_entry(host_results) for host_results in results]
@@ -2164,7 +2172,7 @@ def file_acquisition():
         state = acquisition_info.get('state')
         if state in ['COMPLETE', 'ERROR', 'FAILED']:
             break
-        time.sleep(10)
+        time.sleep(10)  # pylint: disable=sleep-exists
     LOG('acquisition process has been complete. Fetching zip file.')
 
     acquired_file = file_acquisition_package_request(acquisition_id)
@@ -2272,7 +2280,7 @@ def data_acquisition():
         acquisition_info = data_acquisition_information_request(acquisition_id)
         if acquisition_info.get('state') == 'COMPLETE':
             break
-        time.sleep(30)
+        time.sleep(30)  # pylint: disable=sleep-exists
     LOG('Acquisition process has been complete. Fetching mans file.')
 
     message = '{} acquired successfully'.format(args.get('fileName'))

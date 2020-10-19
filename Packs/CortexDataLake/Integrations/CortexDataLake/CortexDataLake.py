@@ -386,6 +386,98 @@ def url_context_transformer(row_content: dict) -> dict:
     }
 
 
+def files_context_transformer(row_content: dict) -> dict:
+    """
+    This function retrieves data from a row of raw data into context path locations
+
+    Args:
+        row_content: a dict representing raw data of a row
+
+    Returns:
+        a dict with context paths and their corresponding value
+    """
+
+    return {
+        'Action': row_content.get('action', {}).get('value'),
+        'App': row_content.get('app'),
+        'AppCategory': row_content.get('app_category'),
+        'AppSubcategory': row_content.get('app_sub_category'),
+        'CharacteristicOfApp': row_content.get('characteristics_of_app'),
+        'DestinationIP': row_content.get('dest_ip', {}).get('value'),
+        'CloudHostname': row_content.get('cloud_hostname'),
+        'CountOfRepeats': row_content.get('count_of_repeats'),
+        'CustomerID': row_content.get('customer_id'),
+        'DestinationLocation': row_content.get('dest_location'),
+        'DestinationPort': row_content.get('dest_port'),
+        'DirectionOfAttack': row_content.get('direction_of_attack', {}).get('value'),
+        'FileID': row_content.get('file_id'),
+        'FileName': row_content.get('file_name'),
+        'FileType': row_content.get('file_type'),
+        'Flags': row_content.get('flags'),
+        'FromZone': row_content.get('from_zone'),
+        'Http2Connection': row_content.get('http2_connection'),
+        'InboundIf': row_content.get('inbound_if', {}).get('value'),
+        'IngestionTime': human_readable_time_from_epoch_time(row_content.get('ingestion_time', 0)),
+        'IsCaptivePortal': row_content.get('is_captive_portal'),
+        'IsClientToServer': row_content.get('is_client_to_server'),
+        'IsContainer': row_content.get('is_container'),
+        'IsDecryptMirror': row_content.get('is_decrypt_mirror'),
+        'IsDupLog': row_content.get('is_dup_log'),
+        'IsExported': row_content.get('is_exported'),
+        'IsForwarded': row_content.get('is_forwarded'),
+        'IsMptcpOn': row_content.get('is_mptcp_on'),
+        'IsNat': row_content.get('is_nat'),
+        'IsNonStdDestPort': row_content.get('is_non_std_dest_port'),
+        'IsPacketCapture': row_content.get('is_packet_capture'),
+        'IsPhishing': row_content.get('is_phishing'),
+        'IsPrismaBranch': row_content.get('is_prisma_branch'),
+        'IsPrismaMobile': row_content.get('is_prisma_mobile'),
+        'IsProxy': row_content.get('is_proxy'),
+        'IsReconExcluded': row_content.get('is_recon_excluded'),
+        'IsSaasApp': row_content.get('is_saas_app'),
+        'IsServerToClient': row_content.get('is_server_to_client'),
+        'IsSymReturn': row_content.get('is_sym_return'),
+        'IsTransaction': row_content.get('is_transaction'),
+        'IsTunnelInspected': row_content.get('is_tunnel_inspected'),
+        'IsUrlDenied': row_content.get('is_url_denied'),
+        'LogSet': row_content.get('log_set'),
+        'LogSource': row_content.get('log_source'),
+        'LogSourceID': row_content.get('log_source_id'),
+        'LogSourceName': row_content.get('log_source_name'),
+        'LogTime': human_readable_time_from_epoch_time(row_content.get('log_time', 0)),
+        'LogType': row_content.get('log_type', {}).get('value'),
+        'NatDestination': row_content.get('nat_dest', {}).get('value'),
+        'NatSource': row_content.get('nat_source', {}).get('value'),
+        'NatDestinationPort': row_content.get('nat_dest_port'),
+        'NatSourcePort': row_content.get('nat_source_port'),
+        'OutboundIf': row_content.get('outbound_if', {}).get('value'),
+        'PcapID': row_content.get('pcap_id'),
+        'Protocol': row_content.get('protocol', {}).get('value'),
+        'RecordSize': row_content.get('record_size'),
+        'ReportID': row_content.get('report_id'),
+        'RiskOfApp': row_content.get('risk_of_app'),
+        'RuleMatched': row_content.get('rule_matched'),
+        'RuleMatchedUuid': row_content.get('rule_matched_uuid'),
+        'SanctionedStateOfApp': row_content.get('sanctioned_state_of_app'),
+        'SequenceNo': row_content.get('sequence_no'),
+        'SessionID': row_content.get('session_id'),
+        'Severity': row_content.get('severity'),
+        'SourceIP': row_content.get('source_ip', {}).get('value'),
+        'Subtype': row_content.get('sub_type', {}).get('value'),
+        'TechnologyOfApp': row_content.get('technology_of_app'),
+        'TimeGenerated': human_readable_time_from_epoch_time(row_content.get('time_generated', 0)),
+        'ToZone': row_content.get('to_zone'),
+        'Tunnel': row_content.get('tunnel', {}).get('value'),
+        'TunneledApp': row_content.get('tunneled_app'),
+        'URLCategory': row_content.get('url_category', {}).get('value'),
+        'FileSHA256': row_content.get('file_sha_256'),
+        'Vsys': row_content.get('vsys'),
+        'VsysID': row_content.get('vsys_id'),
+        'VendorName': row_content.get('vendor_name'),
+        'VendorSeverity': row_content.get('vendor_severity', {}).get('value')
+    }
+
+
 def records_to_human_readable_output(fields: str, table_name: str, results: list) -> str:
     """
     This function gets all relevant data for the human readable output of a specific table.
@@ -412,6 +504,9 @@ def records_to_human_readable_output(fields: str, table_name: str, results: list
                 'Action': result.get('action', {}).get('value'),
                 'RuleMatched': result.get('rule_matched'),
                 'TimeGenerated': human_readable_time_from_epoch_time(result.get('time_generated')),
+                'FileID': result.get('file_id'),
+                'FileName': result.get('file_name'),
+                'FileType': result.get('file_type')
             }
             filtered_results.append(filtered_result)
     else:
@@ -472,7 +567,6 @@ def build_where_clause(args: dict) -> str:
     Returns:
         A string represents the where part of a SQL query
     """
-
     args_dict = {
         'source_ip': 'source_ip.value',
         'dest_ip': 'dest_ip.value',
@@ -484,6 +578,32 @@ def build_where_clause(args: dict) -> str:
         'action': 'action.value',
         'file_sha_256': 'file_sha_256',
         'file_name': 'file_name',
+        'app': 'app',
+        'app_category': 'app_category',
+        'dest_device_port': 'dest_device_port',
+        'dest_edl': 'dest_edl',
+        'dest_dynamic_address_group': 'dest_dynamic_address_group',
+        'dest_location': 'dest_location',
+        'dest_user': 'dest_user',
+        'file_type': 'file_type',
+        'is_server_to_client': 'is_server_to_client',
+        'is_url_denied': 'is_url_denied',
+        'log_type': 'log_type',
+        'nat_dest': 'nat_dest',
+        'nat_dest_port': 'nat_dest_port',
+        'nat_source': 'nat_source',
+        'nat_source_port': 'nat_source_port',
+        'rule_matched_uuid': 'rule_matched_uuid',
+        'severity': 'severity',
+        'source_device_host': 'source_device_host',
+        'source_edl': 'source_edl',
+        'source_dynamic_address_group': 'source_dynamic_address_group',
+        'source_location': 'source_location',
+        'source_user': 'source_user',
+        'sub_type': 'sub_type.value',
+        'time_generated': 'time_generated',
+        'url_category': 'url_category',
+        'url_domain': 'url_domain'
     }
     if args.get('ip') and (args.get('source_ip') or args.get('dest_ip')):
         raise DemistoException('Error: "ip" argument cannot appear with either "source_ip" nor "dest_ip"')
@@ -773,6 +893,14 @@ def query_url_logs_command(args: dict, client: Client) -> Tuple[str, dict, List[
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
+def query_file_data_command(args: dict, client: Client) -> Tuple[str, dict, List[Dict[str, Any]]]:
+
+    query_table_name: str = 'file_data'
+    context_transformer_function = files_context_transformer
+    table_context_path: str = 'CDL.Logging.File'
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
 def query_table_logs(args: dict,
                      client: Client,
                      table_name: str,
@@ -875,6 +1003,8 @@ def main():
             return_outputs(*query_threat_logs_command(args, client))
         elif command == 'cdl-query-url-logs':
             return_outputs(*query_url_logs_command(args, client))
+        elif command == 'cdl-query-file-data':
+            return_outputs(*query_file_data_command(args, client))
         elif command == 'fetch-incidents':
             first_fetch_timestamp = params.get('first_fetch_timestamp', '24 hours').strip()
             fetch_severity = params.get('firewall_severity')

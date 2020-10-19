@@ -64,7 +64,7 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
         if res.status_code not in (200, 204):
             if res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE and num_of_seconds_to_wait <= MAX_SECONDS_TO_WAIT:
                 random_num_of_seconds = random.randint(num_of_seconds_to_wait, num_of_seconds_to_wait + 3)
-                time.sleep(random_num_of_seconds)
+                time.sleep(random_num_of_seconds)  # pylint: disable=sleep-exists
                 return http_request(method, url_suffix, data, headers=headers,
                                     num_of_seconds_to_wait=num_of_seconds_to_wait + 3)
             else:

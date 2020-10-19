@@ -1307,7 +1307,7 @@ tasks:
       message-id:
         simple: ${Gmail.SentMail.ID}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -1352,7 +1352,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: admin@demistodev.com
+              simple: shai@demistodev.com
       - - operator: isEqualString
           left:
             value:
@@ -1448,7 +1448,7 @@ tasks:
                   simple: ID
       permanent: {}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -1583,7 +1583,8 @@ tasks:
       body:
         simple: bla bla bla
       cc: {}
-      from: {}
+      from:
+        simple: shai@demistodev.com
       htmlBody: {}
       replyTo: {}
       subject:
