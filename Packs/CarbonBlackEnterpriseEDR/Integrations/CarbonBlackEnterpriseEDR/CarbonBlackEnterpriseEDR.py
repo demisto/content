@@ -345,7 +345,7 @@ class Client(BaseClient):
         return self._http_request('GET', suffix_url)
 
     def create_search_process_request(self, process_hash: str, process_name: str, event_id: str, query: str,
-                                      limit: int = None):
+                                      limit: int = None) -> dict:
         if not process_hash and not process_name and not event_id and not query:
             raise ValueError("No search parameters were provided.")
         suffix_url = f'/api/investigate/v2/orgs/{self.cb_org_key}/processes/search_jobs'
@@ -363,7 +363,7 @@ class Client(BaseClient):
         )
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def get_search_process_request(self, job_id):
+    def get_search_process_request(self, job_id) -> dict:
         suffix_url = f'/api/investigate/v2/orgs/{self.cb_org_key}/processes/search_jobs/{job_id}/results'
 
         return self._http_request('GET', suffix_url)
@@ -1219,21 +1219,6 @@ def process_search_get_command(client: Client, args: Dict) -> List[CommandResult
     return job_result_list
 
 
-def process_search_check_status_command(client: Client, args: Dict) -> List[CommandResults]:
-    job_ids = argToList(args.get('job_id'))
-    results_list = []
-    for job in job_ids:
-        result = client.get_search_process_request(job_id=job)
-        status = 'Completed' if result.get('contacted') == result.get('completed') else 'In Progress'
-        output = {'status': status, 'job_id': job}
-
-        results_list.append(CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess',
-                                           outputs=output, outputs_key_field='job_id',
-                                           raw_response=result))
-
-    return results_list
-
-
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1371,10 +1356,6 @@ def main():
 
         elif demisto.command() == 'cb-eedr-process-search-results':
             for command_result_item in process_search_get_command(client, demisto.args()):
-                return_results(command_result_item)
-
-        elif demisto.command() == 'cb-eedr-process-search-check-status':
-            for command_result_item in process_search_check_status_command(client, demisto.args()):
                 return_results(command_result_item)
 
         elif demisto.command() == 'cb-eedr-events-by-process-search':
