@@ -546,19 +546,6 @@ def get_remote_data_command(rest_client, args):
         demisto.debug(f"Respond incident {args.get('id')}\n"
                       f"update time:   {arg_to_timestamp(args.get('last_update'), 'last_update')}")
 
-        # todo both working examples of v6 right now use a 'modification_time' type field to
-        #  determine whether or not an event should be updated we should change this to check
-        #  against that field before trying to update. For now, assume every field needs to be
-        #  updated
-
-        # todo do we need to add feedback entries or are they already there as null
-        #  for the case when an incident was closed in respond but initially was open
-
-        # for now
-        # add feedback as third param in id field. if no feedback, field should be string 'None'
-        # then, when updating an incident, if feedback in id is 'None' and there is feedback on the
-        # new incident, add all feedback fields to entries array
-
         return [updated_incident] + entries
 
     except Exception as e:
