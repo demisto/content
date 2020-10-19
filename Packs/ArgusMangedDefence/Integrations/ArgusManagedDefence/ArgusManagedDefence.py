@@ -37,6 +37,7 @@ from argus_api.api.events.v1.case.case import get_events_for_case
 from argus_api.api.events.v1.aggregated import find_aggregated_events, list_aggregated_events
 from argus_api.api.events.v1.payload import get_payload
 from argus_api.api.events.v1.pcap import get_pcap
+from argus_api.api.events.v1.nids import find_n_i_d_s_events, list_n_i_d_s_events
 
 from argus_api.api.pdns.v3.search import search_records
 
@@ -772,6 +773,29 @@ def get_pcap_command(args: Dict[str, Any]) -> fileResult:
     return fileResult(f"{event_id}_pcap", result.content)
 
 
+def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
+    raise NotImplementedError
+
+
+def list_nids_events_command(args: Dict[str, Any]) -> CommandResults:
+    result = list_n_i_d_s_events(
+        customerID=args.get("customer_id", None),
+        signature=args.get("signature", None),
+        ip=args.get("ip", None),
+        startTimestamp=args.get("start_timestamp", None),
+        endTimestamp=args.get("end_timestamp", None),
+        limit=args.get("limit", None),
+        offset=args.get("offset", None)
+    )
+    readable_output = f"# List NIDS Events\n"
+    readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
+    readable_output += tableToMarkdown("Events", result["data"])
+    outputs = {"Argus.Event.NIDS(val.id === obj.id)": result["data"]}
+    return CommandResults(
+        readable_output=readable_output, outputs=outputs, raw_response=result
+    )
+
+
 def search_records_command(args: Dict[str, Any]) -> CommandResults:
     raise NotImplementedError
 
@@ -883,6 +907,12 @@ def main() -> None:
 
         elif demisto.command() == "argus_get_pcap":
             return_results(get_pcap_command(demisto.args()))
+
+        elif demisto.command() == "argus_find_nids_events":
+            return_results(find_nids_events_command(demisto.args()))
+
+        elif demisto.command() == "argus_list_nids_events":
+            return_results(list_nids_events_command(demisto.args()))
 
         elif demisto.command() == "argus_search_records":
             return_results(search_records_command(demisto.args()))

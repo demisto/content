@@ -364,9 +364,16 @@ def test_fetch_observations_for_i_p_command(requests_mock):
     raise NotImplementedError
 
 
-def test_find_n_ids_events(requests_mock):
+def test_find_nids_events(requests_mock):
     raise NotImplementedError
 
 
-def test_list_n_ids_events(requests_mock):
-    raise NotImplementedError
+def test_list_nids_events(requests_mock):
+    from ArgusManagedDefence import list_nids_events_command
+    from argus_json import argus_event_data
+
+    method_url = f"/events/v1/nids"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_NIDS_EVENT)
+    result = list_nids_events_command({})
+    assert result.raw_response == argus_event_data.ARGUS_NIDS_EVENT

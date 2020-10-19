@@ -176,3 +176,128 @@ ARGUS_EVENT = {
         "encodedFlags": ["ESTABLISHED"],
     },
 }
+
+ARGUS_NIDS_EVENT = {
+    "responseCode": 0,
+    "limit": 0,
+    "offset": 0,
+    "count": 0,
+    "size": 0,
+    "metaData": {},
+    "messages": [
+        {
+            "message": "string",
+            "messageTemplate": "string",
+            "type": "FIELD_ERROR",
+            "field": "string",
+            "parameter": {},
+            "timestamp": 0,
+        }
+    ],
+    "data": [
+        {
+            "customerInfo": {
+                "id": 0,
+                "name": "string",
+                "shortName": "string",
+                "domain": {"id": 0, "name": "string"},
+            },
+            "properties": {
+                "additionalProp1": "string",
+                "additionalProp2": "string",
+                "additionalProp3": "string",
+            },
+            "comments": [
+                {
+                    "timestamp": 0,
+                    "user": {
+                        "id": 0,
+                        "customerID": 0,
+                        "customer": {
+                            "id": 0,
+                            "name": "string",
+                            "shortName": "string",
+                            "domain": {"id": 0, "name": "string"},
+                        },
+                        "domain": {"id": 0, "name": "string"},
+                        "userName": "string",
+                        "name": "string",
+                        "type": "user",
+                    },
+                    "comment": "string",
+                }
+            ],
+            "sensor": {
+                "sensorID": 0,
+                "hostName": "string",
+                "hostIpAddress": {
+                    "host": True,
+                    "ipv6": True,
+                    "public": True,
+                    "maskBits": 0,
+                    "multicast": True,
+                    "address": "string",
+                },
+                "hostIpString": "string",
+            },
+            "location": {
+                "shortName": "string",
+                "name": "string",
+                "timeZone": "string",
+                "id": 0,
+            },
+            "attackInfo": {
+                "alarmID": 0,
+                "alarmDescription": "string",
+                "attackCategoryID": 0,
+                "attackCategoryName": "string",
+                "signature": "string",
+            },
+            "count": 0,
+            "engineTimestamp": 0,
+            "protocolID": 0,
+            "domain": {"fqdn": "string"},
+            "uri": "string",
+            "source": {
+                "port": 0,
+                "geoLocation": {
+                    "countryCode": "string",
+                    "countryName": "string",
+                    "locationName": "string",
+                    "latitude": 0,
+                    "longitude": 0,
+                },
+                "networkAddress": {
+                    "ipv6": True,
+                    "public": True,
+                    "maskBits": 0,
+                    "multicast": True,
+                    "host": True,
+                    "address": "string",
+                },
+            },
+            "destination": {
+                "port": 0,
+                "geoLocation": {
+                    "countryCode": "string",
+                    "countryName": "string",
+                    "locationName": "string",
+                    "latitude": 0,
+                    "longitude": 0,
+                },
+                "networkAddress": {
+                    "ipv6": True,
+                    "public": True,
+                    "maskBits": 0,
+                    "multicast": True,
+                    "host": True,
+                    "address": "string",
+                },
+            },
+            "timestamp": 0,
+            "severity": "low",
+            "flags": ["ESTABLISHED"],
+            "id": "string",
+        }
+    ],
+}
