@@ -11,7 +11,7 @@ trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pi
 
 post_data=$(cat <<-EOF
 {
-  "branch": "upload-packs-build-flow",
+  "branch": "master",
   "parameters": {
     "bucket_upload": "true"
   }

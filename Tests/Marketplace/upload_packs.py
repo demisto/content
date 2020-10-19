@@ -536,13 +536,11 @@ def get_recent_commits_data(content_repo, index_folder_path):
     return content_repo.head.commit.hexsha, get_last_upload_commit_hash(index_folder_path)
 
 
-def check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, last_upload_commit_hash,
-                              storage_bucket):
+def check_if_index_is_updated(content_repo, current_commit_hash, last_upload_commit_hash, storage_bucket):
     """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
     added/modified/deleted, all other steps are not performed.
 
     Args:
-        index_folder_path (str): index folder full path.
         content_repo (git.repo.base.Repo): content repo object.
         current_commit_hash (str): last commit hash of head.
         last_upload_commit_hash (str): last origin/master commit hash that was uploaded to the bucket
@@ -783,8 +781,7 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     if not option.override_all_packs:
-        check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, last_upload_commit_hash,
-                                  storage_bucket)
+        check_if_index_is_updated(content_repo, current_commit_hash, last_upload_commit_hash, storage_bucket)
 
     # google cloud bigquery client initialized
     bq_client = init_bigquery_client(service_account)

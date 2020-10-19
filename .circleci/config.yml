@@ -351,26 +351,32 @@ references:
     run:
       name: Upload Packs To Marketplace Storage
       command: |
+        # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
+        if [[ $CIRCLE_BRANCH != master ]]; then
+          echo "Skipping packs uploading on non master branch"
+          exit 0
+        fi
+
         EXTRACT_FOLDER=$(mktemp -d)
         PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
         PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
         ID_SET=$CIRCLE_ARTIFACTS/id_set.json
         GCS_PATH=$(mktemp)
         echo $GCS_MARKET_KEY > $GCS_PATH
-
-        GCS_BUILD_BUCKET="marketplace-dist-dev"
-        SOURCE_PATH="content/packs"
-        BUILD_BUCKET_PATH="wow"
-        TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
-
-        python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -sb $TARGET_PATH
+        python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
         rm $GCS_PATH
       when: on_success
 
   force_upload_packs_to_marketplace_storage: &force_upload_packs_to_marketplace_storage
     run:
-      name: Upload Packs To Marketplace Storage
+      name: Force Upload Packs To Marketplace Storage
       command: |
+        # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
+        if [[ $CIRCLE_BRANCH != master ]]; then
+          echo "Skipping packs uploading on non master branch"
+          exit 0
+        fi
+
         EXTRACT_FOLDER=$(mktemp -d)
         PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
         PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
@@ -1185,6 +1191,14 @@ workflows:
 
   bucket_upload:
     when: << pipeline.parameters.bucket_upload >>
+    triggers:
+      - schedule:
+          # should trigger every day at 12 AM UTC (3 AM Israel Time)
+          cron: "0 21 * * *"
+          filters:
+            branches:
+              only:
+                - master
     jobs:
       - Setup Environment
       - Create Instances
