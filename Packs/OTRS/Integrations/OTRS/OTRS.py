@@ -220,21 +220,15 @@ def get_ticket_command():
 
 
 def get_ticket(ticket_id):
-    try:
-        response = client.ticket_get_by_id(ticket_id, articles=True, attachments=True, dynamic_fields=True)
-    except Exception:
-        update_session()
-        response = client.ticket_get_by_id(ticket_id, articles=True, attachments=True, dynamic_fields=True)
+    args = {'ticket_id': ticket_id, 'articles': True, 'attachments': True, 'dynamic_fields': True}
+    response = execute_otrs_method('ticket_get_by_id', args)
     raw_ticket = response.to_dct()['Ticket']
     return raw_ticket
 
 
 def get_ticket_by_number(ticket_number):
-    try:
-        response = client.ticket_get_by_number(ticket_number, articles=True, attachments=True, dynamic_fields=True)
-    except Exception:
-        update_session()
-        response = client.ticket_get_by_number(ticket_number, articles=True, attachments=True, dynamic_fields=True)
+    args = {'ticket_number': ticket_number, 'articles': True, 'attachments': True, 'dynamic_fields': True}
+    response = execute_otrs_method('ticket_get_by_number', args)
     raw_ticket = response.to_dct().get('Ticket')
     return raw_ticket
 
@@ -297,28 +291,14 @@ def search_ticket_command():
 
 
 def search_ticket(states=None, created_before=None, created_after=None, title=None, queue=None, priority=None, ticket_type=None):
-    try:
-        response = client.ticket_search(
-            States=states,
-            TicketCreateTimeOlderDate=created_before,
-            TicketCreateTimeNewerDate=created_after,
-            Title=title,
-            Queues=queue,
-            Priorities=priority,
-            Types=ticket_type
-        )
-    except Exception:
-        update_session()
-        response = client.ticket_search(
-            States=states,
-            TicketCreateTimeOlderDate=created_before,
-            TicketCreateTimeNewerDate=created_after,
-            Title=title,
-            Queues=queue,
-            Priorities=priority,
-            Types=ticket_type
-        )
-    return response
+    args = {'States': states,
+            'TicketCreateTimeOlderDate': created_before,
+            'TicketCreateTimeNewerDate': created_after,
+            'Title': title,
+            'Queues': queue,
+            'Priorities': priority,
+            'Types': ticket_type}
+    return execute_otrs_method('ticket_search', args)
 
 
 def create_ticket_command():
@@ -396,13 +376,8 @@ def create_ticket_command():
 
 
 def create_ticket(new_ticket, article, df, attachments):
-    try:
-        response = client.ticket_create(new_ticket, article, dynamic_fields=df, attachments=attachments)
-    except Exception:
-        update_session()
-        response = client.ticket_create(new_ticket, article, dynamic_fields=df, attachments=attachments)
-
-    return response
+    args = {'ticket': new_ticket, 'article': article, 'dynamic_fields': df, 'attachments': attachments}
+    return execute_otrs_method('ticket_create', args)
 
 
 def update_ticket_command():
@@ -521,35 +496,17 @@ def close_ticket_command():
 
 def update_ticket(ticket_id, title=None, queue=None, state=None, priority=None,
                   article=None, ticket_type=None, df=None, attachments=None):
-
     kwargs = {'Type': ticket_type}
-    try:
-        response = client.ticket_update(
-            ticket_id,
-            Title=title,
-            Queue=queue,
-            State=state,
-            Priority=priority,
-            article=article,
-            dynamic_fields=df,
-            attachments=attachments,
-            **kwargs
-        )
-    except Exception:
-        update_session()
-        response = client.ticket_update(
-            ticket_id,
-            Title=title,
-            Queue=queue,
-            State=state,
-            Priority=priority,
-            article=article,
-            dynamic_fields=df,
-            attachments=attachments,
-            **kwargs
-        )
-
-    return response
+    args = {'ticket_id': ticket_id,
+            'Title': title,
+            'Queue': queue,
+            'State': state,
+            'Priority': priority,
+            'article': article,
+            'dynamic_fields': df,
+            'attachments': attachments,
+            'kwargs': kwargs}
+    return execute_otrs_method('ticket_update', args)
 
 
 def fetch_incidents():
@@ -600,6 +557,16 @@ def update_session():
     client.session_id_store.write(sessionID)
 
 
+def execute_otrs_method(method_name, args):
+    method = getattr(client, method_name)
+    try:
+        response = method(**args)
+    except Exception:
+        update_session()
+        response = method(**args)
+    return response
+
+
 ''' EXECUTION CODE '''
 handle_proxy(demisto.params().get('proxy'))
 
@@ -611,9 +578,7 @@ client = Client(SERVER, USERNAME, PASSWORD, https_verify=USE_SSL)
 if cache.get('SessionID'):
     client.session_id_store.write(cache['SessionID'])
 else:
-    client.session_create()
-    sessionID = client.session_id_store.value
-    demisto.setIntegrationContext({'SessionID': sessionID})
+    update_session()
 
 
 LOG('command is %s' % (demisto.command(), ))
