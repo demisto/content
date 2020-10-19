@@ -408,7 +408,7 @@ class Client(BaseClient):
         last_token_fetched_expiration_time = demisto.getIntegrationContext().get('expiration_time')
         current_time = int(datetime.now().timestamp())
 
-        if last_token_fetched_expiration_time and last_token_fetched_expiration_time > current_time:
+        if last_token_fetched_expiration_time and int(last_token_fetched_expiration_time) > current_time:
             auth_token = demisto.getIntegrationContext().get('auth_token')
         else:
             auth_token = self.fetch_new_access_token()
