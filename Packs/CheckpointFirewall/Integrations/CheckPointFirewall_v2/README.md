@@ -1,7 +1,7 @@
 ## Overview
 ---
 
-Integration Overview Manage CheckPoint Firewall. Read information and to send commands to the Check Point Firewall server. 
+Integration Overview Manage Check Point Firewall. Read information and to send commands to the Check Point Firewall server. 
 This integration was integrated and tested with version R80.30 of CheckPoint SmartConsole.
 
 Product Name: CheckPoint Firewall  
@@ -2732,4 +2732,3 @@ Retrieve data about objects.
 >|name|uid|type|
 >|---|---|---|
 >| All_Internet | f90e0a2b-f166-427a-b47f-a107b6fe43b9 | address-range |
-
