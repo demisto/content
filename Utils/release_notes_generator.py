@@ -253,7 +253,7 @@ def get_release_notes_dict(release_notes_files):
 
 
 def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata: dict, wrap_pack: bool = True,
-                         add_whitespaces: bool = True):
+                         add_whitespaces: bool = True, wrapper: str = ''):
     """
     merge several pack release note versions into a single block.
 
@@ -263,6 +263,7 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata
         wrap_pack: whether to wrap the rn with the pack header or not.
         add_whitespaces: a parameter to pass to construct_entities_block function which indicates
         whether to add whitespaces to the entity name or not
+        wrapper: a wrapper to wrap the outputs
 
     Returns:
         a single pack release note block
@@ -299,6 +300,12 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata
                     entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
 
     pack_release_notes = construct_entities_block(entities_data, add_whitespaces).strip()
+
+    if wrapper:
+        pack_release_notes = f'{pack_release_notes}{wrapper}' if not pack_release_notes.endswith(wrapper) else \
+            pack_release_notes
+        pack_release_notes = f'{wrapper}{pack_release_notes}' if not pack_release_notes.startswith(wrapper) else \
+            pack_release_notes
 
     if wrap_pack:
         partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''

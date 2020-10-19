@@ -768,6 +768,9 @@ def main():
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
+    if storage_base_path:
+        GCPConfig.STORAGE_BASE_PATH = storage_base_path
+
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
@@ -776,9 +779,6 @@ def main():
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, last_upload_commit_hash = get_recent_commits_data(content_repo, index_folder_path)
     print(f'***** curr={current_commit_hash}, prev={last_upload_commit_hash}')
-
-    if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs)

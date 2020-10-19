@@ -897,12 +897,7 @@ class Pack(object):
                     # wrap all release notes together for one changelog entry
                     release_notes_lines = merge_version_blocks(pack_name=self._pack_name,
                                                                pack_versions_dict=pack_versions_dict, pack_metadata={},
-                                                               wrap_pack=False, add_whitespaces=False)
-                    # merge_version_blocks function doesn't return the lines prefixed & suffixed with \n, so adding it
-                    release_notes_lines = f'{release_notes_lines}\n' if not release_notes_lines.endswith('\n') else \
-                        release_notes_lines
-                    release_notes_lines = f'\n{release_notes_lines}' if not release_notes_lines.startswith('\n') else \
-                        release_notes_lines
+                                                               wrap_pack=False, add_whitespaces=False, wrapper='\n')
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
