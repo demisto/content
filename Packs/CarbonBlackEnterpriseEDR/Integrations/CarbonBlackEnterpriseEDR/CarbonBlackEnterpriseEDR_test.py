@@ -19,6 +19,18 @@ PROCESS_CASES = [
 
 @pytest.mark.parametrize('demisto_args,expected_results', PROCESS_CASES)
 def test_create_process_search_body(mocker, demisto_args, expected_results):
+    """
+    Given:
+        - search task's argument
+
+    When:
+        - creating a search process task
+
+    Then:
+        - validating the body sent to request is matching the search
+
+    """
+
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
     client = cbe.Client(
         base_url='https://server_url.com',
@@ -42,6 +54,18 @@ EVENT_CASES = [
 
 @pytest.mark.parametrize('demisto_args,expected_results', EVENT_CASES)
 def test_create_event_by_process_search_body(mocker, demisto_args, expected_results):
+    """
+    Given:
+        - search task's argument
+
+    When:
+        - creating a search event by process task
+
+    Then:
+        - validating the body sent to request is matching the search
+
+    """
+
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
     client = cbe.Client(
         base_url='https://server_url.com',

@@ -1,0 +1,234 @@
+id: Carbon Black EDR Search Process
+version: -1
+name: Carbon Black EDR Search Process
+starttaskid: "0"
+description: |-
+  Use this playbook as a sub-playbook to run a process search task.
+  This playbook implements polling by continuously running the `cb-eedr-process-search-results` command until the operation completes.
+  The remote action should have the following structure:
+
+  1. Initiate the operation - insert the arguments for te search command.
+  2. Poll to check if the operation completed.
+  3. Get the results of the operation.
+tasks:
+  "0":
+    id: "0"
+    taskid: 7f5de763-1458-40ae-8d8a-08f7b887487e
+    type: start
+    task:
+      id: 7f5de763-1458-40ae-8d8a-08f7b887487e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 720599ae-4737-4079-8e04-366c4afe8877
+    type: regular
+    task:
+      id: 720599ae-4737-4079-8e04-366c4afe8877
+      version: -1
+      name: Process Search Task Creation
+      description: Creates a process search job.
+      script: Carbon Black Enterprise EDR|||cb-eedr-process-search
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      event_id:
+        simple: ${inputs.event_id}
+      limit:
+        simple: ${inputs.limit}
+      process_hash:
+        simple: ${inputs.process_hash}
+      process_name:
+        simple: ${inputs.process_name}
+      query:
+        simple: ${inputs.query}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: fb75040a-68ec-4d9e-8e95-75f52934694a
+    type: playbook
+    task:
+      id: fb75040a-68ec-4d9e-8e95-75f52934694a
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: CarbonBlackEEDR.SearchProcess
+          accessor: job_id
+      Interval:
+        complex:
+          root: inputs.interval
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: cb-eedr-process-search-results
+      Timeout:
+        complex:
+          root: inputs.timeout
+      dt:
+        simple: CarbonBlackEEDR.SearchProcess(val.status != 'Completed').job_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b2f73190-48c3-498f-820c-751c14638fdf
+    type: regular
+    task:
+      id: b2f73190-48c3-498f-820c-751c14638fdf
+      version: -1
+      name: Get Process Search Results
+      description: Retrieves the process search results for a given job ID.
+      script: '|||cb-eedr-process-search-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      job_id:
+        complex:
+          root: CarbonBlackEEDR.SearchProcess
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CarbonBlackEEDR.SearchProcess.status
+                iscontext: true
+              right:
+                value:
+                  simple: Completed
+          accessor: job_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 605,
+        "width": 380,
+        "x": 450,
+        "y": 70
+      }
+    }
+  }
+inputs:
+- key: query
+  value: {}
+  required: false
+  description: Query with Carbon Black API syntax
+  playbookInputQuery:
+- key: process_name
+  value: {}
+  required: false
+  description: Tokenized file path of the process’ main module.
+  playbookInputQuery:
+- key: process_hash
+  value: {}
+  required: false
+  description: MD5 and SHA-256 hashes of process’ main module in a multi-valued field.
+  playbookInputQuery:
+- key: event_id
+  value: {}
+  required: false
+  description: CBD Event id (valid only for events coming through Analytics)
+  playbookInputQuery:
+- key: limit
+  value: {}
+  required: false
+  description: number of results to fetch
+  playbookInputQuery:
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: determine how long to wait between fetching data for polling
+  playbookInputQuery:
+- key: timeout
+  value:
+    simple: "10"
+  required: false
+  description: determine timeout for polling
+  playbookInputQuery:
+outputs: []
+tests:
+- Carbon Black Enterprise EDR Test
+fromversion: 5.0.0

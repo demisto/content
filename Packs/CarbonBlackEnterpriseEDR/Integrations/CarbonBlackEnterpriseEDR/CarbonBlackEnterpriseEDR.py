@@ -1177,6 +1177,9 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
 
 
 def process_search_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Gets arguments for a process search task, and returns the task's id and status.
+    """
     process_name = args.get('process_name', '')
     process_hash = args.get('process_hash', '')
     event_id = args.get('event_id', '')
@@ -1192,6 +1195,9 @@ def process_search_command(client: Client, args: Dict) -> CommandResults:
 
 
 def event_by_process_search_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Gets arguments for an event-by-process search task, and returns the task's results.
+    """
     process_guid = args.get('process_guid', '')
     event_type = args.get('event_type', '')
     query = args.get('query', '')
@@ -1206,6 +1212,9 @@ def event_by_process_search_command(client: Client, args: Dict) -> CommandResult
 
 
 def process_search_get_command(client: Client, args: Dict) -> List[CommandResults]:
+    """
+    Gets a process search task's id, and returns the task's results.
+    """
     job_ids = argToList(args.get('job_id'))
     job_result_list = []
     for job in job_ids:
