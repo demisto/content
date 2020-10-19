@@ -57,14 +57,6 @@ def create_layout(path: Path, layout_name: str) -> str:
     layout_path_sample = Path('Packs/HelloWorld/Layouts/layout-details-Hello_World_Alert-V2.json')
     with open(layout_path_sample) as stream:
         layout = json.load(stream)
-        layout.update({
-             'TypeName': layout_name,
-             'typeId': layout_name
-        })
-        layout['layout'].update({
-             'id': layout_name,
-             'typeId': layout_name
-        })
     dest_layout = path / 'Layouts'
     if not os.path.isdir(dest_layout):
         os.mkdir(dest_layout)
