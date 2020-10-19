@@ -1,6 +1,4 @@
-import pickle
-
-import pandas as pd
+import pytest
 
 from CommonServerPython import *
 from DBotPreprocessTextData import clean_html, remove_line_breaks, hash_word, \
@@ -21,8 +19,8 @@ def test_clean_html(mocker):
 
 def test_remove_line_breaks():
     html_string = """
-    line1
-    line2
+line1
+line2
     """
     assert remove_line_breaks(html_string) == "line1 line2"
 
