@@ -1306,6 +1306,7 @@ def main():
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                   new_integrations, prints_manager)
+    sleep(30)
     if not success or not installed_content_packs_successfully:
         sys.exit(2)
 
