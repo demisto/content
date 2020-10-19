@@ -76,8 +76,12 @@ class STIX21Processor:
             hashes_dict = dict()  # type: Dict
 
             for h in hash_values:
-                key, value = h.split('=')
-                hashes_dict[key.strip().split('file:hashes.')[1].replace("'", '')] = value.strip().replace("'", '')
+                try:
+                    key, value = h.split('=')
+                    hashes_dict[key.strip().split('file:hashes.')[1].replace("'", '')] = value.strip().replace("'", '')
+                except Exception:
+                    # When an unknown item occurs in the pattern
+                    pass
 
             if hashes_dict.get('MD5'):
                 return ['file'], [hashes_dict['MD5']], hashes_dict
@@ -176,6 +180,8 @@ class STIX21Processor:
                     indicator['rawJSON']['SHA-1'] = hashes['SHA-1']
                 if 'SHA-256' in hashes:
                     indicator['rawJSON']['SHA-256'] = hashes['SHA-256']
+                if 'ssdeep' in hashes:
+                    indicator['rawJSON']['SSDeep'] = hashes['ssdeep']
 
                 indicators.append(indicator)
 
