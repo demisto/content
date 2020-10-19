@@ -22,7 +22,7 @@ def create_incident_field(path: Path, layout_name: str) -> str:
     Returns:
         The path to the incident field
     """
-    hello_field_path = 'Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Type.json'
+    hello_field_path = 'Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Status.json'
     with open(hello_field_path) as stream:
         field = json.load(stream)
     name = 'Hello World Incident Test'
@@ -30,8 +30,7 @@ def create_incident_field(path: Path, layout_name: str) -> str:
     field.update({
         'name': name,
         'cliName': cliname,
-        'id': f'incident_{cliname}',
-        'layout': layout_name
+        'id': f'incident_{cliname}'
     })
     dest_incident = path / 'IncidentFields'
 
