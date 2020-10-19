@@ -11,3 +11,4 @@ dockerimage: demisto/ml:1.0.0.12420
 comment: A ML code used which is shared by different ML automatons.
 tags:
 - ml
+fromversion: "5.0.0"
