@@ -418,7 +418,6 @@ def main():
     new_packs = get_new_packs(args.git_sha1)
     new_packs_release_notes = {}
     new_packs_metadata = {}
-    new_packs
     for pack in new_packs:
         pack_metadata = get_pack_metadata(pack)
         pack_name = pack_metadata.get('name')
