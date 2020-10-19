@@ -1277,7 +1277,7 @@ def main():
     configure_servers_and_restart(build, prints_manager)
     installed_content_packs_successfully = False
     if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
-        if build.is_nightly:
+        if build.is_nightly or build.is_private:
             install_nightly_pack(build, prints_manager)
             installed_content_packs_successfully = True
         else:
