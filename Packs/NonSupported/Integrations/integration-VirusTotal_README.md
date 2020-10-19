@@ -3292,11 +3292,11 @@
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h3>Notes</h3>
-<p><code>!ip</code> and <code>!domain</code> dbotscores are calculated according to the positives result in the response.</p>
-<p>As opposed to the VT UI, in the VT API, domain and ip are analysed according to the files downloaded from them.</p>
-<p>We are taking into consideration detected samples (files that was marked malicious by VT engines) When calculating dbotScore.</p>
-<h5>dbotScore calculation:</h5>
-<p>Bad - If the number of positives downloads will be above the given thresholds</p>
-<p>Suspicious - If the number of positives downloads divided by 2 will be above the given thresholds</p>
-<p>otherwise the dbotScore will be marked as goods</p>
+<p>The <code>!ip</code> and <code>!domain</code> DBbot scores are calculated according to the positives result in the response.</p>
+<p>In the VT API (as opposed to the VT UI), domain and ip are analyzed according to the files downloaded from them.</p>
+<p>We take detected samples (files that was marked malicious by VT engines) into consideration when calculating the DBot score.</p>
+<h5>How DBot score is calculated:</h5>
+<p>Bad - If the number of positives downloads exceeds the specified thresholds.</p>
+<p>Suspicious - If the number of positives downloads divided by 2 exceeds the specified thresholds,</p>
+<p>otherwise the DBot score will be marked as good.</p>
 
