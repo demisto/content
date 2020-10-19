@@ -1,11 +1,10 @@
 import argparse
 import json
-import re
 import os
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Tuple
 
 
 def run_command(cmd: str) -> Tuple[str, str]:
@@ -59,6 +58,14 @@ def create_layout(path: Path, layout_name: str) -> str:
     layout_path_sample = Path('Packs/HelloWorld/Layouts/layout-details-Hello_World_Alert-V2.json')
     with open(layout_path_sample) as stream:
         layout = json.load(stream)
+        layout.update({
+             'TypeName': layout_name,
+             'typeId': layout_name
+        })
+        layout['layout'].update({
+             'id': layout_name,
+             'typeId': layout_name
+        })
     dest_layout = path / 'Layouts'
     if not os.path.isdir(dest_layout):
         os.mkdir(dest_layout)
@@ -100,45 +107,10 @@ def create_incident_type(path: Path, layout_name: str) -> str:
     return str(incident_path)
 
 
-def upload_to_sdk(path: Union[Path, str], *args: str, debug: bool = False):
-    """
-    For some reasons, if uploading entities one by one we will get an exception,
-        so we process the output to see that all files created are succeeded.
-
-    Args:
-        path: Path of the pack to upload
-        args: Entities to validate upload
-    """
-    print('Uploading to Cortex XSOAR')
-    stdout, stderr, = run_command(f'demisto-sdk upload -i {str(path)} --insecure')
-    try:
-        if "FAILED UPLOADS" in stdout:
-            searched_re = re.search("SUCCESSFUL UPLOADS.*FAILED UPLOADS", stdout, flags=re.DOTALL)
-            if searched_re is None:
-                raise AttributeError('Could not find output of the command.')
-            trimmed = searched_re.group()
-            for arg in args:
-                assert arg.split('/')[-1] in trimmed, f'Could not upload {arg}.'
-                print(f'{arg} was uploaded to Cortex XSOAR')
-        else:
-            print("All content entities were sucessfully uploaded to Cortex XSOAR.")
-            print("Entities:")
-            print("\t" + "\n\t".join(args))
-    except AssertionError:
-        debug = True
-    finally:
-        if debug:
-            print("Uploading STDOUT")
-            print(stdout)
-            print("Uploading STDERR")
-            print(stderr)
-
-
 def main():
     parser = argparse.ArgumentParser(description="Creates incident field, incident type and a layout in a given pack.")
     parser.add_argument('pack_name')
     parser.add_argument('--artifacts-folder', required=False)
-    parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
     pack_path = Path('Packs') / args.pack_name
     layout_name = 'Hello World Test Layout'
@@ -158,7 +130,6 @@ def main():
             file_name = file.split('/')[-1]
             shutil.copyfile(file, entities_folder / file_name)
             print(f"file: {file_name} stored.")
-    upload_to_sdk(pack_path, *uploaded_entities, debug=args.debug)
 
 
 if __name__ in '__main__':
