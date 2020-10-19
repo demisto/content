@@ -672,8 +672,8 @@ def get_threat_request(sha256):
 
 
 def get_threats():
-    page = demisto.args()['page'] if 'page' in demisto.args() else None
-    page_size = demisto.args()['page_size'] if 'page_size' in demisto.args() else None
+    page = demisto.args()['pageNumber'] if 'pageNumber' in demisto.args() else None
+    page_size = demisto.args()['pageSize'] if 'pageSize' in demisto.args() else None
 
     threats = get_threats_request(page, page_size)['page_items']
     dbot_score_array = []
@@ -718,7 +718,7 @@ def get_threats_request(page=None, page_size=None):
     if page in demisto.args():
         params['page'] = demisto.args()['page']
     if page_size in demisto.args():
-        params['page_size'] = demisto.args()['page_size']
+        params['page_size'] = demisto.args()['pageSize']
 
     res = api_call(uri=URI_THREATS, method='get', headers=headers, params=params)
     return res
