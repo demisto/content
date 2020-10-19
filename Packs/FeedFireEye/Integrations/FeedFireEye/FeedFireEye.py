@@ -91,6 +91,8 @@ class STIX21Processor:
                 return ['file'], [hashes_dict['SHA-256']], hashes_dict
             elif hashes_dict.get('SHA-512'):
                 return ['file'], [hashes_dict['SHA-512']], hashes_dict
+            elif hashes_dict.get('ssdeep'):
+                return ['file'], [hashes_dict['ssdeep']], hashes_dict
             else:
                 return [], [], {}
 
