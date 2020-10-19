@@ -1024,7 +1024,7 @@ def install_nightly_pack(build, prints_manager):
     threads_print_manager = ParallelPrintsManager(len(build.servers))
     if build.is_nightly:
         nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs)
-    create_nightly_test_pack()
+    create_nightly_test_pack(build)
     pack_path = f'{Build.test_pack_target}/test_pack.zip'
     if build.is_private:
         pack_path = '/home/runner/work/content-private/content-private/content/test_pack.zip'
@@ -1166,8 +1166,8 @@ def disable_instances(build: Build, all_module_instances, prints_manager):
     prints_manager.execute_thread_prints(0)
 
 
-def create_nightly_test_pack():
-    test_pack_zip(Build)
+def create_nightly_test_pack(build):
+    test_pack_zip(build)
 
 
 def test_files(content_path):
