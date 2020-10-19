@@ -5,14 +5,15 @@ import demistomock as demisto
 PROCESS_CASES = [
     (
         {'process_hash': '63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6',
-         'process_name': None, 'event_id': None, 'query': None},
-        {'criteria': {'process_hash': ['63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6']}, 'start': 0}
+         'process_name': None, 'event_id': None, 'query': None},  # args
+        {'criteria': {'process_hash': [
+            '63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6']}, 'start': 0}  # expected
     ),
     (
         {"process_name": "svchost.exe,vmtoolsd.exe", 'event_id': None, 'query': None,
-         'process_hash': '63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6'},
+         'process_hash': '63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6'},   # args
         {'criteria': {'process_hash': ['63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6'],
-                      "process_name": ["svchost.exe", "vmtoolsd.exe"]}, 'start': 0}
+                      "process_name": ["svchost.exe", "vmtoolsd.exe"]}, 'start': 0}   # expected
     )
 ]
 
@@ -46,8 +47,8 @@ def test_create_process_search_body(mocker, demisto_args, expected_results):
 
 EVENT_CASES = [
     (
-        {"process_guid": "1234", 'event_type': 'modload', 'query': None},
-        {'criteria': {'event_type': ['modload']}, 'start': 0}
+        {"process_guid": "1234", 'event_type': 'modload', 'query': None},  # args
+        {'criteria': {'event_type': ['modload']}, 'start': 0}   # expected
     )
 ]
 

@@ -347,7 +347,8 @@ class Client(BaseClient):
     def create_search_process_request(self, process_hash: str, process_name: str, event_id: str, query: str,
                                       limit: int = None) -> dict:
         if not process_hash and not process_name and not event_id and not query:
-            raise ValueError("No search parameters were provided.")
+            raise ValueError("To perform an process search, please provide at least one of the following: ."
+                             "'process_hash', 'process_name', 'event_id' or 'query'")
         suffix_url = f'/api/investigate/v2/orgs/{self.cb_org_key}/processes/search_jobs'
         process_hash_list = argToList(process_hash)
         process_name_list = argToList(process_name)
@@ -371,9 +372,10 @@ class Client(BaseClient):
     def create_search_event_by_process_request(self, process_guid: str, event_type: str,
                                                query: str, limit: int = None) -> dict:
         if event_type and event_type not in ['filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc']:
-            raise Exception('event_type is invalid')
+            raise Exception("Only the following event types can be searched:  "
+                            "'filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc'")
         if not event_type and not query:
-            raise Exception("Must provide either event_type or query.")
+            raise Exception("To perform an event search, please provide either event_type or query.")
         suffix_url = f'/api/investigate/v2/orgs/{self.cb_org_key}/events/{process_guid}/_search'
         body = assign_params(
             criteria=assign_params(event_type=argToList(event_type)),

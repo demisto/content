@@ -1580,7 +1580,7 @@ script:
           required: false
           secret: false
         - default: false
-          description: A free-style query.
+          description: A free-style query. For example "process_name:svchost.exe".
           isArray: false
           name: query
           required: false
@@ -1592,6 +1592,9 @@ script:
       outputs:
         - contextPath: CarbonBlackEEDR.SearchProcess.job_id
           description: A request job id.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.status
+          description: A request job status.
           type: String
     - arguments:
         - default: false
@@ -1613,13 +1616,13 @@ script:
           required: false
           secret: false
         - default: false
-          description: A free-style query.
+          description: A free-style query. For example "process_name:svchost.exe".
           isArray: false
           name: query
           required: false
           secret: false
       deprecated: false
-      description: Fetch the events associated with a given process.
+      description: Retrieve the events associated with a given process.
       execution: false
       name: cb-eedr-events-by-process-search
       outputs:
