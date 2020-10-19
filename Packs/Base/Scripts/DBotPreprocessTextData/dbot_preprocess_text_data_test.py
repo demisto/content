@@ -3,7 +3,7 @@ import pickle
 import pandas as pd
 
 from CommonServerPython import *
-from DBotPreprocessTextData import clean_html, remove_line_breaks, hash_word, read_file, \
+from DBotPreprocessTextData import clean_html, remove_line_breaks, hash_word, \
     concat_text_fields, whitelist_dict_fields, remove_short_text, remove_duplicate_by_indices, pre_process, main
 
 
@@ -30,35 +30,6 @@ def test_remove_line_breaks():
 def test_hash_word():
     html_string = "word1"
     assert hash_word(html_string, 5381) == "279393330"
-
-
-def test_read_file(mocker):
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
-    obj = read_file('231342@343', 'json')
-    assert len(obj) >= 1
-    with open('./TestData/input_json_file_test', 'r') as f:
-        obj = read_file(f.read(), 'json_string')
-        assert len(obj) >= 1
-
-    with open('./TestData/input_pickle_file_test', 'wb') as f:
-        f.write(pickle.dumps(obj))
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_pickle_file_test'})
-    obj_from_pickle = read_file('./TestData/input_pickle_file_test', 'pickle')
-    assert len(obj_from_pickle) >= 1
-
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
-    with open('./TestData/input_json_file_test', 'r') as f:
-        obj = read_file(f.read(), 'json_string')
-        df = pd.DataFrame.from_dict(obj)
-        df.to_csv("./TestData/test.csv", index=False)
-        mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/test.csv'})
-        obj2 = read_file('231342@343', 'csv')
-        assert len(obj2) == len(obj)
-
-    with open('./TestData/input_json_file_test', 'r') as f:
-        b64_input = base64.b64encode(f.read().encode('utf-8'))
-        obj = read_file(b64_input, 'json_b64_string')
-        assert len(obj) >= 1
 
 
 def test_concat_text_field(mocker):

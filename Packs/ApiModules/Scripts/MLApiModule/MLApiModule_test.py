@@ -1,8 +1,11 @@
 import string
 
-from MLApiModule import Tokenizer
+from MLApiModule import Tokenizer, FileReader
 from copy import deepcopy
 import re
+import pandas as pd
+from CommonServerPython import *
+import pickle
 
 neagative_initalization = \
     {
@@ -248,3 +251,32 @@ def test_original_words_to_tokens():
     expected = {"I'm": ['i', "'m"], '29': ['29'], 'years': ['years'], 'old': ['old'], 'and': ['and'], 'I': ['i'],
                 "don't": ['do', "n't"], 'live': ['live'], 'in': ['in'], 'Petach': ['petach'], 'Tikva': ['tikva']}
     assert res1['originalWordsToTokens'] == expected
+
+
+def test_read_file(mocker):
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
+    obj = FileReader.read_file('231342@343', 'json')
+    assert len(obj) >= 1
+    with open('./TestData/input_json_file_test', 'r') as f:
+        obj = FileReader.read_file(f.read(), 'json_string')
+        assert len(obj) >= 1
+
+    with open('./TestData/input_pickle_file_test', 'wb') as f:
+        f.write(pickle.dumps(obj))
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_pickle_file_test'})
+    obj_from_pickle = FileReader.read_file('./TestData/input_pickle_file_test', 'pickle')
+    assert len(obj_from_pickle) >= 1
+
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
+    with open('./TestData/input_json_file_test', 'r') as f:
+        obj = FileReader.read_file(f.read(), 'json_string')
+        df = pd.DataFrame.from_dict(obj)
+        df.to_csv("./TestData/test.csv", index=False)
+        mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/test.csv'})
+        obj2 = FileReader.read_file('231342@343', 'csv')
+        assert len(obj2) == len(obj)
+
+    with open('./TestData/input_json_file_test', 'r') as f:
+        b64_input = base64.b64encode(f.read().encode('utf-8'))
+        obj = FileReader.read_file(b64_input, 'json_b64_string')
+        assert len(obj) >= 1

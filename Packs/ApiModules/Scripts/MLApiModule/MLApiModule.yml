@@ -7,3 +7,4 @@ subtype: python3
 system: true
 timeout: '0'
 type: python
+dockerimage: demisto/ml:1.0.0.12379
