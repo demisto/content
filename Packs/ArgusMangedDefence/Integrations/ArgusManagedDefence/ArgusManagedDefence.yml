@@ -1328,9 +1328,14 @@ script:
     execution: false
     name: argus_get_pcap
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       isArray: false
       name: type
+      predefined:
+      - NIDS
+      - AGGR
+      - AGGRATTACK
       required: true
       secret: false
     - default: false
@@ -1341,12 +1346,12 @@ script:
     - default: false
       isArray: false
       name: customer_id
-      required: false
+      required: true
       secret: false
     - default: false
       isArray: false
       name: event_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Fetch specified event.

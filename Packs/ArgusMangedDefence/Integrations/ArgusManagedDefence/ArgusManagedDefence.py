@@ -637,7 +637,7 @@ def get_event_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("event id not specified")
 
     result = get_event_by_path(type=event_type, timestamp=timestamp, customerID=customer_id, eventID=event_id)
-    readable_output = f"# Event: {event_id}"
+    readable_output = f"# Event: {event_id}\n"
     readable_output += tableToMarkdown("Metadata", result['data'])
     outputs = {"Argus.Event(val.id === obj.id)": result['data']}
     return CommandResults(
