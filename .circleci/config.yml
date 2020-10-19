@@ -393,6 +393,7 @@ references:
           demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
           demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
           # TODO: After fixing the demisto-sdk upload, upload from here instead of Tests/sdknightly/create_entities_for_nightly_sdk.py
+          # Issue: 29578
           # demisto-sdk upload -i Packs/HelloWorld/Layouts/layout-Hello_World_Test_Layout.json --insecure
           # demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Incident_Test.json --insecure
           # demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
@@ -1079,7 +1080,7 @@ jobs:
           shell: /bin/bash
           command: |
                 demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
-                echo "format exit status: $?"  # DO NOT DELETE THIS LINE. format sometimes will exit with the odd exist statuses.
+                echo "format exit status: $?"  # DO NOT DELETE THIS LINE. Issue: 29575
       - run:
           name: Run validate
           command: demisto-sdk validate -i Packs/HelloWorld/
