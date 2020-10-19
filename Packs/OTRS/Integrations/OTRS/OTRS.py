@@ -1,9 +1,10 @@
 ''' IMPORTS '''
 
-import urllib3
 from CommonServerPython import *
+import urllib3
 from pyotrs import Article, Attachment, Client, DynamicField, Ticket
 from urllib.parse import unquote
+
 
 # disable insecure warnings
 urllib3.disable_warnings()
