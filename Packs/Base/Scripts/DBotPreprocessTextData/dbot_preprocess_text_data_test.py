@@ -21,7 +21,7 @@ def test_remove_line_breaks():
     html_string = """
 line1
 line2
-    """
+    """.strip()
     assert remove_line_breaks(html_string) == "line1 line2"
 
 
