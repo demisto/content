@@ -148,7 +148,7 @@ def iam_command_success(user_profile, okta_user):
     """ Handles successful responses from Okta API by preparing the User Profile object with the user data.
 
     Args:
-        user_profile (￿IAMUserProfile): The User Profile object.
+        user_profile (IAMUserProfile): The User Profile object.
         okta_user (dict): The data retrieved from Okta.
     """
     if demisto.command() == 'disable-user':
