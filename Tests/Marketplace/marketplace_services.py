@@ -882,7 +882,7 @@ class Pack(object):
 
                         # Aggregate all rn files that are bigger than what we have in the changelog file
                         if LooseVersion(version) > changelog_latest_rn_version:
-                            rn_path = os.path.join(release_notes_dir, version + '.md')
+                            rn_path = os.path.join(release_notes_dir, _version + '.md')
                             with open(rn_path, 'r') as changelog_md:
                                 rn_lines = changelog_md.read()
                             pack_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
