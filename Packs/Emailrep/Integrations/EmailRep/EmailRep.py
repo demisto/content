@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 
 import urllib3
 import traceback
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -157,6 +157,7 @@ def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandRes
         outputs=email_data_list
     )
 
+
 def report_email_address_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Report email address to EmailRep"""
 
@@ -179,7 +180,13 @@ def report_email_address_command(client: Client, args: Dict[str, Any]) -> Comman
     if expires is not None:
         expires = int(args.get('expires'))  # type: ignore
 
-    result = client.post_email_address_report(email=email_address, tags=tags, description=description, timestamp=timestamp, expires=expires)
+    result = client.post_email_address_report(
+        email=email_address,
+        tags=tags,
+        description=description,
+        timestamp=timestamp,
+        expires=expires
+    )
 
     readable_output = tableToMarkdown('Email Report Response', result)
 

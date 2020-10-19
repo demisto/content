@@ -13,14 +13,9 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_email_reputation_get(requests_mock):
-    """Test emailrep-email-reputation-get command"""
-    from EmailRep import INTEGRATION_NAME, Client, email_reputation_command
-
-    mock_response = util_load_json('test_data/reputation_get_results.json')
-    requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
-
-    client = Client(
+def emailrep_client():
+    from EmailRep import INTEGRATION_NAME, Client
+    return Client(
         base_url='https://emailrep.io',
         verify=False,
         headers={
@@ -29,6 +24,13 @@ def test_email_reputation_get(requests_mock):
         }
     )
 
+def test_email_reputation_get(requests_mock):
+    """Test emailrep-email-reputation-get command"""
+    from EmailRep import INTEGRATION_NAME, email_reputation_command
+
+    mock_response = util_load_json('test_data/reputation_get_results.json')
+    requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
+    client = emailrep_client()
     args = {
         'email_address': 'test@example.com'
     }
@@ -72,7 +74,12 @@ def test_email_reputation_get(requests_mock):
         "references": 143
     }]
 
-    # Assert mandatory fields check
+
+def test_input_email_reputation_get():
+    """Test emailrep-email-reputation-get command"""
+    from EmailRep import INTEGRATION_NAME, Client, email_reputation_command
+
+    client = emailrep_client()
     with pytest.raises(ValueError) as error_info:
         email_reputation_command(client, {})
     assert 'Email(s) not specified' in str(error_info.value)
@@ -85,23 +92,12 @@ def test_report_email_address(requests_mock):
     mock_response = {
         "status": "success"
     }
-
-    requests_mock.post(f'https://emailrep.io/report', json=mock_response)
-
-    client = Client(
-        base_url='https://emailrep.io',
-        verify=False,
-        headers={
-            'Key': 'testkey',
-            'User-Agent': f'{INTEGRATION_NAME}-unittest'
-        }
-    )
-
+    requests_mock.post('https://emailrep.io/report', json=mock_response)
+    client = emailrep_client()
     args = {
         'email_address': 'test@example.com',
         'tags': ['scam']
     }
-
     response = report_email_address_command(client, args)
 
     assert response.outputs_prefix == f'{INTEGRATION_NAME}.Report'
@@ -110,7 +106,12 @@ def test_report_email_address(requests_mock):
         "status": "success"
     }
 
-    # Assert tag checking.
+
+def test_input_invalid_tags_report_email_address():
+    """Test emailrep-email-address-report command"""
+    from EmailRep import INTEGRATION_NAME, Client, report_email_address_command
+
+    client = emailrep_client()
     args = {
         'email_address': 'test@example.com',
         'tags': ['invalid-tag', 'scam']
@@ -119,7 +120,12 @@ def test_report_email_address(requests_mock):
         report_email_address_command(client, args)
     assert 'not in accepted tag list' in str(error_info.value)
 
-    # Assert mandatory field checking.
+
+def test_input_tags_report_email_address():
+    """Test emailrep-email-address-report command"""
+    from EmailRep import INTEGRATION_NAME, Client, report_email_address_command
+
+    client = emailrep_client()
     args = {
         'email_address': 'test@example.com'
     }
@@ -127,8 +133,14 @@ def test_report_email_address(requests_mock):
         report_email_address_command(client, args)
     assert 'Tag(s) not specified' in str(error_info.value)
 
+
+def test_input_email_report_email_address():
+    """Test emailrep-email-address-report command"""
+    from EmailRep import INTEGRATION_NAME, Client, report_email_address_command
+
+    client = emailrep_client()
     args = {
-        'tags': ['invalid-tag', 'scam']
+        'tags': ['scam']
     }
     with pytest.raises(ValueError) as error_info:
         report_email_address_command(client, args)
@@ -142,22 +154,12 @@ def test_email(requests_mock):
     mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
 
-    client = Client(
-        base_url='https://emailrep.io',
-        verify=False,
-        headers={
-            'Key': 'testkey',
-            'User-Agent': f'{INTEGRATION_NAME}-unittest'
-        }
-    )
-
+    client = emailrep_client()
     args = {
         'email_address': f'{TEST_EMAIL_ADDRESS}'
     }
-
     response = email_command(client, args)
 
-    # Assert mocked response
     assert response.outputs_prefix == f'{INTEGRATION_NAME}.EmailScore'
     assert response.outputs_key_field == 'email'
     assert response.outputs == [{
@@ -202,13 +204,52 @@ def test_email(requests_mock):
     assert response.indicators[0].dbot_score.integration_name == INTEGRATION_NAME
     assert response.indicators[0].dbot_score.score == Common.DBotScore.SUSPICIOUS
 
-    # Assert GOOD dbot score
+
+def test_email_score_good(requests_mock):
+    """Test emailrep-email-address-report command"""
+    from EmailRep import email_command
+
+    mock_response = util_load_json('test_data/reputation_get_results.json')
+    requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
+    client = emailrep_client()
+    args = {
+        'email_address': f'{TEST_EMAIL_ADDRESS}'
+    }
     mock_response["suspicious"] = False
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     response = email_command(client, args)
     assert response.indicators[0].dbot_score.score == Common.DBotScore.GOOD
 
-    # Assert BAD dbot score due to malicious_activity_recent
+
+def test_email_score_suspicious(requests_mock):
+    """Test emailrep-email-address-report command"""
+    from EmailRep import INTEGRATION_NAME, Client, email_command
+
+    mock_response = util_load_json('test_data/reputation_get_results.json')
+    requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
+    client = emailrep_client()
+    args = {
+        'email_address': f'{TEST_EMAIL_ADDRESS}'
+    }
+    mock_response["suspicious"] = True
+    mock_response["details.malicious_activity_recent"] = False
+    mock_response["details.credentials_leaked_recent"] = False
+
+    requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
+    response = email_command(client, args)
+    assert response.indicators[0].dbot_score.score == Common.DBotScore.SUSPICIOUS
+
+
+def test_email_score_bad_malicious_activity_recent(requests_mock):
+    """Test emailrep-email-address-report command"""
+    from EmailRep import email_command
+
+    mock_response = util_load_json('test_data/reputation_get_results.json')
+    requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
+    client = emailrep_client()
+    args = {
+        'email_address': f'{TEST_EMAIL_ADDRESS}'
+    }
     mock_response["suspicious"] = True
     mock_response["details.malicious_activity_recent"] = True
     mock_response["details.credentials_leaked_recent"] = False
@@ -218,7 +259,17 @@ def test_email(requests_mock):
     assert response.indicators[0].dbot_score.score == Common.DBotScore.BAD
     assert response.indicators[0].dbot_score.malicious_description == 'EmailRep returned malicious_activity_recent'
 
-    # Assert BAD dbot score due to malicious_activity_recent
+
+def test_email_score_bad_credentials_leaked_recent(requests_mock):
+    """Test emailrep-email-address-report command"""
+    from EmailRep import INTEGRATION_NAME, Client, email_command
+
+    mock_response = util_load_json('test_data/reputation_get_results.json')
+    requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
+    client = emailrep_client()
+    args = {
+        'email_address': f'{TEST_EMAIL_ADDRESS}'
+    }
     mock_response["suspicious"] = True
     mock_response["details.malicious_activity_recent"] = False
     mock_response["details.credentials_leaked_recent"] = True
@@ -228,7 +279,17 @@ def test_email(requests_mock):
     assert response.indicators[0].dbot_score.score == Common.DBotScore.BAD
     assert response.indicators[0].dbot_score.malicious_description == 'EmailRep returned credentials_leaked_recent'
 
-    # Assert BAD dbot score due to malicious_activity_recent and credentials_leaked_recent
+
+def test_email_score_bad_malicious_activity_and_credentials_leaked_recent(requests_mock):
+    """Test emailrep-email-address-report command"""
+    from EmailRep import email_command
+
+    mock_response = util_load_json('test_data/reputation_get_results.json')
+    requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
+    client = emailrep_client()
+    args = {
+        'email_address': f'{TEST_EMAIL_ADDRESS}'
+    }
     mock_response["suspicious"] = True
     mock_response["details.malicious_activity_recent"] = True
     mock_response["details.credentials_leaked_recent"] = True
@@ -239,7 +300,12 @@ def test_email(requests_mock):
     assert response.indicators[0].dbot_score.malicious_description == \
         'EmailRep returned malicious_activity_recent credentials_leaked_recent'
 
-    # Assert mandatory fields check
+
+def test_input_email():
+    """Test emailrep-email-address-report command"""
+    from EmailRep import INTEGRATION_NAME, Client, email_command
+
+    client = emailrep_client()
     with pytest.raises(ValueError) as error_info:
         email_command(client, {})
     assert 'Email(s) not specified' in str(error_info.value)
