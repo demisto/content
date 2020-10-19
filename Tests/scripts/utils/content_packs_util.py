@@ -1,7 +1,10 @@
-import os
 import json
-from demisto_sdk.commands.common.constants import PACKS_DIR, PACKS_PACK_META_FILE_NAME, PACK_METADATA_SUPPORT, \
-    PACK_METADATA_CERTIFICATION
+import os
+
+from demisto_sdk.commands.common.constants import (PACK_METADATA_CERTIFICATION,
+                                                   PACK_METADATA_SUPPORT,
+                                                   PACKS_DIR,
+                                                   PACKS_PACK_META_FILE_NAME)
 
 SKIPPED_PACKS = ['DeprecatedContent', 'NonSupported']
 
@@ -19,9 +22,8 @@ def get_pack_metadata(file_path: str) -> dict:
 
 
 def is_pack_certified(pack_path: str) -> bool:
-    """
-        Checks whether the pack is certified or not (Supported by xsoar/certified partner).
-        Tests are not being collected for non-certified packs.
+    """Checks whether the pack is certified or not (Supported by xsoar/certified partner).
+    Tests are not being collected for non-certified packs.
 
     Args:
         pack_path (str): The pack path
