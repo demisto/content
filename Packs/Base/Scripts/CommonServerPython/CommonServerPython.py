@@ -170,7 +170,7 @@ class DBotScoreType(object):
     DOMAIN = 'domain'
     URL = 'url'
     CVE = 'cve'
-    EMAIL_ADDRESS= 'email_address'
+    EMAIL_ADDRESS = 'email_address'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -2582,8 +2582,15 @@ class Common(object):
             return ret_value
 
     class Email(Indicator):
-        """TODO: document
-        interface class
+        """
+        :type email_address: ``str``
+        :param email_address: The email address
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score: If email has reputation then create DBotScore object
+
+        :return: None
+        :rtype: ``None``
         """
         CONTEXT_PATH = 'Email(val.Address && val.Address == obj.Address)'
 
