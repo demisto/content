@@ -23,24 +23,15 @@ gcloud auth activate-service-account --key-file="$KF" > auth.out 2>&1
 echo "Auth loaded successfully."
 
 GCS_MARKET_BUCKET="marketplace-dist-dev"
-GCS_PRODUCTIN_BUCKET="marketplace-dist"
 GCS_BUILD_BUCKET="marketplace-ci-build"
-MARKET_SOURCE_PATH="wow/content/packs"
-PRODUCTION_SOURCE_PATH="content/packs"
+SOURCE_PATH="wow/content/packs"
 BUILD_BUCKET_PATH="content/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM"
 TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
 PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
-gsutil -m rm -r "gs://$GCS_MARKET_BUCKET/wow"
-gsutil -m rm -r "gs://$GCS_MARKET_BUCKET/test"
-echo "Copying master files at: $GCS_PRODUCTIN_BUCKET/$PRODUCTION_SOURCE_PATH to target path: gs://$GCS_MARKET_BUCKET/$MARKET_SOURCE_PATH ..."
-gsutil -m cp -r "gs://$GCS_PRODUCTIN_BUCKET/$PRODUCTION_SOURCE_PATH" "gs://$GCS_MARKET_BUCKET/$MARKET_SOURCE_PATH"
-echo "Finished copying successfully."
-exit 1
-
-echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$MARKET_SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
-gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$MARKET_SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH"
+echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
+gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH"
 echo "Finished copying successfully."
 
 echo "Updating modified content packs in the bucket ..."
