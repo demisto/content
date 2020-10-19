@@ -166,7 +166,7 @@ def main():
             file_name = file.split('/')[-1]
             shutil.copyfile(file, entities_folder / file_name)
             print(f"file: {file_name} stored.")
-    # upload_to_sdk(pack_path, *uploaded_entities, debug=args.debug)
+    upload_to_sdk(pack_path, *uploaded_entities, debug=args.debug)
 
 
 if __name__ in '__main__':
