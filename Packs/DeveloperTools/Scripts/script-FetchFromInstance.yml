@@ -2,7 +2,7 @@ commonfields:
   id: FetchFromInstance
   version: -1
 name: FetchFromInstance
-fromversion: 5.0.0
+fromversion: 6.0.0
 script: >-
   import re
 
