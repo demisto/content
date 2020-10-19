@@ -121,7 +121,7 @@ def iam_command_failure(user_profile, e=None, iam_error=None, skip_command=False
     """ Handles failed responses from Okta API by preparing the User Profile object with the failure data.
 
     Args:
-        user_profile (￿IAMUserProfile): The User Profile object.
+        user_profile (IAMUserProfile): The User Profile object.
         e (DemistoException): The exception error that holds the response json (optional).
         iam_error (IAMErrors): An IAMErrors enum object that indicates the error reason (optional).
         skip_command (bool): If false then the command should fail, otherwise - should be skipped.
