@@ -828,12 +828,13 @@ class Pack(object):
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
             if private_content:
-                try:
-                    shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content'
-                                               f'-private/content/artifacts/packs/{self._pack_name}.zip')
-                except FileExistsError:
-                    shutil.copy(zip_pack_path,
-                                f'/artifacts/packs/{self._pack_name}.zip')
+                print(f"Copying {zip_pack_path} to /home/runner/work/content-private/content-private/content/artifacts/packs/{self._pack_name}.zip")
+                # try:
+                shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content'
+                                           f'-private/content/artifacts/packs/{self._pack_name}.zip')
+                # except FileExistsError:
+                #     shutil.copy(zip_pack_path,
+                #                 f'/artifacts/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
