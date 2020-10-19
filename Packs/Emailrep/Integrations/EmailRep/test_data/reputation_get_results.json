@@ -23,7 +23,6 @@
         "deliverable": false,
         "accept_all": false,
         "valid_mx": true,
-        "primary_mx": "",
         "spoofable": true,
         "spf_strict": true,
         "dmarc_enforced": false,

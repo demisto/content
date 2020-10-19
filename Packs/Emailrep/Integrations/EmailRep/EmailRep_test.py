@@ -26,7 +26,14 @@ def emailrep_client():
 
 
 def test_email_reputation_get(requests_mock):
-    """Test emailrep-email-reputation-get command"""
+    """
+    Given:
+        - email address
+    When:
+        - Fetching email reputation from API
+    Then:
+        - Returns email json as received from API
+    """
     from EmailRep import INTEGRATION_NAME, email_reputation_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
@@ -61,7 +68,6 @@ def test_email_reputation_get(requests_mock):
             "deliverable": False,
             "accept_all": False,
             "valid_mx": True,
-            "primary_mx": "",
             "spoofable": True,
             "spf_strict": True,
             "dmarc_enforced": False,
@@ -77,7 +83,14 @@ def test_email_reputation_get(requests_mock):
 
 
 def test_input_email_reputation_get():
-    """Test emailrep-email-reputation-get command"""
+    """
+    Given:
+        - Nothing
+    When:
+        - Fetching email reputation from API
+    Then:
+        - Raises Value error for missing email address
+    """
     from EmailRep import email_reputation_command
 
     client = emailrep_client()
@@ -87,7 +100,15 @@ def test_input_email_reputation_get():
 
 
 def test_report_email_address(requests_mock):
-    """Test emailrep-email-address-report command"""
+    """
+    Given:
+        - email address
+        - tags
+    When:
+        - Reporting email address to API
+    Then:
+        - Returns success
+    """
     from EmailRep import INTEGRATION_NAME, report_email_address_command
 
     mock_response = {
@@ -109,7 +130,15 @@ def test_report_email_address(requests_mock):
 
 
 def test_input_invalid_tags_report_email_address():
-    """Test emailrep-email-address-report command"""
+    """
+    Given:
+        - email address
+        - invalid tag list
+    When:
+        - Reporting email to API
+    Then:
+        - Raises Value error for bad tag
+    """
     from EmailRep import report_email_address_command
 
     client = emailrep_client()
@@ -123,7 +152,14 @@ def test_input_invalid_tags_report_email_address():
 
 
 def test_input_tags_report_email_address():
-    """Test emailrep-email-address-report command"""
+    """
+    Given:
+        - email address
+    When:
+        - Reporting email to API
+    Then:
+        - Raises Value error for missing tags field
+    """
     from EmailRep import report_email_address_command
 
     client = emailrep_client()
@@ -136,7 +172,14 @@ def test_input_tags_report_email_address():
 
 
 def test_input_email_report_email_address():
-    """Test emailrep-email-address-report command"""
+    """
+    Given:
+        - tag list
+    When:
+        - Reporting email to API
+    Then:
+        - Raises Value error for missing email_address field
+    """
     from EmailRep import report_email_address_command
 
     client = emailrep_client()
@@ -149,7 +192,14 @@ def test_input_email_report_email_address():
 
 
 def test_email(requests_mock):
-    """Test email command"""
+    """
+    Given:
+        - email_address
+    When:
+        - processing email reputation from API
+    Then:
+        - Returns DBot score and API outputs
+    """
     from EmailRep import INTEGRATION_NAME, email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
@@ -184,7 +234,6 @@ def test_email(requests_mock):
             "deliverable": False,
             "accept_all": False,
             "valid_mx": True,
-            "primary_mx": "",
             "spoofable": True,
             "spf_strict": True,
             "dmarc_enforced": False,
@@ -207,7 +256,14 @@ def test_email(requests_mock):
 
 
 def test_email_score_good(requests_mock):
-    """Test emailrep-email-address-report command"""
+    """
+    Given:
+        - email_address
+    When:
+        - processing not suspicious email reputation from API
+    Then:
+        - Returns GOOD DBot score
+    """
     from EmailRep import email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
@@ -223,7 +279,16 @@ def test_email_score_good(requests_mock):
 
 
 def test_email_score_suspicious(requests_mock):
-    """Test emailrep-email-address-report command"""
+    """
+    Given:
+        - email_address
+    When:
+        - processing suspicious email reputation from API
+        - email malicious_activity_recent is False
+        - email credentials_leaked_recent is False
+    Then:
+        - Returns SUSPICIOUS DBot score
+    """
     from EmailRep import email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
@@ -242,7 +307,16 @@ def test_email_score_suspicious(requests_mock):
 
 
 def test_email_score_bad_malicious_activity_recent(requests_mock):
-    """Test emailrep-email-address-report command"""
+    """
+    Given:
+        - email_address
+    When:
+        - processing suspicious email reputation from API
+        - email malicious_activity_recent is True
+        - email credentials_leaked_recent is False
+    Then:
+        - Returns BAD DBot score and malicious_description accordingly
+    """
     from EmailRep import email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
@@ -262,7 +336,16 @@ def test_email_score_bad_malicious_activity_recent(requests_mock):
 
 
 def test_email_score_bad_credentials_leaked_recent(requests_mock):
-    """Test emailrep-email-address-report command"""
+    """
+    Given:
+        - email_address
+    When:
+        - processing suspicious email reputation from API
+        - email malicious_activity_recent is False
+        - email credentials_leaked_recent is True
+    Then:
+        - Returns BAD DBot score and malicious_description accordingly
+    """
     from EmailRep import email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
@@ -282,7 +365,16 @@ def test_email_score_bad_credentials_leaked_recent(requests_mock):
 
 
 def test_email_score_bad_malicious_activity_and_credentials_leaked_recent(requests_mock):
-    """Test emailrep-email-address-report command"""
+    """
+    Given:
+        - email_address
+    When:
+        - processing suspicious email reputation from API
+        - email malicious_activity_recent is True
+        - email credentials_leaked_recent is True
+    Then:
+        - Returns BAD DBot score and malicious_description accordingly
+    """
     from EmailRep import email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
@@ -303,7 +395,14 @@ def test_email_score_bad_malicious_activity_and_credentials_leaked_recent(reques
 
 
 def test_input_email():
-    """Test emailrep-email-address-report command"""
+    """
+    Given:
+        - Nothing
+    When:
+        - Processing email reputation from API
+    Then:
+        - Raises Value error for missing email field
+    """
     from EmailRep import email_command
 
     client = emailrep_client()
