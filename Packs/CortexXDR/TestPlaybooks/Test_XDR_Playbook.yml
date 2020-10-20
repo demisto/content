@@ -1,5 +1,6 @@
 id: Test XDR Playbook
 version: 11
+fromversion: 5.0.0
 vcShouldKeepItemLegacyProdMachine: false
 name: Test XDR Playbook
 description: Cortex XDR Test Playbook

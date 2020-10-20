@@ -1297,6 +1297,10 @@ script:
     - contextPath: PaloAltoNetworksXDR.policyName
       description: Name of the policy allocated with the endpoint.
       type: string
+    - contextPath: PaloAltoNetworksXDR.policyName.policy_name
+      description: Name of the policy allocated with the endpoint.
+    - contextPath: PaloAltoNetworksXDR.policyName.endpoint_id
+      description: Endpoint id
   - arguments:
     - description: String of the script name, or comma separated list of strings
       isArray: true
@@ -1540,6 +1544,10 @@ script:
     outputs:
     - contextPath: PaloAltoNetworksXDR.scriptCode
       description: The code of a specific script in the script library.
+    - contextPath: PaloAltoNetworksXDR.scriptCode.code
+      description: The code of a specific script in the script library.
+    - contextPath: PaloAltoNetworksXDR.scriptCode.script_uid
+      description: Script uid
   - arguments:
     - description: GUID, unique identifier of the script, returned by the “get scripts”
         API per script.
@@ -1598,6 +1606,8 @@ script:
       description: Number of endpoints in “canceled” status.
     - contextPath: PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_aborted
       description: Number of endpoints in “aborted” status.
+    - contextPath: PaloAltoNetworksXDR.scriptExecutionStatus.action_id
+      description: Action ID of script execution.
   - arguments:
     - description: Integer, identifier of the action, can be found in Cortex XDR console
         ResponseAction CenterAction ID field or get return value after running - "xdr-run-script"
@@ -1658,6 +1668,8 @@ script:
     - contextPath: PaloAltoNetworksXDR.scriptExecutionResults.results.retention_date
       description: Timestamp in which the retrieved files will be deleted from the
         server
+    - contextPath: PaloAltoNetworksXDR.scriptExecutionResults.action_id
+      description: Action ID of script execution.
   - arguments:
     - description: Integer, identifier of the action, can be found in Cortex XDR console
         ResponseAction CenterAction ID field or you will receive action id as the
@@ -1780,6 +1792,8 @@ script:
       description: endpoint id.
     - contextPath: PaloAltoNetworksXDR.getActionStatus.status
       description: status of specific endpoint id.
+    - contextPath: PaloAltoNetworksXDR.getActionStatus.action_id
+      description: Action ID that was at the input.
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: true
   ismappable: true

@@ -2731,7 +2731,7 @@ def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
             })
 
     return (
-        tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
+        tableToMarkdown(name='Get Action Status', t=result, removeNull=True, headers=["endpoint_id", "status"]),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.getActionStatus(val.actionId == obj.actionId)': result
         },
