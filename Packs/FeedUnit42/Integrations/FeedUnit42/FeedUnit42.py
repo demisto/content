@@ -1,10 +1,7 @@
-from typing import List, Dict, Optional
+from typing import List, Dict
 
 from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
-from multiprocessing import cpu_count
-from multiprocessing.pool import ThreadPool as Pool
-from itertools import product
 
 from CommonServerPython import *
 
@@ -38,7 +35,11 @@ class Client(BaseClient):
         self._proxies = handle_proxy()
         self.objects_data = {}
 
-    def get_stix_objects(self, test: bool = False, **kwargs):
+    def get_stix_objects(self, test: bool = False, items_types: list = []):
+        for type_ in items_types:
+            self.fetch_stix_objects_from_api(test, type=type_)
+
+    def fetch_stix_objects_from_api(self, test: bool = False, **kwargs):
         """Retrieves all entries from the feed.
 
         Args:
@@ -272,7 +273,8 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                 report['fields']['feedrelatedindicators'].extend([{
                     'type': 'Malware',
                     'value': malware_object.get('name'),
-                    'description': malware_object.get('description', 'No description provided.')
+                    'description': malware_object.get(
+                        'description', ', '.join(malware_object.get('labels', ['No description provided.'])))
                 }])
 
         for relation in related_ids:
@@ -362,19 +364,8 @@ def test_module(client: Client) -> str:
     Returns:
         Outputs.
     """
-    client.get_stix_objects(test=True)
+    client.get_stix_objects(test=True, items_types=['indicator', 'report'])
     return 'ok'
-
-
-def multiprocessing_wrapper_get_stix_objects(client: Client, type_: str):
-    """Wrapper function for multiprocessing the get_stix_objects method
-
-    Args:
-        client: Client object with request
-        type_: objects type to fetch from feed.
-
-    """
-    client.get_stix_objects(test=False, type=type_)
 
 
 def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[str] = None) -> List[Dict]:
@@ -387,10 +378,8 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     Returns:
         List. Processed indicators and reports from feed.
     """
-    with Pool(cpu_count()) as pool:
-        pool.starmap(multiprocessing_wrapper_get_stix_objects,
-                     product([client], ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship'])
-                     )
+    item_types_to_fetch_from_api = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship']
+    client.get_stix_objects(items_types=item_types_to_fetch_from_api)
 
     for type_, objects in client.objects_data.items():
         demisto.info(f'Fetched {len(objects)} Unit42 {type_} objects.')
@@ -430,7 +419,7 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list
     """
     limit = int(args.get('limit', '10'))
 
-    indicators = client.get_stix_objects(test=True, type='indicator')
+    indicators = client.fetch_stix_objects_from_api(test=True, type='indicator')
 
     indicators = parse_indicators(indicators, feed_tags, tlp_color)
     limited_indicators = indicators[:limit]

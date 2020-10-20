@@ -23,7 +23,7 @@ def test_commands(command, args, response, length, mocker):
     validate the raw_response
     """
     client = Client(api_key='1234', verify=False)
-    mocker.patch.object(client, 'get_stix_objects', return_value=response)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', return_value=response)
     command_results = command(client, args)
     indicators = command_results.raw_response
     assert len(indicators) == length
@@ -57,7 +57,7 @@ def test_fetch_indicators_command(mocker):
         client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
 
     client = Client(api_key='1234', verify=False)
-    mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client)
     assert len(indicators) == 11
@@ -82,7 +82,7 @@ def test_feed_tags_param(mocker):
         client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
 
     client = Client(api_key='1234', verify=False)
-    mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client, ['test_tag'])
     assert set(indicators[0].get('fields').get('tags')) == {'malicious-activity', 'test_tag'}
@@ -106,7 +106,7 @@ def test_fetch_indicators_with_feedrelatedindicators(mocker):
         client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
 
     client = Client(api_key='1234', verify=False)
-    mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client)
     for indicator in indicators:
@@ -142,7 +142,7 @@ def test_fetch_indicators_with_malware_reference(mocker):
         client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
 
     client = Client(api_key='1234', verify=False)
-    mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client)
     for indicator in indicators:
@@ -210,7 +210,7 @@ def test_parse_reports_relationships(mocker):
         client.objects_data[type_] = TYPE_TO_RESPONSE[type_]
 
     client = Client(api_key='1234', verify=False)
-    mocker.patch.object(client, 'get_stix_objects', side_effect=mock_get_stix_objects)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client)
     for indicator in indicators:
