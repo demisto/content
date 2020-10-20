@@ -31,7 +31,7 @@ script:
       description: Base integration command dummy argument.
       isArray: false
       name: dummy
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Base integration dummy command.
