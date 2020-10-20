@@ -1,43 +1,37 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-from email import message_from_string
-from email.header import decode_header
 import base64
-from base64 import b64decode
-
-import email.utils
-from email.parser import HeaderParser
-import traceback
-import tempfile
-import sys
-
+# -*- coding: utf-8 -*-
+import codecs
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python
 # Based on MS-OXMSG protocol specification
 # ref:https://blogs.msdn.microsoft.com/openspecification/2010/06/20/msg-file-format-rights-managed-email-message-part-2/
 # ref:https://msdn.microsoft.com/en-us/library/cc463912(v=EXCHG.80).aspx
 import email
-import re
-# -*- coding: utf-8 -*-
-import codecs
+import email.utils
 import os
+import re
+import sys
+import tempfile
+import traceback
 import unicodedata
-from email import encoders
-from email.header import Header
+from base64 import b64decode
+# coding=utf-8
+from datetime import datetime, timedelta
+from email import encoders, message_from_string
+from email.header import Header, decode_header
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.parser import HeaderParser
 from email.utils import getaddresses
-
-from olefile import OleFileIO, isOleFile
-
-# coding=utf-8
-from datetime import datetime, timedelta
 from struct import unpack
+
 import chardet
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from olefile import OleFileIO, isOleFile
 
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=no-member
@@ -3417,6 +3411,24 @@ def unfold(s):
     return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
 
 
+def decode_content(mime):
+    """
+      Decode content
+    """
+    charset = mime.get_content_charset()
+    payload = mime.get_payload(decode=True)
+    try:
+        if payload:
+            if charset:
+                return payload.decode(charset)
+            else:
+                return payload.decode()
+        else:
+            return ''
+    except:
+        return paylaod
+
+
 def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, bom=False):
     global ENCODINGS_TYPES
 
@@ -3589,10 +3601,10 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 # This is because SMTP duplicate dots for lines that start with `.` and get_payload() doesn't format
                 # this correctly
                 part._payload = part._payload.replace('=\r\n..', '=\r\n.')
-                html = get_utf_string(part.get_payload(decode=True), 'HTML')
+                html = get_utf_string(decode_content(part), 'HTML')
 
             elif part.get_content_type() == 'text/plain':
-                text = get_utf_string(part.get_payload(decode=True), 'TEXT')
+                text = get_utf_string(decode_content(part), 'TEXT')
         email_data = None
         # if we are parsing a signed attachment there can be one of two options:
         # 1. it is 'multipart/signed' so it is probably a wrapper and we can ignore the outer "email"
