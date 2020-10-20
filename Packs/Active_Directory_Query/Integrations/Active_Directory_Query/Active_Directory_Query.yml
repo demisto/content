@@ -400,7 +400,7 @@ script:
       required: true
     description: Deletes an existing Active Directory security or distribution group.
     execution: true
-  dockerimage: demisto/ldap:1.0.0.11282
+  dockerimage: demisto/ldap:1.0.0.12410
   runonce: false
 tests:
 - Active Directory Test
