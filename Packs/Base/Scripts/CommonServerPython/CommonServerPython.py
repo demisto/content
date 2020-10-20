@@ -4596,61 +4596,9 @@ class IAMActions(object):
     ENABLE_USER = 'enable'
 
 
-class IAMUserProfile:
-    INDICATOR_TYPE = 'User Profile'
-    """
-        A User Profile object class for IAM integrations.
-
-        Attributes:
-            _user_profile (str): The user profile information.
-            _user_profile_delta (str): The user profile delta.
-            _brand (str): The integration name.
-            _instance_name (str): The instance name.
-            _outputs (str): The command outputs.
-            _readable_output (str): The command readable output.
-    """
-
-    def __init__(self, user_profile, user_profile_delta=None):
-        """ IAMUserProfile c'tor.
-
-        :param user_profile: (dict) the user-profile argument.
-        :param user_profile_delta: (dict) the user-profile argument.
-        """
-        self._brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
-        self._instance_name = demisto.callingContextget('context', {}).get('IntegrationInstance')
-
-        self._outputs = {}  # type: Dict[Any, Any]
-        self._readable_output = ''
-
-        self._user_profile = safe_load_json(user_profile)
-        self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
-
-    def get_attribute(self, item):
-        return self._user_profile.get(item)
-
-    def to_entry(self):
-        """ Generates a XSOAR IAM entry from the user profile object.
-
-        :return: (dict) A XSOAR entry.
-        """
-        entry_context = {
-            'IAM.UserProfile(val.email && val.email == obj.email)': self._user_profile,
-            'IAM.Vendor(val.instanceName && val.instanceName == self.instanceName && '
-            'val.email && val.email == obj.email)': self._outputs
-        }
-
-        return_entry = {
-            'Type': EntryType.NOTE,
-            'ContentsFormat': EntryFormat.JSON,
-            'Contents': self._outputs,
-            'HumanReadable': self._readable_output,
-            'EntryContext': entry_context
-        }
-
-        return return_entry
-
-    def set_result(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
-                   error_message=None, details=None, skip=False, skip_reason=None, action=None):
+class IAMVendorActionResult:
+    def __init__(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
+                 error_message=None, details=None, skip=False, skip_reason=None, action=None):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
         :param success: (bool) whether or not the command succeeded.
@@ -4665,72 +4613,125 @@ class IAMUserProfile:
         :param skip_reason: (str) If the command is skipped, describes the reason.
         :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
         """
-        if not email:
-            email = self.get_attribute('email')
+        self._brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
+        self._instance_name = demisto.callingContextget('context', {}).get('IntegrationInstance')
+        self._success = success
+        self._active = active
+        self._iden = iden
+        self._username = username
+        self._email = email
+        self._error_code = error_code
+        self._error_message = error_message
+        self._details = details
+        self._skip = skip
+        self._skip_reason = skip_reason
+        self._action = action
 
-        self._create_outputs(success, active, iden, username, email, error_code,
-                            error_message, details, skip, skip_reason, action)
-        self._create_readable_output(action, skip=skip)
-
-    def _create_outputs(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
-                       error_message=None, details=None, skip=False, skip_reason=None, action=None):
+    def _create_outputs(self):
         """ Sets the outputs in `_outputs` attribute.
-
-        :param success: (bool) whether or not the command succeeded.
-        :param active:  (bool) whether or not the user status is active.
-        :param iden: (str) the user ID.
-        :param username: (str) the username of the user.
-        :param email:  (str) the email of the user.
-        :param error_code: (str or int) the error code of the response, if exists.
-        :param error_message: (str) the error details of the response, if exists.
-        :param details: (dict) the full response.
-        :param skip: (bool) whether or not the command is skipped.
-        :param skip_reason: (str) If the command is skipped, describes the reason.
-        :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
         """
-        if not skip:
-            self._outputs = {
+        if not self._skip:
+            outputs = {
                 'brand': self._brand,
                 'instanceName': self._instance_name,
-                'action': action,
-                'success': success,
-                'active': active,
-                'id': iden,
-                'username': username,
-                'email': email,
-                'errorCode': error_code,
-                'errorMessage': error_message,
-                'details': details
+                'action': self._action,
+                'success': self._success,
+                'active': self._active,
+                'id': self._iden,
+                'username': self._username,
+                'email': self._email,
+                'errorCode': self._error_code,
+                'errorMessage': self._error_message,
+                'details': self._details
             }
         else:
-            self._outputs = {
+            outputs = {
                 'brand': self._brand,
                 'instanceName': self._instance_name,
-                'action': self._command,
+                'action': self._action,
                 'skipped': True,
-                'reason': skip_reason
+                'reason': self._skip_reason
             }
+        return outputs
 
-    def _create_readable_output(self, action=None, skip=False):
+    def _create_readable_output(self, outputs):
         """ Sets the human readable output in `_readable_output` attribute.
 
-        :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
-        :param skip: (bool) Whether or not the command is skipped.
+        :param outputs: (dict) the command outputs.
         """
-        title = action.title() + ' User Results ({})'.format(self._brand)
+        title = self._action.title() + ' User Results ({})'.format(self._brand)
 
-        if not skip:
+        if not self._skip:
             headers = ["brand", "instanceName", "success", "active", "id", "username",
                        "email", "errorCode", "errorMessage", "details"]
         else:
             headers = ["brand", "instanceName", "skipped", "reason"]
 
-        self._readable_output = tableToMarkdown(
+        readable_output = tableToMarkdown(
             name=title,
-            t=self._outputs,
+            t=outputs,
             headers=headers,
             removeNull=True
         )
+
+        return readable_output
+
+
+class IAMUserProfile:
+    INDICATOR_TYPE = 'User Profile'
+    """
+        A User Profile object class for IAM integrations.
+
+        Attributes:
+            _user_profile (str): The user profile information.
+            _user_profile_delta (str): The user profile delta.
+            _vendor_action_results (list): A List of data returned from the vendor.
+    """
+
+    def __init__(self, user_profile, user_profile_delta=None):
+        """ IAMUserProfile c'tor.
+
+        :param user_profile: (dict) the user-profile argument.
+        :param user_profile_delta: (dict) the user-profile argument.
+        """
+        self._user_profile = safe_load_json(user_profile)
+        self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
+        self._vendor_action_results = []
+
+    def get_attribute(self, item):
+        return self._user_profile.get(item)
+
+    def to_entry(self):
+        """ Generates a XSOAR IAM entry from the user profile object.
+
+        :return: (dict) A XSOAR entry.
+        """
+
+        entry_context = {
+            'IAM.UserProfile(val.email && val.email == obj.email)': self._user_profile,
+            'IAM.Vendor(val.instanceName && val.instanceName == self.instanceName && '
+            'val.email && val.email == obj.email)': outputs
+        }
+
+        return_entry = {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': outputs,
+            'HumanReadable': readable_output,
+            'EntryContext': entry_context
+        }
+
+        return return_entry
+
+    def set_result(self, vendor_action_result=None):
+        """ Sets the outputs and readable outputs attributes according to the given arguments.
+
+        :param vendor_action_result: (IAMVendorActionResult) data returned from the vendor.
+        """
+        if not vendor_action_result.get_attribute('email'):
+            email = self.set_attribute('email')
+
+        self._vendor_action_results.append(vendor_action_result)
 
     def map_object(self, mapper_name, mapping_type=None):
         """ Returns the user data, in an application data format.
