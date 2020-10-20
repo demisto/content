@@ -643,7 +643,7 @@ class Pack(object):
 
         try:
             for directory in Pack.EXCLUDE_DIRECTORIES:
-                if delete_test_playbooks and os.path.isdir(f'{self._pack_path}/{directory}')
+                if delete_test_playbooks and os.path.isdir(f'{self._pack_path}/{directory}'):
                     shutil.rmtree(f'{self._pack_path}/{directory}')
                     print(f"Deleted {directory} directory from {self._pack_name} pack")
 
