@@ -913,6 +913,112 @@ class Pack(object):
 
         return release_notes_lines, latest_release_notes
 
+    def prepare_release_notes_private(self, index_folder_path, build_number):
+        """
+        Handles the creation and update of the changelog.json files.
+        Args:
+            index_folder_path (str): Path to the unzipped index json.
+            build_number (str): circleCI build number.
+        Returns:
+            bool: whether the operation succeeded.
+            bool: whether running build has not updated pack release notes.
+        """
+        task_status = False
+        not_updated_build = False
+
+        try:
+            if os.path.exists(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)):
+                print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
+                # load changelog from downloaded index
+                changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+                with open(changelog_index_path, "r") as changelog_file:
+                    changelog = json.load(changelog_file)
+
+                release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
+
+                if os.path.exists(release_notes_dir):
+                    found_versions = []
+                    for filename in os.listdir(release_notes_dir):
+                        _version = filename.replace('.md', '')
+                        version = _version.replace('_', '.')
+                        found_versions.append(LooseVersion(version))
+                    found_versions.sort(reverse=True)
+                    latest_release_notes = found_versions[0].vstring
+
+                    print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
+                    # load latest release notes
+                    latest_rn_file = latest_release_notes.replace('.', '_')
+                    latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
+
+                    with open(latest_rn_path, 'r') as changelog_md:
+                        release_notes_lines = changelog_md.read()
+                    release_notes_lines = self._clean_release_notes(release_notes_lines)
+
+                    if self._current_version != latest_release_notes:
+                        # TODO Need to implement support for pre-release versions
+                        print_error(f"Version mismatch detected between current version: {self._current_version} "
+                                    f"and latest release notes version: {latest_release_notes}")
+                        task_status = False
+                        return task_status, not_updated_build
+                    else:
+                        if latest_release_notes in changelog:
+                            print(f"Found existing release notes for version: {latest_release_notes}")
+                            version_changelog = Pack._create_changelog_entry(release_notes=release_notes_lines,
+                                                                             version_display_name=latest_release_notes,
+                                                                             build_number=build_number,
+                                                                             new_version=False)
+
+                        else:
+                            print(f"Created new release notes for version: {latest_release_notes}")
+                            version_changelog = Pack._create_changelog_entry(release_notes=release_notes_lines,
+                                                                             version_display_name=latest_release_notes,
+                                                                             build_number=build_number,
+                                                                             new_version=True)
+
+                        changelog[latest_release_notes] = version_changelog
+                else:  # will enter only on initial version and release notes folder still was not created
+                    if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
+                        print_warning(
+                            f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
+                        task_status, not_updated_build = True, True
+                        return task_status, not_updated_build
+
+                    changelog[Pack.PACK_INITIAL_VERSION] = Pack._create_changelog_entry(
+                        release_notes=self.description,
+                        version_display_name=Pack.PACK_INITIAL_VERSION,
+                        build_number=build_number,
+                        new_version=False)
+
+                    print(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
+                          f"in the {self._pack_name} pack.")
+
+            elif self._current_version == Pack.PACK_INITIAL_VERSION:
+                version_changelog = Pack._create_changelog_entry(
+                    release_notes=self.description,
+                    version_display_name=Pack.PACK_INITIAL_VERSION,
+                    build_number=build_number,
+                    new_version=True
+                )
+                changelog = {
+                    Pack.PACK_INITIAL_VERSION: version_changelog
+                }
+            else:
+                print_error(f"No release notes found for: {self._pack_name}")
+                task_status = False
+                return task_status, not_updated_build
+
+            # write back changelog with changes to pack folder
+            with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
+                json.dump(changelog, pack_changelog, indent=4)
+
+            task_status = True
+            print_color(f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}", LOG_COLORS.GREEN)
+        except Exception as e:
+            print_error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
+                        f"Additional info: {e}")
+        finally:
+            return task_status, not_updated_build
+
     def prepare_release_notes(self, index_folder_path, build_number):
         """
         Handles the creation and update of the changelog.json files.
