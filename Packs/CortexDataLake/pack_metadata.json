@@ -15,5 +15,11 @@
     "keywords": [
         "CDL",
         "Cortex Data Lake"
-    ]
+    ],
+    "dependencies": {
+        "GetLicenseID": {
+            "mandatory": true,
+            "name": "Get License ID"
+        }
+    }
 }
