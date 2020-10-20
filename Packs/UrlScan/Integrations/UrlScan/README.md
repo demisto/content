@@ -9,7 +9,7 @@
 <ul>
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Server URL (e.g. <a href="https://urlscan.io/api/v1/" rel="nofollow">https://urlscan.io/api/v1/</a>)</strong></li>
+<li><strong>Server URL (e.g. https://urlscan.io/api/v1/ )</strong></li>
 <li><strong>API Key (needed only for submitting URLs for scanning)</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
@@ -211,7 +211,7 @@
 </table>
 <h5> </h5>
 <h5>Command Example</h5>
-<p><code>!urlscan-submit url=<a href="http://www.github.com/" rel="nofollow">http://www.github.com</a></code></p>
+<p><code>!urlscan-submit url=http://www.github.com/</code></p>
 <h3 id="h_704691117651541575066607">3. Submit a URL (specify using urlscan.io)</h3>
 <hr>
 <p>Submit a URL to scan and specify the <var>using</var> argument as urlscan.io.</p>
@@ -336,5 +336,5 @@
 </table>
 <h5> </h5>
 <h5>Command Example</h5>
-<p><code>!url url=<a href="http://www.github.com/" rel="nofollow">http://www.github.com</a> using="urlscan.io"</code></p>
+<p><code>!url url=http://www.github.com/ using="urlscan.io"</code></p>
 <p> </p>

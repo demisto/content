@@ -132,7 +132,7 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
     md += 'Scan ID: **' + str(vt_response.get('scan_id')) + '**\n'
     md += 'Scan date: **' + str(vt_response.get('scan_date')) + '**\n'
     md += 'Detections / Total: **' + str(positives) + '/' + str(vt_response.get('total')) + '**\n'
-    md += 'Resource: [' + str(vt_response.get('resource')) + '](' + str(vt_response.get('resource')) + ')\n'
+    md += 'Resource: ' + str(vt_response.get('resource')) + '\n'
     md += 'VT Link: [' + str(vt_response.get('permalink')) + '](' + str(vt_response.get('permalink')) + ')\n'
     dbotScore = 0
 
@@ -593,38 +593,40 @@ def get_url_report_command():
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
     threshold = int(args.get('threshold', None) or demisto.params().get('urlThreshold', None) or 10)
     scan_finish_time_in_seconds = int(args.get('retry_time', 6))
-    if (full_response):
+    if full_response:
         max_len = 1000
     else:
         max_len = 50
 
     responses_dict = get_url_reports_with_retries(urls, all_info, retries, scan_finish_time_in_seconds)
-    md = ''
-    ec = {  # type:ignore
-        'DBotScore': [],
-        outputPaths['url']: [],
-    }
+    entries = []
+
     for url, res in responses_dict.iteritems():
         url_md, url_ec, dbot_score = create_url_report_output(url, res, threshold, max_len, short_format)
-        md += url_md
-        ec['DBotScore'].append(dbot_score)
-        ec[outputPaths['url']].append(url_ec)
-    if not md:
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': url_md,
+            'EntryContext': {
+                'DBotScore': dbot_score,
+                outputPaths['url']: url_ec,
+            }
+        }
+        entries.append(entry)
+
+    if len(entries) == 0:
         md = "No scans were completed in the elapsed time. Please run the command again in a few seconds."
+        entries.append({
+            'Type': entryTypes['note'],
+            'Contents': None,
+            'ContentsFormat': formats['text'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md
+        })
 
-    completed_responses = responses_dict.values()
-    if len(completed_responses) == 1:
-        # This is done for backward compatibility
-        completed_responses = completed_responses[0]
-
-    return {
-        'Type': entryTypes['note'],
-        'Contents': completed_responses,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': ec
-    }
+    return entries
 
 
 def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_in_seconds):
@@ -635,7 +637,7 @@ def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_
 
     for url in urls:
         response = get_url_report(url, all_info)
-        if (response.get('response_code', None) == -1):
+        if response.get('response_code', None) == -1:
             return_error("Invalid url provided: {}.".format(url))
 
         if is_url_response_complete(response):
@@ -646,7 +648,7 @@ def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_
     while urls_count > urls_scanned_count and retries_left > 0:
         retries_left -= 1
         # In case there were url scans that have not finished: try again after giving them enough time to finish
-        time.sleep(scan_finish_time_in_seconds)
+        time.sleep(scan_finish_time_in_seconds)  # pylint: disable=sleep-exists
         for url in urls:
             if url not in requests_responses_dict:
                 response = get_url_report(url, all_info)
@@ -674,11 +676,12 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
     md += 'Scan ID: **' + str(response.get('scan_id', '')) + '**\n'
     md += 'Scan date: **' + str(response.get('scan_date', '')) + '**\n'
     md += 'Detections / Total: **' + str(positives) + '/' + str(response.get('total', '')) + '**\n'
-    md += 'Resource: [' + str(response.get('resource')) + '](' + str(response.get('resource')) + ')\n'
+    md += 'Resource: ' + str(response.get('resource')) + '\n'
     md += 'VT Link: [' + str(response.get('permalink')) + '](' + str(response.get('permalink')) + ')\n'
-    dbotScore = 0
+
+    dbot_score = 1
     ec_url = {}
-    if (positives >= threshold or is_enough_preferred_vendors(response)):
+    if positives >= threshold or is_enough_preferred_vendors(response):
         ec_url.update({
             'Data': url,
             'Malicious': {
@@ -686,19 +689,17 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
                 'Vendor': 'VirusTotal - Private API'
             },
         })
-        dbotScore = 3
-    elif (positives >= threshold / 2):
-        dbotScore = 2
-    else:
-        dbotScore = 1
+        dbot_score = 3
+    elif positives >= threshold / 2:
+        dbot_score = 2
 
     ec_dbot = {
         'Indicator': url,
         'Type': 'url',
         'Vendor': 'VirusTotal - Private API',
-        'Score': dbotScore
+        'Score': dbot_score
     }
-    if (dbotScore < 3):
+    if dbot_score < 3:
         ec_url.update({'Data': url})
 
     additional_info = response.get('additional_info', None)
@@ -706,7 +707,7 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
         resolution = additional_info.get('resolution', None)
         if resolution is not None:
             md += 'IP address resolution for this domain is: ' + resolution + '\n'
-        if (ec_url):
+        if ec_url:
             ec_url['VirusTotal'] = {
                 'Resolutions': resolution[:max_len]
             }
@@ -721,7 +722,7 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
     if scans is not None and not short_format:
         scans_table = create_scans_table(scans)
         scans_table_md = tableToMarkdown('Scans', scans_table)
-        if (ec_url.get('VirusTotal', False)):
+        if ec_url.get('VirusTotal', False):
             ec_url['VirusTotal']['Scans'] = scans_table
         else:
             ec_url['VirusTotal'] = {
@@ -732,7 +733,7 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
     dropped_files = response.get('filescan_id', None)
 
     if dropped_files is not None:
-        if (ec_url.get('VirusTotal', False)):
+        if ec_url.get('VirusTotal', False):
             ec_url['VirusTotal']['DroppedFiles'] = dropped_files
         else:
             ec_url['VirusTotal'] = {
@@ -771,16 +772,16 @@ def get_ip_report_command():
     ip = args['ip']
     threshold = int(args.get('threshold', None) or demisto.params().get('ipThreshold', None) or 10)
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
-    if (full_response):
+    if full_response:
         max_len = 1000
     else:
         max_len = 50
 
     response = get_ip_report(ip)
 
-    if (response.get('response_code') == -1):
+    if response.get('response_code') == -1:
         return "Invalid IP address "
-    elif (response.get('response_code') == 0):
+    elif response.get('response_code') == 0:
         return {
             'Type': entryTypes['note'],
             'Contents': response,

@@ -79,4 +79,4 @@ def test_get_shifts_per_user(mocker):
 |---|---|
 | Sunday 08:00 | Wednesday 12:00 |
 | Thursday 16:00 | Saturday 20:00 |
-""" in results[0]['Contents']
+""" in results[0]

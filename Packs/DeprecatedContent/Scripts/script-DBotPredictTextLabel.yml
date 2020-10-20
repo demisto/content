@@ -2,12 +2,16 @@ commonfields:
   id: DBotPredictTextLabel
   version: -1
 name: DBotPredictTextLabel
-script: |+
+script: >+
   import sys, base64, re
+
   import demisto_ml
 
+
   HASH_WORDS = (demisto.args()['hashData'] == 'yes')
+
   HASH_SEED = 5381
+
 
   def get_input_text_prediction(model, input_text):
       number_of_tokens = len(input_text.split(" "))
@@ -31,7 +35,9 @@ script: |+
       return demisto_ml.decode_model(model_as_string)
 
   # validate input text
+
   input_txt = demisto.args().get('inputText', '')
+
   if len(input_txt) == 0:
       return_error("Input text is missing")
   res = demisto.executeCommand('WordTokenizer', {
@@ -39,10 +45,12 @@ script: |+
       'hashWordWithSeed': HASH_SEED if HASH_WORDS else None,
       'type': 'punkt'
   })
+
   if isError(res[0]):
       demisto.results(res)
       sys.exit(0)
   input_txt = res[0]['Contents']
+
   if len(input_txt) == 0:
       return_error("Input text after remove HTML tags is empty: %s" % input_txt)
   if type(input_txt) is not list:
@@ -50,12 +58,15 @@ script: |+
 
   model = load_model(demisto.args()['modelListName'])
 
+
   predictions = map(lambda x: get_input_text_prediction(model, x), input_txt)
+
   if len(predictions) == 1:
       predictions = predictions[0]
   context = {
       "DBotPredictTextLabel": predictions
   }
+
 
   demisto.results({
         'ContentsFormat': formats['json'],
@@ -72,7 +83,7 @@ subtype: python2
 tags:
 - ml
 - phishing
-comment: This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
+comment: Deprecated. This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
 enabled: true
 args:
 - name: inputText
@@ -105,6 +116,6 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/dl:1.1
 deprecated: true
-fromversion: 4.1.0
+fromversion: 5.0.0
 tests:
-  - CreatePhishingClassifierMLTest
+- No tests

@@ -329,7 +329,6 @@ def download_attachments(id_type, object_id, business_object_type_name=None, bus
 def get_attachments_info(id_type, object_id, attachment_type, business_object_type_name=None,
                          business_object_type_id=None):
     type = 'File'
-    attachment_type = attachment_type
     result = get_attachments_details(id_type, object_id, business_object_type_name, business_object_type_id, type,
                                      attachment_type)
     attachments = result.get('attachments')

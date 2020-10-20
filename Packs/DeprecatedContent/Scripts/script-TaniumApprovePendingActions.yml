@@ -3,10 +3,13 @@ commonfields:
   version: -1
 name: TaniumApprovePendingActions
 deprecated: true
-script: |
+script: >
   //var approvedPackageNames = ["Disable Java Auto Update"];
+
   var approvedPackageNames = args.approvedpackages.split(',');
+
   var fieldsToDisplay = ["name", "package_spec","comment"]; //, "approver"];
+
 
   var requestPendingObjects = "<object_list>\
                   <saved_actions/>\
@@ -41,6 +44,7 @@ script: |
               </options>";
 
   // Send a request to Tanium to approve the given action
+
   function approveAction(savedAction) {
       var addObjArgs = {};
       addObjArgs["object-data"] = requestActionApproval.replace('{0}',savedAction.id);
@@ -51,7 +55,9 @@ script: |
           return res[0];
   }
 
+
   // Format a saved action as a table row, filtering unwanted fields.
+
   function formatAsRow(jsonSavedAction,fieldsToDisplay) {
     d = {};
     for (var k in jsonSavedAction)
@@ -60,10 +66,14 @@ script: |
     return d;
   }
 
+
   var getObjArgs = {};
+
   getObjArgs["object-data"] = requestPendingObjects;
 
+
   var res = executeCommand('tn-get-object', getObjArgs);
+
   var entry = {
       Type: 1,
       ContentsFormat: 'json',
@@ -72,10 +82,15 @@ script: |
       HumanReadable: ""
   };
 
+
   responseData = res[0].Contents.Envelope.Body.return.result_object;
+
   respObj = JSON.parse(responseData);
+
   var savedActions = [];
+
   nResultObjects = respObj.result_objects.length;
+
   for (var i=0; i < nResultObjects; i++) {
       resultObj = respObj.result_objects[i];
       nItems = resultObj.saved_actions.length;
@@ -88,7 +103,9 @@ script: |
       }
   }
 
+
   var approvedSummary=[];
+
   for (var i=0; i < savedActions.length; i++) {
       if (approvedPackageNames.indexOf(savedActions[i].package_spec.name) > -1) {
           approvalResult = approveAction(savedActions[i]);
@@ -104,6 +121,7 @@ script: |
               log("Failed to approve action:\n" + JSON.stringify(savedActions[i]) + "\nResults returned:\n" + JSON.stringify(approvalResult) + "\n");
       }
   }
+
 
   if (0 === approvedSummary.length)
       return "No actions were approved.";
@@ -135,7 +153,7 @@ script: |
 type: javascript
 tags:
 - tanium
-comment: Approve all pending actions using the specified package names.
+comment: Deprecated. Approve all pending actions using the specified package names.
 args:
 - name: approvedpackages
   description: "Names of packages to approve"
@@ -158,3 +176,4 @@ dependson:
   - tn-add-object
   - tn-get-object
 timeout: 0s
+fromversion: 5.0.0

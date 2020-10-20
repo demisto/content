@@ -1,16 +1,16 @@
 {
-  "name": "Ipstack",
-  "description": "One of the leading IP to geolocation APIs and global IP database services.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-03-09T16:35:16Z",
-  "categories": [
-    "Data Enrichment & Threat Intelligence"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Ipstack",
+    "description": "One of the leading IP to geolocation APIs and global IP database services.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-03-09T16:35:16Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }

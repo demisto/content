@@ -196,7 +196,7 @@ script:
     - contextPath: Indeni.AlertInfo.Note
       description: Notes for the given issue
       type: Unknown
-  dockerimage: demisto/python3:3.8.1.5734
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: true
@@ -206,5 +206,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
-defaultClassifier: Indeni
-defaultMapperIn: Indeni-mapper
+defaultclassifier: Indeni
+defaultmapperin: Indeni-mapper

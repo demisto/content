@@ -286,7 +286,7 @@ def get_scans_command():
 
 
 def launch_scan_command():
-    scan_id, targets = demisto.getArg('scanId'), demisto.getArg('scanTartgets')
+    scan_id, targets = demisto.getArg('scanId'), demisto.getArg('scanTargets')
     scan_info = send_scan_request(scan_id)['info']
     if not targets:
         targets = scan_info.get('targets', '')

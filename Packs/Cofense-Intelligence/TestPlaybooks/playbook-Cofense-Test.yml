@@ -345,9 +345,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 2310,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2310,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
 inputs: []
 outputs: []
 description: ''
+fromversion: 5.0.0

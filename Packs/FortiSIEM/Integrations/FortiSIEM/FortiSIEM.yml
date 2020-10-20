@@ -143,9 +143,7 @@ script:
       description: Destination IP address for the web.
       type: string
     - contextPath: FortiSIEM.Events.SourceIP
-      description: "IP address of the traffic's origin. The source varies by the direction:
-        l In HTTP requests, this is the web browser or other client. l In HTTP responses,
-        this is the physical server."
+      description: "IP address of the traffic's origin. The source varies by the direction: l In HTTP requests, this is the web browser or other client. l In HTTP responses, this is the physical server."
       type: string
     - contextPath: FortiSIEM.Events.ExtendedData
       description: All additional data returned by FortiSIEM.
@@ -291,8 +289,7 @@ script:
     arguments:
     - name: group_id
       required: true
-      description: ID of the resource group. Run the "fortisiem-get-lists" command
-        to get the ID. command.
+      description: ID of the resource group. Run the "fortisiem-get-lists" command to get the ID. command.
     - name: object-info
       required: true
       description: 'CSV list of key-value pairs of attributes, for example: name=SomeName,lowIp=192.168.1.1,highIp=192.168.1.2'
@@ -353,8 +350,7 @@ script:
     arguments:
     - name: group_id
       required: true
-      description: ID of the resource group. Run the "fortisiem-get-lists" command
-        to get the ID.
+      description: ID of the resource group. Run the "fortisiem-get-lists" command to get the ID.
     - name: resource_type
       required: true
       auto: PREDEFINED
@@ -380,4 +376,5 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - No Test
+- No Test
+fromversion: 5.0.0

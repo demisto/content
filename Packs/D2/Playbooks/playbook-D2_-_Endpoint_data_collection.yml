@@ -1,7 +1,7 @@
 id: D2 - Endpoint data collection
 version: -1
 name: D2 - Endpoint data collection
-fromversion: ""
+fromversion: "5.0.0"
 description: |-
   Uses Demisto's d2 agent to collect data from an endpoint for IR purposes.
 
@@ -186,8 +186,7 @@ tasks:
       id: bfdb339a-a8b5-4b46-822c-23b4d515787e
       version: -1
       name: Does 'Host' input exist?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -397,25 +396,24 @@ inputs:
     simple: ${Endpoint.Hostname}
   required: false
   description: Deploy D2 on target Host
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: OS
   value:
     simple: windows
   required: false
   description: The default OS type of target host
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Credentials
   value:
     simple: Admin
   required: false
-  description: Name of the credential set from Demisto Settings -> Integrations ->
-    Credentials
-  playbookInputQuery: null
+  description: Name of the credential set from Demisto Settings -> Integrations -> Credentials
+  playbookInputQuery:
 - key: Path
   value: {}
   required: false
   description: If initialized, D2 will try and collect the file at target path
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
-  - No Test
+- No Test

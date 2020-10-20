@@ -2,8 +2,9 @@ commonfields:
   id: TestFormatTableValues
   version: -1
 name: TestFormatTableValues
-script: |-
+script: >-
   /* Tests an invalid input param and compares it to the return value */
+
   var testInvalidParam = function (param) {
     var res = formatTableValues(param);
 
@@ -13,7 +14,9 @@ script: |-
 
     return res;
   }
+
   /* Tests a single value as a field and compares it to the stringified result */
+
   var testSingleValueInObject = function (param) {
     var res = formatTableValues(
       {
@@ -25,7 +28,9 @@ script: |-
       throw new Error('Invalid ' + param + ' value representation');
     }
   }
+
   /* Tests a single value as a field and compares it to the stringified result */
+
   var testSingleValueInArray = function (param) {
     var res = formatTableValues(
       [
@@ -37,7 +42,9 @@ script: |-
       throw new Error('Invalid ' + param + ' value representation');
     }
   }
+
   /* Tests the longest indentation of a stringified object against an expected number */
+
   var testIndentation = function (input, expectedIndentation) {
     var longest = 0;
     var count = 0;
@@ -80,6 +87,7 @@ script: |-
     }
   }
 
+
   var testIndentationObject = function () {
     var obj = {
       testObj: {
@@ -91,6 +99,7 @@ script: |-
     testIndentation(obj, 1);
   }
 
+
   var testInvalidInputFunc = function () {
     var testValue = 'anything';
     var res = testInvalidParam(function () { return testValue });
@@ -99,6 +108,7 @@ script: |-
       throw new Error('Invalid function return value');
     }
   }
+
 
   var testInvalidInputTypes = function () {
     testInvalidParam('test');
@@ -111,6 +121,7 @@ script: |-
     testInvalidInputFunc();
   }
 
+
   var testInputObjectWithTypes = function () {
     testSingleValueInObject('test string');
     testSingleValueInObject(123456);
@@ -121,6 +132,7 @@ script: |-
     testSingleValueInObject(undefined);
   }
 
+
   var testInputArrayWithTypes = function () {
     testSingleValueInArray('test string');
     testSingleValueInArray(123456);
@@ -130,6 +142,7 @@ script: |-
     testSingleValueInArray(null);
     testSingleValueInArray(undefined);
   }
+
 
   var testIndentationArray = function() {
     var arr = [
@@ -151,6 +164,7 @@ script: |-
     ]
     testIndentation(arr, 0);
   }
+
 
   var testIndentationArrayOfObjects = function () {
     var arr = [
@@ -177,6 +191,7 @@ script: |-
     ];
     testIndentation(arr, 2);
   }
+
 
   var testIndentationArrayWithinArray = function () {
     var obj = {
@@ -219,15 +234,24 @@ script: |-
     testIndentation(obj, 7);
   }
 
+
   // test calls
+
   testInvalidInputTypes();
+
   testInputObjectWithTypes();
+
   testInputArrayWithTypes();
 
+
   testIndentationObject();
+
   testIndentationArray();
+
   testIndentationArrayOfObjects();
+
   testIndentationArrayWithinArray();
+
 
   return "ok";
 type: javascript
@@ -235,3 +259,4 @@ tags: []
 enabled: true
 comment: ''
 scripttarget: 0
+fromversion: 5.0.0

@@ -1,9 +1,8 @@
 id: Get File Sample By Hash - Cylance Protect v2
 version: -1
-fromversion: 4.0.0
+fromversion: 5.0.0
 name: Get File Sample By Hash - Cylance Protect v2
-description: This playbook returns a file sample to the war-room given the file's
-  SHA256 hash, using Cylance Protect v2 integration.
+description: This playbook returns a file sample to the war-room given the file's SHA256 hash, using Cylance Protect v2 integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -216,4 +215,4 @@ inputs:
     No - will not unzip
 outputs: []
 tests:
-  - No test
+- No test

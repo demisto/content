@@ -128,10 +128,10 @@ class Client:
             raise DemistoException('threadId and campaignID supplied, supply only one of them')
         if include_campaign_forensics and campaign_id:
             raise DemistoException('includeCampaignForensics can be true only with threadId')
-        params = assign_params(
-            threatId=threat_id,
-            campaingId=campaign_id,
-            includeCampaignForensics=include_campaign_forensics)
+        if campaign_id:
+            params = assign_params(campaignId=campaign_id)
+        else:
+            params = assign_params(threatId=threat_id, includeCampaignForensics=include_campaign_forensics)
         return self.http_request('GET', None, params=params, forensics_api=True)
 
 

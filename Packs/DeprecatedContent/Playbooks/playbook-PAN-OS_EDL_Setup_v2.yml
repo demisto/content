@@ -1,11 +1,12 @@
 id: PAN-OS EDL Setup v2
 version: -1
-fromversion: 4.0.0
+fromversion: 5.0.0
 name: PAN-OS EDL Setup v2
 description: |-
-  Configures an external dynamic list in PAN-OS.
+  Deprecated. Use "PAN-OS EDL Setup v3" playbook instead. Configures an external dynamic list in PAN-OS.
   In the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -40,8 +41,7 @@ tasks:
       id: 1ae0d0c0-a36d-44fb-884f-91e30aa52d36
       version: -1
       name: Is PAN-OS integration enabled?
-      description: Checks if there is an active instance of the PAN-OS integration
-        enabled.
+      description: Checks if there is an active instance of the PAN-OS integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -96,8 +96,7 @@ tasks:
       id: 41efc436-52cb-4e5a-80f0-f5dec772b5b2
       version: -1
       name: Is PAN-OS EDL Management integration enabled?
-      description: Checks if there is an active instance of the PAN-OS EDL Management
-        integration enabled.
+      description: Checks if there is an active instance of the PAN-OS EDL Management integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -214,8 +213,7 @@ tasks:
       id: 16f634ed-b95f-45ec-8f84-5e149846b40d
       version: -1
       name: Add changes from external file to the internal list
-      description: Fetches the content of the external file and merges it with the
-        content of the internal list.
+      description: Fetches the content of the external file and merges it with the content of the internal list.
       script: '|||pan-os-edl-update-from-external-file'
       type: regular
       iscommand: true
@@ -250,8 +248,7 @@ tasks:
       id: 2d03e7de-979f-4fa8-844e-c4b5b2f9ad7e
       version: -1
       name: Create internal list and external file
-      description: Creates an internal list in Demisto and creates an external file
-        on the web server.
+      description: Creates an internal list in Demisto and creates an external file on the web server.
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
@@ -336,8 +333,7 @@ tasks:
       id: 580c92fa-cc3e-4ecc-8cd5-f7b3ed06a30e
       version: -1
       name: Create EDL Object
-      description: Creates an external dynamic list in PAN-OS and connects it to the
-        external file.
+      description: Creates an external dynamic list in PAN-OS and connects it to the external file.
       script: '|||panorama-create-edl'
       type: regular
       iscommand: true
@@ -405,8 +401,7 @@ tasks:
       id: e603350c-84d9-48db-876a-cef07dd9c396
       version: -1
       name: Is auto-commit defined?
-      description: Checks if the values provided in the arguments are equal. If either
-        of the arguments are missing, "no" is returned.
+      description: Checks if the values provided in the arguments are equal. If either of the arguments are missing, "no" is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -442,8 +437,7 @@ tasks:
       id: 26b472b7-03ae-419f-81d7-b38e62baece3
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This option
-        is available when auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This option is available when auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -469,8 +463,7 @@ tasks:
       id: 0c9ff993-3a4c-47b2-86e0-2d7bc8f188d9
       version: -1
       name: add the list items to the EDL
-      description: Creates an internal list in Demisto and creates an external file
-        on the web server.
+      description: Creates an internal list in Demisto and creates an external file on the web server.
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
@@ -565,8 +558,7 @@ tasks:
       id: 1e040fd2-4764-469a-8d0e-01c0e1c23f93
       version: -1
       name: Is auto-commit defined?
-      description: Checks if the values provided in the arguments are equal. If either
-        of the arguments are missing, "no" is returned.
+      description: Checks if the values provided in the arguments are equal. If either of the arguments are missing, "no" is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -602,9 +594,7 @@ tasks:
       id: 7863b405-ca3a-4886-8d55-605bbaba4ec1
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
-        the instance.
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -631,8 +621,7 @@ tasks:
       id: 0d85c3b6-490e-4d9b-870b-4ef7666d4bbc
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This option
-        is available when auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This option is available when auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -802,8 +791,7 @@ inputs:
 - key: ioc-type
   value: {}
   required: true
-  description: The type of the IOCs that the list will store. Can be "ip", "url",
-    or "domain".
+  description: The type of the IOCs that the list will store. Can be "ip", "url", or "domain".
 - key: list-items
   value: {}
   required: true
@@ -827,8 +815,7 @@ inputs:
 - key: web-server-ip
   value: {}
   required: true
-  description: The IP address of the web server on which the files are stored. The
-    web server IP address is configured in the integration instance.
+  description: The IP address of the web server on which the files are stored. The web server IP address is configured in the integration instance.
 - key: pre-post-rulebase
   value:
     simple: pre-rulebase
@@ -849,8 +836,7 @@ inputs:
 - key: relative-rule-name
   value: {}
   required: false
-  description: If the rule-position that is chosen is before or after, specify the
-    rule name to which it is related.
+  description: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
 - key: inbound-or-outbound-rule
   value:
     simple: outbound
@@ -859,8 +845,7 @@ inputs:
 - key: rule-name
   value: {}
   required: false
-  description: The name of the rule to update, or the name of the rule that will be
-    created.
+  description: The name of the rule to update, or the name of the rule that will be created.
 - key: device-group
   value: {}
   required: false

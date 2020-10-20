@@ -1647,8 +1647,12 @@ def download_attachment_request(attachment_id):
     }
 
     response = http_request('POST', api_endpoint, str(payload), is_file=True)
-    if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    try:
+        json_response = response.json()
+        if json_response.get('fail'):
+            return_error(json_response.get('fail', [{}])[0].get('errors'))
+    except ValueError:
+        pass
     return response.content
 
 
@@ -1803,11 +1807,11 @@ def group_members_api_response_to_markdown(api_response):
     users_list = list()
     for user in api_response['data'][0]['groupMembers']:
         user_entry = {
-            'Name': user['name'],
-            'Email address': user['emailAddress'],
-            'Domain': user['domain'],
-            'Type': user['type'],
-            'Internal user': user['internal']
+            'Name': user.get('name'),
+            'Email address': user.get('emailAddress'),
+            'Domain': user.get('domain'),
+            'Type': user.get('type'),
+            'Internal user': user.get('internal')
         }
 
         users_list.append(user_entry)
@@ -1824,6 +1828,8 @@ def add_users_under_group_in_context_dict(users_list, group_id):
     if demisto_context and 'Mimecast' in demisto_context:
         if 'Group' in demisto_context['Mimecast']:
             groups_entry_in_context = demisto_context['Mimecast']['Group']
+            groups_entry_in_context = [groups_entry_in_context] if isinstance(groups_entry_in_context,
+                                                                              dict) else groups_entry_in_context
             for group in groups_entry_in_context:
                 if group['ID'] == group_id:
                     group['Users'] = users_list
@@ -1843,11 +1849,11 @@ def group_members_api_response_to_context(api_response, group_id=-1):
     users_list = list()
     for user in api_response['data'][0]['groupMembers']:
         user_entry = {
-            'Name': user['name'],
-            'EmailAddress': user['emailAddress'],
-            'Domain': user['domain'],
-            'Type': user['type'],
-            'InternalUser': user['internal'],
+            'Name': user.get('name'),
+            'EmailAddress': user.get('emailAddress'),
+            'Domain': user.get('domain'),
+            'Type': user.get('type'),
+            'InternalUser': user.get('internal'),
             'IsRemoved': False
         }
 
@@ -1859,6 +1865,14 @@ def group_members_api_response_to_context(api_response, group_id=-1):
 
 
 def add_remove_member_to_group(action_type):
+    """Adds or remove a member from a group
+
+    Args:
+        action_type: the action type
+
+    Returns:
+        Demisto Outputs
+    """
     if action_type == 'add':
         api_endpoint = '/api/directory/add-group-member'
     else:
@@ -1869,10 +1883,18 @@ def add_remove_member_to_group(action_type):
     markdown_output = add_remove_api_response_to_markdown(api_response, action_type)
     entry_context = add_remove_api_response_to_context(api_response, action_type)
 
-    return_outputs(markdown_output, entry_context, api_response)
+    return markdown_output, entry_context, api_response
 
 
 def create_add_remove_group_member_request(api_endpoint):
+    """Adds or remove a member from a group
+
+    Args:
+        api_endpoint: the add or the remove endpoint
+
+    Returns:
+        response from API
+    """
     group_id = demisto.args().get('group_id', '').encode('utf-8')
     email = demisto.args().get('email_address', '').encode('utf-8')
     domain = demisto.args().get('domain_address', '').encode('utf-8')
@@ -1898,8 +1920,19 @@ def create_add_remove_group_member_request(api_endpoint):
 
 
 def add_remove_api_response_to_markdown(api_response, action_type):
-    address_modified = api_response['data'][0]['emailAddress']
-    group_id = api_response['data'][0]['folderId']
+    """Create a markdown response for the add or remove member operation
+
+    Args:
+        api_response: response from api
+        action_type: the action type
+
+    Returns:
+        response from API
+    """
+    address_modified = api_response['data'][0].get('emailAddress')
+    if not address_modified:
+        address_modified = api_response['data'][0].get('domain', 'Address')
+    group_id = api_response['data'][0].get('folderId', '')
 
     if action_type == 'add':
         return address_modified + ' had been added to group ID ' + group_id
@@ -1912,10 +1945,12 @@ def change_user_status_removed_in_context(user_info, group_id):
     if demisto_context and 'Mimecast' in demisto_context:
         if 'Group' in demisto_context['Mimecast']:
             groups_entry_in_context = demisto_context['Mimecast']['Group']
+            groups_entry_in_context = [groups_entry_in_context] if isinstance(groups_entry_in_context,
+                                                                              dict) else groups_entry_in_context
             for group in groups_entry_in_context:
                 if group['ID'] == group_id:
                     for user in group['Users']:
-                        if user['EmailAddress'] == user_info['EmailAddress']:
+                        if user['EmailAddress'] == user_info.get('EmailAddress', ''):
                             user['IsRemoved'] = True
                     return groups_entry_in_context
 
@@ -1936,7 +1971,7 @@ def add_remove_api_response_to_context(api_response, action_type):
         api_response = create_get_group_members_request(group_id=group_id)
         return group_members_api_response_to_context(api_response, group_id=group_id)
     else:
-        address_removed = api_response['data'][0]['emailAddress']
+        address_removed = api_response['data'][0].get('emailAddress', '')
 
         removed_user = {
             'EmailAddress': address_removed,
@@ -2330,9 +2365,9 @@ def main():
         elif demisto.command() == 'mimecast-get-group-members':
             get_group_members()
         elif demisto.command() == 'mimecast-add-group-member':
-            add_remove_member_to_group('add')
+            return_outputs(add_remove_member_to_group('add'))
         elif demisto.command() == 'mimecast-remove-group-member':
-            add_remove_member_to_group('remove')
+            return_outputs(add_remove_member_to_group('remove'))
         elif demisto.command() == 'mimecast-create-group':
             create_group()
         elif demisto.command() == 'mimecast-update-group':

@@ -1,0 +1,162 @@
+[
+    {
+        "EventID": 341,
+        "CreationDatetime": "2020-03-04T11:14:28.227317",
+        "Severity": "Warning",
+        "Description": "New USB peripheral detected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "1",
+        "Details": "[Agent] Vulnerable Device VID/PID are 045E/07F8  (Microsoft Corp. Wired Keyboard 600 (model 1576) 00)"
+    },
+    {
+        "EventID": 123,
+        "CreationDatetime": "2020-03-04T11:14:28.227317",
+        "Severity": "Warning",
+        "Description": "New USB peripheral detected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "2",
+        "Details": "[Agent] Vulnerable Device VID/PID are 046D/C077  (Logitech, Inc. M105 Optical Mouse)"
+    },
+    {
+        "EventID": 247,
+        "CreationDatetime": "2020-03-05T10:10:21.713576",
+        "Severity": "Notice",
+        "Description": "USB peripheral disconnected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "1",
+        "Details": "[Agent] Vulnerable Device VID/PID are 045E/07F8  (Microsoft Corp. Wired Keyboard 600 (model 1576) 00)"
+    },
+    {
+        "EventID": 335,
+        "CreationDatetime": "2020-03-05T10:10:21.713576",
+        "Severity": "Notice",
+        "Description": "USB peripheral disconnected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "2",
+        "Details": "[Agent] Vulnerable Device VID/PID are 046D/C077  (Logitech, Inc. M105 Optical Mouse)"
+    },
+    {
+        "EventID": 275,
+        "CreationDatetime": "2020-03-05T10:10:28.008277",
+        "Severity": "Warning",
+        "Description": "New USB peripheral detected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "1",
+        "Details": "[Agent] Vulnerable Device VID/PID are 045E/07F8  (Microsoft Corp. Wired Keyboard 600 (model 1576) 00)"
+    },
+    {
+        "EventID": 276,
+        "CreationDatetime": "2020-03-05T10:10:29.062256",
+        "Severity": "Warning",
+        "Description": "New USB peripheral detected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "2",
+        "Details": "[Agent] Vulnerable Device VID/PID are 046D/C077  (Logitech, Inc. M105 Optical Mouse)"
+    },
+    {
+        "EventID": 233,
+        "CreationDatetime": "2020-03-05T10:10:34.326514",
+        "Severity": "Notice",
+        "Description": "USB peripheral disconnected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "2",
+        "Details": "[Agent] Vulnerable Device VID/PID are 046D/C077  (Logitech, Inc. M105 Optical Mouse)"
+    },
+    {
+        "EventID": 243,
+        "CreationDatetime": "2020-03-05T10:10:34.326514",
+        "Severity": "Notice",
+        "Description": "USB peripheral disconnected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "1",
+        "Details": "[Agent] Vulnerable Device VID/PID are 045E/07F8  (Microsoft Corp. Wired Keyboard 600 (model 1576) 00)"
+    },
+    {
+        "EventID": 221,
+        "CreationDatetime": "2020-03-05T10:12:11.341571",
+        "Severity": "Warning",
+        "Description": "New USB peripheral detected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "2",
+        "Details": "[Agent] Vulnerable Device VID/PID are 046D/C077  (Logitech, Inc. M105 Optical Mouse)"
+    },
+    {
+        "EventID": 220,
+        "CreationDatetime": "2020-03-05T10:12:11.341571",
+        "Severity": "Warning",
+        "Description": "New USB peripheral detected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "1",
+        "Details": "[Agent] Vulnerable Device VID/PID are 045E/07F8  (Microsoft Corp. Wired Keyboard 600 (model 1576) 00)"
+    },
+    {
+        "EventID": 225,
+        "CreationDatetime": "2020-03-05T10:12:19.910782",
+        "Severity": "Notice",
+        "Description": "USB peripheral disconnected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "1",
+        "Details": "[Agent] Vulnerable Device VID/PID are 045E/07F8  (Microsoft Corp. Wired Keyboard 600 (model 1576) 00)"
+    },
+    {
+        "EventID": 103,
+        "CreationDatetime": "2020-03-05T10:12:19.910782",
+        "Severity": "Notice",
+        "Description": "USB peripheral disconnected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "2",
+        "Details": "[Agent] Vulnerable Device VID/PID are 046D/C077  (Logitech, Inc. M105 Optical Mouse)"
+    },
+    {
+        "EventID": 38,
+        "CreationDatetime": "2020-05-11T09:28:48.247652",
+        "Severity": "Warning",
+        "Description": "New USB peripheral detected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "1",
+        "Details": "[Agent] Vulnerable Device VID/PID are 045E/07F8  (Microsoft Corp. Wired Keyboard 600 (model 1576) 00)"
+    },
+    {
+        "EventID": 49,
+        "CreationDatetime": "2020-05-11T09:28:48.247652",
+        "Severity": "Warning",
+        "Description": "New USB peripheral detected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "2",
+        "Details": "[Agent] Vulnerable Device VID/PID are 046D/C077  (Logitech, Inc. M105 Optical Mouse)"
+    },
+    {
+        "EventID": 242,
+        "CreationDatetime": "2020-05-26T15:12:18.571159",
+        "Severity": "Warning",
+        "Description": "New USB peripheral detected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "3",
+        "Details": "[Agent] Vulnerable Device VID/PID are 0781/5571 SN 4C530007520508112310  (SanDisk Corp. Cruzer Fit)"
+    },
+    {
+        "EventID": 52,
+        "CreationDatetime": "2020-05-26T15:12:29.051512",
+        "Severity": "Notice",
+        "Description": "USB peripheral disconnected",
+        "Category": "USB",
+        "Source": "DESKTOP-9LR722S (192.168.100.128)",
+        "PeripheralType": "3",
+        "Details": "[Agent] Vulnerable Device VID/PID are 0781/5571  (SanDisk Corp. Cruzer Fit)"
+    }
+]

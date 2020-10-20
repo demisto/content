@@ -240,19 +240,18 @@ variable is ``__main__`` , ``__builtin__`` (for Python 2) or ``builtins`` (for
 Python 3) and then calls the ``main()`` function. Just keep this convention.
 
 """
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
-import requests
+import urllib3
 import dateparser
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
@@ -480,7 +479,7 @@ def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y
     the first one.
 
     :type domain_date: ``Union[List[str],str]``
-    :param severity:
+    :param date_format:
         a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
 
     :return: Parsed time in ISO8601 format
@@ -489,10 +488,14 @@ def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y
 
     if isinstance(domain_date, str):
         # if str parse the value
-        return dateparser.parse(domain_date).strftime(date_format)
+        domain_date_dt = dateparser.parse(domain_date)
+        if domain_date_dt:
+            return domain_date_dt.strftime(date_format)
     elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
         # if list with at least one element, parse the first element
-        return dateparser.parse(domain_date[0]).strftime(date_format)
+        domain_date_dt = dateparser.parse(domain_date[0])
+        if domain_date_dt:
+            return domain_date_dt.strftime(date_format)
     # in any other case return nothing
     return None
 

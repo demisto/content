@@ -1,0 +1,11 @@
+[
+        {
+            "$device": "37dee181-dd6e-48ce-9591-19e803a41bd9",
+            "$host": "OSX-Sign-Machine.local",
+            "$time": "2020-07-15T17:36:03.000Z",
+            "$type": "csv",
+            "description": "Setup User",
+            "directory": "/var/setup",
+            "username": "_mbsetupuser"
+        }
+]

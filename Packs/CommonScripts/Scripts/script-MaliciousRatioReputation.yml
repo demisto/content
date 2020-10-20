@@ -2,8 +2,8 @@ commonfields:
   id: MaliciousRatioReputation
   version: -1
 name: MaliciousRatioReputation
-fromversion: "4.0.0"
-script: |-
+fromversion: "5.0.0"
+script: >-
   def get_indicator_from_value(indicator_value):
       try:
           res = demisto.executeCommand("findIndicators", {'value': indicator_value})
@@ -13,7 +13,9 @@ script: |-
           pass
 
   indicator_value = demisto.args()['input']
+
   indicator = get_indicator_from_value(indicator_value)
+
   if indicator:
       res = demisto.executeCommand("maliciousRatio", {'value': indicator['value']})
       try:

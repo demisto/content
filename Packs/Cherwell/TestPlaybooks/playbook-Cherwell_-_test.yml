@@ -1,7 +1,7 @@
 id: Cherwell - test
 version: -1
 name: Cherwell - test
-fromversion: 4.1.0
+fromversion: 5.0.0
 starttaskid: "0"
 description: ""
 tasks:
@@ -47,8 +47,7 @@ tasks:
       - "2"
     scriptarguments:
       json:
-        simple: '{"Priority": "3", "CustomerDisplayName": "Playbook customer", "Description":
-          "This incident was created by Cherwell test playbook"}'
+        simple: '{"Priority": "3", "CustomerDisplayName": "Playbook customer", "Description": "This incident was created by Cherwell test playbook"}'
       type:
         simple: Incident
     separatecontext: false
@@ -613,8 +612,7 @@ tasks:
       - "14"
     scriptarguments:
       json:
-        simple: '{"Title": "Test task", "Description": "Test task generated from test
-          playbook", "OwnedByTeam": "HR",  "Type":"Work Item", "Status":"New"}'
+        simple: '{"Title": "Test task", "Description": "Test task generated from test playbook", "OwnedByTeam": "HR",  "Type":"Work Item", "Status":"New"}'
       type:
         simple: Task
     separatecontext: false
@@ -764,8 +762,7 @@ tasks:
       id: c3170507-39ef-4f4e-8eaf-0a1feab5b1b5
       version: -1
       name: Get Field Info
-      description: Get field info by one of its properties (Name, DIsplay Name or
-        ID)
+      description: Get field info by one of its properties (Name, DIsplay Name or ID)
       script: '|||cherwell-get-field-info'
       type: regular
       iscommand: true
@@ -943,8 +940,7 @@ tasks:
       id: 15a3bfe9-0aea-45a9-8a86-b16bcd97eb7a
       version: -1
       name: Validate Query Business Object
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""

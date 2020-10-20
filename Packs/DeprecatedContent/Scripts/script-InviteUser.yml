@@ -2,12 +2,12 @@ commonfields:
   id: InviteUser
   version: -1
 name: InviteUser
-script: return executeCommand('@', args);
+script: >-
+  return executeCommand('@', args);
 type: javascript
 tags:
 - server
-comment: |
-  Send a notification to another user and add user to the team
+comment: Deprecated. Send a notification to another user and add user to the team
 system: true
 args:
 - name: user
@@ -19,4 +19,5 @@ dependson: {}
 timeout: 0s
 deprecated: true
 tests:
-  - No tests
+- No tests
+fromversion: 5.0.0

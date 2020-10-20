@@ -2,8 +2,9 @@ commonfields:
   id: CountArraySize
   version: -1
 name: CountArraySize
-script: |-
+script: >-
   var arr = args.array;
+
   if (Array.isArray(arr)) {
       var key = 'ArraySize';
       if ((args.contextKey) && (args.contextKey.length > 0 )) {
@@ -12,6 +13,7 @@ script: |-
       setContext(key,arr.length);
       return arr.length;
   }
+
   return 'Given input is not an array';
 type: javascript
 tags:
@@ -33,3 +35,4 @@ outputs:
 - contextPath: ArraySize
   description: Array size
 scripttarget: 0
+fromversion: 5.0.0

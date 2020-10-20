@@ -1,0 +1,22 @@
+{
+    "success": {
+        "totalRecords": 1,
+        "success": true,
+        "results": [
+            {
+                "firstSeen": "2019-12-10 06:06:19",
+                "lastSeen": "2020-06-02 06:05:05",
+                "cause": "dummy cause",
+                "parent": "dummy parent",
+                "child": "dummy child"
+            }
+        ],
+        "facets": []
+    },
+    "emptyContent": {
+    "totalRecords": 0,
+    "success": true,
+    "results": [],
+    "facets": []
+}
+}

@@ -48,7 +48,7 @@ configuration:
 - display: Fetch indicators
   name: feed
   required: false
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
 - defaultvalue: Good
   display: Indicator Reputation
@@ -75,6 +75,16 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ""
@@ -94,6 +104,12 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
@@ -127,7 +143,7 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: aws-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.6980
+  dockerimage: demisto/jmespath:1.0.0.10854
   feed: true
   isfetch: false
   longRunning: false
@@ -137,5 +153,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
-defaultClassifier: AWS Feed
-defaultMapperIn: AWS Feed-mapper
+defaultclassifier: AWS Feed
+defaultmapperin: AWS Feed-mapper

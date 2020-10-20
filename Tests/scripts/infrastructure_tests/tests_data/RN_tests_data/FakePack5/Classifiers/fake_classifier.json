@@ -1,0 +1,10 @@
+{
+    "id": "RedLock-mapper",
+    "name": "Fake classifier",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Prisma Cloud event fields.",
+	"defaultIncidentType": "Prisma Cloud",
+	"mapping": {},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

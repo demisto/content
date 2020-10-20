@@ -99,10 +99,7 @@ tasks:
       id: aa129b6a-759b-42e1-8c01-940a6d9edb86
       version: -1
       name: Get result
-      description: Filter context keys by applying one of the various available manipulations
-        and storing in a new context key. Please notice that the resulting context
-        key will not be available automatically as an option but you can still specify
-        it.
+      description: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
       type: condition
       iscommand: false
       brand: ""
@@ -203,10 +200,7 @@ tasks:
       id: 06cffd37-650e-41c4-812a-51789f03771c
       version: -1
       name: Get result
-      description: Filter context keys by applying one of the various available manipulations
-        and storing in a new context key. Please notice that the resulting context
-        key will not be available automatically as an option but you can still specify
-        it.
+      description: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
       type: condition
       iscommand: false
       brand: ""
@@ -393,7 +387,7 @@ tasks:
       brand: urlscan.io
     nexttasks:
       '#none#':
-      - "20"
+      - "25"
     scriptarguments:
       limit: {}
       long: {}
@@ -403,7 +397,7 @@ tasks:
       threshold: {}
       timeout: {}
       url:
-        simple: https://www.paloaltonetworks.com
+        simple: https://www.ynet.com
       wait:
         simple: "21"
     separatecontext: false
@@ -444,7 +438,7 @@ tasks:
       threshold: {}
       timeout: {}
       url:
-        simple: http://malware.wicar.org/data/js_crypto_miner.html
+        simple: steel-apparatus-278809.el.r.appspot.com
       wait:
         simple: "10"
     separatecontext: false
@@ -525,105 +519,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: 45145044-4d25-487a-80dd-d69f7b0573de
-    type: title
-    task:
-      id: 45145044-4d25-487a-80dd-d69f7b0573de
-      version: -1
-      name: HTTP Transaction Test
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "21":
-    id: "21"
-    taskid: a12fc4ca-e33a-4ea6-8042-6aa94e9f9b16
-    type: regular
-    task:
-      id: a12fc4ca-e33a-4ea6-8042-6aa94e9f9b16
-      version: -1
-      name: get http transactions
-      description: This script enables gives you the functionallity of getting the
-        http transactions made for a given URL using the UrlScan integration
-      scriptName: UrlscanGetHttpTransactions
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      limit: {}
-      timeout:
-        simple: "120"
-      url:
-        simple: http://demisto.com
-      wait_time_for_polling:
-        simple: "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2875
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 9df3542e-2f65-41b9-80d2-cabf7d4ebcfc
-    type: condition
-    task:
-      id: 9df3542e-2f65-41b9-80d2-cabf7d4ebcfc
-      version: -1
-      name: validate http transaction
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "25"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: URLScan
-                accessor: httpTransaction
-            iscontext: true
-          right:
-            value:
-              simple: demisto.com
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3050
         }
       }
     note: false
@@ -846,3 +741,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

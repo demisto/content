@@ -28,8 +28,10 @@ if not demisto.params()['proxy']:
 ''' GLOBAL VARS '''
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
 ORG_NAME = demisto.params()['org']
-USERNAME = demisto.params()['credentials']['identifier']
-PASSWORD = demisto.params()['credentials']['password']
+USERNAME = demisto.params().get('credentials', {}).get('identifier')
+PASSWORD = demisto.params().get('credentials', {}).get('password')
+API_KEY_ID = demisto.params().get('api_key_id')
+API_KEY_SECRET = demisto.params().get('api_key_secret')
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '')
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -994,13 +996,32 @@ def test():
 
 
 ''' EXECUTION CODE '''
-client = resilient.get_client({
-    'email': USERNAME,
-    'password': PASSWORD,
-    'host': SERVER,
-    'cafile': 'true' if USE_SSL else 'false',
-    'org': ORG_NAME
-})
+
+
+def get_client():
+    opts_dict = {
+        'host': SERVER,
+        'cafile': 'true' if USE_SSL else 'false',
+        'org': ORG_NAME
+    }
+    if USERNAME and PASSWORD:
+        opts_dict.update({
+            'email': USERNAME,
+            'password': PASSWORD
+        })
+    elif API_KEY_ID and API_KEY_SECRET:
+        opts_dict.update({
+            'api_key_id': API_KEY_ID,
+            'api_key_secret': API_KEY_SECRET
+        })
+    else:
+        return_error('Credentials were not provided. Configure either the username and password'
+                     ' or the API Key and API Secret')
+    resilient_client = resilient.get_client(opts=opts_dict)
+    return resilient_client
+
+
+client = get_client()
 
 # Disable SDK logging warning messages
 integration_logger = logging.getLogger('resilient')  # type: logging.Logger
@@ -1038,7 +1059,7 @@ try:
     elif demisto.command() == 'rs-related-incidents':
         demisto.results(related_incidents_command(demisto.args()['incident-id']))
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     raise

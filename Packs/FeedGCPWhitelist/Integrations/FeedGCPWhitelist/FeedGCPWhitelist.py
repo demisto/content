@@ -100,6 +100,7 @@ def fetch_indicators(client: Client, params: Dict[str, str]) -> List[Dict]:
         Indicators.
     """
     feed_tags = argToList(params.get('feedTags', ''))
+    tlp_color = params.get('tlp_color')
     iterator = client.build_iterator()
     indicators = []
     for indicator in iterator:
@@ -110,11 +111,13 @@ def fetch_indicators(client: Client, params: Dict[str, str]) -> List[Dict]:
                 'value': indicator["ip"],
                 'type': indicator["type"],
             },
+            'fields': {}
         }
         if feed_tags:
-            indicator_obj['fields'] = {
-                'tags': feed_tags
-            }
+            indicator_obj['fields']['tags'] = feed_tags
+        if tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
         indicators.append(indicator_obj)
     return indicators
 

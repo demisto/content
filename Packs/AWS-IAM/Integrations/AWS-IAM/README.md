@@ -6,7 +6,7 @@
 <li><em>IAMReadOnlyAccess</em></li>
 </ul>
 <h2>Prerequisites</h2>
-<p>It is important that you familiarize yourself with and complete all steps detailed in the <a href="https://support.demisto.com/hc/en-us/articles/360005686854">Amazon AWS Integrations Configuration Guide</a>.</p>
+<p>It is important that you familiarize yourself with and complete all steps detailed in the <a href="https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication">AWS Integrations - Authentication</a>.</p>
 <h2>Configure the AWS IAM Integration on Demisto</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -65,7 +65,7 @@
 <li><a href="#h_16892468322931544460281747">Get information for a policy version: aws-iam-get-policy-version</a></li>
 <li><a href="#h_87933834125311544460287721">Set a default (operative) policy version: aws-iam-set-default-policy-version</a></li>
 <li><a href="#h_34904695527661544460299590">Create an account alias: aws-iam-create-account-alias</a></li>
-<li><a href="41">Delete an account alias: aws-iam-delete-account-alias</a></li>
+<li><a href="#h_41">Delete an account alias: aws-iam-delete-account-alias</a></li>
 </ol>
 <h3 id="h_35292443731528637122687">1. Create a user</h3>
 <hr>
@@ -2723,7 +2723,7 @@
 <pre>!aws-iam-create-account-alias accountAlias=test-alias</pre>
 <h5>Human Readable Output</h5>
 <p><a href="https://user-images.githubusercontent.com/34302832/49734027-b4df8000-fc8b-11e8-87bf-770474d39477.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/49734027-b4df8000-fc8b-11e8-87bf-770474d39477.png" alt="image"></a></p>
-<h3>41. Delete an account alias</h3>
+<h3 id="h_41">41. Delete an account alias</h3>
 <hr>
 <p>Deletes the specified AWS account alias.</p>
 <h5>Base Command</h5>

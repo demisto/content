@@ -2,12 +2,16 @@ commonfields:
   id: TestPYCommonServer
   version: -1
 name: TestPYCommonServer
-script: |-
+script: >-
   #!/usr/bin/env python
+
   # -*- coding: utf-8 -*-
 
+
   import copy
+
   import unittest
+
 
   INFO = {'b' : 1,
       'a': {
@@ -100,10 +104,15 @@ script: |-
       table = tableToMarkdown('tableToMarkdown test', data)
       expected_table = '''### tableToMarkdown test
   |header_1|header_2|header_3|
+
   |---|---|---|
+
   | a1 | b1 | c1 |
+
   | a2 | b2 | c2 |
+
   | a3 | b3 | c3 |
+
   '''
       tables.append((table, expected_table, ))
 
@@ -111,10 +120,15 @@ script: |-
       table_transform = tableToMarkdown('tableToMarkdown test with headerTransform', data, headerTransform=underscoreToCamelCase)
       expected_table_transform = '''### tableToMarkdown test with headerTransform
   |Header1|Header2|Header3|
+
   |---|---|---|
+
   | a1 | b1 | c1 |
+
   | a2 | b2 | c2 |
+
   | a3 | b3 | c3 |
+
   '''
       tables.append((table_transform, expected_table_transform, ))
 
@@ -127,10 +141,15 @@ script: |-
       table_multiline = tableToMarkdown('tableToMarkdown test with multiline', data2)
       expected_table_multiline = '''### tableToMarkdown test with multiline
   |header_1|header_2|header_3|
+
   |---|---|---|
+
   | a1 | b1.1<br>b1.2 | c1\|1 |
+
   | a2 | b2.1<br>b2.2 | c2\|1 |
+
   | a3 | b3.1<br>b3.2 | c3\|1 |
+
   '''
       tables.append((table_multiline, expected_table_multiline, ))
 
@@ -142,10 +161,15 @@ script: |-
       table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data3)
       expected_table_url_missing_info = '''### tableToMarkdown test with url and missing info
   |header_1|header_2|header_3|
+
   |---|---|---|
+
   | a1 |  | [url](https:\\demisto.com) |
+
   | a2 |  | [url](https:\\demisto.com) |
+
   | a3 |  | [url](https:\\demisto.com) |
+
   '''
       tables.append((table_url_missing_info, expected_table_url_missing_info, ))
 
@@ -153,10 +177,15 @@ script: |-
       table_single_column = tableToMarkdown('tableToMarkdown test with single column', data, ['header_1'])
       expected_table_single_column = '''### tableToMarkdown test with single column
   |header_1|
+
   |---|
+
   | a1 |
+
   | a2 |
+
   | a3 |
+
   '''
       tables.append((table_single_column, expected_table_single_column, ))
 
@@ -168,10 +197,15 @@ script: |-
       table_list_field = tableToMarkdown('tableToMarkdown test with list field', data4)
       expected_table_list_field = '''### tableToMarkdown test with list field
   |header_1|header_2|header_3|
+
   |---|---|---|
+
   | a1 | hi | 1,<br>second item |
+
   | a2 | hi | 2,<br>second item |
+
   | a3 | hi | 3,<br>second item |
+
   '''
       tables.append((table_list_field, expected_table_list_field, ))
 
@@ -186,10 +220,15 @@ script: |-
       table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data5)
       expected_table_all_none = '''### tableToMarkdown test with all none fields
   |a|b|c|
+
   |---|---|---|
+
   |  |  |  |
+
   |  |  |  |
+
   |  |  |  |
+
   '''
       tables.append((table_all_none, expected_table_all_none, ))
 
@@ -197,6 +236,7 @@ script: |-
       table_all_none2 = tableToMarkdown('tableToMarkdown test with all none fields2', data5, removeNull=True)
       expected_table_all_none2 = '''### tableToMarkdown test with all none fields2
   **No entries.**
+
   '''
       tables.append((table_all_none2, expected_table_all_none2, ))
 
@@ -206,10 +246,15 @@ script: |-
       table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data6, headers=['header_1', 'header_2', 'extra_header'])
       expected_table_extra_header = '''### tableToMarkdown test with extra header
   |header_1|header_2|extra_header|
+
   |---|---|---|
+
   | a1 | b1 |  |
+
   | a2 | b2 | sample |
+
   | a3 | b3 |  |
+
   '''
       tables.append((table_extra_header, expected_table_extra_header, ))
 
@@ -217,6 +262,7 @@ script: |-
       table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', data, headers=['no', 'header', 'found'], removeNull=True)
       expected_table_no_headers = '''### tableToMarkdown test with no headers
   **No entries.**
+
   '''
       tables.append((table_no_headers, expected_table_no_headers, ))
 
@@ -227,10 +273,15 @@ script: |-
       table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data7, headers=['header_1', 'header_2', 'extra_header'])
       expected_dict_record = '''### tableToMarkdown test with dict record
   |header_1|header_2|extra_header|
+
   |---|---|---|
+
   | a1 | b1 |  |
+
   | a2 | b2 | sample: qwerty<br>sample2: asdf |
+
   | a3 | b3 |  |
+
   '''
       tables.append((table_dict_record, expected_dict_record, ))
 
@@ -238,10 +289,15 @@ script: |-
       table_string_header = tableToMarkdown('tableToMarkdown string header', data, 'header_1')
       expected_string_header_tbl = '''### tableToMarkdown string header
   |header_1|
+
   |---|
+
   | a1 |
+
   | a2 |
+
   | a3 |
+
   '''
       tables.append((table_string_header, expected_string_header_tbl, ))
 
@@ -249,10 +305,15 @@ script: |-
       table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'], ['header_1'])
       expected_string_array_tbl = '''### tableToMarkdown test with string array
   |header_1|
+
   |---|
+
   | foo |
+
   | bar |
+
   | katz |
+
   '''
       tables.append((table_string_array, expected_string_array_tbl, ))
 
@@ -260,10 +321,15 @@ script: |-
       table_string_array_string_header = tableToMarkdown('tableToMarkdown test with string array and string header', ['foo', 'bar', 'katz'], 'header_1')
       expected_string_array_string_header_tbl = '''### tableToMarkdown test with string array and string header
   |header_1|
+
   |---|
+
   | foo |
+
   | bar |
+
   | katz |
+
   '''
       tables.append((table_string_array_string_header, expected_string_array_string_header_tbl, ))
 
@@ -406,6 +472,7 @@ script: |-
       demisto.results("placeholder so the run would finish")
 
   ''' MAIN TEST RUNNER '''
+
   TESTS = {
       'DQ' : test_dq,
       # 'XML' : test_xml,
@@ -422,6 +489,7 @@ script: |-
       'REMOVE_DICTIONARY_NULLS': test_remove_nulls,
       'APPEND_CONTEXT': test_append_context
   }
+
 
 
   class TestIsError(unittest.TestCase):
@@ -537,3 +605,4 @@ args:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
+fromversion: 5.0.0

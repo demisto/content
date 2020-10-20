@@ -100,6 +100,9 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
         else:
             if original_label in labels_mapping:
                 row[tag_field] = labels_mapping[original_label]
+            elif original_label.lower() in labels_mapping:
+                original_label = original_label.lower()
+                row[tag_field] = labels_mapping[original_label]
             else:
                 missing_labels_counter[original_label] += 1
                 continue
@@ -213,17 +216,23 @@ def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, deta
 
 def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing_labels_counter):
     labels_counter = Counter([x[DBOT_TAG_FIELD] for x in data])
-    labels_below_thresh = [l for l, count in labels_counter.items() if count < MIN_INCIDENTS_THRESHOLD]
+    labels_below_thresh = [label for label, count in labels_counter.items() if count < MIN_INCIDENTS_THRESHOLD]
     if len(labels_below_thresh) > 0:
         err = ['Minimum number of incidents per label required for training is {}.'.format(MIN_INCIDENTS_THRESHOLD)]
         err += ['The following labels have less than {} incidents: '.format(MIN_INCIDENTS_THRESHOLD)]
-        for l in labels_below_thresh:
-            err += ['- {}: {}'.format(l, str(labels_counter[l]))]
+        for label in labels_below_thresh:
+            err += ['- {}: {}'.format(label, str(labels_counter[label]))]
         err += ['Make sure that enough incidents exist in the environment per each of these labels.']
         missing_labels = ', '.join(missing_labels_counter.keys())
         err += ['The following labels were not mapped to any label in the labels mapping: {}.'.format(missing_labels)]
         if labels_mapping != ALL_LABELS:
             err += ['The given mapped labels are: {}.'.format(', '.join(labels_mapping.keys()))]
+        return_error('\n'.join(err))
+    if len(exist_labels_counter) == 0:
+        err = ['Did not found any incidents with labels of the labels mapping.']
+        if len(missing_labels_counter) > 0:
+            err += ['The following labels were found: {}'.format(', '.join(k for k in missing_labels_counter))]
+            err += ['Please include these labels at the mapping, or change the query to include your relevant labels']
         return_error('\n'.join(err))
     if len(missing_labels_counter) > 0:
         human_readable = tableToMarkdown("Skip labels - did not match any of specified labels", missing_labels_counter)
@@ -263,9 +272,9 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
             err += ['Please make sure that incidents of at least 2 labels exist in the environment.']
         else:
             err += ['The following labels were not mapped to any label in the labels mapping:']
-            err += [', '.join([l for l in missing_labels_counter])]
-            not_found_mapped_label = [l for l in labels_mapping if l not in exist_labels_counter
-                                      or exist_labels_counter[l] == 0]
+            err += [', '.join(missing_labels_counter)]
+            not_found_mapped_label = [label_map for label_map in labels_mapping if label_map not in exist_labels_counter
+                                      or exist_labels_counter[label_map] == 0]
             if len(not_found_mapped_label) > 0:
                 miss = ', '.join(not_found_mapped_label)
                 err += ['Notice that the following mapped labels were not found among all incidents: {}.'.format(miss)]

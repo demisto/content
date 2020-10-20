@@ -2,15 +2,21 @@ commonfields:
   id: CheckFilesWildfirePy
   version: -1
 name: CheckFilesWildfirePy
-script: |-
+script: >-
   import time
+
   fileNames = []
+
   if 'fileNames' in demisto.args():
       fileNames = demisto.args()['fileNames'].split(',')
   res = []
+
   uploaded = []
+
   viewed = {}
+
   entries = demisto.executeCommand('getEntries', {})
+
   for entry in entries:
       if entry['File'] and demisto.get(entry, 'FileMetadata.md5') and (len(fileNames) == 0 or entry['File'] in fileNames):
           md5 = demisto.get(entry, 'FileMetadata.md5')
@@ -27,6 +33,7 @@ script: |-
                   if upReply[0]['Type'] != entryTypes['error']:
                       uploaded.append(demisto.get(entry, 'FileMetadata.md5'))
   # Wait for the uploaded files to be processed - 15 min
+
   if len(uploaded) > 0:
       time.sleep(15 * 60)
   for u in uploaded:
@@ -47,13 +54,12 @@ tags:
 - server
 - threat-intel
 - wildfire
-comment: Deprecated, use "WildFire - Detonate File" playbook instead
+comment: Deprecated. use "WildFire - Detonate File" playbook instead
 system: true
 args:
 - name: fileNames
   default: true
-  description: If provided, checks only files whose names are in the list. The names
-    should be comma-separated.
+  description: If provided, checks only files whose names are in the list. The names should be comma-separated.
 scripttarget: 0
 deprecated: true
 dependson:
@@ -63,3 +69,4 @@ dependson:
 timeout: 0s
 tests:
 - No tests
+fromversion: 5.0.0

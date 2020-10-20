@@ -324,10 +324,7 @@ credentials = None
 
 PUBLIC_FOLDERS_ERROR = 'Please update your docker image to use public folders'
 if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
-    if demisto.command() == 'test-module':
-        demisto.results(PUBLIC_FOLDERS_ERROR)
-        exit(3)
-    raise Exception(PUBLIC_FOLDERS_ERROR)
+    return_error(PUBLIC_FOLDERS_ERROR)
 
 
 # NOTE: Same method used in EWSMailSender
@@ -345,7 +342,8 @@ def exchangelib_cleanup():
                 protocol.thread_pool.terminate()
                 del protocol.__dict__["thread_pool"]
             else:
-                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+                demisto.info(
+                    'Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
         except Exception as ex:
             demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
 
@@ -495,9 +493,9 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):
             )
             account.root.effective_rights.read  # pylint: disable=E1101
             return account
-        except Exception as original_exc:
+        except Exception as e:
             # fixing flake8 correction where original_exc is assigned but unused
-            original_exc = original_exc
+            original_exc = e
             pass
 
     try:
@@ -508,7 +506,7 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):
         return_error("Auto discovery failed. Check credentials or configure manually")
 
     autodiscover_result = create_context_dict(account)
-    if autodiscover_result == context_dict:
+    if autodiscover_result == context_dict and original_exc:
         raise original_exc  # pylint: disable=E0702
 
     if account_email == ACCOUNT_EMAIL:
@@ -1150,7 +1148,8 @@ def parse_incident_from_item(item, is_fetch):
                                         and header.name != 'Content-Type':
                                     attached_email.add_header(header.name, header.value)
 
-                        file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attached_email.as_string())
+                        file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
+                                                 attached_email.as_string())
 
                     if file_result:
                         # check for error
@@ -2128,7 +2127,15 @@ def sub_main():
 
             error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
                 if AUTH_METHOD_STR.lower() == 'ntlm' else ''
-        if "Status code: 503" in debug_log:
+
+        if "SSL: CERTIFICATE_VERIFY_FAILED" in debug_log:
+            # same status code (503) but different error.
+            error_message_simple = "Certificate verification failed - This error may happen if the server " \
+                                   "certificate cannot be validated or as a result of a proxy that is doing SSL/TLS " \
+                                   "termination. It is possible to bypass certificate validation by checking " \
+                                   "'Trust any certificate' in the instance settings."
+
+        elif "Status code: 503" in debug_log:
             error_message_simple = "Got timeout from the server. " \
                                    "Probably the server is not reachable with the current settings. " \
                                    "Check proxy parameter. If you are using server URL - change to server IP address. "
@@ -2172,6 +2179,7 @@ def process_main():
 
 
 def main():
+    handle_proxy()
     # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
     # collector. `separate_process` flag will run the integration on a separate process that will prevent
     # memory leakage.

@@ -2,8 +2,9 @@ commonfields:
   id: RaiseError
   version: -1
 name: RaiseError
-script: |-
+script: >-
   contents = demisto.args()["error"]
+
 
   for arg_name in ["expected", "actual", "details"]:
       arg_val = demisto.args().get(arg_name)
@@ -32,3 +33,4 @@ args:
   description: Details
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

@@ -1765,7 +1765,7 @@ script:
       description: URL to direct you to the source product console for this security
         event.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.9486
+  dockerimage: demisto/googleapi-python3:1.0.0.9863
   feed: false
   isfetch: true
   longRunning: false

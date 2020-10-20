@@ -183,7 +183,8 @@ def ip_command():
         demisto.results('No information available for the given IP.')
     else:
         hostnames = res.get('hostnames')
-        hostname = hostnames[0] if hostnames else ''  # It's a list, only if it exists and not empty we take the first value
+        # It's a list, only if it exists and not empty we take the first value.
+        hostname = hostnames[0] if hostnames else ''
 
         location = f'{round(res.get("latitude", 0.0), 3)},{round(res.get("longitude", 0.0), 3)}'
 
@@ -270,7 +271,7 @@ def shodan_scan_ip_command():
             'Type': entryTypes['error'],
             'Contents': res,
             'ContentsFormat': formats['json'],
-            'HumanReadable': f'## Unknown answer format, no "id" field in response',
+            'HumanReadable': '## Unknown answer format, no "id" field in response',
             'HumanReadableFormat': formats['markdown'],
         })
 

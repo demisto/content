@@ -33,12 +33,15 @@ configuration:
   type: 0
   required: false
 script:
-  script: |+
+  script: >+
     var initialurl = params.url;
+
     var malLists = params.maliciousList.split(',');
+
     for (i = 0 ; i < malLists.length; i++) {
         malLists[i] = malLists[i].trim();
     }
+
 
     var sendRequest = function(url, param) {
 
@@ -70,7 +73,9 @@ script:
         }
     };
 
+
     // The command input arg holds the command sent from the user.
+
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
@@ -125,4 +130,5 @@ script:
     description: Get intel from PacketMail.net on IPs
 hidden: false
 tests:
-  - no test
+- no test
+fromversion: 5.0.0

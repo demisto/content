@@ -1,9 +1,10 @@
 id: dedup_-_generic
 version: -1
 name: Dedup - Generic
-fromversion: "4.0.0"
-description: This playbook identifies duplicate incidents using one of the supported methods.
+fromversion: "5.0.0"
+description: Deprecated. Use "Dedup - Generic v2" playbook instead. This playbook identifies duplicate incidents using one of the supported methods.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -371,8 +372,7 @@ inputs:
   value:
     simple: created
   required: false
-  description: 'The Time field by which to query past incidents to check for duplicate incident candidates.
-    Values: created, occurred, modified'
+  description: 'The Time field by which to query past incidents to check for duplicate incident candidates. Values: created, occurred, modified'
 outputs:
 - contextPath: isSimilarIncidentFound
   description: Whether a similar incident was found? Can be "true" or "false".
@@ -381,4 +381,4 @@ outputs:
   description: The similar incident.
   type: unknown
 tests:
-  - dedup_-_generic_-_test
+- No tests

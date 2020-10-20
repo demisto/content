@@ -683,7 +683,7 @@ def create_sample_ec_from_analysis_json(analysis_json, sample_id, sample_process
     directory = demisto.get(sample_process, 'startup_info.current_directory')
     if directory:
         directory = directory[:len(directory) - 1]
-    domain_with_limit = get_with_limit(analysis_json, 'domains', limit)
+    domain_with_limit = get_with_limit(analysis_json, 'domains', limit) or {}
     return {
         'ID': sample_id,
         'VM': {'ID': demisto.get(analysis_json, 'metadata.sandcastle_env.vm_id'),

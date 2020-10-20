@@ -24,23 +24,21 @@ args:
   required: false
   secret: false
 - default: false
-  description: HTML body of the email. Only use this field if the emailBody argument
-    is empty.
+  description: HTML body of the email. Only use this field if the emailBody argument is empty.
   isArray: false
   name: emailBodyHTML
   required: false
   secret: false
 - default: false
   defaultValue: '20'
-  description: 'Maximum number of positive/negative words to return for the model
-    decision. '
+  description: 'Maximum number of positive/negative words to return for the model decision. Default is 20.'
   isArray: false
   name: topWordsLimit
   required: false
   secret: false
 - default: false
   defaultValue: '0.05'
-  description: Threshold to determine word importance (range 0-1).
+  description: Threshold to determine word importance (range 0-1). Default is 0.05.
   isArray: false
   name: wordThreshold
   required: false
@@ -48,7 +46,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: list
-  description: How the model is stored in Demisto.
+  description: How the model is stored in Demisto. Can be "list" or "mlModel". Default is "list".
   isArray: false
   name: modelStoreType
   predefined:
@@ -65,15 +63,22 @@ args:
   secret: false
 - default: false
   defaultValue: '0.8'
-  description: The label probability threshold.
+  description: The label probability threshold. Default is 0.8.
   isArray: false
   name: labelProbabilityThreshold
+  required: false
+  secret: false
+  deprecated: true
+- default: false
+  description: The confidence threshold. The model will provide predictions only if their confidence is above this threshold.
+  isArray: false
+  name: confidenceThreshold
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Whether to return an error when there is no prediction.
+  description: Whether to return an error when there is no prediction. Default is "true".
   isArray: false
   name: returnError
   predefined:
@@ -90,6 +95,35 @@ args:
   predefined:
   - 'true'
   - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: English
+  description: The language of the input text. Default is "English". Can be "English", "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other".
+  isArray: false
+  name: language
+  predefined:
+    - English
+    - German
+    - French
+    - Spanish
+    - Portuguese
+    - Italian
+    - Dutch
+    - Other
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: tokenizer
+  description: Tokenization method for text. Only required when the language argument is set to "Other". Can be "tokenizer", "byWords", or "byLetters".
+  isArray: false
+  name: tokenizationMethod
+  predefined:
+    - tokenizer
+    - byWords
+    - byLetters
   required: false
   secret: false
 comment: Predict text label using a pre-trained machine learning phishing model, and
@@ -110,12 +144,10 @@ outputs:
   description: A list of words in the input text that supports the model decision.
   type: Unknown
 - contextPath: DBotPredictPhishingWords.NegativeWords
-  description: A list of words in the input text that do not support the model decision.
-    These words better support a different classification class.
+  description: A list of words in the input text that do not support the model decision. These words better support a different classification class.
   type: Unknown
 - contextPath: DBotPredictPhishingWords.TextTokensHighlighted
-  description: The input text (after pre-processing) with the positive words that
-    support the model decision.
+  description: The input text (after pre-processing) with the positive words that support the model decision.
   type: String
 script: '-'
 subtype: python3
@@ -126,5 +158,7 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/dl:1.3
+runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test
+fromversion: 5.0.0

@@ -1,11 +1,10 @@
 id: Account Enrichment
 version: -1
 name: Account Enrichment
-fromversion: 3.5.0
-description: Deprecated - We recommend using Account Enrichment - Generic playbook instead.
-  Enrich the accounts under the Account context key with details from relevant
-  integrations such as AD.
+fromversion: 5.0.0
+description: Deprecated. We recommend using Account Enrichment - Generic playbook instead. Enrich the accounts under the Account context key with details from relevant integrations such as AD.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -38,8 +37,7 @@ tasks:
       id: be4d8a4d-14b5-4541-8d40-1df25ef145c6
       version: -1
       name: Is AD configured?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -166,4 +164,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No tests - Deprecated playbook
+- No tests - Deprecated playbook

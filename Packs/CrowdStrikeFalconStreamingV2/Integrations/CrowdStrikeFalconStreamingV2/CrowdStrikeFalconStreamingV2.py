@@ -37,7 +37,15 @@ class Client(BaseClient):
     def __init__(self, base_url: str, app_id: str, verify_ssl: bool, proxy: bool) -> None:
         self.app_id = app_id
         self.refresh_stream_url = None
-        super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
+        super().__init__(
+            base_url=base_url,
+            verify=verify_ssl,
+            proxy=proxy,
+            headers={
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        )
 
     async def set_access_token(self, refresh_token: 'RefreshToken') -> None:
         await refresh_token.set_access_token(self)
@@ -126,10 +134,13 @@ class EventStream:
             await sleep(MINUTES_25)
             event.clear()
 
-    async def fetch_event(self, initial_offset: int = 0, event_type: str = '') -> AsyncGenerator[Dict, None]:
+    async def fetch_event(
+            self, first_fetch_time: datetime, initial_offset: int = 0, event_type: str = ''
+    ) -> AsyncGenerator[Dict, None]:
         """Retrieves events from a CrowdStrike Falcon stream starting from given offset.
 
         Args:
+            first_fetch_time (datetime): The start time to fetch from retroactively for the first fetch.
             initial_offset (int): Stream offset to start the fetch from.
             event_type (str): Stream event type to fetch.
 
@@ -148,14 +159,18 @@ class EventStream:
             last_fetch_stats_print = datetime.utcnow()
             async with ClientSession(
                 connector=TCPConnector(ssl=self.verify_ssl),
-                headers={'Authorization': f'Token {self.session_token}'},
+                headers={
+                    'Authorization': f'Token {self.session_token}',
+                    'Connection': 'keep-alive'
+                },
                 trust_env=self.proxy,
                 timeout=None
             ) as session:
                 try:
-                    integration_context = demisto.getIntegrationContext()
+                    integration_context = get_integration_context()
                     offset = integration_context.get('offset', 0) or initial_offset
-                    demisto.debug(f'Starting to fetch from offset {offset} events of type {event_type}')
+                    demisto.debug(f'Starting to fetch from offset {offset} events of type {event_type} '
+                                  f'from time {first_fetch_time}')
                     async with session.get(
                         self.data_feed_url,
                         params={'offset': offset, 'eventType': event_type},
@@ -167,7 +182,20 @@ class EventStream:
                             if stripped_line:
                                 events_fetched += 1
                                 try:
-                                    yield json.loads(stripped_line)
+                                    streaming_event = json.loads(stripped_line)
+                                    event_metadata = streaming_event.get('metadata', {})
+                                    event_creation_time = event_metadata.get('eventCreationTime', 0)
+                                    if not event_creation_time:
+                                        demisto.debug('Could not extract "eventCreationTime" field, using 0 instead. '
+                                                      f'{streaming_event}')
+                                    else:
+                                        event_creation_time /= 1000
+                                    event_creation_time_dt = datetime.fromtimestamp(event_creation_time)
+                                    if event_creation_time_dt < first_fetch_time:
+                                        demisto.debug(f'Event with offset {event_metadata.get("offset")} '
+                                                      f'and creation time {event_creation_time} was skipped.')
+                                        continue
+                                    yield streaming_event
                                 except json.decoder.JSONDecodeError:
                                     demisto.debug(f'Failed decoding event (skipping it) - {str(stripped_line)}')
                             else:
@@ -317,6 +345,7 @@ async def long_running_loop(
         verify_ssl: bool,
         proxy: bool,
         incident_type: str,
+        first_fetch_time: datetime,
         store_samples: bool = False
 ) -> None:
     """Connects to a CrowdStrike Falcon stream and fetches events from it in a loop.
@@ -332,6 +361,7 @@ async def long_running_loop(
         proxy (bool): Whether to run the integration using the system proxy or not.
         incident_type (str): Type of incident to create.
         store_samples (bool): Whether to store sample events in the integration context or not.
+        first_fetch_time (datetime): The start time to fetch from retroactively for the first fetch.
 
     Returns:
         None: No data returned.
@@ -339,52 +369,64 @@ async def long_running_loop(
     try:
         offset_to_store = offset
         sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
-        last_integration_context_set = datetime.utcnow()
         async with init_refresh_token(base_url, client_id, client_secret, verify_ssl, proxy) as refresh_token:
             stream.set_refresh_token(refresh_token)
-            async for event in stream.fetch_event(initial_offset=offset, event_type=event_type):
+            async for event in stream.fetch_event(
+                    first_fetch_time=first_fetch_time, initial_offset=offset, event_type=event_type
+            ):
                 event_metadata = event.get('metadata', {})
                 event_type = event_metadata.get('eventType', '')
                 event_offset = event_metadata.get('offset', '')
                 demisto.info(f'Fetching event with offset: {event_offset}')
                 incident_name = f'{event_type} - offset {event_offset}'
+                event_creation_time = event_metadata.get('eventCreationTime', 0)
+                occurred = datetime.fromtimestamp(event_creation_time / 1000).strftime('%Y-%m-%dT%H:%M:%SZ')
                 event_dump = json.dumps(event)
                 incident = [{
                     'name': incident_name,
                     'details': event_dump,
                     'rawJSON': event_dump,
-                    'type': incident_type
+                    'type': incident_type,
+                    'occurred': occurred
                 }]
                 demisto.createIncidents(incident)
                 offset_to_store = int(event_offset) + 1
-                if last_integration_context_set + timedelta(minutes=1) <= datetime.utcnow():
-                    integration_context = demisto.getIntegrationContext()
-                    integration_context['offset'] = offset_to_store
-                    if store_samples:
-                        try:
-                            sample_events_to_store.append(event)
-                            demisto.debug(f'Storing new {len(sample_events_to_store)} sample events')
-                            sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
-                            sample_events += sample_events_to_store
-                            integration_context['sample_events'] = json.dumps(list(sample_events))
-                        except Exception as e:
-                            demisto.error(f'Failed storing sample events - {e}')
-                    demisto.debug(f'Storing offset {offset_to_store}')
-                    demisto.setIntegrationContext(integration_context)
-                    last_integration_context_set = datetime.utcnow()
+                integration_context = get_integration_context()
+                integration_context['offset'] = offset_to_store
+                if store_samples:
+                    try:
+                        sample_events_to_store.append(event)
+                        demisto.debug(f'Storing new {len(sample_events_to_store)} sample events')
+                        sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
+                        sample_events += sample_events_to_store
+                        integration_context['sample_events'] = list(sample_events)
+                    except Exception as e:
+                        demisto.error(f'Failed storing sample events - {e}')
+                demisto.debug(f'Storing offset {offset_to_store}')
+                set_to_integration_context_with_retries(integration_context)
     except Exception as e:
         demisto.error(f'An error occurred in the long running loop: {e}')
     finally:
         # store latest fetched event offset in case the loop crashes and we did not reach the 1 minute to store it
-        integration_context = demisto.getIntegrationContext()
-        integration_context['offset'] = offset_to_store
-        demisto.setIntegrationContext(integration_context)
+        set_to_integration_context_with_retries({'offset': offset_to_store})
 
 
 async def test_module(base_url: str, client_id: str, client_secret: str, verify_ssl: bool, proxy: bool) -> None:
     async with init_refresh_token(base_url, client_id, client_secret, verify_ssl, proxy) as refresh_token:
         await refresh_token.get_access_token()
         demisto.results('ok')
+
+
+def fetch_samples() -> None:
+    """Extracts sample events stored in the integration context and returns them as incidents
+
+    Returns:
+        None: No data returned.
+    """
+    integration_context = get_integration_context()
+    sample_events = json.loads(integration_context.get('sample_events', '[]'))
+    incidents = [{'rawJSON': json.dumps(event)} for event in sample_events]
+    demisto.incidents(incidents)
 
 
 def get_sample_events(store_samples: bool = False) -> None:
@@ -396,7 +438,7 @@ def get_sample_events(store_samples: bool = False) -> None:
     Returns:
         None: No data returned.
     """
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context()
     sample_events = integration_context.get('sample_events')
     if sample_events:
         try:
@@ -416,7 +458,7 @@ def main():
     base_url: str = params.get('base_url', '')
     client_id: str = params.get('client_id', '')
     client_secret: str = params.get('client_secret', '')
-    event_type = ','.join(params.get('event_type', []))
+    event_type = ','.join(params.get('event_type', []) or [])
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     offset = params.get('offset', '0')
@@ -426,8 +468,10 @@ def main():
         offset = 0
     incident_type = params.get('incidentType', '')
     store_samples = params.get('store_samples', False)
+    first_fetch_time, _ = parse_date_range(params.get('fetch_time', '1 hour'))
+    app_id = params.get('app_id') or 'Demisto'
 
-    stream = EventStream(base_url=base_url, app_id='Demisto', verify_ssl=verify_ssl, proxy=proxy)
+    stream = EventStream(base_url=base_url, app_id=app_id, verify_ssl=verify_ssl, proxy=proxy)
 
     LOG(f'Command being called is {demisto.command()}')
     try:
@@ -436,8 +480,10 @@ def main():
         elif demisto.command() == 'long-running-execution':
             run(long_running_loop(
                 base_url, client_id, client_secret, stream, offset, event_type, verify_ssl, proxy, incident_type,
-                store_samples
+                first_fetch_time, store_samples
             ))
+        elif demisto.command() == 'fetch-incidents':
+            fetch_samples()
         elif demisto.command() == 'crowdstrike-falcon-streaming-get-sample-events':
             get_sample_events(store_samples)
     except Exception as e:

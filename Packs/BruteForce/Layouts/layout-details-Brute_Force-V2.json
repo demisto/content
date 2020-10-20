@@ -603,5 +603,6 @@
 		"version": -1
 	},
 	"typeId": "Brute Force",
-	"version": -1
+	"version": -1,
+	"toVersion": "5.9.9"
 }

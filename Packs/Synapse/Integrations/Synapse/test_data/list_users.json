@@ -1,0 +1,67 @@
+{
+    "status": "ok",
+    "result": [
+        {
+            "type": "user",
+            "iden": "9b8c64268f100f64cbb5eea4c3abe8d6",
+            "name": "root",
+            "rules": [],
+            "roles": [],
+            "admin": true,
+            "email": null,
+            "locked": false,
+            "archived": false,
+            "authgates": {
+                "82371e87b67fc8d56c5724d2034f20c4": {
+                    "admin": true
+                },
+                "9bdddc8734fa31e3d17a8dee9a7d8018": {
+                    "admin": true
+                }
+            }
+        },
+        {
+            "type": "user",
+            "iden": "01f39e62cdff72b3abf65e1b4f3667de",
+            "name": "testuser",
+            "rules": [],
+            "roles": [
+                "ff7afe8c4df42771d09d9b4d14fc5068"
+            ],
+            "admin": false,
+            "email": null,
+            "locked": false,
+            "archived": false,
+            "authgates": {}
+        },
+        {
+            "type": "user",
+            "iden": "bd1c4fda3e756376e916976cad00da2e",
+            "name": "testuser2",
+            "rules": [],
+            "roles": [
+                "ff7afe8c4df42771d09d9b4d14fc5068"
+            ],
+            "admin": false,
+            "email": null,
+            "locked": false,
+            "archived": false,
+            "authgates": {}
+        },
+        {
+            "type": "user",
+            "iden": "c37d5a2b1576578c9ba39b0d76ba5430",
+            "name": "testuser3",
+            "rules": [],
+            "roles": [
+                "ff7afe8c4df42771d09d9b4d14fc5068",
+                "f45bacf3583360ce3d92cd52f6369da8"
+            ],
+            "admin": false,
+            "email": null,
+            "locked": false,
+            "archived": false,
+            "authgates": {}
+        }
+    ]
+}

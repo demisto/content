@@ -1,7 +1,7 @@
 id: PAN-OS Log Forwarding Setup And Configuration
 version: -1
 name: PAN-OS Log Forwarding Setup And Configuration
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: |-
   This playbook sets up and maintains log forwarding for the Panorama rulebase.
   It can be run when setting up a new instance, or as a periodic job to enforce log forwarding policy.
@@ -135,8 +135,7 @@ tasks:
       id: 382555b7-9ed7-483b-8545-d81f4ecb7e2e
       version: -1
       name: Is auto-commit defined?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments is missing, the value "no" is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments is missing, the value "no" is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -172,8 +171,7 @@ tasks:
       id: 1c1fc4c9-32a2-4caa-8030-b9d6732f4eeb
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This is available 
-        if auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This is available if auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -399,8 +397,7 @@ inputs:
   value:
     simple: log_forwarding_101
   required: true
-  description: The name of the log-forwarding object that will be attached to all
-    of the rules.
+  description: The name of the log-forwarding object that will be attached to all of the rules.
 - key: auto_commit
   value:
     simple: "yes"
@@ -422,4 +419,4 @@ inputs:
   description: Should we override log-forwarding profiles that were already defined.
 outputs: []
 tests:
-  - No Tests
+- No Tests

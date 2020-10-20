@@ -19,7 +19,7 @@ b) Copy the automation and change the `default timeout` parameter to match your 
 | entry_id | The entry\_id of the PCAP file to mine. |
 | protocol_output | A comma\-separated list of protocols to output as context. If empty, will not output any protocols to context. |
 | extract_strings | Whether to extract IP, URL, and Email from PCAP file. Can be "True" or "False". |
-| pcap_filter | Filter to apply on PCAP. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man\-pages/wireshark\-filter.html |
+| pcap_filter | Filter to apply on PCAP. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html |
 | custom_regex | Your own regular expression to extract from the PCAP. |
 | filtered_file_name | The name of the PCAP file to save to the War Room after applying the \`pcap\_filter\` \(i.e. \`filtered\_file.pcap\`\). |
 | rsa_decrypt_key_entry_id | The entry ID for the RSA decryption key. |

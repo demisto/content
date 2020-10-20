@@ -180,7 +180,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
     Args:
         search_base: the location in the DIT where the search will start
-        search_filte: LDAP query string
+        search_filter: LDAP query string
         attributes: the attributes to specify for each entrxy found in the DIT
 
     """
@@ -215,9 +215,9 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
         if (size_limit and size_limit <= total_entries) or (time_limit and time_diff >= time_limit) or (not cookie):
             break
 
-    # keep the raw entry for raw content (backward compatability)
+    # keep the raw entry for raw content (backward compatibility)
     raw = []
-    # flaten the entries
+    # flatten the entries
     flat = []
 
     for entry in entries:
@@ -337,8 +337,10 @@ def search_users(default_base_dn, page_size):
     attributes: List[str] = []
     custom_attributes: List[str] = []
 
-    # zero is actually no limitation
-    limit = int(args.get('limit', '0'))
+    # zero is actually no limitation, default is 20
+    limit = int(args.get('limit', '20'))
+    if limit <= 0:
+        limit = 20
 
     # default query - list all users
     query = "(&(objectClass=User)(objectCategory=person))"
@@ -415,7 +417,7 @@ def search_computers(default_base_dn, page_size):
 
     # query by user DN
     if args.get('dn'):
-        query = "(&(objectClass=user)(objectCategory=computer)(dn={}))".format(args['dn'])
+        query = "(&(objectClass=user)(objectCategory=computer)(distinguishedName={}))".format(args['dn'])
 
     # query by name
     if args.get('name'):
@@ -463,6 +465,8 @@ def search_group_members(default_base_dn, page_size):
     args = demisto.args()
     member_type = args.get('member-type')
     group_dn = args.get('group-dn')
+    nested_search = '' if args.get('disable-nested-search') == 'true' else ':1.2.840.113556.1.4.1941:'
+    time_limit = int(args.get('time_limit', 180))
 
     custome_attributes: List[str] = []
     default_attributes = DEFAULT_PERSON_ATTRIBUTES if member_type == 'person' else DEFAULT_COMPUTER_ATTRIBUTES
@@ -472,15 +476,14 @@ def search_group_members(default_base_dn, page_size):
 
     attributes = list(set(custome_attributes + default_attributes))
 
-    # neasted search
-    query = "(&(objectCategory={})(objectClass=user)(memberOf:1.2.840.113556.1.4.1941:={}))".format(member_type,
-                                                                                                    group_dn)
+    query = "(&(objectCategory={})(objectClass=user)(memberOf{}={}))".format(member_type, nested_search, group_dn)
 
     entries = search_with_paging(
         query,
         default_base_dn,
         attributes=attributes,
-        page_size=page_size
+        page_size=page_size,
+        time_limit=time_limit
     )
 
     members = [{'dn': entry['dn'], 'category': member_type} for entry in entries['flat']]
@@ -665,12 +668,12 @@ def create_group():
 
 def modify_object(dn, modification):
     """
-    modifys object in the DIT
+    modifies object in the DIT
     """
     assert conn is not None
     success = conn.modify(dn, modification)
     if not success:
-        raise Exception("Failed to update object {} with the following modofication: {}".format(
+        raise Exception("Failed to update object {} with the following modification: {}".format(
             dn, json.dumps(modification)))
 
 
@@ -926,7 +929,7 @@ def unlock_account(default_base_dn):
 
 
 def delete_user():
-    # can acually delete any object...
+    # can actually delete any object...
     assert conn is not None
     success = conn.delete(demisto.args().get('user-dn'))
     if not success:
@@ -961,7 +964,7 @@ def delete_group():
 
 '''
     TEST CONFIGURATION
-    authenticate user credentials while initializing connection wiith AD server
+    authenticate user credentials while initializing connection with AD server
     verify base DN is configured correctly
 '''
 
@@ -1115,5 +1118,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
     main()

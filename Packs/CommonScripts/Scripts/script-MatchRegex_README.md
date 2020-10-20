@@ -1,4 +1,5 @@
-Extracts regex data from a given text. This supports groups and looping as well.
+Deprecated. Use the *MatchRegexV2* script instead.
+Extracts regex data from a given text. The script supports groups and looping.
 
 ## Script Data
 ---
@@ -14,9 +15,9 @@ Extracts regex data from a given text. This supports groups and looping as well.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| data | The text date to extract the regex from. |
+| data | The text date from which to extract the regex. |
 | regex | The regex to match and extract. |
-| group | The matching group to return. If nothing is provided the full match will be returned. The group value should start at 1. |
+| group | The matching group to return. If no group is provided, the full match will be returned. The group value should start at 1. |
 | contextKey | The context key to populate with the result. |
 | flags | The regex flags to match. The default is "-gim". |
 
@@ -25,4 +26,4 @@ Extracts regex data from a given text. This supports groups and looping as well.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| MatchRegex.results | List of Regex matches | string |
+| MatchRegex.results | List of regex matches. | string |

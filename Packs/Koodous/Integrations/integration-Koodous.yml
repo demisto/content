@@ -10,7 +10,7 @@ description: Check Android app samples (APK) against Koodous API
 configuration:
 - display: API Key
   name: APIKey
-  defaultvalue: null
+  defaultvalue:
   type: 0
   required: false
 - display: Server URL
@@ -19,7 +19,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |-
+  script: >-
     var request = function(method, path, parameters){
         var headers = {'Content-Type': ['application/json']};
         if (params.APIKey){
@@ -39,6 +39,7 @@ script:
         }
         return result.Body;
     };
+
     switch (command) {
         case 'test-module':
             return 'ok';
@@ -55,4 +56,5 @@ script:
       description: The hash of the sample (MD5, SHA1 or SHA256)
     description: Check APK sample.
 tests:
-  - No tests
+- No tests
+fromversion: 5.0.0

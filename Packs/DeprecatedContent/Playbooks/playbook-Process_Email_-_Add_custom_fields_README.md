@@ -1,4 +1,4 @@
-Processes emails and adds email data to a phishing incident's custom fields
+Deprecated - We recommend using Process Email - Generic playbook instead.Processes emails and adds email data to a phishing incident's custom fields
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

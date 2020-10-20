@@ -1,11 +1,11 @@
 id: Hunt for bad IOCs
 version: -1
 name: Hunt for bad IOCs
-fromversion: 2.5.0
+fromversion: 5.0.0
 system: true
-description: DEPRECATED. Use the Search Endpoints By Hash playbook. Assume that malicious IOCs are in the right place in the context and
-  start hunting using available tools.
+description: Deprecated. Use the Search Endpoints By Hash playbook. Assume that malicious IOCs are in the right place in the context and start hunting using available tools.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -125,4 +125,4 @@ view: |-
   }
 inputs: []
 tests:
-  - No test - no instance
+- No test - no instance

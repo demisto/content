@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 310
+          "y": 90
         }
       }
     note: false
@@ -49,7 +49,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "4"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -71,7 +71,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 440
+          "y": 220
         }
       }
     note: false
@@ -318,15 +318,73 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "12":
+    id: "12"
+    taskid: 73ce68b3-5868-401b-8d1d-f476272d3b0c
+    type: condition
+    task:
+      id: 73ce68b3-5868-401b-8d1d-f476272d3b0c
+      version: -1
+      name: Is Whois enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Whois
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 975,
+        "height": 1195,
         "width": 1580,
         "x": -740,
-        "y": 310
+        "y": 90
       }
     }
   }

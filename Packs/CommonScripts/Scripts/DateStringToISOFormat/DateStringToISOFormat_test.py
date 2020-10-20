@@ -1,4 +1,5 @@
 from DateStringToISOFormat import parse_datestring_to_iso
+import demistomock as demisto
 import pytest
 
 
@@ -36,7 +37,7 @@ testdata = [
 
 
 @pytest.mark.parametrize('date_value,day_first,year_first,fuzzy,expected_output', testdata)
-def test_parse_datestring_to_iso(date_value, day_first, year_first, fuzzy, expected_output, capfd):
+def test_parse_datestring_to_iso(mocker, date_value, day_first, year_first, fuzzy, expected_output):
     '''Scenario: Parse an arbitrary date string and convert it to ISO 8601 format
 
     Given
@@ -58,5 +59,5 @@ def test_parse_datestring_to_iso(date_value, day_first, year_first, fuzzy, expec
                       January 1, 2047 at 8:21:00AM".
         expected_output (str): The iso 8601 formatted date to check the result against
     '''
-    with capfd.disabled():
-        assert parse_datestring_to_iso(date_value, day_first, year_first, fuzzy) == expected_output
+    mocker.patch.object(demisto, 'error')
+    assert parse_datestring_to_iso(date_value, day_first, year_first, fuzzy) == expected_output

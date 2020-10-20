@@ -1,0 +1,357 @@
+category: Authentication
+commonfields:
+  id: CrowdStrikeMalquery
+  version: -1
+configuration:
+- defaultvalue: https://api.crowdstrike.com
+  display: Server URL (e.g. https://example.net)
+  name: base_url
+  required: true
+  type: 0
+- display: Client ID
+  name: client_id
+  required: true
+  type: 4
+- display: Client Secret
+  name: client_secret
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the MalQuery Integration to query the contents of 
+   clean and malicious binary files, which forms part of Falcon's search engine.
+display: CrowdStrike Malquery
+name: CrowdStrikeMalquery
+script:
+  commands:
+  - name: cs-malquery-exact-search
+    arguments:
+    - name: hex
+      description: The hex pattern to search. For example, deadbeef0102 (for bytes de, ad, be,
+        ef, 01, 02).
+    - name: ascii
+      description: The ASCII pattern to search. For example, CrowdStrike.
+    - name: wide
+      description: The wide string pattern to search. For example, CrowdStrike.
+    - name: limit
+      description: The maximum number of results to be returned. Default is 100.
+    - name: max_size
+      description: The maximum file size. The value can be specified either in bytes or
+        in multiples of KB/MB/GB. For example, 128000, 1.3 KB, 8mb.
+    - name: min_size
+      description: The minimum file size. The value can be specified either in bytes or
+        in multiples of KB/MB/GB. For example, 128000, 1.3 KB, 8mb.
+    - name: max_date
+      description: Limits results to files first seen before this date. The format
+        is YYYY/MM/DD. For example, 2018/01/31.
+    - name: min_date
+      description: Limits results to files first seen after this date. The format is
+        YYYY/MM/DD. For example, 2018/01/31.
+    - name: filter_filetypes
+      description: Limits results to certain file types such as EMAIL, PCAP, PDF,
+        PE32. Comma separated values. For a full list of file types, see the MalQuery API documentation.
+      isArray: true
+    - name: filter_meta
+      description: Specifies a subset of metadata fields to return in the results. Possible
+        values - sha256, md5, type, size, first_seen, label, family. Comma separated values.
+      isArray: true
+    outputs:
+    - contextPath: Malquery.Request_ID
+      description: The request ID.
+      type: String
+    description: "Searches Falcon MalQuery for a combination of\
+      \ hex patterns and strings to identify malware samples based upon file content,\
+      \ which returns a request ID. Use the request ID in the cs-malquery-get-request command to\ 
+      \ retrieve results. You can filter results based on criteria such as file\
+      \ type, file size and first seen date."      
+  - name: cs-malquery-hunt
+    arguments:
+    - name: yara_rule
+      required: false
+      description: The YARA rule to search.
+    - name: yar_file_entry_id
+      required: false
+      description: A YAR file entry ID that contains the YARA rule to search. Only one Yara rule per request.
+    - name: limit
+      description: The maximum number of results to be returned.
+    - name: max_size
+      description: The maximum file size. The value can be specified either in bytes or
+        in multiples of KB/MB/GB. For example, 128000, 1.3 KB, 8mb.
+    - name: min_size
+      description: The minimum file size. For example, 128000, 1.3 KB, 8mb.
+    - name: max_date
+      description: Limits results to files first seen before this date. The format
+        is YYYY/MM/DD. For example, 2018/01/31.
+    - name: min_date
+      description: Limits results to files first seen after this date. The format is
+        YYYY/MM/DD. For example, 2018/01/31.
+    - name: filter_filetypes
+      description: Limits results to files of certain types such as EMAIL, PCAP, PDF,
+        PE32. Comma separated values. For a full list of types, see the MalQuery API documentation.
+      isArray: true
+    - name: filter_meta
+      description: Specifies a subset of metadata fields to return in the results. Possible
+        values - sha256, md5, type, size, first_seen, label, family. Comma separated values.
+      isArray: true
+    outputs:
+    - contextPath: Malquery.Request_ID
+      description: The request ID.
+      type: String
+    description: "Schedules a YARA rule-based search for execution, which returns a request ID.\
+      \ Use the request ID in the cs-malquery-get-request command to retrieve results.\
+      \ You can filter based on criteria such as file type, file size and first seen date."      
+  - name: cs-malquery-fuzzy-search
+    arguments:
+    - name: hex
+      description: The hex pattern to search. For example, deadbeef0102 (for bytes de, ad, be,
+        ef, 01, 02).
+    - name: ascii
+      description: The ASCII pattern to search. For example, CrowdStrike.
+    - name: wide
+      description: The wide string pattern to search. For example, CrowdStrike.
+    - name: limit
+      description: The maximum number of results to be returned. Default is 100.
+    - name: filter_meta
+      description: Specifies a subset of metadata fields to return in the results. Possible
+        values - sha256, md5, type, size, first_seen, label, family. Comma separated values.
+      isArray: true
+    outputs:
+    - contextPath: Malquery.File.family
+      description: The malware family of the file. For example, StoneDrill.
+      type: String
+    - contextPath: Malquery.File.filesize
+      description: The size of the file.
+      type: String
+    - contextPath: Malquery.File.filetype
+      description: The type of the file.
+      type: String
+    - contextPath: Malquery.File.first_seen
+      description: The date when the file was first seen.
+      type: String
+    - contextPath: Malquery.File.label
+      description: The label of the file. For example, Malware.
+      type: String
+    - contextPath: Malquery.File.md5
+      description: The MD5 of the file.
+      type: String
+    - contextPath: Malquery.File.sha1
+      description: The SHA1 of the file.
+      type: String
+    - contextPath: Malquery.File.sha256
+      description: The SHA256 of the file.
+      type: String
+    description: Searches Falcon MalQuery quickly. Uses partial matching, but with more potential for false
+      positives. Search for a combination of hex patterns and strings to
+      identify samples based upon file content.
+  - name: cs-malquery-get-request
+    arguments:
+    - name: request_id
+      required: true
+      description: The identifier of a MalQuery request.
+    outputs:
+    - contextPath: Malquery.Request_ID
+      description: The request ID.
+      type: String
+    - contextPath: Malquery.Status
+      description: The status of the request.
+      type: String
+    - contextPath: Malquery.File.family
+      description: The malware family of the file. For example, StoneDrill.
+      type: String
+    - contextPath: Malquery.File.filesize
+      description: The size of the file.
+      type: String
+    - contextPath: Malquery.File.filetype
+      description: The type of the file. For example, PE32.
+      type: String
+    - contextPath: Malquery.File.first_seen
+      description: The date when the file was first seen.
+      type: String
+    - contextPath: Malquery.File.label
+      description: The label of the file. For example, malware.
+      type: String
+    - contextPath: Malquery.File.md5
+      description: The file MD5.
+      type: String
+    - contextPath: Malquery.File.sha1
+      description: The file SHA1.
+      type: String
+    - contextPath: Malquery.File.sha256
+      description: The file SHA256.
+      type: String
+    description: Checks the status and results of an asynchronous request, such as
+      hunt or exact-search.  Supports a single request ID.
+  - name: cs-malquery-get-ratelimit
+    arguments: []
+    outputs:
+    - contextPath: Malquery.Quota.hunt_count
+      description: How many hunts were executed in the last month.
+      type: number
+    - contextPath: Malquery.Quota.download_count
+      description: How many downloads were executed in the last month.
+      type: number
+    - contextPath: Malquery.Quota.monitor_count
+      description: How many monitors were created in the last month.
+      type: number
+    - contextPath: Malquery.Quota.hunt_limit
+      description: Total hunt limit per month.
+      type: number
+    - contextPath: Malquery.Quota.download_limit
+      description: The total download limit per month.
+      type: number
+    - contextPath: Malquery.Quota.monitor_limit
+      description: The total monitor limit per month.
+      type: number
+    - contextPath: Malquery.Quota.refresh_time
+      description: The time when the limits are refreshed. ISO 8601 format.
+      type: string
+    - contextPath: Malquery.Quota.days_left
+      description: The days left until the limits are refreshed.
+      type: number
+    - contextPath: Malquery.Quota.hunt_counts.userid
+      description: The download counts per user.
+      type: String
+    - contextPath: Malquery.Quota.hunt_counts.counter
+      description: The download counts per user.
+      type: number
+    description: Returns information about search and download quotas in your environment.
+  - name: cs-malquery-samples-multidownload
+    arguments:
+    - name: samples
+      required: true
+      isArray: true
+      description: Sample sha256 IDs. Comma separated values.
+    outputs:
+    - contextPath: Malquery.Request_ID
+      description: The request ID.
+      type: String
+    - contextPath: Malquery.Status
+      description: The request status.
+      type: String
+    description: 'Schedule samples for download, which returns a request ID. Use the request ID in the cs-malquery-get-request,
+      to check the status of the operation. When the request status is
+      “done”, use the cs-malquery-sample-fetch to download the results as a password-protected
+      archive. The password to extract results from the archive: infected'' '
+  - name: cs-malquery-file-download
+    arguments:
+    - name: file_id
+      required: true
+      description: The SHA256 file.
+    description: Download a file indexed by MalQuery. Specify the file using its SHA256.
+      Only one file is supported.
+    outputs:
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The Entry ID.
+      type: String
+    - contextPath: File.Info
+      description: Information about the file.
+      type: String
+    - contextPath: File.Type
+      description: The type of the file.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+  - name: cs-malquery-sample-fetch
+    arguments:
+    - name: request_id
+      required: true
+      description: Identifier of a MalQuery request.
+    description: Fetches a zip archive file using the password, "infected" containing the samples.
+      Use this after the cs-malquery-samples-multidownload request has finished processing.
+    outputs:
+      - contextPath: File.SHA256
+        description: THe SHA256 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: The SHA1 hash of the file.
+        type: String
+      - contextPath: File.SHA512
+        description: The SHA512 hash of the file.
+        type: String
+      - contextPath: File.Name
+        description: The name of the file.
+        type: String
+      - contextPath: File.EntryID
+        description: The entry ID.
+        type: String
+      - contextPath: File.Info
+        description: Information about the file.
+        type: String
+      - contextPath: File.Type
+        description: The type of the file.
+        type: String
+      - contextPath: File.MD5
+        description: The MD5 hash of the file.
+        type: String
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      description: The SHA256 of the files. Comma separated values.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: File.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: Malquery.File.family
+      description: The malware family of the file. For example, StoneDrill.
+      type: String
+    - contextPath: Malquery.File.filesize
+      description: The size of the file.
+      type: String
+    - contextPath: Malquery.File.filetype
+      description: The type of the file.
+      type: String
+    - contextPath: Malquery.File.first_seen
+      description: The date when the file was first seen.
+      type: String
+    - contextPath: Malquery.File.label
+      description: The label of the file.
+      type: String
+    - contextPath: Malquery.File.md5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: Malquery.File.sha1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: Malquery.File.sha256
+      description: The SHA256 hash of the file.
+      type: String
+    description: Retrieves indexed files metadata by their hash.
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.8.3.9324
+fromversion: 5.0.0
+tests:
+- CrowdStrikeMalquery-Test

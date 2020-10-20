@@ -3,6 +3,7 @@ from CommonServerPython import *
 import jwt
 import json
 import requests
+from typing import Set, List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -10,6 +11,7 @@ requests.packages.urllib3.disable_warnings()
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 APP_NAME = 'ms-management-api'
+PUBLISHER_IDENTIFIER = 'ebac1a16-81bf-449b-8d43-5732c3c1d999'  # This isn't a secret and is public knowledge.
 
 CONTENT_TYPE_TO_TYPE_ID_MAPPING = {
     'ExchangeAdmin': 1,
@@ -101,26 +103,46 @@ class Client(BaseClient):
     def get_authentication_string(self):
         return f'Bearer {self.access_token}'
 
-    def get_blob_data_request(self, blob_url):
+    def get_blob_data_request(self, blob_url, timeout=10):
+        '''
+        Args:
+            blob_url: The URL for the blob.
+            timeout: Timeout for http request.
+            The default timeout in the Client class is 10 seconds. That's why the defualt here is 10 as well.
+        '''
         auth_string = self.get_authentication_string()
         headers = {
             'Content-Type': 'application/json',
             'Authorization': auth_string
         }
+        params = {
+            'PublisherIdentifier': PUBLISHER_IDENTIFIER
+        }
         response = self._http_request(
             method='GET',
             url_suffix='',
             full_url=blob_url,
-            headers=headers
+            headers=headers,
+            params=params,
+            timeout=timeout,
         )
         return response
 
-    def list_content_request(self, content_type, start_time, end_time):
+    def list_content_request(self, content_type, start_time, end_time, timeout=10):
+        """
+        Args:
+            content_type: the content type
+            start_time: start time to fetch content
+            end_time: end time to fetch content
+            timeout: Timeout for http request.
+            The default timeout in the Client class is 10 seconds. That's why the defualt here is 10 as well.
+        """
         auth_string = self.get_authentication_string()
         headers = {
             'Authorization': auth_string
         }
         params = {
+            'PublisherIdentifier': PUBLISHER_IDENTIFIER,
             'contentType': content_type
         }
 
@@ -132,7 +154,8 @@ class Client(BaseClient):
             method='GET',
             url_suffix=self.suffix_template.format(self.tenant_id, 'content'),
             headers=headers,
-            params=params
+            params=params,
+            timeout=timeout,
         )
         return response
 
@@ -141,10 +164,14 @@ class Client(BaseClient):
         headers = {
             'Authorization': auth_string
         }
+        params = {
+            'PublisherIdentifier': PUBLISHER_IDENTIFIER
+        }
         response = self._http_request(
             method='GET',
             url_suffix=self.suffix_template.format(self.tenant_id, 'list'),
-            headers=headers
+            headers=headers,
+            params=params
         )
         return response
 
@@ -155,9 +182,10 @@ class Client(BaseClient):
             'Authorization': auth_string
         }
         params = {
+            'PublisherIdentifier': PUBLISHER_IDENTIFIER,
             'contentType': content_type
         }
-        response = self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix=self.suffix_template.format(self.tenant_id, start_or_stop_suffix),
             headers=headers,
@@ -165,18 +193,18 @@ class Client(BaseClient):
             ok_codes=(200, 201, 202, 203, 204),
             return_empty_response=True
         )
-        return response
 
 
-def test_module(client):
+def test_module():
     params = demisto.params()
     fetch_delta = params.get('first_fetch_delta', '10 minutes')
-    user_input_fetch_start_date = parse_date_range(fetch_delta)
+    user_input_fetch_start_date, _ = parse_date_range(fetch_delta)
     if datetime.now() - timedelta(days=7) - timedelta(minutes=5) >= user_input_fetch_start_date:
         return 'Error: first fetch time delta should not be over one week.'
-    if client.self_deployed and not params.get('auth_code'):
+    if params.get('self_deployed') and not params.get('auth_code'):
         return 'Error: in the self_deployed authentication flow the authentication code parameter cannot be empty.'
-    return 'The basic parameters are ok, authentication cannot be checked using the test module'
+    return 'The basic parameters are ok, authentication cannot be checked using the test module. ' \
+           'Please run ms-management-activity-list-subscriptions to test your credentials.'
 
 
 def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):
@@ -201,15 +229,22 @@ def get_start_or_stop_subscription_context(content_type, start_or_stop):
 
 def start_or_stop_subscription_command(client, args, start_or_stop):
     content_type = args.get('content_type')
-    client.start_or_stop_subscription_request(content_type, start_or_stop)
-    human_readable = get_start_or_stop_subscription_human_readable(content_type, start_or_stop)
-    entry_context = get_start_or_stop_subscription_context(content_type, start_or_stop)
+    try:
+        client.start_or_stop_subscription_request(content_type, start_or_stop)
+        human_readable = get_start_or_stop_subscription_human_readable(content_type, start_or_stop)
+        entry_context = get_start_or_stop_subscription_context(content_type, start_or_stop)
 
-    return_outputs(
-        readable_output=human_readable,
-        outputs=entry_context,
-        raw_response={}
-    )
+        return_outputs(
+            readable_output=human_readable,
+            outputs=entry_context,
+            raw_response={}
+        )
+
+    except Exception as e:
+        if start_or_stop == 'start' and 'The subscription is already enabled. No property change' in str(e):
+            return_outputs('The subscription is already enabled.')
+        else:
+            raise
 
 
 def get_enabled_subscriptions_content_types(enabled_subscriptions):
@@ -276,13 +311,13 @@ def get_content_records_context(content_records):
     return content_records_context
 
 
-def get_all_content_type_records(client, content_type, start_time, end_time):
-    content_blobs = client.list_content_request(content_type, start_time, end_time)
+def get_all_content_type_records(client, content_type, start_time, end_time, timeout=10):
+    content_blobs = client.list_content_request(content_type, start_time, end_time, timeout)
     # The list_content request returns a list of content records, each containing a url that holds the actual data
     content_uris = [content_blob.get('contentUri') for content_blob in content_blobs]
-    content_records = []
+    content_records: List = []
     for uri in content_uris:
-        content_records_in_uri = client.get_blob_data_request(uri)
+        content_records_in_uri = client.get_blob_data_request(uri, timeout)
         content_records.extend(content_records_in_uri)
     return content_records
 
@@ -358,8 +393,9 @@ def list_content_command(client, args):
     content_type = args['content_type']
     start_time = args.get('start_time')
     end_time = args.get('end_time')
+    timeout = args.get('timeout', 10)
 
-    content_records = get_all_content_type_records(client, content_type, start_time, end_time)
+    content_records = get_all_content_type_records(client, content_type, start_time, end_time, timeout)
     filtered_content_records = filter_records(content_records, args)
     content_records_context = get_content_records_context(filtered_content_records)
     human_readable = create_events_human_readable(content_records_context, content_type)
@@ -408,7 +444,7 @@ def get_fetch_start_and_end_time(last_run, first_fetch_datetime):
 
 
 def get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time):
-    all_content_records = []
+    all_content_records: List = list()
     content_types_to_fetch = content_types_to_fetch.split(',') if type(content_types_to_fetch) is str \
         else content_types_to_fetch
     for content_type in content_types_to_fetch:
@@ -422,7 +458,7 @@ def content_records_to_incidents(content_records, start_time, end_time):
     start_time_datetime = datetime.strptime(start_time, DATE_FORMAT)
     latest_creation_time_datetime = start_time_datetime
 
-    record_ids_already_found = set()
+    record_ids_already_found: Set = set()
 
     for content_record in content_records:
         incident_creation_time_str = content_record['CreationTime']
@@ -476,6 +512,10 @@ def main():
 
     LOG(f'Command being called is {demisto.command()}')
     try:
+        if demisto.command() == 'test-module':
+            result = test_module()
+            return_error(result)
+
         args = demisto.args()
         params = demisto.params()
         refresh_token = params.get('refresh_token', '')
@@ -502,11 +542,7 @@ def main():
         client.access_token = access_token
         client.tenant_id = token_data['tid']
 
-        if demisto.command() == 'test-module':
-            result = test_module(client)
-            demisto.results(result)
-
-        elif demisto.command() == 'fetch-incidents':
+        if demisto.command() == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),

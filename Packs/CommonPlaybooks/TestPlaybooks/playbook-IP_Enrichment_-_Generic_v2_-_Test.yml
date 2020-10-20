@@ -1,6 +1,6 @@
 id: IP Enrichment - Generic v2 - Test
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: IP Enrichment - Generic v2 - Test
 starttaskid: "0"
 tasks:
@@ -37,8 +37,7 @@ tasks:
       id: 48651a1d-b6fd-4816-80d9-a8e5a45899e9
       version: -1
       name: Delete Context
-      description: Deletes the context of the incident to start the test with no unnecessary
-        data.
+      description: Deletes the context of the incident to start the test with no unnecessary data.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -178,8 +177,7 @@ tasks:
       id: 54fa1e23-dcbb-4b7f-8bb6-d928f2a9fd5b
       version: -1
       name: Was external IP resolved?
-      description: Checks whether one of the external IPs was resolved to the yahoo.com
-        domain.
+      description: Checks whether one of the external IPs was resolved to the yahoo.com domain.
       type: condition
       iscommand: false
       brand: ""
@@ -227,8 +225,7 @@ tasks:
       id: 0d739831-24ca-4043-8f30-7e46348550ad
       version: -1
       name: Was internal IP resolved?
-      description: Checks whether the internal IP specified in this test, has been
-        resolved.
+      description: Checks whether the internal IP specified in this test, has been resolved.
       type: condition
       iscommand: false
       brand: ""
@@ -337,9 +334,7 @@ tasks:
       - "4"
     scriptarguments:
       message:
-        simple: IP Enrichment has failed. Please check the conditions and see which
-          one was not met, or if another error has occurred during the enrichment
-          process.
+        simple: IP Enrichment has failed. Please check the conditions and see which one was not met, or if another error has occurred during the enrichment process.
     separatecontext: false
     view: |-
       {
@@ -372,7 +367,5 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Determines whether the IP Enrichment - Generic playbook should convert
-    IP addresses to hostnames using a DNS query. You can set this to either True or
-    False.
+  description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. You can set this to either True or False.
 outputs: []

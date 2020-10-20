@@ -2,10 +2,12 @@ commonfields:
   id: ExtractDomainFromURL
   version: -1
 name: ExtractDomainFromURL
-script: |+
+script: >+
   from urlparse import urlparse
 
+
   url = demisto.get(demisto.args(),'url')
+
   if not url:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "URL must be provided" } )
       sys.exit()
@@ -25,7 +27,7 @@ subtype: python2
 tags:
 - url
 - domain
-comment: Extract Domain from a URL. Domain will include sub-domain as well
+comment: Deprecated. Extract Domain from a URL. Domain will include sub-domain as well
 system: true
 deprecated: true
 args:
@@ -37,3 +39,4 @@ scripttarget: 0
 outputs:
 - contextPath: Domain.Name
   description: Domain name
+fromversion: 5.0.0

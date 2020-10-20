@@ -299,7 +299,7 @@ def search_looks_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(f'Look search results', contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Look search results', contents, removeNull=True),
         'EntryContext': context
     })
 

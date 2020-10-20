@@ -7,10 +7,12 @@ import csv
 import gzip
 import urllib3
 from dateutil.parser import parse
-from typing import Optional, Pattern, Dict, Any, Tuple, Union
+from typing import Optional, Pattern, Dict, Any, Tuple, Union, List
 
 # disable insecure warnings
 urllib3.disable_warnings()
+
+# Globals
 
 
 class Client(BaseClient):
@@ -18,7 +20,7 @@ class Client(BaseClient):
                  insecure: bool = False, credentials: dict = None, ignore_regex: str = None, encoding: str = 'latin-1',
                  delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
-                 **kwargs):
+                 feedTags: Optional[str] = None, tlp_color: Optional[str] = None, value_field: str = 'value', **kwargs):
         """
         :param url: URL of the feed.
         :param feed_url_to_config: for each URL, a configuration of the feed that contains
@@ -59,7 +61,11 @@ class Client(BaseClient):
             <https://docs.python.org/2/library/csv.html#dialects-and-formatting-parameters>`. Default False
         :param polling_timeout: timeout of the polling request in seconds. Default: 20
         :param proxy: Sets whether use proxy when sending requests
+        :param tlp_color: Traffic Light Protocol color.
         """
+        self.tags: List[str] = argToList(feedTags)
+        self.tlp_color = tlp_color
+        self.value_field = value_field
         if not credentials:
             credentials = {}
 
@@ -231,10 +237,13 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
         if not raw_json.get(field):  # type: ignore
             continue
 
-        try:
-            field_value = re.match(regex_extractor, raw_json[field]).group(1)  # type: ignore
-        except Exception:
+        if not regex_extractor:
             field_value = raw_json[field]  # type: ignore
+        else:
+            try:
+                field_value = re.match(regex_extractor, raw_json[field]).group(1)  # type: ignore
+            except Exception:
+                field_value = raw_json[field]  # type: ignore
 
         fields_mapping[key] = formatter_string.format(field_value) if formatter_string else field_value
 
@@ -244,7 +253,7 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
     return fields_mapping
 
 
-def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, **kwargs):
+def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, limit: int = 0, **kwargs):
     iterator = client.build_iterator(**kwargs)
     indicators = []
     config = client.feed_url_to_config or {}
@@ -253,7 +262,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
             mapping = config.get(url, {}).get('mapping', {})
             for item in reader:
                 raw_json = dict(item)
-                value = item.get('value')
+                value = item.get(client.value_field)
                 if not value and len(item) > 1:
                     value = next(iter(item.values()))
                 if value:
@@ -268,15 +277,29 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                         'rawJSON': raw_json,
                         'fields': create_fields_mapping(raw_json, mapping) if mapping else {}
                     }
+                    indicator['fields']['tags'] = client.tags
+
+                    if client.tlp_color:
+                        indicator['fields']['trafficlightprotocol'] = client.tlp_color
+
                     indicators.append(indicator)
+                    # exit the loop if we have more indicators than the limit
+                    if limit and len(indicators) >= limit:
+                        return indicators
+
     return indicators
 
 
-def get_indicators_command(client, args):
+def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None):
+    if tags is None:
+        tags = []
     itype = args.get('indicator_type', demisto.params().get('indicator_type'))
-    limit = int(args.get('limit'))
+    try:
+        limit = int(args.get('limit', 50))
+    except ValueError:
+        raise ValueError('The limit argument must be a number.')
     auto_detect = demisto.params().get('auto_detect_type')
-    indicators_list = fetch_indicators_command(client, itype, auto_detect)
+    indicators_list = fetch_indicators_command(client, itype, auto_detect, limit)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
     return hr, {}, indicators_list
@@ -299,7 +322,12 @@ def feed_main(feed_name, params=None, prefix=''):
     }
     try:
         if command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, params.get('indicator_type'), params.get('auto_detect_type'))
+            indicators = fetch_indicators_command(
+                client,
+                params.get('indicator_type'),
+                params.get('auto_detect_type'),
+                params.get('limit'),
+            )
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)  # type: ignore

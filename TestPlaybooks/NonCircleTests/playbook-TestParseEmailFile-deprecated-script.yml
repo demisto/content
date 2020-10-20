@@ -1,5 +1,6 @@
 id: TestParseEmailFile-deprecated-script
 version: -1
+fromversion: 5.0.0
 name: TestParseEmailFile-deprecated-script
 starttaskid: "0"
 tasks:

@@ -1,10 +1,8 @@
 id: Email Address Enrichment - Generic v2.1 - Test
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Email Address Enrichment - Generic v2.1 - Test
-description: A test for email address enrichment. Currently, due to issues, the test
-  does not check all domain squatting results or whether the email addresses were
-  detected as internal or external.
+description: A test for email address enrichment. Currently, due to issues, the test does not check all domain squatting results or whether the email addresses were detected as internal or external.
 starttaskid: "0"
 tasks:
   "0":
@@ -87,8 +85,7 @@ tasks:
       key:
         simple: Account.Email.Address
       value:
-        simple: '["geverwithnoname@domainthatdoesntexist.co.uk", "soso@demisto.com",
-          "koko@demisto.com", "user1@domain.com","donotdelete@demisto.ninja"]'
+        simple: '["geverwithnoname@domainthatdoesntexist.co.uk", "soso@demisto.com", "koko@demisto.com", "user1@domain.com","donotdelete@demisto.ninja"]'
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -218,8 +215,7 @@ tasks:
       - "6"
     scriptarguments:
       message:
-        simple: Domain squatting should have been detected, but wasn't, or the user
-          was not enriched using Active Directory.
+        simple: Domain squatting should have been detected, but wasn't, or the user was not enriched using Active Directory.
     reputationcalc: 1
     separatecontext: false
     view: |-

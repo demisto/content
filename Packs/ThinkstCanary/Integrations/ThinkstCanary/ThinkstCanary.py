@@ -364,7 +364,7 @@ def fetch_incidents_command():
     incidents = []
     current_fetch = last_fetch
     for alert in alerts:
-        current_fetch = 1000 * (int(demisto.get(alert, 'description.created')))
+        current_fetch = 1000 * (int(demisto.get(alert, 'description.created')) + 1)
         current_fetch = timestamp_to_datestring(current_fetch, '%Y-%m-%d-%H:%M:%S')
         incident = create_incident(alert)
         incidents.append(incident)

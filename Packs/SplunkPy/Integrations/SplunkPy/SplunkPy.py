@@ -1,4 +1,4 @@
-from splunklib.binding import HTTPError
+from splunklib.binding import HTTPError, namespace
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -21,12 +21,13 @@ sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
-FETCH_LIMIT = int(params.get('fetch_limit', 50))
+FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
 REPLACE_FLAG = params.get('replaceKeys', False)
 FETCH_TIME = demisto.params().get('fetch_time')
+PROXIES = handle_proxy()
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
 
@@ -76,27 +77,30 @@ def get_current_splunk_time(splunk_service):
 
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
-    if 'message' in raw:
-        raw = raw.replace('"', '').strip('{').strip('}')
-        key_val_arr = raw.split(",")
-        for key_val in key_val_arr:
-            single_key_val = key_val.split(":")
-            if len(single_key_val) > 1:
-                val = single_key_val[1]
-                key = single_key_val[0].strip()
+    try:
+        result = json.loads(raw)
+    except ValueError:
+        if 'message' in raw:
+            raw = raw.replace('"', '').strip('{').strip('}')
+            key_val_arr = raw.split(",")
+            for key_val in key_val_arr:
+                single_key_val = key_val.split(":", 1)
+                if len(single_key_val) > 1:
+                    val = single_key_val[1]
+                    key = single_key_val[0].strip()
 
-                if key in result.keys():
-                    result[key] = result[key] + "," + val
-                else:
-                    result[key] = val
+                    if key in result.keys():
+                        result[key] = result[key] + "," + val
+                    else:
+                        result[key] = val
 
-    else:
-        raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
-        for key_val in raw_response:
-            key_value = key_val.replace('"', '').strip()
-            if '=' in key_value:
-                key_and_val = key_value.split('=', 1)
-                result[key_and_val[0]] = key_and_val[1]
+        else:
+            raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
+            for key_val in raw_response:
+                key_value = key_val.replace('"', '').strip()
+                if '=' in key_value:
+                    key_and_val = key_value.split('=', 1)
+                    result[key_and_val[0]] = key_and_val[1]
 
     if REPLACE_FLAG:
         result = replace_keys(result)
@@ -232,7 +236,7 @@ def request(url, message):
 
     try:
         response = urllib2.urlopen(req, context=context)  # guardrails-disable-line
-    except urllib2.HTTPError as response:
+    except urllib2.HTTPError as response:  # noqa: F841
         pass  # Propagate HTTP errors via the returned response message
     return {
         'status': response.code,  # type: ignore
@@ -460,12 +464,13 @@ def fetch_incidents(service):
 
     incidents = []
     current_time_for_fetch = datetime.utcnow()
-    if demisto.get(demisto.params(), 'timezone'):
-        timezone = demisto.params()['timezone']
+    dem_params = demisto.params()
+    if demisto.get(dem_params, 'timezone'):
+        timezone = dem_params['timezone']
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
 
     now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    if demisto.get(demisto.params(), 'useSplunkTime'):
+    if demisto.get(dem_params, 'useSplunkTime'):
         now = get_current_splunk_time(service)
         current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         current_time_for_fetch = current_time_in_splunk
@@ -475,16 +480,16 @@ def fetch_incidents(service):
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    earliest_fetch_time_fieldname = demisto.params().get("earliest_fetch_time_fieldname", "index_earliest")
-    latest_fetch_time_fieldname = demisto.params().get("latest_fetch_time_fieldname", "index_latest")
+    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
+    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
 
     kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
 
-    searchquery_oneshot = demisto.params()['fetchQuery']
+    searchquery_oneshot = dem_params['fetchQuery']
 
-    if demisto.get(demisto.params(), 'extractFields'):
-        extractFields = demisto.params()['extractFields']
+    if demisto.get(dem_params, 'extractFields'):
+        extractFields = dem_params['extractFields']
         extra_raw_arr = extractFields.split(',')
         for field in extra_raw_arr:
             field_trimmed = field.strip()
@@ -554,10 +559,17 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
+    parsed_fields = None
+    if fields:
+        try:
+            parsed_fields = json.loads(fields)
+        except Exception:
+            parsed_fields = {'fields': fields}
+
     args = assign_params(
         event=event,
         host=host,
-        fields={'fields': fields} if fields else None,
+        fields=parsed_fields,
         index=index,
         sourcetype=source_type,
         source=source,
@@ -665,15 +677,25 @@ def splunk_parse_raw_command():
 
 
 def test_module(service):
-    if demisto.params().get('isFetch'):
+    params = demisto.params()
+    if params.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count': 1, 'earliest_time': time}
-        searchquery_oneshot = demisto.params()['fetchQuery']
+        searchquery_oneshot = params['fetchQuery']
         try:
             service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
         except HTTPError as error:
             return_error(str(error))
+    if params.get('hec_url'):
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        try:
+            requests.get(params.get('hec_url') + '/services/collector/health', headers=headers,
+                         verify=VERIFY_CERTIFICATE)
+        except Exception as e:
+            return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
 
 def replace_keys(data):
@@ -688,7 +710,254 @@ def replace_keys(data):
     return data
 
 
+def kv_store_collection_create(service):
+    service.kvstore.create(demisto.args()['kv_store_name'])
+    return_outputs("KV store collection {} created successfully".format(service.namespace['app']), {}, {})
+
+
+def kv_store_collection_config(service):
+    args = demisto.args()
+    app = service.namespace['app']
+    kv_store_collection_name = args['kv_store_collection_name']
+    kv_store_fields = args['kv_store_fields'].split(',')
+    for key_val in kv_store_fields:
+        try:
+            _key, val = key_val.split('=', 1)
+        except ValueError:
+            return_error('error when trying to parse {} you possibly forgot to add the field type.'.format(key_val))
+        else:
+            if _key.startswith('index.'):
+                service.kvstore[kv_store_collection_name].update_index(_key.replace('index.', ''), val)
+            else:
+                service.kvstore[kv_store_collection_name].update_field(_key.replace('field.', ''), val)
+    return_outputs("KV store collection {} configured successfully".format(app), {}, {})
+
+
+def kv_store_collection_add_entries(service):
+    args = demisto.args()
+    kv_store_data = args.get('kv_store_data', '').encode('utf-8')
+    kv_store_collection_name = args['kv_store_collection_name']
+    indicator_path = args.get('indicator_path')
+    service.kvstore[kv_store_collection_name].data.insert(kv_store_data)
+    timeline = None
+    if indicator_path:
+        indicator = extract_indicator(indicator_path, [json.loads(kv_store_data)])
+        timeline = {
+            'Value': indicator,
+            'Message': 'Indicator added to {} store in Splunk'.format(kv_store_collection_name),
+            'Category': 'Integration Update'
+        }
+    return_outputs("Data added to {}".format(kv_store_collection_name), timeline=timeline)
+
+
+def kv_store_collections_list(service):
+    app_name = service.namespace['app']
+    names = list(map(lambda x: x.name, service.kvstore.iter()))
+    human_readable = "list of collection names {}\n| name |\n| --- |\n|{}|".format(app_name, '|\n|'.join(names))
+    entry_context = {"Splunk.CollectionList": names}
+    return_outputs(human_readable, entry_context, entry_context)
+
+
+def kv_store_collection_data_delete(service):
+    args = demisto.args()
+    kv_store_collection_name = args['kv_store_collection_name'].split(',')
+    for store in kv_store_collection_name:
+        service.kvstore[store].data.delete()
+    return_outputs('The values of the {} were deleted successfully'.format(args['kv_store_collection_name']), {}, {})
+
+
+def kv_store_collection_delete(service):
+    kv_store_names = demisto.args()['kv_store_name']
+    for store in kv_store_names.split(','):
+        service.kvstore[store].delete()
+    return_outputs('The following KV store {} were deleted successfully'.format(kv_store_names), {}, {})
+
+
+def build_kv_store_query(kv_store, args):
+    if 'key' in args and 'value' in args:
+        _type = get_key_type(kv_store, args['key'])
+        args['value'] = _type(args['value']) if _type else args['value']
+        return json.dumps({args['key']: args['value']})
+    elif 'limit' in args:
+        return {'limit': args['limit']}
+    else:
+        return args.get('query', '{}')
+
+
+def kv_store_collection_data(service):
+    args = demisto.args()
+    stores = args['kv_store_collection_name'].split(',')
+
+    for i, store_res in enumerate(get_store_data(service)):
+        store = service.kvstore[stores[i]]
+
+        if store_res:
+            human_readable = tableToMarkdown(name="list of collection values {}".format(store.name),
+                                             t=store_res)
+            return_outputs(human_readable, {'Splunk.KVstoreData': {store.name: store_res}}, store_res)
+        else:
+
+            return_outputs(get_kv_store_config(store), {}, {})
+
+
+def kv_store_collection_delete_entry(service):
+    args = demisto.args()
+    store_name = args['kv_store_collection_name']
+    indicator_path = args.get('indicator_path')
+    store = service.kvstore[store_name]
+    query = build_kv_store_query(store, args)
+    store_res = next(get_store_data(service))
+    if indicator_path:
+        indicators = extract_indicator(indicator_path, store_res)
+    else:
+        indicators = []
+    store.data.delete(query=query)
+    timeline = {
+        'Value': ','.join(indicators),
+        'Message': 'Indicator deleted from {} store in Splunk'.format(store_name),
+        'Category': 'Integration Update'
+    }
+    return_outputs('The values of the {} were deleted successfully'.format(store_name), timeline=timeline)
+
+
+def check_error(service, args):
+    app = args.get('app_name')
+    store_name = args.get('kv_store_collection_name')
+    if app not in service.apps:
+        raise DemistoException('app not found')
+    elif store_name and store_name not in service.kvstore:
+        raise DemistoException('KV Store not found')
+
+
+def get_key_type(kv_store, _key):
+    keys_and_types = get_keys_and_types(kv_store)
+    types = {
+        'number': float,
+        'string': str,
+        'cidr': str,
+        'boolean': bool,
+        'time': str
+    }
+    index = 'index.{}'.format(_key)
+    field = 'field.{}'.format(_key)
+    val_type = keys_and_types.get(field) or keys_and_types.get(index)
+    return types.get(val_type)
+
+
+def get_keys_and_types(kv_store):
+    keys = kv_store.content()
+    for key_name in keys.keys():
+        if not (key_name.startswith('field.') or key_name.startswith('index.')):
+            del keys[key_name]
+    return keys
+
+
+def get_kv_store_config(kv_store):
+    keys = get_keys_and_types(kv_store)
+    readable = ['#### configuration for {} store'.format(kv_store.name),
+                '| field name | type |',
+                '| --- | --- |']
+    for _key, val in keys.items():
+        readable.append('| {} | {} |'.format(_key, val))
+    return '\n'.join(readable)
+
+
+def extract_indicator(indicator_path, _dict_objects):
+    indicators = []
+    indicator_paths = indicator_path.split('.')
+    for indicator_obj in _dict_objects:
+        indicator = ''
+        for path in indicator_paths:
+            indicator = indicator_obj.get(path, {})
+        indicators.append(str(indicator))
+    return indicators
+
+
+def get_store_data(service):
+    args = demisto.args()
+    stores = args['kv_store_collection_name'].split(',')
+
+    for store in stores:
+        store = service.kvstore[store]
+        query = build_kv_store_query(store, args)
+        if 'limit' not in query:
+            query = {'query': query}
+        yield store.data.query(**query)
+
+
+def create_mapping_dict(total_parsed_results, type_field):
+    """
+    Create a {'field_name': 'fields_properties'} dict to be used as mapping schemas.
+    Args:
+        total_parsed_results: list. the results from the splunk search query
+        type_field: str. the field that represents the type of the event or alert.
+
+    Returns:
+
+    """
+    types_map = {}
+    for result in total_parsed_results:
+        raw_json = json.loads(result.get('rawJSON', "{}"))
+        event_type_name = raw_json.get(type_field, '')
+        if event_type_name:
+            types_map[event_type_name] = raw_json
+
+    return types_map
+
+
+def get_mapping_fields_command(service):
+    # Create the query to get unique objects
+    # The logic is identical to the 'fetch_incidents' command
+    type_field = demisto.params().get('type_field', 'source')
+    total_parsed_results = []
+    search_offset = demisto.getLastRun().get('offset', 0)
+
+    current_time_for_fetch = datetime.utcnow()
+    dem_params = demisto.params()
+    if demisto.get(dem_params, 'timezone'):
+        timezone = dem_params['timezone']
+        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
+
+    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+    if demisto.get(dem_params, 'useSplunkTime'):
+        now = get_current_splunk_time(service)
+        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+        current_time_for_fetch = current_time_in_splunk
+
+    fetch_time_in_minutes = parse_time_to_minutes()
+    start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+    last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+
+    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
+    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
+
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
+                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+
+    searchquery_oneshot = dem_params['fetchQuery']
+
+    if demisto.get(dem_params, 'extractFields'):
+        extractFields = dem_params['extractFields']
+        extra_raw_arr = extractFields.split(',')
+        for field in extra_raw_arr:
+            field_trimmed = field.strip()
+            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
+
+    searchquery_oneshot = searchquery_oneshot + ' | dedup ' + type_field
+    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+    reader = results.ResultsReader(oneshotsearch_results)
+    for item in reader:
+        inc = notable_to_incident(item)
+        total_parsed_results.append(inc)
+
+    types_map = create_mapping_dict(total_parsed_results, type_field)
+    demisto.results(types_map)
+
+
 def main():
+    if demisto.command() == 'splunk-parse-raw':
+        splunk_parse_raw_command()
+        sys.exit(0)
     service = None
     proxy = demisto.params().get('proxy')
     use_requests_handler = demisto.params().get('use_requests_handler')
@@ -696,7 +965,7 @@ def main():
     connection_args = {
         'host': demisto.params()['host'],
         'port': demisto.params()['port'],
-        'app': demisto.params().get('app'),
+        'app': demisto.params().get('app', '-'),
         'username': demisto.params()['authentication']['identifier'],
         'password': demisto.params()['authentication']['password'],
         'verify': VERIFY_CERTIFICATE
@@ -738,12 +1007,35 @@ def main():
         splunk_submit_event_command(service)
     if demisto.command() == 'splunk-notable-event-edit':
         splunk_edit_notable_event_command(proxy)
-    if demisto.command() == 'splunk-parse-raw':
-        splunk_parse_raw_command()
     if demisto.command() == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     if demisto.command() == 'splunk-job-status':
         splunk_job_status(service)
+    if demisto.command().startswith('splunk-kv-') and service is not None:
+        args = demisto.args()
+        app = args.get('app_name', 'search')
+        service.namespace = namespace(app=app, owner='nobody', sharing='app')
+        check_error(service, args)
+
+        if demisto.command() == 'splunk-kv-store-collection-create':
+            kv_store_collection_create(service)
+        elif demisto.command() == 'splunk-kv-store-collection-config':
+            kv_store_collection_config(service)
+        elif demisto.command() == 'splunk-kv-store-collection-delete':
+            kv_store_collection_delete(service)
+        elif demisto.command() == 'splunk-kv-store-collections-list':
+            kv_store_collections_list(service)
+        elif demisto.command() == 'splunk-kv-store-collection-add-entries':
+            kv_store_collection_add_entries(service)
+        elif demisto.command() in ['splunk-kv-store-collection-data-list',
+                                   'splunk-kv-store-collection-search-entry']:
+            kv_store_collection_data(service)
+        elif demisto.command() == 'splunk-kv-store-collection-data-delete':
+            kv_store_collection_data_delete(service)
+        elif demisto.command() == 'splunk-kv-store-collection-delete-entry':
+            kv_store_collection_delete_entry(service)
+    if demisto.command() == 'get-mapping-fields':
+        get_mapping_fields_command(service)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

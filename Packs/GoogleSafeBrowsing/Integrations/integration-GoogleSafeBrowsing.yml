@@ -41,23 +41,29 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: >
     var apiKey = params.apiKey;
+
     var lookupUrl = params.url;
+
     if (lookupUrl[lookupUrl.length - 1] !== '/') {
         lookupUrl += '/';
     }
+
     lookupUrl += "?key=" + apiKey;
+
 
     var client = {
         clientId: params.clientId,
         clientVersion: params.clientVer
     }
 
+
     var types = {
         threatTypes:      ["MALWARE", "SOCIAL_ENGINEERING","POTENTIALLY_HARMFUL_APPLICATION","UNWANTED_SOFTWARE"],
         platformTypes:    ["ANY_PLATFORM","WINDOWS","LINUX","ALL_PLATFORMS","OSX","CHROME","IOS","ANDROID"]
     }
+
 
     var sendRequest = function(body) {
         var result = http(
@@ -97,6 +103,7 @@ script:
         return {body: result.Body, obj: obj, statusCode: result.StatusCode};
     };
 
+
     var checkURL = function(url) {
         var body = {
             "client": client,
@@ -111,9 +118,11 @@ script:
         return res.obj;
     }
 
+
     var getThreats = function(matches) {
         return dq(matches,"[]=val.threatType+'/'+val.platformType");
     }
+
 
     switch (command) {
         case 'test-module':
@@ -143,6 +152,7 @@ script:
                 md += "#### Found matches for URL " + args.url + "\n";
                 md += arrToMd(res.matches);
             } else {
+                ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'GoogleSafeBrowsing', Score: 0};
                 md += "#### No matches for URL " + args.url + "\n";
             }
 
@@ -179,3 +189,4 @@ script:
     description: Check URL Reputation
 hidden: false
 system: true
+fromversion: 5.0.0

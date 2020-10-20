@@ -25,13 +25,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "11"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 630,
-          "y": 0
+          "y": -170
         }
       }
     note: false
@@ -421,6 +421,65 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: e014ab1e-ad60-4fd4-8929-53bd40be41a5
+    type: condition
+    task:
+      id: e014ab1e-ad60-4fd4-8929-53bd40be41a5
+      version: -1
+      name: Is Google Cloud Compute integration enabled?
+      description: "Is Google Cloud Compute integration enabled?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -431,10 +490,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 955,
+        "height": 1125,
         "width": 1640,
         "x": -250,
-        "y": 0
+        "y": -170
       }
     }
   }

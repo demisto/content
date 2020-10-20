@@ -8,7 +8,7 @@ This integration was integrated and tested with version 3008.0.1.2800 of Infocyt
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| InstanceName | Instance Name. You can find this in your Infocyte url: <pre>https://*InstanceName*.infocyte.com</pre> | True |
+| InstanceName | Instance Name. You can find this in your Infocyte url: `https://*InstanceName*.infocyte.com` | True |
 | APIKey | API Key | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
@@ -17,7 +17,7 @@ This integration was integrated and tested with version 3008.0.1.2800 of Infocyt
 | insecure | Trust any certificate -- not secure | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+1. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -219,7 +219,7 @@ You can find the available open sourced extensions here:
 https://github.com/Infocyte/extensions
 
 Extensions can be loaded into your instance here:
-https://\<_instancename_\>.infocyte.com/admin/extensions/list
+`https://<_instancename_>.infocyte.com/admin/extensions/list`
 
 
 #### Base Command

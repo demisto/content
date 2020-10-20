@@ -280,8 +280,7 @@ tasks:
       id: 58aceeaf-2628-4eba-833e-69c54ddd97cd
       version: -1
       name: file
-      description: Queries the illuminate REST API and enriches the given file with
-        illuminate indicator data.
+      description: Queries the illuminate REST API and enriches the given file with illuminate indicator data.
       script: illuminate|||file
       type: regular
       iscommand: true
@@ -727,3 +726,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -4,9 +4,7 @@ commonfields:
 name: Thinkst Canary
 display: Thinkst Canary
 category: Deception
-description: By presenting itself as an apparently benign and legitimate service(s), the Canary draws the attention of
-  unwanted activity. When someone trips one of the Canary's triggers, an alert is sent to notify the responsible
-  parties so that action can be taken before valubale systems in your network are compromised.
+description: By presenting itself as an apparently benign and legitimate service(s), the Canary draws the attention of unwanted activity. When someone trips one of the Canary's triggers, an alert is sent to notify the responsible parties so that action can be taken before valubale systems in your network are compromised.
 configuration:
 - display: Canary Server URL (e.g., https://***.canary.tools)
   name: server
@@ -142,8 +140,7 @@ script:
     arguments:
     - name: alert_id
       required: true
-      description: 'Alert ID (e.g., incident:canarytoken:d6fe0ae4dfd36cc3cc6d9d4f::1548593719, Can be retrieved through
-      fetch incidents)'
+      description: 'Alert ID (e.g., incident:canarytoken:d6fe0ae4dfd36cc3cc6d9d4f::1548593719, Can be retrieved through fetch incidents)'
     - name: status
       required: true
       auto: PREDEFINED
@@ -203,3 +200,4 @@ script:
   runonce: false
 tests:
 - CanaryTools Test
+fromversion: 5.0.0

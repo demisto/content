@@ -49,7 +49,7 @@ def http_request(method, url_suffix, headers=None, data=None, allow_redirects=Tr
         )
         if res.status_code not in {200, 302}:
             raise Exception('Your request failed with the following error: ' + res.content + str(res.status_code))
-    except Exception, e:
+    except Exception as e:
         LOG(e)
         raise
 

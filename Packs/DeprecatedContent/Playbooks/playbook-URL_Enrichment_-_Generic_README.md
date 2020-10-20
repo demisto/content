@@ -1,4 +1,4 @@
-Enriches a URL using one or more integrations.
+DEPRECATED. Use "URL Enrichment - Generic v2" playbook instead. Enriches a URL using one or more integrations.
 
 URL enrichment includes:
 * Verify URL SSL

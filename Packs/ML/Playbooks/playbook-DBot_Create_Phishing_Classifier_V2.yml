@@ -1,8 +1,7 @@
 id: DBot Create Phishing Classifier V2
 version: -1
 name: DBot Create Phishing Classifier V2
-description: Create a phishing classifier using machine learning technique, based
-  on email content.
+description: Create a phishing classifier using machine learning technique, based on email content.
 starttaskid: "0"
 tasks:
   "0":
@@ -61,9 +60,7 @@ tasks:
       id: 5e19ea89-ccf7-40c8-811b-f683ba5ac94a
       version: -1
       name: Get Incidents
-      description: Gets a list of incident objects and the associated incident outputs
-        that match the specified query and filters. The results are returned in a
-        structured data file.
+      description: Gets a list of incident objects and the associated incident outputs that match the specified query and filters. The results are returned in a structured data file.
       scriptName: GetIncidentsByQuery
       type: regular
       iscommand: false
@@ -217,8 +214,7 @@ tasks:
       id: 0ee35628-0387-4595-84f8-17968fdabcdc
       version: -1
       name: Historical data exist?
-      description: Check if we have input with historical data file - usually from
-        external source, or data we used to have in Demisto.
+      description: Check if we have input with historical data file - usually from external source, or data we used to have in Demisto.
       type: condition
       iscommand: false
       brand: ""
@@ -301,35 +297,22 @@ inputs:
   value:
     simple: emailbody|emailbodyhtml|details
   required: false
-  description: A comma-separated list of incident fields names with the email body
-    or html body. You can also use "|" if you want to choose the first non-empty value
-    from a list of fields.
+  description: A comma-separated list of incident fields names with the email body or html body. You can also use "|" if you want to choose the first non-empty value from a list of fields.
 - key: emailSubjectKey
   value:
     simple: emailsubject|name
   required: false
-  description: A comma-separated list of incident fields names with the email subject.
-    You can also use "|" if you want to choose the first non-empty value from a list
-    of fields.
+  description: A comma-separated list of incident fields names with the email subject. You can also use "|" if you want to choose the first non-empty value from a list of fields.
 - key: emailTagKey
   value:
     simple: emailclassification
   required: false
-  description: The field name with the email tag. Supports a comma-separated list,
-    the first non-empty value will be taken.
+  description: The field name with the email tag. Supports a comma-separated list, the first non-empty value will be taken.
 - key: phishingLabels
   value:
     simple: '*'
   required: false
-  description: 'A comma-separated list of email tags values and mapping. The script
-      considers only the tags specified in this field. You can map label to another
-      value by using this format: LABEL:MAPPED_LABEL. For example, for
-      4 values in email tag: malicious, credentials harvesting, inner communitcation,
-      external legit email, unclassified. While training, we want to ignore "unclassified"
-      tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to     merge
-      "inner communitcation" and "external legit email" to one tag called "non-malicious".
-      The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
-      external legit email:non-malicious'
+  description: 'A comma-separated list of email tags values and mapping. The script considers only the tags specified in this field. You can map label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to     merge "inner communitcation" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious, external legit email:non-malicious'
 - key: incidentsQuery
   value: {}
   required: false
@@ -346,14 +329,12 @@ inputs:
 - key: historicalDataFileListName
   value: {}
   required: false
-  description: The name of demisto list contains historical data training samples
-    for the model.
+  description: The name of demisto list contains historical data training samples for the model.
 - key: overrideModel
   value:
     simple: "true"
   required: false
-  description: Whether to override the existing model if a model with the same name
-    exists. Default is "false".
+  description: Whether to override the existing model if a model with the same name exists. Default is "false".
 - key: incidentTypes
   value:
     simple: Phishing
@@ -363,14 +344,12 @@ inputs:
   value:
     simple: "0.99"
   required: false
-  description: Remove emails with similarity greater then this threshold, range 0-1,
-    where 1 is completly identical.
+  description: Remove emails with similarity greater then this threshold, range 0-1, where 1 is completly identical.
 - key: removeShortTextThreshold
   value:
     simple: "15"
   required: false
-  description: Sample text of which the total number words are less than or equal
-    to this number will be ignored.
+  description: Sample text of which the total number words are less than or equal to this number will be ignored.
 - key: modelTargetAccuracy
   value:
     simple: "0.8"
@@ -397,6 +376,6 @@ outputs:
 - contextPath: DBotPhishingClassifier.ModelName
   description: The name of the model in Demisto.
   type: string
-fromversion: "4.5.0"
+fromversion: "5.0.0"
 tests:
-  - Create Phishing Classifier V2 ML Test
+- Create Phishing Classifier V2 ML Test

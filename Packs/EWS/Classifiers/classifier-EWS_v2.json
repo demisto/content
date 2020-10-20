@@ -1,6 +1,6 @@
 {
 	"id": "EWS v2",
-    "name": "EWS v2 - Classifier",
+    "name": "EWS - Classifier",
     "type": "classification",
     "description": "Classifies EWS phishing email messages.",
 	"version": -1,

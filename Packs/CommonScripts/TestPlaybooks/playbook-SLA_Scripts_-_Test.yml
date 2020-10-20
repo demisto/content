@@ -59,9 +59,7 @@ tasks:
       id: d8750391-b43c-4a77-8d09-d48ecc4ec7f3
       version: -1
       name: Run script to update dueDate
-      description: Runs a script that should change the Remediation SLA because of
-        a severity change. This also injects input to the script, that will make it
-        believe the severity was changed.
+      description: Runs a script that should change the Remediation SLA because of a severity change. This also injects input to the script, that will make it believe the severity was changed.
       scriptName: ChangeRemediationSLAOnSevChange
       type: regular
       iscommand: false
@@ -92,8 +90,7 @@ tasks:
       id: 7a9560eb-92e0-4918-8ceb-8c3b1e7d4a83
       version: -1
       name: Store old dueDate
-      description: Stores the old dueDate to later compare it with the new one and
-        see if there were any changes.
+      description: Stores the old dueDate to later compare it with the new one and see if there were any changes.
       scriptName: Set
       type: regular
       iscommand: false
@@ -128,8 +125,7 @@ tasks:
       id: acc48387-b242-44c3-8d52-6104832da674
       version: -1
       name: Is dueDate still the same?
-      description: Checks if the dueDate is the same as it was before running the
-        script that was supposed to change it.
+      description: Checks if the dueDate is the same as it was before running the script that was supposed to change it.
       type: condition
       iscommand: false
       brand: ""
@@ -286,11 +282,7 @@ tasks:
       id: 8668d05c-4309-47b7-8204-2865a43f6f08
       version: -1
       name: Set remediation SLA to 444
-      description: Sets the remediation SLA to 444 (dueDate should be in 444 minutes
-        from now), so that the field becomes SLA and not a timer. Making remediation
-        SLA an SLA field, means that the dueDate won't be changing every second. By
-        making dueDate static, we can isolate changes to our script only, and check
-        if our script caused the dueDate to change (and not something else).
+      description: Sets the remediation SLA to 444 (dueDate should be in 444 minutes from now), so that the field becomes SLA and not a timer. Making remediation SLA an SLA field, means that the dueDate won't be changing every second. By making dueDate static, we can isolate changes to our script only, and check if our script caused the dueDate to change (and not something else).
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -337,8 +329,7 @@ tasks:
       id: cd2b5ffa-490f-4949-8a45-7680c78197f5
       version: -1
       name: Reset Remediation SLA
-      description: Resets the Remediation SLA timer to allow re-running the playbook
-        if needed.
+      description: Resets the Remediation SLA timer to allow re-running the playbook if needed.
       script: Builtin|||resetTimer
       type: regular
       iscommand: true
@@ -426,8 +417,7 @@ tasks:
       id: 5a133461-2514-4e13-81af-c9f3f0fe3f5a
       version: -1
       name: Run script with new owner
-      description: Runs StopTimeToAssignOnOwnerChange script, with a new owner as
-        an argument. This should stop the Time to Assignment timer.
+      description: Runs StopTimeToAssignOnOwnerChange script, with a new owner as an argument. This should stop the Time to Assignment timer.
       scriptName: StopTimeToAssignOnOwnerChange
       type: regular
       iscommand: false
@@ -487,8 +477,7 @@ tasks:
       id: 9d39054a-2531-43f6-88bf-9905679d82ad
       version: -1
       name: Reset Time to Assignment
-      description: Resets the Time to Assignment timer to allow re-running the playbook
-        if needed.
+      description: Resets the Time to Assignment timer to allow re-running the playbook if needed.
       script: Builtin|||resetTimer
       type: regular
       iscommand: true
@@ -566,3 +555,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,411 @@
+id: Blueliv_ThreatContext_test
+version: -1
+name: Blueliv_ThreatContext_test
+description: Test all commands from Blueliv ThreatContext integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 22e35a94-75e3-4089-8e8d-6ac2c69b2989
+    type: start
+    task:
+      id: 22e35a94-75e3-4089-8e8d-6ac2c69b2989
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 51ae9209-8831-4f95-8ec9-9419f4217f20
+    type: regular
+    task:
+      id: 51ae9209-8831-4f95-8ec9-9419f4217f20
+      version: -1
+      name: Check IP
+      description: Gets information about an IP
+      script: '|||blueliv-tc-indicator-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      IP:
+        simple: 103.76.228.28
+      IP_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e2479e96-2909-4980-8bf9-aacd094ca3a4
+    type: regular
+    task:
+      id: e2479e96-2909-4980-8bf9-aacd094ca3a4
+      version: -1
+      name: Check Threat Actor
+      description: Gets information about a Threat Actor
+      script: '|||blueliv-tc-threat-actor'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      threatActor:
+        simple: Vendetta
+      threatActor_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d43499ae-253f-4dc0-827d-f415490feb7f
+    type: regular
+    task:
+      id: d43499ae-253f-4dc0-827d-f415490feb7f
+      version: -1
+      name: Get Tools
+      description: Gets information about a Tool
+      script: '|||blueliv-tc-tool'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      tool:
+        simple: ACEHASH
+      tool_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 0c44a276-72e0-4632-8e55-fb77e7de07ce
+    type: regular
+    task:
+      id: 0c44a276-72e0-4632-8e55-fb77e7de07ce
+      version: -1
+      name: Get CVE
+      description: Gets information about CVE
+      script: '|||blueliv-tc-cve'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      CVE:
+        simple: CVE-2020-8794
+      CVE_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: ec703143-3dfe-48de-84b6-73a4012d0bd4
+    type: regular
+    task:
+      id: ec703143-3dfe-48de-84b6-73a4012d0bd4
+      version: -1
+      name: Get malware hash
+      description: Gets information about malware by ID
+      script: '|||blueliv-tc-malware'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      hash:
+        simple: ad53660b6d7e8d2ed14bd59b39e1f265148e3c6818a494cce906e749976bade1
+      hash_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: f72e2020-bc63-49bb-8de8-464a6a2eed61
+    type: regular
+    task:
+      id: f72e2020-bc63-49bb-8de8-464a6a2eed61
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: e1a14b28-4856-4647-81ba-9d72f0cebb09
+    type: regular
+    task:
+      id: e1a14b28-4856-4647-81ba-9d72f0cebb09
+      version: -1
+      name: Get FQDN
+      description: Gets information about FQDN
+      script: '|||blueliv-tc-indicator-fqdn'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      FQDN:
+        simple: self-repair.r53-2.services.mozilla.com
+      FQDN_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: c163d4e9-deaf-4d77-8056-4d156976a995
+    type: regular
+    task:
+      id: c163d4e9-deaf-4d77-8056-4d156976a995
+      version: -1
+      name: Get attack pattern
+      description: Gets information about a Attack Pattern
+      script: '|||blueliv-tc-attack-pattern'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      attackPattern:
+        simple: Account Discovery
+      attackPatternId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 79a2af8f-a658-4410-8a27-15d172d229f0
+    type: regular
+    task:
+      id: 79a2af8f-a658-4410-8a27-15d172d229f0
+      version: -1
+      name: Get signature
+      description: Gets information about a Signature
+      script: '|||blueliv-tc-signature'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      signature: {}
+      signature_id:
+        simple: "84458"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 32a9fbaa-2097-4d09-8b78-3eb6cc2f8242
+    type: regular
+    task:
+      id: 32a9fbaa-2097-4d09-8b78-3eb6cc2f8242
+      version: -1
+      name: Get Campaign
+      description: Gets information about a Campaign
+      script: '|||blueliv-tc-campaign'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      campaign: {}
+      campaign_id:
+        simple: "152"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: f6c08518-db12-4cdb-820c-68807fc21036
+    type: regular
+    task:
+      id: f6c08518-db12-4cdb-820c-68807fc21036
+      version: -1
+      name: Get Crime Server
+      description: Gets information about a Crime Server
+      script: '|||blueliv-tc-indicator-cs'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      CS: {}
+      CS_id:
+        simple: "6626263"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2095,
+        "width": 380,
+        "x": 600,
+        "y": 60
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -16,14 +16,6 @@ configuration:
   name: key
   required: true
   type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   required: false
@@ -32,10 +24,32 @@ configuration:
   name: vsys
   required: false
   type: 0
-- display: Template - Panorama instances only. routes.
+- display: Template - Panorama instances only.
   name: template
   required: false
   type: 0
+- display: Use URL Filtering for auto enrichment
+  name: use_url_filtering
+  required: false
+  type: 8
+- display: URL Filtering Additional suspicious categories. CSV list of categories
+    that will be considered suspicious.
+  name: additional_suspicious
+  required: false
+  type: 12
+- display: URL Filtering Additional malicious categories. CSV list of categories that
+    will be considered malicious.
+  name: additional_malicious
+  required: false
+  type: 12
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
 display: Palo Alto Networks PAN-OS
@@ -199,6 +213,47 @@ script:
     description: Run any command supported in the API.
     execution: false
     name: panorama
+  - arguments:
+    - default: false
+      description: If specified, retrieves the predefined threats from a specific
+        firewall managed by Panorama.
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    deprecated: false
+    description: Get pre-defined threats list from a Firewall or Panorama and stores
+      as a JSON file in the context.
+    execution: false
+    name: panorama-get-predefined-threats-list
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.Name
+      description: File name.
+      type: string
+    - contextPath: File.Type
+      description: File type.
+      type: string
+    - contextPath: File.Info
+      description: File info.
+      type: string
+    - contextPath: File.Extenstion
+      description: File extension.
+      type: string
+    - contextPath: File.EntryID
+      description: FIle entryID.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
   - deprecated: false
     description: Commits a configuration to Palo Alto Firewall or Panorama, but does
       not validate if the commit was successful. Committing to Panorama does not push
@@ -556,6 +611,44 @@ script:
     - contextPath: Panorama.AddressGroups.Tag
       description: Address group tags.
       type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Type of session reject
+      isArray: false
+      name: drop_mode
+      predefined:
+      - drop
+      - alert
+      - block-ip
+      - reset-both
+      - reset-client
+      - reset-server
+      required: false
+      secret: false
+    - default: false
+      description: Name of vulnerability profile.
+      isArray: false
+      name: vulnerability_profile
+      required: true
+      secret: false
+    - default: false
+      description: Numerical Threat ID.
+      isArray: false
+      name: threat_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Sets a vulnerability signature to block mode.
+    execution: false
+    name: panorama-block-vulnerability
+    outputs:
+    - contextPath: Panorama.Vulnerability.ID
+      description: ID of vulnerability that has been blocked/overridden.
+      type: string
+    - contextPath: Panorama.Vulnerability.NewAction
+      description: New action for vulnerability
+      type: string
   - arguments:
     - default: false
       description: Name of address group to delete.
@@ -1174,11 +1267,11 @@ script:
       description: Device group for the Custom URL Category (Panorama instances).
       type: string
   - arguments:
-    - default: false
+    - default: true
       description: URL to check.
       isArray: true
       name: url
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Gets a URL category from URL Filtering.
@@ -1191,6 +1284,60 @@ script:
     - contextPath: Panorama.URLFilter.Category
       description: URL category.
       type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: URL.Category
+      description: The URL Category.
+      type: String
+  - arguments:
+    - default: true
+      description: URL to check.
+      isArray: true
+      name: url
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a URL category from URL Filtering.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: Panorama.URLFilter.URL
+      description: URL.
+      type: string
+    - contextPath: Panorama.URLFilter.Category
+      description: URL category.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: URL.Category
+      description: The URL Category.
+      type: String
   - arguments:
     - default: false
       description: URL to check.
@@ -1674,6 +1821,32 @@ script:
       name: device-group
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the EDL. Required when refreshing an EDL object which
+        is configured on Panorama.
+      isArray: false
+      name: edl_type
+      predefined:
+      - ip
+      - url
+      - domain
+      required: false
+      secret: false
+    - default: false
+      description: The location of the EDL. Required when refreshing an EDL object
+        which is configured on Panorama.
+      isArray: false
+      name: location
+      required: false
+      secret: false
+    - default: false
+      description: The Vsys of the EDL. Required when refreshing an EDL object which
+        is configured on Panorama.
+      isArray: false
+      name: vsys
+      required: false
+      secret: false
     deprecated: false
     description: Refreshes the specified external dynamic list.
     execution: false
@@ -1714,6 +1887,18 @@ script:
         names, or EDL object names.
       isArray: true
       name: destination
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of source zones.
+      isArray: true
+      name: source_zone
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of destination zones.
+      isArray: true
+      name: destination_zone
       required: false
       secret: false
     - auto: PREDEFINED
@@ -2290,6 +2475,18 @@ script:
       description: Password for Panorama, needed for the 'dlp-pcap' PCAP type only.
       isArray: false
       name: password
+      required: false
+      secret: false
+    - default: false
+      description: The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation.
+      isArray: false
+      name: deviceName
+      required: false
+      secret: false
+    - default: false
+      description: The Session ID of the PCAP. For further information, see the Panorama XML API Documentation.
+      isArray: false
+      name: sessionID
       required: false
       secret: false
     deprecated: false
@@ -3588,7 +3785,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The target device for which to reboot the Firewall.
+      description: The target device for which to reboot the firewall.
       isArray: false
       name: target
       required: false
@@ -3597,7 +3794,583 @@ script:
     description: Reboots the Firewall device.
     execution: false
     name: panorama-device-reboot
-  dockerimage: demisto/python3:3.8.3.9324
+  - arguments:
+    - default: false
+      description: The IP address for which to return information.
+      isArray: false
+      name: ip_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets location information for an IP address.
+    execution: false
+    name: panorama-show-location-ip
+    outputs:
+    - contextPath: Panorama.Location.IP.country_code
+      description: The IP location country code.
+      type: String
+    - contextPath: Panorama.Location.IP.country_name
+      description: The IP location country name.
+      type: String
+    - contextPath: Panorama.Location.IP.ip_address
+      description: The IP address.
+      type: String
+    - contextPath: Panorama.Location.IP.Status
+      description: Whether or not the IP address was found.
+      type: String
+  - deprecated: false
+    description: Gets information about available PAN-OS licenses and their statuses.
+    execution: false
+    name: panorama-get-licenses
+    outputs:
+    - contextPath: Panorama.License.Authcode
+      description: The authentication code of the license.
+      type: String
+    - contextPath: Panorama.License.Base-license-name
+      description: The base license name.
+      type: String
+    - contextPath: Panorama.License.Description
+      description: The description of the license.
+      type: String
+    - contextPath: Panorama.License.Expired
+      description: Whether the license has expired.
+      type: String
+    - contextPath: Panorama.License.Expires
+      description: When the license will expire.
+      type: String
+    - contextPath: Panorama.License.Feature
+      description: The feature of the license.
+      type: String
+    - contextPath: Panorama.License.Issued
+      description: When the license was issued.
+      type: String
+    - contextPath: Panorama.License.Serial
+      description: The serial number of the license.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The security profile for which to get information. Can be "data-filtering",
+        "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or
+        "wildfire-analysis".
+      isArray: false
+      name: security_profile
+      predefined:
+      - data-filtering
+      - file-blocking
+      - spyware
+      - url-filtering
+      - virus
+      - vulnerability
+      - wildfire-analysis
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information for the specified security profile.
+    execution: false
+    name: panorama-get-security-profiles
+    outputs:
+    - contextPath: Panorama.Spyware.Name
+      description: The profile name.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Cateogry
+      description: The category for which to apply the rule.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Packet-capture
+      description: Whether packet capture is enabled.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Severity
+      description: The rule severity.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Threat-name
+      description: The threat name for which to apply the rule.
+      type: String
+    - contextPath: Panorama.URLFilter.Name
+      description: The profile name.
+      type: String
+    - contextPath: Panorama.URLFilter.Rules.Category.Action
+      description: The rule action to apply to the category.
+      type: String
+    - contextPath: Panorama.URLFilter.Rules.Category.Name
+      description: The category name.
+      type: String
+    - contextPath: Panorama.WildFire.Name
+      description: The WildFire profile name.
+      type: String
+    - contextPath: Panorama.WildFire.Rules.Analysis
+      description: The rule analysis.
+      type: String
+    - contextPath: Panorama.WildFire.Rules.Application
+      description: The application for which to apply the rule.
+      type: String
+    - contextPath: Panorama.WildFire.Rules.File-type
+      description: The file type for which to apply the rule.
+      type: String
+    - contextPath: Panorama.WildFire.Rules.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Name
+      description: The vulnerability profile name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Vendor-id
+      description: The vendor ID for which to apply the rule.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Packet-capture
+      description: Whether packet capture is enabled.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Host
+      description: The rule host.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Cateogry
+      description: The category for which to apply the rule.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.CVE
+      description: The CVE for which to apply the rule.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Severity
+      description: The rule severity.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Threat-name
+      description: The threat for which to apply the rule.
+      type: String
+    - contextPath: Panorama.Antivirus.Name
+      description: The Antivirus profile name.
+      type: String
+    - contextPath: Panorama.Antivirus.Rules.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.Antivirus.Rules.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Antivirus.Rules.WildFire-action
+      description: The WildFire action.
+      type: String
+    - contextPath: Panorama.FileBlocking.Name
+      description: The file blocking profile name.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rules.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rules.Application
+      description: The application for which to apply the rule.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rules.File-type
+      description: The file type to apply the rule.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rules.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.DataFiltering.Name
+      description: The data filtering profile name.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Alert-threshold
+      description: The alert threshold.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Application
+      description: The application to apply the rule.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Block-threshold
+      description: The block threshold.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Data-object
+      description: The data object.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Direction
+      description: The rule direction.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.File-type
+      description: The file type for which to apply the rule.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Log-severity
+      description: The log severity.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Name
+      description: The rule name.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Security profile type. Can be 'data-filtering', 'file-blocking',
+        'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.'
+      isArray: false
+      name: profile_type
+      predefined:
+      - data-filtering
+      - file-blocking
+      - spyware
+      - url-filtering
+      - virus
+      - vulnerability
+      - wildfire-analysis
+      required: true
+      secret: false
+    - default: false
+      description: The rule name to apply.
+      isArray: false
+      name: rule_name
+      required: true
+      secret: false
+    - default: false
+      description: The profile name to apply to the rule.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'.
+        Mandatory for Panorama instances.
+      isArray: false
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      required: false
+      secret: false
+    deprecated: false
+    description: Apply a security profile to specific rules or rules with a specific
+      tag.
+    execution: false
+    name: panorama-apply-security-profile
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'.
+        Mandatory for Panorama instances.
+      isArray: false
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      required: false
+      secret: false
+    deprecated: false
+    description: Get SSL decryption rules.
+    execution: false
+    name: panorama-get-ssl-decryption-rules
+    outputs:
+    - contextPath: Panorama.SSLRule.From
+      description: The SSL rule from the source.
+      type: String
+    - contextPath: Panorama.SSLRule.Name
+      description: The name of the SSL rule.
+      type: String
+    - contextPath: Panorama.SSLRule.Destination
+      description: The destination of the SSL rule.
+      type: String
+    - contextPath: Panorama.SSLRule.Target
+      description: The target of the SSL rule.
+      type: String
+    - contextPath: Panorama.SSLRule.Service
+      description: The SSL rule service.
+      type: String
+    - contextPath: Panorama.SSLRule.Action
+      description: The SSL rule action.
+      type: String
+    - contextPath: Panorama.SSLRule.Type
+      description: The SSL rule type.
+      type: String
+    - contextPath: Panorama.SSLRule.Source
+      description: The source of the SSL rule.
+      type: String
+    - contextPath: Panorama.SSLRule.To
+      description: The SSL rule to destination.
+      type: String
+    - contextPath: Panorama.SSLRule.UUID
+      description: The SSL rule UUID.
+      type: String
+    - contextPath: Panorama.SSLRule.Description
+      description: The SSL rule description.
+      type: String
+    - contextPath: Panorama.SSLRule.Source-user
+      description: The SSL rule source user.
+      type: String
+    - contextPath: Panorama.SSLRule.Category
+      description: The SSL rule category.
+      type: String
+  - arguments:
+    - default: false
+      description: The template name.
+      isArray: false
+      name: template
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the Wildfire configuration.
+    execution: false
+    name: panorama-get-wildfire-configuration
+    outputs:
+    - contextPath: Panorama.WildFire.Name
+      description: The file type.
+      type: String
+    - contextPath: Panorama.WildFire.Size-limit
+      description: The file size limit.
+      type: String
+    - contextPath: Panorama.WildFire.recurring
+      description: The schedule that is recurring.
+      type: String
+  - arguments:
+    - default: false
+      description: The url-filtering profile name. Get the name by running the get-security-profiles
+        command.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Set default categories to block in the URL filtering profile.
+    execution: false
+    name: panorama-url-filtering-block-default-categories
+  - deprecated: false
+    description: Get anti-spyware best practices.
+    execution: false
+    name: panorama-get-anti-spyware-best-practice
+    outputs:
+    - contextPath: Panorama.Spyware.BotentDomain.Name
+      description: The botnet domain name.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Action
+      description: The botnet domain action.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Packet-capture
+      description: Whether packet capture is enabled.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Sinkhole.ipv4-address
+      description: The botnet domain IPv4 address.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Sinkhole.ipv6-address
+      description: The Botnet domain IPv6 address.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Cateogry
+      description: The rule category.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Severity
+      description: The rule severity.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Threat-name
+      description: The rule threat name.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Max_version
+      description: The botnet domain max version.
+      type: String
+  - deprecated: false
+    description: Get file-blocking best practices.
+    execution: false
+    name: panorama-get-file-blocking-best-practice
+    outputs:
+    - contextPath: Panorama.FileBlocking.Rule.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rule.Application
+      description: The rule application.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rule.File-type
+      description: The rule file type.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rule.Name
+      description: The rule name.
+      type: String
+  - deprecated: false
+    description: Get anti-virus best practices.
+    execution: false
+    name: panorama-get-antivirus-best-practice
+    outputs:
+    - contextPath: Panorama.Antivirus.Decoder.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.Antivirus.Decoder.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Antivirus.Decoder.WildFire-action
+      description: The WildFire action.
+      type: String
+  - deprecated: false
+    description: Get vulnerability-protection best practices.
+    execution: false
+    name: panorama-get-vulnerability-protection-best-practice
+    outputs:
+    - contextPath: Panorama.Vulnerability.Rule.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.CVE
+      description: The rule CVE.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Cateogry
+      description: The rule category.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Host
+      description: The rule host.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Severity
+      description: The rule severity.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Threat-name
+      description: The threat name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Vendor-id
+      description: The vendor ID.
+      type: String
+  - deprecated: false
+    description: View WildFire best practices.
+    execution: false
+    name: panorama-get-wildfire-best-practice
+    outputs:
+    - contextPath: Panorama.WildFire.Analysis
+      description: The WildFire analysis.
+      type: String
+    - contextPath: Panorama.WildFire.Application
+      description: The WildFire application.
+      type: String
+    - contextPath: Panorama.WildFire.File.File-size
+      description: The recommended file size.
+      type: String
+    - contextPath: Panorama.WildFire.File.Name
+      description: The file name.
+      type: String
+    - contextPath: Panorama.WildFire.File-type
+      description: The WildFire profile file type.
+      type: String
+    - contextPath: Panorama.WildFire.Name
+      description: The WildFire profile name.
+      type: String
+    - contextPath: Panorama.WildFire.SSLDecrypt
+      description: The SSL decrypt content.
+      type: String
+    - contextPath: Panorama.WildFire.Schedule.Action
+      description: The WildFire schedule action.
+      type: String
+    - contextPath: Panorama.WildFire.Schedule.Recurring
+      description: The WildFire schedule recurring.
+      type: String
+  - deprecated: false
+    description: View URL Filtering best practices.
+    execution: false
+    name: panorama-get-url-filtering-best-practice
+    outputs:
+    - contextPath: Panorama.URLFilter.Category.Action
+      description: The action to perform on the category.
+      type: String
+    - contextPath: Panorama.URLFilter.Category.Name
+      description: The category name.
+      type: String
+    - contextPath: Panorama.URLFilter.DeviceGroup
+      description: The device group name.
+      type: String
+    - contextPath: Panorama.URLFilter.Name
+      description: The Profile name.
+      type: String
+    - contextPath: Panorama.URLFilter.Header.log-container-page-only
+      description: The log container page only.
+      type: String
+    - contextPath: Panorama.URLFilter.Header.log-http-hdr-referer
+      description: The log HTTP header referer.
+      type: String
+    - contextPath: Panorama.URLFilter.Header.log-http-hdr-user
+      description: The log HTTP header user.
+      type: String
+    - contextPath: Panorama.URLFilter.Header.log-http-hdr-xff
+      description: The log HTTP header xff.
+      type: String
+  - arguments:
+    - default: false
+      description: The template name.
+      isArray: false
+      name: template
+      required: true
+      secret: false
+    deprecated: false
+    description: Enforces wildfire best practices to upload files to the maximum size,
+      forwards all file types, and updates the schedule.
+    execution: false
+    name: panorama-enforce-wildfire-best-practice
+  - arguments:
+    - default: false
+      description: The name of the profile to create.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates an antivirus best practice profile.
+    execution: false
+    name: panorama-create-antivirus-best-practice-profile
+  - arguments:
+    - default: false
+      description: The profile name to create.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates an Anti-Spyware best practice profile.
+    execution: false
+    name: panorama-create-anti-spyware-best-practice-profile
+  - arguments:
+    - default: false
+      description: The profile name.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a vulnerability protection best practice profile.
+    execution: false
+    name: panorama-create-vulnerability-best-practice-profile
+  - arguments:
+    - default: false
+      description: The profile name.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a URL filtering best practice profile.
+    execution: false
+    name: panorama-create-url-filtering-best-practice-profile
+  - arguments:
+    - default: false
+      description: The name of the profile.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a file blocking best practice profile.
+    execution: false
+    name: panorama-create-file-blocking-best-practice-profile
+  - arguments:
+    - default: false
+      description: The name of the profile.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a WildFire analysis best practice profile.
+    execution: false
+    name: panorama-create-wildfire-best-practice-profile
+  dockerimage: demisto/python3:3.8.5.11789
   feed: false
   isfetch: false
   longRunning: false
@@ -3609,4 +4382,4 @@ script:
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
-fromversion: 3.0.0
+fromversion: 5.0.0

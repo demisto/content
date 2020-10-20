@@ -29,8 +29,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: A threat intelligence and investigation platform for domain names, IP addresses, email addresses, name servers
-  and so on.
+description: A threat intelligence and investigation platform for domain names, IP addresses, email addresses, name servers and so on.
 display: DomainTools Iris
 name: DomainTools Iris
 script:
@@ -99,7 +98,7 @@ script:
       description: The Threat Profile Risk Score in DomainTools.
       type: Number
     - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Threats
-      description: The threats of the Threat Profile Risk Score in DomainTools. 
+      description: The threats of the Threat Profile Risk Score in DomainTools.
       type: String
     - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Evidence
       description: The Threat Profile Risk Score Evidence in DomainTools.
@@ -207,7 +206,7 @@ script:
       description: The Email value of the billing contact.
       type: String
     - contextPath: DomainTools.Domains.Identity.BillingContact.Email.count
-      description: The Email count of the billing contact. 
+      description: The Email count of the billing contact.
       type: Number
     - contextPath: DomainTools.Domains.Identity.BillingContact.Name.value
       description: The name value of the billing contact.
@@ -258,7 +257,7 @@ script:
       description: The ASN count of IP addresses.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.value
-      description: The country code value of IP addresses. 
+      description: The country code value of IP addresses.
       type: String
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.count
       description: The country code count of IP addresses.
@@ -318,16 +317,16 @@ script:
       description: The hash count of the SSL certificate.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.value
-      description: The organization value of the SSL certificate. 
+      description: The organization value of the SSL certificate.
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.count
-      description: The organization count of the SSL certificate information. 
+      description: The organization count of the SSL certificate information.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject.value
       description: The subject value of the SSL certificate information.
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject.count
-      description: The subject count of the SSL certificate information. 
+      description: The subject count of the SSL certificate information.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.RedirectsTo.value
       description: The Redirects To Value of the domain.
@@ -444,7 +443,7 @@ script:
       description: The country count of the registrant contact.
       type: Number
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Email.value
-      description: The Email value of the registrant contact. 
+      description: The Email value of the registrant contact.
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Email.count
       description: The Email count of the registrant contact.
@@ -492,7 +491,7 @@ script:
       description: The phone count of the administrator contact.
       type: Number
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Country.value
-      description: The country value of the technical contact. 
+      description: The country value of the technical contact.
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Country.count
       description: The country count of the technical contact.
@@ -576,7 +575,7 @@ script:
       description: The ASN counts of the IP addresses.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.value
-      description: The country code values of the IP addresses. 
+      description: The country code values of the IP addresses.
       type: String
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.count
       description: The country code counts of the IP addresses.
@@ -624,16 +623,16 @@ script:
       description: The host count of the DomainTools Domains NameServers.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.NameServers.ip.value
-      description: The IP value of the DomainTools Domains NameServers. 
+      description: The IP value of the DomainTools Domains NameServers.
       type: String
     - contextPath: DomainTools.Domains.Hosting.NameServers.ip.count
-      description: The IP count of the DomainTools Domains NameServers. 
+      description: The IP count of the DomainTools Domains NameServers.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.value
-      description: The hash value of the SSL certificate. 
+      description: The hash value of the SSL certificate.
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.count
-      description: The hash count of the SSL certificate. 
+      description: The hash count of the SSL certificate.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.value
       description: The organization value of the SSL certificate.
@@ -933,22 +932,22 @@ script:
       description: The domain value of the DomainTools Domains NameServers.
       type: String
     - contextPath: DomainTools.Domains.Hosting.NameServers.domain.count
-      description: The domain count of the DomainTools Domains NameServers. 
+      description: The domain count of the DomainTools Domains NameServers.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.NameServers.host.value
       description: The host value of the DomainTools Domains NameServers.
       type: String
     - contextPath: DomainTools.Domains.Hosting.NameServers.host.count
-      description: The host count of the DomainTools Domains NameServers. 
+      description: The host count of the DomainTools Domains NameServers.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.NameServers.ip.value
       description: The IP value of the DomainTools Domains NameServers.
       type: String
     - contextPath: DomainTools.Domains.Hosting.NameServers.ip.count
-      description: The IP count of the DomainTools Domains NameServers. 
+      description: The IP count of the DomainTools Domains NameServers.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.value
-      description: The hash value of the SSL certificate.  
+      description: The hash value of the SSL certificate.
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.count
       description: The hash count of the SSL certificate.
@@ -1289,7 +1288,7 @@ script:
     - contextPath: DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
       description: The tracking code Google Analytics.
       type: Number
-  dockerimage: demisto/python3:3.7.4.2728
+  dockerimage: demisto/python3:3.8.3.9324
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -1298,5 +1297,5 @@ script:
   type: python
   subtype: python3
 tests:
-- DomainTools Iris - Test
-fromversion: 4.1.0
+- No test - test 'DomainTools Iris - Test' was moved to NonCircleFolder
+fromversion: 5.0.0

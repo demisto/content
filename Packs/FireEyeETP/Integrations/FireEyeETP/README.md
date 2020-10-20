@@ -5,12 +5,13 @@ Use the FireEye Email Threat Prevention (ETP) integration to import messages as 
 
 ## Use Cases
 * Search for messages using specific message attributes as indicators.
-* Import messages as Demisto incidents, using the message status as indicator.
+* Import messages as Cortex XSOAR incidents, using the message status as indicator.
 
 ## Prerequisites
 Make sure you obtain the following information.
 * Valid FireEye ETP account
 * Configure an API key on the ETP Web portal. Select the product as both *Email Threat Prevention* and *Identity Access Management*. Select all entitlements.
+* Upon Authentication errors, contact FireEye Technical Support to let them know the IP address of your Cortex XSOAR Server and the URL you are accessing , e.g. https://etp.us.fireeye.com. FireEye will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex XSOAR and FireEye ETP.
 
 ## Configure FireEye ETP on Demisto
 1. Navigate to *Settings > Integrations > Servers & Services*.

@@ -1,4 +1,4 @@
-Gets an email addresses's reputation using one or more integrations.
+DEPRECATED. Use "Email Address Enrichment - Generic v2.1" playbook instead. Gets an email addresses's reputation using one or more integrations.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

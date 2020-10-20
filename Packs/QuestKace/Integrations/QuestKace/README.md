@@ -21,7 +21,7 @@ Custom fields of tickets are represented by their custom number and not but thei
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Quest KACE URL, in the format https://company.works.com/ | True |
+| url | Quest KACE URL, in the format: `https://company.works.com/` | True |
 | credentials | Username | True |
 | isFetch | Fetch incidents | False |
 | fetch_time | First fetch time range \(&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes\) | False |

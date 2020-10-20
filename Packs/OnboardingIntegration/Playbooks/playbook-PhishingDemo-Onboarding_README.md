@@ -1,4 +1,4 @@
-Focuses on phishing scenarios. This playbook is part of the on-boarding experience. To use this playbook, you'll need to enable the `on-boarding` integration and configure incidents of type `Phishing`. For more information, refer to the on-boarding walkthroughs in the help section.
+Focuses on phishing scenarios. This playbook is part of the on-boarding experience. To use this playbook, you'll need to enable the `on-boarding` integration and configure incidents of type `Phishing`.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

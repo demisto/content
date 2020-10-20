@@ -40,7 +40,7 @@ This playbook does not use any integrations.
 | inbound-or-outbound-rule | Determines if the rule is inbound or outbound. | - |Optional |
 | action-type | The action that will be defined in the rule. Can be, "allow", "deny", or "drop". |-  | Optional |
 | pre-post-rulebase | Whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama. | - |Required |
-| device-group | The device group for which to return results. For panorama only. | - |Optional |
+| device-group | The device group for which to return results. This will override the default device group defined in the PAN-OS integration instance. For Panorama only. | - |Optional |
 
 ## Playbook Outputs
 ---
