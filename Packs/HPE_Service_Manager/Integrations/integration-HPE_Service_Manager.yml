@@ -26,7 +26,7 @@ configuration:
   required: false
 - display: The incidents endpoint name that will be used to operate on the incidents
   name: resourcename
-  defaultvalue: Incidents
+  defaultvalue: incidents
   type: 0
   required: true
 - display: The KEY name for the resource
