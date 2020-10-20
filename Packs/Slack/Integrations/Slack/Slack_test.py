@@ -309,7 +309,7 @@ PAYLOAD_JSON = r'''
 '''
 
 
-def test_exception_in_invite_to_mirrored_channel(mocker, capfd):
+def test_exception_in_invite_to_mirrored_channel(mocker):
     import Slack
     from Slack import check_for_mirrors
     new_user = {
