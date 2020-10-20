@@ -1297,11 +1297,8 @@ def main():
         tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests,
                                         build.is_nightly)
         print(f"List of tests to run: {tests_for_iteration}")
-        #  Getting list of pack ids.
-        pack_ids = get_non_added_packs_ids(build)
         #  Installing the packs.
-        installed_content_packs_successfully = install_packs_private(build, prints_manager,
-                                                                     pack_ids=pack_ids)
+        installed_content_packs_successfully = install_packs_private(build, prints_manager)
         #  Get a list of the integrations that have changed.
         new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
         print(f"Identified {new_integrations} as new integrations.\nIdentified {modified_integrations} as modified integrations.")
