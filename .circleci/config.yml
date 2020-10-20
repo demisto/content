@@ -46,9 +46,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.9.2"
+      CONTENT_VERSION: "20.10.0"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "64cac0b349187b861c4c717951a634de52caba03" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "8a93f9ad1328fc1f2e4ed75aec24d10159d68312" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -157,6 +157,58 @@ references:
         python3 --version
         demisto-sdk --version
 
+  download_configuration: &download_configuration
+    run:
+      name: Download Configuration
+      when: always
+      command: |
+        if ./Tests/scripts/is_ami.sh ;
+          then
+            ./Tests/scripts/download_demisto_conf.sh
+
+          else
+            ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
+        fi
+
+  create_instance: &create_instance
+    run:
+      name: Create Instance
+      when: on_success
+      command: |
+        [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+        if ./Tests/scripts/is_ami.sh ;
+          then
+            if [ -n "${NIGHTLY}" ] ;
+              then
+                export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
+            elif [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
+            elif [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
+              then
+                export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
+            else
+              export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
+            fi
+            python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
+
+          else
+            . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+            python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
+        fi
+
+  setup_instance: &setup_instance
+    run:
+      name: Setup Instance
+      when: on_success
+      command: |
+        if ./Tests/scripts/is_ami.sh ;
+          then
+            python3 ./Tests/scripts/run_content_installation.py
+          else
+            ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
+        fi
+
   create_artifact: &create_artifact
     run:
       name: Create Content Artifacts
@@ -173,11 +225,6 @@ references:
     run:
       name: Destroy Instances
       command: |
-        if [ -n "${DEMISTO_SDK_NIGHTLY}" ]
-          then
-            echo "Skipping - not running in demisto-sdk nightly"
-            exit 0
-        fi
         if [ -n "${CONTRIB_BRANCH}" ]
           then
             echo "Skipping - not running in contribution instance"
@@ -326,6 +373,7 @@ references:
                 REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
                 python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO
+
   comment_on_contrib_pr: &comment_on_contrib_pr
     when:
       condition: << pipeline.parameters.contrib_branch >>
@@ -337,6 +385,24 @@ references:
               # Demisto Marketplace refers to Server Master
               SERVER_URL=$(jq -r 'select(.[].Role == "Demisto Marketplace") | .[].InstanceDNS' ./env_results.json)
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
+
+  upload_entities_to_cortex_xsoar: &upload_entities_to_cortex_xsoar
+    run:
+        name: Upload entities to Cortex XSOAR
+        command: |
+          demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
+          demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
+          demisto-sdk upload -i Packs/HelloWorld/Layouts/layout-Hello_World_Test_Layout.json --insecure
+          demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Incident_Test.json --insecure
+          demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
+
+
+  sdk_nightly_jobs: &sdk_nightly_jobs
+    - Demisto SDK Nightly:
+        context: sdk_nightly_env
+    - Demisto SDK Nightly - Run against Cortex XSOAR:
+        context: sdk_nightly_env
+
 jobs:
   Setup Environment:
     <<: *container_config
@@ -471,17 +537,7 @@ jobs:
       - *common_server_documentation
       - *create_artifact
       - *update_tests_step
-      - run:
-          name: Download Configuration
-          when: always
-          command: |
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/download_demisto_conf.sh
-
-              else
-                ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
-            fi
+      - *download_configuration
       - run:
           name: Download Artifacts
           when: always
@@ -523,104 +579,10 @@ jobs:
                 name: Store Artifacts to GCS
                 command: ./Tests/scripts/upload_artifacts.sh
                 when: always
-            - run:
-                name: Create Instance
-                when: on_success
-                command: |
-                  [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      if [ -n "${NIGHTLY}" ] ;
-                        then
-                          export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
-                      elif [ -n "${INSTANCE_TESTS}" ] ;
-                        then
-                          export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
-                      elif [ -n "${CONTRIB_BRANCH}" ] ;
-                        then
-                          export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
-                      else
-                        export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
-                      fi
-                      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
-
-                    else
-                      . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
-                  fi
-            - run:
-                name: Setup Instance
-                when: on_success
-                command: |
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      python3 ./Tests/scripts/run_content_installation.py
-                    else
-                      ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                  fi
+            - *create_instance
+            - *setup_instance
             - *store_artifacts
       - *persist_to_workspace
-  Server 4_5:
-    <<: *container_config
-    resource_class: medium
-    <<: *environment
-    steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - run:
-                name: Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
-      - unless:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - *attach_workspace
-            - *add_ssh_keys
-            - *prepare_environment
-            - run:
-                name: Wait until server ready
-                shell: /bin/bash
-                when: always
-                command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto one before GA"
-            - run:
-                name: Run Tests - Server 4.5
-                shell: /bin/bash
-                when: always
-                command: |
-                  echo 'export INSTANCE_ROLE="Demisto one before GA"' >> $BASH_ENV
-                  source $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
-                  echo "Demisto one before GA filter=$TEMP"
-                  if [[ "$TEMP" == "false" ]];
-                    then
-                      echo "Skipping - instance was not setup"
-                      exit 0
-                  fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-
-                    else
-                      echo "Not AMI run, can't run on this version"
-                      exit 0
-                  fi
-            - *destroy_instances
-            - *store_artifacts
   Server 5_0:
     <<: *container_config
     resource_class: medium
@@ -1010,11 +972,73 @@ jobs:
             ./Tests/scripts/slack_notifier.sh 'sdk_faild_steps' ./env_results.json
           when: always
 
+  Demisto SDK Nightly - Run against Cortex XSOAR:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - checkout
+      - setup_remote_docker
+      - *restore_cache
+      - *prepare_environment
+      - *download_configuration
+      - *create_instance
+      - *setup_instance
+      - run:
+          name: Wait until server ready
+          when: always
+          command: |
+            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
+            echo "export DEMISTO_BASE_URL=\"https://$(cat env_results.json | jq -r '.[0].InstanceDNS')\"" >> $BASH_ENV
+            echo "Server URL: $DEMISTO_BASE_URL"
+      - run:
+          name: Install SDK Master
+          command: pip3 install git+https://github.com/demisto/demisto-sdk.git
+      - run:
+          name: Unlock HelloWorld integration and playbook
+          command: python3 Tests/sdknightly/unlock_entity.py integration HelloWorld
+      - run:
+          name: Create and upload incident type, incident field and a layout to Cortex XSOAR
+          command: python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $CIRCLE_ARTIFACTS
+      - *upload_entities_to_cortex_xsoar
+      - run:
+          name: Download entities from Cortex XSOAR
+          command: |
+            demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
+            demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
+            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Incident Test" --insecure -f
+            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
+      - run:
+          name: Format the entities
+          command: demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
+      - run:
+          name: Run validate
+          command: demisto-sdk validate -i Packs/HelloWorld/
+      - run:
+          name: Run lint
+          command: demisto-sdk lint -i Packs/HelloWorld/
+      - *upload_entities_to_cortex_xsoar
+      - *destroy_instances
+      - *store_artifacts
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' ./env_results.json
+          when: always
 
 workflows:
   version: 2
   commit:
-    unless: << pipeline.parameters.force_pack_upload >>
+    when:
+      not:
+        or:
+        - << pipeline.parameters.force_pack_upload >>
+        - << pipeline.parameters.demisto_sdk_nightly >>
     jobs:
       - Setup Environment
       - Create Instances:
@@ -1027,12 +1051,6 @@ workflows:
       - Run Validations:
           requires:
             - Setup Environment
-      - Server 4_5:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
       - Server 5_0:
           filters:
             branches:
@@ -1136,5 +1154,10 @@ workflows:
               only:
                 - master
     jobs:
-      - Demisto SDK Nightly:
-          context: sdk_nightly_env
+      *sdk_nightly_jobs
+
+  sdk_nightly_trigger:
+    # will initiate when using the trigger script.
+    when: << pipeline.parameters.demisto_sdk_nightly>>
+    jobs:
+      *sdk_nightly_jobs

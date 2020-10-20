@@ -157,6 +157,7 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
 
     client = MockClient()
 
+    mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
     mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
     prints_manager = ParallelPrintsManager(1)

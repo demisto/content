@@ -113,7 +113,8 @@ def construct_entities_block(entities_data: dict):
     """
     release_notes = ''
     for entity_type, entities_description in sorted(entities_data.items()):
-        release_notes += f'#### {entity_type}\n'
+        pretty_entity_type = re.sub(r'(\w)([A-Z])', r'\1 \2', entity_type)
+        release_notes += f'#### {pretty_entity_type}\n'
         for name, description in entities_description.items():
             if entity_type in ('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields'):
                 release_notes += f'- **{name}**\n'
@@ -417,7 +418,6 @@ def main():
     new_packs = get_new_packs(args.git_sha1)
     new_packs_release_notes = {}
     new_packs_metadata = {}
-    new_packs
     for pack in new_packs:
         pack_metadata = get_pack_metadata(pack)
         pack_name = pack_metadata.get('name')
