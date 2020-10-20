@@ -64,7 +64,8 @@ def get_destination_domains(client: Client, **args) -> CommandResults:
         x['Destination List'] = destinationListId
 
     results = CommandResults(
-        outputs_prefix="Umbrella.Destinations", outputs_key_field=f"data.id", outputs=r, readable_output=tableToMarkdown('Domains in Destination List', r.get('data'))
+        outputs_prefix="Umbrella.Destinations", outputs_key_field="data.id", outputs=r,
+        readable_output=tableToMarkdown('Domains in Destination List', r.get('data'))
     )
 
     return results

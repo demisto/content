@@ -27,6 +27,7 @@ script:
     name: umbrella-get-destination-lists
     outputs:
     - contextPath: Umbrella.DestinationLists
+      description: ''
       type: Unknown
   - arguments:
     - description: Optional organization ID. If not provided, will use the one provided
@@ -57,7 +58,7 @@ script:
       required: true
     description: Get's the domains listed in a destination list
     name: umbrella-get-destination-domains
-  dockerimage: demisto/python3:3.7.5.4583
+  dockerimage: demisto/python3:3.8.6.12176
   runonce: false
   script: ''
   subtype: python3
