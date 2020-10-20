@@ -218,14 +218,15 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
         return None, None
 
 
-def return_entry(message, existing_incident=None):
+def return_entry(message, existing_incident=None, similarity=0):
     if existing_incident is None:
         similar_incident = {}
     else:
         similar_incident = {
             'rawId': existing_incident['id'],
             'id': existing_incident['id'],
-            'name': existing_incident.get('name')
+            'name': existing_incident.get('name'),
+            'similarity': similarity
         }
     outputs = {
         'similarIncident': similar_incident,
@@ -245,7 +246,7 @@ def close_new_incident_and_link_to_existing(new_incident, existing_incident, sim
             return_error(res)
         message += 'This incident (#{}) will be closed and linked to #{}.'.format(new_incident['id'],
                                                                                   existing_incident['id'])
-    return_entry(message, existing_incident.to_dict())
+    return_entry(message, existing_incident.to_dict(), similarity)
 
 
 def create_new_incident():

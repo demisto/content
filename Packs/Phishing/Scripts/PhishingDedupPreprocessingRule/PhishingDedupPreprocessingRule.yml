@@ -142,6 +142,10 @@ outputs:
   - contextPath: similarIncident.rawId
     description: Similar incident ID.
     type: Unknown
+  - contextPath: similarIncident.similarity
+    description: 'Number in range 0-1 which describe the similairty between the existing
+    incident and the new incident. '
+    type: Unknown
 script: '-'
 subtype: python3
 system: false
