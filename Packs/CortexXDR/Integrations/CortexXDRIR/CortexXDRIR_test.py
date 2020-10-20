@@ -1324,7 +1324,6 @@ def test_get_script_execution_results_command(requests_mock):
 #         """
 #     from CortexXDRIR import get_script_execution_result_files_command, Client
 #
-#     # todo: add file
 #     get_script_execution_results_files_reply = load_test_data('./test_data/get_script_execution_results_files.json')
 #     get_script_execution_results_files_command_expected_result = {
 #         'PaloAltoNetworksXDR.scriptExecutionResultFile(val.actionId == obj.actionId)':

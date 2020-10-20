@@ -1380,3 +1380,428 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 
 ## Troubleshooting
  - In case you encounter ReadTimeoutError, we recommend increasing the HTTP request timeout by setting it in the **HTTP Timeout** integration parameter.
+### xdr-get-policy
+***
+Get the policy name for a specific endpoint.
+
+
+#### Base Command
+
+`xdr-get-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_id | The endpoint ID. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.policyName | string | Name of the policy allocated with the endpoint. | 
+| PaloAltoNetworksXDR.policyName.policy_name | unknown | Name of the policy allocated with the endpoint. | 
+| PaloAltoNetworksXDR.policyName.endpoint_id | unknown | Endpoint id | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### xdr-get-endpoint-violations
+***
+Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
+
+
+#### Base Command
+
+`xdr-get-endpoint-violations`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma separated list of endpoint IDs. | Optional | 
+| type | Type of violation | Optional | 
+| timestamp_gte | Timestamp of the violation - GTE | Optional | 
+| timestamp_lte | Timestamp of the violation - LTE | Optional | 
+| ip_list | Comma separated list of IP addresses | Optional | 
+| vendor | Name of vendor | Optional | 
+| vendor_id | Vendor ID | Optional | 
+| product | Name of product | Optional | 
+| product_id | Product ID | Optional | 
+| serial | Serial Number | Optional | 
+| hostname | Hostname | Optional | 
+| violation_id_list | Comma separated list of violation IDs | Optional | 
+| username | Username | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.EndpointViolations | unknown | Number of total results of this filter without paging, Number of alerts actually returned as result \(integer\),  A list of violations \(list\). | 
+| PaloAltoNetworksXDR.EndpointViolations.total_count | unknown | Number of total results of this filter without paging. | 
+| PaloAltoNetworksXDR.EndpointViolations.result_count | unknown | Number of alerts actually returned as result \(integer\). | 
+| PaloAltoNetworksXDR.EndpointViolations.violations | unknown | A list of violations \(list\). | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.os_type | unknown | Type of the operation system | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.hostname | unknown | Hostname | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.username | unknown | Username | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.ip | unknown | IP address  | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.timestamp | unknown | Timestamp of the violation | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.violation_id | unknown | Violation ID | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.type | unknown | Type of violation | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.vendor_id | unknown | Vendor ID | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.vendor | unknown | Name of vendor | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.product_id | unknown | Product ID | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.product | unknown | Name of product | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.serial | unknown | Serial Number | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.endpoint_id | unknown | Endpoint ID | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### xdr-retrieve-files
+***
+Retrieve files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. Please enter endpoint_ids and at least one file path.
+
+
+#### Base Command
+
+`xdr-retrieve-files`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma separated list of endpoint IDs | Required | 
+| windows_file_paths | The type of platform and files you want to retrieve - comma separated list of strings.  | Optional | 
+| linux_file_paths | The type of platform and files you want to retrieve - comma separated list of strings.  | Optional | 
+| mac_file_paths | The type of platform and files you want to retrieve - comma separated list of strings.  | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.retrievedFiles.actionId | unknown | ID of action to retrieve files from selected endpoints. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### xdr-retrieve-file-details
+***
+View the file retrieved by the Retrieve File request according to the action ID.
+
+
+#### Base Command
+
+`xdr-retrieve-file-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_id | String the represents the Action ID of the Retrieve File request. Action ID it is an output of Retrieve File request. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.retrievedFileDetails | unknown | Data — Link to the file retrieved by Retrieve File request. | 
+| PaloAltoNetworksXDR.retrievedFileDetails.endpoint_id | unknown | Endpoint ID. | 
+| PaloAltoNetworksXDR.retrievedFileDetails.file_link | unknown | Link to the file retrieved by Retrieve File request. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### xdr-get-scripts
+***
+Get a list of scripts available in the scripts library.
+
+
+#### Base Command
+
+`xdr-get-scripts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| script_name | String of the script name, or comma separated list of strings | Optional | 
+| description | String of the script description, or comma separated list of strings | Optional | 
+| created_by | String of the user name of who created the script or comma separated list of strings | Optional | 
+| windows_supported | Whether the script can be executed on Windows operating system. | Optional | 
+| linux_supported | Whether the script can be executed on Linux operating system. | Optional | 
+| macos_supported | Whether the script can be executed on Mac operating system. | Optional | 
+| is_high_risk | Whether the script has a high-risk outcome. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.Scripts | unknown | An array of scripts containing the following information: name,  description, modification_date, created_by, windows_supported, linux_supported, macos_supported, is_high_risk. | 
+| PaloAltoNetworksXDR.Scripts.script_id | unknown | Script ID | 
+| PaloAltoNetworksXDR.Scripts.name | string | Name of the script | 
+| PaloAltoNetworksXDR.Scripts.description | string | Description of the script | 
+| PaloAltoNetworksXDR.Scripts.modification_date | unknown | Timestamp of when the script was last modified. | 
+| PaloAltoNetworksXDR.Scripts.created_by | string | name of the user who created the script. | 
+| PaloAltoNetworksXDR.Scripts.windows_supported | unknown | Whether the script can be executed on Windows OS. | 
+| PaloAltoNetworksXDR.Scripts.linux_supported | unknown | Whether the script can be executed on Linux OS. | 
+| PaloAltoNetworksXDR.Scripts.macos_supported | unknown | Whether the script can be executed on macOS. | 
+| PaloAltoNetworksXDR.Scripts.is_high_risk | unknown | Whether the script has a high-risk outcome. | 
+| PaloAltoNetworksXDR.Scripts.script_uid | unknown | GUID, global ID of the script, used to identify the script when executing. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### xdr-get-script-metadata
+***
+Get the full definitions of a specific script in the scripts library.
+
+
+#### Base Command
+
+`xdr-get-script-metadata`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| script_uid | Unique identifier of the script, returned by the “xdr-get-scripts” command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.scriptMetadata | unknown | The full definitions of a specific script in the scripts library. | 
+| PaloAltoNetworksXDR.scriptMetadata.script_id | unknown | Script ID | 
+| PaloAltoNetworksXDR.scriptMetadata.name | unknown | Script name | 
+| PaloAltoNetworksXDR.scriptMetadata.description | unknown | Script Description | 
+| PaloAltoNetworksXDR.scriptMetadata.modification_date | unknown | Timestamp of when the script was last modified. | 
+| PaloAltoNetworksXDR.scriptMetadata.created_by | unknown | Name of the user who created the script. | 
+| PaloAltoNetworksXDR.scriptMetadata.is_high_risk | unknown | Whether the script has a high-risk outcome. | 
+| PaloAltoNetworksXDR.scriptMetadata.windows_supported | unknown | Whether the script can be executed on Windows OS. | 
+| PaloAltoNetworksXDR.scriptMetadata.linux_supported | unknown | Whether the script can be executed on Linux OS. | 
+| PaloAltoNetworksXDR.scriptMetadata.macos_supported | unknown | Whether the script can be executed on macOS. | 
+| PaloAltoNetworksXDR.scriptMetadata.entry_point | unknown | Name of the entry point selected for the script. Empty string indicate the script defined as just run. | 
+| PaloAltoNetworksXDR.scriptMetadata.script_input | unknown | Name and type for the specified entry point. | 
+| PaloAltoNetworksXDR.scriptMetadata.script_output_type | unknown | Type of output | 
+| PaloAltoNetworksXDR.scriptMetadata.script_output_dictionary_definitions | unknown | In case of the script_output_type is a dictionary an array with friendly_name, name, and type for each output is returned. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### xdr-get-script-code
+***
+Get the code of a specific script in the script library.
+
+
+#### Base Command
+
+`xdr-get-script-code`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| script_uid | Unique identifier of the script, returned by the “xdr-get-scripts” command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.scriptCode | unknown | The code of a specific script in the script library. | 
+| PaloAltoNetworksXDR.scriptCode.code | unknown | The code of a specific script in the script library. | 
+| PaloAltoNetworksXDR.scriptCode.script_uid | unknown | Script uid | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### xdr-run-script
+***
+Initiate a new endpoint script execution action using a script from the script library.
+
+
+#### Base Command
+
+`xdr-run-script`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| script_uid | GUID, unique identifier of the script, returned by the “get scripts” API per script. | Required | 
+| endpoint_ids | List of endpoint IDs. | Required | 
+| parameters | Please enter comma separated parameters at the following way : “ param1_name=param1_value, param2_name=param2_value “. You can find which parameters required for the script, by running "xdr-get-script-metadata" command. | Optional | 
+| timeout | Integer, represents the timeout in seconds for this execution. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.runScript.actionId | unknown | Action ID of the action initiated. ID will be used as a reference to track in the action center. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### xdr-get-script-execution-status
+***
+Retrieve the status of a script execution action.
+
+
+#### Base Command
+
+`xdr-get-script-execution-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_id | Integer, identifier of the action, can be found in Cortex XDR console ResponseAction CenterAction ID field, or as return value after running - "xdr-run-script" command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.scriptExecutionStatus | unknown | Action ID of the action initiated. ID will be used as a reference to track in the action center. | 
+| PaloAltoNetworksXDR.scriptExecutionStatus.general_status | unknown | general status of the action, considering the status of all the endpoints. | 
+| PaloAltoNetworksXDR.scriptExecutionStatus.error_message | unknown | Error message regarding permissions for running APIs or the action doesn’t exist. | 
+| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_timeout | unknown | number of endpoints in “timeout” status. | 
+| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_pending_abort | unknown | Number of endpoints in “pending abort” status. | 
+| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_pending | unknown | Number of endpoints in pending status. | 
+| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_in_progress | unknown | Nnumber of endpoints in “in progress” status. | 
+| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_failed | unknown | Number of endpoints in “failed” status. | 
+| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_expired | unknown | Number of endpoints in “expired” status. | 
+| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_completed_successfully | unknown | Number of endpoints in “completed successfully” status. | 
+| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_canceled | unknown | Number of endpoints in “canceled” status. | 
+| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_aborted | unknown | Number of endpoints in “aborted” status. | 
+| PaloAltoNetworksXDR.scriptExecutionStatus.action_id | unknown | Action ID of script execution. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### xdr-insert-simple-indicators
+***
+Upload IOCs as JSON objects that you retrieved from external threat intelligence sources.
+
+
+#### Base Command
+
+`xdr-insert-simple-indicators`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator | String that identifies the indicator you want to insert into Cortex XDR. | Required | 
+| type | Keyword identifying the type of indicator. | Required | 
+| severity | Keyword identifying the indicator's severity.  | Required | 
+| expiration_date | Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds. If this indicator has no expiration, use -1. If this value is NULL, the indicator receives the indicator's type default expiration date | Optional | 
+| comment | Comment string. | Optional | 
+| reputation | Keyword representing the indicator's reputation. | Optional | 
+| reliability | Character representing the indicator's reliability rating. Valid values are A - F. A is the most reliable, F is the least. | Optional | 
+| vendors | JSON array of objects representing the vendors from which this IOC was obtained. Each field in the array is: vendor_name = String representing the name of the vendor who reported this indicator. reputation = Keyword representing the vendor's reputation. Valid values are: GOOD BAD SUSPICIOUS UNKNOWN. reliability = Character representing the vendor's reliability rating. Valid values are A - F. A is the most reliable, F is the least. | Optional | 
+| class | String representing the indicator class (for example, 'Malware'). | Optional | 
+| vendor_name | String representing the name of the vendor who reported this indicator. You should enter vendor_name, vendor_reputation and vendor_reliability all of this arguments together, or none of them.  | Optional | 
+| vendor_reputation | Keyword representing the vendor's reputation. Valid values are: GOOD,BAD,SUSPICIOUS,UNKNOWN. You should enter vendor_name, vendor_reputation and vendor_reliability all of this arguments together, or none of them.  | Optional | 
+| vendor_reliability | Character representing the vendor's reliability rating. Valid values are A - F. A is the most reliable, F is the least. You should enter vendor_name, vendor_reputation and vendor_reliability all of this arguments together, or none of them.  | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### xdr-action-status-get
+***
+Retrieve the status of the requested actions according to the action ID.
+
+
+#### Base Command
+
+`xdr-action-status-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_id | The Action ID of the selected request. After performing an action, you will receive an action id. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.getActionStatus | unknown | Status of the action ID. You will receive a table of endpoint id and its status. | 
+| PaloAltoNetworksXDR.getActionStatus.endpoint_id | unknown | endpoint id. | 
+| PaloAltoNetworksXDR.getActionStatus.status | unknown | status of specific endpoint id. | 
+| PaloAltoNetworksXDR.getActionStatus.action_id | unknown | Action ID that was at the input. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### xdr-delete-endpoints
+***
+Delete selected endpoints in the Cortex XDR app. You can delete up to 1000 endpoints.
+
+
+#### Base Command
+
+`xdr-delete-endpoints`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma separated list of endpoint IDs. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+

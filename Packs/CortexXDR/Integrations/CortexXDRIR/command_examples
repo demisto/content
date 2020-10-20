@@ -18,7 +18,6 @@
 !xdr-get-quarantine-status endpoint_id=f8a2f58846b542579c12090652e79f3d file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4 file_path=/home/ec2-user/test_file.txt
 !xdr-endpoint-scan endpoint_id_list=f8a2f58846b542579c12090652e79f3d
 !xdr-restore-file file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
-!xdr-delete-endpoints endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916
 !xdr-get-policy endpoint_id="f8a2f58846b542579c12090652e79f3d"
 !xdr-get-endpoint-violations endpoint_ids="f8a2f58846b542579c12090652e79f3d" type="cd-rom"
 !xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\\Users\\demisto\\Desktop\\demisto.txt"
@@ -26,9 +25,10 @@
 !xdr-get-scripts created_by="Palo Alto Networks" is_high_risk=true
 !xdr-get-script-metadata script_uid=43973479d389f2ac7e99b6db88eaee40
 !xdr-get-script-code script_uid=548023b6e4a01ec51a495ba6e5d2a15d
-!xdr-run-script script_uid=43973479d389f2ac7e99b6db88eaee40 endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 timeout=30 parameters="path=C:\\,number_of_levels=3"
+!xdr-run-script script_uid=43973479d389f2ac7e99b6db88eaee40 endpoint_ids=23a86310665d413a958926fce5b794b3 timeout=30 parameters="path=C:\\,number_of_levels=3"
 !xdr-get-script-execution-status action_id=1777
 !xdr-get-script-execution-results action_id=1777
 !xdr-get-script-execution-result-files action_id=1777 endpoint_id=aeec6a2cc92e46fab3b6f621722e9916
 !xdr-insert-simple-indicators indicator=IndicatorTest severity=LOW type=DOMAIN_NAME class="Test" comment="Test this integration" reliability=C reputation=UNKNOWN expiration_date=12413524
 !xdr-action-status-get action_id="1819"
+!xdr-delete-endpoints endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916
