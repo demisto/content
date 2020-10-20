@@ -116,6 +116,24 @@ class Client(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
+def merge(user_profile, full_user_data):
+    """ Merges the user_profile and the full user data, such that existing attributes in user_profile will remain as
+    they are, but attributes not provided will be added to it.
+
+    Args:
+        user_profile (dict): The user profile data, in Okta format.
+        full_user_data (dict): The full user data retrieved from Okta.
+
+    Return:
+        (dict) The full user profile.
+    """
+    for attribute, value in full_user_data.get('profile').items():
+        if attribute not in user_profile.keys():
+            user_profile[attribute] = value
+
+    return user_profile
+
+
 def handle_exception(user_profile, e, action):
     """ Handles failed responses from Okta API by setting the User Profile object with the results.
 
@@ -298,8 +316,9 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
         okta_user = client.get_user(user_profile.get_attribute('email'))
         if okta_user:
             user_id = okta_user.get('id')
-            okta_profile = user_profile.map_object(mapper_out, full_app_data=okta_user)
-            updated_user = client.update_user(user_id, okta_profile)
+            okta_profile = user_profile.map_object(mapper_out)
+            full_okta_profile = merge(okta_profile, okta_user)
+            updated_user = client.update_user(user_id, full_okta_profile)
             user_profile.set_result(
                 action=IAMActions.UPDATE_USER,
                 success=True,
