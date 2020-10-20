@@ -91,12 +91,10 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
     index_generation = 0  # Setting to 0 makes the operation succeed only if there are no live versions of the blob
 
     if not os.path.exists(extract_destination_path):
-        print_error('extract_destination_path does not exist')
         os.mkdir(extract_destination_path)
 
     if not index_blob.exists():
         os.mkdir(index_folder_path)
-        print_error('index_folder_path does not exist, blob does not exist')
         return index_folder_path, index_blob, index_generation
 
     index_blob.reload()

@@ -89,12 +89,12 @@ def get_new_entity_record(entity_path: str) -> Tuple[str, str]:
     return name, description
 
 
-def construct_entities_block(entities_data: dict, add_whitespaces: bool = True):
+def construct_entities_block(entities_data: dict, add_whitespaces: bool = True) -> str:
     """
     convert entities information to a pack release note block
 
     Args:
-        entities_data: dictionary of the form:
+        entities_data (dict): dictionary of the form:
             {
                 Integrations: {
                     Integration1: <description>,
@@ -106,7 +106,7 @@ def construct_entities_block(entities_data: dict, add_whitespaces: bool = True):
                 },
                 ...
             }
-        add_whitespaces: whether to add whitespaces to the entity name or not
+        add_whitespaces (bool): whether to add whitespaces to the entity name or not
 
     Returns:
         release note block string
@@ -253,13 +253,14 @@ def get_release_notes_dict(release_notes_files):
 
 
 def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata: dict, wrap_pack: bool = True,
-                         add_whitespaces: bool = True, wrapper: str = ''):
+                         add_whitespaces: bool = True, wrapper: str = '') -> str:
     """
     merge several pack release note versions into a single block.
 
     Args:
         pack_name: pack name
         pack_versions_dict: a mapping from a pack version to a release notes file content.
+        pack_metadata: the pack metadata contents
         wrap_pack: whether to wrap the rn with the pack header or not.
         add_whitespaces: a parameter to pass to construct_entities_block function which indicates
         whether to add whitespaces to the entity name or not

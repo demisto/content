@@ -866,7 +866,7 @@ class Pack(object):
                     changelog = json.load(changelog_file)
 
                 # get the latest rn version in the changelog.json file
-                changelog_rn_versions = [LooseVersion(ver) for ver in [*changelog]]
+                changelog_rn_versions = [LooseVersion(ver) for ver in changelog]
                 changelog_rn_versions.sort()
                 # no need to check if changelog_rn_versions isn't empty because changelog file exists
                 changelog_latest_rn_version = changelog_rn_versions[-1]
