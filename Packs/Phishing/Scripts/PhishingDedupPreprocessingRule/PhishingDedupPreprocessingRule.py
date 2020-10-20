@@ -39,6 +39,7 @@ FROM_POLICY = FROM_POLICY_TEXT_ONLY
 URL_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
             r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
+IGNORE_INCIDENT_TYPE_VALUE = 'None'
 
 def get_existing_incidents(input_args, current_incident_type):
     global DEFAULT_ARGS
@@ -60,10 +61,8 @@ def get_existing_incidents(input_args, current_incident_type):
         pass
     else:
         return_error('Unsupported statusScope: {}'.format(status_scope))
-    type_values = input_args.get('incidentTypes')
-    if not type_values:
-        type_values = current_incident_type or 'None'
-    if type_values is not None and type_values != 'None':
+    type_values = input_args.get('incidentTypes', current_incident_type)
+    if type_values != IGNORE_INCIDENT_TYPE_VALUE:
         type_field = input_args.get('incidentTypeFieldName', 'type')
         type_query = generate_incident_type_query_component(type_field, type_values)
         query_components.append(type_query)
@@ -159,9 +158,10 @@ def preprocess_incidents_df(existing_incidents):
 
 def incident_has_text_fields(incident):
     text_fields = [EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_BODY_FIELD]
+    custom_fields = incident.get('CustomFields', []) or []
     if any(field in incident for field in text_fields):
         return True
-    elif 'CustomFields' in incident and any(field in (incident.get('CustomFields') or []) for field in text_fields):
+    elif 'CustomFields' in incident and any(field in custom_fields for field in text_fields):
         return True
     return False
 
@@ -293,7 +293,7 @@ def main():
     FROM_FIELD = input_args.get('emailFrom', FROM_FIELD)
     FROM_POLICY = input_args.get('fromPolicy', FROM_POLICY)
     new_incident = demisto.incidents()[0]
-    existing_incidents = get_existing_incidents(input_args, new_incident.get('type'))
+    existing_incidents = get_existing_incidents(input_args, new_incident.get('type', IGNORE_INCIDENT_TYPE_VALUE))
     demisto.debug('found {} incidents by query'.format(len(existing_incidents)))
     if len(existing_incidents) == 0:
         create_new_incident()
