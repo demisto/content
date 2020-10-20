@@ -622,7 +622,7 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- TestDarktracePlaybook
+- Darktrace Test Playbook
 fromversion: 5.0.0
 description: Handles each fetched Darktrace model breach by gathering additional detail
   about the activity and device, providing enrichment data from Darktrace and XSOAR,
