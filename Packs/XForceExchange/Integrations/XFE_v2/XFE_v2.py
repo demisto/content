@@ -216,7 +216,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
             'Indicator': report['url'],
             'Type': 'domain',
             'Vendor': 'XFE',
-            'Score': calculate_score(report['score'], threshold)
+            'Score': calculate_score(report.get('score', 0), threshold)
         }
 
         if dbot_score['Score'] == 3:
