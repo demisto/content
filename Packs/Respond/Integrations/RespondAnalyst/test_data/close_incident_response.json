@@ -1,24 +1,26 @@
 {
-  "closeIncident": {
-    "id": "5",
-    "status": "Closed",
-    "feedback": {
-      "userId": "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a",
-      "newStatus": "NonActionable",
-      "timeGiven": "1594074571368",
-      "newSelectedOptions": [
-        {
-          "id": "4",
-          "key": "unmonitoredAssets",
-          "value": "true"
-        },
-        {
-          "id": "19",
-          "key": "scopedCorrectly",
-          "value": "No"
-        }
-      ],
-      "optionalText": "new text"
+  "data": {
+    "closeIncident": {
+      "id": "5",
+      "status": "Closed",
+      "feedback": {
+        "userId": "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a",
+        "newStatus": "NonActionable",
+        "timeGiven": "1594074571368",
+        "newSelectedOptions": [
+          {
+            "id": "4",
+            "key": "unmonitoredAssets",
+            "value": "true"
+          },
+          {
+            "id": "19",
+            "key": "scopedCorrectly",
+            "value": "No"
+          }
+        ],
+        "optionalText": "new text"
+      }
     }
   }
 }

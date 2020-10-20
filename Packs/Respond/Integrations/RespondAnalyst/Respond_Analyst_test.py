@@ -26,7 +26,6 @@ def load_test_data(json_path):
         return json.load(f)
 
 
-
 def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_mock):
     from RespondAnalyst import fetch_incidents, RestClient
 
@@ -58,10 +57,10 @@ def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_m
     assert next_run['Tenant 2']['time'] is None
 
 
-def test_get_incident_command(mocker, requests_mock):
+def test_get_incident_command(requests_mock):
     from RespondAnalyst import get_incident_command, RestClient
 
-    full_incidents_response = [
+    full_incidents_response = {'data': {'fullIncidents': [
         {
             "assetClass": "Critical",
             "attackStage": "LateralMovement",
@@ -97,7 +96,10 @@ def test_get_incident_command(mocker, requests_mock):
                 "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"
             ]
         }
-    ]
+    ]}}
+
+    full_incidents_response = load_test_data(
+        'test_data/full_incidents_response_single_full_incident.json')
 
     expected_result = load_test_data('test_data/get_incident_response.json')
 
@@ -111,14 +113,15 @@ def test_get_incident_command(mocker, requests_mock):
         f'{BASE_URL}/session/tenantIdMapping',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
-    mocker.patch.object(client, 'construct_and_send_full_incidents_query',
-                        return_value=full_incidents_response)
+    requests_mock.post(
+        f'{BASE_URL}/graphql?tenantId=dev1',
+        json=full_incidents_response
+    )
     args = {
         'tenant_id': 'Tenant 1',
         'incident_id': 6
     }
     incident = get_incident_command(client, args)
-    # print(incident)
     assert incident == expected_result
 
 
@@ -179,7 +182,6 @@ def test_fetch_incidents(mocker, requests_mock):
     expected_output = load_test_data('test_data/fetch_incidents_response.json')
 
     next_run, response = fetch_incidents(client, None)
-    # print(response)
     assert expected_output == response
     assert next_run['Tenant 1']['time'] == '1591374031591'
 
@@ -193,11 +195,13 @@ def test_remove_user(mocker, requests_mock):
         verify=False
     )
     get_all_users_response = load_test_data('test_data/users.json')
-    remove_user_response = {'id': '5', 'userIds': []}
+    remove_user_response = {'data': {'removeUserFromIncident': {'id': '5', 'userIds': []}}}
     mocker.patch.object(demisto, 'info')
-    mocker.patch.object(rest_client, 'construct_and_send_remove_user_from_incident_mutation',
-                        return_value=remove_user_response)
-    requests_mock.post
+
+    requests_mock.post(
+        f'{BASE_URL}/graphql?tenantId=dev1',
+        json=remove_user_response
+    )
     requests_mock.get(
         f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
@@ -225,7 +229,8 @@ def test_remove_user(mocker, requests_mock):
 def test_assign_user(mocker, requests_mock):
     from RespondAnalyst import assign_user_command, RestClient
 
-    assign_user_response = {'id': '5', 'userIds': ['675ad53a-d8f4-4ae7-9a3a-59de6c70b912']}
+    assign_user_response = {'data': {
+        'addUserToIncident': {'id': '5', 'userIds': ['675ad53a-d8f4-4ae7-9a3a-59de6c70b912']}}}
     get_all_users_response = load_test_data('test_data/users.json')
 
     rest_client = RestClient(
@@ -234,8 +239,6 @@ def test_assign_user(mocker, requests_mock):
         verify=False
     )
     mocker.patch.object(demisto, 'info')
-    mocker.patch.object(rest_client, 'construct_and_send_add_user_to_incident_mutation',
-                        return_value=assign_user_response)
 
     requests_mock.get(
         f'{BASE_URL}/api/v0/users',
@@ -250,6 +253,10 @@ def test_assign_user(mocker, requests_mock):
         json={'userId': 'qa1-user-id', 'currentTenant': 'dev1',
               'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
+    )
+    requests_mock.post(
+        f'{BASE_URL}/graphql?tenantId=dev1',
+        json=assign_user_response
     )
 
     args = {
@@ -284,10 +291,9 @@ def test_close_incident(mocker, requests_mock):
     close_incident_response = load_test_data('test_data/close_incident_response.json')
     single_full_incident_response = load_test_data('test_data/single_full_incident.json')
 
-    mocker.patch.object(rest_client, 'construct_and_send_close_incident_mutation',
-                        return_value=close_incident_response)
     mocker.patch.object(rest_client, 'construct_and_send_full_incidents_query',
                         return_value=single_full_incident_response)
+
     requests_mock.get(
         f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
@@ -301,6 +307,10 @@ def test_close_incident(mocker, requests_mock):
         json={'userId': 'qa1-user-id', 'currentTenant': 'dev1',
               'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
+    )
+    requests_mock.post(
+        f'{BASE_URL}/graphql?tenantId=dev1',
+        json=close_incident_response
     )
 
     args = {
@@ -453,3 +463,29 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
 
     demisto.error.assert_any_call(
         "error closing incident and/or updating feedback: 'type' object is not subscriptable")
+
+
+def test_get_remote_data_command(mocker, requests_mock):
+    from RespondAnalyst import get_remote_data_command, RestClient
+    full_incidents_response = load_test_data(
+        'test_data/full_incidents_response_single_full_incident.json')
+
+    rest_client = RestClient(
+        base_url='https://localhost:6078',
+        auth=('un', 'pw'),
+        verify=False
+    )
+    requests_mock.get(
+        f'{BASE_URL}/session/tenantIdMapping',
+        json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
+    )
+    requests_mock.post(
+        f'{BASE_URL}/graphql?tenantId=dev1',
+        json=full_incidents_response
+    )
+
+    args = {'id': 'Tenant 1:1'}
+    res = get_remote_data_command(rest_client, args)
+    expected_result = full_incidents_response.get('data').get('fullIncidents')
+    expected_result[0]['id'] = args['id']
+    assert res == expected_result

@@ -542,11 +542,10 @@ def get_remote_data_command(rest_client, args):
     args['tenant_id'] = args.get('id').split(':')[0]
     args['incident_id'] = args.get('id').split(':')[1]
 
-    incident_data = {}
     entries = []
     try:
         updated_incident = get_incident_command(rest_client, args, False)
-        updated_incident['id'] = updated_incident.get('respondRemoteId')
+        updated_incident['id'] = args.get('id')
         demisto.debug(f"Respond incident {args.get('id')}\n"
                       f"update time:   {arg_to_timestamp(args.get('last_update'), 'last_update')}")
 
