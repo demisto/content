@@ -15,24 +15,5 @@
     "keywords": [],
     "githubUser": [
         "Dan-at-Extrahop"
-    ],
-    "dependencies": {
-        "CommonPlaybooks": {
-            "mandatory": true,
-            "display_name": "Common Playbooks"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        }
-    },
-    "displayedImages": [
-        "CommonPlaybooks",
-        "CommonTypes",
-        "CommonScripts"
     ]
 }
