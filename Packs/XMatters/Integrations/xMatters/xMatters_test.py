@@ -52,9 +52,9 @@ def test_xm_get_events_command(requests_mock):
 
     hostname = 'https://acme.xmatters.com'
     mock_response = {
-        "count": 1,
-        "total": 1,
-        "data":
+            "count": 1,
+            "total": 1,
+            "data":
             [
                 {
                     "id": "116f41dc-395c-4bba-a806-df1eda88f4aa",
@@ -63,11 +63,11 @@ def test_xm_get_events_command(requests_mock):
                     "plan": {
                         "id": "c56730a9-1435-4ae2-8c7e-b2539e635ac6",
                         "name": "Cat Facts!"
-                    },
+                        },
                     "form": {
                         "id": "b593c84c-497d-461d-9521-7d9a2d09a4f3",
                         "name": "Send Fact"
-                    },
+                        },
                     "floodControl": False,
                     "submitter": {
                         "id": "c21b7cc9-c52a-4878-8d26-82b26469fdc7",
@@ -77,8 +77,8 @@ def test_xm_get_events_command(requests_mock):
                         "recipientType": "PERSON",
                         "links": {
                             "self": "/api/xm/1/people/c21b7cc9-c52a-4878-8d26-82b26469fdc7"
+                            },
                         },
-                    },
                     "priority": "HIGH",
                     "incident": "INCIDENT_ID-981006",
                     "overrideDeviceRestrictions": False,
@@ -91,26 +91,26 @@ def test_xm_get_events_command(requests_mock):
                         "id": "34c384ba-eaa4-4278-9ebb-94726232b063",
                         "at": "2019-08-09T16:59:38.371Z",
                         "seq": "21866402165008"
-                    },
+                        },
                     "eventId": "981006",
                     "created": "2016-10-31T22:37:35.301+0000",
                     "terminated": "2016-10-31T22:38:40.063+0000",
                     "status": "TERMINATED",
                     "links": {
                         "self": "/api/xm/1/events/116f41dc-395c-4bba-a806-df1eda88f4aa"
-                    },
+                        },
                     "responseCountsEnabled": False,
                     "properties": {
                         "Customer reported": True,
                         "Customers affected": 100,
                         "Country#en": "USA"
+                        }
                     }
-                }
-            ],
+                ],
         "links": {
-            "self": "/api/xm/1/events?priority=HIGH&offset=0&limit=100"
+                "self": "/api/xm/1/events?priority=HIGH&offset=0&limit=100"
+                }
         }
-    }
 
     requests_mock.register_uri('GET', hostname + '/api/xm/1/events?priority=HIGH', json=mock_response)
 
