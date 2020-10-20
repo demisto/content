@@ -34,7 +34,10 @@ from argus_api.api.cases.v2.case import (
 
 from argus_api.api.events.v1 import get_event_by_path
 from argus_api.api.events.v1.case.case import get_events_for_case
-from argus_api.api.events.v1.aggregated import find_aggregated_events, list_aggregated_events
+from argus_api.api.events.v1.aggregated import (
+    find_aggregated_events,
+    list_aggregated_events,
+)
 from argus_api.api.events.v1.payload import get_payload
 from argus_api.api.events.v1.pcap import get_pcap
 from argus_api.api.events.v1.nids import find_n_i_d_s_events, list_n_i_d_s_events
@@ -231,19 +234,16 @@ def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"#{case_id}: Tags", result["data"], headers=headers
     )
-    outputs = {"Argus.Case.Tag(val.id === obj.id)": result["data"]}
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Tag(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
 def add_comment_command(args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", None)
     comment = args.get("comment", None)
-    as_reply_to = args.get("as_reply_to", None)
-    internal = args.get("internal", None)
-    origin_email_address = args.get("origin_email_address", None)
-    associated_attachment_id = args.get("associated_attachement_id", None)
     if not case_id:
         raise ValueError("case_id not specified")
     if not comment:
@@ -252,19 +252,20 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
     result = add_comment(
         caseID=case_id,
         comment=comment,
-        asReplyTo=as_reply_to,
-        internal=internal,
-        originEmailAddress=origin_email_address,
-        associatedAttachmentID=associated_attachment_id,
+        asReplyTo=args.get("as_reply_to", None),
+        internal=args.get("internal", None),
+        originEmailAddress=args.get("origin_email_address", None),
+        associatedAttachmentID=args.get("associated_attachement_id", None),
     )
     readable_output = f"# #{case_id}: Added comment\n"
     readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['addedTime']}*\n"
     readable_output += f"{result['data']['comment']}\n\n"
     readable_output += f"_id: {result['data']['id']}_\n"
 
-    outputs = {"Argus.Case.Comment(val.id === obj.id)": result["data"]}
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Comment(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -311,9 +312,10 @@ def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
     readable_output += tableToMarkdown(
         "Output not suitable for playground", result["data"]
     )
-    outputs = {"Argus.Cases(val.id === obj.id)": result["data"]}
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Case(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -331,9 +333,10 @@ def close_case_command(args: Dict[str, Any]) -> CommandResults:
     readable_output += (
         f"_Status: {result['data']['status']}, at: {result['data']['closedTime']}_"
     )
-    outputs = {"Argus.Case(val.id === obj.id)": result["data"]}
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Case(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -380,10 +383,11 @@ def create_case_command(args: Dict[str, Any]) -> CommandResults:
         publish=args.get("publish", None),
         defaultWatchers=args.get("default_watchers", None),
     )
-    readable_output = pretty_print_case_metadata(result)
-    outputs = {"Argus.Case(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=pretty_print_case_metadata(result),
+        outputs={"Argus.Case(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -393,10 +397,11 @@ def delete_case_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("case id not specified")
 
     result = delete_case(caseID=case_id)
-    readable_output = pretty_print_case_metadata(result, "Case deleted")
-    outputs = {"Argus.Case(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=pretty_print_case_metadata(result, "Case deleted"),
+        outputs={"Argus.Case(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -413,9 +418,11 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
     readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['lastUpdatedTime']}*\n"
     readable_output += f"{result['data']['comment']}"
     readable_output += f"Flags: {str(result['data']['flags'])}"
-    outputs = {"Argus.Case.Comment(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Comment(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -448,9 +455,11 @@ def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
     readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['lastUpdatedTime']}*\n"
     readable_output += f"{result['data']['comment']}\n\n"
     readable_output += f"_id: {result['data']['id']}_\n"
-    outputs = {"Argus.Case.Comment(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Comment(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -467,9 +476,11 @@ def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
     readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['addedTime']}*\n"
     readable_output += f"{result['data']['name']} ({result['data']['mimeType']}, {result['data']['size']} bytes)\n\n"
     readable_output += f"_id: {result['data']['id']}_\n"
-    outputs = {"Argus.Case.Attachment(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Attachment(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -481,10 +492,11 @@ def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
     result = get_case_metadata_by_id(
         id=case_id, skipRedirect=args.get("skip_redirect", None)
     )
-    readable_output = pretty_print_case_metadata(result)
-    outputs = {"Argus.Case(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=pretty_print_case_metadata(result),
+        outputs={"Argus.Case(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -502,36 +514,36 @@ def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
         readable_output += f"{attachment['name']} ({attachment['mimeType']}, {attachment['size']} kb)\n\n"
         readable_output += f"_id: {attachment['id']}_\n"
         readable_output += "* * *\n"
-    outputs = {"Argus.Case.Attachments(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Attachment(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
 def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", None)
-    limit = args.get("limit", None)
-    offset = args.get("offset", None)
     if not case_id:
         raise ValueError("case_id not specified")
 
-    result = list_case_tags(caseID=case_id, limit=limit, offset=offset)
+    result = list_case_tags(
+        caseID=case_id, limit=args.get("limit", None), offset=args.get("offset", None)
+    )
     headers = ["key", "value", "addedTime", "id"]
     readable_output = tableToMarkdown(
         f"#{case_id}: Tags", result["data"], headers=headers
     )
-    outputs = {"Argus.Case.Tags(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Tag(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
 def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", None)
-    before_comment = args.get("before_comment", None)
-    after_comment = args.get("after_comment", None)
-    offset = args.get("offset", None)
-    limit = args.get("limit", None)
     sort_by = args.get("sort_by", None)
     if not case_id:
         raise ValueError("case_id not specified")
@@ -540,10 +552,10 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
 
     result = list_case_comments(
         caseID=case_id,
-        beforeComment=before_comment,
-        afterComment=after_comment,
-        offset=offset,
-        limit=limit,
+        beforeComment=args.get("before_comment", None),
+        afterComment=args.get("after_comment", None),
+        offset=args.get("offset", None),
+        limit=args.get("limit", None),
         sortBy=sort_by,
     )
     readable_output = f"# #{case_id}: Comments\n"
@@ -554,9 +566,11 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
         readable_output += f"{comment['comment']}\n\n"
         readable_output += f"_id: {comment['id']}_\n"
         readable_output += "* * *\n"
-    outputs = {"Argus.Case.Comments(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Comment(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -573,9 +587,11 @@ def remove_case_tag_by_id_command(args: Dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"#{case_id}: Delete tags", result["data"], headers=headers
     )
-    outputs = {"Argus.Case.Tag(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Tag(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -595,9 +611,11 @@ def remove_case_tag_by_key_value_command(args: Dict[str, Any]) -> CommandResults
     readable_output = tableToMarkdown(
         f"#{case_id}: Delete tags", result["data"], headers=headers
     )
-    outputs = {"Argus.Case.Tag(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Tag(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -623,10 +641,11 @@ def update_case_command(args: Dict[str, Any]) -> CommandResults:
         hasEvents=args.get("has_events", None),
         internalComment=args.get("internal_comment", None),
     )
-    readable_output = pretty_print_case_metadata(result)
-    outputs = {"Argus.Case(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=pretty_print_case_metadata(result),
+        outputs={"Argus.Case(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -644,12 +663,14 @@ def get_event_command(args: Dict[str, Any]) -> CommandResults:
     if not event_id:
         raise ValueError("event id not specified")
 
-    result = get_event_by_path(type=event_type, timestamp=timestamp, customerID=customer_id, eventID=event_id)
-    readable_output = f"# Event: {event_id}\n"
-    readable_output += tableToMarkdown("Metadata", result['data'])
-    outputs = {"Argus.Event(val.id === obj.id)": result['data']}
+    result = get_event_by_path(
+        type=event_type, timestamp=timestamp, customerID=customer_id, eventID=event_id
+    )
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=tableToMarkdown(f"Event: {event_id}", result["data"]),
+        outputs={"Argus.Event(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -664,9 +685,11 @@ def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
     readable_output = f"# #{case_id}: Associated Events\n"
     readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
     readable_output += tableToMarkdown("Events", result["data"])
-    outputs = {"Argus.Event(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Event(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -674,7 +697,7 @@ def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
     result = find_aggregated_events(
         skipFutureEvents=args.get("skip_future_events", None),
         exclude=args.get("exclude", None),
-        eventIdentifier=str_to_list(args.get("event_identifier", None)), # TODO fix
+        eventIdentifier=str_to_list(args.get("event_identifier", None)),  # TODO fix
         locationID=str_to_list(args.get("location_id", None)),
         severity=str_to_list(args.get("severity", None)),
         customer=str_to_list(args.get("customer", None)),
@@ -714,9 +737,11 @@ def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
     readable_output = f"# List Events\n"
     readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
     readable_output += tableToMarkdown("Events", result["data"])
-    outputs = {"Argus.Event(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Event(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -728,14 +753,16 @@ def list_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
         startTimestamp=args.get("start_timestamp", None),
         endTimestamp=args.get("end_timestamp", None),
         limit=args.get("limit", None),
-        offset=args.get("offset", None)
+        offset=args.get("offset", None),
     )
     readable_output = f"# List Events\n"
     readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
     readable_output += tableToMarkdown("Events", result["data"])
-    outputs = {"Argus.Event(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Event(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -752,13 +779,17 @@ def get_payload_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("customer id not specified")
     if not event_id:
         raise ValueError("event id not specified")
-    result = get_payload(type=event_type, timestamp=timestamp, customerID=customer_id, eventID=event_id)
+    result = get_payload(
+        type=event_type, timestamp=timestamp, customerID=customer_id, eventID=event_id
+    )
     readable_output = f"# Event payload\n"
     readable_output += f"Event: {event_id}, type: {result['data']['type']}\n"
-    readable_output += result['data']['payload']
-    outputs = {"Argus.Event.Payload(val.id === obj.id)": result['data']}
+    readable_output += result["data"]["payload"]
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.Payload(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -775,7 +806,9 @@ def get_pcap_command(args: Dict[str, Any]) -> fileResult:
         raise ValueError("customer id not specified")
     if not event_id:
         raise ValueError("event id not specified")
-    result = get_pcap(type=event_type, timestamp=timestamp, customerID=customer_id, eventID=event_id)
+    result = get_pcap(
+        type=event_type, timestamp=timestamp, customerID=customer_id, eventID=event_id
+    )
 
     return fileResult(f"{event_id}_pcap", result.content)
 
@@ -821,9 +854,11 @@ def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
     readable_output = f"# Find NIDS Events\n"
     readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
     readable_output += tableToMarkdown("Events", result["data"])
-    outputs = {"Argus.Event.NIDS(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.NIDS_Event(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -835,14 +870,16 @@ def list_nids_events_command(args: Dict[str, Any]) -> CommandResults:
         startTimestamp=args.get("start_timestamp", None),
         endTimestamp=args.get("end_timestamp", None),
         limit=args.get("limit", None),
-        offset=args.get("offset", None)
+        offset=args.get("offset", None),
     )
     readable_output = f"# List NIDS Events\n"
     readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
     readable_output += tableToMarkdown("Events", result["data"])
-    outputs = {"Argus.Event.NIDS(val.id === obj.id)": result["data"]}
+
     return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
+        readable_output=readable_output,
+        outputs={"Argus.NIDS_Event(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -859,12 +896,12 @@ def search_records_command(args: Dict[str, Any]) -> CommandResults:
         customerID=str_to_list(args.get("customer_id", None)),
         tlp=str_to_list((args.get("tlp", None))),
         limit=args.get("limit", 25),
-        offset=args.get("offset", None)
+        offset=args.get("offset", None),
     )
     return CommandResults(
-        readable_output=tableToMarkdown("PDNS records", result['data']),
-        outputs={"Argus.Event.PDNS(val.id === obj.id)": result['data']},
-        raw_response=result
+        readable_output=tableToMarkdown("PDNS records", result["data"]),
+        outputs={"Argus.PDNS(val.id === obj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -875,9 +912,11 @@ def fetch_observations_for_domain_command(args: Dict[str, Any]) -> CommandResult
 
     result = fetch_observations_for_domain(fqdn=fqdn)
     return CommandResults(
-        readable_output=tableToMarkdown(f"Domain observations for \"{fqdn}\"", result['data']),
-        outputs={"Argus.Event.Observation.Domain(val.id === onj.id)": result['data']},
-        raw_response=result
+        readable_output=tableToMarkdown(
+            f'Domain observations for "{fqdn}"', result["data"]
+        ),
+        outputs={"Argus.Domain_Observation(val.id === onj.id)": result["data"]},
+        raw_response=result,
     )
 
 
@@ -888,9 +927,9 @@ def fetch_observations_for_i_p_command(args: Dict[str, Any]) -> CommandResults:
 
     result = fetch_observations_for_i_p(ip=ip)
     return CommandResults(
-        readable_output=tableToMarkdown(f"IP observations for \"{ip}\"", result['data']),
-        outputs={"Argus.Event.Observation.IP(val.id === onj.id)": result['data']},
-        raw_response=result
+        readable_output=tableToMarkdown(f'IP observations for "{ip}"', result["data"]),
+        outputs={"Argus.IP_Observation(val.id === onj.id)": result["data"]},
+        raw_response=result,
     )
 
 
