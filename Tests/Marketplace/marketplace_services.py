@@ -893,12 +893,11 @@ class Pack(object):
 
                     print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
 
-                    print_color(f"Aggregating ReleaseNotes versions:"
-                                f" {[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} =>"
-                                f" {latest_release_notes}", LOG_COLORS.GREEN)
-
                     if pack_versions_dict:
                         # wrap all release notes together for one changelog entry
+                        print_color(f"Aggregating ReleaseNotes versions:"
+                                    f" {[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} =>"
+                                    f" {latest_release_notes}", LOG_COLORS.GREEN)
                         release_notes_lines = merge_version_blocks(pack_name=self._pack_name,
                                                                    pack_versions_dict=pack_versions_dict,
                                                                    pack_metadata={}, wrap_pack=False,
