@@ -490,6 +490,10 @@ script:
     - contextPath: Endpoint.Hostname
       description: The hostname that is mapped to this endpoint.
       type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.mitre_technique_id_and_name
+      description: mitre_technique_id_and_name
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.mitre_tactic_id_and_name
+      description: mitre_tactic_id_and_name
   - arguments:
     - description: XDR incident ID. You can get the incident ID from the output of
         the 'xdr-get-incidents' command or the 'xdr-get-incident-extra-details' command.
@@ -782,6 +786,10 @@ script:
     - contextPath: Endpoint.OS
       description: Endpoint OS.
       type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.agent_type
+      description: Workstation or Server
+    - contextPath: PaloAltoNetworksXDR.Endpoint.agent_status
+      description: 'status of the endpoint: connected or lost '
   - arguments: []
     description: Gets a list of all the agent versions to use for creating a distribution
       list.
@@ -1418,6 +1426,32 @@ script:
       description: Number of alerts actually returned as result (integer).
     - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations
       description: A list of violations (list).
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.os_type
+      description: Type of the operation system
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.hostname
+      description: Hostname
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.username
+      description: Username
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.ip
+      description: 'IP address '
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.timestamp
+      description: Timestamp of the violation
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.violation_id
+      description: Violation ID
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.type
+      description: Type of violation
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.vendor_id
+      description: Vendor ID
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.vendor
+      description: Name of vendor
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.product_id
+      description: Product ID
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.product
+      description: Name of product
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.serial
+      description: Serial Number
+    - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.endpoint_id
+      description: Endpoint ID
   - arguments:
     - description: Comma separated list of endpoint IDs
       isArray: true
@@ -1569,6 +1603,7 @@ script:
         ResponseAction CenterAction ID field or get return value after running - "xdr-run-script"
         command.
       name: action_id
+      required: true
     description: Retrieve the results of a script execution action.
     name: xdr-get-script-execution-results
     outputs:

@@ -1053,7 +1053,11 @@ def test_get_policy(requests_mock):
         """
     from CortexXDRIR import get_policy_command, Client
 
-    run_script_expected_result = {'PaloAltoNetworksXDR.policyName(val.id == obj.id)': 'test'}
+    expected_context = {
+        'endpoint_id': 'aeec6a2cc92e46fab3b6f621722e9916',
+        'policy_name': 'test'
+    }
+    run_script_expected_result = {'PaloAltoNetworksXDR.policyName(val.endpoint_id == obj.endpoint_id)': expected_context}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_policy/', json={'reply': {
         'policy_name': 'test'}})
 
@@ -1061,7 +1065,7 @@ def test_get_policy(requests_mock):
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
-        'endpoint_id': 'aeec6a2cc92e46fab3b6f621722e9916',
+        'endpoint_id': 'aeec6a2cc92e46fab3b6f621722e9916'
     }
 
     _, context, _ = get_policy_command(client, args)
@@ -1081,7 +1085,7 @@ def test_get_endpoint_violations_command(requests_mock):
 
     get_endpoint_violations_reply = load_test_data('./test_data/get_endpoint_violations.json')
     get_endpoint_violations_expected_result = {
-        'PaloAltoNetworksXDR.EndpointViolations': get_endpoint_violations_reply.get('reply')
+        'PaloAltoNetworksXDR.EndpointViolations(val.violation_id==obj.violation_id)': get_endpoint_violations_reply.get('reply')
     }
     requests_mock.post(f'{XDR_URL}/public_api/v1/device_control/get_violations/', json=get_endpoint_violations_reply)
 
@@ -1171,7 +1175,7 @@ def test_get_scripts_command(requests_mock):
 
     get_scripts_response = load_test_data('./test_data/get_scripts.json')
     get_scripts_expected_result = {
-        'PaloAltoNetworksXDR.Scripts(val.script_uid==obj.script_uid)': get_scripts_response.get('reply').get('scripts')
+        'PaloAltoNetworksXDR.Scripts(val.script_uid == obj.script_uid)': get_scripts_response.get('reply').get('scripts')
     }
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_scripts/', json=get_scripts_response)
 
@@ -1200,7 +1204,7 @@ def test_get_script_metadata_command(requests_mock):
 
     get_script_metadata_response = load_test_data('./test_data/get_script_metadata.json')
     get_scripts_expected_result = {
-        'PaloAltoNetworksXDR.scriptMetadata(val.actionId == obj.actionId)': get_script_metadata_response.get('reply')
+        'PaloAltoNetworksXDR.scriptMetadata(val.script_uid == obj.script_uid)': get_script_metadata_response.get('reply')
     }
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_metadata/', json=get_script_metadata_response)
 
@@ -1258,9 +1262,11 @@ def test_get_script_execution_status_command(requests_mock):
     from CortexXDRIR import get_script_execution_status_command, Client
 
     get_script_execution_status_reply = load_test_data('./test_data/get_script_execution_status.json')
+    expected_context = get_script_execution_status_reply.get('reply')
+    expected_context["action_id"] = '1799'
     get_script_execution_status_expected_result = {
         'PaloAltoNetworksXDR.scriptExecutionStatus(val.actionId == obj.actionId)':
-            get_script_execution_status_reply.get('reply')}
+            expected_context}
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_execution_status/',
                        json=get_script_execution_status_reply)
 
@@ -1287,9 +1293,11 @@ def test_get_script_execution_results_command(requests_mock):
     from CortexXDRIR import get_script_execution_results_command, Client
 
     get_script_execution_results_reply = load_test_data('./test_data/get_script_execution_results.json')
+    expected_context = get_script_execution_results_reply.get('reply')
+    expected_context["action_id"] = '1799'
     get_script_execution_results_command_expected_result = {
         'PaloAltoNetworksXDR.scriptExecutionResults(val.actionId == obj.actionId)':
-            get_script_execution_results_reply.get('reply')}
+            expected_context}
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_execution_results/',
                        json=get_script_execution_results_reply)
 
@@ -1347,9 +1355,13 @@ def test_get_script_code_command(requests_mock):
     from CortexXDRIR import get_script_code_command, Client
 
     get_script_code_command_reply = load_test_data('./test_data/get_script_code.json')
+    context = {
+        "script_uid": "548023b6e4a01ec51a495ba6e5d2a15d",
+        "code": get_script_code_command_reply.get('reply')
+    }
     get_script_code_command_expected_result = {
         'PaloAltoNetworksXDR.scriptCode(val.script_uid == obj.script_uid)':
-            get_script_code_command_reply.get('reply')}
+            context}
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_code/',
                        json=get_script_code_command_reply)
 
@@ -1426,6 +1438,7 @@ def test_action_status_get_command(requests_mock):
     result = []
     for item in data:
         result.append({
+            "action_id": "1810",
             "endpoint_id": item,
             "status": data.get(item)
         })

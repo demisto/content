@@ -2434,11 +2434,13 @@ def get_policy_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     endpoint_id = args.get('endpoint_id')
 
     policy_name = client.get_policy(endpoint_id)
+    context = {"endpoint_id": endpoint_id,
+               "policy_name": policy_name}
 
     return (
         f'The policy name of endpoint {endpoint_id} is {policy_name}.',
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.policyName(val.id == obj.id)': policy_name
+            f'{INTEGRATION_CONTEXT_BRAND}.policyName(val.endpoint_id == obj.endpoint_id)': context
         },
         policy_name
     )
@@ -2485,7 +2487,7 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
     return (
         tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), headers=headers, removeNull=True),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations': reply
+            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)': reply
         },
         reply
     )
@@ -2564,7 +2566,7 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
     return (
         tableToMarkdown(name='Scripts', t=scripts, headers=headers, removeNull=True),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.Scripts(val.script_uid==obj.script_uid)': scripts
+            f'{INTEGRATION_CONTEXT_BRAND}.Scripts(val.script_uid == obj.script_uid)': scripts
         },
         scripts
     )
@@ -2578,7 +2580,7 @@ def get_script_metadata_command(client: Client, args: Dict[str, str]) -> Tuple[s
     return (
         tableToMarkdown(name='Script Metadata', t=reply, headers=[*reply], removeNull=True),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptMetadata(val.actionId == obj.actionId)': reply
+            f'{INTEGRATION_CONTEXT_BRAND}.scriptMetadata(val.script_uid == obj.script_uid)': reply
         },
         reply
     )
@@ -2588,11 +2590,15 @@ def get_script_code_command(client: Client, args: Dict[str, str]) -> Tuple[str, 
     script_uid = args.get('script_uid')
 
     reply = client.get_script_code(script_uid)
+    context = {
+        "script_uid": script_uid,
+        "code": reply
+    }
 
     return (
         f'Script code is :\n {str(reply)}',
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptCode(val.script_uid == obj.script_uid)': reply
+            f'{INTEGRATION_CONTEXT_BRAND}.scriptCode(val.script_uid == obj.script_uid)': context
         },
         reply
     )
@@ -2637,6 +2643,7 @@ def get_script_execution_status_command(client: Client, args: Dict[str, str]) ->
     action_id = args.get('action_id')
 
     reply = client.get_script_execution_status(action_id)
+    reply["action_id"] = action_id
 
     return (
         tableToMarkdown(name='Execution Status', t=reply, removeNull=True),
@@ -2651,6 +2658,7 @@ def get_script_execution_results_command(client: Client, args: Dict[str, str]) -
     action_id = args.get('action_id')
 
     reply = client.get_script_execution_results(action_id)
+    reply["action_id"] = action_id
 
     return (
         tableToMarkdown(name='Script Execution Results', t=reply.get('results'), removeNull=True),
@@ -2717,12 +2725,13 @@ def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
 
         for item in data:
             result.append({
+                "action_id": action_id,
                 "endpoint_id": item,
                 "status": data.get(item)
             })
 
     return (
-        tableToMarkdown(name='Get Action Status', t=result, removeNull=True, headers=["endpoint_id", "status"]),
+        tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.getActionStatus(val.actionId == obj.actionId)': result
         },
