@@ -5,7 +5,6 @@ import threading
 import pytest
 import slack
 
-import demistomock as demisto
 from CommonServerPython import *
 
 import datetime
@@ -355,11 +354,9 @@ def test_exception_in_invite_to_mirrored_channel(mocker, capfd):
                                                                        'username': 'perikles'}])
     mocker.patch.object(Slack, 'invite_to_mirrored_channel', side_effect=Exception)
     mocker.patch.object(demisto, 'error')
-    try:
-        check_for_mirrors()
-    except Exception:
-        assert set_integration_context.call_count != 0
-        assert demisto.error.call_args == ""
+    check_for_mirrors()
+    assert demisto.setIntegrationContext.call_count != 0
+    assert demisto.error.call_args[0][0] == 'Could not invite investigation users to the mirrored channel: '
 
 
 def get_integration_context():
