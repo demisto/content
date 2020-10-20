@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Cisco Umbrella
+  id: Cisco Umbrella Cloud Security
   version: -1
 configuration:
 - display: Organization ID
@@ -16,8 +16,8 @@ configuration:
   required: false
   type: 4
 description: Adds domains to Umbrella block list
-display: Cisco Umbrella
-name: Cisco Umbrella
+display: Cisco Umbrella Cloud Security
+name: Cisco Umbrella Cloud Security
 script:
   commands:
   - arguments:
