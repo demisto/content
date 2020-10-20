@@ -4627,7 +4627,7 @@ class IAMVendorActionResult:
         self._skip_reason = skip_reason
         self._action = action
 
-    def _create_outputs(self):
+    def create_outputs(self):
         """ Sets the outputs in `_outputs` attribute.
         """
         if not self._skip:
@@ -4654,7 +4654,7 @@ class IAMVendorActionResult:
             }
         return outputs
 
-    def _create_readable_output(self, outputs):
+    def create_readable_output(self, outputs):
         """ Sets the human readable output in `_readable_output` attribute.
 
         :param outputs: (dict) the command outputs.
@@ -4702,10 +4702,14 @@ class IAMUserProfile:
         return self._user_profile.get(item)
 
     def to_entry(self):
-        """ Generates a XSOAR IAM entry from the user profile object.
+        """ Generates a XSOAR IAM entry from the data in _vendor_action_results.
+        Note: Currently we are using only the first element of the list, in the future we will support multiple results.
 
         :return: (dict) A XSOAR entry.
         """
+
+        outputs = self._vendor_action_results[0].create_outputs()
+        readable_output = self._vendor_action_results[0].create_readable_outputs(outputs)
 
         entry_context = {
             'IAM.UserProfile(val.email && val.email == obj.email)': self._user_profile,
@@ -4724,7 +4728,7 @@ class IAMUserProfile:
         return return_entry
 
     def set_result(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
-                   error_message=None, details=None, skip=False, skip_reason=None):
+                   error_message=None, details=None, skip=False, skip_reason=None, action=None):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
         :param success: (bool) whether or not the command succeeded.
@@ -4743,16 +4747,17 @@ class IAMUserProfile:
             email = self.get_attribute('email')
 
         vendor_action_result = IAMVendorActionResult(
-            success,
-            active,
-            iden,
-            username,
-            email,
-            error_code,
-            error_message,
-            details,
-            skip,
-            skip_reason
+            success=success,
+            active=active,
+            iden=iden,
+            username=username,
+            email=email,
+            error_code=error_code,
+            error_message=error_message,
+            details=details,
+            skip=skip,
+            skip_reason=skip_reason,
+            action=action
         )
 
         self._vendor_action_results.append(vendor_action_result)
@@ -4767,7 +4772,7 @@ class IAMUserProfile:
         if not mapping_type:
             mapping_type = IAMUserProfile.INDICATOR_TYPE
         if not self._user_profile:
-            raise DemistoException('You must provide user-profile argument.')
+            raise DemistoException('You must provide the user profile data.')
         app_data = demisto.mapObject(self._user_profile, mapper_name, mapping_type)
         return app_data
 
@@ -4784,5 +4789,3 @@ class IAMUserProfile:
             app_data = safe_load_json(app_data)
         self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)
 
-    def set_command_name(self, command):
-        self._command = command
