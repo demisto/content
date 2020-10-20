@@ -30,64 +30,8 @@ configuration:
   type: 8
 script:
   commands:
-  - name: xmcyber-entity-get
-    description: Get XM Entity by IP or Name
-    arguments:
-      - name: ip
-        default: true
-        description: List of IPs.
-        isArray: true
-        required: false
-      - name: name
-        description: List of Names
-        isArray: true
-        required: false
-    outputs:
-      - contextPath: entity_id
-        description: 'XMCyber Entity ID'
-        type: String
-      - contextPath: name
-        description: 'Entity Name'
-        type: String
-      - contextPath: is_asset
-        description: Is Entity a Critical Asset
-        type: Boolean
-      - contextPath: is_choke_point
-        description: Is Entity a Choke Point to Critical Assets
-        type: Boolean
-      - contextPath: affected_assets.value
-        description: Number of affected critical assets
-        type: Number
-      - contextPath: affected_assets.level
-        description: None, Low, Medium, or High
-        type: String
-
-  - name: xmcyber-attack-complexity-to-ip
-    description: Set attack complexity on IP of the incident
-    arguments:
-      - name: time_id
-        default: false
-        description: time_id for example timeAgo_days_7
-        isArray: false
-        required: false
-        secret: false
-      - name: ip
-        default: true
-        description: List of IPs.
-        isArray: true
-    outputs:
-      - contextPath: EntityId
-        description: 'XMCyber Entity ID'
-        type: String
-      - contextPath: AttackComplexity
-        description: 'XMCyber Attack Complexity'
-        type: Number
-      - contextPath: EntityIpAddress
-        description: 'IP Address of Entity'
-        type: String
-  
-  - name: xmcyber-asset-attack-path-list
-    description: Get Paths to the Critical Assets
+  - name: xmcyber-compromising-techniques-list
+    description: List compromising techniques to an entity
     arguments:
       - name: time_id
         default: false
@@ -96,443 +40,12 @@ script:
         required: false
         secret: false
     outputs:
-      - contextPath: XMCyber.AttackPath.path.event._id
-        description: ''
+      - contextPath: XMCyber.compromisingTechniques.name
+        description: Compromising Techinique Name
         type: String
-      - contextPath: XMCyber.AttackPath.path.event.timestamp
-        description: ''
-        type: Date
-      - contextPath: XMCyber.AttackPath.path.event.type
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.group
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.nodeId
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.isAsset
-        description: ''
+      - contextPath: XMCyber.compromisingTechniques.percent
+        description: Percent of Vectors
         type: Number
-      - contextPath: XMCyber.AttackPath.path.event.markedBy
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.method
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.tid
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.attackId
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.attackTimestamp
-        description: ''
-        type: Date
-      - contextPath: XMCyber.AttackPath.path.event.eventTargets
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.dependencies
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.targetClusters.subnetInfo.id
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.targetClusters.subnetInfo.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.targetClusters.domainWorkgroup.id
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.targetClusters.domainWorkgroup.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.targetClusters.ouComputer.id
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.targetClusters.ouComputer.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.targetClusters.ouUser.id
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.targetClusters.ouUser.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.sourceClusters.subnetInfo.id
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.sourceClusters.subnetInfo.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.sourceClusters.domainWorkgroup.id
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.sourceClusters.domainWorkgroup.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.sourceClusters.ouComputer.id
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.sourceClusters.ouComputer.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.sourceClusters.ouUser.id
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.sourceClusters.ouUser.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.networkSuperiority
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.compromisedAssets.device
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.compromisedAssets.data
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.compromisedAssets.network
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.compromisedAssets.cloud
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.allAssets.device
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.allAssets.data
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.allAssets.network
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.allAssets.cloud
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.compromisedDataGB
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.nodes.total
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.nodes.red
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.nodes.blue
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.nodes.white
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.nodes.discoveredBlue
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.nodes.active
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.event.details.remediation.advice
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.details.remediation.parameter
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.details.eventParameters.eventDescription
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.details.eventParameters.eventParameters.type
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.details.eventParameters.eventParameters.data
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.details.eventParameters.eventParameters.displayData
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.event.assetPath
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.type
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.timestamp
-        description: ''
-        type: Date
-      - contextPath: XMCyber.AttackPath.path.mapEvent.id
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.method
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.type
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.id
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.x
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.y
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityType
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityTypeDisplayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entitySubType.name
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entitySubType.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entitySubType.value
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entitySubType.displayValue
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityBasicData.entityFlavorProperties.name
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityBasicData.entityFlavorProperties.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityBasicData.entityFlavorProperties.value
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityBasicData.entityFlavorProperties.displayValue
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityBasicData.entityNetworkIdentifierProperties.name
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityBasicData.entityNetworkIdentifierProperties.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityBasicData.entityNetworkIdentifierProperties.value
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityBasicData.entityNetworkIdentifierProperties.displayValue
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.status
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.isStartingPoint
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.isAsset
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.assetAt
-        description: ''
-        type: Date
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.title
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.isActive
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.totalAssets
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.nodeAttackVectorScore
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.assetAttackVectorScore
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.nodeAttackVectorCount
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.assetAttackVectorCount
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.nodeAttackVectorComplexity
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.nodeAttackVectorComplexityScore
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityExtraData.name
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityExtraData.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityExtraData.value
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.target.entityExtraData.displayValue
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.type
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.id
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.x
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.y
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityType
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityTypeDisplayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entitySubType.name
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entitySubType.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entitySubType.value
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entitySubType.displayValue
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityBasicData.entityFlavorProperties.name
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityBasicData.entityFlavorProperties.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityBasicData.entityFlavorProperties.value
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityBasicData.entityFlavorProperties.displayValue
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityBasicData.entityNetworkIdentifierProperties.name
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityBasicData.entityNetworkIdentifierProperties.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityBasicData.entityNetworkIdentifierProperties.value
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityBasicData.entityNetworkIdentifierProperties.displayValue
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.status
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.isStartingPoint
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.isAsset
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.title
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.isActive
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.totalAssets
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.nodeAttackVectorScore
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.assetAttackVectorScore
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.nodeAttackVectorCount
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.assetAttackVectorCount
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.nodeAttackVectorComplexity
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.nodeAttackVectorComplexityScore
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityExtraData.name
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityExtraData.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityExtraData.value
-        description: ''
-        type: Number
-      - contextPath: XMCyber.AttackPath.path.mapEvent.source.entityExtraData.displayValue
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.eventParameters.eventDescription
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.eventParameters.eventParameters.data
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.eventParameters.eventParameters.displayData
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.eventParameters.eventParameters.parameterType
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.eventParameters.eventParameters.mapEvent.type
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.eventParameters.eventParameters.mapEvent.timestamp
-        description: ''
-        type: Unknown
-      - contextPath: XMCyber.AttackPath.path.mapEvent.eventParameters.eventParameters.mapEvent.id
-        description: ''
-        type: Unknown
-      - contextPath: XMCyber.AttackPath.path.mapEvent.eventParameters.eventParameters.mapEvent.method
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.path.mapEvent.eventParameters.eventParameters.mapEvent.displayName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.pathId
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.pathName
-        description: ''
-        type: String
-      - contextPath: XMCyber.AttackPath.pathComplexity
-        description: ''
-        type: Number
-
-  - name: xmcyber-risk-score-trend
-    description: Get current and previous global risk score
-    outputs:
-      - contextPath: XMCyber.RiskScore.grade
-        description: 'Current global risk score grade'
-        type: String
-      - contextPath: XMCyber.RiskScore.score
-        description: 'Current global risk score number'
-        type: Number
-      - contextPath: XMCyber.RiskScore.trend
-        description: 'Trend from previous week'
-        type: Number
-
-  - name: xmcyber-assets
-    description: Get assets list
-    outputs:
-      - contextPath: XMCyber.Assets.entityId
-        description: 'Current global risk score grade'
-        type: String
 
   - name: xmcyber-is-version-supported
     description: Check if current XM version supports Demisto integration
@@ -540,44 +53,6 @@ script:
       - contextPath: XMCyber.IsVersion.valid
         description: 'Flag that indicates if the version is valid'
         type: Boolean
-
-  - name: xmcyber-top-choke-points
-    description: Return 5 top choke points in the system
-    outputs:
-      - contextPath: XMCyber.TopChokePoints.entityId
-        description: 'Entity id'
-        type: String
-      - contextPath: XMCyber.TopChokePoints.displayName
-        description: 'Entity display name'
-        type: String
-      - contextPath: XMCyber.TopChokePoints.entityType
-        description: 'Entity type'
-        type: String
-      - contextPath: XMCyber.TopChokePoints.score
-        description: 'Entity choke point score'
-        type: String
-      - contextPath: XMCyber.TopChokePoints.trend
-        description: 'Entity trend (score change from the previous week)'
-        type: String
-  
-  - name: xmcyber-top-assets-at-risk
-    description: Return 5 top assets at risk in the system
-    outputs:
-      - contextPath: XMCyber.TopChokePoints.entityId
-        description: 'Entity id'
-        type: String
-      - contextPath: XMCyber.TopChokePoints.displayName
-        description: 'Entity display name'
-        type: String
-      - contextPath: XMCyber.TopChokePoints.entityType
-        description: 'Entity type'
-        type: String
-      - contextPath: XMCyber.TopChokePoints.score
-        description: 'Entity asset at risk score'
-        type: String
-      - contextPath: XMCyber.TopChokePoints.trend
-        description: 'Entity trend (score change from the previous week)'
-        type: String
     
   - name: xmcyber-get-version
     description: Get current xm version
@@ -599,7 +74,7 @@ script:
         description: 'XMCyber Entity ID'
         type: String
       - contextPath: name
-        description: 'Entity Name'
+        description: Entity Name
         type: String
       - contextPath: is_asset
         description: Is Entity a Critical Asset
@@ -640,6 +115,73 @@ script:
       - contextPath: IP.ASN
         description: The autonomous system name for the IP address.
         type: String
+  
+  - name: hostname
+    description: Return data on Entity by hostname from XM Cyber
+    arguments:
+      - name: hostname
+        default: true
+        description: List of hostnames.
+        isArray: true
+        required: false
+    outputs:
+      - contextPath: entity_id
+        description: 'XMCyber Entity ID'
+        type: String
+      - contextPath: name
+        description: Entity Name
+        type: String
+      - contextPath: is_asset
+        description: Is Entity a Critical Asset
+        type: Boolean
+      - contextPath: is_choke_point
+        description: Is Entity a Choke Point to Critical Assets
+        type: Boolean
+      - contextPath: affected_assets.value
+        description: Number of affected critical assets
+        type: Number
+      - contextPath: affected_assets.level
+        description: None, Low, Medium, or High
+        type: String
+      - contextPath: Host.Domain
+        description: The domain of the host.
+        type: String
+      - contextPath: Host.Hostname
+        description: The name of the host.
+        type: String
+      - contextPath: Host.BIOVersion
+        description: The BIOS version of the host.
+        type: String
+      - contextPath: Host.ID
+        description: The unique ID within the tool retrieving the host.
+        type: String
+      - contextPath: Host.DHCPServer
+        description: The DHCP server.
+        type: String
+      - contextPath: Host.IP
+        description: The IP address of the host.
+        type: String
+      - contextPath: Host.MACAddress
+        description: The MAC address of the host.
+        type: String
+      - contextPath: Host.Memory
+        description: Memory on the host.
+        type: String
+      - contextPath: Host.Model
+        description: The model of the host.
+        type: String
+      - contextPath: Host.OS
+        description: Host OS.
+        type: String
+      - contextPath: Host.OSVersion
+        description: The OS version of the host.
+        type: String
+      - contextPath: Host.Processor
+        description: The processor of the host.
+        type: String
+      - contextPath: Host.Processors
+        description: The number of processors that the host is using.
+        type: Number
 
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: false

@@ -1,6 +1,6 @@
 import json
 import io
-from XMCyberIntegration import XM, Client, entity_get_command, PAGE_SIZE, URLS, ip_command
+from XMCyberIntegration import XM, Client, PAGE_SIZE, URLS, ip_command, hostname_command
 
 
 TEST_URL = 'https://test.com'
@@ -28,32 +28,31 @@ def mock_request_and_get_xm_mock(json_path, requests_mock, url_to_mock):
     return get_xm_mock()
 
 
-def test_entity_get(requests_mock):
-    """Tests entity_get_command command function.
+def test_hostname(requests_mock):
+    """Tests hostname_command function.
 
     Configures requests_mock instance to generate the appropriate search
     API response. Checks the output of the command function with the expected output.
     """
 
     mock_url = f'{TEST_URL}{URLS.Entities}?search=%2FCorporateDC%2Fi&page=1&pageSize={PAGE_SIZE}'
-    xm = mock_request_and_get_xm_mock('test_data/entity_get.json', requests_mock, mock_url)
+    xm = mock_request_and_get_xm_mock('test_data/hostname.json', requests_mock, mock_url)
 
-    response = entity_get_command(xm, {
-        'name': 'CorporateDC'
+    response = hostname_command(xm, {
+        'hostname': 'CorporateDC'
     })
 
-    assert response.outputs_prefix == 'XMCyber'
-    assert response.outputs_key_field == 'entity_id'
-    assert response.outputs == [{
-        'entity_id': '3110337924893579985',
+    assert response.outputs_prefix == 'XMCyber.Endpoint'
+    assert response.outputs_key_field == 'ID'
+    assert response.outputs == {
+        'entityId': '3110337924893579985',
         'name': 'CorporateDC',
-        'is_asset': True,
-        'is_choke_point': True,
-        'affected_assets': {
-            'value': 14,
-            'level': "medium"
-        }
-    }]
+        'affectedEntities': 29,
+        'averageComplexity': 2,
+        'criticalAssetsAtRisk': 14,
+        'averageComplexityLevel': 'medium',
+        'isAsset': True
+    }
 
 def test_ip(requests_mock):
     """Tests ip command function.
@@ -63,7 +62,7 @@ def test_ip(requests_mock):
     """
 
     mock_url = f'{TEST_URL}{URLS.Entities}?search=%2F172.0.0.1%2Fi&page=1&pageSize={PAGE_SIZE}'
-    xm = mock_request_and_get_xm_mock('test_data/entity_get.json', requests_mock, mock_url)
+    xm = mock_request_and_get_xm_mock('test_data/hostname.json', requests_mock, mock_url)
 
     response = ip_command(xm, {
         'ip': '172.0.0.1'
@@ -72,12 +71,11 @@ def test_ip(requests_mock):
     assert response.outputs_prefix == 'XMCyber.IP'
     assert response.outputs_key_field == 'ip'
     assert response.outputs == {
-        'entity_id': '3110337924893579985',
+        'entityId': '3110337924893579985',
         'name': 'CorporateDC',
-        'is_asset': True,
-        'is_choke_point': True,
-        'affected_assets': {
-            'value': 14,
-            'level': "medium"
-        }
+        'affectedEntities': 29,
+        'averageComplexity': 2,
+        'criticalAssetsAtRisk': 14,
+        'averageComplexityLevel': 'medium',
+        'isAsset': True
     }

@@ -193,19 +193,6 @@ class XM:
             'timeId': time_id
         })
 
-    def get_entities_by_label(self, label: str):
-        # is this the right API?
-        # /discoveryRules/matchingSensors/getMatchingSensors
-        raise NotImplementedError(label)
-
-    def unlabel_entities(self, entities: List[str], label: str):
-        # api does not exist
-        raise NotImplementedError(entities, label)
-
-    def label_entities(self, entities: List[str], label: str):
-        # api does not exist
-        raise NotImplementedError(entities, label)
-
     def search_entities(self, search_string):
         return self.client.get_paginated(URLS.Entities, {
             'search': f'/{search_string}/i'
@@ -215,9 +202,6 @@ class XM:
         return self.client.get_paginated(URLS.Techniques, {
             'timeId': time_id
         }, page_size, max_pages)
-
-    def lookup_entities_by_ip(self, ips):
-        raise NotImplementedError(ips)
 
     def get_entity_report(self, entity_id: str, time_id: str):
         return self.client.get(URLS.System_Report, {
@@ -324,39 +308,62 @@ def create_xm_event(name, data, date = None):
 
     return data
 
+
+def path_to_compromising_technique(path: Any):
+    return path[-1]['event']['displayName']
+
+
+def entity_obj_to_data(entity: Any):
+    try:
+        is_asset = entity['asset']
+    except KeyError:
+        is_asset = False
+    return {
+        'entityId': entity['entityId'],
+        'name': entity['name'],
+        'affectedEntities': entity['affectedUniqueEntities']['count']['value'],
+        'averageComplexity': entity['attackComplexity']['avg']['value'],
+        'criticalAssetsAtRisk': entity['affectedUniqueAssets']['count']['value'],
+        'averageComplexityLevel': entity['affectedUniqueAssets']['count']['level'],
+        'isAsset': is_asset
+        #'affected_entities_list': None,
+        #'compromising_techniques': None,
+        #'critical_assets_at_risk_list': None,
+        #'critical_assets_at_risk_level': None
+    }
+
+
+def entity_score(entity: Any):
+    score = 0
+    reputation = entity['affectedUniqueAssets']['count']['level']
+    if reputation == 'none':
+        score = Common.DBotScore.GOOD
+    else:
+        score = Common.DBotScore.BAD
+    return score, reputation
+
 ''' COMMAND FUNCTIONS '''
 
 
-def asset_attack_path_list_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+def compromising_techniques_to_entity_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     time_id = args.get('time_id')
     if not time_id:
-        time_id = DEFAULT_TIME_ID
-    critical_assets = xm.get_entities(time_id, True)
-    attack_paths = []
-    for critical_asset in critical_assets:
-        paths = xm.get_inbound_paths(critical_asset['entityId'], time_id)
+        time_id = 'timeAgo_days_7'
+    entity_ids = argToList(args.get('entity_id'))
+    if len(entity_ids) == 0:
+        raise ValueError('Entity ID(s) not specified')
+    compromising_techniques = []
+    for entity_id in entity_ids:
+        paths = xm.get_inbound_paths(entity_id, time_id)
         for path in paths:
-            attack_paths.append(path)
-    readable_output = 'loaded list of {0} asset attack paths'.format(len(attack_paths))
+            compromising_techniques.append(path_to_compromising_technique(path))
+    readable_output = 'found {0} compromising techniques to {1} entities'.format(len(compromising_techniques), len(entity_ids))
     return CommandResults(
-        outputs_prefix='XMCyber.AttackPath',
-        outputs_key_field='pathId',
-        outputs=attack_paths,
-        readable_output=readable_output
-    )
+        outputs_prefix='XMCyber',
+        outputs_key_field='entity_id',
+        outputs=compromising_techniques,
+        readable_output=readable_output,
 
-
-def techniques_list_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    time_id = args.get('time_id')
-    if not time_id:
-        time_id = DEFAULT_TIME_ID
-    techniques = xm.get_techniques(time_id)
-    readable_output = f'loaded list of {len(techniques)} top techniques'
-    return CommandResults(
-        outputs_prefix='XMCyber.Technique',
-        outputs_key_field='technique',
-        outputs=techniques,
-        readable_output=readable_output
     )
 
 
@@ -364,7 +371,7 @@ def breachpoint_update_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
-    entities = xm.lookup_entities_by_ip(ips)
+    entities = xm.search_entities(ips)
     xm.label_entities(entities, BREACHPOINT_LABEL)
     labeled_entities = xm.get_entities_by_label(BREACHPOINT_LABEL)
     readable_output = 'The {0} has been updated, there are {1} labeled entities'.format(
@@ -381,7 +388,7 @@ def critical_asset_add_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
-    entities = xm.lookup_entities_by_ip(ips)
+    entities = xm.search_entities(ips)
     xm.label_entities(entities, CRITICAL_ASSET_LABEL)
     labeled_entities = xm.get_entities_by_label(CRITICAL_ASSET_LABEL)
     readable_output = f'The {CRITICAL_ASSET_LABEL} has been updated, there are {len(labeled_entities)} labeled entities'
@@ -393,69 +400,6 @@ def critical_asset_add_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def attack_paths_to_entity_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    time_id = args.get('time_id')
-    if not time_id:
-        time_id = 'timeAgo_days_7'
-    ips = argToList(args.get('ip'))
-    if len(ips) == 0:
-        raise ValueError('IP(s) not specified')
-    entities = xm.lookup_entities_by_ip(ips[0])
-    attack_paths = []
-    for entity in entities:
-        paths = xm.get_inbound_paths(entity['agentId'], time_id)
-        for path in paths:
-            attack_paths.append(raw_path_to_incident_path(path))
-    readable_output = 'found {0} attack paths to {1} entities'.format(len(attack_paths), len(entities))
-    return CommandResults(
-        outputs_prefix='XMCyber.AttackPath',
-        outputs_key_field='pathId',
-        outputs=attack_paths,
-        readable_output=readable_output,
-
-    )
-
-
-def attack_complexity_to_ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    time_id = args.get('time_id')
-    if not time_id:
-        time_id = 'timeAgo_days_7'
-    ips = argToList(args.get('ip'))
-    if len(ips) == 0:
-        raise ValueError('IP(s) not specified')
-    try:
-        address = ips[0]['Address']
-    except (AttributeError, TypeError):
-        address = ips[0]
-    entities = xm.lookup_entities_by_ip(address)
-    if len(entities) == 0:
-        outputs = {
-            'EntityIpAddress': address,
-            'AverageAttackComplexity': -1,
-            'EntityId': 'N/A'
-        }
-        readable_output = f'Could not find entity with the IP {address}'
-    else:
-        entity_id = entities[0]['agentId']
-        report = xm.get_entity_report(entity_id, time_id)
-        attack_complexity = report['attackComplexity']
-        average = attack_complexity['avg']['value']
-        level = attack_complexity['avg']['level']
-        entity_name = entities[0]['name']
-        readable_output = f'Entity {entity_name} has average {average} which is {level}'
-        outputs = {
-            'EntityIpAddress': address,
-            'AverageAttackComplexity': average,
-            'EntityId': entity_id
-        }
-    return CommandResults(
-        outputs_prefix='XMCyber',
-        outputs_key_field='EntityId',
-        outputs=outputs,
-        readable_output=readable_output,
-    )
-
-
 def attack_paths_from_entity_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     time_id = args.get('time_id')
     if not time_id:
@@ -463,7 +407,7 @@ def attack_paths_from_entity_command(xm: XM, args: Dict[str, Any]) -> CommandRes
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
-    entities = xm.lookup_entities_by_ip(ips)
+    entities = xm.search_entities(ips)
     attack_paths = []
     for entity in entities:
         paths = xm.get_outbound_paths(entity, time_id)
@@ -474,51 +418,6 @@ def attack_paths_from_entity_command(xm: XM, args: Dict[str, Any]) -> CommandRes
         outputs_prefix='XMCyber.AttackPath',
         outputs_key_field='pathId',
         outputs=attack_paths,
-        readable_output=readable_output
-    )
-
-
-def entity_get_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    ips = argToList(args.get('ip'))
-    names = argToList(args.get('name'))
-    entities = []
-    outputs = []
-
-    demisto.info(f'ips {ips}')
-    for ip in ips:
-        demisto.info(f'ip {ip}')
-        try:
-            entities.extend(xm.search_entities(ip['Address']))
-        except AttributeError:
-            entities.extend(xm.search_entities(ip))
-    for name in names:
-        entities.extend(xm.search_entities(name))
-    if len(entities) == 0:
-        readable_output = f'No entities match the properties IPs "{ips}", Names "{names}"'
-    else:
-        readable_output = '**Found the following entities**'
-        for entity in entities:
-            name = entity['name']
-            try:
-                is_asset = entity['asset']
-            except KeyError:
-                is_asset = False
-            affected_assets = entity['affectedUniqueAssets']['count']
-            readable_output += f'\n- {name}'
-            outputs.append({
-                'entity_id': entity['entityId'],
-                'name': name,
-                'is_asset': is_asset,
-                'is_choke_point': affected_assets['level'] != 'none',
-                'affected_assets': {
-                    'value': affected_assets['value'],
-                    'level': affected_assets['level']
-                }
-            })
-    return CommandResults(
-        outputs_prefix='XMCyber',
-        outputs_key_field='entity_id',
-        outputs=outputs,
         readable_output=readable_output
     )
 
@@ -624,34 +523,6 @@ def test_module_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_assets_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    # Not in used - if will be used, need to update yml file
-    outputs = xm.get_entities(DEFAULT_TIME_ID, True)
-    return CommandResults(
-        outputs_prefix='XMCyber.RiskScore',
-        outputs_key_field='id',
-        outputs=outputs
-    )
-
-
-def top_assets_at_risk_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    outputs = xm.top_assets_at_risk(DEFAULT_TIME_ID)
-    return CommandResults(
-        outputs_prefix='XMCyber.TopAssetsAtRisk',
-        outputs_key_field='id',
-        outputs=outputs
-    )
-
-
-def top_choke_points_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    outputs = xm.top_choke_points(DEFAULT_TIME_ID)
-    return CommandResults(
-        outputs_prefix='XMCyber.TopChokePoints',
-        outputs_key_field='entityId',
-        outputs=outputs
-    )
-
-
 def get_version_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix='XMCyber.Version',
@@ -681,32 +552,22 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     
     # Context standard for IP class
     ip_standard_list: List[Common.IP] = []
-    ip_data_list: List[Dict[str, Any]] = []
+    xm_data_list: List[Dict[str, Any]] = []
 
     for ip in ips:
-        res: List[Any]
+        entity_ids: List[Any]
         try:
-            res = xm.search_entities(ip['Address'])
+            entity_ids = xm.search_entities(ip['Address'])
         except (AttributeError, TypeError):
-            res = xm.search_entities(ip)
-        if len(res) > 0:
+            entity_ids = xm.search_entities(ip)
+        if len(entity_ids) > 0:
             readable_output = f'**Resolved the following entities for IP {ip}**'
         else:
             readable_output = f'**No entity with the IP {ip}'
-        for entity in res:
+        for entity in entity_ids:
             name = entity['name']
-            try:
-                is_asset = entity['asset']
-            except KeyError:
-                is_asset = False
-            affected_assets = entity['affectedUniqueAssets']['count']
             readable_output += f'\n- {name}'
-            score = 0
-            reputation = affected_assets['level']
-            if reputation == 'none':
-                score = Common.DBotScore.GOOD  # unknown
-            else:
-                score = Common.DBotScore.BAD  # bad
+            score, reputation = entity_score(entity)
 
             dbot_score = Common.DBotScore(
                 indicator=ip,
@@ -723,25 +584,62 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
 
             ip_standard_list.append(ip_standard_context)
 
-            ip_data_list = {
-                'entity_id': entity['entityId'],
-                'name': name,
-                'is_asset': is_asset,
-                'is_choke_point': affected_assets['level'] != 'none',
-                'affected_assets': {
-                    'value': affected_assets['value'],
-                    'level': affected_assets['level']
-                }
-            }
+            xm_data_list = entity_obj_to_data(entity)
     
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='XMCyber.IP',
         outputs_key_field='ip',
-        outputs=ip_data_list,
-        indicators=ip_standard_list
+        outputs=xm_data_list,
+        indicators=ip_standard_list,
+        raw_response=entity_ids
     )
+
+
+def hostname_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    hostnames = argToList(args.get('hostname'))
+    if len(hostnames) == 0:
+        raise ValueError('Endpoint(s) not specified')
     
+    # Context standard for IP class
+    endpoint_standard_list: List[Common.Endpoint] = []
+    xm_data_list: List[Dict[str, Any]] = []
+
+    for hostname in hostnames:
+        res = xm.search_entities(hostname)
+        if len(res) > 0:
+            readable_output = f'**Matched the following entities for hostname {hostname}**'
+        else:
+            readable_output = f'**No entity matches hostname {hostname}'
+        for entity in res:
+            name = entity['name']
+            readable_output += f'\n- {name}'
+            ID = entity['entityId']
+            try:
+                ip = entity['ipv4Str']
+                domain = entity['customProperties']['domainWorkgroup']['data']
+                OS = entity['os']['type']
+                os_version = entity['os']['name']
+                endpoint_standard_context = Common.Endpoint(ID, 
+                                                hostname=hostname,
+                                                ip_address=ip,
+                                                domain=domain,
+                                                os=OS,
+                                                os_version=os_version)
+            except (TypeError, AttributeError):
+                endpoint_standard_context = Common.Endpoint(ID, hostname=hostname)
+            endpoint_standard_list.append(endpoint_standard_context)
+
+            xm_data_list = entity_obj_to_data(entity)
+    
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='XMCyber.Endpoint',
+        outputs_key_field='ID',
+        outputs=xm_data_list,
+        indicators=endpoint_standard_list
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -776,23 +674,17 @@ def main() -> None:
         commandsDict = {
             "test-module": test_module_command,  # This is the call made when pressing the integration Test button.
             "xmcyber-f-incidents": fetch_incidents_command, # for debugging of fetch incidents
-            # Command list
+            # XM Cyber Command list
             # xmcyber-command-name: function_command
             "xmcyber-get-version": get_version_command,
-            "xmcyber-risk-score-trend": risk_score_trend_command,
-            "xmcyber-assets": get_assets_command,
-            "xmcyber-top-assets-at-risk": top_assets_at_risk_command,
-            "xmcyber-top-choke-points": top_choke_points_command,
             "xmcyber-is-version-supported": is_xm_version_supported_command,
-            "xmcyber-asset-attack-path-list": asset_attack_path_list_command,
+            "xmcyber-compromising-techniques-list": compromising_techniques_to_entity_command,
             "xmcyber-breachpoint-update": breachpoint_update_command,
             "xmcyber-critical-asset-add": critical_asset_add_command,
-            "xmcyber-attack-paths-to-entity": attack_paths_to_entity_command,
-            "xmcyber-attack-complexity-to-ip": attack_complexity_to_ip_command,
-            "xmcyber-techniques-list": techniques_list_command,
             "xmcyber-attack-paths-from-entity": attack_paths_from_entity_command,
-            "xmcyber-entity-get": entity_get_command,
-            "ip": ip_command # TODO - change to xmcyber-ip
+            # Common commands
+            "ip": ip_command,
+            "hostname": hostname_command
         }
 
         if command == 'fetch-incidents':
