@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Any, Dict, List, Optional, Union
+from datetime import datetime
 
 import json
 import urllib3
@@ -12,16 +13,34 @@ import enum
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
+### DELETE
+def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
+    """
+      Parses timestamp (milliseconds) to a date string in the provided date format (by default: ISO 8601 format)
+      Examples: (1541494441222, 1541495441000, etc.)
+      :type timestamp: ``int`` or ``str``
+      :param timestamp: The timestamp to be parsed (required)
+      :type date_format: ``str``
+      :param date_format: The date format the timestamp should be parsed to. (optional)
+      :return: The parsed timestamp in the date_format
+      :rtype: ``str``
+    """
+    return datetime.utcfromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
 ''' CONSTANTS '''
+### DELETE
+
+
 
 # Minimum supported version is:  1.38
 MIN_MAJOR_VERSION = 1
 MIN_MINOR_VERSION = 38
+FULL_INCIDENTS_SECONDS = 86400
 
 BREACHPOINT_LABEL = 'Demisto Breachpoint'
 CRITICAL_ASSET_LABEL = 'Demisto Critical Asset'
 DEFAULT_TIME_ID = 'timeAgo_days_7'
+PREVIOUS_DEFAULT_TIME_ID = 'timeAgo_days_7'
+XM_CYBER_INCIDENT_TYPE = 'XM Cyber Incident'
 TOP_ENTITIES = 5
 PAGE_SIZE = 50
 MAX_PAGES = 10
@@ -86,7 +105,25 @@ class URLS:
     Techniques = '/systemReport/techniques'
 
 
+class EVENT_NAME:
+    EventPrefix = 'XM '
+    RiskScore = 'Risk score'
+    AssetAtRisk = 'Asset at risk'
+    ChokePoint = 'Choke point'
+    TopTechnique = 'Top technique'
+
+
+class SEVERITY:
+    Informational = 'Informational'
+    Low = 'Low'
+    Medium = 'Medium'
+    High = 'High'
+    Critical = 'Critical'
+
+
 class XM:
+
+    is_fetch_incidents = False
 
     def __init__(self, client: Client):
         self.client = client
@@ -100,7 +137,7 @@ class XM:
     #   current_grade - current risk score grade (A-F)
     #   current_score - current risk score (0-100)
 
-    def risk_score(self, time_id, resolution):
+    def risk_score(self, time_id=DEFAULT_TIME_ID, resolution=1):
         risk_score_response = self.client.get(URLS.Risk_Score, {
             'timeId': time_id,
             'resolution': resolution
@@ -138,10 +175,10 @@ class XM:
 
         return response["data"]["entities"]
 
-    def top_assets_at_risk(self, time_id, amount_of_results=TOP_ENTITIES):
+    def top_assets_at_risk(self, time_id=DEFAULT_TIME_ID, amount_of_results=TOP_ENTITIES):
         return self._top_entities(URLS.Top_Assets_At_Risk, time_id, amount_of_results)
 
-    def top_choke_points(self, time_id, amount_of_results=TOP_ENTITIES):
+    def top_choke_points(self, time_id=DEFAULT_TIME_ID, amount_of_results=TOP_ENTITIES):
         return self._top_entities(URLS.Top_Choke_Points, time_id, amount_of_results)
 
     def get_inbound_paths(self, entity_id: str, time_id: str):
@@ -174,10 +211,10 @@ class XM:
             'search': f'/{search_string}/i'
         })
 
-    def get_top_techniques(self, time_id):
+    def get_techniques(self, time_id=DEFAULT_TIME_ID, page_size = None, max_pages = None):
         return self.client.get_paginated(URLS.Techniques, {
             'timeId': time_id
-        })
+        }, page_size, max_pages)
 
     def lookup_entities_by_ip(self, ips):
         raise NotImplementedError(ips)
@@ -188,6 +225,52 @@ class XM:
             'timeId': time_id
         })
 
+    def _create_event_for_risk_score(self, events):
+        risk_score = self.risk_score()
+        trend = risk_score["trend"]
+        if trend is not None and trend != '' and trend > 0: # < 0:
+            events.append(create_xm_event(EVENT_NAME.RiskScore, risk_score))
+
+    def _create_events_from_top_dashboard(self, events_array, top_list, event_name):
+        for top in top_list:
+            trend = top["trend"]
+            if trend is not None and trend != '' and int(trend) >= 0: # < 0:
+                events_array.append(create_xm_event(event_name, top))
+
+    def _create_events_from_top_techniques(self, events_array, current_techniques, previous_techniques):
+        for current_tech in current_techniques:
+            previous_tech = None
+            for previous_tech_iteratee in previous_techniques:
+                if current_tech["technique"] == previous_tech_iteratee["technique"]:
+                    previous_tech = previous_tech_iteratee
+                    break
+
+            if previous_tech is None or current_tech["criticalAssets"] == previous_tech["criticalAssets"]: # should be >
+                events_array.append(create_xm_event(EVENT_NAME.TopTechnique, current_tech))
+
+
+    def get_fetch_incidents_events(self):
+        events = []
+
+        writeLog("risk score")
+        # risk score
+        self._create_event_for_risk_score(events)
+
+        writeLog("assets at risk")
+        # top assets at risk
+        self._create_events_from_top_dashboard(events, self.top_assets_at_risk(), EVENT_NAME.AssetAtRisk)
+
+        writeLog("choke point")
+        # top choke points
+        self._create_events_from_top_dashboard(events, self.top_choke_points(), EVENT_NAME.ChokePoint)
+
+        writeLog("top techniques")
+        # top techniques
+        current_techniques = self.get_techniques(DEFAULT_TIME_ID, TOP_ENTITIES, 1)
+        previous_techniques = self.get_techniques(PREVIOUS_DEFAULT_TIME_ID, TOP_ENTITIES, 1)
+        self._create_events_from_top_techniques(events, current_techniques, previous_techniques)
+
+        return events
 
 ''' HELPER FUNCTIONS '''
 
@@ -202,7 +285,7 @@ def writeLog(msg, logLevel=LogLevel.Info):
     if logLevel == LogLevel.Debug:
         demisto.debug(msg)
     elif logLevel == LogLevel.Info or logLevel == LogLevel.Error:
-        demisto.info(msg)
+        demisto.info(f'NNNNNN2 {msg}')
 
 
 def create_client():
@@ -225,6 +308,21 @@ def create_client():
         headers=headers,
         proxy=proxy)
 
+
+def dates_diff_seconds(date1, date2):
+    return (date1 - date2).total_seconds()
+
+
+def create_xm_event(name, data, date = None):
+    if date is None:
+        date = datetime.now()
+
+    data["name"] = f'{EVENT_NAME.EventPrefix}{name}'
+    data["create_time"] = timestamp_to_datestring(datetime.timestamp(date)) # CommonServerPython.timestamp_to_datestring(date)
+    data["type"] = XM_CYBER_INCIDENT_TYPE # TODO - add to PR
+    data["severity"] = SEVERITY.Informational
+
+    return data
 
 ''' COMMAND FUNCTIONS '''
 
@@ -251,8 +349,8 @@ def asset_attack_path_list_command(xm: XM, args: Dict[str, Any]) -> CommandResul
 def techniques_list_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     time_id = args.get('time_id')
     if not time_id:
-        time_id = 'timeAgo_days_7'
-    techniques = xm.get_top_techniques(time_id)
+        time_id = DEFAULT_TIME_ID
+    techniques = xm.get_techniques(time_id)
     readable_output = f'loaded list of {len(techniques)} top techniques'
     return CommandResults(
         outputs_prefix='XMCyber.Technique',
@@ -438,13 +536,55 @@ def risk_score_trend_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
 
 
 def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    demisto.info('Running fetch incidents')
-    demisto.debug('@@@@@@@@@@@@@@@@@@@@')
-    outputs = [{'entity_id': 'markTest'}]
+    writeLog('Running fetch incidents 2')
+    should_run = True
+
+    if xm.is_fetch_incidents:
+        last_run = demisto.getLastRun()
+        if len(last_run) > 0:
+            last_run = demisto.getLastRun()
+            now = datetime.now()
+            writeLog(f'last run is: {str(last_run)}')
+            writeLog(f'last run start time is: {str(last_run["start_time"])}')
+            start_time = datetime.fromisoformat(last_run["start_time"])
+            writeLog(f'Diff from previous run: {str(dates_diff_seconds(now, start_time))}')
+            if should_run < FULL_INCIDENTS_SECONDS:
+                should_run = False
+        else:
+            writeLog(f'Last run is null')
+
+    if not should_run:
+        return
+
+    events = xm.get_fetch_incidents_events()
+    writeLog(f'Found {len(events)} events')
+
+    if xm.is_fetch_incidents:
+        incidents = []
+        for event in events:
+            incident = {
+                'name': event['name'],
+                'occurred': event['create_time'],
+                'rawJson': json.dumps(event),
+                'type': event['type'],
+                'severity': event["severity"]
+            }
+            incidents.append(incident)
+
+        writeLog(f'Finish incidents: {len(incidents)}')
+        demisto.setLastRun({
+            'start_time': datetime.now().isoformat()
+        })
+
+        writeLog(f'Finish set last run')
+        demisto.incidents(incidents)
+        writeLog(f'Incidents writtern to incidents')
+        return None
+
     return CommandResults(
         outputs_prefix='XMCyber',
-        outputs_key_field='entity_id',
-        outputs=outputs
+        outputs_key_field='create_time',
+        outputs=events
     )
 
 
@@ -622,6 +762,7 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
     demisto.info(f'Command running: {demisto.command()}')
+
     try:
         client = create_client()
         xm = XM(client)
@@ -634,7 +775,7 @@ def main() -> None:
         #         return value - CommandResults
         commandsDict = {
             "test-module": test_module_command,  # This is the call made when pressing the integration Test button.
-            "fetch-incidents": fetch_incidents_command,
+            "xmcyber-f-incidents": fetch_incidents_command, # for debugging of fetch incidents
             # Command list
             # xmcyber-command-name: function_command
             "xmcyber-get-version": get_version_command,
@@ -651,10 +792,13 @@ def main() -> None:
             "xmcyber-techniques-list": techniques_list_command,
             "xmcyber-attack-paths-from-entity": attack_paths_from_entity_command,
             "xmcyber-entity-get": entity_get_command,
-            "ip": ip_command
+            "ip": ip_command # TODO - change to xmcyber-ip
         }
 
-        if command in commandsDict:
+        if command == 'fetch-incidents':
+            xm.is_fetch_incidents = True
+            fetch_incidents_command(xm, args)
+        elif command in commandsDict:
             return_results(commandsDict[command](xm, args))
         else:
             raise Exception("Unsupported command: " + command)
