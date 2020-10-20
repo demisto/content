@@ -1,4 +1,4 @@
-from typing import Tuple, List, Dict, Optional
+from typing import Tuple, List, Dict
 
 import urllib3
 from requests.auth import HTTPBasicAuth
@@ -146,10 +146,10 @@ class STIX21Processor:
                 if confidence > threshold:
                     return min(score, Common.DBotScore.SUSPICIOUS)
 
-    def process_indicator(self, raw_data):
+    def process_indicator(self, raw_data: Dict) -> List:
         indicators = list()
 
-        _, values, hashes = self.process_indicator_value(raw_data.get('pattern'))
+        _, values, hashes = self.process_indicator_value(raw_data['pattern'])
 
         for value in values:
             indicator = dict()
@@ -158,8 +158,8 @@ class STIX21Processor:
                 indicator['value'] = value
 
                 indicator['score'] = self.calculate_indicator_reputation(
-                    raw_data.get('confidence'),
-                    raw_data.get('created'),
+                    raw_data.get('confidence', 0),
+                    raw_data.get('created', '2000-01-01T00:00:00.000Z'),
                     self.reputation_interval
                 )
 
@@ -189,7 +189,7 @@ class STIX21Processor:
 
         return indicators
 
-    def process_stix_entities(self):
+    def process_stix_entities(self) -> List:
         processed_entities = list()  # type: List
 
         for entity_type, value in self.entities.items():
@@ -211,7 +211,7 @@ class STIX21Processor:
         return processed_reports
 
     @staticmethod
-    def process_malware(raw_data) -> Dict:
+    def process_malware(raw_data: Dict) -> Dict:
         entity = dict()  # type: Dict[str, Any]
 
         entity['type'] = 'STIX Malware'
@@ -239,7 +239,7 @@ class STIX21Processor:
         return entity
 
     @staticmethod
-    def process_threat_actor(raw_data) -> Dict:
+    def process_threat_actor(raw_data: Dict) -> Dict:
         entity = dict()  # type: Dict[str, Any]
 
         entity['type'] = 'STIX Threat Actor'
@@ -272,7 +272,7 @@ class STIX21Processor:
         return entity
 
     @staticmethod
-    def process_report(raw_data) -> Dict:
+    def process_report(raw_data: Dict) -> Dict:
         report = dict()  # type: Dict[str, Any]
 
         report['type'] = 'STIX Report'
@@ -303,7 +303,7 @@ class STIX21Processor:
         return report
 
 
-def parse_timestamp(next_url_to_extract_timestamp_from):
+def parse_timestamp(next_url_to_extract_timestamp_from: str) -> Optional[int]:
     """Extract the last fetched indicator timestamp.
 
     Args:
@@ -389,11 +389,12 @@ class Client(BaseClient):
         expires_in = response.get('expires_in')
         epoch_expiration_time = self.parse_access_token_expiration_time(expires_in)
 
-        updated_context = update_integration_context({
+        integration_context = demisto.getIntegrationContext()
+        integration_context.update({
             'auth_token': auth_token,
             'expiration_time': epoch_expiration_time
         })
-        demisto.setIntegrationContext(updated_context[0])
+        demisto.setIntegrationContext(integration_context)
 
         return auth_token
 
@@ -435,7 +436,7 @@ class Client(BaseClient):
         }
 
         if limit == -1:
-            query_url = f'/collections/indicators/objects?length=1000'
+            query_url = '/collections/indicators/objects?length=1000'
         else:
             query_url = f'/collections/indicators/objects?length={min(limit, 1000)}'
 
@@ -483,8 +484,7 @@ class Client(BaseClient):
                 query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
 
                 if 'last_id_modified_timestamp=' in query_url:
-                    last_fetch_time_modified_timestamp = query_url.split('last_id_modified_timestamp=')[1]
-                    self.last_indicators_fetch_time = parse_timestamp(last_fetch_time_modified_timestamp)
+                    self.last_indicators_fetch_time = parse_timestamp(query_url)
 
             except KeyError:
                 break
@@ -509,7 +509,7 @@ class Client(BaseClient):
         }
 
         if limit == -1:
-            query_url = f'/collections/reports/objects?length=100'
+            query_url = '/collections/reports/objects?length=100'
         else:
             query_url = f'/collections/reports/objects?length={min(limit, 100)}'
 
@@ -546,8 +546,7 @@ class Client(BaseClient):
                 query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
 
                 if 'last_id_modified_timestamp=' in query_url:
-                    last_fetch_time_modified_timestamp = query_url.split('last_id_modified_timestamp=')[1]
-                    self.last_reports_fetch_time = parse_timestamp(last_fetch_time_modified_timestamp)
+                    self.last_reports_fetch_time = parse_timestamp(query_url)
 
             except KeyError:
                 break
@@ -568,11 +567,12 @@ class Client(BaseClient):
         stix_indicators = stix_processor.process_stix_entities()
         reports = stix_processor.process_reports()
 
-        updated_context = update_integration_context({
+        integration_context = demisto.getIntegrationContext()
+        integration_context.update({
             'last_indicators_fetch_time': self.last_indicators_fetch_time,
             'last_reports_fetch_time': self.last_reports_fetch_time
         })
-        demisto.setIntegrationContext(updated_context[0])
+        demisto.setIntegrationContext(integration_context)
 
         return indicators + stix_indicators + reports
 
@@ -602,7 +602,7 @@ def get_indicators_command(client: Client):
     return human_readable, {}, indicators
 
 
-def add_fields_if_exists(client: Client, fields_dict: Dict):
+def add_fields_if_exists(client: Client, fields_dict: Dict) -> Dict:
     """Adds field mapping if they hold actual values
 
     Args:
@@ -626,7 +626,7 @@ def add_fields_if_exists(client: Client, fields_dict: Dict):
     return fields_dict
 
 
-def fetch_indicators_command(client: Client, limit: int = -1):
+def fetch_indicators_command(client: Client, limit: int = -1) -> Tuple[List, List]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
@@ -660,8 +660,12 @@ def reset_fetch_command():
     """
     Reset the last fetch from the integration context
     """
-    demisto.setIntegrationContext({})
-    return 'Fetch was reset successfully'
+    integration_context = demisto.getIntegrationContext()
+    integration_context.pop('last_indicators_fetch_time', None)
+    integration_context.pop('last_reports_fetch_time', None)
+    demisto.setIntegrationContext(integration_context)
+
+    return 'Fetch was reset successfully', {}, {}
 
 
 def verify_threshold_reputation_interval_types(threshold: str, reputation_interval: str):
