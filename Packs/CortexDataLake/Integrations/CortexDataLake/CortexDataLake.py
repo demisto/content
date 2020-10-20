@@ -47,14 +47,14 @@ class Client(BaseClient):
         self.use_ssl = use_ssl
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
-        self._get_access_token()
+        self._set_access_token()
 
-    def _get_access_token(self):
+    def _set_access_token(self):
         """
-        Checks if access token exists in the integration context and return it if it exists, if not, a new token
+        Checks if access token exists in the integration context and set it to the object properties, if not, a new token
         is generated and saved in the integration context along with the query api_url and the instance_id
         Returns:
-            The access token from the integration context or from the request.
+            None
         """
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
@@ -65,7 +65,7 @@ class Client(BaseClient):
                 self.api_url = integration_context.get(API_URL_CONST, DEFAULT_API_URL)
                 self.instance_id = integration_context.get(INSTANCE_ID_CONST)
                 return
-            demisto.debug(f'access token time: {valid_until} expired. Will call oproxy')
+        demisto.debug(f'access token time: {valid_until} expired/none. Will call oproxy')
         access_token, api_url, instance_id, refresh_token, expires_in = self._oproxy_authorize()
         updated_integration_context = {
             ACCESS_TOKEN_CONST: access_token,
