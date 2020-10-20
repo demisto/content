@@ -1203,7 +1203,7 @@ def event_by_process_search_command(client: Client, args: Dict) -> CommandResult
     process_guid = args.get('process_guid', '')
     event_type = args.get('event_type', '')
     query = args.get('query', '')
-    limit = args.get('limit', '')
+    limit = args.get('limit', 20)
 
     result = client.create_search_event_by_process_request(
         process_guid=process_guid, event_type=event_type,
