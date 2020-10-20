@@ -775,7 +775,7 @@ def check_for_mirrors():
                             invited_users = invite_to_mirrored_channel(channel_id, users)
                             updated_users.extend(invited_users)
                         except Exception as error:
-                            demisto.error(f"There was an error while invite to mirror channel:  {error}")
+                            demisto.error(f"Could not invite investigation users to the mirrored channel: {error}")
 
                     mirror['mirrored'] = True
                     updated_mirrors.append(mirror)

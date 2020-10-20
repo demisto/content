@@ -358,7 +358,7 @@ def test_exception_in_invite_to_mirrored_channel(mocker, capfd):
         try:
             check_for_mirrors()
         except Exception:
-            assert False
+            assert set_integration_context.call_count != 0
 
 
 def get_integration_context():
