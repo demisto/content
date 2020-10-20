@@ -2673,10 +2673,10 @@ tasks:
     quietmode: 0
   "76":
     id: "76"
-    taskid: 9f7fd475-465e-462a-8e48-eb2c08f54b1d
+    taskid: 92d5fd22-80c5-4b19-864a-022c629552a9
     type: condition
     task:
-      id: 9f7fd475-465e-462a-8e48-eb2c08f54b1d
+      id: 92d5fd22-80c5-4b19-864a-022c629552a9
       version: -1
       name: Check extraction of IPv6s surrounded by special characters
       type: condition
@@ -2684,43 +2684,43 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "77"
+      - "80"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isEqualString
           left:
             value:
               simple: IPv6.Address
             iscontext: true
           right:
             value:
-              simple: ',1::6:7:8,'
-      - - operator: containsGeneral
+              simple: 1::6:7:8
+      - - operator: isEqualString
           left:
             value:
               simple: IPv6.Address
             iscontext: true
           right:
             value:
-              simple: -1:2:3:4:5:6::8-
-      - - operator: containsGeneral
+              simple: 1:2:3:4:5:6::8
+      - - operator: isEqualString
           left:
             value:
               simple: IPv6.Address
             iscontext: true
           right:
             value:
-              simple: '`1:2::8`'
-      - - operator: containsGeneral
+              simple: 1:2::8
+      - - operator: isEqualString
           left:
             value:
               simple: IPv6.Address
             iscontext: true
           right:
             value:
-              simple: .1:2:3:4::8.
+              simple: 1:2:3:4::8
     view: |-
       {
         "position": {
@@ -2804,10 +2804,10 @@ tasks:
     quietmode: 0
   "79":
     id: "79"
-    taskid: fc00f71e-2626-4c7b-8eb3-7ab89821e5f8
+    taskid: 10d5df6b-33c1-423e-8ed4-562dec95c439
     type: condition
     task:
-      id: fc00f71e-2626-4c7b-8eb3-7ab89821e5f8
+      id: 10d5df6b-33c1-423e-8ed4-562dec95c439
       version: -1
       name: Check non-extraction of invalid IPv6s surrounded by special characters
       type: condition
@@ -2820,43 +2820,52 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: notContainsGeneral
+      - - operator: isNotExists
           left:
             value:
               simple: IPv6.Address
             iscontext: true
-          right:
-            value:
-              simple: ::1234
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: IPv6.Address
-            iscontext: true
-          right:
-            value:
-              simple: '::'
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: IPv6.Address
-            iscontext: true
-          right:
-            value:
-              simple: ::2:3:4:5:6:7:8
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: IPv6.Address
-            iscontext: true
-          right:
-            value:
-              simple: 1::3:4:5:6:7:8
     view: |-
       {
         "position": {
           "x": 600,
           "y": 8990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: 4abf2072-e01f-434f-838e-735ac1d50692
+    type: regular
+    task:
+      id: 4abf2072-e01f-434f-838e-735ac1d50692
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 8370
         }
       }
     note: false
