@@ -1,0 +1,23 @@
+{
+ "id": "Chronicle IOC Domain Matches",
+ "version": -1,
+ "vcShouldIgnore": false,
+ "locked": false,
+ "name": "Chronicle IOC Domain Matches",
+ "prevName": "Chronicle IOC Domain Matches",
+ "color": "#90A4AE",
+ "playbookId": "Threat Hunting - Chronicle",
+ "hours": 0,
+ "days": 0,
+ "weeks": 0,
+ "hoursR": 0,
+ "daysR": 0,
+ "weeksR": 0,
+ "system": false,
+ "readonly": false,
+ "default": false,
+ "autorun": false,
+ "disabled": false,
+ "reputationCalc": 0,
+ "fromVersion": "5.0.0"
+}

@@ -1,0 +1,36 @@
+{
+ "id": "incident_chronicleautoblockentities",
+ "version": -1,
+ "modified": "2020-07-27T13:27:15.496890733+05:30",
+ "name": "Chronicle Auto Block Entities",
+ "ownerOnly": false,
+ "description": "Auto block the detected suspicious Domain(s) and URL(s). Select 'yes' to automatically start the process of blocking the entities, 'no' otherwise.",
+ "cliName": "chronicleautoblockentities",
+ "type": "singleSelect",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": [
+  "",
+  "Yes",
+  "No"
+ ],
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Chronicle IOC Domain Matches"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}
