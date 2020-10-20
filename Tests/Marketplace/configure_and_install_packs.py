@@ -31,19 +31,19 @@ def main():
     username: str = secret_conf_file.get('username')
     password: str = secret_conf_file.get('userPassword')
 
-    # Configure the Server
-    host = hosts[0]
-    server: Server = Server(host=host, user_name=username, password=password)
-    error_msg: str = 'Failed to set marketplace configuration.'
-    print_color(f'Adding Marketplace configuration to {host}', LOG_COLORS.GREEN)
-    server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
-    set_marketplace_url(servers=[server], branch_name=options.branch, ci_build_number=options.build_number)
+    # Configure the Servers
+    for host in hosts:
+        server: Server = Server(host=host, user_name=username, password=password)
+        error_msg: str = 'Failed to set marketplace configuration.'
+        print_color(f'Adding Marketplace configuration to {host}', LOG_COLORS.NATIVE)
+        server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
+        set_marketplace_url(servers=[server], branch_name=options.branch, ci_build_number=options.build_number)
 
-    # Acquire the server's host and install all content packs (one threaded execution)
-    print_color(f'Starting to install all content packs in {host}', LOG_COLORS.GREEN)
-    server_host: str = server.client.api_client.configuration.host
-    install_all_content_packs(client=server.client, host=server_host, prints_manager=ParallelPrintsManager(1))
-    print_color(f'Finished installing all content packs in {host}', LOG_COLORS.GREEN)
+        # Acquire the server's host and install all content packs (one threaded execution)
+        print_color(f'Starting to install all content packs in {host}', LOG_COLORS.NATIVE)
+        server_host: str = server.client.api_client.configuration.host
+        install_all_content_packs(client=server.client, host=server_host, prints_manager=ParallelPrintsManager(1))
+        print_color(f'Finished installing all content packs in {host}', LOG_COLORS.GREEN)
 
 
 if __name__ == '__main__':
