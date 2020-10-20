@@ -1627,6 +1627,103 @@ script:
     description: Search for NIDS events.
     execution: false
     name: argus_find_nids_events
+  - arguments:
+    - default: false
+      description: Lookup query
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether aggregate results (default true) .
+      isArray: false
+      name: aggregate_result
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether include anonymous results (default true) '
+      isArray: false
+      name: include_anonymous_results
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Lookup with specified record classes (as comma-separated list).
+      isArray: false
+      name: rr_class
+      required: false
+      secret: false
+    - default: false
+      description: Lookup with specified record types (as comma-separated list)
+      isArray: false
+      name: rr_type
+      required: false
+      secret: false
+    - default: false
+      description: Lookup for specified customer IDs  (as comma-separated list)
+      isArray: false
+      name: customer_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Lookup with specified TLPs, public usage only TLP white allowed
+        (as comma-separated list)
+      isArray: false
+      name: tlp
+      predefined:
+      - white
+      - green
+      - amber
+      - red
+      required: false
+      secret: false
+    - default: false
+      description: Max number of results to be returned, default unset means default
+        limit 25 will be used, 0 means unlimited.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Number of results to be skipped first (default 0).
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Search against PassiveDNS with criteria and return matching records.
+    execution: false
+    name: argus_pdns_search_records
+  - arguments:
+    - default: false
+      description: Domain to fetch observations for
+      isArray: false
+      name: fqdn
+      required: true
+      secret: false
+    deprecated: false
+    description: Look up reputation observations for the given domain
+    execution: false
+    name: argus_fetch_observations_for_domain
+  - arguments:
+    - default: false
+      description: IP address to fetch observations for
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Look up reputation observations for the given IP
+    execution: false
+    name: argus_fetch_observations_for_ip
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true

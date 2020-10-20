@@ -847,15 +847,51 @@ def list_nids_events_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def search_records_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    query = args.get("query", None)
+    if not query:
+        raise ValueError("query not specified")
+    result = search_records(
+        query=query,
+        aggregateResult=args.get("aggregate_result", None),
+        includeAnonymousResults=args.get("include_anonymous_results", None),
+        rrClass=str_to_list(args.get("rr_class", None)),
+        rrType=str_to_list(args.get("rr_type", None)),
+        customerID=str_to_list(args.get("customer_id", None)),
+        tlp=str_to_list((args.get("tlp", None))),
+        limit=args.get("limit", 25),
+        offset=args.get("offset", None)
+    )
+    return CommandResults(
+        readable_output=tableToMarkdown("PDNS records", result['data']),
+        outputs={"Argus.Event.PDNS(val.id === obj.id)": result['data']},
+        raw_response=result
+    )
 
 
 def fetch_observations_for_domain_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    fqdn = args.get("fqdn", None)
+    if not fqdn:
+        raise ValueError("fqdn not specified")
+
+    result = fetch_observations_for_domain(fqdn=fqdn)
+    return CommandResults(
+        readable_output=tableToMarkdown(f"Domain observations for \"{fqdn}\"", result['data']),
+        outputs={"Argus.Event.Observation.Domain(val.id === onj.id)": result['data']},
+        raw_response=result
+    )
 
 
 def fetch_observations_for_i_p_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    ip = args.get("ip", None)
+    if not ip:
+        raise ValueError("ip not specified")
+
+    result = fetch_observations_for_i_p(ip=ip)
+    return CommandResults(
+        readable_output=tableToMarkdown(f"IP observations for \"{ip}\"", result['data']),
+        outputs={"Argus.Event.Observation.IP(val.id === onj.id)": result['data']},
+        raw_response=result
+    )
 
 
 """ MAIN FUNCTION """
@@ -964,13 +1000,13 @@ def main() -> None:
         elif demisto.command() == "argus_list_nids_events":
             return_results(list_nids_events_command(demisto.args()))
 
-        elif demisto.command() == "argus_search_records":
+        elif demisto.command() == "argus_pdns_search_records":
             return_results(search_records_command(demisto.args()))
 
-        elif demisto.command() == "argus_fetch_observations_for_domain ":
+        elif demisto.command() == "argus_fetch_observations_for_domain":
             return_results(fetch_observations_for_domain_command(demisto.args()))
 
-        elif demisto.command() == "argus_fetch_observations_for_i_p":
+        elif demisto.command() == "argus_fetch_observations_for_ip":
             return_results(fetch_observations_for_i_p_command(demisto.args()))
 
     # Log exceptions and return errors

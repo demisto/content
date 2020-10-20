@@ -301,3 +301,111 @@ ARGUS_NIDS_EVENT = {
         }
     ],
 }
+
+ARGUS_EVENT_PDNS = {
+    "responseCode": 0,
+    "limit": 0,
+    "offset": 0,
+    "count": 0,
+    "size": 0,
+    "metaData": {},
+    "messages": [
+        {
+            "message": "string",
+            "messageTemplate": "string",
+            "type": "FIELD_ERROR",
+            "field": "string",
+            "parameter": {},
+            "timestamp": 0,
+        }
+    ],
+    "data": [
+        {
+            "createdTimestamp": 0,
+            "lastUpdatedTimestamp": 0,
+            "times": 0,
+            "tlp": "white",
+            "query": "string",
+            "answer": "string",
+            "minTtl": 0,
+            "maxTtl": 0,
+            "customer": {
+                "id": 0,
+                "name": "string",
+                "shortName": "string",
+                "domain": {"id": 0, "name": "string"},
+            },
+            "lastSeenTimestamp": 0,
+            "firstSeenTimestamp": 0,
+            "rrclass": "in",
+            "rrtype": "a",
+        }
+    ],
+}
+
+ARGUS_EVENT_OBSERVATION_DOMAIN = {
+    "responseCode": 0,
+    "limit": 0,
+    "offset": 0,
+    "count": 0,
+    "size": 0,
+    "metaData": {},
+    "messages": [
+        {
+            "message": "string",
+            "messageTemplate": "string",
+            "type": "FIELD_ERROR",
+            "field": "string",
+            "parameter": {},
+            "timestamp": 0,
+        }
+    ],
+    "data": [
+        {
+            "domainName": {"fqdn": "string"},
+            "reason": "string",
+            "override": True,
+            "value": 0,
+        }
+    ],
+}
+
+ARGUS_EVENT_OBSERVATION_IP = {
+    "responseCode": 0,
+    "limit": 0,
+    "offset": 0,
+    "count": 0,
+    "size": 0,
+    "metaData": {},
+    "messages": [
+        {
+            "message": "string",
+            "messageTemplate": "string",
+            "type": "FIELD_ERROR",
+            "field": "string",
+            "parameter": {},
+            "timestamp": 0,
+        }
+    ],
+    "data": [
+        {
+            "id": 0,
+            "lastModified": 0,
+            "source": {"id": 0, "alias": "string", "name": "string"},
+            "role": {"id": 0, "alias": "string", "name": "string"},
+            "firstSeen": 0,
+            "lastSeen": 0,
+            "numObservations": 0,
+            "state": 0,
+            "comment": "string",
+            "address": {
+                "host": True,
+                "ipv6": True,
+                "maskBits": 0,
+                "multicast": True,
+                "public": True,
+                "address": "string",
+            },
+        }
+    ],
+}

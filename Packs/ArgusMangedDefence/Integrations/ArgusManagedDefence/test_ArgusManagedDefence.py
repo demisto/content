@@ -1,3 +1,6 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 BASE_URL = "https://api.mnemonic.no"
 CASE_ID = 1337
 COMMENT_ID = "some-long-hash"
@@ -353,15 +356,38 @@ def test_get_pcap_command(requests_mock):
 
 
 def test_search_records_command(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import search_records_command
+    from argus_json import argus_event_data
+    query = "mnemonic.no"
+    method_url = f"/pdns/v3/search"
+    
+    requests_mock.post(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_PDNS)
+    result = search_records_command({"query": query})
+    assert result.raw_response == argus_event_data.ARGUS_EVENT_PDNS
 
 
 def test_fetch_observations_for_domain_command(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import fetch_observations_for_domain_command
+    from argus_json import argus_event_data
+
+    fqdn = "domain.test"
+    method_url = f"/reputation/v1/observation/domain/{fqdn}"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_OBSERVATION_DOMAIN)
+    result = fetch_observations_for_domain_command({"fqdn": fqdn})
+    assert result.raw_response == argus_event_data.ARGUS_EVENT_OBSERVATION_DOMAIN
 
 
 def test_fetch_observations_for_i_p_command(requests_mock):
-    raise NotImplementedError
+    from ArgusManagedDefence import fetch_observations_for_i_p_command
+    from argus_json import argus_event_data
+
+    ip = "0.0.0.0"
+    method_url = f"/reputation/v1/observation/ip/{ip}"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_OBSERVATION_IP)
+    result = fetch_observations_for_i_p_command({"ip": ip})
+    assert result.raw_response == argus_event_data.ARGUS_EVENT_OBSERVATION_IP
 
 
 def test_find_nids_events(requests_mock):
