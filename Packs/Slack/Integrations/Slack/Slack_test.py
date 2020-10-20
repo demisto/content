@@ -354,11 +354,12 @@ def test_exception_in_invite_to_mirrored_channel(mocker, capfd):
                                                                       {'email': 'perikles@acropoli.com',
                                                                        'username': 'perikles'}])
     mocker.patch.object(Slack, 'invite_to_mirrored_channel', side_effect=Exception)
-    with capfd.disabled():
-        try:
-            check_for_mirrors()
-        except Exception:
-            assert set_integration_context.call_count != 0
+    mocker.patch.object(demisto, 'error')
+    try:
+        check_for_mirrors()
+    except Exception:
+        assert set_integration_context.call_count != 0
+        assert demisto.error.call_args == ""
 
 
 def get_integration_context():
