@@ -1240,6 +1240,26 @@ def test_pack_metadata():
     return json.dumps(metadata, indent=4)
 
 
+def private_test_pack_zip():
+    content_path = '/home/runner/work/content-private/content-private/content'
+    target = '/home/runner/work/content-private/content-private/content/test_pack.zip'
+    with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
+        for test_path, test in test_files(content_path):
+            print(f"test_path is: {test_path}")
+            print(f"test.name is: {test.name}")
+            if not test_path.endswith('.yml'):
+                continue
+            test = test.name
+            with open(test_path, 'r') as test_file:
+                if not (test.startswith('playbook-') or test.startswith('script-')):
+                    test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
+                    test_file.seek(0)
+                    test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
+                else:
+                    test_target = f'test_pack/TestPlaybooks/{test}'
+                zip_file.writestr(test_target, test_file.read())
+
 def test_pack_zip(build: Build):
     if build.is_private:
         content_path = '/home/runner/work/content-private/content-private/content'
@@ -1320,6 +1340,8 @@ def main():
                                                                     pre_update=False)
         #  Done running tests so we are disabling the instances.
         disable_instances(build, all_module_instances, prints_manager)
+
+        test_pack_zip(build)
 
     else:
         if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
