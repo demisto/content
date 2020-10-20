@@ -2183,7 +2183,7 @@ class TestFetch:
                                                {'detection_id': 'ldt:2',
                                                 'created_timestamp': '2020-09-04T09:20:11Z',
                                                 'max_severity_displayname': 'Low'}]})
-        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1', json={})
 
     def test_old_fetch_to_new_fetch(self, set_up_mocks, mocker):
@@ -2253,7 +2253,7 @@ class TestIncidentFetch:
         """ Sets up the mocks for the fetch.
         """
         mocker.patch.object(demisto, 'setLastRun')
-        requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={})
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={})
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2']})
@@ -2266,7 +2266,7 @@ class TestIncidentFetch:
         mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z',
                                                                  'last_incident_id': 1234})
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[1][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
                                                           'incident_offset': 2, 'last_incident_fetch': 'ldt:1'}
 
     def test_new_fetch_with_offset(self, set_up_mocks, mocker):
@@ -2274,7 +2274,7 @@ class TestIncidentFetch:
         from CrowdStrikeFalcon import fetch_incidents
 
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[1][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
                                                           'incident_offset': 2, 'last_incident_fetch': 'ldt:1'}
 
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
@@ -2285,7 +2285,7 @@ class TestIncidentFetch:
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[1][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:11Z',
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:11Z',
                                                           'last_incident_fetch': 'ldt:1'}
 
 
