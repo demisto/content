@@ -41,6 +41,7 @@ URL_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\
 
 IGNORE_INCIDENT_TYPE_VALUE = 'None'
 
+
 def get_existing_incidents(input_args, current_incident_type):
     global DEFAULT_ARGS
     get_incidents_args = {}
@@ -242,7 +243,8 @@ def close_new_incident_and_link_to_existing(new_incident, existing_incident, sim
             'duplicateId': existing_incident['id']})
         if is_error(res):
             return_error(res)
-        message += 'This incident will be closed and linked to #{}.'.format(existing_incident['id'])
+        message += 'This incident (#{}) will be closed and linked to #{}.'.format(new_incident['id'],
+                                                                                  existing_incident['id'])
     return_entry(message, existing_incident.to_dict())
 
 
