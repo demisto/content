@@ -29,7 +29,7 @@ from Tests.test_content import extract_filtered_tests, ParallelPrintsManager, \
     get_server_numeric_version
 from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
-    install_all_content_packs, upload_zipped_packs
+    search_and_install_packs_and_their_dependencies_private, install_all_content_packs, upload_zipped_packs
 
 from Tests.tools import update_server_configuration
 
@@ -938,7 +938,7 @@ def restart_server_legacy(server):
         print(exc.output)
 
 
-def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, is_private=False):
+def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
     if Build.run_environment == Running.CIRCLECI_RUN:
         filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
         if run_all_tests:
@@ -1041,6 +1041,22 @@ def install_packs(build, prints_manager, pack_ids=None):
     for server in build.servers:
         try:
             _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, prints_manager, build.is_private)
+            if not flag:
+                raise Exception('Failed to search and install packs.')
+        except Exception as exc:
+            prints_manager.add_print_job(str(exc), print_error, 0)
+            prints_manager.execute_thread_prints(0)
+            installed_content_packs_successfully = False
+
+    return installed_content_packs_successfully
+
+
+def install_packs_private(build, prints_manager, pack_ids=None):
+    pack_ids = get_pack_ids_to_install() if pack_ids is None else pack_ids
+    installed_content_packs_successfully = True
+    for server in build.servers:
+        try:
+            _, flag = search_and_install_packs_and_their_dependencies_private(pack_ids, server.client, prints_manager)
             if not flag:
                 raise Exception('Failed to search and install packs.')
         except Exception as exc:
@@ -1276,34 +1292,65 @@ def main():
 
     configure_servers_and_restart(build, prints_manager)
     installed_content_packs_successfully = False
-    if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
-        if build.is_nightly:
-            install_nightly_pack(build, prints_manager)
-            installed_content_packs_successfully = True
-        else:
-            if not build.is_private:
+    if build.is_private:
+        #  Get a list of the test we need to run.
+        tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests,
+                                        build.is_nightly)
+        print(f"List of tests to run: {tests_for_iteration}")
+        #  Getting list of pack ids.
+        pack_ids = get_non_added_packs_ids(build)
+        #  Installing the packs.
+        installed_content_packs_successfully = install_packs_private(build, prints_manager,
+                                                                     pack_ids=pack_ids)
+        #  Get a list of the integrations that have changed.
+        new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
+        print(f"Identified {new_integrations} as new integrations.\nIdentified {modified_integrations} as modified integrations.")
+        #  Configuring the instances which are used in testing.
+        all_module_instances, brand_new_integrations = \
+            configure_server_instances(build, tests_for_iteration, new_integrations,
+                                       modified_integrations, prints_manager)
+
+        #  Running the instance tests (pushing the test button)
+        successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances,
+                                                                  prints_manager,
+                                                                  pre_update=True)
+        #  Setting the marketplace url in the server to point to the test bucket.
+        set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
+        #  Adding the new integrations to the instance test list and testing them.
+        all_module_instances.extend(brand_new_integrations)
+        successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances,
+                                                                    prints_manager,
+                                                                    pre_update=False)
+        #  Done running tests so we are disabling the instances.
+        disable_instances(build, all_module_instances, prints_manager)
+
+    else:
+        if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
+            if build.is_nightly:
+                install_nightly_pack(build, prints_manager)
+                installed_content_packs_successfully = True
                 pack_ids = get_non_added_packs_ids(build)
                 installed_content_packs_successfully = install_packs(build, prints_manager, pack_ids=pack_ids)
-    else:
-        installed_content_packs_successfully = True
+        else:
+            installed_content_packs_successfully = True
 
-    tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly,
-                                    build.is_private)
-    new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
-    all_module_instances, brand_new_integrations = \
-        configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
-    successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances, prints_manager,
-                                                              pre_update=True)
-    if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
-        update_content_till_v6(build)
-    elif not build.is_nightly:
-        set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
-        installed_content_packs_successfully = install_packs(build, prints_manager) and installed_content_packs_successfully
-        install_nightly_pack(build, prints_manager)
+        tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests,
+                                        build.is_nightly)
+        new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
+        all_module_instances, brand_new_integrations = \
+            configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
+        successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances, prints_manager,
+                                                                  pre_update=True)
+        if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
+            update_content_till_v6(build)
+        elif not build.is_nightly:
+            set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
+            installed_content_packs_successfully = install_packs(build, prints_manager) and installed_content_packs_successfully
+            install_nightly_pack(build, prints_manager)
 
-    all_module_instances.extend(brand_new_integrations)
-    successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, prints_manager, pre_update=False)
-    disable_instances(build, all_module_instances, prints_manager)
+        all_module_instances.extend(brand_new_integrations)
+        successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, prints_manager, pre_update=False)
+        disable_instances(build, all_module_instances, prints_manager)
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                   new_integrations, prints_manager)
