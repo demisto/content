@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 5b56bc27-796a-4740-8bd4-0847c13ed146
+    taskid: d07574d8-760a-441f-8dae-227170fec04d
     type: regular
     task:
-      id: 5b56bc27-796a-4740-8bd4-0847c13ed146
+      id: d07574d8-760a-441f-8dae-227170fec04d
       version: -1
       name: Check URL
       description: Checks the reputation of the supplied URLs.
@@ -276,10 +276,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: fcf385f8-b754-4396-8073-23dada67ad53
+    taskid: 13c4baaf-e36b-4459-8d1f-4c6cd8c03d50
     type: regular
     task:
-      id: fcf385f8-b754-4396-8073-23dada67ad53
+      id: 13c4baaf-e36b-4459-8d1f-4c6cd8c03d50
       version: -1
       name: Set badURL
       scriptName: Set
@@ -293,6 +293,7 @@ tasks:
       append: {}
       key:
         simple: badURL
+      stringify: {}
       value:
         simple: ${FileData=val.split('\n')[1].split(',')[1]}
     separatecontext: false
