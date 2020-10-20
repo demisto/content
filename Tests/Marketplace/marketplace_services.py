@@ -699,6 +699,7 @@ class Pack(object):
             return task_status
 
     def encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
+        # TODO Handle this better.
         try:
             shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
             os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
