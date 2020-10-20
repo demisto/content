@@ -4723,13 +4723,37 @@ class IAMUserProfile:
 
         return return_entry
 
-    def set_result(self, vendor_action_result=None):
+    def set_result(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
+                   error_message=None, details=None, skip=False, skip_reason=None):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
-        :param vendor_action_result: (IAMVendorActionResult) data returned from the vendor.
+        :param success: (bool) whether or not the command succeeded.
+        :param active:  (bool) whether or not the user status is active.
+        :param iden: (str) the user ID.
+        :param username: (str) the username of the user.
+        :param email:  (str) the email of the user.
+        :param error_code: (str or int) the error code of the response, if exists.
+        :param error_message: (str) the error details of the response, if exists.
+        :param details: (dict) the full response.
+        :param skip: (bool) whether or not the command is skipped.
+        :param skip_reason: (str) If the command is skipped, describes the reason.
+        :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
         """
-        if not vendor_action_result.get_attribute('email'):
-            email = self.set_attribute('email')
+        if not email:
+            email = self.get_attribute('email')
+
+        vendor_action_result = IAMVendorActionResult(
+            success,
+            active,
+            iden,
+            username,
+            email,
+            error_code,
+            error_message,
+            details,
+            skip,
+            skip_reason
+        )
 
         self._vendor_action_results.append(vendor_action_result)
 
