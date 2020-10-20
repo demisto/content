@@ -43,12 +43,12 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_known_issue': 'Other',
     'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
-    'resloved_other': 'Other'
+    'resolved_other': 'Other'
 }
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Resolved': 'resolved_threat_handled',
-    'Other': 'resloved_other',
+    'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive'
 }
@@ -1936,8 +1936,8 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(update_args, inc_status):
     if inc_status == 2:
-        demisto.debug("Closing Remote XDR incident")
         update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason'))
+        demisto.debug(f"Closing Remote XDR incident with status {update_args['status']}")
         update_args['resolve_comment'] = update_args.get('closeNotes')
 
 
