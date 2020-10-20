@@ -1241,10 +1241,6 @@ def get_fetch_times_and_offset(incident_type):
 
 
 def fetch_incidents():
-    """
-        Fetches incident using the detections API
-        :return: Fetched detections in incident format
-    """
     incidents = []  # type:List
     demisto_set_last_run = {}
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
