@@ -10,6 +10,7 @@ from demisto_client.demisto_api.rest import ApiException
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list, print_error
 from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH, IGNORED_FILES
+from Tests.test_content import ParallelPrintsManager
 
 PACK_METADATA_FILE = 'pack_metadata.json'
 SUCCESS_FLAG = True
@@ -22,18 +23,6 @@ def get_pack_display_name(pack_id):
             pack_metadata = json.load(json_file)
         return pack_metadata.get('name')
     return ''
-
-
-def get_pack_data_from_results(search_results, pack_display_name):
-    if not search_results:
-        return {}
-    for pack in search_results:
-        if pack.get('name') == pack_display_name:
-            return {
-                'id': pack.get('id'),
-                'version': pack.get('currentVersion')
-            }
-    return {}
 
 
 def create_dependencies_data_structure(response_data, dependants_ids, dependencies_data, checked_packs):
@@ -121,13 +110,15 @@ def get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock)
         lock.release()
 
 
-def search_pack(client, prints_manager, pack_display_name, pack_id, thread_index, lock):
+def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, pack_display_name: str, pack_id: str,
+                thread_index: int, lock: Lock) -> dict:
     """ Make a pack search request.
 
     Args:
         client (demisto_client): The configured client to use.
         prints_manager (ParallelPrintsManager): Print manager object.
         pack_display_name (string): The pack display name.
+        pack_id (string): The pack ID.
         thread_index (int): the thread index.
         lock (Lock): A lock object.
     Returns:
@@ -144,30 +135,31 @@ def search_pack(client, prints_manager, pack_display_name, pack_id, thread_index
 
         if 200 <= status_code < 300:
             result_object = ast.literal_eval(response_data)
-            pack_data = {
-                'id': result_object.get('id'),
-                'version': result_object.get('currentVersion')
-            }
 
-            if pack_data:
-                print_msg = 'Found pack {} in bucket!\n'.format(pack_display_name)
+            if result_object and result_object.get('currentVersion'):
+                print_msg = f'Found pack "{pack_display_name}" by its ID "{pack_id}" in bucket!\n'
                 prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.GREEN)
                 prints_manager.execute_thread_prints(thread_index)
+
+                pack_data = {
+                    'id': result_object.get('id'),
+                    'version': result_object.get('currentVersion')
+                }
                 return pack_data
 
             else:
-                print_msg = 'Did not find pack {} in bucket.\n'.format(pack_display_name)
+                print_msg = f'Did not find pack "{pack_display_name}" by its ID "{pack_id}" in bucket.\n'
                 prints_manager.add_print_job(print_msg, print_color, thread_index, LOG_COLORS.RED)
                 prints_manager.execute_thread_prints(thread_index)
                 raise Exception(print_msg)
         else:
             result_object = ast.literal_eval(response_data)
             msg = result_object.get('message', '')
-            err_msg = 'Pack {} search request failed - with status code {}\n{}'.format(pack_display_name,
-                                                                                       status_code, msg)
+            err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed with status code ' \
+                      f'{status_code}\n{msg}'
             raise Exception(err_msg)
     except Exception as e:
-        err_msg = 'The request to search pack {} has failed. Reason:\n{}'.format(pack_display_name, str(e))
+        err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed. Reason:\n{str(e)}'
         prints_manager.add_print_job(err_msg, print_color, thread_index, LOG_COLORS.RED)
 
         lock.acquire()
