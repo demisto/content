@@ -87,8 +87,11 @@ configuration:
   name: hec_url
   required: false
   type: 0
-- defaultvalue: 10 minutes
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+- additionalinfo: How far back in time to go when performing the first fetch, or when
+    creating a mapping using the Select Schema option.
+  defaultvalue: 10 minutes
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
   hidden: false
   name: fetch_time
   required: false
@@ -97,6 +100,16 @@ configuration:
   name: use_requests_handler
   required: false
   type: 8
+- additionalinfo: Used only for Mapping with the Select Schema option. The name of
+    the field that contains the type of the event or alert. The default value is "source",
+    which is a good option for Notable Events, however you may choose any custom field
+    that suits the need.
+  defaultvalue: source
+  display: Event Type Field
+  hidden: false
+  name: type_field
+  required: false
+  type: 0
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -242,7 +255,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update an existing Notable event in Splunk ES
+    description: Update an existing Notable event in Splunk ES.
     execution: true
     name: splunk-notable-event-edit
   - arguments:
@@ -292,7 +305,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Fields for indexing that do not occur in the event payload itself. Accepts a JSON string of key value pairs or comma-seperated values.
+      description: Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma separated, fields.
       isArray: false
       name: fields
       required: false
@@ -470,7 +483,7 @@ script:
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. in for example "search"
+      description: The name of the Splunk application that contains the KV store collection. For example, "search".
       isArray: false
       name: app_name
       required: true
@@ -588,11 +601,17 @@ script:
     description: Deletes the specified object in store. Search can be basic key value or a full query.
     execution: false
     name: splunk-kv-store-collection-delete-entry
+  - deprecated: false
+    description: Query Splunk to retrieve a list of sample alerts by alert type. Used
+      for Mapping fetched incidents through the Get Schema option.
+    execution: false
+    name: get-mapping-fields
   dockerimage: demisto/splunksdk:1.0.0.11989
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
+  ismappable: true
   runonce: false
   script: '-'
   subtype: python2

@@ -3180,6 +3180,16 @@
 <td style="width: 532px;">The password for Panorama. This is only required for the "dlp-pcap" PCAP type.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 137px;">deviceName</td>
+<td style="width: 532px;">The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 137px;">sessionID</td>
+<td style="width: 532px;">The Session ID of the PCAP. For further information, see the Panorama XML API Documentation.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -3863,6 +3873,21 @@
 <td style="width: 288px;">device-group</td>
 <td style="width: 289px;">
 <span>The device group for which to return addresses (Panorama instances).</span> If no value is supplied, the default group configured integration parameter is applied.</td>
+<td style="width: 163px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 288px;">edl_type</td>
+<td style="width: 289px;">The type of the EDL. Required when refreshing an EDL object which is configured on Panorama.</td>
+<td style="width: 163px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 288px;">location</td>
+<td style="width: 289px;">The location of the EDL. Required when refreshing an EDL object which is configured on Panorama.</td>
+<td style="width: 163px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 288px;">vsys</td>
+<td style="width: 289px;">The Vsys of the EDL. Required when refreshing an EDL object which is configured on Panorama.</td>
 <td style="width: 163px;">Optional</td>
 </tr>
 </tbody>

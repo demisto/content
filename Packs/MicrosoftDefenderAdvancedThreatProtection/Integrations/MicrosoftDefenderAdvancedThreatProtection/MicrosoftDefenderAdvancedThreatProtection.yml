@@ -3462,7 +3462,7 @@ script:
     description: Deletes the specified indicator.
     execution: false
     name: microsoft-atp-indicator-delete
-  dockerimage: demisto/crypto:1.0.0.11287
+  dockerimage: demisto/crypto:1.0.0.12410
   feed: false
   isfetch: true
   longRunning: false

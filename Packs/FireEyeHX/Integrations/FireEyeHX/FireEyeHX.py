@@ -1062,12 +1062,20 @@ def containment_request(agent_id):
         'state': 'contain'
     }
 
-    http_request(
-        'POST',
-        url,
-        body=body,
-        headers=POST_HEADERS
-    )
+    api_version = VERSION[-1]
+    if api_version > 3:
+        http_request(
+            'POST',
+            url,
+            headers=POST_HEADERS
+        )
+    else:
+        http_request(
+            'POST',
+            url,
+            body=body,
+            headers=POST_HEADERS
+        )
     # no exception raised - successful request
 
 
