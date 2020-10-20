@@ -1253,7 +1253,7 @@ def fetch_incidents():
         incident_type = 'detection'
         last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(incident_type)
 
-        fetch_query = demisto.params().get('detections_fetch_query')
+        fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
             fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
             detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, offset=offset), 'resources')

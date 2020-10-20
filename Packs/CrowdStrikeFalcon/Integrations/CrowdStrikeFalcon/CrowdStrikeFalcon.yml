@@ -27,7 +27,7 @@ configuration:
   required: false
   type: 0
 - display: Detections fetch query
-  name: detections_fetch_query
+  name: fetch_query
   required: false
   type: 0
 - display: Incidents fetch query
