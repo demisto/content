@@ -1246,7 +1246,7 @@ def fetch_incidents():
         :return: Fetched detections in incident format
     """
     incidents = []  # type:List
-
+    demisto_set_last_run = {}
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
 
     if 'Detections' in fetch_incidents_or_detections:
@@ -1285,10 +1285,10 @@ def fetch_incidents():
                     incidents.append(incident)
 
             if len(incidents) == INCIDENTS_PER_FETCH:
-                demisto.setLastRun({'first_behavior_detection_time': prev_fetch,
-                                    'detection_offset': offset + INCIDENTS_PER_FETCH})
+                demisto_set_last_run['first_behavior_detection_time'] = prev_fetch
+                demisto_set_last_run['detection_offset'] = offset + INCIDENTS_PER_FETCH
             else:
-                demisto.setLastRun({'first_behavior_detection_time': last_fetch_time})
+                demisto_set_last_run['first_behavior_detection_time'] = last_fetch_time
 
     if 'Incidents' in fetch_incidents_or_detections:
         incident_type = 'incident'
@@ -1333,12 +1333,14 @@ def fetch_incidents():
                         incidents.append(incident_to_context)
 
             if len(incidents) == INCIDENTS_PER_FETCH:
-                demisto.setLastRun({'first_behavior_incident_time': prev_fetch,
-                                    'incident_offset': offset + INCIDENTS_PER_FETCH,
-                                    'last_incident_fetch': last_new_incident_fetched})
+                demisto_set_last_run['first_behavior_incident_time'] = prev_fetch
+                demisto_set_last_run['incident_offset'] = offset + INCIDENTS_PER_FETCH
+                demisto_set_last_run['last_incident_fetch'] = last_new_incident_fetched
             else:
-                demisto.setLastRun({'first_behavior_incident_time': last_fetch_time,
-                                    'last_incident_fetch': last_new_incident_fetched})
+                demisto_set_last_run['first_behavior_incident_time'] = last_fetch_time
+                demisto_set_last_run['last_incident_fetch'] = last_new_incident_fetched
+
+    demisto.setLastRun(demisto_set_last_run)
     return incidents
 
 
