@@ -1,5 +1,5 @@
 commonfields:
-  id: Micro Focus Service Manager
+  id: Service Manager
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Micro Focus Service Manager
