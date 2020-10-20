@@ -14,6 +14,7 @@ requests.packages.urllib3.disable_warnings()
 '''CONSTANTS'''
 
 DEPROVISIONED_STATUS = 'DEPROVISIONED'
+USER_IS_DISABLED_MSG = 'Deactivation failed because the user is already disabled.'
 USER_IS_DISABLED_ERROR = 'E0000007'
 ERROR_CODES_TO_SKIP = [
     'E0000016',  # user is already enabled
@@ -84,9 +85,7 @@ class Client(BaseClient):
 
     def create_user(self, user_data):
         body = {
-            'profile': user_data,
-            'groupIds': [],
-            'credentials': {}
+            'profile': user_data
         }
         uri = 'users'
         query_params = {
@@ -103,9 +102,9 @@ class Client(BaseClient):
 
     def update_user(self, user_id, user_data):
         body = {
-            "profile": user_data
+            'profile': user_data
         }
-        uri = f"users/{user_id}"
+        uri = f'users/{user_id}'
         res = self._http_request(
             method='POST',
             url_suffix=uri,
@@ -128,7 +127,7 @@ def handle_exception(user_profile, e, action):
     error_code = e.res.get('errorCode')
     error_message = get_error_details(e.res)
     if error_code == USER_IS_DISABLED_ERROR:
-        error_message = 'Deactivation failed because the user is already disabled'
+        error_message = USER_IS_DISABLED_MSG
 
     if error_code in ERROR_CODES_TO_SKIP:
         user_profile.set_result(action=action,
@@ -326,9 +325,6 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
 
 
 def main():
-    """
-        PARSE AND VALIDATE INTEGRATION PARAMS
-    """
     user_profile = None
     params = demisto.params()
     base_url = urljoin(params['url'].strip('/'), '/api/v1/')
