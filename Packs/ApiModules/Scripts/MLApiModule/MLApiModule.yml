@@ -8,7 +8,7 @@ system: true
 timeout: '0'
 type: python
 dockerimage: demisto/ml:1.0.0.12420
-comment: A ML code used which is shared by different ML automatons.
+comment: A piece of ML code that is used and which is shared by different ML automations.
 tags:
 - ml
 fromversion: "5.0.0"
