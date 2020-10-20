@@ -1186,7 +1186,7 @@ def process_search_command(client: Client, args: Dict) -> CommandResults:
     process_hash = args.get('process_hash', '')
     event_id = args.get('event_id', '')
     query = args.get('query', '')
-    limit = args.get('limit', '')
+    limit = args.get('limit', 20)
 
     raw_respond = client.create_search_process_request(process_name=process_name, process_hash=process_hash,
                                                        event_id=event_id, query=query, limit=limit)
