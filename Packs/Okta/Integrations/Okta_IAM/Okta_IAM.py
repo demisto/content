@@ -306,9 +306,9 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
                 user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled,
                                                    set_command_name=True)
             else:
-            _, error_message = IAMErrors.USER_DOES_NOT_EXIST
-            user_profile.set_result(skip=True,
-                                    skip_reason=error_message)
+                _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                user_profile.set_result(skip=True,
+                                        skip_reason=error_message)
 
     except DemistoException as e:
         handle_exception(user_profile, e)
