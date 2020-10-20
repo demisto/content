@@ -139,6 +139,7 @@ references:
         sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/lastest_server_build_scripts/*
+        chmod +x ./Tests/Marketplace/*
         if [ ! -e "venv" ]; then
           echo "installing venv"
           NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
