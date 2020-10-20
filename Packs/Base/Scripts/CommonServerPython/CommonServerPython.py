@@ -4597,6 +4597,9 @@ class IAMActions(object):
 
 
 class IAMVendorActionResult:
+    """ This class is used in IAMUserProfile class to represent actions data.
+    """
+
     def __init__(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
                  error_message=None, details=None, skip=False, skip_reason=None, action=None):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
@@ -4779,9 +4782,9 @@ class IAMUserProfile:
     def update_with_app_data(self, app_data, mapper_name, mapping_type=None):
         """ updates the user_profile attribute according to the given app_data
 
-        :param app_data: The user data in app (dict)
-        :param mapper_name: incoming mapper name (str)
-        :param mapping_type: Optional - mapping type (str)
+        :param app_data: (dict) The user data in app
+        :param mapper_name: (str) incoming mapper name
+        :param mapping_type: (str) Optional - mapping type
         """
         if not mapping_type:
             mapping_type = IAMUserProfile.INDICATOR_TYPE
