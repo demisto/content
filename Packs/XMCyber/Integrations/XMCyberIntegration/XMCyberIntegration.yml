@@ -33,13 +33,22 @@ script:
   - name: xmcyber-compromising-techniques-list
     description: List compromising techniques to an entity
     arguments:
-      - name: time_id
+      - name: timeId
         default: false
-        description: time_id for example timeAgo_days_7
+        description: timeId for example timeAgo_days_7
         isArray: false
         required: false
         secret: false
+      - name: entityId
+        default: false
+        description: Entity ID
+        isArray: false
+        required: true
+        secret: false
     outputs:
+      - contextPath: entityId
+        description: XMCyber Entity ID
+        type: String
       - contextPath: XMCyber.compromisingTechniques.name
         description: Compromising Techinique Name
         type: String
@@ -47,6 +56,35 @@ script:
         description: Percent of Vectors
         type: Number
 
+  - name: xmcyber-affected-critical-assets-list
+    description: List critical assets at risk from an entity and the complexity of the attack
+    arguments:
+      - name: timeId
+        default: false
+        description: timeId for example timeAgo_days_7
+        isArray: false
+        required: false
+        secret: false
+      - name: entityId
+        default: false
+        description: Entity ID
+        isArray: false
+        required: true
+        secret: false
+    outputs:
+      - contextPath: entityId
+        description: XMCyber Entity ID
+        type: String
+      - contextPath: XMCyber.criticalAssetsAtRiskList.name
+        description: Compromising Techinique Name
+        type: String
+      - contextPath: XMCyber.criticalAssetsAtRiskList.avgattackComplexity
+        description: Average attack complexity
+        type: Number
+      - contextPath: XMCyber.criticalAssetsAtRiskList.minattackComplexity
+        description: Minimum attack complexity
+        type: Number
+        
   - name: xmcyber-is-version-supported
     description: Check if current XM version supports Demisto integration
     outputs:
@@ -70,27 +108,33 @@ script:
         isArray: true
         required: false
     outputs:
-      - contextPath: entity_id
-        description: 'XMCyber Entity ID'
+      - contextPath: entityId
+        description: XMCyber Entity ID
         type: String
       - contextPath: name
         description: Entity Name
         type: String
-      - contextPath: is_asset
+      - contextPath: isAsset
         description: Is Entity a Critical Asset
         type: Boolean
-      - contextPath: is_choke_point
-        description: Is Entity a Choke Point to Critical Assets
-        type: Boolean
-      - contextPath: affected_assets.value
-        description: Number of affected critical assets
+      - contextPath: affectedEntities
+        description: Number of unique entities at risk from this entity
         type: Number
-      - contextPath: affected_assets.level
-        description: None, Low, Medium, or High
+      - contextPath: averageComplexity
+        description: Average complexity to compromise this entity
+        type: Number
+      - contextPath: criticalAssetsAtRisk
+        description: Number of unique critical assets at risk from this entity
+        type: Number
+      - contextPath: averageComplexityLevel
+        description: Level of the average complexity to compromise this entity
         type: String
-      - contextPath: ip
-        description: The actual IP
+      - contextPath: compromisingTechniques.name
+        description: Technique compromising this entity
         type: String
+      - contextPath: compromisingTechniques.count
+        description: Number of vectors with this technique compromising this entity
+        type: Number
       - contextPath: DBotScore.Indicator
         description: The indicator that was tested.
         type: String
@@ -125,24 +169,33 @@ script:
         isArray: true
         required: false
     outputs:
-      - contextPath: entity_id
-        description: 'XMCyber Entity ID'
+      - contextPath: entityId
+        description: XMCyber Entity ID
         type: String
       - contextPath: name
         description: Entity Name
         type: String
-      - contextPath: is_asset
+      - contextPath: isAsset
         description: Is Entity a Critical Asset
         type: Boolean
-      - contextPath: is_choke_point
-        description: Is Entity a Choke Point to Critical Assets
-        type: Boolean
-      - contextPath: affected_assets.value
-        description: Number of affected critical assets
+      - contextPath: affectedEntities
+        description: Number of unique entities at risk from this entity
         type: Number
-      - contextPath: affected_assets.level
-        description: None, Low, Medium, or High
+      - contextPath: averageComplexity
+        description: Average complexity to compromise this entity
+        type: Number
+      - contextPath: criticalAssetsAtRisk
+        description: Number of unique critical assets at risk from this entity
+        type: Number
+      - contextPath: averageComplexityLevel
+        description: Level of the average complexity to compromise this entity
         type: String
+      - contextPath: compromisingTechniques.name
+        description: Technique compromising this entity
+        type: String
+      - contextPath: compromisingTechniques.count
+        description: Number of vectors with this technique compromising this entity
+        type: Number
       - contextPath: Host.Domain
         description: The domain of the host.
         type: String

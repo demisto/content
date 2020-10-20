@@ -96,9 +96,6 @@
             "agentVersionStr": "1.5.798",
             "latestPossibleAgentVersionStr": "1.5.798",
             "ipv4Str": [],
-            "ipv6Str": [
-                "fe80::200:5efe:ac00:6401"
-            ],
             "securityFlags": {},
             "inActiveWorkingSet":true,
             "activeWorkingSetLastPick": "2020-09-30T06:42:59.229Z",

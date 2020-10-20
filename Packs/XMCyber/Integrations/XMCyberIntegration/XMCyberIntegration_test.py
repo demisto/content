@@ -27,6 +27,36 @@ def mock_request_and_get_xm_mock(json_path, requests_mock, url_to_mock):
     requests_mock.get(url_to_mock, json=json)
     return get_xm_mock()
 
+def test_affected_critical_assets_list(requests_mock):
+    """Tests test_affected_critical_assets_list_command function.
+
+    Configures requests_mock instance to generate the appropriate search
+    API response. Checks the output of the command function with the expected output.
+    """
+    from XMCyberIntegration import affected_critical_assets_list_command
+    mock_url = f'{TEST_URL}{URLS.Assets_At_Risk}?entityId=15553084234424912589&timeId=timeAgo_days_7&sort=-attackComplexity&pageSize={PAGE_SIZE}&page=1'
+    xm = mock_request_and_get_xm_mock('test_data/affected_assets.json', requests_mock, mock_url)
+
+    response = affected_critical_assets_list_command(xm, {
+        'entityId': '15553084234424912589'
+    })
+
+    assert response.outputs_prefix == 'XMCyber'
+    assert response.outputs_key_field == 'entityId'
+    assert response.outputs == [{
+        'entityId': '15553084234424912589',
+        'criticalAssetsAtRiskList': [
+            {
+                'avgattackComplexity': 25.33,
+                'minAttackComplexity': 24, 
+                'name': 'USERBB03'
+            },
+            {
+                'avgattackComplexity': 24.67,
+                'minAttackComplexity': 22, 
+                'name': 'model-bucket-from-struts'
+            }]
+    }]
 
 def test_hostname(requests_mock):
     """Tests hostname_command function.
@@ -51,7 +81,11 @@ def test_hostname(requests_mock):
         'averageComplexity': 2,
         'criticalAssetsAtRisk': 14,
         'averageComplexityLevel': 'medium',
-        'isAsset': True
+        'isAsset': True,
+        'compromisingTechniques': [
+            {'count': 46,'name': 'DNS Heap Overflow (CVE-2018-8626)'},
+            {'count': 34, 'name': 'SIGRed (CVE-2020-1350)'}
+        ]
     }
 
 def test_ip(requests_mock):
@@ -77,5 +111,9 @@ def test_ip(requests_mock):
         'averageComplexity': 2,
         'criticalAssetsAtRisk': 14,
         'averageComplexityLevel': 'medium',
-        'isAsset': True
+        'isAsset': True,
+        'compromisingTechniques': [
+            {'count': 46,'name': 'DNS Heap Overflow (CVE-2018-8626)'},
+            {'count': 34, 'name': 'SIGRed (CVE-2020-1350)'}
+        ]
     }

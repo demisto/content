@@ -103,6 +103,8 @@ class URLS:
     Outbound = '/systemReport/entity/outbound'
     System_Report = '/systemReport/entity'
     Techniques = '/systemReport/techniques'
+    Assets_At_Risk = '/systemReport/assetsAtRiskByEntity'
+    Entities_At_Risk = '/systemReport/affectedEntitiesByEntity'
 
 
 class EVENT_NAME:
@@ -193,6 +195,20 @@ class XM:
             'timeId': time_id
         })
 
+    def get_affected_assets(self, entity_id: str, time_id=DEFAULT_TIME_ID, page_size=PAGE_SIZE, max_pages=MAX_PAGES):
+        return self.client.get_paginated(URLS.Assets_At_Risk, {
+            'entityId': entity_id,
+            'timeId': time_id,
+            'sort': '-attackComplexity'
+        }, page_size, max_pages)
+    
+    def get_affected_entities(self, entity_id: str, time_id=DEFAULT_TIME_ID, page_size=PAGE_SIZE, max_pages=MAX_PAGES):
+        return self.client.get_paginated(URLS.Entities_At_Risk, {
+            'entityId': entity_id,
+            'timeId': time_id,
+            'sort': '-attackComplexity'
+        }, page_size, max_pages)
+
     def search_entities(self, search_string):
         return self.client.get_paginated(URLS.Entities, {
             'search': f'/{search_string}/i'
@@ -231,7 +247,6 @@ class XM:
 
             if previous_tech is None or current_tech["criticalAssets"] == previous_tech["criticalAssets"]: # should be >
                 events_array.append(create_xm_event(EVENT_NAME.TopTechnique, current_tech))
-
 
     def get_fetch_incidents_events(self):
         events = []
@@ -318,6 +333,12 @@ def entity_obj_to_data(entity: Any):
         is_asset = entity['asset']
     except KeyError:
         is_asset = False
+    techniques = []
+    for technique in entity['attackedByTechniques']:
+        techniques.append({
+             'name': technique['displayName'], 
+             'count': technique['count']
+             })
     return {
         'entityId': entity['entityId'],
         'name': entity['name'],
@@ -325,11 +346,11 @@ def entity_obj_to_data(entity: Any):
         'averageComplexity': entity['attackComplexity']['avg']['value'],
         'criticalAssetsAtRisk': entity['affectedUniqueAssets']['count']['value'],
         'averageComplexityLevel': entity['affectedUniqueAssets']['count']['level'],
-        'isAsset': is_asset
-        #'affected_entities_list': None,
-        #'compromising_techniques': None,
-        #'critical_assets_at_risk_list': None,
-        #'critical_assets_at_risk_level': None
+        'isAsset': is_asset,
+        'compromisingTechniques': techniques
+        #'affectedEntitiesList': None,
+        #'criticalAssetsAtRiskList': None,
+        #'criticalAssetsAtRiskLevel': None
     }
 
 
@@ -346,10 +367,10 @@ def entity_score(entity: Any):
 
 
 def compromising_techniques_to_entity_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    time_id = args.get('time_id')
+    time_id = args.get('timeId')
     if not time_id:
         time_id = 'timeAgo_days_7'
-    entity_ids = argToList(args.get('entity_id'))
+    entity_ids = argToList(args.get('entityId'))
     if len(entity_ids) == 0:
         raise ValueError('Entity ID(s) not specified')
     compromising_techniques = []
@@ -360,7 +381,7 @@ def compromising_techniques_to_entity_command(xm: XM, args: Dict[str, Any]) -> C
     readable_output = 'found {0} compromising techniques to {1} entities'.format(len(compromising_techniques), len(entity_ids))
     return CommandResults(
         outputs_prefix='XMCyber',
-        outputs_key_field='entity_id',
+        outputs_key_field='entityId',
         outputs=compromising_techniques,
         readable_output=readable_output,
 
@@ -400,24 +421,33 @@ def critical_asset_add_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def attack_paths_from_entity_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+def affected_critical_assets_list_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     time_id = args.get('time_id')
     if not time_id:
         time_id = 'timeAgo_days_7'
-    ips = argToList(args.get('ip'))
-    if len(ips) == 0:
-        raise ValueError('IP(s) not specified')
-    entities = xm.search_entities(ips)
-    attack_paths = []
-    for entity in entities:
-        paths = xm.get_outbound_paths(entity, time_id)
-        for path in paths:
-            attack_paths.append(raw_path_to_incident_path(path))
-    readable_output = 'found {0} attack paths from {1} entities'.format(len(attack_paths), len(entities))
+    entity_ids = argToList(args.get('entityId'))
+    if len(entity_ids) == 0:
+        raise ValueError('Entity ID(s) not specified')
+    output = []
+    readable_output = ''
+    for entity_id in entity_ids:
+        affected_assets = xm.get_affected_assets(entity_id, time_id)
+        affected_assets_list = []
+        for asset in affected_assets:
+            affected_assets_list.append({
+                'name': asset['name'],
+                'avgattackComplexity': asset['attackComplexity'],
+                'minAttackComplexity': asset['minAttackComplexity']
+            })
+        output.append({
+            'entityId': entity_id,
+            'critical_assets_at_risk_list': affected_assets_list
+        })
+        readable_output += f'found {len(affected_assets)} affected critical assets from {entity_id}\n'
     return CommandResults(
-        outputs_prefix='XMCyber.AttackPath',
-        outputs_key_field='pathId',
-        outputs=attack_paths,
+        outputs_prefix='XMCyber',
+        outputs_key_field='entityId',
+        outputs=output,
         readable_output=readable_output
     )
 
@@ -681,7 +711,7 @@ def main() -> None:
             "xmcyber-compromising-techniques-list": compromising_techniques_to_entity_command,
             "xmcyber-breachpoint-update": breachpoint_update_command,
             "xmcyber-critical-asset-add": critical_asset_add_command,
-            "xmcyber-attack-paths-from-entity": attack_paths_from_entity_command,
+            "xmcyber-affected-critical-assets-list": affected_critical_assets_list_command,
             # Common commands
             "ip": ip_command,
             "hostname": hostname_command
