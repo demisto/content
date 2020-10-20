@@ -377,12 +377,19 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
 
             datetimeformat = '%Y-%m-%dT%H:%M:%S.000Z'
 
-            occurred = dateparser.parse(incident_created_time).strftime(datetimeformat)
-
-            date = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'})
-
-            incident_created_time = int(date.timestamp())
-            incident_created_time_ms = incident_created_time * 1000
+            if isinstance(incident_created_time, str):
+                occurred = dateparser.parse(incident_created_time).strftime(datetimeformat)
+                date = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'})
+                if isinstance(date, datetime):
+                    incident_created_time = int(date.timestamp())
+                    incident_created_time_ms = incident_created_time * 1000
+                else:
+                    incident_created_time = 0
+                    incident_created_time_ms = 0
+            else:
+                date = None
+                incident_created_time = 0
+                incident_created_time_ms = 0
 
             demisto.info("MS - incident_created_time: " + str(last_fetch))
             # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
@@ -405,17 +412,12 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
                 'rawJSON': json.dumps(alert),
                 'type': 'xMatters Alert',  # Map to a specific XSOAR incident Type
                 'severity': convert_to_demisto_severity(alert.get('priority', 'Low')),
-                # 'CustomFields': {  # Map specific XSOAR Custom Fields
-                #     'helloworldid': alert.get('alert_id'),
-                #     'helloworldstatus': alert.get('alert_status'),
-                #     'helloworldtype': alert.get('alert_type')
-                # }
             }
 
             incidents.append(incident)
 
             # Update last run and add incident if the incident is newer than last fetch
-            if date.timestamp() > latest_created_time:
+            if isinstance(date, datetime) and date.timestamp() > latest_created_time:
                 latest_created_time = incident_created_time
         except Exception as e:
             demisto.info("Issue with event")
