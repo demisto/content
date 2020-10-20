@@ -298,7 +298,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
         okta_user = client.get_user(user_profile.get_attribute('email'))
         if okta_user:
             user_id = okta_user.get('id')
-            okta_profile = user_profile.map_object(mapper_out)
+            okta_profile = user_profile.map_object(mapper_out, full_app_data=okta_user)
             updated_user = client.update_user(user_id, okta_profile)
             user_profile.set_result(
                 action=IAMActions.UPDATE_USER,
