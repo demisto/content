@@ -9,9 +9,9 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: Phishing
-  description: A comma-separatetd list of incident types by which to filter. Specify
-    "None" to ignore incident type from deduplication logic.
+  description: A comma-separatetd list of incident types by which to filter. The default
+    is the current incident type. Specify "None" to ignore incident type from deduplication
+    logic.
   isArray: false
   name: incidentTypes
   required: false

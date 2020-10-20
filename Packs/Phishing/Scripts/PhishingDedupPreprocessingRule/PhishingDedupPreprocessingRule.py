@@ -40,7 +40,7 @@ URL_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\
             r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
 
-def get_existing_incidents(input_args):
+def get_existing_incidents(input_args, current_incident_type):
     global DEFAULT_ARGS
     get_incidents_args = {}
     get_incidents_args['limit'] = input_args.get('limit', DEFAULT_ARGS['limit'])
@@ -61,6 +61,8 @@ def get_existing_incidents(input_args):
     else:
         return_error('Unsupported statusScope: {}'.format(status_scope))
     type_values = input_args.get('incidentTypes')
+    if not type_values:
+        type_values = current_incident_type or 'None'
     if type_values is not None and type_values != 'None':
         type_field = input_args.get('incidentTypeFieldName', 'type')
         type_query = generate_incident_type_query_component(type_field, type_values)
@@ -159,7 +161,7 @@ def incident_has_text_fields(incident):
     text_fields = [EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_BODY_FIELD]
     if any(field in incident for field in text_fields):
         return True
-    elif 'CustomFields' in incident and any(field in incident['CustomFields'] for field in text_fields):
+    elif 'CustomFields' in incident and any(field in (incident.get('CustomFields') or []) for field in text_fields):
         return True
     return False
 
@@ -259,7 +261,7 @@ def format_similar_incident(incident, similairy):
 
 
 def create_new_incident_low_similarity(existing_incident, similarity):
-    message = '# This incident is not a duplicate of an existing incident.\n'
+    message = '## This incident is not a duplicate of an existing incident.\n'
 
     if similarity > SIMILARITY_THRESHOLD - CLOSE_TO_SIMILAR_DISTANCE:
         formatted_incident = format_similar_incident(existing_incident, similarity)
@@ -290,12 +292,12 @@ def main():
     EMAIL_HTML_FIELD = input_args.get('emailBodyHTML', EMAIL_HTML_FIELD)
     FROM_FIELD = input_args.get('emailFrom', FROM_FIELD)
     FROM_POLICY = input_args.get('fromPolicy', FROM_POLICY)
-    existing_incidents = get_existing_incidents(input_args)
+    new_incident = demisto.incidents()[0]
+    existing_incidents = get_existing_incidents(input_args, new_incident.get('type'))
     demisto.debug('found {} incidents by query'.format(len(existing_incidents)))
     if len(existing_incidents) == 0:
         create_new_incident()
         return
-    new_incident = demisto.incidents()[0]
     if not incident_has_text_fields(new_incident):
         create_new_incident_no_text_fields()
         return
