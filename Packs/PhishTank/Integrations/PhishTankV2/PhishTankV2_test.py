@@ -224,7 +224,7 @@ def test_url_command(mocker, data, url, expected_score, expected_table):
         - Returns markdown table and outputs
     """
     client = create_client(False, False, "1")
-    mocker.patch.object(demisto,"results")
+    mocker.patch.object(demisto, "results")
     mocker.patch('PhishTankV2.get_url_data', return_value=(data, url[0]))
     url_command(client, url)
     assert len(url) == demisto.results.call_count
