@@ -1771,7 +1771,7 @@ script:
           description: Cumulative counts of registry modifications since process tracking  started.
           type: Number
         - contextPath: CarbonBlackEEDR.SearchProcess.results.scriptload_count
-          description: Unknown
+          description: Cumulative counts of loaded scripts since process tracking started.
           type: Number
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
