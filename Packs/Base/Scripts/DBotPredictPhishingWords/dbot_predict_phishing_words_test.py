@@ -7,6 +7,7 @@ from DBotPredictPhishingWords import get_model_data, predict_phishing_words, mai
 
 TOKENIZATION_RESULT = None
 
+
 class PhishingModelMock:
 
     def __init__(self, filter_words_res=None, explain_model_words_res=None):
@@ -18,6 +19,7 @@ class PhishingModelMock:
 
     def explain_model_words(self, a, b, c, d):
         return self.explain_model_words_res
+
 
 def get_args():
     args = defaultdict(lambda: "yes")

@@ -125,8 +125,8 @@ def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, t
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
                                                    'modelLabels': model_labels,
-                                                   'modelOverride': model_override
-                                                   # 'modelExtraInfo': {'threshold': threshold}
+                                                   'modelOverride': model_override,
+                                                   'modelExtraInfo': {'threshold': threshold}
                                                    })
     if is_error(res):
         return_error(get_error(res))
@@ -225,7 +225,7 @@ def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, deta
 
 def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing_labels_counter):
     labels_counter = Counter([x[DBOT_TAG_FIELD] for x in data])
-    labels_below_thresh = [x for x, count in labels_counter.items() if count < MIN_INCIDENTS_THRESHOLD]
+    labels_below_thresh = [label for label, count in labels_counter.items() if count < MIN_INCIDENTS_THRESHOLD]
     if len(labels_below_thresh) > 0:
         err = ['Minimum number of incidents per label required for training is {}.'.format(MIN_INCIDENTS_THRESHOLD)]
         err += ['The following labels have less than {} incidents: '.format(MIN_INCIDENTS_THRESHOLD)]
@@ -336,7 +336,7 @@ def get_X_and_y_from_data(data, text_field):
 
 def main():
     tokenizer_script = demisto.args().get('tokenizerScript', None)
-    PhishingModel = demisto_ml.PhishingModel(tokenizer_script=tokenizer_script)
+    phishing_model = demisto_ml.PhishingModel(tokenizer_script=tokenizer_script)
     input = demisto.args()['input']
     input_type = demisto.args()['inputType']
     model_name = demisto.args()['modelName']
@@ -380,8 +380,8 @@ def main():
     X_train, X_test = [X[i] for i in train_index], [X[i] for i in test_index]
     y_train, y_test = [y[i] for i in train_index], [y[i] for i in test_index]
 
-    PhishingModel.train(X_train, y_train, compress=False)
-    ft_test_predictions = PhishingModel.predict(X_test)
+    phishing_model.train(X_train, y_train, compress=False)
+    ft_test_predictions = phishing_model.predict(X_test)
     y_pred = [{y_tuple[0]: float(y_tuple[1])} for y_tuple in ft_test_predictions]
     if return_predictions_on_test_set:
         return_file_result_with_predictions_on_test_set(data, original_text_fields, test_index, text_field, y_test,
