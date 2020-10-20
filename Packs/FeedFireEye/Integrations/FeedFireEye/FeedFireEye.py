@@ -319,8 +319,7 @@ def parse_timestamp(next_url_to_extract_timestamp_from):
         timestamp_in_seconds = math.floor(timestamp_in_micro_seconds / 1000000)
         return timestamp_in_seconds
     except Exception:
-        # 1539942216 is 2018-10-19
-        return 1539942216
+        return None
 
 
 class Client(BaseClient):
@@ -347,9 +346,8 @@ class Client(BaseClient):
         self.tlp_color = tlp_color
 
         integration_context = demisto.getIntegrationContext()
-        # 1539942216 is 2018-10-19
-        self.last_indicators_fetch_time = integration_context.get('last_indicators_fetch_time', 1539942216)
-        self.last_reports_fetch_time = integration_context.get('last_reports_fetch_time', 1539942216)
+        self.last_indicators_fetch_time = integration_context.get('last_indicators_fetch_time')
+        self.last_reports_fetch_time = integration_context.get('last_reports_fetch_time')
 
     @staticmethod
     def parse_access_token_expiration_time(expires_in: str) -> int:
@@ -437,10 +435,12 @@ class Client(BaseClient):
         }
 
         if limit == -1:
-            query_url = f'/collections/indicators/objects?added_after={self.last_indicators_fetch_time}&length=1000'
+            query_url = f'/collections/indicators/objects?length=1000'
         else:
-            query_url = f'/collections/indicators/objects?added_after={self.last_indicators_fetch_time}&' \
-                        f'length={min(limit, 1000)}'
+            query_url = f'/collections/indicators/objects?length={min(limit, 1000)}'
+
+        if self.last_indicators_fetch_time:
+            query_url += f'&added_after={self.last_indicators_fetch_time}'
 
         round_count = 0
         while round_count != 10:
@@ -509,10 +509,12 @@ class Client(BaseClient):
         }
 
         if limit == -1:
-            query_url = f'/collections/reports/objects?added_after={self.last_reports_fetch_time}&length=100'
+            query_url = f'/collections/reports/objects?length=100'
         else:
-            query_url = f'/collections/reports/objects?added_after={self.last_reports_fetch_time}&' \
-                        f'length={min(limit, 100)}'
+            query_url = f'/collections/reports/objects?length={min(limit, 100)}'
+
+        if self.last_reports_fetch_time:
+            query_url += f'&added_after={self.last_reports_fetch_time}'
 
         round_count = 0
         while round_count != 10:
