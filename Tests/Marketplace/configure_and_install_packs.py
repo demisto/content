@@ -26,7 +26,7 @@ def main():
     # Get the host by the ami env
     hosts, _ = Build.get_servers(ami_env=options.ami_env)
 
-    print_color('Retrieving the credentials for Cortex XSOAR server', LOG_COLORS.GREEN)
+    print_color('Retrieving the credentials for Cortex XSOAR server', LOG_COLORS.NATIVE)
     secret_conf_file = get_json_file(path=options.secret)
     username: str = secret_conf_file.get('username')
     password: str = secret_conf_file.get('userPassword')
@@ -43,7 +43,7 @@ def main():
         print_color(f'Starting to install all content packs in {host}', LOG_COLORS.NATIVE)
         server_host: str = server.client.api_client.configuration.host
         install_all_content_packs(client=server.client, host=server_host, prints_manager=ParallelPrintsManager(1))
-        print_color(f'Finished installing all content packs in {host}', LOG_COLORS.GREEN)
+        print_color(f'Finished installing all content packs in {host}', LOG_COLORS.NATIVE)
 
 
 if __name__ == '__main__':

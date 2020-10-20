@@ -940,6 +940,12 @@ jobs:
       - *add_ssh_keys
       - *prepare_environment
       - *upload_packs_to_marketplace_storage
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
+          when: always
       - *destroy_instances
       - *store_artifacts
 
@@ -1189,16 +1195,20 @@ workflows:
           context: sdk_nightly_env
 
   bucket_upload:
+    # todo: delete the when
     when: << pipeline.parameters.bucket_upload >>
     jobs:
       - Setup Environment
       - Create Instances:
+          context: bucket_upload_env
           requires:
             - Setup Environment
       - Run Unit Testing And Lint:
+          context: bucket_upload_env
           requires:
             - Setup Environment
       - Run Validations:
+          context: bucket_upload_env
           requires:
             - Setup Environment
       - Install Packs in Demisto 6_0:
@@ -1208,6 +1218,7 @@ workflows:
           requires:
             - Create Instances
       - Upload Packs:
+          context: bucket_upload_env
           requires:
             - Run Unit Testing And Lint
             - Run Validations
