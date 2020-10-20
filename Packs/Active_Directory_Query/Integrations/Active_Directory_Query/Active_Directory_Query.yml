@@ -498,7 +498,7 @@ script:
         name: default_attribute
         required: false
         secret: false
-        description: ""
+        description: "The unique attribute in AD, default: samaccountname"
     deprecated: false
     execution: false
     description: ""
