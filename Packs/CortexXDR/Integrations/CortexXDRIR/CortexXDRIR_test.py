@@ -1438,7 +1438,7 @@ def test_action_status_get_command(requests_mock):
     result = []
     for item in data:
         result.append({
-            "action_id": "1810",
+            "action_id": 1810,
             "endpoint_id": item,
             "status": data.get(item)
         })
@@ -1461,6 +1461,14 @@ def test_action_status_get_command(requests_mock):
 
 
 def test_arg_to_dictionary():
+    """
+            Given:
+                -string
+            When:
+                -when user enter params argument at "run script" command
+            Then:
+                - returns dictionary of params
+    """
     from CortexXDRIR import arg_to_dictionary
 
     string = 'param1_name=param1_value, param2_name=param2_value'
@@ -1481,6 +1489,14 @@ def test_arg_to_dictionary():
 
 
 def test_string_to_int_array():
+    """
+            Given:
+                -list of strings
+            When:
+                -if we need array of integers
+            Then:
+                - returns array of integers
+        """
     from CortexXDRIR import string_to_int_array
 
     string_list = ["1", "2", "3", "4"]
@@ -1491,6 +1507,14 @@ def test_string_to_int_array():
 
 
 def test_arg_to_json():
+    """
+            Given:
+                -string representing json array
+            When:
+                -when user enter params argument as json array
+            Then:
+                - returns json array
+        """
     from CortexXDRIR import arg_to_json
 
     string = '{"test 1": 1, "test 2": "str", "test 3": [1, "str", true]}'
