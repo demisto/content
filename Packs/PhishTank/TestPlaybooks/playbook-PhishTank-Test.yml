@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7aaefdb3-41b2-4c42-8cd1-54f706951e5f
+    taskid: b14875b9-58e6-439e-8f1e-c2917c47231a
     type: start
     task:
-      id: 7aaefdb3-41b2-4c42-8cd1-54f706951e5f
+      id: b14875b9-58e6-439e-8f1e-c2917c47231a
       version: -1
       name: ""
       iscommand: false
@@ -31,17 +31,17 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: ea01decf-54f8-45f1-8a7d-3a3873e8dc29
+    taskid: 5b56bc27-796a-4740-8bd4-0847c13ed146
     type: regular
     task:
-      id: ea01decf-54f8-45f1-8a7d-3a3873e8dc29
+      id: 5b56bc27-796a-4740-8bd4-0847c13ed146
       version: -1
       name: Check URL
-      description: Check URL Reputation
-      script: '|||url'
+      description: Checks the reputation of the supplied URLs.
+      script: PhishTank V2|||url
       type: regular
       iscommand: true
-      brand: ""
+      brand: PhishTank V2
     nexttasks:
       '#none#':
       - "2"
@@ -53,7 +53,8 @@ tasks:
       submitWait: {}
       threshold: {}
       url:
-        simple: ${badURL}
+        complex:
+          root: ${badURL}
       wait: {}
     separatecontext: false
     view: |-
@@ -70,31 +71,28 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 0a2da204-3f8f-4eab-83df-f878268723f5
-    type: regular
+    taskid: ade33157-af73-4c07-8f0a-72ae48a88974
+    type: condition
     task:
-      id: 0a2da204-3f8f-4eab-83df-f878268723f5
+      id: ade33157-af73-4c07-8f0a-72ae48a88974
       version: -1
       name: Verify URL Data
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "4"
     scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Data
-      path:
-        simple: URL
+      left:
+        simple: ${URL.Data}
+      right:
+        simple: ${badURL}
+    results:
+    - AreValuesEqual
     separatecontext: false
     view: |-
       {
@@ -110,10 +108,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 5cc2b958-d69e-43b2-89f6-55ceb23ef902
-    type: regular
+    taskid: 1b5363c0-a284-41e2-8fda-52684c0981f9
+    type: condition
     task:
-      id: 5cc2b958-d69e-43b2-89f6-55ceb23ef902
+      id: 1b5363c0-a284-41e2-8fda-52684c0981f9
       version: -1
       name: Verify DBotScore
       description: |-
@@ -122,20 +120,48 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "4"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Indicator,Score,Type,Vendor
-      path:
-        simple: DBotScore
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Type}
+            iscontext: true
+          right:
+            value:
+              simple: url
+      - - operator: in
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+        - operator: in
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: in
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     view: |-
       {
         "position": {
@@ -150,10 +176,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: ff7a088b-0315-4569-85e8-ec5556bd0b1f
+    taskid: 17217bb3-4858-4759-8cc7-3f8cdd2c4930
     type: title
     task:
-      id: ff7a088b-0315-4569-85e8-ec5556bd0b1f
+      id: 17217bb3-4858-4759-8cc7-3f8cdd2c4930
       version: -1
       name: Success
       type: title
@@ -174,10 +200,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: be16d6b0-c31f-48c8-8802-a4d71351a0e9
+    taskid: c85c5b1a-9c83-4b9d-8369-9a93ced65875
     type: regular
     task:
-      id: be16d6b0-c31f-48c8-8802-a4d71351a0e9
+      id: c85c5b1a-9c83-4b9d-8369-9a93ced65875
       version: -1
       name: Download phishtank CSV
       scriptName: http
@@ -217,10 +243,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 2460c597-5995-4288-887d-60873622416e
+    taskid: a68ed099-ad68-4901-80f6-1a542255a19d
     type: regular
     task:
-      id: 2460c597-5995-4288-887d-60873622416e
+      id: a68ed099-ad68-4901-80f6-1a542255a19d
       version: -1
       name: Load file to context
       scriptName: ReadFile
@@ -250,10 +276,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: e8f9b718-59b5-431e-8e37-66b1025b321e
+    taskid: fcf385f8-b754-4396-8073-23dada67ad53
     type: regular
     task:
-      id: e8f9b718-59b5-431e-8e37-66b1025b321e
+      id: fcf385f8-b754-4396-8073-23dada67ad53
       version: -1
       name: Set badURL
       scriptName: Set
@@ -284,10 +310,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 60b545ed-5c7c-4bc2-8131-00da26d2b52c
+    taskid: c0a47ff2-fbfb-4cde-85af-15165604c1fd
     type: regular
     task:
-      id: 60b545ed-5c7c-4bc2-8131-00da26d2b52c
+      id: c0a47ff2-fbfb-4cde-85af-15165604c1fd
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -314,7 +340,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
