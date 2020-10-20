@@ -111,7 +111,7 @@ def get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock)
 
 
 def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, pack_display_name: str, pack_id: str,
-                thread_index: int, lock: Lock):
+                thread_index: int, lock: Lock) -> dict:
     """ Make a pack search request.
 
     Args:
