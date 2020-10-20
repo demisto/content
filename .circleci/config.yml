@@ -353,7 +353,7 @@ references:
       name: Upload Packs To Marketplace Storage
       command: |
         # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
-        if [[ $CIRCLE_BRANCH != master ]]; then
+        if [[ $CIRCLE_BRANCH != upload-packs-build-flow ]]; then
           echo "Skipping packs uploading on non master branch"
           exit 0
         fi
