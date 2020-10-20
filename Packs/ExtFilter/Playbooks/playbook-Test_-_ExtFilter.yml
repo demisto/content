@@ -1,5 +1,5 @@
 id: Test - ExtFilter
-version: 57
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Test - ExtFilter
 description: Run ExtFilter for a test
