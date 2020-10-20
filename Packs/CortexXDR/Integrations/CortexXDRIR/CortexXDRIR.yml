@@ -1494,8 +1494,13 @@ script:
       description: Data — Link to the file retrieved by Retrieve File request.
     - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.endpoint_id
       description: Endpoint ID.
+      type: string
     - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.file_link
       description: Link to the file retrieved by Retrieve File request.
+      type: string
+    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.action_id
+      description: Action ID of the Retrieve File request
+      type: string
   - arguments:
     - description: Unique identifier of the script, returned by the “xdr-get-scripts”
         command.

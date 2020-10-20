@@ -1142,6 +1142,7 @@ def test_retrieve_file_details_command(requests_mock):
     result = []
     for item in output:
         result.append({
+            "action_id": 1788,
             "endpoint_id": item,
             "file_link": output.get(item)
         })

@@ -2549,6 +2549,7 @@ def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]
 
         for key, val in data.items():
             obj = {
+                "action_id": action_id,
                 "endpoint_id": key
             }
             if val:
