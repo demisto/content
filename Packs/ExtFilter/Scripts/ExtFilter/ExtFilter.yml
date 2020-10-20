@@ -1,6 +1,6 @@
 commonfields:
   id: 257cf15c-c28a-4114-802f-1fff894c886c
-  version: 45
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: ExtFilter
 script: ''
