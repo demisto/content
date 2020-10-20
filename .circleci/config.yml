@@ -938,7 +938,7 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
           when: always
       - *destroy_instances
       - *store_artifacts
