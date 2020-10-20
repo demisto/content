@@ -642,11 +642,10 @@ class Pack(object):
         task_status = True
 
         try:
-            pack_dirs = [f for f in os.listdir(self._pack_path)]
             for directory in Pack.EXCLUDE_DIRECTORIES:
-                if delete_test_playbooks and directory in pack_dirs:
+                if delete_test_playbooks and os.path.isdir(f'{self._pack_path}/{directory}')
                     shutil.rmtree(f'{self._pack_path}/{directory}')
-                    print(f"Deleted pack {directory} directory for {self._pack_name} pack")
+                    print(f"Deleted {directory} directory from {self._pack_name} pack")
 
             for root, dirs, files in os.walk(self._pack_path, topdown=True):
                 for pack_file in files:
