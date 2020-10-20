@@ -4614,7 +4614,7 @@ class IAMVendorActionResult:
         :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
         """
         self._brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
-        self._instance_name = demisto.callingContextget('context', {}).get('IntegrationInstance')
+        self._instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
         self._success = success
         self._active = active
         self._iden = iden
@@ -4654,7 +4654,7 @@ class IAMVendorActionResult:
             }
         return outputs
 
-    def create_readable_output(self, outputs):
+    def create_readable_outputs(self, outputs):
         """ Sets the human readable output in `_readable_output` attribute.
 
         :param outputs: (dict) the command outputs.
