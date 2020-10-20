@@ -3,7 +3,7 @@ args:
   description: Base Script dummy argument.
   isArray: false
   name: dummy
-  required: false
+  required: true
   secret: false
 comment: Base Script for development.
 commonfields:
