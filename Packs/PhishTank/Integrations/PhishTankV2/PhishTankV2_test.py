@@ -223,8 +223,11 @@ def test_url_command(mocker, data, url, expected_score, expected_table):
     Then:
         - Returns markdown table and outputs
     """
+    from demistomock import results
     client = create_client(False, False, "1")
     mocker.patch('PhishTankV2.get_url_data', return_value=(data, url[0]))
+    url_command(client, url)
+    assert len(url) == results.call_count
     assert url_command(client, url).indicators[0].dbot_score.score == expected_score and url_command(client,
                                                                                                      url). \
         readable_output == expected_table

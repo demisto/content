@@ -144,9 +144,8 @@ def create_verified_markdown(url_data, url):
 
 
 def url_command(client: Client, url_list: list):
-    markdown = "### PhishTankV2 Database - URL Query \n"
-    url_object_list_output = []
     for url in url_list:
+        markdown = "### PhishTankV2 Database - URL Query \n"
         url_data, url = get_url_data(client, url)
         url_data_is_valid = url_data and "verified" in url_data.keys()
         if url_data_is_valid:
@@ -155,8 +154,7 @@ def url_command(client: Client, url_list: list):
         else:
             markdown += f'#### No matches for URL {url} \n'
             dbot = Common.DBotScore(url, DBotScoreType.URL, "PhishTankV2", 0)
-        url_object_list_output.append(Common.URL(url, dbot))
-    return CommandResults(readable_output=markdown, indicators=url_object_list_output)
+        return_results(CommandResults(readable_output=markdown, indicators=[Common.URL(url, dbot)]))
 
 
 def phishtank_reload_command(client: Client):
@@ -315,7 +313,7 @@ def main() -> None:
 
         elif demisto.command() == 'url':
             url = argToList(demisto.args().get("url"))
-            return_results(url_command(client, url))
+            url_command(client, url)
 
         elif demisto.command() == 'phishtank-reload':
             return_results(phishtank_reload_command(client))
