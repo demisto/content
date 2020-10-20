@@ -3080,14 +3080,6 @@
             "playbookID": "Field polling test",
             "timeout": 600,
             "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Analyst1",
-            "playbookID": "Analyst1 Integration Test"
-        },
-        {
-            "integrations": "Analyst1",
-            "playbookID": "Analyst1 Integration Demonstration - Test"
         }
     ],
     "skipped_tests": {
