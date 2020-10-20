@@ -19,6 +19,7 @@ from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS
 from Utils.release_notes_generator import merge_version_blocks
+from typing import Tuple
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
@@ -843,6 +844,75 @@ class Pack(object):
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True, None
 
+    def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion]:
+        """
+        Returns the changelog file contents and the last version of rn in the changelog file
+        Args:
+            changelog_index_path (str): the changelog.json file path in the index
+
+        Returns: the changelog file contents and the last version of rn in the changelog file
+
+        """
+        print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
+        with open(changelog_index_path, "r") as changelog_file:
+            changelog = json.load(changelog_file)
+
+        # get the latest rn version in the changelog.json file
+        changelog_rn_versions = [LooseVersion(ver) for ver in changelog]
+        changelog_rn_versions.sort()
+        # no need to check if changelog_rn_versions isn't empty because changelog file exists
+        changelog_latest_rn_version = changelog_rn_versions[-1]
+
+        return changelog, changelog_latest_rn_version
+
+    def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion) -> \
+            Tuple[str, str]:
+        """
+        Prepares the release notes contents for the new release notes entry
+        Args:
+            release_notes_dir (str): the path to the release notes dir
+            changelog_latest_rn_version (LooseVersion): the last version of release notes in the changelog.json file
+
+        Returns: The release notes contents and the latest release notes version (in the release notes directory)
+
+        """
+        found_versions: list = list()
+        pack_versions_dict: dict = dict()
+
+        for filename in os.listdir(release_notes_dir):
+            _version = filename.replace('.md', '')
+            version = _version.replace('_', '.')
+
+            # Aggregate all rn files that are bigger than what we have in the changelog file
+            if LooseVersion(version) > changelog_latest_rn_version:
+                with open(os.path.join(release_notes_dir, filename), 'r') as rn_file:
+                    rn_lines = rn_file.read()
+                pack_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
+
+            found_versions.append(LooseVersion(version))
+
+        found_versions.sort()
+        latest_release_notes_version = found_versions[-1]
+        latest_release_notes = latest_release_notes_version.vstring
+        print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
+
+        if pack_versions_dict:
+            # wrap all release notes together for one changelog entry
+            print_color(f"Aggregating ReleaseNotes versions:"
+                        f" {[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} =>"
+                        f" {latest_release_notes}", LOG_COLORS.GREEN)
+            release_notes_lines = merge_version_blocks(pack_name=self._pack_name,
+                                                       pack_versions_dict=pack_versions_dict,
+                                                       pack_metadata={}, pack_header_wrap=False,
+                                                       add_whitespaces=False, rn_wrapper='\n')
+        else:
+            # In case where the pack is up to date, i.e. latest changelog is latest rn file
+            with open(os.path.join(release_notes_dir, f"{latest_release_notes.replace('.', '_')}.md"), 'r') \
+                    as rn_file:
+                release_notes_lines = self._clean_release_notes(rn_file.read())
+
+        return release_notes_lines, latest_release_notes
+
     def prepare_release_notes(self, index_folder_path, build_number):
         """
         Handles the creation and update of the changelog.json files.
@@ -861,52 +931,12 @@ class Pack(object):
             # load changelog from downloaded index
             changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
             if os.path.exists(changelog_index_path):
-                print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
-                with open(changelog_index_path, "r") as changelog_file:
-                    changelog = json.load(changelog_file)
-
-                # get the latest rn version in the changelog.json file
-                changelog_rn_versions = [LooseVersion(ver) for ver in changelog]
-                changelog_rn_versions.sort()
-                # no need to check if changelog_rn_versions isn't empty because changelog file exists
-                changelog_latest_rn_version = changelog_rn_versions[-1]
-
+                changelog, changelog_latest_rn_version = self.get_changelog_latest_rn(changelog_index_path)
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
-                pack_versions_dict: dict = dict()
 
                 if os.path.exists(release_notes_dir):
-                    found_versions = []
-                    for filename in os.listdir(release_notes_dir):
-                        _version = filename.replace('.md', '')
-                        version = _version.replace('_', '.')
-
-                        # Aggregate all rn files that are bigger than what we have in the changelog file
-                        if LooseVersion(version) > changelog_latest_rn_version:
-                            with open(os.path.join(release_notes_dir, filename), 'r') as rn_file:
-                                rn_lines = rn_file.read()
-                            pack_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
-
-                        found_versions.append(LooseVersion(version))
-                    found_versions.sort()
-                    latest_release_notes_version = found_versions[-1]
-                    latest_release_notes = latest_release_notes_version.vstring
-
-                    print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
-
-                    if pack_versions_dict:
-                        # wrap all release notes together for one changelog entry
-                        print_color(f"Aggregating ReleaseNotes versions:"
-                                    f" {[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} =>"
-                                    f" {latest_release_notes}", LOG_COLORS.GREEN)
-                        release_notes_lines = merge_version_blocks(pack_name=self._pack_name,
-                                                                   pack_versions_dict=pack_versions_dict,
-                                                                   pack_metadata={}, wrap_pack=False,
-                                                                   add_whitespaces=False, wrapper='\n')
-                    else:
-                        # In case where the pack is up to date, i.e. latest changelog is latest rn file
-                        with open(os.path.join(release_notes_dir, f"{latest_release_notes.replace('.', '_')}.md"), 'r')\
-                                as rn_file:
-                            release_notes_lines = self._clean_release_notes(rn_file.read())
+                    release_notes_lines, latest_release_notes = self.get_release_notes_lines(
+                        release_notes_dir, changelog_latest_rn_version)
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
