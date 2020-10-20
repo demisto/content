@@ -324,10 +324,9 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 def run_test_logic(tests_settings, c, failed_playbooks,
                    integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, demisto_user, demisto_pass, build_name,
-                   prints_manager, thread_index=0, is_mock_run=False):
+                   prints_manager, thread_index=0):
     status, inc_id = test_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager,
-                                      test_options,
-                                      is_mock_run, thread_index=thread_index)
+                                      test_options, thread_index=thread_index)
     if status == PB_Status.COMPLETED:
         prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color,
                                      thread_index,
@@ -542,7 +541,7 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def run_test_scenario(tests_queue, tests_settings, t, default_test_timeout, skipped_tests_conf,
+def run_test_scenario(tests_settings, t, default_test_timeout, skipped_tests_conf,
                       nightly_integrations, skipped_integrations_conf, skipped_integration,
                       run_all_tests, is_filter_configured, filtered_tests, skipped_tests, secret_params,
                       failed_playbooks, playbook_skipped_integration,
@@ -745,13 +744,13 @@ def execute_testing(tests_settings, server_ip, all_tests,
             t = private_tests_queue.get()
             executed_in_current_round = update_round_set_and_sleep_if_round_completed(
                 executed_in_current_round, prints_manager, t, thread_index)
-            run_test_scenario(private_tests_queue, tests_settings, t, default_test_timeout,
-                              skipped_tests_conf, nightly_integrations, skipped_integrations_conf,
-                              skipped_integration, run_all_tests, is_filter_configured,
-                              filtered_tests, skipped_tests, secret_params, failed_playbooks,
-                              unmockable_integrations, succeed_playbooks, slack, circle_ci,
-                              build_number, server, build_name, server_numeric_version,
-                              demisto_user, demisto_pass, demisto_api_key, prints_manager)
+            run_test_scenario(tests_settings, t, default_test_timeout, skipped_tests_conf,
+                              nightly_integrations, skipped_integrations_conf, skipped_integration,
+                              run_all_tests, is_filter_configured, filtered_tests, skipped_tests,
+                              secret_params, failed_playbooks, unmockable_integrations,
+                              succeed_playbooks, slack, circle_ci, build_number, server, build_name,
+                              server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
+                              prints_manager)
             prints_manager.execute_thread_prints(thread_index)
 
     except Exception as exc:
