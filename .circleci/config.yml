@@ -1022,14 +1022,9 @@ jobs:
                 echo "Skipping - instance was not setup"
                 exit 0
             fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
-            else
-              echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
-            fi
+            echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
             source $BASH_ENV
-            ./Tests/scripts/install_packs.sh "$INSTANCE_ROLE"
+            ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
             exit $RETVAL
 
   Install Packs in Demisto Marketplace - Master:
@@ -1054,14 +1049,9 @@ jobs:
                 echo "Skipping - instance was not setup"
                 exit 0
             fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
-            else
-              echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
-            fi
+            echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
             source $BASH_ENV
-            ./Tests/scripts/install_packs.sh "$INSTANCE_ROLE"
+            ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
             exit $RETVAL
 
 workflows:
@@ -1193,7 +1183,7 @@ workflows:
     when: << pipeline.parameters.bucket_upload >>
     triggers:
       - schedule:
-          # should trigger every day at 12 AM UTC (3 AM Israel Time)
+          # should trigger every day at 9 PM UTC (3 AM Israel Time)
           cron: "0 21 * * *"
           filters:
             branches:

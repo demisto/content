@@ -8,11 +8,9 @@ from demisto_sdk.commands.common.tools import print_color, LOG_COLORS
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
-    parser.add_argument('-u', '--user', help='The username for the login', required=True)
-    parser.add_argument('-p', '--password', help='The password for the login', required=True)
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                                          '"Server Master", "Demisto GA", "Demisto one before GA", "Demisto two before '
-                                          'GA". The server url is determined by the AMI environment.')
+                                          '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
+                                          ' AMI environment.')
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
@@ -30,8 +28,8 @@ def main():
 
     print_color('Retrieving the credentials for Cortex XSOAR server', LOG_COLORS.GREEN)
     secret_conf_file = get_json_file(path=options.secret)
-    username: str = options.user if options.user else secret_conf_file.get('username')
-    password: str = options.password if options.password else secret_conf_file.get('userPassword')
+    username: str = secret_conf_file.get('username')
+    password: str = secret_conf_file.get('userPassword')
 
     # Configure the Server
     host = hosts[0]
