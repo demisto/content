@@ -7,7 +7,7 @@ args:
   secret: false
 - default: false
   defaultValue: '15'
-  description: Sample text of which the total number words are less than or equal
+  description: Sample text for which the total number words are less than or equal
     to this number will be ignored.
   isArray: false
   name: removeShortTextThreshold
@@ -15,7 +15,7 @@ args:
   secret: false
 - default: false
   defaultValue: '0.99'
-  description: Remove emails with similarity greater then this threshold, range 0-1,
+  description: Remove emails with similarity greater than this threshold, range 0-1,
     where 1 is completly identical.
   isArray: false
   name: dedupThreshold
@@ -23,7 +23,7 @@ args:
   secret: false
 - default: false
   defaultValue: emailsubject|name,emailbody|emailbodyhtml
-  description: A comma-separated list of incident fields names with the text to process.
+  description: A comma-separated list of incident field names with the text to process.
     You can also use "|" if you want to choose the first non-empty value from a list
     of fields.
   isArray: false
@@ -51,7 +51,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: nlp
-  description: Text pre-processing type.
+  description: Text pre-processing type. The default is "json".
   isArray: false
   name: preProcessType
   predefined:
@@ -126,7 +126,7 @@ args:
   default: false
   defaultValue: tokenizer
   description: Tokenization method for text. Only required when the language argument
-    is set to "Other". Can be "tokenizer", "byWords", or "byLetters".
+    is set to "Other". Can be "tokenizer", "byWords", or "byLetters". Default is "tokenizer".
   isArray: false
   name: tokenizationMethod
   predefined:
