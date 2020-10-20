@@ -378,12 +378,18 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
             datetimeformat = '%Y-%m-%dT%H:%M:%S.000Z'
 
             if isinstance(incident_created_time, str):
-                occurred = dateparser.parse(incident_created_time).strftime(datetimeformat)
-                date = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'})
-                if isinstance(date, datetime):
-                    incident_created_time = int(date.timestamp())
-                    incident_created_time_ms = incident_created_time * 1000
+                parseddate = dateparser.parse(incident_created_time)
+                if isinstance(parseddate, datetime):
+                    occurred = parseddate.strftime(datetimeformat)
+                    date = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'})
+                    if isinstance(date, datetime):
+                        incident_created_time = int(date.timestamp())
+                        incident_created_time_ms = incident_created_time * 1000
+                    else:
+                        incident_created_time = 0
+                        incident_created_time_ms = 0
                 else:
+                    date = None
                     incident_created_time = 0
                     incident_created_time_ms = 0
             else:
