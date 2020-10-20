@@ -2267,7 +2267,7 @@ class TestIncidentFetch:
                                                                  'last_incident_id': 1234})
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
-                                                          'incident_offset': 2, 'last_incident_fetch': 'ldt:1'}
+                                                          'incident_offset': 2, 'last_fetched_incident': 'ldt:1'}
 
     def test_new_fetch_with_offset(self, set_up_mocks, mocker):
         mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z'})
@@ -2275,7 +2275,7 @@ class TestIncidentFetch:
 
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
-                                                          'incident_offset': 2, 'last_incident_fetch': 'ldt:1'}
+                                                          'incident_offset': 2, 'last_fetched_incident': 'ldt:1'}
 
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
         mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z',
@@ -2286,7 +2286,7 @@ class TestIncidentFetch:
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:11Z',
-                                                          'last_incident_fetch': 'ldt:1'}
+                                                          'last_fetched_incident': 'ldt:1'}
 
 
 def get_fetch_data():
