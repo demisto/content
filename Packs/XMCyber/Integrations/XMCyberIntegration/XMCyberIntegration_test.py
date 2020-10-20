@@ -3,7 +3,7 @@ import io
 from XMCyberIntegration import XM, Client, PAGE_SIZE, URLS, ip_command, hostname_command
 
 
-TEST_URL = 'https://test.com'
+TEST_URL = 'https://test.com/api'
 
 
 def util_load_json(path):
@@ -34,7 +34,7 @@ def test_affected_critical_assets_list(requests_mock):
     API response. Checks the output of the command function with the expected output.
     """
     from XMCyberIntegration import affected_critical_assets_list_command
-    mock_url = f'{TEST_URL}{URLS.Assets_At_Risk}?entityId=15553084234424912589&timeId=timeAgo_days_7&sort=-attackComplexity&pageSize={PAGE_SIZE}&page=1'
+    mock_url = f'{TEST_URL}{URLS.Assets_At_Risk}?entityId=15553084234424912589&timeId=timeAgo_days_7&sort=attackComplexity&pageSize={PAGE_SIZE}&page=1'
     xm = mock_request_and_get_xm_mock('test_data/affected_assets.json', requests_mock, mock_url)
 
     response = affected_critical_assets_list_command(xm, {

@@ -30,32 +30,6 @@ configuration:
   type: 8
 script:
   commands:
-  - name: xmcyber-compromising-techniques-list
-    description: List compromising techniques to an entity
-    arguments:
-      - name: timeId
-        default: false
-        description: timeId for example timeAgo_days_7
-        isArray: false
-        required: false
-        secret: false
-      - name: entityId
-        default: false
-        description: Entity ID
-        isArray: false
-        required: true
-        secret: false
-    outputs:
-      - contextPath: entityId
-        description: XMCyber Entity ID
-        type: String
-      - contextPath: XMCyber.compromisingTechniques.name
-        description: Compromising Techinique Name
-        type: String
-      - contextPath: XMCyber.compromisingTechniques.percent
-        description: Percent of Vectors
-        type: Number
-
   - name: xmcyber-affected-critical-assets-list
     description: List critical assets at risk from an entity and the complexity of the attack
     arguments:
@@ -84,7 +58,7 @@ script:
       - contextPath: XMCyber.criticalAssetsAtRiskList.minattackComplexity
         description: Minimum attack complexity
         type: Number
-        
+
   - name: xmcyber-is-version-supported
     description: Check if current XM version supports Demisto integration
     outputs:

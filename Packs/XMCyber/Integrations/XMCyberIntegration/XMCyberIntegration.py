@@ -199,14 +199,14 @@ class XM:
         return self.client.get_paginated(URLS.Assets_At_Risk, {
             'entityId': entity_id,
             'timeId': time_id,
-            'sort': '-attackComplexity'
+            'sort': 'attackComplexity'
         }, page_size, max_pages)
     
     def get_affected_entities(self, entity_id: str, time_id=DEFAULT_TIME_ID, page_size=PAGE_SIZE, max_pages=MAX_PAGES):
         return self.client.get_paginated(URLS.Entities_At_Risk, {
             'entityId': entity_id,
             'timeId': time_id,
-            'sort': '-attackComplexity'
+            'sort': 'attackComplexity'
         }, page_size, max_pages)
 
     def search_entities(self, search_string):
@@ -366,28 +366,6 @@ def entity_score(entity: Any):
 ''' COMMAND FUNCTIONS '''
 
 
-def compromising_techniques_to_entity_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    time_id = args.get('timeId')
-    if not time_id:
-        time_id = 'timeAgo_days_7'
-    entity_ids = argToList(args.get('entityId'))
-    if len(entity_ids) == 0:
-        raise ValueError('Entity ID(s) not specified')
-    compromising_techniques = []
-    for entity_id in entity_ids:
-        paths = xm.get_inbound_paths(entity_id, time_id)
-        for path in paths:
-            compromising_techniques.append(path_to_compromising_technique(path))
-    readable_output = 'found {0} compromising techniques to {1} entities'.format(len(compromising_techniques), len(entity_ids))
-    return CommandResults(
-        outputs_prefix='XMCyber',
-        outputs_key_field='entityId',
-        outputs=compromising_techniques,
-        readable_output=readable_output,
-
-    )
-
-
 def breachpoint_update_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
@@ -430,8 +408,10 @@ def affected_critical_assets_list_command(xm: XM, args: Dict[str, Any]) -> Comma
         raise ValueError('Entity ID(s) not specified')
     output = []
     readable_output = ''
+    raw_json = {}
     for entity_id in entity_ids:
         affected_assets = xm.get_affected_assets(entity_id, time_id)
+        raw_json[entity_id] = affected_assets
         affected_assets_list = []
         for asset in affected_assets:
             affected_assets_list.append({
@@ -441,14 +421,15 @@ def affected_critical_assets_list_command(xm: XM, args: Dict[str, Any]) -> Comma
             })
         output.append({
             'entityId': entity_id,
-            'critical_assets_at_risk_list': affected_assets_list
+            'criticalAssetsAtRiskList': affected_assets_list
         })
         readable_output += f'found {len(affected_assets)} affected critical assets from {entity_id}\n'
     return CommandResults(
         outputs_prefix='XMCyber',
         outputs_key_field='entityId',
         outputs=output,
-        readable_output=readable_output
+        readable_output=readable_output,
+        raw_response=raw_json
     )
 
 
@@ -525,7 +506,6 @@ def test_module_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     Raises exceptions if something goes wrong.
 
     :type client: ``Client``
-    :param Client: HelloWorld client to use
 
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
@@ -546,11 +526,7 @@ def test_module_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
             raise e
     except Exception as e:
         raise Exception(f'Verification Error: could not load XM Cyber version.\n{e}')
-    return CommandResults(
-        outputs_prefix='XMCyber.TestModule',
-        outputs_key_field='status',
-        outputs={'status': 'ok'}
-    )
+    return 'ok'
 
 
 def get_version_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
@@ -708,7 +684,6 @@ def main() -> None:
             # xmcyber-command-name: function_command
             "xmcyber-get-version": get_version_command,
             "xmcyber-is-version-supported": is_xm_version_supported_command,
-            "xmcyber-compromising-techniques-list": compromising_techniques_to_entity_command,
             "xmcyber-breachpoint-update": breachpoint_update_command,
             "xmcyber-critical-asset-add": critical_asset_add_command,
             "xmcyber-affected-critical-assets-list": affected_critical_assets_list_command,
