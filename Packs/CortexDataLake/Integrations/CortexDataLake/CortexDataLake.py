@@ -64,6 +64,8 @@ class Client(BaseClient):
                 self.access_token = access_token
                 self.api_url = integration_context.get(API_URL_CONST, DEFAULT_API_URL)
                 self.instance_id = integration_context.get(INSTANCE_ID_CONST)
+                return
+            demisto.debug(f'access token time: {valid_until} expired. Will call oproxy')
         access_token, api_url, instance_id, refresh_token, expires_in = self._oproxy_authorize()
         updated_integration_context = {
             ACCESS_TOKEN_CONST: access_token,
