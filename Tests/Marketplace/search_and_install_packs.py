@@ -467,6 +467,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
         threads_list.append(thread)
     run_threads_list(threads_list)
 
-    install_packs(client, host, prints_manager, thread_index, installation_request_body, private_install=is_private)
+    install_packs(client, host, prints_manager, thread_index, installation_request_body)
 
     return packs_to_install, SUCCESS_FLAG
