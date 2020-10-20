@@ -351,6 +351,12 @@ references:
     run:
       name: Upload Packs To Marketplace Storage
       command: |
+        # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
+        if [[ $CIRCLE_BRANCH != master ]]; then
+          echo "Skipping packs uploading on non master branch"
+          exit 0
+        fi
+
         EXTRACT_FOLDER=$(mktemp -d)
         PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
         PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
@@ -369,8 +375,14 @@ references:
 
   force_upload_packs_to_marketplace_storage: &force_upload_packs_to_marketplace_storage
     run:
-      name: Upload Packs To Marketplace Storage
+      name: Force Upload Packs To Marketplace Storage
       command: |
+        # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
+        if [[ $CIRCLE_BRANCH != master ]]; then
+          echo "Skipping packs uploading on non master branch"
+          exit 0
+        fi
+
         EXTRACT_FOLDER=$(mktemp -d)
         PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
         PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
@@ -1018,7 +1030,7 @@ jobs:
             fi
             echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
             source $BASH_ENV
-            ./Tests/scripts/install_packs.sh "$INSTANCE_ROLE"
+            ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
             exit $RETVAL
 
   Install Packs in Demisto Marketplace - Master:
@@ -1045,7 +1057,7 @@ jobs:
             fi
             echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
             source $BASH_ENV
-            ./Tests/scripts/install_packs.sh "$INSTANCE_ROLE"
+            ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
             exit $RETVAL
 
 workflows:
