@@ -730,7 +730,7 @@ class Pack(object):
                         relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
-            if encryption_key and pack_name is not 'DeveloperTools':
+            if encryption_key:
                 self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
                 zip_pack_path = zip_pack_path.replace("_not_encrypted.zip", ".zip")
             task_status = True
@@ -829,12 +829,8 @@ class Pack(object):
                 blob.upload_from_file(pack_zip)
             if private_content:
                 print(f"Copying {zip_pack_path} to /home/runner/work/content-private/content-private/content/artifacts/packs/{self._pack_name}.zip")
-                # try:
                 shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content'
                                            f'-private/content/artifacts/packs/{self._pack_name}.zip')
-                # except FileExistsError:
-                #     shutil.copy(zip_pack_path,
-                #                 f'/artifacts/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
