@@ -252,8 +252,8 @@ def get_release_notes_dict(release_notes_files):
     return release_notes_dict, packs_metadata_dict
 
 
-def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata: dict, wrap_pack: bool = True,
-                         add_whitespaces: bool = True, wrapper: str = '') -> str:
+def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata: dict, pack_header_wrap: bool = True,
+                         add_whitespaces: bool = True, rn_wrapper: str = '') -> str:
     """
     merge several pack release note versions into a single block.
 
@@ -261,10 +261,10 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata
         pack_name: pack name
         pack_versions_dict: a mapping from a pack version to a release notes file content.
         pack_metadata: the pack metadata contents
-        wrap_pack: whether to wrap the rn with the pack header or not.
+        pack_header_wrap: whether to wrap the rn with the pack header or not.
         add_whitespaces: a parameter to pass to construct_entities_block function which indicates
         whether to add whitespaces to the entity name or not
-        wrapper: a wrapper to wrap the outputs
+        rn_wrapper: a wrapper to wrap the release notes (usually /n)
 
     Returns:
         a single pack release note block
@@ -302,13 +302,13 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata
 
     pack_release_notes = construct_entities_block(entities_data, add_whitespaces).strip()
 
-    if wrapper:
-        pack_release_notes = f'{pack_release_notes}{wrapper}' if not pack_release_notes.endswith(wrapper) else \
+    if rn_wrapper:
+        pack_release_notes = f'{pack_release_notes}{rn_wrapper}' if not pack_release_notes.endswith(rn_wrapper) else \
             pack_release_notes
-        pack_release_notes = f'{wrapper}{pack_release_notes}' if not pack_release_notes.startswith(wrapper) else \
+        pack_release_notes = f'{rn_wrapper}{pack_release_notes}' if not pack_release_notes.startswith(rn_wrapper) else \
             pack_release_notes
 
-    if wrap_pack:
+    if pack_header_wrap:
         partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
         return (f'### {pack_name} Pack v{latest_version}{partner}\n'
                 f'{pack_release_notes}')

@@ -525,6 +525,7 @@ jobs:
     resource_class: medium
     <<: *environment
     steps:
+      - *attach_workspace
       - checkout
       - *restore_cache
       - *prepare_environment
@@ -1058,10 +1059,11 @@ jobs:
 workflows:
   version: 2
   commit:
-    unless:
-      or:
-        - << pipeline.parameters.force_pack_upload >>
-        - << pipeline.parameters.bucket_upload >>
+    when:
+      not:
+        or:
+          - << pipeline.parameters.force_pack_upload >>
+          - << pipeline.parameters.bucket_upload >>
     jobs:
       - Setup Environment
       - Create Instances:
@@ -1184,15 +1186,17 @@ workflows:
     when: << pipeline.parameters.bucket_upload >>
     triggers:
       - schedule:
-          # should trigger every day at 9 PM UTC (3 AM Israel Time)
-          cron: "0 21 * * *"
+          # should trigger every day at 10 PM UTC (1 AM Israel Time)
+          cron: "0 22 * * *"
           filters:
             branches:
               only:
                 - master
     jobs:
       - Setup Environment
-      - Create Instances
+      - Create Instances:
+          requires:
+            - Setup Environment
       - Run Unit Testing And Lint:
           requires:
             - Setup Environment

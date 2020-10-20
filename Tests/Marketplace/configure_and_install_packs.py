@@ -33,7 +33,7 @@ def main():
 
     # Configure the Servers
     for host in hosts:
-        server: Server = Server(host=host, user_name=username, password=password)
+        server = Server(host=host, user_name=username, password=password)
         error_msg: str = 'Failed to set marketplace configuration.'
         print_color(f'Adding Marketplace configuration to {host}', LOG_COLORS.NATIVE)
         server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
