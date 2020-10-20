@@ -516,7 +516,7 @@ def close_incident_command(rest_client, args):
         raise Exception('error closing incident and/or updating feedback: ' + str(err))
 
 
-def get_incident_command(rest_client, args):
+def get_incident_command(rest_client, args, format=True):
     external_tenant_id = args.get('tenant_id')
     user_tenant_mappings = rest_client.get_tenant_mappings()
 
@@ -531,7 +531,11 @@ def get_incident_command(rest_client, args):
 
     raw_incident = \
         rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
-    return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
+
+    if format:
+        return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
+    else:
+        return raw_incident
 
 
 def get_remote_data_command(rest_client, args):
@@ -541,7 +545,7 @@ def get_remote_data_command(rest_client, args):
     incident_data = {}
     entries = []
     try:
-        updated_incident = get_incident_command(rest_client, args)
+        updated_incident = get_incident_command(rest_client, args, False)
         updated_incident['id'] = updated_incident.get('respondRemoteId')
         demisto.debug(f"Respond incident {args.get('id')}\n"
                       f"update time:   {arg_to_timestamp(args.get('last_update'), 'last_update')}")
