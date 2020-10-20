@@ -1014,10 +1014,7 @@ jobs:
             demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
       - run:
           name: Format the entities
-          shell: /bin/bash
-          command: |
-                demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
-                echo "format exit status: $?"  # DO NOT DELETE THIS LINE. Issue: 29575
+          command: demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
       - run:
           name: Run validate
           command: demisto-sdk validate -i Packs/HelloWorld/
