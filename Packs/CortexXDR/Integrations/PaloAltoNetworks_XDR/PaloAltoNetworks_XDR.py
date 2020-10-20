@@ -889,6 +889,18 @@ class Client(BaseClient):
         else:
             raise TypeError(f'got unexpected response from api: {reply_content}\n')
 
+    def save_modified_incidents_to_integration_context(self):
+        last_modified_incidents = self.get_incidents(limit=1000, sort_by_modification_time='desc')
+        modified_incidents_list = []
+        for incident in last_modified_incidents:
+            modified_incidents_list.append(
+                {
+                    'id': incident.get('incident_id'),
+                    'last_modified': incident.get('modification_time')
+                }
+            )
+        set_integration_context({'modified_incidents': modified_incidents_list})
+
 
 def get_incidents_command(client, args):
     """
@@ -957,9 +969,23 @@ def get_incidents_command(client, args):
     )
 
 
-def get_incident_extra_data_command(client, args):
+def get_incident_extra_data_command(client, args, return_only_updated_incident=False, remote_args=None):
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
+
+    if return_only_updated_incident:
+        last_modified_incidents = get_integration_context().get('modified_incidents', {})
+
+        for incident in last_modified_incidents:
+            if incident.get("id") == incident_id:  # search the incident in the list of modified incidents
+                current_incident_modified_time = int(str(incident.get('last_modified')))
+                if arg_to_timestamp(current_incident_modified_time, 'last_modified') > \
+                        arg_to_timestamp(remote_args.last_update, 'last_update'):   # need to update this incident
+                    break
+                else:
+                    return {}
+        else:  # the incident was not found in the list
+            return {}
 
     raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
 
@@ -1816,21 +1842,20 @@ def get_remote_data_command(client, args):
     incident_data = {}
     try:
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
-                                                                 "alerts_limit": 1000})[2].get('incident')
+                                                                 "alerts_limit": 1000},
+                                                        return_only_updated_incident=True,
+                                                        remote_args=remote_args)[2].get('incident')
 
-        incident_data['id'] = incident_data.get('incident_id')
-        current_modified_time = int(str(incident_data.get('modification_time')))
-        demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"  # type:ignore
-                      f"modified time: {int(incident_data.get('modification_time'))}\n"
-                      f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
+        if incident_data:
+            incident_data['id'] = incident_data.get('incident_id')
+            demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"  # type:ignore
+                          f"modified time: {int(incident_data.get('modification_time'))}\n"
+                          f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
 
-        sort_all_list_incident_fields(incident_data)
+            sort_all_list_incident_fields(incident_data)
 
-        # deleting creation time as it keeps updating in the system
-        del incident_data['creation_time']
-
-        if arg_to_timestamp(current_modified_time, 'modification_time') > \
-                arg_to_timestamp(remote_args.last_update, 'last_update'):
+            # deleting creation time as it keeps updating in the system
+            del incident_data['creation_time']
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
 
             # handle unasignment
@@ -1856,13 +1881,11 @@ def get_remote_data_command(client, args):
                 entries=reformatted_entries
             )
 
-        else:
-            # no new data modified - resetting error if needed
-            incident_data['in_mirror_error'] = ''
-
-            # handle unasignment
-            if incident_data.get('assigned_user_mail') is None:
-                handle_incoming_user_unassignment(incident_data)
+        else:  # no need to update this incident
+            incident_data = {
+                'id': remote_args.remote_incident_id,
+                'in_mirror_error': ""
+            }
 
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
@@ -1963,6 +1986,9 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
     incidents = []
     raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
                                          limit=max_fetch, sort_by_creation_time='asc')
+
+    # save the last 1000 modified incidents to the integration context - for mirroring purposes
+    client.save_modified_incidents_to_integration_context()
 
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
