@@ -31,12 +31,13 @@ async def verify_auth_header(request: Request, call_next):
 
 
 @app.post('/')
-async def handle_post(incident: Incident) -> List:
+async def handle_post(incident: Incident, request: Request) -> List:
+    raw_json = incident.raw_json or await request.json()
     return demisto.createIncidents([{
-        'name': incident.name,
+        'name': incident.name or 'Generic webhook triggered incident',
         'type': incident.type or demisto.params().get('incidentType'),
         'occurred': incident.occurred,
-        'rawJSON': json.dumps(incident.raw_json)
+        'rawJSON': json.dumps(raw_json)
     }])
 
 
