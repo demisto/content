@@ -1,6 +1,5 @@
 id: Test XDR Playbook
-version: 11
-fromversion: 5.0.0
+version: 13
 vcShouldKeepItemLegacyProdMachine: false
 name: Test XDR Playbook
 description: Cortex XDR Test Playbook
@@ -982,7 +981,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 10140
+          "y": 9790
         }
       }
     note: false
@@ -2193,7 +2192,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "56"
+      - "58"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2208,74 +2207,6 @@ tasks:
         "position": {
           "x": 480,
           "y": 9090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "56":
-    id: "56"
-    taskid: deec81bd-3471-4874-8021-02b9bba37497
-    type: regular
-    task:
-      id: deec81bd-3471-4874-8021-02b9bba37497
-      version: -1
-      name: xdr-get-script-execution-results
-      description: Retrieve the results of a script execution action.
-      script: Cortex XDR - IR|||xdr-get-script-execution-results
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - IR
-    nexttasks:
-      '#none#':
-      - "57"
-    scriptarguments:
-      action_id:
-        simple: ${PaloAltoNetworksXDR.runScript.actionId}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 9265
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "57":
-    id: "57"
-    taskid: a381abd2-1e3a-4c8a-8401-74871f95058c
-    type: condition
-    task:
-      id: a381abd2-1e3a-4c8a-8401-74871f95058c
-      version: -1
-      name: Verify Outputs
-      description: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "58"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.scriptExecutionResults.script_name
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 9440
         }
       }
     note: false
@@ -2311,7 +2242,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9615
+          "y": 9265
         }
       }
     note: false
@@ -2347,7 +2278,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9790
+          "y": 9440
         }
       }
     note: false
@@ -2393,7 +2324,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9965
+          "y": 9615
         }
       }
     note: false
@@ -2406,7 +2337,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 10155,
+        "height": 9805,
         "width": 922.5,
         "x": 50,
         "y": 50
