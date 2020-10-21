@@ -1369,7 +1369,7 @@ def main():
             for command_result_item in process_search_get_command(client, demisto.args()):
                 return_results(command_result_item)
 
-        elif demisto.command() == 'cb-eedr-events-by-process-search':
+        elif demisto.command() == 'cb-eedr-events-by-process-get':
             return_results(event_by_process_search_command(client, demisto.args()))
 
     # Log exceptions

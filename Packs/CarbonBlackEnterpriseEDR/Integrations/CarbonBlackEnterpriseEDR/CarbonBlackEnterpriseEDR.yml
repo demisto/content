@@ -1624,7 +1624,7 @@ script:
       deprecated: false
       description: Retrieve the events associated with a given process.
       execution: false
-      name: cb-eedr-events-by-process-search
+      name: cb-eedr-events-by-process-get
       outputs:
         - contextPath: CarbonBlackEEDR.SearchEvent.backend_timestamp
           description: timestamp for when the process was ingested by the backend.
