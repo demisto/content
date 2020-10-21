@@ -231,15 +231,15 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         # make the pack installation request
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
             for pack in packs_to_install:
-                request_data = {
-                    'pack': [pack],
-                    'ignoreWarnings': True
-                }
+                # request_data = {
+                #     'pack': pack,
+                #     'ignoreWarnings': True
+                # }
                 results.append(executor.submit(fn=demisto_client.generic_request_func,
                                                self=client,
                                                path='/contentpacks/marketplace/install',
                                                method='POST',
-                                               body=request_data,
+                                               body=pack,
                                                accept='application/json',
                                                _request_timeout=request_timeout))
 
@@ -247,7 +247,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
             try:
                 response_data, pack_status, _ = future.result()
                 print('### Response Data:')
-                print(response_data)
+                print(ast.literal_eval(response_data))
                 print('### Status Code:')
                 print(pack_status)
                 if 200 <= pack_status < 300:
