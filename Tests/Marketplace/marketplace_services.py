@@ -1042,7 +1042,8 @@ class Pack(object):
 
                 if os.path.exists(release_notes_dir):
                     release_notes_lines, latest_release_notes = self.get_release_notes_lines(
-                        release_notes_dir, changelog_latest_rn_version)
+                        release_notes_dir, changelog_latest_rn_version
+                    )
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
