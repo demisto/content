@@ -229,10 +229,10 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         prints_manager.execute_thread_prints(thread_index)
         results = []
         # make the pack installation request
-        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
             for pack in packs_to_install:
                 request_data = {
-                    'packs': pack,
+                    'packs': [pack],
                     'ignoreWarnings': True
                 }
                 print(request_data)
