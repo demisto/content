@@ -2725,17 +2725,9 @@
             "memory_threshold": 190
         },
         {
-            "integrations": "illuminate",
-            "playbookID": "illuminate Integration Test"
-        },
-        {
             "integrations": "Carbon Black Enterprise EDR",
             "playbookID": "Carbon Black Enterprise EDR Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "illuminate",
-            "playbookID": "illuminate Integration Demonstration - Test"
         },
         {
             "integrations": "MongoDB Key Value Store",
@@ -3101,6 +3093,14 @@
             "timeout": 600,
             "fromversion": "5.0.0"
 
+        },
+        {
+            "integrations": "Analyst1",
+            "playbookID": "Analyst1 Integration Test"
+        },
+        {
+            "integrations": "Analyst1",
+            "playbookID": "Analyst1 Integration Demonstration - Test"
         }
     ],
     "skipped_tests": {
