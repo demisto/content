@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: '1'
-  display: Database refresh interval (number of hours to wait between each loading )
+  display: Database refresh interval (number of hours to wait between each loading)
   hidden: false
   name: fetchIntervalHours
   required: false
