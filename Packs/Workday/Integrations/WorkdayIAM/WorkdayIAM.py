@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 import traceback
-from email.mime.text import MIMEText
-from smtplib import SMTP
 import requests
 from datetime import datetime, timedelta
 
@@ -149,7 +147,7 @@ def test_module(client, params):
     client.get_full_report()
 
     if params.get('isFetch'):
-        last_run, events = fetch_incidents(
+        fetch_incidents(
             client=client,
             last_run={},
             fetch_time=params.get('fetch_events_time_minutes')
