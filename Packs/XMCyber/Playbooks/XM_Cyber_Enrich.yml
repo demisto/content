@@ -1,0 +1,345 @@
+id: 08eca619-daae-431f-85c7-f1d558c61c52
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
+name: XM Cyber Enrich
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 386f0239-8f95-49ce-8c35-859f6f1bac35
+    type: start
+    task:
+      id: 386f0239-8f95-49ce-8c35-859f6f1bac35
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0b57f61e-b8bd-45a1-8558-56c57b7896c9
+    type: regular
+    task:
+      id: 0b57f61e-b8bd-45a1-8558-56c57b7896c9
+      version: -1
+      name: ContextGetIps
+      description: Gets all IP addresses in context, excluding ones given.
+      scriptName: ContextGetIps
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      excludedIps: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 246cddc4-e2eb-4d31-85f3-5556b70db42a
+    type: regular
+    task:
+      id: 246cddc4-e2eb-4d31-85f3-5556b70db42a
+      version: -1
+      name: Lookup IPs
+      description: Return data on Entity by IP from XM Cyber
+      script: XMCyber|||ip
+      type: regular
+      iscommand: true
+      brand: XMCyber
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ip:
+        simple: ${IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 5302e219-69b7-45a9-84dc-4ef1ff61f0fa
+    type: regular
+    task:
+      id: 5302e219-69b7-45a9-84dc-4ef1ff61f0fa
+      version: -1
+      name: xmcyber-affected-critical-assets-list
+      description: List critical assets at risk from an entity and the complexity
+        of the attack
+      script: XMCyber|||xmcyber-affected-critical-assets-list
+      type: regular
+      iscommand: true
+      brand: XMCyber
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      entityId:
+        simple: ${XMCyber.entityId}
+      timeId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ce800424-c303-4ccc-8e2b-ff92062566e7
+    type: regular
+    task:
+      id: ce800424-c303-4ccc-8e2b-ff92062566e7
+      version: -1
+      name: xmcyber-affected-entities-list
+      description: List all entities at risk from an entity and the complexity of
+        the attack
+      script: XMCyber|||xmcyber-affected-entities-list
+      type: regular
+      iscommand: true
+      brand: XMCyber
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      entityId:
+        simple: ${XMCyber.entityId}
+      timeId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8a4427d1-7d07-47d6-8a06-7e463c36eb01
+    type: regular
+    task:
+      id: 8a4427d1-7d07-47d6-8a06-7e463c36eb01
+      version: -1
+      name: XMCyber-map
+      description: Maps the XM Cyber context to fields
+      scriptName: XMCyber-map
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 1dd37104-5c3d-4e4f-8b06-f18d3222cac7
+    type: regular
+    task:
+      id: 1dd37104-5c3d-4e4f-8b06-f18d3222cac7
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      assignBy: {}
+      email: {}
+      onCall: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 9d9b33a2-f735-4976-819b-1957b724fd70
+    type: condition
+    task:
+      id: 9d9b33a2-f735-4976-819b-1957b724fd70
+      version: -1
+      name: Exists IP
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "2"
+    scriptarguments:
+      value:
+        simple: ${IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: a762c9b2-95c6-459a-8fe0-398d9721ce0b
+    type: regular
+    task:
+      id: a762c9b2-95c6-459a-8fe0-398d9721ce0b
+      version: -1
+      name: Manually remediate  the incident
+      description: "Review the incident to determine if the account activity is malicious.\n\nIf
+        malicious, consider the following:\n* Quarantine the account/ endpoint \n*
+        Revoke the account password\n* Query the account/ IPs logs in the SIEM\n*
+        Block the external IPs in the firewall/ proxy\n* Check the account's privileges
+        and change if needed"
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: ab5265d9-5bcf-4a88-8a1a-7c2838799696
+    type: condition
+    task:
+      id: ab5265d9-5bcf-4a88-8a1a-7c2838799696
+      version: -1
+      name: Exists Entity
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${XMCyber.entityId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

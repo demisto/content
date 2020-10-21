@@ -1,8 +1,8 @@
 commonfields:
-  id: 7e4f48d5-6ece-493b-8ded-4265ae190a14
-  version: 21
-vcShouldKeepItemLegacyProdMachine: false
+  id: xmcyber-map
+  version: -1
 name: xmcyber-map
+fromversion: 5.0.0
 script: |-
   fields = {
       'entityId': 'xmcyberentityid',
@@ -33,7 +33,6 @@ important:
   related: dsa
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.6.12176
 runas: DBotWeakRole

@@ -1,9 +1,11 @@
 {
-	"close": null,
+	"id": "XM Cyber Layout",
+	"group": "incident",
+	"name": "XM Cyber Layout",
 	"description": "",
-	"details": null,
+	"version": -1,
+	"fromVersion": "6.0.0",
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -568,24 +570,5 @@
 				"type": "custom"
 			}
 		]
-	},
-	"edit": null,
-	"fromServerVersion": "",
-	"group": "incident",
-	"id": "611f4a26-5caa-4663-8a37-372304790f88",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
-	"name": "XM Cyber Layout",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"sortValues": null,
-	"system": false,
-	"toServerVersion": "",
-	"version": -1
+	}
 }
