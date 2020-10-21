@@ -47,14 +47,47 @@ def test_affected_critical_assets_list(requests_mock):
         'entityId': '15553084234424912589',
         'criticalAssetsAtRiskList': [
             {
-                'avgattackComplexity': 25.33,
-                'minAttackComplexity': 24, 
+                'average': 25.33,
+                'minimum': 24, 
                 'name': 'USERBB03'
             },
             {
-                'avgattackComplexity': 24.67,
-                'minAttackComplexity': 22, 
+                'average': 24.67,
+                'minimum': 22, 
                 'name': 'model-bucket-from-struts'
+            }]
+    }]
+
+def test_affected_entities_list(requests_mock):
+    """Tests test_affected_entities_list_command function.
+
+    Configures requests_mock instance to generate the appropriate search
+    API response. Checks the output of the command function with the expected output.
+    """
+    from XMCyberIntegration import affected_entities_list_command
+    mock_url = f'{TEST_URL}{URLS.Entities_At_Risk}?entityId=awsUser-AIDA5HCBCYKFMAQHGI56Z&timeId=timeAgo_days_7&sort=attackComplexity&pageSize={PAGE_SIZE}&page=1'
+    xm = mock_request_and_get_xm_mock('test_data/affected_entities.json', requests_mock, mock_url)
+
+    response = affected_entities_list_command(xm, {
+        'entityId': 'awsUser-AIDA5HCBCYKFMAQHGI56Z'
+    })
+
+    assert response.outputs_prefix == 'XMCyber'
+    assert response.outputs_key_field == 'entityId'
+    assert response.outputs == [{
+        'entityId': 'awsUser-AIDA5HCBCYKFMAQHGI56Z',
+        'entitiesAtRiskList': [
+            {
+                #'entityId': 'awsKmsKey-792168ed-fcf9-4d5c-ae31-f3de29f7e354',
+                #'entityType': 'AWS KMS Key',
+                'name': '792168ed-fcf9-4d5c-ae31-f3de29f7e354',
+                'technique': 'AWS KMS Key Compromise'
+            },
+            {
+                #'entityId': 'awsKmsKey-81f97e46-e80f-4a4d-a54e-1c7885c1c71d',
+                #'entityType': 'AWS KMS Key',
+                'name': '81f97e46-e80f-4a4d-a54e-1c7885c1c71d',
+                'technique': 'AWS KMS Key Compromise'
             }]
     }]
 
@@ -72,20 +105,22 @@ def test_hostname(requests_mock):
         'hostname': 'CorporateDC'
     })
 
-    assert response.outputs_prefix == 'XMCyber.Endpoint'
-    assert response.outputs_key_field == 'ID'
+    assert response.outputs_prefix == 'XMCyber'
+    assert response.outputs_key_field == 'entityId'
     assert response.outputs == {
         'entityId': '3110337924893579985',
         'name': 'CorporateDC',
         'affectedEntities': 29,
         'averageComplexity': 2,
         'criticalAssetsAtRisk': 14,
+        'criticalAssetsAtRiskLevel': 'medium',
         'averageComplexityLevel': 'medium',
         'isAsset': True,
         'compromisingTechniques': [
             {'count': 46,'name': 'DNS Heap Overflow (CVE-2018-8626)'},
             {'count': 34, 'name': 'SIGRed (CVE-2020-1350)'}
-        ]
+        ],
+        'entityType': 'Sensor'
     }
 
 def test_ip(requests_mock):
@@ -102,18 +137,20 @@ def test_ip(requests_mock):
         'ip': '172.0.0.1'
     })
 
-    assert response.outputs_prefix == 'XMCyber.IP'
-    assert response.outputs_key_field == 'ip'
+    assert response.outputs_prefix == 'XMCyber'
+    assert response.outputs_key_field == 'entityId'
     assert response.outputs == {
         'entityId': '3110337924893579985',
         'name': 'CorporateDC',
         'affectedEntities': 29,
         'averageComplexity': 2,
         'criticalAssetsAtRisk': 14,
+        'criticalAssetsAtRiskLevel': 'medium',
         'averageComplexityLevel': 'medium',
         'isAsset': True,
         'compromisingTechniques': [
             {'count': 46,'name': 'DNS Heap Overflow (CVE-2018-8626)'},
             {'count': 34, 'name': 'SIGRed (CVE-2020-1350)'}
-        ]
+        ],
+        'entityType': 'Sensor'
     }

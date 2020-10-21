@@ -1,0 +1,39 @@
+commonfields:
+  id: 7e4f48d5-6ece-493b-8ded-4265ae190a14
+  version: 21
+vcShouldKeepItemLegacyProdMachine: false
+name: xmcyber-map
+script: |-
+  fields = {
+      'entityId': 'xmcyberentityid',
+      'averageComplexity': 'xmcyberaveragecomplexity',
+      'averageComplexityLevel': 'xmcyberaveragecomplexitylevel',
+      'affectedEntities': 'xmcyberaffectedentities',
+      'entitiesAtRiskList': 'xmcyberaffectedentitieslist',
+      'compromisingTechniques': 'xmcybercompromisingtechniques',
+      'criticalAssetsAtRisk': 'xmcybercriticalassetsatrisk',
+      'criticalAssetsAtRiskLevel': 'xmcybercriticalassetsatrisklevel',
+      'criticalAssetsAtRiskList':'xmcybercriticalassetsatrisklist',
+      'isAsset': 'xmcyberiscriticalasset',
+      'entityType': 'xmcyberentitytype',
+      'name': 'xmcyberhostname'
+  }
+  context_values = {key : demisto.get(demisto.context(), 'XMCyber.' + key) for key in fields.keys()}
+
+
+  demisto.executeCommand('setIncident', {fields[key]: context_values[key] for key in fields.keys()})
+type: python
+tags:
+- XM Cyber
+comment: Maps the XM Cyber context to fields
+enabled: true
+important:
+- contextPath: sadsa
+  description: sada
+  related: dsa
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.6.12176
+runas: DBotWeakRole
