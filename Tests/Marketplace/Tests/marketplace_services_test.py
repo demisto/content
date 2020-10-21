@@ -288,18 +288,18 @@ class TestHelperFunctions:
     def test_remove_unwanted_files(self):
         """
            Given:
-               -
+               - Pack name & path.
            When:
-               -
+               - Before uploading a pack to the marketplace, delete unwanted files.
            Then:
-               -
+               - Assert the TestPlaybooks die was deleted.
        """
-        os.mkdir('/Users/mgalitzki/dev/demisto/content/Packs/pack_to_test')
-        os.mkdir('/Users/mgalitzki/dev/demisto/content/Packs/pack_to_test/TestPlaybooks')
-        test_pack = Pack(pack_name="pack_to_test", pack_path="/Users/mgalitzki/dev/demisto/content/Packs/pack_to_test")
+        os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test')
+        os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
+        test_pack = Pack(pack_name="pack_to_test", pack_path='Tests/Marketplace/Tests/test_data/pack_to_test')
         test_pack.remove_unwanted_files()
-        assert not os.path.isdir('/Users/mgalitzki/dev/demisto/content/Packs/pack_to_test/TestPlaybooks')
-        shutil.rmtree("/Users/mgalitzki/dev/demisto/content/Packs/pack_to_test")
+        assert not os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
+        shutil.rmtree('Tests/Marketplace/Tests/test_data/pack_to_test')
 
 
 class TestVersionSorting:
