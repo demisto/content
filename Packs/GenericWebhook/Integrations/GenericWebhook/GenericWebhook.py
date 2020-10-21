@@ -1,3 +1,4 @@
+from collections import deque
 from io import StringIO
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
@@ -7,12 +8,14 @@ from typing import Dict
 import uvicorn
 from fastapi import Depends, FastAPI, Request, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi.security.api_key import APIKeyHeader, APIKey
+from fastapi.security.api_key import APIKey, APIKeyHeader
 from pydantic import BaseModel
 
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
+sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
 
 
 class Incident(BaseModel):
@@ -52,12 +55,37 @@ async def handle_post(
             return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
 
     raw_json = incident.raw_json or await request.json()
-    return demisto.createIncidents([{
+    incident = {
         'name': incident.name or 'Generic webhook triggered incident',
         'type': incident.type or demisto.params().get('incidentType'),
         'occurred': incident.occurred,
         'rawJSON': json.dumps(raw_json)
-    }])
+    }
+
+    if demisto.params().get('store_samples'):
+        try:
+            sample_events_to_store.append(incident)
+            integration_context = get_integration_context()
+            sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
+            sample_events += sample_events_to_store
+            integration_context['sample_events'] = list(sample_events)
+            set_to_integration_context_with_retries(integration_context)
+        except Exception as e:
+            demisto.error(f'Failed storing sample events - {e}')
+
+    return demisto.createIncidents([incident])
+
+
+def fetch_samples() -> None:
+    """Extracts sample events stored in the integration context and returns them as incidents
+
+    Returns:
+        None: No data returned.
+    """
+    integration_context = get_integration_context()
+    sample_events = json.loads(integration_context.get('sample_events', '[]'))
+    incidents = [{'rawJSON': json.dumps(event)} for event in sample_events]
+    demisto.incidents(incidents)
 
 
 def main() -> None:
@@ -70,6 +98,8 @@ def main() -> None:
             raise ValueError(f'Invalid listen port - {e}')
         if demisto.command() == 'test-module':
             return_results('ok')
+        elif demisto.command() == 'fetch-incidents':
+            fetch_samples()
         elif demisto.command() == 'long-running-execution':
             while True:
                 certificate = demisto.params().get('certificate', '')

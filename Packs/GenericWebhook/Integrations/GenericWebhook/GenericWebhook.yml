@@ -34,6 +34,13 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- additionalinfo: Because this is a push-based streaming integration, it cannot fetch sample events in
+    the mapping wizard.
+  display: Store sample events for mapping
+  hidden: false
+  name: store_samples
+  required: false
+  type: 8
 description: Generic webhook to be triggered in order to create incident.
 display: Generic Webhook
 name: Generic Webhook
@@ -48,6 +55,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  isFetchSamples: true
 fromversion: 5.5.0
 tests:
   - Generic Webhook - Test
