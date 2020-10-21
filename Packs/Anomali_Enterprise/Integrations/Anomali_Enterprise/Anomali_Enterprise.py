@@ -159,7 +159,7 @@ def domain_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults and DBotScore.
     """
-    domain = args.get('domain')
+    domain = str(args.get('domain'))
     response = client.domain_request([domain])
     domain_data = response.get('data', {})
     output = {
@@ -205,7 +205,7 @@ def calculate_dbot_score(domain_data: dict) -> int:
     """
     score = 0
     if domain_data.get('malware_family', {}):
-        if float(domain_data.get('prob')) > 0.6:
+        if float(domain_data.get('prob', 0)) > 0.6:
             score = 3
         else:
             score = 2
