@@ -31,6 +31,10 @@ description: Integration to GitLab API
 display: GitLab
 name: LGTM
 script:
+  commands:
+  - deprecated: false
+    execution: false
+    name: gitlab-list-projects
   dockerimage: aymanam/gitlab:latest
   feed: false
   isfetch: true
