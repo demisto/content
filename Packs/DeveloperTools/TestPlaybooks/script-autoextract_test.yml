@@ -12,7 +12,7 @@ script: >2
 
   url_context_output = ["http://www.thisurlwillneverexist4444.co.il", "www.thisoneshouldnotexisteither4444.com"]
 
-  urlescaped_context_output = ["hxxp://www.letsseeifyoucanfindthisone4444.co.il"]
+  urlescaped_context_output = ["hxxp://www.letsseeifyoucanfindthisone4444.co.il", "https://‌www.‌demisto1.‌com‌/"]
 
   md5_context_output = ["999d8c71dd6dddd77777777b85734318", "44f03f1a5280bbb7f4c2550b222bb88c"]
 

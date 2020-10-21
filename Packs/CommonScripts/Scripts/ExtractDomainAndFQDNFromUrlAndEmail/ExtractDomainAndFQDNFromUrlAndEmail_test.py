@@ -24,6 +24,8 @@ import pytest
     ('5be9245893ff486d98c3640879bb2657.protect@whoisguard.com', '', 'whoisguard.com'),
     ('test@www.bücher.de', 'www.bücher.de', 'bücher.de'),
     ('test@www[.]demisto[.]com', 'www.demisto.com', 'demisto.com'),
+    # left has zero-width chars
+    ("https://‌www.‌demisto1.‌com‌/", "www.demisto1.com", "demisto1.com")
 ])  # noqa: E124
 def test_extract_fqdn_or_domain(input, fqdn, domain):
     extracted_fqdn = extract_fqdn_or_domain(input, is_fqdn=True)

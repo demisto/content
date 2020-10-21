@@ -16,10 +16,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2fe21461-bf20-4252-87d9-9cc8936634c4
+    taskid: e4decd1f-6a21-43b4-8cce-7b1e8a20f543
     type: start
     task:
-      id: 2fe21461-bf20-4252-87d9-9cc8936634c4
+      id: e4decd1f-6a21-43b4-8cce-7b1e8a20f543
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +39,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: ea8daebe-5b96-4418-8ed6-5063f0d45f55
+    taskid: aba57525-1353-4faf-876a-b25fd6801c0d
     type: regular
     task:
-      id: ea8daebe-5b96-4418-8ed6-5063f0d45f55
+      id: aba57525-1353-4faf-876a-b25fd6801c0d
       version: -1
       name: Delete context
       description: Deletes the context to start the test with a clean context.
@@ -73,14 +73,15 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 6b41e663-db7a-4bad-8666-995e93a83da3
+    taskid: bb6f97e7-4085-406e-882a-a49d925801a0
     type: regular
     task:
-      id: 6b41e663-db7a-4bad-8666-995e93a83da3
+      id: bb6f97e7-4085-406e-882a-a49d925801a0
       version: -1
       name: Print indicators
-      description: Prints indicators to the war room and lets auto-extract put them in context.
-      scriptName: autoextract_test
+      description: Prints indicators to the war room and lets auto-extract put them
+        in context.
+      script: autoextract_test
       type: regular
       iscommand: false
       brand: ""
@@ -105,13 +106,14 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: e6d0c59e-21d1-4cca-8bff-d9ad1c87f54f
+    taskid: 71b7d611-ebc0-4781-8c89-d87072a7df18
     type: condition
     task:
-      id: e6d0c59e-21d1-4cca-8bff-d9ad1c87f54f
+      id: 71b7d611-ebc0-4781-8c89-d87072a7df18
       version: -1
       name: Were the IP addresses extracted?
-      description: Checks whether the internal, external and escaped IP addresses that were printed are found in context.
+      description: Checks whether the internal, external and escaped IP addresses
+        that were printed are found in context.
       type: condition
       iscommand: false
       brand: ""
@@ -199,13 +201,14 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: 549fc882-fd38-432e-8059-1a1fd8f644e3
+    taskid: d9dd6530-f67f-47be-8846-b693376008c7
     type: condition
     task:
-      id: 549fc882-fd38-432e-8059-1a1fd8f644e3
+      id: d9dd6530-f67f-47be-8846-b693376008c7
       version: -1
       name: Were the URLs extracted?
-      description: Checks whether the URLs and escaped URLs that were printed are found in context.
+      description: Checks whether the URLs and escaped URLs that were printed are
+        found in context.
       type: condition
       iscommand: false
       brand: ""
@@ -269,6 +272,36 @@ tasks:
                         simple: http://www.letsseeifyoucanfindthisone4444.co.il
                 accessor: Data
             iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URL.Data
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://‌www.‌demisto1.‌com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URL.Data
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://www.demisto.com/
+            iscontext: true
     view: |-
       {
         "position": {
@@ -280,13 +313,14 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: b4c3ac46-08cc-407e-87f1-b0a1dd5d46b4
+    taskid: 3c589407-0a09-4b30-85bd-7bf777bd06bb
     type: condition
     task:
-      id: b4c3ac46-08cc-407e-87f1-b0a1dd5d46b4
+      id: 3c589407-0a09-4b30-85bd-7bf777bd06bb
       version: -1
       name: Were the hashes extracted?
-      description: Checks whether the MD5, SHA1 and SHA256 hashes that were printed are found in context.
+      description: Checks whether the MD5, SHA1 and SHA256 hashes that were printed
+        are found in context.
       type: condition
       iscommand: false
       brand: ""
@@ -413,13 +447,14 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: bf681094-49c7-4ccf-8719-721be65759fb
+    taskid: b39fe7e2-2962-4246-88ed-e5fce1e265dc
     type: condition
     task:
-      id: bf681094-49c7-4ccf-8719-721be65759fb
+      id: b39fe7e2-2962-4246-88ed-e5fce1e265dc
       version: -1
       name: Were the email addresses extracted?
-      description: Checks whether the email addresses that were printed are found in context.
+      description: Checks whether the email addresses that were printed are found
+        in context.
       type: condition
       iscommand: false
       brand: ""
@@ -478,13 +513,14 @@ tasks:
     timertriggers: []
   "17":
     id: "17"
-    taskid: 4a63db05-d3ae-49e1-81e2-a44c0ad68eea
+    taskid: 450de9d7-29ff-4ce7-83d8-a3bd35cbab2a
     type: condition
     task:
-      id: 4a63db05-d3ae-49e1-81e2-a44c0ad68eea
+      id: 450de9d7-29ff-4ce7-83d8-a3bd35cbab2a
       version: -1
       name: Were the domains extracted?
-      description: Checks whether domains were extracted from URLs and email addresses that were printed to context.
+      description: Checks whether domains were extracted from URLs and email addresses
+        that were printed to context.
       type: condition
       iscommand: false
       brand: ""
@@ -576,10 +612,10 @@ tasks:
     timertriggers: []
   "22":
     id: "22"
-    taskid: 7e852556-2c01-4abd-84e0-37102eee07ef
+    taskid: 78e0301c-8247-4a62-848e-7e01e52901c9
     type: regular
     task:
-      id: 7e852556-2c01-4abd-84e0-37102eee07ef
+      id: 78e0301c-8247-4a62-848e-7e01e52901c9
       version: -1
       name: Make test fail
       description: Fail the test if not all indicators were extracted.
@@ -592,7 +628,8 @@ tasks:
       - "24"
     scriptarguments:
       message:
-        simple: Extraction of an indicator has failed. Check which indicators were not found in the previous conditions of the playbook.
+        simple: Extraction of an indicator has failed. Check which indicators were
+          not found in the previous conditions of the playbook.
     separatecontext: false
     view: |-
       {
@@ -605,10 +642,10 @@ tasks:
     timertriggers: []
   "23":
     id: "23"
-    taskid: 41880aab-f713-4c35-828e-7cc62077b61e
+    taskid: 0aaf0a80-beb2-4298-88cf-00e74867153a
     type: title
     task:
-      id: 41880aab-f713-4c35-828e-7cc62077b61e
+      id: 0aaf0a80-beb2-4298-88cf-00e74867153a
       version: -1
       name: All Indicators Extracted
       description: ""
@@ -630,10 +667,10 @@ tasks:
     timertriggers: []
   "24":
     id: "24"
-    taskid: 18f01873-bf58-4fe0-8bed-3c649c3dbfff
+    taskid: 70ebbff2-af15-472e-81d1-af8ddffe9b23
     type: title
     task:
-      id: 18f01873-bf58-4fe0-8bed-3c649c3dbfff
+      id: 70ebbff2-af15-472e-81d1-af8ddffe9b23
       version: -1
       name: Done
       description: ""
@@ -652,10 +689,10 @@ tasks:
     timertriggers: []
   "25":
     id: "25"
-    taskid: 6570f3ad-c973-4afd-8cdf-e697291a6b21
+    taskid: 1ddb8a10-cd96-44ef-831b-a2f22e9cf726
     type: condition
     task:
-      id: 6570f3ad-c973-4afd-8cdf-e697291a6b21
+      id: 1ddb8a10-cd96-44ef-831b-a2f22e9cf726
       version: -1
       name: Was the CVE ID extracted?
       description: Checks whether the ID of the CVE that was printed is found in context.

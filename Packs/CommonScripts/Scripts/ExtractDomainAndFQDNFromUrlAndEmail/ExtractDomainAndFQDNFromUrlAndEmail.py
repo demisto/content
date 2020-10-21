@@ -8,6 +8,7 @@ import re
 
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=']
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/.*\?url='
+ZERO_WIDTH_CHAR = ['\u200c', '\u200B', '\u200D', '\uFEFF', '\uFF10']
 
 
 def atp_get_original_url(safe_url):
@@ -36,10 +37,17 @@ def proofpoint_get_original_url(safe_url):
     return clean
 
 
+def remove_zero_width_chars(url):
+    for zero_width_char in ZERO_WIDTH_CHAR:
+        url = url.replace(zero_width_char, '')
+    return url
+
+
 def unescape_url(escaped_url):
     # Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
     url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')\
         .replace('http:\\\\', 'http://')
+    url = remove_zero_width_chars(url)
     # Normalize the URL with http prefix
     if url.find('http:') == 0 and url.find('http://') == -1:
         url = url.replace('http:', 'http://')
