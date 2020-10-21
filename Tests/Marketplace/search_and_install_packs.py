@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import concurrent.futures
 import os
 import ast
 import json
@@ -168,8 +169,7 @@ def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, p
         lock.release()
 
 
-def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999,
-                  private_install=False):
+def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999, private_install=False):
     """ Make a packs installation request.
 
     Args:
@@ -180,7 +180,6 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         packs_to_install (list): A list of the packs to install.
         request_timeout (int): Timeout settings for the installation request.
     """
-
     if private_install:
         license_path = '/home/runner/work/content-private/content-private/content-test-conf/demisto.lic'
         header_params = {
@@ -201,8 +200,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                 header_params=header_params, files=files)
             if 200 <= status_code < 300:
                 message = 'License was successfully updated!\n'
-                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
-                                             include_timestamp=True)
+                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
             else:
                 result_object = ast.literal_eval(response_data)
                 message = result_object.get('message', '')
@@ -223,44 +221,53 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
             if any(pack_id in local_pack for pack_id in pack_ids_to_install):
                 upload_zipped_packs(client=client, host=host, prints_manager=prints_manager,
                                     thread_index=thread_index, pack_path=local_pack)
-    else:
-        request_data = {
-            'packs': packs_to_install,
-            'ignoreWarnings': True
-        }
 
+    else:
         packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
         message = 'Installing the following packs in server {}:\n{}'.format(host, packs_to_install_str)
         prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
         prints_manager.execute_thread_prints(thread_index)
-
+        results = []
         # make the pack installation request
-        try:
-            response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                path='/contentpacks/marketplace/install',
-                                                                                method='POST',
-                                                                                body=request_data,
-                                                                                accept='application/json',
-                                                                                _request_timeout=request_timeout)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            for pack in packs_to_install:
+                request_data = {
+                    'pack': [pack],
+                    'ignoreWarnings': True
+                }
+                results.append(executor.submit(fn=demisto_client.generic_request_func,
+                                               self=client,
+                                               path='/contentpacks/marketplace/install',
+                                               method='POST',
+                                               body=request_data,
+                                               accept='application/json',
+                                               _request_timeout=request_timeout))
 
-            if 200 <= status_code < 300:
-                message = 'Packs were successfully installed!\n'
-                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
-                                             include_timestamp=True)
-            else:
-                result_object = ast.literal_eval(response_data)
-                message = result_object.get('message', '')
-                err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
+        for future in concurrent.futures.as_completed(results):
+            try:
+                response_data, pack_status, _ = future.result()
+                print('### Response Data:')
+                print(response_data)
+                print('### Status Code:')
+                print(pack_status)
+                if 200 <= pack_status < 300:
+                    message = 'Packs were successfully installed!\n'
+                    prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                                 include_timestamp=True)
+                else:
+                    result_object = ast.literal_eval(response_data)
+                    message = result_object.get('message', '')
+                    err_msg = f'Failed to install packs - with status code {response_data}\n{message}\n'
+                    prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+                    raise Exception(err_msg)
+            except Exception as e:
+                err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
                 prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-                raise Exception(err_msg)
-        except Exception as e:
-            err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
-            prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
 
-            global SUCCESS_FLAG
-            SUCCESS_FLAG = False
-        finally:
-            prints_manager.execute_thread_prints(thread_index)
+                global SUCCESS_FLAG
+                SUCCESS_FLAG = False
+            finally:
+                prints_manager.execute_thread_prints(thread_index)
 
 
 def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install,
