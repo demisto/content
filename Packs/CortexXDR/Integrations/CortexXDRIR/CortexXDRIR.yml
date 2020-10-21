@@ -50,6 +50,11 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: 7 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
 - defaultvalue: 'true'
   display: Fetch incident alerts and artifacts
   hidden: false
