@@ -1,0 +1,89 @@
+category: IT Services
+commonfields:
+  id: WorkdayIAM
+  version: -1
+configuration:
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- display: Report Type
+  name: report_type
+  options:
+  - Full-Report
+  - Delta_Report
+  required: false
+  type: 15
+- display: Workday Report URL
+  name: report_url
+  required: true
+  type: 0
+- additionalinfo: Import schedule to get events
+  display: Fetch Events Frequency In minutes
+  name: fetch_events_time_minutes
+  required: false
+  type: 0
+- additionalinfo: Maximum number of events to fetch at a time
+  defaultvalue: '50'
+  display: Fetch Limit (Recommended less than 200)
+  name: fetch_limit
+  required: false
+  type: 0
+- additionalinfo: Used to notify any errors via email
+  display: Email Notification Ids (Separated by comma)
+  name: email_notification_ids
+  required: false
+  type: 0
+- display: SMTP Server Host
+  name: smtp_server
+  required: false
+  type: 0
+- display: SMTP Server Port
+  name: smtp_port
+  required: false
+  type: 0
+- display: From Email
+  name: from_email
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: Workday IAM Integration
+display: Workday IAM
+name: WorkdayIAM
+script:
+  commands:
+  - deprecated: false
+    description: Syncornizes between the workday users and the indicators used in
+      IAM. Creates an indicator for every workday user. Should be run when starting
+      to use the integration, before fetching any incidents.
+    execution: false
+    name: workday-first-run
+  dockerimage: demisto/python3:3.7.5.3066
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
