@@ -145,7 +145,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "9"
     scriptarguments:
       created_at: {}
       file_hash: {}
@@ -308,6 +308,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
     scriptarguments:
       created_at: {}
       file_hash: {}
