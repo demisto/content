@@ -4605,6 +4605,8 @@ class IAMActions(object):
 
 class IAMVendorActionResult:
     """ This class is used in IAMUserProfile class to represent actions data.
+    :return: None
+    :rtype: ``None``
     """
 
     def __init__(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
@@ -4695,6 +4697,8 @@ class IAMUserProfile:
             _user_profile (str): The user profile information.
             _user_profile_delta (str): The user profile delta.
             _vendor_action_results (list): A List of data returned from the vendor.
+    :return: None
+    :rtype: ``None``
     """
 
     INDICATOR_TYPE = 'User Profile'
