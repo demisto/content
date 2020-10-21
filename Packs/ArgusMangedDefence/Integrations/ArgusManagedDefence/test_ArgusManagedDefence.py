@@ -29,8 +29,16 @@ def test_is_valid_case_type():
     assert not is_valid_case_type("ids", "not_a_type")
 
 
-def test_fetch_incidents():
-    raise NotImplementedError
+def test_fetch_incidents(requests_mock):
+    from ArgusManagedDefence import fetch_incidents
+    from argus_json import argus_case_data
+
+    method_url = f"/cases/v2/case/search"
+
+    requests_mock.post(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_SEARCH_RESULT)
+    next_run, incidents = fetch_incidents(None, "-1 day")
+    assert len(incidents) == 1
+    assert incidents[0]['name'] == "#0: string"
 
 
 def test_add_case_tag_command(requests_mock):

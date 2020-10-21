@@ -7,6 +7,7 @@ import dateparser
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
+import logging
 from argus_cli.utils import formatting  # Common helper for creating nice outputs
 from argus_cli.settings import settings
 
@@ -49,13 +50,10 @@ from argus_api.api.reputation.v1.observation import (
     fetch_observations_for_i_p,
 )
 
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 """ CONSTANTS """
-
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_INCIDENTS_TO_FETCH = 50
@@ -126,9 +124,7 @@ services = [
     },
 ]
 
-
 """ CLIENT CLASS """
-
 
 """ HELPER FUNCTIONS """
 
@@ -177,7 +173,7 @@ def str_to_dict(string: str) -> dict:
 
 
 def pretty_print_case_metadata(
-    result: dict, title: str = None
+        result: dict, title: str = None
 ) -> str:  # TODO improve: markdownify
     data = result["data"]
     string = title if title else f"# #{data['id']}: {data['subject']}\n"
@@ -195,8 +191,8 @@ def is_valid_service(service: str) -> bool:
 
 def is_valid_case_type(service: str, case_type: str) -> bool:
     return is_valid_service(service) and (
-        case_type
-        in next((s for s in services if s["shortName"] == service), {})["caseTypes"]
+            case_type
+            in next((s for s in services if s["shortName"] == service), {})["caseTypes"]
     )
 
 
@@ -214,7 +210,32 @@ def test_module_command() -> str:
 
 
 def fetch_incidents(last_run: dict, first_fetch_period: str):
-    raise NotImplementedError
+    start_timestamp = last_run.get("start_timestamp", None) if last_run else None
+    result = advanced_case_search(
+        startTimestamp=start_timestamp if start_timestamp else first_fetch_period,
+        endTimestamp="now",
+        limit=0,
+        sortBy=["createdTimestamp"]
+    )
+    incidents = []
+    for case in result['data']:
+        incidents.append({
+            "name": f"#{case['id']}: {case['subject']}",
+            "occurred": case['createdTime'],
+            "severity": argus_priority_to_demisto_severity(case['priority']),
+            "status": argus_status_to_demisto_status(case['status']),
+            "details": case['description'],  # TODO markdownify
+            # "customFields": {
+            #     "service": case["service"]["name"],
+            #     "type": case['type'],
+            #     "category": case['category']['name'],
+            #     "lastUpdatedTime": case['lastUpdatedTime'],
+            #     "customer": case['customer']['shortName']
+            # },
+            "rawJson": json.dumps(case)
+        })
+    last_run["start_timestamp"] = incidents[-1].get("occurred", None)
+    return last_run, incidents
 
 
 def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
@@ -938,10 +959,11 @@ def fetch_observations_for_i_p_command(args: Dict[str, Any]) -> CommandResults:
 
 def main() -> None:
     # TODO test argus-cli
+    logging.getLogger("argus_cli").setLevel("WARNING")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
 
-    first_fetch_period = demisto.params().get("first_fetch_period", "1 day")
+    first_fetch_period = demisto.params().get("first_fetch_period", "-1 day")
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
@@ -1057,7 +1079,6 @@ def main() -> None:
 
 
 """ ENTRY POINT """
-
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
