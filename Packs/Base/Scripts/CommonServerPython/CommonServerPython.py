@@ -4217,6 +4217,9 @@ class DemistoException(Exception):
         self.exception = exception
         super(DemistoException, self).__init__(message, exception, *args)
 
+    def __str__(self):
+        return str(self.message)
+
 
 class GetRemoteDataArgs:
     """get-remote-data args parser
@@ -4803,4 +4806,3 @@ class IAMUserProfile:
         if not isinstance(app_data, dict):
             app_data = safe_load_json(app_data)
         self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)
-
