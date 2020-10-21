@@ -4582,13 +4582,20 @@ class TableOrListWidget(BaseWidget):
 
 class IAMErrors(object):
     """
-    An enum class to manually handle errors in IAM integrations.
+    An enum class to manually handle errors in IAM integrations
+    :return: None
+    :rtype: ``None``
     """
     USER_DOES_NOT_EXIST = 404, 'User does not exist'
     USER_ALREADY_EXISTS = 409, 'User already exists'
 
 
 class IAMActions(object):
+    """
+    Enum: contains all the IAM actions (e.g. get, update, create, etc.)
+    :return: None
+    :rtype: ``None``
+    """
     GET_USER = 'get'
     UPDATE_USER = 'update'
     CREATE_USER = 'create'
@@ -4681,7 +4688,6 @@ class IAMVendorActionResult:
 
 
 class IAMUserProfile:
-    INDICATOR_TYPE = 'User Profile'
     """
         A User Profile object class for IAM integrations.
 
@@ -4690,6 +4696,8 @@ class IAMUserProfile:
             _user_profile_delta (str): The user profile delta.
             _vendor_action_results (list): A List of data returned from the vendor.
     """
+
+    INDICATOR_TYPE = 'User Profile'
 
     def __init__(self, user_profile, user_profile_delta=None):
         """ IAMUserProfile c'tor.
