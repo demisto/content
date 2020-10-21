@@ -1499,8 +1499,8 @@ Gets a list of device control violations filtered by selected fields. You can re
             "violations": [
                 {
                     "endpoint_id": "eca20ea25d4e4cfdad3a317997322693",
-                    "hostname": "win-2020-04-14---12-39",
-                    "ip": "10.196.73.119",
+                    "hostname": "$HOSTNAME",
+                    "ip": "$IP",
                     "os_type": "AGENT_OS_WINDOWS",
                     "product": "Cruzer Blade",
                     "product_id": "0x5567",
@@ -1514,8 +1514,8 @@ Gets a list of device control violations filtered by selected fields. You can re
                 },
                 {
                     "endpoint_id": "e4b83018ae2c411899d847930e68d398",
-                    "hostname": "win-2020-04-14---12-39",
-                    "ip": "10.196.73.119",
+                    "hostname": "$HOSTNAME",
+                    "ip": "$IP",
                     "os_type": "AGENT_OS_WINDOWS",
                     "product": "Cruzer Blade",
                     "product_id": "0x5567",
@@ -1529,8 +1529,8 @@ Gets a list of device control violations filtered by selected fields. You can re
                 },
                 {
                     "endpoint_id": "bef78d0ddbcc4ae488190bab0dcb31cd",
-                    "hostname": "win-2020-04-14---12-39",
-                    "ip": "10.196.73.119",
+                    "hostname": "$HOSTNAME",
+                    "ip": "$IP",
                     "os_type": "AGENT_OS_WINDOWS",
                     "product": "Cruzer Blade",
                     "product_id": "0x5567",
@@ -1553,9 +1553,9 @@ Gets a list of device control violations filtered by selected fields. You can re
 >### Endpoint Violation
 >|timestamp|username|ip|type|violation_id|vendor|product|serial|
 >|---|---|---|---|---|---|---|---|
->| 1586813964000 | st3.localssaflevi | 10.196.73.119 | Disk Drive | 100 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
->| 1586813953000 | st3.localssaflevi | 10.196.73.119 | Disk Drive | 90 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
->| 1586813942000 | st3.localssaflevi | 10.196.73.119 | Disk Drive | 80 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
+>| 1586813964000 | st3.localssaflevi | $IP | Disk Drive | 100 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
+>| 1586813953000 | st3.localssaflevi | $IP | Disk Drive | 90 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
+>| 1586813942000 | st3.localssaflevi | $IP | Disk Drive | 80 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
 
 
 ### 17. xdr-retrieve-files
