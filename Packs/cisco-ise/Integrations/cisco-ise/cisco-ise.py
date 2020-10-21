@@ -12,6 +12,7 @@ requests.packages.urllib3.disable_warnings()
 BASE_URL = re.sub(r"/+$", "", demisto.params().get('serverURL'))
 SERVER_PORT = demisto.params().get('serverPort')
 SERVER_URL = BASE_URL + ':' + SERVER_PORT
+SERVER_URL_ADMIN = BASE_URL
 
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
@@ -21,6 +22,12 @@ USE_SSL = not demisto.params().get('insecure', False)
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'Connection': 'keep_alive'
+}
+
+DEFAULT_HEADERS1 = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/xml',
     'Connection': 'keep_alive'
 }
 ''' HELPER FUNCTIONS '''
@@ -62,6 +69,43 @@ def http_request(method, url_suffix, params={}, data=None, headers=DEFAULT_HEADE
 
     return response
 
+
+def http_request_admin(method, url_suffix, params={}, data=None, headers=DEFAULT_HEADERS1):
+    try:
+        url = SERVER_URL_ADMIN + url_suffix
+        LOG(f'running {method} request with url={url}')
+        response = requests.request(
+            method,
+            url,
+            auth=(USERNAME, PASSWORD),
+            headers=headers,
+            verify=USE_SSL,
+            params=params,
+            data=data
+        )
+    except requests.exceptions.SSLError:
+        err_msg = 'Could not connect to Cisco ISE: Could not verify certificate.'
+        return_error(err_msg)
+    except requests.exceptions.ConnectionError:
+        err_msg = 'Connection Error. Verify that the Server URL and port are correct, and that the port is open.'
+        return_error(err_msg)
+    # handle request failure
+    demisto.results("http return code {}" .format(response.status_code))
+    if response.status_code not in {200, 201, 202, 204}:
+        message = parse_error_response(response)
+        err_msg = f'Error in API call to Cisco ISE Integration [{response.status_code}] - {response.reason}, {message}'
+
+        return_error(err_msg)
+
+    if response.status_code in (201, 204):
+        return
+    try:
+        response = response.content
+    except ValueError:
+        demisto.results("this is the error ")
+        return_error(response.content)
+
+    return response
 
 def parse_error_response(response):
     try:
@@ -615,6 +659,49 @@ def assign_policy_to_endpoint():
 
     return_outputs(f'The policy "{policy_name}" has been assigned successfully', context)
 
+def remove_policy_request(data):
+
+    api_endpoint = '/ers/config/ancendpoint/clear'
+
+    http_request('PUT', api_endpoint, data=json.dumps(data))
+
+
+def remove_policy_from_endpoint():
+    """
+    Remove ANC policy from an endpoint
+    """
+
+    policy_name = demisto.args().get('policy_name')
+    mac_address = demisto.args().get('mac_address')
+    if not is_mac_address(mac_address):
+        return_error('Please enter a valid mac address')
+
+    data = {
+        'OperationAdditionalData': {
+            'additionalData': [{
+                'name': 'macAddress',
+                'value': mac_address
+            },
+                {
+                'name': 'policyName',
+                'value': policy_name
+            }
+            ]
+        }
+    }
+    remove_policy_request(data)
+
+    endpoint_context = {
+        'MACAddress': mac_address,
+        'PolicyName': policy_name
+    }
+
+    context = {
+        'CiscoISE.Endpoint(val.ID && val.ID === obj.ID)': endpoint_context
+    }
+
+    return_outputs(f'The policy "{policy_name}" has been removed successfully', context)
+
 
 def get_blacklist_group_id():
 
@@ -660,6 +747,30 @@ def get_blacklist_endpoints():
 
     return_outputs(tableToMarkdown('CiscoISE Blacklist Endpoints', data, removeNull=True), context, endpoints)
 
+def get_session_data_by_ip_request(ip):
+    ip_address = f'/admin/API/mnt/Session/EndPointIPAddress/{ip}'
+    response = http_request_admin('GET', ip_address)
+    byte_conversion = str(response, 'utf-8')
+    jsondata = xml2json(byte_conversion)
+    sessionData = json.loads(jsondata)
+
+    context = {
+        'CiscoISE.Endpoint(val.ID && val.ID === obj.ID)': sessionData
+    }
+
+    return_outputs('The targeted users session xml is being returned ', context)
+
+def get_session_data_by_ip():
+    """
+    Returns: the session data given an ip address
+    """
+    ip = demisto.args().get('ip_address')
+    if not ip:
+        return_error('Please enter the ip')
+    response = get_session_data_by_ip_request(ip)
+
+    return
+
 
 ''' EXECUTION CODE '''
 
@@ -696,8 +807,12 @@ def main():
             create_policy()
         elif demisto.command() == 'cisco-ise-assign-policy':
             assign_policy_to_endpoint()
+        elif demisto.command() == 'cisco-ise-remove-policy':
+            remove_policy_from_endpoint()
         elif demisto.command() == 'cisco-ise-get-blacklist-endpoints':
             get_blacklist_endpoints()
+        elif demisto.command() == 'cisco-ise-get-session-data-by-ip':
+            get_session_data_by_ip()
 
     except Exception as e:
         return_error(str(e))
