@@ -96,10 +96,6 @@ def fetch_incidents(client, last_run, fetch_time):
                     # in both cases, don't create the incident
                     continue
 
-                # todo: remove condition
-                if workday_user.get('email') == 'dcrocker@paloaltonetworks.com':
-                    continue
-
                 entry['UserProfile'] = workday_user
                 event = {
                     "rawJSON": json.dumps(entry),
@@ -121,8 +117,6 @@ def fetch_incidents(client, last_run, fetch_time):
 def get_demisto_user(workday_user):
     employee_id = workday_user.get('employeeid')
     data = demisto.searchIndicators(query=f"type:\"User Profile\" and employeeid:\"{employee_id}\"").get('iocs')
-    demisto.info('WORKDAY FETCH: employee - ' + workday_user.get('displayname'))
-    demisto.info('WORKDAY FETCH: employee data - ' + str(data))
     if data:
         return data[0]
     return None
@@ -131,8 +125,6 @@ def get_demisto_user(workday_user):
 def does_email_exist_in_xsoar(email_address):
     data = demisto.searchIndicators(query=f"type:\"User Profile\" and value:\"{email_address}\"").get('iocs')
     does_email_exist = (data and len(data) > 0)
-    demisto.info('WORKDAY FETCH: does email exist - ' + str(does_email_exist))
-    demisto.info('WORKDAY FETCH: email - ' + str(email_address))
     return does_email_exist
 
 
@@ -143,13 +135,8 @@ def get_profile_changed_fields(workday_user, demisto_user):
     for user_profile_key in workday_user.keys():
         workday_value = workday_user.get(user_profile_key)
         demisto_value = demisto_user.get('CustomFields', {}).get(user_profile_key)
-        if user_profile_key == 'streetaddress' and workday_user.get('displayname') == 'Remy Buxaplenty':
-            demisto.info(f'Remy Buxaplenty - workday_user: {workday_value}, demisto_user: {demisto_value}')
         if workday_value and demisto_value and workday_value != demisto_value:
             profile_changed_fields.append(user_profile_key)
-
-    demisto.info('WORKDAY FETCH: display name: ' + str(workday_user.get('displayname')))
-    demisto.info('WORKDAY FETCH: CHANGES ' + str(profile_changed_fields))
 
     return profile_changed_fields
 
@@ -246,7 +233,7 @@ def main():
                     last_run=last_run,
                     fetch_time=params.get('fetch_events_time_minutes'))
 
-            fetch_limit = int(params.get('fetch_limit'))
+            fetch_limit = int(params.get('max_fetch'))
 
             demisto.setLastRun(last_run)
             demisto.incidents(events[:fetch_limit])
