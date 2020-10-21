@@ -1610,7 +1610,7 @@ script:
           required: false
           secret: false
         - default: false
-          description: The maximum number of rows to return. The deafult is 20.
+          description: The maximum number of rows to return. Default is 20.
           isArray: false
           name: limit
           required: false
