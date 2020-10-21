@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 import traceback
 
 
-def find_largest_input_or_output(all_args_list):
+def find_largest_input_or_output(all_args_list) -> dict:
     max_arg = {'Size(MB)': 0}
     for arg in all_args_list:
         if arg.get('Size(MB)') > max_arg.get('Size(MB)'):
@@ -14,7 +14,7 @@ def find_largest_input_or_output(all_args_list):
     return max_arg
 
 
-def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, incident_id):
+def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, incident_id) -> None:
     inputs = []
     outputs = []
     urls = demisto.demistoUrls()
@@ -57,7 +57,7 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
         largest_inputs_and_outputs.append(find_largest_input_or_output(outputs))
 
 
-def get_extra_data_from_investigations(investigations):
+def get_extra_data_from_investigations(investigations: list) -> list:
     largest_inputs_and_outputs: List = []
     for inv in investigations:
         inputs_and_outputs = demisto.executeCommand('getInvPlaybookMetaData',
@@ -65,15 +65,15 @@ def get_extra_data_from_investigations(investigations):
                                                         "incidentId": inv.get('IncidentID')
                                                     })[0].get('Contents').get('tasks')
         get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, inv.get('IncidentID'))
-
     return largest_inputs_and_outputs
 
 
 def main():
     try:
-        raw_output = demisto.executeCommand('GetLargestInvestigations_copy', args={'from': demisto.args().get('from'),
-                                                                                   'to': demisto.args().get('to'),
-                                                                                   'table_result': 'true'})
+        raw_output = demisto.executeCommand('GetLargestInvestigations',
+                                            args={'from': demisto.args().get('from'), 'to': demisto.args().get('to'),
+                                                  'table_result': 'true'}
+                                            )
         investigations = raw_output[0].get('Contents', {}).get('data')
         demisto.results(tableToMarkdown('Largest Inputs And Outputs In Incidents',
                                         get_extra_data_from_investigations(investigations)))

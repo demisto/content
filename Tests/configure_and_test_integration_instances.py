@@ -93,7 +93,8 @@ class Server:
     @property
     def client(self):
         if self.__client is None:
-            self.__client = demisto_client.configure(self.host, verify_ssl=False, username=self.user_name, password=self.password)
+            self.__client = demisto_client.configure(self.host, verify_ssl=False, username=self.user_name,
+                                                     password=self.password)
         return self.__client
 
     def add_server_configuration(self, config_dict, error_msg, restart=False):
@@ -120,6 +121,7 @@ class Build:
     run_environment = Running.CIRCLECI_RUN
     env_results_path = './env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'
+
     #  END CHANGE ON LOCAL RUN  #
 
     def __init__(self, options):
@@ -943,7 +945,8 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, i
         filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
         if run_all_tests:
             # skip test button testing
-            skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(RUN_ALL_TESTS_FORMAT)
+            skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(
+                RUN_ALL_TESTS_FORMAT)
             prints_manager.add_print_job(skipped_instance_test_message, print_warning, 0)
             tests_for_iteration = []
         elif filter_configured and filtered_tests:
@@ -1037,7 +1040,8 @@ def install_packs(build, prints_manager, pack_ids=None):
     installed_content_packs_successfully = True
     for server in build.servers:
         try:
-            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, prints_manager, build.is_private)
+            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, prints_manager,
+                                                                      build.is_private)
             if not flag:
                 raise Exception('Failed to search and install packs.')
         except Exception as exc:
@@ -1048,7 +1052,8 @@ def install_packs(build, prints_manager, pack_ids=None):
     return installed_content_packs_successfully
 
 
-def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations, prints_manager):
+def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations,
+                               prints_manager):
     all_module_instances = []
     brand_new_integrations = []
     testing_client = build.servers[0].client
@@ -1077,9 +1082,11 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         integrations_to_configure = modified_integrations[:]
         integrations_to_configure.extend(unchanged_integrations)
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        new_ints_params_set = set_integration_params(new_integrations, build.secret_conf['integrations'], instance_names_conf,
+        new_ints_params_set = set_integration_params(new_integrations, build.secret_conf['integrations'],
+                                                     instance_names_conf,
                                                      placeholders_map)
-        ints_to_configure_params_set = set_integration_params(integrations_to_configure, build.secret_conf['integrations'],
+        ints_to_configure_params_set = set_integration_params(integrations_to_configure,
+                                                              build.secret_conf['integrations'],
                                                               instance_names_conf, placeholders_map)
         if not new_ints_params_set:
             prints_manager.add_print_job(
@@ -1291,10 +1298,12 @@ def main():
         update_content_till_v6(build)
     elif not build.is_nightly:
         set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
-        installed_content_packs_successfully = install_packs(build, prints_manager) and installed_content_packs_successfully
+        installed_content_packs_successfully = install_packs(build,
+                                                             prints_manager) and installed_content_packs_successfully
 
     all_module_instances.extend(brand_new_integrations)
-    successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, prints_manager, pre_update=False)
+    successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, prints_manager,
+                                                                pre_update=False)
     disable_instances(build, all_module_instances, prints_manager)
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,

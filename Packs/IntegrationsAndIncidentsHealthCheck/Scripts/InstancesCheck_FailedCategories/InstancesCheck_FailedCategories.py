@@ -60,8 +60,8 @@ def main():
                             0
                         ],
                         "groups": None,
-                        "name": "N\\A",
-                        "label": "N\\A",
+                        "name": "N\A",
+                        "label": "N\A",
                         "color": "rgb(255, 23, 68)"
                     },
                 ],
