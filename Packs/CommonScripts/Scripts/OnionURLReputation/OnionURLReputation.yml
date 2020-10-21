@@ -1,11 +1,11 @@
 args:
 - default: false
-  description: The indicators to which to add reputation.
+  description: The indicators to which to add the reputation.
   isArray: true
   name: input
   required: true
   secret: false
-comment: A reputation script for `Onion URL` indicators.
+comment: This script adds the reputation to Onion URL indicators. The script is automatically triggered when a Onion URL indicator is auto-extracted. For instance, if you run a Cortex XSOAR CLI on a valid Onion URL, the indicators are extracted automatically and this script is triggered for the extracted indicators. 
 commonfields:
   id: OnionURLReputation
   version: -1
