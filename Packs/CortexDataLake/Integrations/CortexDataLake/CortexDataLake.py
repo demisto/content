@@ -25,6 +25,10 @@ ENCRYPTION_KEY_CONST = 'auth_key'
 DEFAULT_API_URL = 'https://api.us.cdl.paloaltonetworks.com'
 MINUTES_60 = 60 * 60
 SECONDS_30 = 30
+FETCH_TABLE_HR_NAME = {
+    "firewall.threat": "Cortex Firewall Threat",
+    "firewall.file_data": "Cortex Firewall File Data"
+}
 
 
 class Client(BaseClient):
@@ -43,14 +47,14 @@ class Client(BaseClient):
         self.use_ssl = use_ssl
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
-        self._get_access_token()
+        self._set_access_token()
 
-    def _get_access_token(self):
+    def _set_access_token(self):
         """
-        Checks if access token exists in the integration context and return it if it exists, if not, a new token
+        Checks if access token exists in the integration context and set it to the object properties, if not, a new token
         is generated and saved in the integration context along with the query api_url and the instance_id
         Returns:
-            The access token from the integration context or from the request.
+            None
         """
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
@@ -60,6 +64,8 @@ class Client(BaseClient):
                 self.access_token = access_token
                 self.api_url = integration_context.get(API_URL_CONST, DEFAULT_API_URL)
                 self.instance_id = integration_context.get(INSTANCE_ID_CONST)
+                return
+        demisto.debug(f'access token time: {valid_until} expired/none. Will call oproxy')
         access_token, api_url, instance_id, refresh_token, expires_in = self._oproxy_authorize()
         updated_integration_context = {
             ACCESS_TOKEN_CONST: access_token,
@@ -696,7 +702,9 @@ def get_encrypted(auth_id: str, key: str) -> str:
 
 def prepare_fetch_incidents_query(fetch_timestamp: str,
                                   fetch_severity: list,
+                                  fetch_table: str,
                                   fetch_subtype: list,
+                                  fetch_fields: str,
                                   fetch_limit: str) -> str:
     """
     Prepares the SQL query for fetch incidents command
@@ -705,11 +713,13 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
         fetch_timestamp: The date from which threat logs should be queried
         fetch_severity: Severity associated with the incident.
         fetch_subtype: Identifies the log subtype.
+        fetch_table: Identifies the fetch type.
+        fetch_fields: Fields to fetch fro the table.
 
     Returns:
         SQL query that matches the arguments
     """
-    query = 'SELECT * FROM `firewall.threat` '  # guardrails-disable-line
+    query = f'SELECT {fetch_fields} FROM `{fetch_table}` '  # guardrails-disable-line
     query += f'WHERE time_generated Between TIMESTAMP("{fetch_timestamp}") ' \
              f'AND CURRENT_TIMESTAMP'
     if fetch_subtype and 'all' not in fetch_subtype:
@@ -722,11 +732,11 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
     return query
 
 
-def convert_log_to_incident(log: dict) -> dict:
+def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
     time_generated = log.get('time_generated', 0)
     occurred = human_readable_time_from_epoch_time(time_generated, utc_time=True)
     incident = {
-        'name': 'Cortex Firewall Threat',
+        'name': FETCH_TABLE_HR_NAME[fetch_table],
         'rawJSON': json.dumps(log, ensure_ascii=False),
         'occurred': occurred
     }
@@ -736,8 +746,12 @@ def convert_log_to_incident(log: dict) -> dict:
 ''' COMMANDS FUNCTIONS '''
 
 
-def test_module(client: Client):
-    query = 'SELECT * FROM `firewall.traffic` limit 1'
+def test_module(client: Client, fetch_table, fetch_fields, is_fetch):
+    if not is_fetch:
+        # fetch params not to be tested (won't be used)
+        fetch_fields = '*'
+        fetch_table = 'firewall.traffic'
+    query = f'SELECT {fetch_fields} FROM `{fetch_table}` limit 1'
     client.query_loggings(query)
     return_outputs('ok')
 
@@ -942,7 +956,9 @@ def build_query(args, table_name):
 def fetch_incidents(client: Client,
                     first_fetch_timestamp: str,
                     fetch_severity: list,
+                    fetch_table: str,
                     fetch_subtype: list,
+                    fetch_fields: str,
                     fetch_limit: str,
                     last_run: dict) -> Tuple[Dict[str, str], list]:
     last_fetched_event_timestamp = last_run.get('lastRun')
@@ -952,13 +968,14 @@ def fetch_incidents(client: Client,
     else:
         last_fetched_event_timestamp, _ = parse_date_range(first_fetch_timestamp)
         last_fetched_event_timestamp = last_fetched_event_timestamp.replace(microsecond=0)
-    query = prepare_fetch_incidents_query(last_fetched_event_timestamp, fetch_severity, fetch_subtype, fetch_limit)
+    query = prepare_fetch_incidents_query(last_fetched_event_timestamp, fetch_severity, fetch_table,
+                                          fetch_subtype, fetch_fields, fetch_limit)
     demisto.debug('Query being fetched: {}'.format(query))
     records, _ = client.query_loggings(query)
     if not records:
         return {'lastRun': str(last_fetched_event_timestamp)}, []
 
-    incidents = [convert_log_to_incident(record) for record in records]
+    incidents = [convert_log_to_incident(record, fetch_table) for record in records]
     max_fetched_event_timestamp = max(records, key=lambda record: record.get('time_generated', 0)).get('time_generated',
                                                                                                        0)
     next_run = {'lastRun': human_readable_time_from_epoch_time(max_fetched_event_timestamp)}
@@ -984,11 +1001,14 @@ def main():
     proxy = params.get('proxy', False)
     client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
     args = demisto.args()
+    fetch_table = params.get('fetch_table')
+    fetch_fields = params.get('fetch_fields') or '*'
+
     command = demisto.command()
     LOG(f'command is {command}')
     try:
         if command == 'test-module':
-            test_module(client)
+            test_module(client, fetch_table, fetch_fields, params.get('isFetch'))
         elif command == 'cdl-query-logs':
             return_outputs(*query_logs_command(args, client))
         elif command == 'cdl-get-critical-threat-logs':
@@ -1008,13 +1028,17 @@ def main():
         elif command == 'fetch-incidents':
             first_fetch_timestamp = params.get('first_fetch_timestamp', '24 hours').strip()
             fetch_severity = params.get('firewall_severity')
+            fetch_table = params.get('fetch_table')
+            fetch_fields = params.get('fetch_fields') or '*'
             fetch_subtype = params.get('firewall_subtype')
             fetch_limit = params.get('limit')
             last_run = demisto.getLastRun()
             next_run, incidents = fetch_incidents(client,
                                                   first_fetch_timestamp,
                                                   fetch_severity,
+                                                  fetch_table,
                                                   fetch_subtype,
+                                                  fetch_fields,
                                                   fetch_limit,
                                                   last_run)
             demisto.setLastRun(next_run)
