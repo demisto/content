@@ -3867,7 +3867,12 @@ if 'requests' in sys.modules:
                             raise DemistoException(err_msg, res=error_entry)
                         except ValueError:
                             err_msg += '\n{}'.format(res.text)
-                            raise DemistoException(err_msg, res=res.text)
+                            try:
+                                error_entry = json.loads(res.text)
+                                raise DemistoException(err_msg, res=error_entry)
+                            except ValueError:
+                                # couldn't parse the response json, sending only the error message
+                                raise DemistoException(err_msg)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
