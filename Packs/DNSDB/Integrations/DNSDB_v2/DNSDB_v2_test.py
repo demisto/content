@@ -27,14 +27,14 @@ class TestClient(object):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, apikey)
 
         requests_mock.get(
-            '{server}/lookup/rate_limit?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/rate_limit?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
             json={},
             request_headers={
-                'Accept': 'application/json',
+                'Accept': 'application/x-ndjson',
                 'X-API-Key': apikey,
             })
 
@@ -44,7 +44,7 @@ class TestClient(object):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
 
         requests_mock.get(
-            '{server}/lookup/rate_limit?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/rate_limit?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
@@ -65,7 +65,7 @@ class TestClient(object):
         name = 'farsightsecurity.com'
 
         requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rrset',
                 type='name',
@@ -73,7 +73,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            text='\n'.join(records))
+            text=_saf_wrap(records))
 
         for rrset in c.lookup_rrset(name):
             assert rrset == json.loads(records[0])
@@ -86,7 +86,7 @@ class TestClient(object):
         name = 'farsightsecurity.com'
 
         requests_mock.get(
-            '{server}/summarize/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/summarize/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rrset',
                 type='name',
@@ -94,7 +94,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            text=record)
+            text=_saf_wrap([record]))
 
         rrset = c.summarize_rrset(name)
         assert rrset == json.loads(record)
@@ -104,7 +104,7 @@ class TestClient(object):
         name = 'farsightsecurity.com'
 
         requests_mock.get(
-            '{server}/summarize/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/summarize/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rrset',
                 type='name',
@@ -133,7 +133,7 @@ class TestClient(object):
         rrtype = 'A'
 
         requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{name}/{rrtype}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{name}/{rrtype}?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rrset',
                 type='name',
@@ -142,7 +142,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            text='\n'.join(records))
+            text=_saf_wrap(records))
 
         for rrset in c.lookup_rrset(name, rrtype=rrtype):
             assert rrset == json.loads(records[0])
@@ -172,7 +172,7 @@ class TestClient(object):
         bailiwick = 'com'
 
         requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{name}/{rrtype}/{bailiwick}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{name}/{rrtype}/{bailiwick}?swclient={swclient}&version={version}'.format(  # noqa: E501
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rrset',
                 type='name',
@@ -182,7 +182,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            text='\n'.join(records))
+            text=_saf_wrap(records))
 
         for rrset in c.lookup_rrset(name, bailiwick=bailiwick):
             assert rrset == json.loads(records[0])
@@ -213,7 +213,7 @@ class TestClient(object):
         bailiwick = 'com'
 
         requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{name}/{rrtype}/{bailiwick}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{name}/{rrtype}/{bailiwick}?swclient={swclient}&version={version}'.format(  # noqa: E501
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rrset',
                 type='name',
@@ -223,7 +223,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            text='\n'.join(records))
+            text=_saf_wrap(records))
 
         for rrset in c.lookup_rrset(name, rrtype=rrtype, bailiwick=bailiwick):
             assert rrset == json.loads(records[0])
@@ -245,7 +245,7 @@ class TestClient(object):
         name = 'farsightsecurity.com'
 
         requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rdata',
                 type='name',
@@ -253,7 +253,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            text='\n'.join(records))
+            text=_saf_wrap(records))
 
         for rrset in c.lookup_rdata_name(name):
             assert rrset == json.loads(records[0])
@@ -266,7 +266,7 @@ class TestClient(object):
         name = 'farsightsecurity.com'
 
         requests_mock.get(
-            '{server}/summarize/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/summarize/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rdata',
                 type='name',
@@ -274,7 +274,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            text=record)
+            text=_saf_wrap([record]))
 
         rrset = c.summarize_rdata_name(name)
         assert rrset == json.loads(record)
@@ -284,7 +284,7 @@ class TestClient(object):
         name = 'farsightsecurity.com'
 
         requests_mock.get(
-            '{server}/summarize/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/summarize/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rdata',
                 type='name',
@@ -313,7 +313,7 @@ class TestClient(object):
         rrtype = 'PTR'
 
         requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{name}/{rrtype}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{name}/{rrtype}?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rdata',
                 type='name',
@@ -322,7 +322,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            text='\n'.join(records))
+            text=_saf_wrap(records))
 
         for rrset in c.lookup_rdata_name(name, rrtype=rrtype):
             assert rrset == json.loads(records[0])
@@ -346,7 +346,7 @@ class TestClient(object):
         ip = '66.160.140.81'
 
         requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{ip}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{ip}?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rdata',
                 type='ip',
@@ -354,7 +354,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            text='\n'.join(records))
+            text=_saf_wrap(records))
 
         for rrset in c.lookup_rdata_ip(ip):
             assert rrset == json.loads(records[0])
@@ -367,7 +367,7 @@ class TestClient(object):
         ip = '66.160.140.81'
 
         requests_mock.get(
-            '{server}/summarize/{mode}/{type}/{ip}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/summarize/{mode}/{type}/{ip}?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rdata',
                 type='ip',
@@ -375,7 +375,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            text=record)
+            text=_saf_wrap([record]))
 
         rrset = c.summarize_rdata_ip(ip)
         assert rrset == json.loads(record)
@@ -385,7 +385,7 @@ class TestClient(object):
         ip = '66.160.140.81'
 
         requests_mock.get(
-            '{server}/summarize/{mode}/{type}/{ip}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/summarize/{mode}/{type}/{ip}?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rdata',
                 type='ip',
@@ -398,30 +398,12 @@ class TestClient(object):
         with pytest.raises(DNSDB.QueryError):
             c.summarize_rdata_ip(ip)
 
-    def test_404(self, requests_mock):
-        c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
-        name = 'farsightsecurity.com'
-
-        requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
-                server=DNSDB.DEFAULT_DNSDB_SERVER,
-                mode='rrset',
-                type='name',
-                name=name,
-                swclient=DNSDB.SWCLIENT,
-                version=DNSDB.VERSION,
-            ),
-            status_code=404, text='error')
-
-        for rrset in c.lookup_rrset(name):
-            pytest.fail('received {0}'.format(rrset))  # pragma: no cover
-
     def test_500(self, requests_mock):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         name = 'farsightsecurity.com'
 
         requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{name}?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rrset',
                 type='name',
@@ -441,7 +423,7 @@ class TestClient(object):
         limit = 100
 
         requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{name}?limit={limit}&swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{name}?limit={limit}&swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rrset',
                 type='name',
@@ -450,7 +432,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            status_code=404)
+            text=_saf_wrap([]))
 
         for rrset in c.lookup_rrset(name, limit=limit):
             pytest.fail('received {0}'.format(rrset))  # pragma: no cover
@@ -473,7 +455,7 @@ class TestClient(object):
         aggr = 100
 
         requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{name}?aggr={aggr}&swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{name}?aggr={aggr}&swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rrset',
                 type='name',
@@ -482,7 +464,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            status_code=404)
+            text=_saf_wrap([]))
 
         for rrset in c.lookup_rrset(name, aggr=aggr):
             pytest.fail('received {0}'.format(rrset))  # pragma: no cover
@@ -493,7 +475,7 @@ class TestClient(object):
         offset = 100
 
         requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{name}?offset={offset}&swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{name}?offset={offset}&swclient={swclient}&version={version}'.format(  # noqa: E501
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rrset',
                 type='name',
@@ -502,7 +484,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            status_code=404)
+            text=_saf_wrap([]))
 
         for rrset in c.lookup_rrset(name, offset=offset):
             pytest.fail('received {0}'.format(rrset))  # pragma: no cover
@@ -513,7 +495,7 @@ class TestClient(object):
         max_count = 100
 
         requests_mock.get(
-            '{server}/summarize/{mode}/{type}/{name}?max_count={max_count}'
+            '{server}/dnsdb/v2/summarize/{mode}/{type}/{name}?max_count={max_count}'
             '&swclient={swclient}&version={version}'.format(server=DNSDB.DEFAULT_DNSDB_SERVER,
                                                             mode='rrset',
                                                             type='name',
@@ -521,11 +503,11 @@ class TestClient(object):
                                                             max_count=max_count,
                                                             swclient=DNSDB.SWCLIENT,
                                                             version=DNSDB.VERSION),
-            text='{}'
-        )
+            text=_saf_wrap([]))
 
-        for rrset in c.summarize_rrset(name, max_count=max_count):
-            pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+        with pytest.raises(DNSDB.QueryError):
+            for rrset in c.summarize_rrset(name, max_count=max_count):
+                pytest.fail('received {0}'.format(rrset))  # pragma: no cover
 
     @staticmethod
     def _test_time_param(requests_mock, param: str):
@@ -534,7 +516,7 @@ class TestClient(object):
         when = time.time()
 
         requests_mock.get(
-            '{server}/lookup/{mode}/{type}/{name}?{param}={when}&swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{name}?{param}={when}&swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 mode='rrset',
                 type='name',
@@ -544,7 +526,7 @@ class TestClient(object):
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
             ),
-            status_code=404)
+            text=_saf_wrap([]))
 
         for rrset in c.lookup_rrset(name, **{param: when}):
             pytest.fail('received {0}'.format(rrset))  # pragma: no cover
@@ -710,10 +692,10 @@ class TestRDataCommand:
             'value': 'ns5.dnsmadeeasy.com',
             'limit': '10',
         }
-        input = textwrap.dedent('''\
-            {"count":1078,"zone_time_first":1374250920,"zone_time_last":1468253883,"rrname":"farsightsecurity.com.","rrtype":"NS","rdata":"ns5.dnsmadeeasy.com."}
-            {"count":706617,"time_first":1374096380,"time_last":1468334926,"rrname":"farsightsecurity.com.","rrtype":"NS","rdata":"ns5.dnsmadeeasy.com."}
-            ''')
+        input = [
+            '{"count":1078,"zone_time_first":1374250920,"zone_time_last":1468253883,"rrname":"farsightsecurity.com.","rrtype":"NS","rdata":"ns5.dnsmadeeasy.com."}',  # noqa: E501
+            '{"count":706617,"time_first":1374096380,"time_last":1468334926,"rrname":"farsightsecurity.com.","rrtype":"NS","rdata":"ns5.dnsmadeeasy.com."}',  # noqa: E501
+        ]
 
         expected_readable = textwrap.dedent('''\
             ### Farsight DNSDB Lookup
@@ -721,7 +703,7 @@ class TestRDataCommand:
             |---|---|---|---|---|---|---|
             | farsightsecurity.com | NS | ns5.dnsmadeeasy.com. | 1078 | 2013-07-19T16:22:00Z | 2016-07-11T16:18:03Z | True |
             | farsightsecurity.com | NS | ns5.dnsmadeeasy.com. | 706617 | 2013-07-17T21:26:20Z | 2016-07-12T14:48:46Z | False |
-            ''')
+            ''')  # noqa: E501
 
         expected_output_prefix = 'DNSDB.Record'
         expected_outputs = [
@@ -753,10 +735,10 @@ class TestRDataCommand:
             'value': '104.244.13.104',
             'limit': '10',
         }
-        input = textwrap.dedent('''\
-            {"count":24,"time_first":1433550785,"time_last":1468312116,"rrname":"www.farsighsecurity.com.","rrtype":"A","rdata":"104.244.13.104"}
-            {"count":9429,"zone_time_first":1427897872,"zone_time_last":1468333042,"rrname":"farsightsecurity.com.","rrtype":"A","rdata":"104.244.13.104"}
-                ''')
+        input = [
+            '{"count":24,"time_first":1433550785,"time_last":1468312116,"rrname":"www.farsighsecurity.com.","rrtype":"A","rdata":"104.244.13.104"}',  # noqa: E501
+            '{"count":9429,"zone_time_first":1427897872,"zone_time_last":1468333042,"rrname":"farsightsecurity.com.","rrtype":"A","rdata":"104.244.13.104"}'  # noqa: E501
+        ]
 
         expected_readable = textwrap.dedent('''\
             ### Farsight DNSDB Lookup
@@ -789,13 +771,13 @@ class TestRDataCommand:
         self._run_test(requests_mock, args, input, expected_readable, expected_prefix, expected_outputs)
 
     @staticmethod
-    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str,
+    def _run_test(requests_mock, args: dict, input: list, expected_readable: str, expected_output_prefix: str,
                   expected_outputs: list):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
-        requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/lookup/rdata/{args["type"]}/{args["value"]}'
+        requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/lookup/rdata/{args["type"]}/{args["value"]}'
                           f'?limit={args["limit"]}'
                           f'&swclient=demisto-integration&version=v2.0',
-                          text=input)
+                          text=_saf_wrap(input))
 
         for v in args.values():
             assert isinstance(v, str)
@@ -815,7 +797,9 @@ class TestSummarizeRDataCommand:
             'limit': '2',
             'max_count': '5000',
         }
-        input = {"count": 1127, "num_results": 2, "time_first": 1557859313, "time_last": 1560537333}
+        input = [
+            '{"count": 1127, "num_results": 2, "time_first": 1557859313, "time_last": 1560537333}',
+        ]
 
         expected_readable = textwrap.dedent('''\
                 ### Farsight DNSDB Summarize
@@ -841,7 +825,9 @@ class TestSummarizeRDataCommand:
             'limit': '2',
             'max_count': '5000',
         }
-        input = {"count": 1127, "num_results": 2, "time_first": 1557859313, "time_last": 1560537333}
+        input = [
+            '{"count": 1127, "num_results": 2, "time_first": 1557859313, "time_last": 1560537333}',
+        ]
 
         expected_readable = textwrap.dedent('''\
                 ### Farsight DNSDB Summarize
@@ -868,7 +854,9 @@ class TestSummarizeRDataCommand:
             'limit': '10',
             'max_count': '50',
         }
-        input = {"count": 1127, "num_results": 2, "zone_time_first": 1557859313, "zone_time_last": 1560537333}
+        input = [
+            '{"count": 1127, "num_results": 2, "zone_time_first": 1557859313, "zone_time_last": 1560537333}',
+        ]
 
         expected_readable = textwrap.dedent('''\
                         ### Farsight DNSDB Summarize
@@ -892,11 +880,11 @@ class TestSummarizeRDataCommand:
     def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str,
                   expected_outputs: dict):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
-        requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/summarize/rdata/{args["type"]}/{args["value"]}'
+        requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/summarize/rdata/{args["type"]}/{args["value"]}'
                           f'?limit={args["limit"]}'
                           f'&max_count={args["max_count"]}'
                           f'&swclient=demisto-integration&version=v2.0',
-                          json=input)
+                          text=_saf_wrap(input))
 
         for v in args.values():
             assert isinstance(v, str)
@@ -914,7 +902,7 @@ class TestRRSetCommand:
             'owner_name': '*.farsightsecurity.com',
             'limit': '10',
         }
-        input = ''
+        input = []
         expected_readable = textwrap.dedent('''\
                     ### Farsight DNSDB Lookup
                     **No entries.**
@@ -929,10 +917,10 @@ class TestRRSetCommand:
             'owner_name': '*.farsightsecurity.com',
             'limit': '10',
         }
-        input = textwrap.dedent('''\
-        {"count":5059,"time_first":1380139330,"time_last":1427881899,"rrname":"www.farsightsecurity.com.","rrtype":"A","bailiwick":"farsightsecurity.com.","rdata":["66.160.140.81"]}
-        {"count":17381,"zone_time_first":1427893644,"zone_time_last":1468329272,"rrname":"farsightsecurity.com.","rrtype":"A","bailiwick":"com.","rdata":["104.244.13.104"]}
-        ''')
+        input = [
+            '{"count":5059,"time_first":1380139330,"time_last":1427881899,"rrname":"www.farsightsecurity.com.","rrtype":"A","bailiwick":"farsightsecurity.com.","rdata":["66.160.140.81"]}',  # noqa: E501
+            '{"count":17381,"zone_time_first":1427893644,"zone_time_last":1468329272,"rrname":"farsightsecurity.com.","rrtype":"A","bailiwick":"com.","rdata":["104.244.13.104"]}',  # noqa: E501
+        ]
 
         expected_readable = textwrap.dedent('''\
         ### Farsight DNSDB Lookup
@@ -969,13 +957,13 @@ class TestRRSetCommand:
         self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
 
     @staticmethod
-    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str,
+    def _run_test(requests_mock, args: dict, input: list, expected_readable: str, expected_output_prefix: str,
                   expected_outputs: list):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
-        requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/lookup/rrset/name/{DNSDB.quote(args["owner_name"])}'
+        requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/lookup/rrset/name/{DNSDB.quote(args["owner_name"])}'
                           f'?limit={args["limit"]}'
                           f'&swclient=demisto-integration&version=v2.0',
-                          text=input)
+                          text=_saf_wrap(input))
 
         for v in args.values():
             assert isinstance(v, str)
@@ -994,7 +982,9 @@ class TestSummarizeRRSetCommand:
             'limit': '2',
             'max_count': '5000',
         }
-        input = {"count": 1127, "num_results": 2, "time_first": 1557859313, "time_last": 1560537333}
+        input = [
+            '{"count": 1127, "num_results": 2, "time_first": 1557859313, "time_last": 1560537333}',
+        ]
 
         expected_readable = textwrap.dedent('''\
                 ### Farsight DNSDB Summarize
@@ -1020,7 +1010,9 @@ class TestSummarizeRRSetCommand:
             'limit': '10',
             'max_count': '50',
         }
-        input = {"count": 1127, "num_results": 2, "zone_time_first": 1557859313, "zone_time_last": 1560537333}
+        input = [
+            '{"count": 1127, "num_results": 2, "zone_time_first": 1557859313, "zone_time_last": 1560537333}',
+        ]
 
         expected_readable = textwrap.dedent('''\
                         ### Farsight DNSDB Summarize
@@ -1041,14 +1033,14 @@ class TestSummarizeRRSetCommand:
         self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
 
     @staticmethod
-    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str,
+    def _run_test(requests_mock, args: dict, input: list, expected_readable: str, expected_output_prefix: str,
                   expected_outputs: dict):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
-        requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/summarize/rrset/name/{args["owner_name"]}'
+        requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/summarize/rrset/name/{args["owner_name"]}'
                           f'?limit={args["limit"]}'
                           f'&max_count={args["max_count"]}'
                           f'&swclient=demisto-integration&version=v2.0',
-                          json=input)
+                          text=_saf_wrap(input))
 
         for v in args.values():
             assert isinstance(v, str)
@@ -1112,7 +1104,7 @@ class TestRateLimitCommand:
     def _run_test(requests_mock, input: dict, expected_readable: str):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(
-            '{server}/lookup/rate_limit?swclient={swclient}&version={version}'.format(
+            '{server}/dnsdb/v2/rate_limit?swclient={swclient}&version={version}'.format(
                 server=DNSDB.DEFAULT_DNSDB_SERVER,
                 swclient=DNSDB.SWCLIENT,
                 version=DNSDB.VERSION,
@@ -1144,3 +1136,9 @@ class TestParseRData:
 
     def test_idna_email(self):
         assert DNSDB.parse_rdata("test@xn--frsight-exa.com.") == "test@fårsight.com."
+
+
+def _saf_wrap(records):
+    return '\n'.join(
+        ['{"cond":"begin"}'] + [f'{{"obj":{r}}}' for r in records] + ['{"cond":"succeeded"}']
+    )
