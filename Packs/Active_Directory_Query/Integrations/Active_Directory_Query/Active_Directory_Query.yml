@@ -547,18 +547,6 @@ script:
         required: true
         secret: false
         description: ""
-      - default: false
-        isArray: false
-        name: attribute
-        required: false
-        secret: false
-        description: ""
-      - default: false
-        isArray: false
-        name: value
-        required: false
-        secret: false
-        description: ""
       - auto: PREDEFINED
         default: false
         defaultValue: 'true'
