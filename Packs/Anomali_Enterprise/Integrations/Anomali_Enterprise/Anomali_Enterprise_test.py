@@ -14,9 +14,9 @@ def test_domain_command(mocker):
 
     """
     client = Client(server_url='test', username='test', password='1234', verify=True, proxy=False)
-    mocker.patch.object(client, 'domain_request', return_value=
-    {'data': {'test.com': {'malware_family': '', 'probability': 0}}, 'result': 'success'})
-    command_results = domain_command(client,  args={'domain': 'test.com'})
+    return_data = {'data': {'test.com': {'malware_family': '', 'probability': 0}}, 'result': 'success'}
+    mocker.patch.object(client, 'domain_request', return_value=return_data)
+    command_results = domain_command(client, args={'domain': 'test.com'})
     output = command_results.to_context().get('EntryContext', {})
     dbot_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
                ' val.Vendor == obj.Vendor && val.Type == obj.Type)'

@@ -46,7 +46,7 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix='/api/v1/mars/forensic', data=data, params=params)
         return response
 
-    def domain_request(self, domain: str) -> dict:
+    def domain_request(self, domain: List[str]) -> dict:
         """Retrieve information regarding a domain.
         Args:
             domain: the domain name to search
@@ -82,7 +82,7 @@ def start_search_job(client: Client, args: dict) -> CommandResults:
     """
     from_ = str(args.get('from'))
     to_ = str(args.get('to'))
-    indicators = str(args.get('indicators'))
+    indicators = argToList(args.get('indicators'))
     response = client.start_search_job_request(from_, to_, indicators)
     search_data = response.get('data', {})
     search_data.update({'Status': 'In Progress'})
@@ -129,7 +129,7 @@ def dga_domain_status(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    domains = argToList(args.get('domains'))
+    domains = argToList(str(args.get('domains')))
     response = client.domain_request(domains)
     domains_data = response.get('data', {})
     outputs = []
@@ -204,8 +204,8 @@ def calculate_dbot_score(domain_data: dict) -> int:
         DBot Score.
     """
     score = 0
-    if domain_data.get('malware_family'):
-        if domain_data.get('prob') > 0.6:
+    if domain_data.get('malware_family', {}):
+        if float(domain_data.get('prob')) > 0.6:
             score = 3
         else:
             score = 2
@@ -228,7 +228,7 @@ def main():
 
     try:
         client = Client(server_url=server_url,username=username, password=password, verify=verify, proxy=proxy)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands: Dict[str, Callable[[Client, Dict[Any, Any]], CommandResults]] = {
             'anomali-enterprise-retro-forensic-search': start_search_job,
             'anomali-enterprise-retro-forensic-search-results': get_search_job_result,
             'anomali-enterprise-dga-domain-status': dga_domain_status,
