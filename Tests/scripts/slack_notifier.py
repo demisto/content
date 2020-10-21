@@ -15,8 +15,10 @@ UNITTESTS_TYPE = 'unittests'
 TEST_PLAYBOOK_TYPE = 'test_playbooks'
 SDK_UNITTESTS_TYPE = 'sdk_unittests'
 SDK_FAILED_STEPS_TYPE = 'sdk_faild_steps'
+SDK_RUN_AGAINST_FAILED_STEPS_TYPE = 'sdk_run_against_failed_steps'
 BUCKET_UPLOAD_TYPE = 'bucket_upload'
 SDK_BUILD_TITLE = 'SDK Nightly Build'
+SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
 BUCKET_UPLOAD_BUILD_TITLE = 'Upload to Production Bucket'
 
 
@@ -241,6 +243,8 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         elif test_type == BUCKET_UPLOAD_TYPE:
             print_color('Starting Slack notifications about upload to production bucket build', LOG_COLORS.GREEN)
             content_team_attachments = get_attachments_for_all_steps(build_url, build_title=BUCKET_UPLOAD_BUILD_TITLE)
+        elif test_type == SDK_RUN_AGAINST_FAILED_STEPS_TYPE:
+            content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_XSOAR_BUILD_TITLE)
         else:
             raise NotImplementedError('The test_type parameter must be only \'test_playbooks\' or \'unittests\'')
         print('Content team attachments:\n', content_team_attachments)
@@ -262,7 +266,8 @@ def main():
                        options.slack,
                        options.test_type,
                        env_results_file_name=options.env_results_file_name)
-    elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, BUCKET_UPLOAD_TYPE):
+    elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, BUCKET_UPLOAD_TYPE,
+                               SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
         slack_notifier(options.url, options.slack, options.test_type)
     else:
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)

@@ -10,7 +10,7 @@ def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
                                           '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
-                                          ' AMI environment.')
+                                          ' AMI environment.', default="Demisto Marketplace")
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
