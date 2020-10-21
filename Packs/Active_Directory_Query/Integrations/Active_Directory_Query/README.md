@@ -759,7 +759,7 @@ Used in the IAM premium pack.
 
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br>status: PROVISIONED<br>created: 2020-10-18T17:54:30.000Z<br>activated: 2020-10-18T17:54:30.000Z<br>statusChanged: 2020-10-18T17:54:30.000Z<br>lastLogin: null<br>lastUpdated: 2020-10-18T17:54:30.000Z<br>passwordChanged: null<br>type: {"id": "oty8zfz6plq7b0r830h7"}<br>profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br>credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
+| Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
 
 
 
@@ -797,7 +797,7 @@ Used in the IAM premium pack.
 
 #### Command Example
 ```
-!update-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"firstname\":\"Demisto-Test\"}
+!update-user user-profile={\"email\":\"testdemisto22@paloaltonetworks.com\", \"name\":\"testdemisto2\"}
 ```
 
 #### Human Readable Output
@@ -805,7 +805,7 @@ Used in the IAM premium pack.
 ### Update User Results
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br>status: PROVISIONED<br>created: 2020-10-18T17:54:30.000Z<br>activated: 2020-10-18T17:54:30.000Z<br>statusChanged: 2020-10-18T17:54:30.000Z<br>lastLogin: null<br>lastUpdated: 2020-10-18T17:54:30.000Z<br>passwordChanged: null<br>type: {"id": "oty8zfz6plq7b0r830h7"}<br>profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br>credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
+| Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto22@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
 
 
 
@@ -851,9 +851,7 @@ Used in the IAM premium pack.
 ### Get User Results
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br>status: PROVISIONED<br>created: 2020-10-18T17:54:30.000Z<br>activated: 2020-10-18T17:54:30.000Z<br>statusChanged: 2020-10-18T17:54:30.000Z<br>lastLogin: null<br>lastUpdated: 2020-10-18T17:54:30.000Z<br>passwordChanged: null<br>type: {"id": "oty8zfz6plq7b0r830h7"}<br>profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br>credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
-
-
+| Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
 
 
 ### 22. Enable an AD user
@@ -895,7 +893,7 @@ Used in the IAM premium pack.
 ### Enable User Results
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br>status: PROVISIONED<br>created: 2020-10-18T17:54:30.000Z<br>activated: 2020-10-18T17:54:30.000Z<br>statusChanged: 2020-10-18T17:54:30.000Z<br>lastLogin: null<br>lastUpdated: 2020-10-18T17:54:30.000Z<br>passwordChanged: null<br>type: {"id": "oty8zfz6plq7b0r830h7"}<br>profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br>credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
+| Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
 
 
 ### 23. Disable an AD user
@@ -938,7 +936,7 @@ Used in the IAM premium pack.
 ### Disable User Results
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Active Directory Query | IAM_instance_1 | true | false |  | testdemisto2| testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br>status: PROVISIONED<br>created: 2020-10-18T17:54:30.000Z<br>activated: 2020-10-18T17:54:30.000Z<br>statusChanged: 2020-10-18T17:54:30.000Z<br>lastLogin: null<br>lastUpdated: 2020-10-18T17:54:30.000Z<br>passwordChanged: null<br>type: {"id": "oty8zfz6plq7b0r830h7"}<br>profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br>credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
+| Active Directory Query | IAM_instance_1 | true | false |  | testdemisto2| testdemisto2@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
 
 
 

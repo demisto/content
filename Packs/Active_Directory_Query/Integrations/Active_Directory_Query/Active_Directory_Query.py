@@ -450,7 +450,6 @@ def get_user_iam(default_base_dn, page_size, args):
 
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-    iam_user_profile.set_command_name(demisto.command().split('-')[0])
     ad_user = iam_user_profile.map_object(mapper_name=OUTGOING_MAPPER)
 
     value = ad_user.get(default_attribute)
@@ -678,7 +677,6 @@ def create_user_iam(default_base_dn, default_page_size, args):
     user_profile_delta = args.get('user-profile-delta')
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-    iam_user_profile.set_command_name(demisto.command().split('-')[0])
     ad_user = iam_user_profile.map_object(mapper_name=OUTGOING_MAPPER, mapping_type='User Profile')
 
     try:
@@ -716,7 +714,6 @@ def update_user_iam(default_base_dn, default_page_size, args):
     user_profile_delta = args.get('user-profile-delta')
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-    iam_user_profile.set_command_name(demisto.command().split('-')[0])
     ad_user = iam_user_profile.map_object(mapper_name=OUTGOING_MAPPER)
 
     try:
@@ -1021,7 +1018,6 @@ def enable_user_iam(default_base_dn, default_page_size, group, args):
     user_profile_delta = args.get('user-profile-delta')
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-    iam_user_profile.set_command_name(demisto.command().split('-')[0])
     ad_user = iam_user_profile.map_object(mapper_name=OUTGOING_MAPPER)
 
     # check it user exists and if it doesn't, create it
@@ -1068,7 +1064,6 @@ def disable_user_iam(default_base_dn, default_page_size, group, args):
     user_profile_delta = args.get('user-profile-delta')
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-    iam_user_profile.set_command_name(demisto.command().split('-')[0])
     ad_user = iam_user_profile.map_object(mapper_name=OUTGOING_MAPPER)
 
     sam_account_name = ad_user.get("samaccountname")
