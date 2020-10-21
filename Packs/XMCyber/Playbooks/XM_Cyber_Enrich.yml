@@ -1,8 +1,9 @@
-id: 08eca619-daae-431f-85c7-f1d558c61c52
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+id: XM Cyber Enrich
+version: -1
 name: XM Cyber Enrich
 starttaskid: "0"
+description: Extracts all IPs in context to see impact on critical assets
+fromversion: 6.0.0
 tasks:
   "0":
     id: "0"
@@ -14,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: start
     nexttasks:
       '#none#':
       - "1"
@@ -343,3 +345,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+ -  No tests
