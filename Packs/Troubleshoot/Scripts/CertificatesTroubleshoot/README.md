@@ -76,11 +76,11 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 | TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.CountryName | The country of the authority that issued the engine custom SSL certificate. | String |
 | TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.EmailAddress | The email address of the authority that issued the engine custom SSL certificate. | String |
 | TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.DomainNameQualifier | The domain name qualifier of the authority that issued the engine custom SSL certificate. | String |
-| TroubleShoot.Engine.SSL/TLS.Certificates.Decode.Extentions.IssuerAlternativeName | Issuer Alternative names. | String |
-| TroubleShoot.Engine.SSL/TLS.Certificates.Decode.Extentions.SubjectAlternativeName | Subject Alternative names. | String |
-| TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore | Representing the beginning of the validity period for the certificate in UTC. | Date |
-| TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidAfter | Representing the end of the validity period for the certificate in UTC. | Date |
-| TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Version| The certificate version. | Number |
+| TroubleShoot.Engine.SSL/TLS.Certificates.Decode.Extentions.IssuerAlternativeName | The alternate names of the issuer. | String |
+| TroubleShoot.Engine.SSL/TLS.Certificates.Decode.Extentions.SubjectAlternativeName | The alternate names of the subject. | String |
+| TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore | The beginning of the validity period for the certificate in UTC format. | Date |
+| TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidAfter | The end of the validity period for the certificate in UTC format. | Date |
+| TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Version| The version of the certificate. | Number |
 | TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Raw | The raw engine custom SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.OrganizationalUnitName | The unit name of the organization that is the holder of the endpoint SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.OrganizationName | The name of the organization that is the holder of the endpoint SSL certificate. | String |
@@ -126,11 +126,11 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.CountryName | The country of the authority that issued the endpoint SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.EmailAddress | The email address of the authority that issued the endpoint SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.DomainNameQualifier | The domain name qualifier of the authority that issued the endpoint SSL certificate. | String |
-| TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.IssuerAlternativeName | Issuer Alternative names. | String |
-| TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.SubjectAlternativeName | Subject Alternative names. | String |
-| TroubleShoot.Endpoint.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore | Representing the beginning of the validity period for the certificate in UTC. | Date |
-| TroubleShoot.Endpoint.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidAfter | Representing the end of the validity period for the certificate in UTC. | Date |
-| TroubleShoot.Endpoint.SSL/TLS.CustomCertificateAuthorities.Decode.Version| The certificate version. | Number |
+| TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.IssuerAlternativeName | The alternate names of the issuer. | String |
+| TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.SubjectAlternativeName | The alternate names of the subject. | String |
+| TroubleShoot.Endpoint.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore | The beginning of the validity period for the certificate in UTC format. | Date |
+| TroubleShoot.Endpoint.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidAfter | The end of the validity period for the certificate in UTC format. | Date |
+| TroubleShoot.Endpoint.SSL/TLS.CustomCertificateAuthorities.Decode.Version| The version of the certificate. | Number |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Raw | The raw endpoint SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Identifier | The endpoint SSL identifier. | String |
 
