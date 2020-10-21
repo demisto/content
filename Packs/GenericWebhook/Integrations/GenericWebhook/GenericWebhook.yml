@@ -16,13 +16,20 @@ configuration:
   name: longRunningPort
   type: 0
   required: true
-- additionalinfo: Use this verification token, given in the Authorization header,
-    to validate an incident creation request from your app.
-  display: Authorization Verification Token
-  hidden: false
-  name: auth_header
+- display: Username
+  name: credentials
   required: false
-  type: 4
+  type: 9
+- display: Certificate
+  additionalinfo: Required for HTTPS, in case not using the server rerouting
+  name: certificate
+  required: false
+  type: 12
+- display: Private Key
+  additionalinfo: Required for HTTPS, in case not using the server rerouting
+  name: key
+  required: false
+  type: 14
 - display: Incident type
   name: incidentType
   type: 13

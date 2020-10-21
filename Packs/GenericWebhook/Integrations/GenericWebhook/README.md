@@ -9,7 +9,10 @@ Generic webhook to be triggered in order to create incident.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | longRunningPort | Listen Port | True |
-| auth_header | Authorization Verification Token | False |
+| username | Username (see [Security](#security) for more details) | False |
+| password | Password (see [Security](#security) for more details) | False |
+| certificate | Certificate (Required for HTTPS, in case not using the server rerouting) | False |
+| key | Private Key (Required for HTTPS, in case not using the server rerouting) | False |
 | incidentType | Incident type | False |
 
 4. Click **Done**.
@@ -22,6 +25,7 @@ You can now trigger the webhook URL: `<CORTEX-XSOAR-URL>/instance/execute/<INTEG
 
 ## Usage
 The Generic Webhook accepts POST HTTP queries, with the following optional fields in the request body:
+
 | **Field** | **Type** | **Description** |
 | --- | --- | --- |
 | name | string | Name of the incident to be created. |
@@ -36,5 +40,10 @@ For example, triggering the webhook using cURL:
 The response will be an array containing an object with the created incident metadata, such as the incident ID.
 
 ## Security
-The ***Authorization Verification Token*** integration parameter allows validation the request received, by verifying the **Authorization** header value equals the value of that parameter.
-
+- To validate an incident request creation, you can the Username/Password integration parameters for one of the following:
+     * Basic authentication
+     * Verification token given in a request header, by setting the username to `_header:<HEADER-NAME>` and the password to be the header value. 
+     
+        For example, if the request include in the `Authorization` header the value `Bearer XXX`, then the username should be set to `_header:Authorization` and the password should be set to `Bearer XXX`.
+    
+- In case you're not using the server rerouting as described above, you can configure an HTTPS server by providing certificate and private key.
