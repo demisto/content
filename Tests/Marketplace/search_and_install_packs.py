@@ -232,7 +232,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
             for pack in packs_to_install:
                 request_data = {
-                    'packs': [pack],
+                    'packs': pack,
                     'ignoreWarnings': True
                 }
                 print(request_data)
@@ -243,7 +243,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                                                body=request_data,
                                                accept='application/json',
                                                _request_timeout=request_timeout))
-
+        print(results)
         for future in concurrent.futures.as_completed(results):
             try:
                 response_data, pack_status, _ = future.result()
