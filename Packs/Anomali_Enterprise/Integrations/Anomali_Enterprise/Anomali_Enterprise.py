@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Callable, List
+from typing import Dict, Callable
 
 import urllib3
 
@@ -30,7 +30,7 @@ class Client(BaseClient):
             Response from API.
         """
         data = json.dumps({'username': self._username, 'password': self._password, 'from': from_, 'to': to_,
-                'indicators': indicators})
+                           'indicators': indicators})
         response = self._http_request(method='POST', url_suffix='/api/v1/mars/forensic', data=data)
         return response
 
@@ -90,7 +90,7 @@ def start_search_job(client: Client, args: dict) -> CommandResults:
         outputs_prefix='AnomaliEnterprise.ForensicSearch',
         outputs_key_field='jobid',
         outputs=response,
-        readable_output=tableToMarkdown(name=f"Forensic Search:", t=search_data, removeNull=True),
+        readable_output=tableToMarkdown(name="Forensic Search:", t=search_data, removeNull=True),
         raw_response=response
     )
 
@@ -114,7 +114,7 @@ def get_search_job_result(client: Client, args: Dict) -> CommandResults:
         outputs_prefix='AnomaliEnterprise.ForensicSearch',
         outputs_key_field='jobid',
         outputs=response,
-        readable_output=tableToMarkdown(name=f"Forensic Results:", t=result_data, removeNull=True),
+        readable_output=tableToMarkdown(name="Forensic Results:", t=result_data, removeNull=True),
         raw_response=response
     )
 
@@ -144,7 +144,7 @@ def dga_domain_status(client: Client, args: dict) -> CommandResults:
         outputs_prefix='AnomaliEnterprise.DGA',
         outputs_key_field='domain',
         outputs=outputs,
-        readable_output=tableToMarkdown(name=f"Domains DGA:", t=outputs, removeNull=True),
+        readable_output=tableToMarkdown(name="Domains DGA:", t=outputs, removeNull=True),
         raw_response=response
     )
 
@@ -185,7 +185,7 @@ def domain_command(client: Client, args: dict) -> CommandResults:
         outputs_prefix='AnomaliEnterprise.DGA',
         outputs_key_field='domain',
         outputs=output,
-        readable_output=tableToMarkdown(name=f"Domains DGA:", t=output, removeNull=True),
+        readable_output=tableToMarkdown(name="Domains DGA:", t=output, removeNull=True),
         indicators=[domain],
         raw_response=response
     )
@@ -227,7 +227,7 @@ def main():
     LOG(f'Command being called in Anomali Enterprise is: {command}')
 
     try:
-        client = Client(server_url=server_url,username=username, password=password, verify=verify, proxy=proxy)
+        client = Client(server_url=server_url, username=username, password=password, verify=verify, proxy=proxy)
         commands: Dict[str, Callable[[Client, Dict[Any, Any]], CommandResults]] = {
             'anomali-enterprise-retro-forensic-search': start_search_job,
             'anomali-enterprise-retro-forensic-search-results': get_search_job_result,
