@@ -2,8 +2,8 @@ commonfields:
   id: UnEscapeURLs
   version: -1
 name: UnEscapeURLs
-script: >-
-  function format_url(input) {
+script: |-
+  function format_url(input, remove_ascii=true) {
       // Check if it is a Microsoft ATP Safe Link
       var atp_link_re = /(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/.*\?url=/;
       if (atp_link_re.test(input)) {
@@ -45,6 +45,12 @@ script: >-
       // Not Proofpoint so just un-escape
       if (v === 0) {
           var url = input.replace(/\[\.\]/g, '.')
+
+          // remove ascii
+          if (remove_ascii === true){
+              url = url.replace(/[^\x00-\x7F]/g, "");
+          }
+
           if (input.startsWith('https') || input.startsWith('hxxps')) {
               //Normalize: 1) [.] --> . 2) hxxps --> https 3) &amp --> & 4) https:\\ --> https://
               url = url.replace(/hxxps/i, 'https').replace(/&amp;/g, '&').replace(/https:\\\\/g, 'https://').replace(/https:\\/g, 'https://')
@@ -100,10 +106,17 @@ script: >-
 
 
   function format_url_list(url_list) {
-      var len = url_list.length;
-      var formatted_urls = new Array(len);
+      var has_more_than_ascii = true
+      var formatted_urls = [];
       url_list.forEach(function(the_url, index) {
-          formatted_urls[index] = format_url(the_url.trim());
+
+          // Check if the URL has non ascii charcters -
+          // if so output the url both with and without the ascii.
+          has_more_than_ascii = /[^\x00-\x7F]/g.test(the_url);
+          if (has_more_than_ascii === true){
+              formatted_urls.push(format_url(the_url.trim(), false));
+          }
+          formatted_urls.push(format_url(the_url.trim()));
       });
       return formatted_urls;
   }
