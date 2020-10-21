@@ -73,7 +73,7 @@ name: WorkdayIAM
 script:
   commands:
   - deprecated: false
-    description: Syncornizes between the workday users and the indicators used in
+    description: Synchronizes between the workday users and the indicators used in
       IAM. Creates an indicator for every workday user. Should be run when starting
       to use the integration, before fetching any incidents.
     execution: false
