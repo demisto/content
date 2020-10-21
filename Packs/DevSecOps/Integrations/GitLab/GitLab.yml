@@ -1,9 +1,10 @@
 category: Utilities
 commonfields:
-  id: LGTM
+  id: GitLab
   version: -1
 configuration:
-- display: Server URL (e.g. https://example.net)
+- defaultvalue: https://gitlab.com
+  display: Server URL (e.g. https://example.net)
   name: url
   required: true
   type: 0
@@ -29,13 +30,13 @@ configuration:
   type: 8
 description: Integration to GitLab API
 display: GitLab
-name: LGTM
+name: GitLab
 script:
   commands:
   - deprecated: false
     execution: false
     name: gitlab-list-projects
-  dockerimage: aymanam/gitlab:latest
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
   longRunning: false

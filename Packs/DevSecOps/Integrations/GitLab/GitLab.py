@@ -1,5 +1,5 @@
 import urllib3
-import gitlab
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
 
@@ -15,32 +15,60 @@ urllib3.disable_warnings()
 
 INTEGRATION_NAME = 'GitLab'
 
+
+'''API Client'''
+
+
+class Client(BaseClient):
+
+    def query(self, suffix, response_type="json", method="GET", body=None):
+        suffix = suffix
+        LOG(f'running request with url= {self._base_url}')
+
+        res = self._http_request(
+            method=method,
+            url_suffix=suffix,
+            resp_type=response_type,
+            data=body
+        )
+        return res
+
+
 '''' Commands '''
 
 
 def test_module(client):
-    client.query(suffix='/')
-    return 'ok'
+    test_result=client.query(suffix='/version')
+    if test_result.get('version'):
+        return "ok"
+    else:
+        return "Test Failed:" + test_result
 
 
-def gitlab_list_projects(gl, args):
-    title = f'{INTEGRATION_NAME} - Projects List'
+def get_project_by_url(client, args):
+    search_query = '/projects/' + args.get('provider') + '/' + args.get('org') + '/' + args.get('name')
+    title = f'{INTEGRATION_NAME} - Project Details'
     raws = []
-    projects_ec = []
-    raw_response = gl.projects.list()
+    project_ec = []
+    raw_response = client.query(search_query)
 
     if raw_response:
         raws.append(raw_response)
-        projects_ec.append(raws)
+        project_ec.append({
+            "id": raws[0]['id'],
+            "name": raws[0]['name'],
+            "url": raws[0]['url'],
+            "languages": raws[0]['languages']
+        })
 
     if not raws:
         return_error(f'{INTEGRATION_NAME} - Could not find any results for given query')
 
     context_entry = {
-        "LGTM": {"Projects": projects_ec}
+        "LGTM": {"Projects": project_ec}
     }
 
-    human_readable = tableToMarkdown(t=context_entry['GitLab']['Projects'], name=title)
+    human_readable = tableToMarkdown(t=context_entry['LGTM']['Projects'], name=title)
     return [human_readable, context_entry, raws]
 
 
@@ -217,46 +245,53 @@ def main():
     """
     params = demisto.params()
     api_key = params.get('apikey')
-    base_url = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url']
+    base_url = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url'] + '/api/v4'
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
-
     try:
-        gl = gitlab.Gitlab(base_url, private_token=api_key)
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            ok_codes=(200, 201, 202, 204),
+            headers={
+                'PRIVATE-TOKEN': api_key,
+                'Content-Type': 'text/plain'
+            },
+        )
 
         if demisto.command() == 'test-module':
-            result = test_module(gl)
+            result = test_module(client)
             return_outputs(result)
 
-        elif demisto.command() == 'gitlab-list-projects':
-            print (gl.projects.list())
-            result = gitlab_list_projects(gl, demisto.args())
+        elif demisto.command() == 'lgtm-get-project-by-url':
+            result = get_project_by_url(client, demisto.args())
             return_outputs(*result)
 
         elif demisto.command() == 'lgtm-get-project-by-id':
-            result = get_project_by_id(gl, demisto.args())
+            result = get_project_by_id(client, demisto.args())
             return_outputs(*result)
 
         elif demisto.command() == 'lgtm-get-project-config':
-            result = get_project_config(gl, demisto.args())
+            result = get_project_config(client, demisto.args())
             return_outputs(*result)
 
         elif demisto.command() == 'lgtm-run-commit-analysis':
-            result = run_commit_analysis(gl, demisto.args())
+            result = run_commit_analysis(client, demisto.args())
             return_outputs(*result)
 
         elif demisto.command() == 'lgtm-get-analysis-status':
-            result = get_analysis_status(gl, demisto.args())
+            result = get_analysis_status(client, demisto.args())
             return_outputs(*result)
 
         elif demisto.command() == 'lgtm-get-alerts-details':
-            result = get_alerts_details(gl, demisto.args())
+            result = get_alerts_details(client, demisto.args())
             return_outputs(*result)
 
         elif demisto.command() == 'lgtm-run-project-query':
-            result = run_project_query(gl, demisto.args())
+            result = run_project_query(client, demisto.args())
             return_outputs(*result)
 
     except Exception as e:
