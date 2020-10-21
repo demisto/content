@@ -369,19 +369,19 @@ def main():
     )
 
     try:
-        if command == 'get-user':
+        if command == 'iam-get-user':
             user_profile = get_user_command(client, args, mapper_in)
 
-        elif command == 'create-user':
+        elif command == 'iam-create-user':
             user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
 
-        elif command == 'update-user':
+        elif command == 'iam-update-user':
             user_profile = update_user_command(client, args, mapper_out, is_update_enabled, is_create_enabled)
 
-        elif command == 'disable-user':
+        elif command == 'iam-disable-user':
             user_profile = disable_user_command(client, args, is_enable_disable_enabled)
 
-        elif command == 'enable-user':
+        elif command == 'iam-enable-user':
             user_profile = enable_user_command(client, args, mapper_out, is_enable_disable_enabled, is_create_enabled)
 
         elif command == 'test-module':

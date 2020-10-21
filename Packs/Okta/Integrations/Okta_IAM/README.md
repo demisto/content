@@ -24,14 +24,14 @@ This integration was integrated and tested with version v1 of Okta.
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### create-user
+### iam-create-user
 ***
 Creates a user.
 
 
 #### Base Command
 
-`create-user`
+`iam-create-user`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -56,7 +56,7 @@ Creates a user.
 
 
 #### Command Example
-```!create-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"lastname\":\"Test\",\"firstname\":\"Demisto\"} using=Okta_IAM```
+```!iam-create-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"lastname\":\"Test\",\"firstname\":\"Demisto\"} using=Okta_IAM```
 
 #### Human Readable Output
 ### Create User Results (Okta IAM)
@@ -66,14 +66,14 @@ Creates a user.
 
 
 
-### update-user
+### iam-update-user
 ***
 Updates an existing user with the data passed in the user-profile argument.
 
 
 #### Base Command
 
-`update-user`
+`iam-update-user`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -99,7 +99,7 @@ Updates an existing user with the data passed in the user-profile argument.
 
 
 #### Command Example
-```!update-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"firstname\":\"Demisto-Test\"}```
+```!iam-update-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"firstname\":\"Demisto-Test\"}```
 
 #### Human Readable Output
 ### Update User Results (Okta IAM)
@@ -109,14 +109,14 @@ Updates an existing user with the data passed in the user-profile argument.
 
 
 
-### get-user
+### iam-get-user
 ***
 Retrieves a single user resource.
 
 
 #### Base Command
 
-`get-user`
+`iam-get-user`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -141,7 +141,7 @@ Retrieves a single user resource.
 
 
 #### Command Example
-```!get-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}```
+```!iam-get-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}```
 
 #### Human Readable Output
 ### Get User Results (Okta IAM)
@@ -152,14 +152,14 @@ Retrieves a single user resource.
 
 
 
-### disable-user
+### iam-disable-user
 ***
 Disable an active user.
 
 
 #### Base Command
 
-`disable-user`
+`iam-disable-user`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -184,7 +184,7 @@ Disable an active user.
 
 
 #### Command Example
-```!disable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}```
+```!iam-disable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}```
 
 #### Human Readable Output
 ### Disable User Results (Okta IAM)
@@ -194,14 +194,14 @@ Disable an active user.
 
 
 
-### enable-user
+### iam-enable-user
 ***
 Enable a deprovisioned user.
 
 
 #### Base Command
 
-`enable-user`
+`iam-enable-user`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -227,7 +227,7 @@ Enable a deprovisioned user.
 
 
 #### Command Example
-```!enable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}```
+```!iam-enable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}```
 
 #### Human Readable Output
 ### Enable User Results (Okta IAM)

@@ -1,4 +1,4 @@
-category: IAM
+category: Identity and Access Management
 commonfields:
   id: Okta IAM
   version: -1
@@ -60,7 +60,7 @@ script:
     deprecated: false
     description: Creates a user.
     execution: true
-    name: create-user
+    name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
       description: If true the employee's status is active, otherwise false.
@@ -114,7 +114,7 @@ script:
     description: Updates an existing user with the data passed in the user-profile
       argument.
     execution: true
-    name: update-user
+    name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
       description: If true the employee's status is active, otherwise false.
@@ -156,7 +156,7 @@ script:
     deprecated: false
     description: Retrieves a single user resource.
     execution: false
-    name: get-user
+    name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
       description: If true the employee's status is active, otherwise false.
@@ -209,7 +209,7 @@ script:
     deprecated: false
     description: Enables a deprovisioned user.
     execution: true
-    name: enable-user
+    name: iam-enable-user
     outputs:
     - contextPath: IAM.Vendor.active
       description: If true the employee's status is active, otherwise false.
@@ -251,7 +251,7 @@ script:
     deprecated: false
     description: Disable an active user.
     execution: true
-    name: disable-user
+    name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
       description: If true the employee's status is active, otherwise false.
