@@ -13,7 +13,7 @@ args:
   required: false
   secret: false
 comment: Exports all certificate-related information from the Python Docker container
-  and decodes it using RFC. It also gets the certificate located in the specified
+  and decodes it using RFC. It also retrieves the certificate located in the specified
   endpoint.
 commonfields:
   id: CertificatesTroubleshoot
@@ -184,21 +184,19 @@ outputs:
     SSL certificate.
   type: String
 - contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.IssuerAlternativeName
-  description: Issuer Alternative names.
+  description: The alternate name of the issuer.
   type: String
 - contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.SubjectAlternativeName
-  description: Subject Alternative names.
+  description: The alternate name of the subject.
   type: String
 - contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore
-  description: Representing the beginning of the validity period for the certificate
-    in UTC.
+  description: The beginning of the validity period for the certificate in UTC format.
   type: Date
 - contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidAfter
-  description: representing the end of the validity period for the certificate in
-    UTC.
+  description: The end of the validity period for the certificate in UTC format.
   type: Date
 - contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Version
-  description: The certificate version.
+  description: The version of the certificate.
   type: Number
 - contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Raw
   description: The raw engine custom SSL certificate.
@@ -352,21 +350,19 @@ outputs:
     SSL certificate.
   type: String
 - contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.IssuerAlternativeName
-  description: Issuer Alternative names.
+  description: The alternate name of the issuer.
   type: String
 - contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.SubjectAlternativeName
-  description: Subject Alternative names.
+  description: The alternate name of the subject.
   type: String
 - contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore
-  description: Representing the beginning of the validity period for the certificate
-    in UTC.
+  description: The beginning of the validity period for the certificate in UTC format.
   type: Date
 - contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidAfter
-  description: representing the end of the validity period for the certificate in
-    UTC.
+  description: The end of the validity period for the certificate in UTC format.
   type: Date
 - contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Version
-  description: The certificate version.
+  description: The version of the certificate.
   type: Number
 - contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Raw
   description: The raw endpoint SSL certificate.
