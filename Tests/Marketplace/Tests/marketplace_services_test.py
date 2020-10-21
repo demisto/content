@@ -1,3 +1,4 @@
+import shutil
 import pytest
 import json
 import os
@@ -283,6 +284,22 @@ class TestHelperFunctions:
         dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
         dummy_pack.is_feed_pack(yaml_context, yaml_type)
         assert dummy_pack.is_feed == is_actually_feed
+
+    def test_remove_unwanted_files(self):
+        """
+           Given:
+               -
+           When:
+               -
+           Then:
+               -
+       """
+        os.mkdir('/Users/mgalitzki/dev/demisto/content/Packs/pack_to_test')
+        os.mkdir('/Users/mgalitzki/dev/demisto/content/Packs/pack_to_test/TestPlaybooks')
+        test_pack = Pack(pack_name="pack_to_test", pack_path="/Users/mgalitzki/dev/demisto/content/Packs/pack_to_test")
+        test_pack.remove_unwanted_files()
+        assert not os.path.isdir('/Users/mgalitzki/dev/demisto/content/Packs/pack_to_test/TestPlaybooks')
+        shutil.rmtree("/Users/mgalitzki/dev/demisto/content/Packs/pack_to_test")
 
 
 class TestVersionSorting:
