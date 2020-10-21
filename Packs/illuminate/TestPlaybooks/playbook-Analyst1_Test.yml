@@ -1,7 +1,8 @@
-id: illuminate Integration Test
+id: Analyst1 Integration Test
 version: -1
-name: illuminate Integration Test
-description: illuminate Integration testplaybook
+name: Analyst1 Integration Test
+description: Analyst1 Integration testplaybook
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -69,10 +70,10 @@ tasks:
       id: 94d880d2-b26d-4ac2-8bf2-a73d795377c2
       version: -1
       name: domain
-      script: illuminate|||domain
+      script: Analyst1|||domain
       type: regular
       iscommand: true
-      brand: illuminate
+      brand: Analyst1
     nexttasks:
       '#none#':
       - "3"
@@ -115,7 +116,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: Illuminate.Domain.ID
+              simple: Analyst1.Domain.ID
             iscontext: true
           right:
             value:
@@ -140,10 +141,10 @@ tasks:
       id: 9427ed8f-67ef-4cc0-8657-bb40a75eda6b
       version: -1
       name: email
-      script: illuminate|||email
+      script: Analyst1|||email
       type: regular
       iscommand: true
-      brand: illuminate
+      brand: Analyst1
     nexttasks:
       '#none#':
       - "5"
@@ -184,7 +185,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: Illuminate.Email.ID
+              simple: Analyst1.Email.ID
             iscontext: true
           right:
             value:
@@ -209,10 +210,10 @@ tasks:
       id: 1adef7ee-d248-45cf-8bd9-aabb9b573eb2
       version: -1
       name: ip
-      script: illuminate|||ip
+      script: Analyst1|||ip
       type: regular
       iscommand: true
-      brand: illuminate
+      brand: Analyst1
     nexttasks:
       '#none#':
       - "7"
@@ -255,7 +256,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: Illuminate.Ip.ID
+              simple: Analyst1.Ip.ID
             iscontext: true
           right:
             value:
@@ -280,11 +281,12 @@ tasks:
       id: 58aceeaf-2628-4eba-833e-69c54ddd97cd
       version: -1
       name: file
-      description: Queries the illuminate REST API and enriches the given file with illuminate indicator data.
-      script: illuminate|||file
+      description: Queries the Analyst1 REST API and enriches the given file with
+        Analyst1 indicator data.
+      script: Analyst1|||file
       type: regular
       iscommand: true
-      brand: illuminate
+      brand: Analyst1
     nexttasks:
       '#none#':
       - "9"
@@ -326,7 +328,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: Illuminate.File.ID
+              simple: Analyst1.File.ID
             iscontext: true
           right:
             value:
@@ -350,8 +352,8 @@ tasks:
     task:
       id: 77190d09-6936-4179-8769-840ee551799c
       version: -1
-      name: illuminate-enrich-string
-      script: '|||illuminate-enrich-string'
+      name: analyst1-enrich-string
+      script: '|||analyst1-enrich-string'
       type: regular
       iscommand: true
       brand: ""
@@ -395,7 +397,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: Illuminate.String.ID
+              simple: Analyst1.String.ID
             iscontext: true
           right:
             value:
@@ -419,8 +421,8 @@ tasks:
     task:
       id: 0c433982-8194-4c33-8d14-980e4efe6e0b
       version: -1
-      name: illuminate-enrich-ipv6
-      script: '|||illuminate-enrich-ipv6'
+      name: analyst1-enrich-ipv6
+      script: '|||analyst1-enrich-ipv6'
       type: regular
       iscommand: true
       brand: ""
@@ -464,7 +466,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: Illuminate.Ipv6.ID
+              simple: Analyst1.Ipv6.ID
             iscontext: true
           right:
             value:
@@ -488,8 +490,8 @@ tasks:
     task:
       id: 9dead863-6d75-4caa-8939-1a42eba5cbc6
       version: -1
-      name: illuminate-enrich-mutex
-      script: '|||illuminate-enrich-mutex'
+      name: analyst1-enrich-mutex
+      script: '|||analyst1-enrich-mutex'
       type: regular
       iscommand: true
       brand: ""
@@ -533,7 +535,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: Illuminate.Mutex.ID
+              simple: Analyst1.Mutex.ID
             iscontext: true
           right:
             value:
@@ -557,8 +559,8 @@ tasks:
     task:
       id: d08547f7-726e-4cff-859e-39b03fe20ff6
       version: -1
-      name: illuminate-enrich-http-request
-      script: '|||illuminate-enrich-http-request'
+      name: analyst1-enrich-http-request
+      script: '|||analyst1-enrich-http-request'
       type: regular
       iscommand: true
       brand: ""
@@ -602,7 +604,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: Illuminate.Httprequest.ID
+              simple: Analyst1.Httprequest.ID
             iscontext: true
           right:
             value:
@@ -627,10 +629,10 @@ tasks:
       id: 50c33870-00a8-49dd-8823-104c0c9909cb
       version: -1
       name: url
-      script: illuminate|||url
+      script: Analyst1|||url
       type: regular
       iscommand: true
-      brand: illuminate
+      brand: Analyst1
     nexttasks:
       '#none#':
       - "19"
@@ -671,7 +673,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: Illuminate.Url.ID
+              simple: Analyst1.Url.ID
             iscontext: true
           right:
             value:
@@ -726,4 +728,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
