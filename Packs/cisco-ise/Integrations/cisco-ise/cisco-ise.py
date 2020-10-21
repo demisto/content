@@ -6,7 +6,7 @@ import requests
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
+print('hello')
 ''' GLOBAL VARS '''
 
 BASE_URL = re.sub(r"/+$", "", demisto.params().get('serverURL'))
