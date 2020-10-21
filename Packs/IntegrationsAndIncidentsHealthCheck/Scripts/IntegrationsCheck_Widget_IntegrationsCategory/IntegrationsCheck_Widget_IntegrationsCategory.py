@@ -42,15 +42,13 @@ def main():
         data = parse_data(list_content)
 
     else:
-        data = {
-            {
+        data = [{
             "data": [
                 0
             ],
             "name": "N\A",
             "color": "#00CD33"
-        },
-    }
+        }]
 
     demisto.results(json.dumps(data))
 
