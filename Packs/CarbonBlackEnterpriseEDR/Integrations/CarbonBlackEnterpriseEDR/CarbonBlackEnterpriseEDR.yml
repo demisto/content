@@ -1574,7 +1574,7 @@ script:
           required: false
           secret: false
         - default: false
-          description: The maximum number of rows to return.
+          description: The maximum number of rows to return. deafult is 20.
           isArray: false
           name: limit
           required: false
@@ -1610,7 +1610,7 @@ script:
           required: false
           secret: false
         - default: false
-          description: The maximum number of rows to return.
+          description: The maximum number of rows to return. The deafult is 20.
           isArray: false
           name: limit
           required: false
@@ -1733,7 +1733,7 @@ script:
           type: Number
         - contextPath: CarbonBlackEEDR.SearchProcess.results.ingress_time
           description: Unknown
-          type: Unknown
+          type: Date
         - contextPath: CarbonBlackEEDR.SearchProcess.results.legacy
           description: True if process document came from the legacy data stream (deprecated, use enriched).
           type: Boolean
