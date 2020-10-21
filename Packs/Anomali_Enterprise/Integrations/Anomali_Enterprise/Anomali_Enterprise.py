@@ -80,16 +80,17 @@ def start_search_job(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    from_ = args.get('from')
-    to_ = args.get('to')
-    indicators = args.get('indicators')
+    from_ = str(args.get('from'))
+    to_ = str(args.get('to'))
+    indicators = str(args.get('indicators'))
     response = client.start_search_job_request(from_, to_, indicators)
-    d = {'Status': 'In Progress'}
+    search_data = response.get('data', {})
+    search_data.update({'Status': 'In Progress'})
     return CommandResults(
         outputs_prefix='AnomaliEnterprise.ForensicSearch',
         outputs_key_field='jobid',
         outputs=response,
-        readable_output=response,
+        readable_output=tableToMarkdown(name=f"Forensic Search:", t=search_data, removeNull=True),
         raw_response=response
     )
 
@@ -106,13 +107,14 @@ def get_search_job_result(client: Client, args: Dict) -> CommandResults:
     """
     job_id = str(args.get('job_id'))
     response = client.get_search_job_result_request(job_id)
+    result_data = response.get('data', {})
     status = 'In Progress' if False else 'Completed'  # TODO
-    d = {'Status': status}
+    result_data.update({'Status': status})
     return CommandResults(
         outputs_prefix='AnomaliEnterprise.ForensicSearch',
         outputs_key_field='jobid',
         outputs=response,
-        readable_output=response,
+        readable_output=tableToMarkdown(name=f"Forensic Results:", t=result_data, removeNull=True),
         raw_response=response
     )
 
@@ -129,7 +131,7 @@ def dga_domain_status(client: Client, args: dict) -> CommandResults:
     """
     domains = argToList(args.get('domains'))
     response = client.domain_request(domains)
-    domains_data = response.get('data')
+    domains_data = response.get('data', {})
     outputs = []
     for domain in domains:
         output = {
@@ -159,7 +161,7 @@ def domain_command(client: Client, args: dict) -> CommandResults:
     """
     domain = args.get('domain')
     response = client.domain_request([domain])
-    domain_data = response.get('data')
+    domain_data = response.get('data', {})
     output = {
         'domain': domain,
         'malware_family': domain_data.get(domain, {}).get('malware_family'),
