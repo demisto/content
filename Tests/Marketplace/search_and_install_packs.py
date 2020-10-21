@@ -232,9 +232,10 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
             for pack in packs_to_install:
                 request_data = {
-                    'pack': pack,
+                    'pack': [pack],
                     'ignoreWarnings': True
                 }
+                print(request_data)
                 results.append(executor.submit(fn=demisto_client.generic_request_func,
                                                self=client,
                                                path='/contentpacks/marketplace/install',
