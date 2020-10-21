@@ -768,7 +768,8 @@ def get_server_numeric_version(ami_env, is_local_run=False):
         server_numeric_version = extracted_version[0]
     else:
         if 'Master' in instances_ami_name:
-            server_numeric_version = 'Master'
+            print_color(f'Server version: Master', LOG_COLORS.GREEN)
+            return default_version
         else:
             server_numeric_version = default_version
 
