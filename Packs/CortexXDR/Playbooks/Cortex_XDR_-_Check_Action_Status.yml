@@ -1,20 +1,16 @@
-id: 'Cortex_XDR_Retrieve_File_Playbook'
+id: Cortex XDR - Check Action Status
 version: -1
-name: 'Cortex_XDR_Retrieve_File_Playbook'
-description: |-
-  Retrieve files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
-  Please enter - endpoint ids, comma separated and at least one file path:
-  windows_file_paths - comma separated,
-  linux_file_paths - comma separated,
-  mac_file_paths - comma separated
+name: Cortex XDR - Check Action Status
+description: "Playbook that takes action id and checks the action status. \nPlease\
+  \ enter action id you want to know it’s status."
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 94440b97-5f4e-43d3-80b0-f645dced6c3d
+    taskid: 66e5f8f6-bf2c-4ee9-85e4-f442eb366c4e
     type: start
     task:
-      id: 94440b97-5f4e-43d3-80b0-f645dced6c3d
+      id: 66e5f8f6-bf2c-4ee9-85e4-f442eb366c4e
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +18,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -38,15 +34,15 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: b3fc0feb-9464-4b43-83b4-bc8acf39aa2f
+    taskid: 4fdb2092-79ce-427f-8694-bc2402f1866d
     type: regular
     task:
-      id: b3fc0feb-9464-4b43-83b4-bc8acf39aa2f
+      id: 4fdb2092-79ce-427f-8694-bc2402f1866d
       version: -1
-      name: xdr-retrieve-files
-      description: Retrieve files from selected endpoints. You can retrieve up to
-        20 files, from no more than 10 endpoints.
-      script: Cortex XDR - IR|||xdr-retrieve-files
+      name: xdr-action-status-get
+      description: Retrieve the status of the requested actions according to the action
+        ID.
+      script: Cortex XDR - IR|||xdr-action-status-get
       type: regular
       iscommand: true
       brand: Cortex XDR - IR
@@ -54,47 +50,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      endpoint_ids:
-        simple: ${inputs.endpoint_ids}
-      linux_file_paths:
-        simple: ${inputs.linux_file_paths}
-      mac_file_paths:
-        simple: ${inputs.mac_file_paths}
-      windows_file_paths:
-        simple: ${inputs.windows_file_paths}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 0a8a0e74-54ab-4a62-85f6-47b758e7fb9c
-    type: regular
-    task:
-      id: 0a8a0e74-54ab-4a62-85f6-47b758e7fb9c
-      version: -1
-      name: xdr-retrieve-file-details
-      description: View the file retrieved by the Retrieve File request according
-        to the action ID.
-      script: Cortex XDR - IR|||xdr-retrieve-file-details
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - IR
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
       action_id:
-        simple: ${PaloAltoNetworksXDR.retrievedFiles.actionId}
+        simple: ${inputs.action_id}
     separatecontext: false
     view: |-
       {
@@ -108,12 +65,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: eaa6c006-9b0d-4e32-8bde-57d8f7692061
+  "2":
+    id: "2"
+    taskid: 76b7b748-14d0-4be4-86f1-8b892ddbdecd
     type: playbook
     task:
-      id: eaa6c006-9b0d-4e32-8bde-57d8f7692061
+      id: 76b7b748-14d0-4be4-86f1-8b892ddbdecd
       version: -1
       name: GenericPolling
       description: |-
@@ -130,33 +87,36 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "6"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
-        simple: ${PaloAltoNetworksXDR.retrievedFiles.actionId}
+        simple: ${inputs.action_id}
       Interval:
         simple: "1"
       PollingCommandArgName:
         simple: action_id
       PollingCommandName:
-        simple: xdr-retrieve-file-details
+        simple: xdr-action-status-get
       Timeout:
         simple: "10"
       dt:
-        simple: PaloAltoNetworksXDR.retrievedFileDetails(!val.file_link).action_id
+        simple: PaloAltoNetworksXDR.getActionStatus(val.status != "CANCELLED" || val.status
+          != "ABORTED" || val.status != "EXPIRED" || val.status != "COMPLETED_PARTIAL"
+          || val.status != "COMPLETED_SUCCESSFULLY" || val.status != "FAILED" || val.status
+          != "TIMEOUT")
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 0
+      max: 100
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 195
         }
       }
     note: false
@@ -164,12 +124,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 32e7a7d5-cffa-46ff-8030-dbdd7699872d
+  "3":
+    id: "3"
+    taskid: c4b7c36b-9e3f-4dc7-8ea1-2ab3893a80b1
     type: title
     task:
-      id: 32e7a7d5-cffa-46ff-8030-dbdd7699872d
+      id: c4b7c36b-9e3f-4dc7-8ea1-2ab3893a80b1
       version: -1
       name: Done
       type: title
@@ -189,37 +149,40 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: 06718f2a-0ac8-4028-8aa2-7e6182ef9370
+  "4":
+    id: "4"
+    taskid: a7ba2d63-ee1f-48df-8aa4-879d48483965
     type: condition
     task:
-      id: 06718f2a-0ac8-4028-8aa2-7e6182ef9370
+      id: a7ba2d63-ee1f-48df-8aa4-879d48483965
       version: -1
-      name: Retrive file finished
-      description: We should check if the link to the file is ready.
+      name: Action status is final
+      description: We should check if the action is at its final status or not.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+      - "5"
       "yes":
-      - "2"
+      - "1"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotExists
+      - - operator: inList
           left:
             value:
-              simple: PaloAltoNetworksXDR.retrievedFileDetails(!val.file_link)
+              simple: PaloAltoNetworksXDR.getActionStatus(val.status).status
             iscontext: true
+          right:
+            value:
+              simple: CANCELLED,ABORTED,EXPIRED,COMPLETED_PARTIAL,COMPLETED_SUCCESSFULLY,FAILED,TIMEOUT
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 535
+          "y": 545
         }
       }
     note: false
@@ -227,12 +190,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
-    taskid: b3d9501e-3cc9-4b21-810c-b9cef1fb049a
+  "5":
+    id: "5"
+    taskid: 2f8ad41a-f5cb-41c5-8f81-dc0d4bd2bd86
     type: regular
     task:
-      id: b3d9501e-3cc9-4b21-810c-b9cef1fb049a
+      id: 2f8ad41a-f5cb-41c5-8f81-dc0d4bd2bd86
       version: -1
       name: Print Error message
       description: Prints an error entry with a given message
@@ -242,13 +205,46 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: Not all files retrieved.
+        simple: The status of this action still not final
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
           "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: dd7d3789-b6c2-4019-8365-b672923064fd
+    type: regular
+    task:
+      id: dd7d3789-b6c2-4019-8365-b672923064fd
+      version: -1
+      name: xdr-action-status-get
+      description: Retrieve the status of the requested actions according to the action
+        ID.
+      script: Cortex XDR - IR|||xdr-action-status-get
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      action_id:
+        simple: ${inputs.action_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
         }
       }
     note: false
@@ -269,31 +265,10 @@ view: |-
     }
   }
 inputs:
-- key: endpoint_ids
-  value: {}
-  required: true
-  description: Please enter comma separated list of endpoint ids.
-  playbookInputQuery:
-- key: windows_file_paths
+- key: action_id
   value: {}
   required: false
-  description: |-
-    Comma separated list, of paths.
-    Please enter at least one path ( windows, linux or mac)
-  playbookInputQuery:
-- key: linux_file_paths
-  value: {}
-  required: false
-  description: |-
-    Comma separated list, of paths.
-    Please enter at least one path ( windows, linux or mac)
-  playbookInputQuery:
-- key: mac_file_paths
-  value: {}
-  required: false
-  description: |-
-    Comma separated list, of paths.
-    Please enter at least one path ( windows, linux or mac)
+  description: Action ID of the specific request.
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
