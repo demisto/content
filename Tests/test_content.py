@@ -602,10 +602,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     return test_skipped_integration, integrations, is_nightly_integration
 
 
-def extract_filtered_tests(is_nightly):
-    if is_nightly:
-        # TODO: verify this response
-        return [], False, True
+def extract_filtered_tests():
     with open(FILTER_CONF, 'r') as filter_file:
         filtered_tests = filter_file.readlines()
         filtered_tests = [line.strip('\n') for line in filtered_tests]
@@ -825,7 +822,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests(tests_settings.nightly)
+    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests()
     if is_filter_configured and not run_all_tests:
         is_nightly = True
 
