@@ -246,7 +246,7 @@ def main():
                     last_run=last_run,
                     fetch_time=params.get('fetch_events_time_minutes'))
 
-            fetch_limit = int(params.get('fetch_limit'))
+            fetch_limit = int(params.get('max_fetch'))
 
             demisto.setLastRun(last_run)
             demisto.incidents(events[:fetch_limit])

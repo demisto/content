@@ -26,7 +26,7 @@ configuration:
 - additionalinfo: Maximum number of events to fetch at a time
   defaultvalue: '50'
   display: Fetch Limit (Recommended less than 200)
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 - additionalinfo: Used to notify any errors via email
@@ -78,7 +78,7 @@ script:
       to use the integration, before fetching any incidents.
     execution: false
     name: workday-first-run
-  dockerimage: demisto/python3:3.7.5.3066
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
   longRunning: false
@@ -87,3 +87,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
+tests:
+- No tests
+
