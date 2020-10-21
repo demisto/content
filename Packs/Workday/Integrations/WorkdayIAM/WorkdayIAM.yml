@@ -67,7 +67,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-description: Workday IAM Integration
+description: Use the Workday IAM Integration as part of the IAM premium pack.
 display: Workday IAM
 name: WorkdayIAM
 script:

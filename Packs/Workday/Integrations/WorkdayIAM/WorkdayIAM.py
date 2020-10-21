@@ -7,13 +7,10 @@ from smtplib import SMTP
 import requests
 from datetime import datetime, timedelta
 
-''' CONSTANTS '''
 
 WORKDAY_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 READ_TIME_OUT_IN_SECONDS = 300
 
-
-''' GLOBAL VARIABLES '''
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -31,9 +28,6 @@ class Client(BaseClient):
     # Getting Workday Full User Report with a given report URL. This uses RaaS
     def get_full_report(self):
         return self._http_request(method="GET", full_url=self._report_url, url_suffix="", timeout=READ_TIME_OUT_IN_SECONDS)
-
-
-'''HELPER FUNCTIONS'''
 
 
 def convert_incident_fields_to_cli_names(data):
@@ -61,9 +55,6 @@ def get_time_elapsed(fetch_time, last_run):
         time_elapsed_in_minutes = fetch_time
 
     return time_elapsed_in_minutes, last_run_time
-
-
-'''COMMAND FUNCTIONS'''
 
 
 def fetch_incidents(client, last_run, fetch_time):
@@ -235,7 +226,6 @@ def main():
     )
 
     try:
-        '''EXECUTION CODE'''
         if command == 'test-module':
             return_results(test_module(client, params))
 
