@@ -36,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR - Retrieve File Playbook](Insert the link to your image here)
+![Cortex XDR - Retrieve File Playbook](https://raw.githubusercontent.com/demisto/content/cortex-xdr-enhancement/Packs/CortexXDR/doc_files/Cortex%20XDR%20-%20Retrieve%20File%20Playbook.png)
