@@ -5,8 +5,11 @@ import traceback
 import requests
 from datetime import datetime, timedelta
 
-
+LAST_DAY_OF_WORK_EVENT_FIELD = 'lastdayofwork'
+TERMINATION_DATE_EVENT_FIELD = 'terminationdate'
+HIRE_DATE_EVENT_FIELD = 'hiredate'
 WORKDAY_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+WORKDAY_DATE_FORMAT = "%m/%d/%Y"
 READ_TIME_OUT_IN_SECONDS = 300
 
 
@@ -87,6 +90,7 @@ def fetch_incidents(client, last_run, fetch_time):
                 workday_user = convert_incident_fields_to_cli_names(workday_user)
                 demisto_user = get_demisto_user(workday_user)
                 profile_changed_fields = get_profile_changed_fields(workday_user, demisto_user)
+                terminate_date_arrived = check_if_user_should_be_terminated(workday_user)
                 does_email_exist = does_email_exist_in_xsoar(workday_user.get('email'))
 
                 if (demisto_user and len(profile_changed_fields) == 0) or (not demisto_user and does_email_exist):
@@ -137,6 +141,26 @@ def get_profile_changed_fields(workday_user, demisto_user):
             profile_changed_fields.append(user_profile_key)
 
     return profile_changed_fields
+
+
+def check_if_user_should_be_terminated(workday_user):
+    # make sure with ido
+    is_term_event = False
+    last_day_of_work = workday_user.get(LAST_DAY_OF_WORK_EVENT_FIELD)
+    termination_date = workday_user.get(TERMINATION_DATE_EVENT_FIELD)
+    if last_day_of_work or termination_date:
+        hire_date = workday_user.get(HIRE_DATE_EVENT_FIELD)
+        hire_date = datetime.strptime(hire_date, WORKDAY_DATE_FORMAT)
+        today = datetime.today()
+        # Check if term date is older than the latest hire date. If it is, then it is not a term, its a rehire
+        # Also check with current date. If its future date, then it's not a term event
+        if last_day_of_work:
+            last_day_of_work = datetime.strptime(last_day_of_work, WORKDAY_DATE_FORMAT)
+            is_term_event = hire_date <= last_day_of_work <= today
+        elif termination_date:
+            termination_date = datetime.strptime(termination_date, WORKDAY_DATE_FORMAT)
+            is_term_event = hire_date <= termination_date <= today
+    return is_term_event
 
 
 def test_module(client, params):
