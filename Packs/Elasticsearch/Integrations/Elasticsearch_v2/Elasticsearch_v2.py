@@ -101,9 +101,8 @@ def get_api_key_header_val(api_key):
     return "ApiKey " + api_key
 
 
-def elasticsearch_builder():
+def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-    proxies = handle_proxy() if PROXY else None
     if API_KEY_ID:
         es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
                            api_key=API_KEY, proxies=proxies)
@@ -211,7 +210,7 @@ def get_total_results(response_dict):
     return total_dict, total_results
 
 
-def search_command():
+def search_command(proxies):
     """Performs a search in Elasticsearch."""
     index = demisto.args().get('index')
     query = demisto.args().get('query')
@@ -222,7 +221,7 @@ def search_command():
     sort_field = demisto.args().get('sort-field')
     sort_order = demisto.args().get('sort-order')
 
-    es = elasticsearch_builder()
+    es = elasticsearch_builder(proxies)
 
     que = QueryString(query=query)
     search = Search(using=es, index=index).query(que)[base_page:base_page + size]
@@ -365,7 +364,7 @@ def test_timestamp_format(timestamp):
             return_error(f"Fetched timestamp is not in milliseconds since epoch.\nFetched: {timestamp}")
 
 
-def test_func():
+def test_func(proxies):
     headers = {
         'Content-Type': "application/json"
     }
@@ -402,7 +401,7 @@ def test_func():
 
         try:
             # build general Elasticsearch class
-            es = elasticsearch_builder()
+            es = elasticsearch_builder(proxies)
 
             # test if FETCH_INDEX exists
             test_general_query(es)
@@ -544,7 +543,7 @@ def format_to_iso(date_string):
     return date_string
 
 
-def fetch_incidents():
+def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
 
@@ -569,7 +568,7 @@ def fetch_incidents():
     else:
         last_fetch_timestamp = last_fetch
 
-    es = elasticsearch_builder()
+    es = elasticsearch_builder(proxies)
 
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
     # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
@@ -624,14 +623,16 @@ def get_mapping_fields_command():
 
 
 def main():
+    proxies = handle_proxy()
+    proxies = proxies if proxies else None
     try:
         LOG('command is %s' % (demisto.command(),))
         if demisto.command() == 'test-module':
-            test_func()
+            test_func(proxies)
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents()
+            fetch_incidents(proxies)
         elif demisto.command() in ['search', 'es-search']:
-            search_command()
+            search_command(proxies)
         elif demisto.command() == 'get-mapping-fields':
             get_mapping_fields_command()
     except Exception as e:
