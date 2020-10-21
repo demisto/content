@@ -178,10 +178,10 @@ comment: Deprecated. Syncs a single incident between Demisto and XDR. This scrip
   is updated in Demisto, the script will execute the xdr-update-incident command and update the
   incident in XDR.
 commonfields:
-  id: XDRSyncScript
+  id: XDRSyncScriptCopy
   version: -1
 enabled: false
-name: XDRSyncScript
+name: XDRSyncScriptCopy
 outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.incident_id
   description: Unique ID assigned to each returned incident.

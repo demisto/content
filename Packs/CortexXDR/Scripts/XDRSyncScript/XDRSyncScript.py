@@ -193,8 +193,14 @@ def args_to_str(demisto_args, latest_incident_in_xdr):
 
 def get_latest_incident_from_xdr(incident_id):
     # get the latest incident from xdr
-    latest_incident_in_xdr_result = demisto.executeCommand("xdr-get-incident-extra-data", {"incident_id": incident_id})
-    if is_error(latest_incident_in_xdr_result):
+    latest_incident_in_xdr_result = demisto.executeCommand("xdr-get-incident-extra-data",
+                                                           {"incident_id": incident_id,
+                                                            "return_only_updated_incident": True})
+
+    return_error('Done with extra data')
+    if not latest_incident_in_xdr_result:
+        return {}, {}, {}
+    elif is_error(latest_incident_in_xdr_result):
         raise ValueError("Failed to execute xdr-get-incident-extra-data command. Error: {}".format(
             get_error(latest_incident_in_xdr_result)))
 

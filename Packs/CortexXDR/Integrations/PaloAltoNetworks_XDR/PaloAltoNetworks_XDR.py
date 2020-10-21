@@ -890,7 +890,7 @@ class Client(BaseClient):
             raise TypeError(f'got unexpected response from api: {reply_content}\n')
 
     def save_modified_incidents_to_integration_context(self):
-        last_modified_incidents = self.get_incidents(limit=1000, sort_by_modification_time='desc')
+        last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time='desc')
         modified_incidents_list = []
         for incident in last_modified_incidents:
             modified_incidents_list.append(
@@ -969,16 +969,22 @@ def get_incidents_command(client, args):
     )
 
 
-def get_incident_extra_data_command(client, args, return_only_updated_incident=False, remote_args=None):
+def get_incident_extra_data_command(client, args, return_only_updated_incident=False):
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
 
     if return_only_updated_incident:
         last_modified_incidents = get_integration_context().get('modified_incidents', {})
 
+        demisto.debug(f"integration context: {last_modified_incidents}\n")  # type:ignore
         for incident in last_modified_incidents:
-            if incident.get("id") == incident_id:  # search the incident in the list of modified incidents
+            if incident.get('id') == incident_id:  # search the incident in the list of modified incidents
                 current_incident_modified_time = int(str(incident.get('last_modified')))
+
+                demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"  # type:ignore
+                              f"modified time: {current_incident_modified_time}\n"
+                              f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
+
                 if arg_to_timestamp(current_incident_modified_time, 'last_modified') > \
                         arg_to_timestamp(remote_args.last_update, 'last_update'):   # need to update this incident
                     break
@@ -1843,20 +1849,18 @@ def get_remote_data_command(client, args):
     try:
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
                                                                  "alerts_limit": 1000},
-                                                        return_only_updated_incident=True,
-                                                        remote_args=remote_args)[2].get('incident')
+                                                        return_only_updated_incident=True)
 
         if incident_data:
+            demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
+
+            incident_data = incident_data[2].get('incident')
             incident_data['id'] = incident_data.get('incident_id')
-            demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"  # type:ignore
-                          f"modified time: {int(incident_data.get('modification_time'))}\n"
-                          f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
 
             sort_all_list_incident_fields(incident_data)
 
             # deleting creation time as it keeps updating in the system
             del incident_data['creation_time']
-            demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
 
             # handle unasignment
             if incident_data.get('assigned_user_mail') is None:
@@ -1987,7 +1991,7 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
     raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
                                          limit=max_fetch, sort_by_creation_time='asc')
 
-    # save the last 1000 modified incidents to the integration context - for mirroring purposes
+    # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
 
     for raw_incident in raw_incidents:
@@ -2003,6 +2007,7 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
 
         incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
         incident_data['mirror_instance'] = demisto.integrationInstance()
+        incident_data['last_mirrored_in'] = datetime.now().isoformat()
 
         description = raw_incident.get('description')
         occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
