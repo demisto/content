@@ -1,6 +1,6 @@
-id: 'Cortex XDR - Retrieve File Playbook'
+id: Cortex XDR - Retrieve File Playbook
 version: -1
-name: 'Cortex XDR - Retrieve File Playbook'
+name: Cortex XDR - Retrieve File Playbook
 description: |-
   Retrieve files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
   Please enter - endpoint ids, comma separated and at least one file path:
@@ -11,10 +11,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 94440b97-5f4e-43d3-80b0-f645dced6c3d
+    taskid: 808eba1f-6338-4e14-865b-28fa19ae0a2e
     type: start
     task:
-      id: 94440b97-5f4e-43d3-80b0-f645dced6c3d
+      id: 808eba1f-6338-4e14-865b-28fa19ae0a2e
       version: -1
       name: ""
       iscommand: false
@@ -38,10 +38,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: b3fc0feb-9464-4b43-83b4-bc8acf39aa2f
+    taskid: d07c1069-79ab-47ca-88a7-bfc4448ec9c1
     type: regular
     task:
-      id: b3fc0feb-9464-4b43-83b4-bc8acf39aa2f
+      id: d07c1069-79ab-47ca-88a7-bfc4448ec9c1
       version: -1
       name: xdr-retrieve-files
       description: Retrieve files from selected endpoints. You can retrieve up to
@@ -77,10 +77,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 0a8a0e74-54ab-4a62-85f6-47b758e7fb9c
+    taskid: 8e20354e-75fd-4716-802b-d3862f18a1d4
     type: regular
     task:
-      id: 0a8a0e74-54ab-4a62-85f6-47b758e7fb9c
+      id: 8e20354e-75fd-4716-802b-d3862f18a1d4
       version: -1
       name: xdr-retrieve-file-details
       description: View the file retrieved by the Retrieve File request according
@@ -100,7 +100,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -110,10 +110,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: eaa6c006-9b0d-4e32-8bde-57d8f7692061
+    taskid: 4b33d290-4788-4f1e-8e9b-ea7d13cdd0b0
     type: playbook
     task:
-      id: eaa6c006-9b0d-4e32-8bde-57d8f7692061
+      id: 4b33d290-4788-4f1e-8e9b-ea7d13cdd0b0
       version: -1
       name: GenericPolling
       description: |-
@@ -130,7 +130,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "7"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
@@ -166,10 +166,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 32e7a7d5-cffa-46ff-8030-dbdd7699872d
+    taskid: a2712ae7-1100-4545-85a7-43770ff6fbd7
     type: title
     task:
-      id: 32e7a7d5-cffa-46ff-8030-dbdd7699872d
+      id: a2712ae7-1100-4545-85a7-43770ff6fbd7
       version: -1
       name: Done
       type: title
@@ -181,7 +181,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -191,10 +191,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 06718f2a-0ac8-4028-8aa2-7e6182ef9370
+    taskid: 069bc12b-b96b-47ef-86dd-c000cdc518b6
     type: condition
     task:
-      id: 06718f2a-0ac8-4028-8aa2-7e6182ef9370
+      id: 069bc12b-b96b-47ef-86dd-c000cdc518b6
       version: -1
       name: Retrieve file finished
       description: We should check if the link to the file is ready.
@@ -219,7 +219,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 535
+          "y": 720
         }
       }
     note: false
@@ -229,10 +229,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: b3d9501e-3cc9-4b21-810c-b9cef1fb049a
+    taskid: 776b2c6a-86da-4037-8a97-f037d957a432
     type: regular
     task:
-      id: b3d9501e-3cc9-4b21-810c-b9cef1fb049a
+      id: 776b2c6a-86da-4037-8a97-f037d957a432
       version: -1
       name: Print Error message
       description: Prints an error entry with a given message
@@ -248,7 +248,40 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 00a014af-15f0-4944-8fbe-c59133e02d92
+    type: regular
+    task:
+      id: 00a014af-15f0-4944-8fbe-c59133e02d92
+      version: -1
+      name: xdr-retrieve-file-details
+      description: View the file retrieved by the Retrieve File request according
+        to the action ID.
+      script: Cortex XDR - IR|||xdr-retrieve-file-details
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      action_id:
+        simple: ${PaloAltoNetworksXDR.retrievedFiles.actionId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
         }
       }
     note: false
@@ -261,7 +294,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 1085,
         "width": 810,
         "x": 50,
         "y": 50
@@ -296,7 +329,7 @@ inputs:
     Please enter at least one path ( windows, linux or mac)
   playbookInputQuery:
 outputs: []
-fromversion: 5.0.0
 tests:
 - Test XDR Playbook
 - Cortex XDR - IOC - Test
+fromversion: 5.0.0

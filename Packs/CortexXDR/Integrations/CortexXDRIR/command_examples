@@ -19,7 +19,7 @@
 !xdr-endpoint-scan endpoint_id_list=f8a2f58846b542579c12090652e79f3d
 !xdr-restore-file file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
 !xdr-get-policy endpoint_id="f8a2f58846b542579c12090652e79f3d"
-!xdr-get-endpoint-violations endpoint_ids="f8a2f58846b542579c12090652e79f3d" type="cd-rom"
+!xdr-get-endpoint-violations violation_id_list=100,90,80
 !xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\\Users\\demisto\\Desktop\\demisto.txt"
 !xdr-retrieve-file-details action_id=1763
 !xdr-get-scripts created_by="Palo Alto Networks" is_high_risk=true
