@@ -1283,6 +1283,7 @@ def test_get_script_execution_status_command(requests_mock):
 
 
 def test_get_script_execution_results_command(requests_mock):
+    # todo: change this test once command fixed
     """
         Given:
             -action_id
@@ -1314,6 +1315,7 @@ def test_get_script_execution_results_command(requests_mock):
 
 
 # def test_get_script_execution_result_files_command(requests_mock):
+# todo: change this test once command fixed
 #     """
 #         Given:
 #             -action_id,

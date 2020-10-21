@@ -2647,7 +2647,8 @@ def run_script_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
 
 
 def run_snippet_code_script_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    # was told not to implement this command, since xdr will change something at their side.
+    # todo:  change this code when the issue resolved,
+    #  was told not to implement this command, since xdr will change something at their side.
     endpoint_ids: list = argToList(args.get('endpoint_ids'))
     snippet_code = args.get('snippet_code')
     timeout: int = arg_to_int(arg=args.get('timeout'), arg_name='timeout')
@@ -2680,7 +2681,8 @@ def get_script_execution_status_command(client: Client, args: Dict[str, str]) ->
 
 
 def get_script_execution_results_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    # we have an issue with the output of this command, at the xdr side
+    # todo: we have an issue with the output of this command, at the xdr side,
+    # change this code when the issue resolved
     action_id = args.get('action_id')
 
     reply = client.get_script_execution_results(action_id)
@@ -2696,7 +2698,8 @@ def get_script_execution_results_command(client: Client, args: Dict[str, str]) -
 
 
 def get_script_execution_result_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    # we have an issue with the output of this command, at the xdr side
+    # todo: we have an issue with the output of this command, at the xdr side,
+    # change this code when the issue resolved
     action_id = args.get('action_id')
     endpoint_id = args.get('endpoint_id')
 
