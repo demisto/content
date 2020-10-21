@@ -197,7 +197,7 @@ def workday_first_run_command(client):
     indicators = report_to_indicators(report_data.get('Report_Entry'))
     for b in batch(indicators, batch_size=2000):
         demisto.createIndicators(b)
-    demisto.results(indicators[0])
+    demisto.results("Indicators were created successfully")
 
 
 def main():

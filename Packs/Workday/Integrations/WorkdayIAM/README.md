@@ -26,10 +26,8 @@ When using the Integration for the first time, run the ***workday-first-run*** c
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
 ### workday-first-run
 ***
 Synchronizes between the workday users and the indicators used in IAM. Creates an indicator for every workday user. Should be run when starting to use the integration, before fetching any incidents.
@@ -47,8 +45,12 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
-```
-!workday-first-run 
+``` 
+!workday-first-run
 ```
 
 #### Human Readable Output
+```
+Indicators were created successfully
+```
+
