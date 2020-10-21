@@ -1,6 +1,6 @@
 id: Prisma Cloud Remediation - GCP Kubernetes Engine Misconfiguration
 version: -1
-fromversion: 6.0.0
+fromversion: 5.0.0
 name: Prisma Cloud Remediation - GCP Kubernetes Engine Misconfiguration
 description: |
   This playbook remediates Prisma Cloud GCP Kubernetes Engine alerts.  It calls sub-playbooks that perform the actual remediation steps.
