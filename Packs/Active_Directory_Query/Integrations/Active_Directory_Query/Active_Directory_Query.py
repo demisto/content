@@ -477,10 +477,10 @@ def get_user_iam(default_base_dn, page_size, args):
             ad_user["userAccountControl"] = user_account_control
 
             iam_user_profile.set_result(success=True,
-                                         email=ad_user.get('email'),
-                                         username=ad_user.get('name'),
-                                         details=ad_user,
-                                         active=user_account_control)
+                                        email=ad_user.get('email'),
+                                        username=ad_user.get('name'),
+                                        details=ad_user,
+                                        active=user_account_control)
 
             user_profile.update_with_app_data(ad_user, INCOMING_MAPPER)
 
