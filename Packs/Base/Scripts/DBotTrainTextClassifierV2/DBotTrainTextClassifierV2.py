@@ -208,7 +208,7 @@ def output_model_evaluation(model_name, y_test, y_pred, res, context_field, huma
         }
     }
     demisto.results(result_entry)
-    return confusion_matrix_no_thresh
+    return confusion_matrix_at_thresh
 
 
 def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=False):
