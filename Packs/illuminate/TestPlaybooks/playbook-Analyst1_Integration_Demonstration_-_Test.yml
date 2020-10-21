@@ -1,6 +1,7 @@
-id: illuminate Integration Demonstration - Test
+id: Analyst1 Integration Demonstration - Test
 version: -1
-name: illuminate Integration Demonstration - Test
+name: Analyst1 Integration Demonstration - Test
+fromversion: 5.0.0
 starttaskid: '0'
 tasks:
   '0':
@@ -35,8 +36,8 @@ tasks:
     task:
       id: 61dc1217-21c1-4094-8bb8-24a94394fef6
       version: -1
-      name: Illuminate Integration Demonstration
-      playbookName: Illuminate Integration Demonstration
+      name: Analyst1 Integration Demonstration
+      playbookName: Analyst1 Integration Demonstration
       type: playbook
       iscommand: false
       brand: ''
@@ -329,4 +330,3 @@ view: |-
 inputs: []
 outputs: []
 description: ''
-fromversion: 5.0.0
