@@ -1,0 +1,151 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Anomali Enterprise
+  version: -1
+configuration:
+- defaultvalue: https://127.0.0.1:8080
+  display: Server URL (e.g., https://www.test.com)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use Anomali Enterprise to search indicators and enrich domains.
+display: Anomali Enterprise
+name: Anomali Enterprise
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: from todo.
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: to todo.
+      isArray: false
+      name: to
+      required: true
+      secret: false
+    - default: false
+      description: Indicators to search.
+      isArray: true
+      name: indicators
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiates a forensic search of the indicators.
+    execution: false
+    name: anomali-enterprise-retro-forensic-search
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: false
+      description: the forensic search job ID.
+      isArray: true
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retreive the forensic search results.
+    execution: false
+    name: anomali-enterprise-retro-forensic-search-results
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: false
+      description: Domains to search.
+      isArray: true
+      name: domains
+      required: true
+      secret: false
+    deprecated: false
+    description: Search domains DGA.
+    execution: false
+    name: anomali-enterprise-dga-domain-status
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: true
+      description: Domain to search.
+      isArray: true
+      name: domain
+      required: false
+      secret: false
+    deprecated: false
+    description: Search domains DGA.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: AnomaliEnterprise.DGA
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No test
