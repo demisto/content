@@ -1277,7 +1277,7 @@ class Client(BaseClient):
             timeout=self.timeout
         )
 
-        return reply.get('reply')
+        return reply
 
     def insert_simple_indicators(self, indicator, type_, severity, expiration_date: int,
                                  comment, reputation, reliability, vendor_name,
