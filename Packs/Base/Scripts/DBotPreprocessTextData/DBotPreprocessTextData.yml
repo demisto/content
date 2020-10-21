@@ -46,6 +46,7 @@ args:
   - json_b64_string
   - pickle_b64_string
   - csv_b64_string
+  - string
   required: false
   secret: false
 - auto: PREDEFINED
