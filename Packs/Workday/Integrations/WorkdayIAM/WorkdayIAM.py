@@ -7,7 +7,9 @@ from datetime import datetime, timedelta
 
 LAST_DAY_OF_WORK_EVENT_FIELD = 'lastdayofwork'
 TERMINATION_DATE_EVENT_FIELD = 'terminationdate'
+EMPLOYMENT_STATUS_EVENT_FIELD = 'employmentstatus'
 HIRE_DATE_EVENT_FIELD = 'hiredate'
+EMPLOYEE_ACTIVE_STATUS = 'active'
 WORKDAY_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 WORKDAY_DATE_FORMAT = "%m/%d/%Y"
 READ_TIME_OUT_IN_SECONDS = 300
@@ -93,7 +95,7 @@ def fetch_incidents(client, last_run, fetch_time):
                 terminate_date_arrived = check_if_user_should_be_terminated(workday_user)
                 does_email_exist = does_email_exist_in_xsoar(workday_user.get('email'))
 
-                if (demisto_user and len(profile_changed_fields) == 0) or (not demisto_user and does_email_exist):
+                if ((demisto_user and len(profile_changed_fields) == 0) or (not demisto_user and does_email_exist)) and not terminate_date_arrived:
                     # either no change in user profile (by employee id), or user profile doesn't exist but the email is already used
                     # in both cases, don't create the incident
                     continue
@@ -108,7 +110,7 @@ def fetch_incidents(client, last_run, fetch_time):
             demisto.info(f'Workday Fetch Events Completed. Response Time:'
                          f' {(datetime.now() - start).total_seconds()} seconds')
 
-        last_run = {'time': last_run_time}
+        last_run = {'time': last_run_time, "sync_users": True}
     except Exception as e:
         demisto.error(f'Failed to fetch events. From Date = {from_date_time}. To Date = {to_date_time}')
         raise e
@@ -144,22 +146,25 @@ def get_profile_changed_fields(workday_user, demisto_user):
 
 
 def check_if_user_should_be_terminated(workday_user):
-    # make sure with ido
+    # check if employee is active and his terminate fay or last day of work arrived
     is_term_event = False
-    last_day_of_work = workday_user.get(LAST_DAY_OF_WORK_EVENT_FIELD)
-    termination_date = workday_user.get(TERMINATION_DATE_EVENT_FIELD)
-    if last_day_of_work or termination_date:
-        hire_date = workday_user.get(HIRE_DATE_EVENT_FIELD)
-        hire_date = datetime.strptime(hire_date, WORKDAY_DATE_FORMAT)
-        today = datetime.today()
-        # Check if term date is older than the latest hire date. If it is, then it is not a term, its a rehire
-        # Also check with current date. If its future date, then it's not a term event
-        if last_day_of_work:
-            last_day_of_work = datetime.strptime(last_day_of_work, WORKDAY_DATE_FORMAT)
-            is_term_event = hire_date <= last_day_of_work <= today
-        elif termination_date:
-            termination_date = datetime.strptime(termination_date, WORKDAY_DATE_FORMAT)
-            is_term_event = hire_date <= termination_date <= today
+    employment_status = str(workday_user.get(EMPLOYMENT_STATUS_EVENT_FIELD))
+
+    if employment_status.lower() == EMPLOYEE_ACTIVE_STATUS:
+        last_day_of_work = workday_user.get(LAST_DAY_OF_WORK_EVENT_FIELD)
+        termination_date = workday_user.get(TERMINATION_DATE_EVENT_FIELD)
+        if last_day_of_work or termination_date:
+            hire_date = workday_user.get(HIRE_DATE_EVENT_FIELD)
+            hire_date = datetime.strptime(hire_date, WORKDAY_DATE_FORMAT)
+            today = datetime.today()
+            # Check if term date is older than the latest hire date. If it is, then it is not a term, its a rehire
+            # Also check with current date. If its future date, then it's not a term event
+            if last_day_of_work:
+                last_day_of_work = datetime.strptime(last_day_of_work, WORKDAY_DATE_FORMAT)
+                is_term_event = hire_date <= last_day_of_work <= today
+            elif termination_date:
+                termination_date = datetime.strptime(termination_date, WORKDAY_DATE_FORMAT)
+                is_term_event = hire_date <= termination_date <= today
     return is_term_event
 
 
@@ -248,6 +253,14 @@ def main():
             events = workday_context.get('events')
 
             last_run = demisto.getLastRun()
+            run_first_command = False
+            if last_run:
+                if last_run.get("sync_users"):
+                    run_first_command = True
+
+            if not run_first_command:
+                workday_first_run_command(client)
+
             if not events:
                 # Get the events from Workday by making an API call. Last run is updated only when API call is made
                 last_run, events = fetch_incidents(
