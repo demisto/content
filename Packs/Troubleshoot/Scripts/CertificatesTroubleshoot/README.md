@@ -368,7 +368,7 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 > ### Extentions
 > |IssuerAlternativeName|
 > |---|
-> | *.google.com,<br>*.android.com,<br>*.appengine.google.com,<br>*.bdn.dev,<br>*.cloud.google.com<br> |
+> | *.google.com,*.android.com,*.appengine.google.com,*.bdn.dev,*.cloud.google.com |
 
 
  
