@@ -91,7 +91,7 @@ def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y
     return None
 
 
-def convert_to_xsoar_severity(pulsedive_severity) -> str:
+def convert_to_xsoar_severity(pulsedive_severity) -> int:
     if (pulsedive_severity == 'unknown' or pulsedive_severity == 'none'):
         xsoar_severity = Common.DBotScore.NONE  # unknown
     elif pulsedive_severity == 'high':
@@ -110,8 +110,8 @@ def test_module(client: Client) -> str:
     """Tests API connectivity and authentication"""
 
     try:
-        response = client.test_connect()
-    except DemistoException as err:
+        client.test_connect()
+    except DemistoException:
         return 'Could not connect to Pulsedive'
     return 'ok'
 
@@ -198,14 +198,14 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> 
 
         domain_standard_context = Common.Domain(
             domain=indicator_domain,
-            #creation_date=domain_data.get('creation_date', None),
-            #expiration_date=domain_data.get('expiration_date', None),
-            #updated_date=domain_data.get('updated_date', None),
-            #organization=domain_data.get('org', None),
-            #name_servers=domain_data.get('name_servers', None),
-            #registrant_name=domain_data.get('name', None),
-            #registrant_country=domain_data.get('country', None),
-            #registrar_name=domain_data.get('registrar', None),
+            # creation_date=domain_data.get('creation_date', None),
+            # expiration_date=domain_data.get('expiration_date', None),
+            # updated_date=domain_data.get('updated_date', None),
+            # organization=domain_data.get('org', None),
+            # name_servers=domain_data.get('name_servers', None),
+            # registrant_name=domain_data.get('name', None),
+            # registrant_country=domain_data.get('country', None),
+            # registrar_name=domain_data.get('registrar', None),
             dbot_score=dbot_score
         )
 
@@ -214,7 +214,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> 
 
     # In this case we want to use an custom markdown to specify the table title,
     # but otherwise ``CommandResults()`` will call ``tableToMarkdown()``
-    #  automatically
+    # automatically
     readable_output = tableToMarkdown('Domain List', domain_data_list)
 
     return CommandResults(
@@ -286,7 +286,7 @@ def main() -> None:
     # etc. to print information in the XSOAR server log. You can set the log
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
-    #demisto.debug(f'Command being called is {demisto.command()}')
+    # demisto.debug(f'Command being called is {demisto.command()}')
 
     try:
 
