@@ -480,6 +480,7 @@ script:
         }
 
         setLastRun({ time: endTime });
+        logout(userSessionId);
         return JSON.stringify(incidents);
     }
 
