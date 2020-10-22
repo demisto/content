@@ -167,10 +167,12 @@ script:
       required: true
       description: The summary of the issue.
     - name: projectKey
+      required: true
       description: The project key with which to associate the issue.
     - name: issueTypeName
       description: 'Select an issue type by name, for example: "Problem".'
     - name: issueTypeId
+      required: true
       description: Select an issue type by its numeric ID.
     - name: projectName
       description: The project name with which to associate the issue.
@@ -304,7 +306,7 @@ script:
       description: The ID offset.
       type: string
     description: Returns the ID offset, for example, the first issue ID.
-  dockerimage: demisto/oauthlib:1.0.0.8892
+  dockerimage: demisto/oauthlib:1.0.0.12447
   isfetch: true
   runonce: false
 tests:
