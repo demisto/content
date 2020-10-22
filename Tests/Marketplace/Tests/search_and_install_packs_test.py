@@ -5,35 +5,14 @@ from Tests.test_content import ParallelPrintsManager
 BASE_URL = 'http://123-fake-api.com'
 API_KEY = 'test-api-key'
 
-MOCK_PACKS_SEARCH_RESULTS = """{
-    "packs": [
-        {
-            "id": "HelloWorld",
-            "currentVersion": "2.0.0",
-            "name": "HelloWorld",
-            "dependencies": {"Base": {}, "TestPack": {}}
-        },
-        {
-            "id": "TestPack",
-            "currentVersion": "1.0.0",
-            "name": "TestPack",
-            "dependencies": {"Base": {}}
-        },
-        {
-            "id": "AzureSentinel",
-            "currentVersion": "1.0.0",
-            "name": "AzureSentinel",
-            "dependencies": {"Base": {}}
-        },
-        {
-            "id": "Base",
-            "currentVersion": "1.0.0",
-            "name": "Base",
-            "dependencies": {}
-        }
-    ]
+MOCK_HELLOWORLD_SEARCH_RESULTS = """{
+    "id": "HelloWorld",
+    "currentVersion": "1.1.10"
 }"""
-
+MOCK_AZURESENTINEL_SEARCH_RESULTS = """{
+    "id": "AzureSentinel",
+    "currentVersion": "1.0.2"
+}"""
 MOCK_PACKS_INSTALLATION_RESULT = """[
     {
         "id": "HelloWorld",
@@ -81,9 +60,11 @@ MOCK_PACKS_DEPENDENCIES_RESULT = """{
 }"""
 
 
-def mocked_generic_request_func(self, path, method, body, accept, _request_timeout):
-    if path == '/contentpacks/marketplace/search':
-        return MOCK_PACKS_SEARCH_RESULTS, 200, None
+def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None):
+    if path == '/contentpacks/marketplace/HelloWorld':
+        return MOCK_HELLOWORLD_SEARCH_RESULTS, 200, None
+    if path == '/contentpacks/marketplace/AzureSentinel':
+        return MOCK_AZURESENTINEL_SEARCH_RESULTS, 200, None
     elif path == '/contentpacks/marketplace/install':
         return MOCK_PACKS_INSTALLATION_RESULT, 200, None
     elif path == '/contentpacks/marketplace/search/dependencies':
@@ -114,10 +95,19 @@ class MockClient:
         self.api_client = MockApiClient()
 
 
+class MockLock:
+    def acquire(self):
+        return None
+
+    def release(self):
+        return None
+
+
 def test_search_and_install_packs_and_their_dependencies(mocker):
     """
     Given
-    - Valid and invalid integrations paths.
+    - Valid pack ids.
+    - Invalid pack id.
     When
     - Running integrations configuration tests.
     Then
@@ -133,6 +123,7 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
 
     client = MockClient()
 
+    mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
     mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
     prints_manager = ParallelPrintsManager(1)
@@ -166,6 +157,7 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
 
     client = MockClient()
 
+    mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
     mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
     prints_manager = ParallelPrintsManager(1)
@@ -175,3 +167,47 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
                                                                                       prints_manager,
                                                                                       is_private=False)
     assert success is False
+
+
+def test_search_pack_with_id(mocker):
+    """
+   Given
+   - Pack with a new name (different from its ID)
+   When
+   - Searching the pack in the Demsito instance.
+   Then
+   - Ensure the pack is found using its ID
+   """
+    client = MockClient()
+    prints_manager = ParallelPrintsManager(1)
+    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
+    expected_response = {
+        'id': 'HelloWorld',
+        'version': '1.1.10'
+    }
+    assert expected_response == script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, None)
+
+
+def test_search_pack_with_failure(mocker):
+    """
+   Given
+   - Error when searching for pack
+   - Response with missing data
+   When
+   - Searching the pack in the Demsito instance for installation.
+   Then
+   - Ensure error is raised.
+   """
+    client = MockClient()
+    prints_manager = ParallelPrintsManager(1)
+    lock = MockLock()
+
+    # Error when searching for pack
+    mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
+    script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, lock)
+    assert not script.SUCCESS_FLAG
+
+    # Response with missing data
+    mocker.patch.object(demisto_client, 'generic_request_func', return_value=('{"id": "HelloWorld"}', 200, None))
+    script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, lock)
+    assert not script.SUCCESS_FLAG
