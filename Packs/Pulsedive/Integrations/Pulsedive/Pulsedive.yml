@@ -282,7 +282,7 @@ script:
       name: url
       isArray: true
       required: true
-    description: ' Returns URL information and reputation.'
+    description: Returns URL information and reputation.
     name: url
     outputs:
     - contextPath: URL.Data
