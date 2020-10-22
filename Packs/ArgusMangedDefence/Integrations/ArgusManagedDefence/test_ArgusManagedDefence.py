@@ -29,6 +29,13 @@ def test_build_argus_priority_from_min_severity():
     assert build_argus_priority_from_min_severity("critical") == ["critical"]
 
 
+def test_parse_first_fetch():
+    from ArgusManagedDefence import parse_first_fetch
+    assert parse_first_fetch("some string") == "-some string"
+    assert parse_first_fetch("-some string") == "-some string"
+    assert parse_first_fetch(123) == 123
+
+
 def test_is_valid_service():
     from ArgusManagedDefence import is_valid_service
 

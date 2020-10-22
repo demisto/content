@@ -163,6 +163,13 @@ def build_argus_priority_from_min_severity(min_severity: str) -> List[str]:
     return min_severity_list
 
 
+def parse_first_fetch(first_fetch: Any) -> Any:
+    if isinstance(first_fetch, str):
+        if first_fetch[0] != "-":
+            first_fetch = f"-{first_fetch}"
+    return first_fetch
+
+
 def build_tags_from_list(lst: list) -> List[Dict]:
     if not lst:
         return None
@@ -192,7 +199,7 @@ def pretty_print_case_metadata(
     string += (
         f"Reported by {data['publishedByUser']['name']} at {data['publishedTime']}\n\n"
     )
-    string += data["description"]
+    string += data["description"]  # TODO DisplayHTML playbook# ?
     return string
 
 
@@ -221,7 +228,7 @@ def test_module_command() -> str:
 
 
 def fetch_incidents(last_run: dict, first_fetch_period: str):
-    start_timestamp = last_run.get("start_timestamp", None) if last_run else None
+    start_timestamp = last_run.get("start_time", None) if last_run else None
     # noinspection PyTypeChecker
     result = advanced_case_search(
         startTimestamp=start_timestamp if start_timestamp else first_fetch_period,
@@ -234,7 +241,7 @@ def fetch_incidents(last_run: dict, first_fetch_period: str):
         subCriteria=[
             {"exclude": True, "status": ["closed"]},
         ],
-        timeFieldStrategy=["createdTimestamp"]
+        timeFieldStrategy=["createdTimestamp"],
     )
     incidents = []
     for case in result["data"]:
@@ -257,7 +264,9 @@ def fetch_incidents(last_run: dict, first_fetch_period: str):
                 "rawJson": json.dumps(case),
             }
         )
-    last_run["start_timestamp"] = incidents[-1].get("occurred", None) if incidents else None
+    last_run["start_time"] = (
+        incidents[-1].get("occurred", None) if incidents else None
+    )
     return last_run, incidents
 
 
@@ -986,7 +995,9 @@ def main() -> None:
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
 
-    first_fetch_period = demisto.params().get("first_fetch_period", "-1 day")
+    first_fetch_period = parse_first_fetch(
+        demisto.params().get("first_fetch_period", "-1 day")
+    )
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
