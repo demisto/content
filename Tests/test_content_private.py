@@ -1161,6 +1161,8 @@ def lock_expired(lock_file: storage.Blob, lock_timeout: str) -> bool:
 
 def main():
     print("Time is: {}\n\n\n".format(datetime.datetime.now()))
+    with open("./Tests/filter_file.txt", "r") as filter_file:
+        print(f"filter is this: {filter_file}")
     tests_settings = options_handler()
     manage_tests(tests_settings)
 

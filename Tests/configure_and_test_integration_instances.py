@@ -1243,6 +1243,7 @@ def test_pack_metadata():
 def private_test_pack_zip():
     content_path = '/home/runner/work/content-private/content-private/content'
     target = '/home/runner/work/content-private/content-private/content/test_pack.zip'
+
     with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
         for test_path, test in test_files(content_path):
@@ -1259,6 +1260,7 @@ def private_test_pack_zip():
                 else:
                     test_target = f'test_pack/TestPlaybooks/{test}'
                 zip_file.writestr(test_target, test_file.read())
+
 
 def test_pack_zip(build: Build):
     if build.is_private:
