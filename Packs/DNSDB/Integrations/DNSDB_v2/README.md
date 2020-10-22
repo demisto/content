@@ -16,10 +16,10 @@ lookup rich, historical DNS information – either as playbook tasks or through
 API calls in the War Room – to access rdata and rrset records.  It was
 integrated and tested with version 1 of the DNSDB API.
 
-## Configure DNSDB_v2 on Cortex XSOAR
+## Configure DNSDB v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DNSDB_v2.
+2. Search for DNSDB v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
