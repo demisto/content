@@ -197,17 +197,6 @@ references:
             python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
         fi
 
-  setup_instance: &setup_instance
-    run:
-      name: Setup Instance
-      when: on_success
-      command: |
-        if ./Tests/scripts/is_ami.sh ;
-          then
-            python3 ./Tests/scripts/run_content_installation.py
-          else
-            ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-        fi
 
   create_artifact: &create_artifact
     run:
@@ -299,6 +288,7 @@ references:
       command: |
         python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
         python3 -m pytest ./Tests/Marketplace/Tests/ -v
+        python3 -m pytest ./Tests/scripts/utils/tests -v
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
           ./Tests/scripts/sdk_pylint_check.sh
@@ -538,18 +528,16 @@ jobs:
       - *create_artifact
       - *update_tests_step
       - *download_configuration
-      - run:
-          name: Download Artifacts
-          when: always
-          command: |
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                echo "Using AMI - Not downloading artifacts"
-
-              else
-                ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
-            fi
+      - when:
+          # If this is an ami run - No need to download server artifacts
+          condition: << pipeline.parameters.non_ami_run >>
+          steps:
+            - run:
+                name: Download Artifacts
+                when: always
+                command: |
+                  ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                  cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
       - *collect_test_list_and_content_packs
       - *calculate_packs_dependencies
       - unless:
@@ -580,7 +568,6 @@ jobs:
                 command: ./Tests/scripts/upload_artifacts.sh
                 when: always
             - *create_instance
-            - *setup_instance
             - *store_artifacts
       - *persist_to_workspace
   Server 5_0:
@@ -983,7 +970,6 @@ jobs:
       - *prepare_environment
       - *download_configuration
       - *create_instance
-      - *setup_instance
       - run:
           name: Wait until server ready
           when: always
