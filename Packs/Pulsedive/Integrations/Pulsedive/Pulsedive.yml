@@ -302,7 +302,7 @@ script:
     - contextPath: URL.Malicious.Description
       description: A description of the malicious URL.
       type: string
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.6.12176
   runonce: false
   script: ''
   subtype: python3
