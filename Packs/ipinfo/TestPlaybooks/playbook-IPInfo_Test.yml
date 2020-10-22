@@ -62,8 +62,7 @@ tasks:
       id: f4e163e3-9257-4f98-88da-b780f5bdd2f2
       version: -1
       name: ip
-      description: Check IP reputation (when information is available, returns a JSON
-        with details).  Uses all configured Threat Intelligence feeds
+      description: Check IP reputation (when information is available, returns a JSON with details).  Uses all configured Threat Intelligence feeds
       script: ipinfo|||ip
       type: regular
       iscommand: true
@@ -192,3 +191,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -1,7 +1,7 @@
 id: playbook5
 version: -1
 system: true
-fromversion: 3.5.0
+fromversion: 5.0.0
 name: Phishing Playbook - Automated
 description: |-
   Deprecated. We recommend using Phishing investigation - Generic playbook instead.
@@ -96,9 +96,7 @@ tasks:
       attachIDs: {}
       bcc: {}
       body:
-        simple: "Hi ${Account=val.DisplayName || val.Email.Address},\nWe've received
-          your email and are investigating.\nPlease do not touch the email until further
-          notice.\n\nCordially, \n  Your friendly neighborhood security team"
+        simple: "Hi ${Account=val.DisplayName || val.Email.Address},\nWe've received your email and are investigating.\nPlease do not touch the email until further notice.\n\nCordially, \n  Your friendly neighborhood security team"
       cc: {}
       htmlBody: {}
       noteEntryID: {}
@@ -252,8 +250,7 @@ tasks:
       id: 7f2d8700-472f-4cfa-87e4-97681e5309fa
       version: -1
       name: Check sender domain distance
-      description: Check if the sender is trying to confuse the user with a domain
-        that is very close to one of our own email domains
+      description: Check if the sender is trying to confuse the user with a domain that is very close to one of our own email domains
       scriptName: CheckSenderDomainDistance
       type: regular
       iscommand: false
@@ -288,8 +285,7 @@ tasks:
       id: 5778ac35-8936-4170-8cf6-8cc09c98a300
       version: -1
       name: Manually inspect the email for anything suspicious
-      description: Since automatic triage did not find anything wrong, please inspect
-        it manually and see if something stands out
+      description: Since automatic triage did not find anything wrong, please inspect it manually and see if something stands out
       type: regular
       iscommand: false
       brand: ""
@@ -317,8 +313,7 @@ tasks:
       id: 5445acdd-df36-403e-8635-a0cbc3bd3f04
       version: -1
       name: Assign and involve appropriate personnel
-      description: 'Invite the relevant users for investigation - malware expert and
-        network experts if needed. '
+      description: 'Invite the relevant users for investigation - malware expert and network experts if needed. '
       type: regular
       iscommand: false
       brand: ""
@@ -346,8 +341,7 @@ tasks:
       id: e76cfd73-35f3-4065-8e59-c37e365cd06c
       version: -1
       name: Assess severity
-      description: 'Based on the end user affected, and other information assess and
-        change the severity if needed. '
+      description: 'Based on the end user affected, and other information assess and change the severity if needed. '
       type: regular
       iscommand: false
       brand: ""
@@ -522,8 +516,7 @@ tasks:
       brand: ""
     scriptarguments:
       notes:
-        simple: Concluded that this email is safe and sent a response to user notifying
-          them that they may proceed normally.
+        simple: Concluded that this email is safe and sent a response to user notifying them that they may proceed normally.
       reason:
         simple: Safe
     separatecontext: false
@@ -607,10 +600,7 @@ tasks:
       key:
         simple: AttachmentMD5
       value:
-        simple: ${File(!(val.Type.toLowerCase().indexOf('composite document file v2
-          document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
-          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
-          val.Type.toLowerCase().indexOf('crlf') >= 0)).EntryID}
+        simple: ${File(!(val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 && val.Type.toLowerCase().indexOf('crlf') >= 0)).EntryID}
     separatecontext: false
     view: |-
       {
@@ -1030,9 +1020,8 @@ inputs:
   value:
     simple: company.com
   required: false
-  description: The domains for the company to try and match closeness of sender. Comma
-    separated.
-  playbookInputQuery: null
+  description: The domains for the company to try and match closeness of sender. Comma separated.
+  playbookInputQuery:
 outputs: []
 tests:
-  - No test - Deprecated playbook
+- No test - Deprecated playbook

@@ -217,7 +217,7 @@ Creates a new issue in Jira.
 
 
 ##### Command Example
-```!jira-create-issue summary="test SOC issue26" projectKey=DEM issueJson=`{"fields":{"issuetype":{"name":"Request for Action"}}}````
+```!jira-create-issue summary="test SOC issue26" projectKey=DEM issueJson=\`{"fields":{"issuetype":{"name":"Request for Action"}}}\````
 
 ##### Context Example
 ```

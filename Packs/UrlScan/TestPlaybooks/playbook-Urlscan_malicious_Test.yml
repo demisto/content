@@ -99,10 +99,7 @@ tasks:
       id: aa129b6a-759b-42e1-8c01-940a6d9edb86
       version: -1
       name: Get result
-      description: Filter context keys by applying one of the various available manipulations
-        and storing in a new context key. Please notice that the resulting context
-        key will not be available automatically as an option but you can still specify
-        it.
+      description: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
       type: condition
       iscommand: false
       brand: ""
@@ -203,10 +200,7 @@ tasks:
       id: 06cffd37-650e-41c4-812a-51789f03771c
       version: -1
       name: Get result
-      description: Filter context keys by applying one of the various available manipulations
-        and storing in a new context key. Please notice that the resulting context
-        key will not be available automatically as an option but you can still specify
-        it.
+      description: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
       type: condition
       iscommand: false
       brand: ""
@@ -747,3 +741,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

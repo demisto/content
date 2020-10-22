@@ -2,9 +2,11 @@ commonfields:
   id: VectraHosts
   version: -1
 name: VectraHosts
-script: |
+script: >
   keys = ['id','name','state','t_score','c_score','last_source','last_detection_timestamp','detection_set','url','tags','key_asset','new_host_pointer','sensor_luid','t_score','targets_key_asset']
+
   resp = demisto.executeCommand("vec-hosts", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -22,8 +24,7 @@ type: python
 subtype: python2
 tags:
 - Vectra
-comment: Deprecated. Host information includes data that correlates the host data to detected
-  security events
+comment: Deprecated. Host information includes data that correlates the host data to detected security events
 system: true
 args:
 - description: Filters objects listed
@@ -32,10 +33,7 @@ args:
   name: page
 - description: Page size. Possible values are a positive integer or all
   name: page_size
-- description: "Orders records by last timestamp, threat score and certainty score.\
-    \ The default out sorts threat and certainty score in ascending order. Scores\
-    \ can sorted in descending order by prepending the query with \u201Cminus\u201D\
-    \ symbol"
+- description: "Orders records by last timestamp, threat score and certainty score. The default out sorts threat and certainty score in ascending order. Scores can sorted in descending order by prepending the query with “minus” symbol"
   name: ordering
 - description: filter by name
   name: name
@@ -55,8 +53,7 @@ args:
   name: c_score_gte
 - description: filter by last_detection_timestamp
   name: last_detection_timestamp
-- description: filter by a tag or a comma-separated list of tags (returns hosts that
-    contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
+- description: filter by a tag or a comma-separated list of tags (returns hosts that contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
   name: tags
 - description: 'filter by key asset: True, False'
   name: key_assest
@@ -68,3 +65,4 @@ dependson:
   must:
   - vec-hosts
 deprecated: true
+fromversion: 5.0.0

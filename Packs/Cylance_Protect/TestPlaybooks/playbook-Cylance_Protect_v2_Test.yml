@@ -33,9 +33,7 @@ tasks:
       id: 23730283-bf3f-4308-8673-cd9a4e94d76d
       version: -1
       name: cylance-protect-get-devices
-      description: Allows a caller to request a page with a list of Console device
-        resources belongings to a Tenant, sorted by registration (created) date in
-        descending order (most recent device registered listed first)
+      description: Allows a caller to request a page with a list of Console device resources belongings to a Tenant, sorted by registration (created) date in descending order (most recent device registered listed first)
       script: '|||cylance-protect-get-devices'
       type: regular
       iscommand: true
@@ -63,8 +61,7 @@ tasks:
       id: cef538aa-1852-47ed-8bc9-0f0505b69d2b
       version: -1
       name: cylance-protect-get-device-threats
-      description: Allows a caller to request a page with a list of threats found
-        on a specific device
+      description: Allows a caller to request a page with a list of threats found on a specific device
       script: '|||cylance-protect-get-device-threats'
       type: regular
       iscommand: true
@@ -164,8 +161,7 @@ tasks:
       id: 76546d6f-1c33-44bd-8dde-db457eeba6a7
       version: -1
       name: cylance-protect-get-zones
-      description: Request zone information for your organization. This will return
-        the top 100 records
+      description: Request zone information for your organization. This will return the top 100 records
       script: '|||cylance-protect-get-zones'
       type: regular
       iscommand: true
@@ -617,3 +613,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

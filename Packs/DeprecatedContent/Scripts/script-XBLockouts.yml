@@ -2,16 +2,21 @@ commonfields:
   id: XBLockouts
   version: -1
 name: XBLockouts
-script: |-
+script: >-
   import time
+
   rows = '100'
+
   if demisto.args().has_key('rows'):
       rows = demisto.args()['rows']
   days = '1'
+
   if demisto.args().has_key('days'):
       days = demisto.args()['days']
   res = '## Exabeam Lockouts'
+
   entry = demisto.executeCommand('xb-lockouts', {'numberOfResults': rows, 'num': days})[0]
+
   if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
       lockouts = demisto.get(entry, 'Contents.lockouts')
       if lockouts:
@@ -61,3 +66,4 @@ dependson:
   must:
   - xb-lockouts
 timeout: 0s
+fromversion: 5.0.0

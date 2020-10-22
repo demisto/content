@@ -1,7 +1,7 @@
 id: PAN-OS - Create Or Edit Rule
 version: -1
 name: PAN-OS - Create Or Edit Rule
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: Creates or edits a Panorama rule and moves it into the desired position
 starttaskid: "0"
 tasks:
@@ -113,8 +113,7 @@ tasks:
       id: baccdbc9-eb31-4a3f-8e18-73996824ef3e
       version: -1
       name: Is the rule inbound or outbound?
-      description: Checks whether the rule is inbound or outbound based on playbook
-        input
+      description: Checks whether the rule is inbound or outbound based on playbook input
       type: condition
       iscommand: false
       brand: ""
@@ -163,8 +162,7 @@ tasks:
       id: f6317490-2c98-48a3-8ff8-c87e7d441343
       version: -1
       name: Is the rule inbound or outbound?
-      description: Checks whether the rule is inbound or outbound based on playbook
-        input
+      description: Checks whether the rule is inbound or outbound based on playbook input
       type: condition
       iscommand: false
       brand: ""
@@ -486,8 +484,7 @@ inputs:
 - key: rule_name
   value: {}
   required: true
-  description: The name of the rule to update, or the name of the rule that will be
-    created.
+  description: The name of the rule to update, or the name of the rule that will be created.
 - key: log-forwarding-object-name
   value: {}
   required: false
@@ -506,8 +503,7 @@ inputs:
 - key: relative-rule-name
   value: {}
   required: false
-  description: If the rule-position that is chosen is before or after, specify the
-    rule name to which it is related.
+  description: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
 - key: inbound-or-outbound-rule
   value: {}
   required: false
@@ -527,10 +523,8 @@ inputs:
 - key: pre-post-rulebase
   value: {}
   required: false
-  description: Determines whether the rule is a pre-rulebase or post-rulebase rule,
-    according to the rule structure.
-    Exists only in panorama!
+  description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
 outputs: []
 tests:
-  - no test
+- no test
 sourceplaybookid: PAN-OS - Create Or Edit Rule

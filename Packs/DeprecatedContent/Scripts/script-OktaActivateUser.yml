@@ -2,9 +2,10 @@ commonfields:
   id: 840aa9a7-04b2-4505-8238-8fe85f010dde
   version: -1
 name: OktaActivateUser
-script: |2
+script: >2
 
   resp = demisto.executeCommand("okta-activate-user", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -32,3 +33,4 @@ deprecated: true
 dependson:
   must:
   - okta-activate-user
+fromversion: 5.0.0

@@ -2,7 +2,7 @@ id: playbook15
 version: -1
 name: Tanium Demo Playbook
 description: This playbook shows how to use automation scripts to interact with Tanium.
-fromversion: 2.5.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -40,8 +40,7 @@ tasks:
       id: 3533d2be-a90d-4f93-8630-c169d790254d
       version: -1
       name: Ask questions
-      description: Ask the server to parse the question text and choose the first
-        parsed result as the question to run
+      description: Ask the server to parse the question text and choose the first parsed result as the question to run
       script: Tanium|||tn-ask-question
       type: regular
       iscommand: true
@@ -72,10 +71,8 @@ tasks:
     task:
       id: d7609125-e21f-4871-8d72-518017ea0b93
       version: -1
-      name: Run a complex Tanium query to find all machines with processes starting
-        with "EC"
-      description: Ask the server to parse the question text and choose the first
-        parsed result as the question to run
+      name: Run a complex Tanium query to find all machines with processes starting with "EC"
+      description: Ask the server to parse the question text and choose the first parsed result as the question to run
       script: Tanium|||tn-ask-question
       type: regular
       iscommand: true
@@ -270,4 +267,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No test
+- No test

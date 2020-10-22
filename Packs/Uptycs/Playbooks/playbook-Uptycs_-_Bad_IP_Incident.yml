@@ -3,7 +3,7 @@ version: -1
 name: Uptycs - Bad IP Incident
 description: Get information about processes which open connections to known Bad IP's
 starttaskid: "0"
-fromversion: ""
+fromversion: "5.0.0"
 tasks:
   "0":
     id: "0"
@@ -114,8 +114,7 @@ tasks:
       id: d7d24260-1542-4d2a-83e3-63eab8da4efe
       version: -1
       name: Get child processes
-      description: Get information about the child processes which were spawned from
-        the parent process of the process which opened the connection.
+      description: Get information about the child processes which were spawned from the parent process of the process which opened the connection.
       script: '|||uptycs-get-process-child-processes'
       type: regular
       iscommand: true
@@ -193,8 +192,7 @@ tasks:
       id: cf635963-d89e-4c75-87e6-e53f74ac80ee
       version: -1
       name: Get parent info
-      description: Get information about the parent process of the process which opened
-        the connection.
+      description: Get information about the parent process of the process which opened the connection.
       script: '|||uptycs-get-parent-information'
       type: regular
       iscommand: true
@@ -227,8 +225,7 @@ tasks:
       id: 9b99e315-8a5d-4153-8923-2ec5ccb7265e
       version: -1
       name: Get threat indicator info
-      description: Get information about the threat indicator which caused the alert
-        to be fired.
+      description: Get information about the threat indicator which caused the alert to be fired.
       script: '|||uptycs-get-threat-indicator'
       type: regular
       iscommand: true
@@ -256,8 +253,7 @@ tasks:
       id: df3199e9-f3c5-4689-8ed7-0822dc32a9c6
       version: -1
       name: Get threat source info
-      description: Get information about the source of the threat indicator which
-        fired the alert.
+      description: Get information about the source of the threat indicator which fired the alert.
       script: '|||uptycs-get-threat-source'
       type: regular
       iscommand: true
@@ -354,4 +350,4 @@ outputs:
   description: time that the process was removed
   type: date
 tests:
-  - No test
+- No test

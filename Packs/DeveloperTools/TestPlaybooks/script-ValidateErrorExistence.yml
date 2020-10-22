@@ -2,11 +2,14 @@ commonfields:
   id: ValidateErrorExistence
   version: -1
 name: ValidateErrorExistence
-script: |-
+script: >-
   res = []
 
+
   entries = demisto.executeCommand("getEntries", {})
+
   error_was_found = False
+
 
   for entry in entries:
       if isError(entry):
@@ -24,3 +27,4 @@ type: python
 subtype: python2
 tags: []
 comment: ''
+fromversion: 5.0.0

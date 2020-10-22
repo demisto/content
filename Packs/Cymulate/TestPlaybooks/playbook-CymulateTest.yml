@@ -110,10 +110,7 @@ tasks:
       id: 0c30303a-837b-497f-8398-af396f6cef42
       version: -1
       name: Rerun Simulation
-      description: Extract user's response from EmailAskUser reply. Returns the first
-        textual response line of the provided entry that contains the reply body.
-        Use ${lastCompletedTaskEntries} to analyze the previous playbook task containing
-        the user's reply.
+      description: Extract user's response from EmailAskUser reply. Returns the first textual response line of the provided entry that contains the reply body. Use ${lastCompletedTaskEntries} to analyze the previous playbook task containing the user's reply.
       type: condition
       iscommand: false
       brand: ""
@@ -141,8 +138,8 @@ tasks:
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -157,9 +154,7 @@ tasks:
       id: 23f90fa0-e382-4f74-87a6-a68adbb8aecc
       version: -1
       name: Any payloads penetrated?
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -341,8 +336,7 @@ tasks:
       id: e6201f27-4344-4c21-8db3-dff1998cef0d
       version: -1
       name: Is Cymulate integration enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -461,3 +455,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -1009,9 +1009,7 @@ tasks:
       id: 8b5caa36-b189-4e49-8850-ed00318d5e64
       version: -1
       name: Get user PwdLastSet attribute
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -1169,3 +1167,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

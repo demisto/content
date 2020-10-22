@@ -1,3 +1,5 @@
+from collections import Counter
+
 from DBotMLFetchData import *
 from CommonServerPython import *
 import string
@@ -95,8 +97,8 @@ def test_get_html_features():
 
 # disable-secrets-detection-start
 def test_get_url_features(mocker):
-    email_body = 'https://www.a.com https://www.b.com http://www.c.com/vcvc/vcvc/vc/b'   # disable-secrets-detection
-    embedded_url = 'https://www.a.com'   # disable-secrets-detection
+    email_body = 'https://www.a.com https://www.b.com http://www.c.com/vcvc/vcvc/vc/b'  # disable-secrets-detection
+    embedded_url = 'https://www.a.com'  # disable-secrets-detection
     all_urls = email_body.split() + [embedded_url]
     email_html = '<a href="{}">Link</a>'.format(embedded_url)
     soup = BeautifulSoup(email_html, "html.parser")
@@ -119,6 +121,8 @@ def test_get_url_features(mocker):
     email_body_3 = 'https://drive.google.com/file/d/1f9pBukhG_5jB-uh0TeZiYq0rV2GUXftr/view'  # disable-secrets-detection
     url_features_3 = get_url_features(email_body_3, '', empty_bs)
     assert url_features_3['drive_count'] == 1
+
+
 # disable-secrets-detection-end
 
 
@@ -165,14 +169,14 @@ def test_parse_received_headers_2():
     n_received_headers, [first_server, first_envelop, _, _] = parse_received_headers(email_headers)
     assert n_received_headers == 2
     assert first_server['domain'] == 'google'
-    assert first_envelop['address'] == 'mt.kb.user@gmail.com'   # disable-secrets-detection
+    assert first_envelop['address'] == 'mt.kb.user@gmail.com'  # disable-secrets-detection
     assert first_envelop['domain'] == 'gmail'
 
 
 def test_parse_received_headers_3():
     value = 'from po-out-1718.google.com ([xxx.xxx.xxx.xxx]:xxxx) by cl35.gs01.gridserver.com with esmtp (Exim 4.63) ' \
             '(envelope-from <mt.kb.user@gmail.com>) id 1KDoNH-0000f0-RL for user@example.com;' \
-            ' Tue, 25 Jan 2011 15:31:01 -0700'    # disable-secrets-detection
+            ' Tue, 25 Jan 2011 15:31:01 -0700'  # disable-secrets-detection
 
     email_headers = [{'headername': 'Received', 'headervalue': value}]
     n_received_headers, [_, _, second_server, second_envelop] = parse_received_headers(email_headers)
@@ -193,7 +197,7 @@ def test_headers_features():
     headers = [
         {'headername': 'Received-SPF', 'headervalue': 'SoftFail (xxx.com: domain of xxx.com '
                                                       'discourages use of xxx.xxx.xxx.xxx.xxx '
-                                                      'permitted sender)'},   # disable-secrets-detection
+                                                      'permitted sender)'},  # disable-secrets-detection
         {'headername': 'Authentication-Results', 'headervalue': 'spf=neutral (sender IP is xxx.xxx.xxx.xxx) '
                                                                 'smtp.mailfrom=xxx.net; dkim=fail (body hash did not '
                                                                 'verify) header.d=xxxx.com;xxxx.com; dmarc=fail '
@@ -213,11 +217,11 @@ def test_headers_features_2(mocker):
     load_external_resources()
     headers = [
         {'headername': 'From', 'headervalue': ' =?UTF-8?B?TcKqIElzYWJlbCBHYXJjw61hIExvc2FkYSA8TUlHQGVsemFidXJ1LmVz'
-                                              'Pg==?= <name@domain.com>'},   # disable-secrets-detection
-        {'headername': 'Return-Path', 'headervalue': 'name@domain.com'},   # disable-secrets-detection
+                                              'Pg==?= <name@domain.com>'},  # disable-secrets-detection
+        {'headername': 'Return-Path', 'headervalue': 'name@domain.com'},  # disable-secrets-detection
         {'headername': 'Received', 'headervalue': 'from [xxx.xxx.xxx.xxx] ([xxx.xxx.xxx.xxx]) by domain.com with '
                                                   'MailEnable ESMTPA; Tue, 21 Jan 2020 05:16:47 '
-                                                  '-0600'},   # disable-secrets-detection
+                                                  '-0600'},  # disable-secrets-detection
     ]
     res = get_headers_features(headers)
     assert res['From.Domain==Return-Path.Domain']
@@ -229,7 +233,7 @@ def test_headers_features_3_virus_total_format(mocker):
     mocker.patch('DBotMLFetchData.open', mock_read_func)
     load_external_resources()
     headers = [
-        {'headername': 'From', 'headervalue': 'Jhon Jhon<purchase@domain.com>'},   # disable-secrets-detection
+        {'headername': 'From', 'headervalue': 'Jhon Jhon<purchase@domain.com>'},  # disable-secrets-detection
         {'headername': 'Return-Path', 'headervalue': '<>'},
         {'headername': 'Received', 'headervalue': 'from domain.com ([xxx.xxx.xxx.xxx] [xxx.xxx.xxx.xxx]) by xxx.xxx.ro '
                                                   '(amavisd-milter) with ESMTP id xxx; Thu, 9 Jan 2020 12:21:34 +0200 '
@@ -257,7 +261,7 @@ def test_headers_features_4():
         {'headername': 'List-Unsubscribe', 'headervalue': 'Message-Id: Sender: Date; bh=GExv5cay5SOdSeHjP5vfnhswJAlO/X4'
                                                           'tR2EBLXjqNXw=; b=KPBtMUsmW0F+wD5qXzQoS6U2fzWPSEWbAVK+AEha2hx'
                                                           'Q7q1PWplkMU7xIiehm0vlO'
-                                                          'C7eTrUh'},   # disable-secrets-detection
+                                                          'C7eTrUh'},  # disable-secrets-detection
     ]
     res = get_headers_features(headers)
     assert res['unsubscribe_headers']
@@ -366,7 +370,7 @@ def test_whole_preprocessing(mocker):
     debug = False
     mocker.patch('DBotMLFetchData.open', mock_read_func)
 
-    data_file_path = 'test_data/50_incidents.p'
+    data_file_path = 'test_data/100_incidents.p'
     with open(data_file_path, 'rb') as file:
         incidents = pickle.load(file)
     prof = cProfile.Profile()
@@ -375,4 +379,56 @@ def test_whole_preprocessing(mocker):
         with open('output.txt', 'w') as file:
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
-    assert all('Text length is shorter than allowed' in e_msg for e_msg in data['log']['exceptions'])
+    assert len(data['log']['exceptions']) == 0
+    assert len(data['X']) == 100
+
+
+def test_whole_preprocessing_short_incident(mocker):
+    import cProfile
+    debug = False
+    mocker.patch('DBotMLFetchData.open', mock_read_func)
+
+    data_file_path = 'test_data/100_incidents.p'
+    with open(data_file_path, 'rb') as file:
+        incidents = pickle.load(file)
+    short_text_incident = {'closeReason': 'shortText', 'emailbody': 'short text',
+                           'created': '2020-05-10T18:39:04+03:00',
+                           'attachment': []}
+    short_text_incident_index = 50
+    incidents = incidents[:short_text_incident_index] + [short_text_incident] + incidents[short_text_incident_index:]
+    prof = cProfile.Profile()
+    data = prof.runcall(extract_data_from_incidents, incidents=incidents)
+    if debug:
+        with open('output.txt', 'w') as file:
+            json.dump(data, fp=file, indent=4)
+        prof.print_stats(sort='cumtime')
+    assert len(data['log']['exceptions']) == 1
+    assert len(data['X']) == 100
+    # check labels order kept as original excluding the short label
+    assert Counter(x['closeReason'] for x in data['X']) == Counter(
+        [inc['closeReason'] for i, inc in enumerate(incidents) if i != short_text_incident_index])
+
+
+def test_whole_preprocessing_incdient_without_label(mocker):
+    import cProfile
+    debug = False
+    mocker.patch('DBotMLFetchData.open', mock_read_func)
+
+    data_file_path = 'test_data/100_incidents.p'
+    with open(data_file_path, 'rb') as file:
+        incidents = pickle.load(file)
+    incident_without_label = {'closeReason': '', 'emailbody': 'short text',
+                              'created': '2020-05-10T18:39:04+03:00', 'attachment': []}
+    no_label_idx = 50
+    incidents = incidents[:no_label_idx] + [incident_without_label] + incidents[no_label_idx:]
+    prof = cProfile.Profile()
+    data = prof.runcall(extract_data_from_incidents, incidents=incidents)
+    if debug:
+        with open('output.txt', 'w') as file:
+            json.dump(data, fp=file, indent=4)
+        prof.print_stats(sort='cumtime')
+    assert len(data['log']['exceptions']) == 0
+    assert len(data['X']) == 100
+    # check labels order kept as original excluding the short label
+    assert Counter(x['closeReason'] for x in data['X']) == Counter(
+        [inc['closeReason'] for i, inc in enumerate(incidents) if i != no_label_idx])

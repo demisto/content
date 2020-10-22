@@ -2,7 +2,7 @@ commonfields:
   id: PanoramaConfig
   version: -1
 name: PanoramaConfig
-script: |-
+script: >-
   function AddArgumentOpen(arg, fieldName, member) {
       if (arg) {
           if (member) {
@@ -13,12 +13,14 @@ script: |-
       }
       return '';
   }
+
   function AddArgumentYesNo(arg, fieldName) {
       if (arg  !== undefined) {
               return '<'+fieldName+'>' + (arg ? 'yes' : 'no') + '</'+fieldName+'>';
           }
       return '';
   }
+
   var req = {
           type: 'config',
           action: 'set',
@@ -39,6 +41,7 @@ script: |-
               AddArgumentYesNo(args.disableServerResponseInspection, 'disable-server-response-inspection')
       };
   var raw = executeCommand('panorama', req);
+
   return raw[0].Contents.response['-status'];
 type: javascript
 tags:
@@ -51,18 +54,15 @@ args:
 - name: ruleName
   description: Name for the rule to be configured
 - name: xpath
-  description: Usually not required as ruleName is sufficient. Direct XPath to the
-    rule entry to be modified.
+  description: Usually not required as ruleName is sufficient. Direct XPath to the rule entry to be modified.
 - name: srcIP
   description: Source IP address
 - name: dstIP
   description: Destination IP address
 - name: negateSrc
-  description: Yes/No - whether to negate the source IP address (match all except
-    the specified address)
+  description: Yes/No - whether to negate the source IP address (match all except the specified address)
 - name: negateDst
-  description: Yes/No - whether to negate the destination IP address (match all except
-    the specified address)
+  description: Yes/No - whether to negate the destination IP address (match all except the specified address)
 - name: action
   description: Action for the rule
 - name: service
@@ -88,3 +88,4 @@ dependson:
 timeout: 0s
 tests:
 - palo_alto_firewall_test_pb
+fromversion: 5.0.0

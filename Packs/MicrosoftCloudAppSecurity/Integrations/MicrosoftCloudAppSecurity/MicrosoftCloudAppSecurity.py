@@ -1,5 +1,9 @@
 import json
 from typing import Dict, Any
+
+from dateparser import parse
+from pytz import utc
+
 import demistomock as demisto
 import requests
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -18,13 +22,15 @@ DEFAULT_INCIDENT_TO_FETCH = 50
 SEVERITY_OPTIONS = {
     'Low': 0,
     'Medium': 1,
-    'High': 2
+    'High': 2,
+    'All': [0, 1, 2]
 }
 
 RESOLUTION_STATUS_OPTIONS = {
     'Open': 0,
     'Dismissed': 1,
-    'Resolved': 2
+    'Resolved': 2,
+    'All': [0, 1, 2]
 }
 
 # Note that number 4 is missing
@@ -77,6 +83,8 @@ STATUS_OPTIONS = {
     'Suspended': 3,
     'Deleted': 4
 }
+
+INTEGRATION_NAME = 'MicrosoftCloudAppSecurity'
 
 
 class Client(BaseClient):
@@ -139,12 +147,13 @@ class Client(BaseClient):
             url_suffix='/alerts/',
             json_data={
                 'filters': filters,
-                'limit': limit
+                'limit': limit,
+                'sortDirection': 'asc'
             }
         )
 
 
-def args_or_params_to_filter(arguments, args_or_params='args'):
+def args_to_filter(arguments):
     request_data: Dict[str, Any] = {}
     filters: Dict[str, Any] = {}
     for key, value in arguments.items():
@@ -180,8 +189,6 @@ def args_or_params_to_filter(arguments, args_or_params='args'):
             filters['isExternal'] = {'eq': IS_EXTERNAL_OPTIONS[value]}
         if key == 'status':
             filters[key] = {'eq': STATUS_OPTIONS[value]}
-    if args_or_params == 'params':
-        return filters
     request_data['filters'] = filters
     return request_data
 
@@ -205,7 +212,7 @@ def build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, sp
     elif custom_filter:
         request_data = json.loads(custom_filter)
     else:
-        request_data = args_or_params_to_filter(arguments)
+        request_data = args_to_filter(arguments)
     return request_data, url_suffix
 
 
@@ -259,6 +266,24 @@ def alerts_to_human_readable(alerts):
     headers = ['alert_id', 'alert_date', 'title', 'description', 'status_value', 'severity_value', 'is_open']
     human_readable = tableToMarkdown('Microsoft CAS Alerts', alerts_readable_outputs, headers, removeNull=True)
     return human_readable
+
+
+def extract_ip_indicators(activities):
+    indicators = []
+    for activity in activities:
+        ip_address = dict_safe_get(activity, ['device', 'clientIP'])
+        indicators.append(Common.IP(
+            ip=ip_address,
+            dbot_score=Common.DBotScore(
+                ip_address,
+                DBotScoreType.IP,
+                INTEGRATION_NAME,
+                Common.DBotScore.NONE,
+            ),
+            geo_latitude=dict_safe_get(activity, ['location', 'latitude']),
+            geo_longitude=dict_safe_get(activity, ['location', 'longitude']),
+        ))
+    return indicators
 
 
 def arrange_alerts_descriptions(alerts):
@@ -369,12 +394,14 @@ def list_activities_command(client, args):
     list_activities = activities_response_data.get('data') if activities_response_data.get('data') \
         else [activities_response_data]
     activities = arrange_entities_data(list_activities)
+    ip_indicators = extract_ip_indicators(activities)
     human_readable = activities_to_human_readable(activities)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.Activities',
         outputs_key_field='_id',
-        outputs=activities
+        outputs=activities,
+        indicators=ip_indicators,
     )
 
 
@@ -466,12 +493,11 @@ def calculate_fetch_start_time(last_fetch, first_fetch):
     if last_fetch is None:
         if not first_fetch:
             first_fetch = '3 days'
-        first_fetch_time = date_to_timestamp(first_fetch)
+        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)
+        first_fetch_time = int(first_fetch_dt.timestamp())
         return first_fetch_time
     else:
-        last_fetch = int(last_fetch)
-    latest_created_time = last_fetch
-    return latest_created_time
+        return int(last_fetch)
 
 
 def arrange_alerts_by_incident_type(alerts):
@@ -516,16 +542,42 @@ def fetch_incidents(client, max_results, last_run, first_fetch, filters):
     return next_run, incidents
 
 
+def params_to_filter(severity, resolution_status):
+    filters: Dict[str, Any] = {}
+    if len(severity) == 1:
+        filters['severity'] = {'eq': SEVERITY_OPTIONS[severity[0]]}
+
+    else:
+        severities = []
+        for severity_option in severity:
+            severities.append(SEVERITY_OPTIONS[severity_option])
+        filters['severity'] = {'eq': severities}
+
+    if len(resolution_status) == 1:
+        filters['resolutionStatus'] = {'eq': RESOLUTION_STATUS_OPTIONS[resolution_status[0]]}
+
+    else:
+        resolution_statuses = []
+        for resolution in resolution_status:
+            resolution_statuses.append(RESOLUTION_STATUS_OPTIONS[resolution])
+        filters['resolutionStatus'] = {'eq': resolution_statuses}
+    return filters
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
+
+    params = demisto.params()
     token = demisto.params().get('token')
     base_url = f'{demisto.params().get("url")}/api/v1'
     verify_certificate = not demisto.params().get('insecure', False)
     first_fetch = demisto.params().get('first_fetch')
     max_results = demisto.params().get('max_fetch')
     proxy = demisto.params().get('proxy', False)
+    severity = params.get('severity')
+    resolution_status = params.get('resolution_status')
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
@@ -539,13 +591,10 @@ def main():
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            params = demisto.params()
             if params.get('custom_filter'):
                 filters = json.loads(params.get('custom_filter'))
             else:
-                parameters = assign_params(severity=params.get('severity'),
-                                           resolution_status=params.get('resolution_status'))
-                filters = args_or_params_to_filter(parameters, args_or_params="params")
+                filters = params_to_filter(severity, resolution_status)
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=max_results,

@@ -1,7 +1,7 @@
 id: Detonate File - Generic Test
 version: -1
 name: Detonate File - Generic Test
-fromversion: "4.0.0"
+fromversion: "5.0.0"
 starttaskid: "0"
 tasks:
   "0":

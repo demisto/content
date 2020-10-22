@@ -1,5 +1,8 @@
 For full integration documentation, see our [reference docs](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-user).
 
+The commands: ***msgraph-user-terminate-session***, ***msgraph-user-change-password*** are only supported in a self-deployed application configuration.
+
+
 ## Authorize Cortex XSOAR for Microsoft Graph User
 
 You need to grant Cortex XSOAR authorization to access Microsoft Graph User.

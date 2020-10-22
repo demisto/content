@@ -1,6 +1,6 @@
 id: Hybrid-analysis quick-scan
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Hybrid-analysis quick-scan
 description: Use this playbook to run quick-scan command with generic-polling
 starttaskid: "0"
@@ -86,8 +86,7 @@ tasks:
       id: 646ceb09-7cbb-45ea-8a0b-69f26bf41040
       version: -1
       name: Run quick-scan command
-      description: Submits the URL of a website, or the URL that contains the file,
-        for analysis.
+      description: Submits the URL of a website, or the URL that contains the file, for analysis.
       script: '|||hybrid-analysis-quick-scan-url'
       type: regular
       iscommand: true
@@ -191,16 +190,14 @@ inputs:
   value:
     simple: all
   required: false
-  description: The type of scan. Run the hybrid-analysis-list-scanners command to
-    view available scanners.
+  description: The type of scan. Run the hybrid-analysis-list-scanners command to view available scanners.
 - key: min_malicious_scanners
   value:
     simple: "2"
   required: false
-  description: The number of scanners that report the file as malicious to determine
-    whether the file is malicious. Default is "2".
+  description: The number of scanners that report the file as malicious to determine whether the file is malicious. Default is "2".
 outputs:
 - contextPath: HybridAnalysis.URL.SubmissionType
   description: The type of the submission - file or url
 tests:
-  - HybridAnalysis-Test
+- HybridAnalysis-Test

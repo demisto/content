@@ -65,9 +65,7 @@ configuration:
   name: custom_filter
   required: false
   type: 0
-description: Microsoft Cloud App Security is a multimode Cloud Access Security Broker
-  (CASB). It provides rich visibility, control over data travel, and sophisticated
-  analytics to identify and combat cyber threats across all your cloud services. Use the integration to view and resolve alerts, view activities, view files, and view user accounts.
+description: Microsoft Cloud App Security is a multimode Cloud Access Security Broker (CASB). It provides rich visibility, control over data travel, and sophisticated analytics to identify and combat cyber threats across all your cloud services. Use the integration to view and resolve alerts, view activities, view files, and view user accounts.
 display: Microsoft Cloud App Security
 name: MicrosoftCloudAppSecurity
 script:
@@ -248,12 +246,10 @@ script:
       description: The ID of the reason (policy) that explains why the alert was triggered.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.label
-      description: The label of the reason (policy) that explains why the alert was
-        triggered.
+      description: The label of the reason (policy) that explains why the alert was triggered.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.policyType
-      description: The policy type of the reason (policy) that explains why the alert
-        was triggered.
+      description: The policy type of the reason (policy) that explains why the alert was triggered.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.threatScore
       description: The threat score of the alert.
@@ -325,8 +321,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The subnet categories. Valid
-        values are: "Corporate", "Administrative", "Risky", "VPN", "Cloud_provider", and "Other".'
+      description: 'The subnet categories. Valid values are: "Corporate", "Administrative", "Risky", "VPN", "Cloud_provider", and "Other".'
       isArray: false
       name: ip_category
       predefined:
@@ -340,9 +335,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The actions taken on activities. Valid values are:
-        "block", "proxy", "BypassProxy", "encrypt", "decrypt", "verified", "encryptionFailed", "protect",
-        "verify", and "null".'
+      description: 'The actions taken on activities. Valid values are: "block", "proxy", "BypassProxy", "encrypt", "decrypt", "verified", "encryptionFailed", "protect", "verify", and "null".'
       isArray: false
       name: taken_action
       predefined:
@@ -355,13 +348,12 @@ script:
       - encryptionFailed
       - protect
       - verify
-      - null
+      - 
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The source type. Valid values are: "Access_control",
-        "Session_control", "App_connector", "App_connector_analysis", "Discovery", and "MDATP".'
+      description: 'The source type. Valid values are: "Access_control", "Session_control", "App_connector", "App_connector_analysis", "Discovery", and "MDATP".'
       isArray: false
       name: source
       predefined:
@@ -390,6 +382,12 @@ script:
     execution: false
     name: microsoft-cas-activities-list
     outputs:
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Activities._id
       description: The ID of the activity.
       type: String
@@ -541,8 +539,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The file type. Valid value are: Other,
-        Document, Spreadsheet, Presentation, Text, Image, Folder.'
+      description: 'The file type. Valid value are: Other, Document, Spreadsheet, Presentation, Text, Image, Folder.'
       isArray: false
       name: file_type
       predefined:
@@ -557,8 +554,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter files with the specified sharing levels. Valid values are:
-        Private, Internal, External, Public, Public_Internet.'
+      description: 'Filter files with the specified sharing levels. Valid values are: Private, Internal, External, Public, Public_Internet.'
       isArray: false
       name: sharing
       predefined:
@@ -577,8 +573,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter by whether the file is quarantined. Valid values are: "True" or
-        "False".'
+      description: 'Filter by whether the file is quarantined. Valid values are: "True" or "False".'
       isArray: false
       name: quarantined
       predefined:
@@ -730,8 +725,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The status by which to filter the information about the user accounts. Valid values are: "N/A", "Staged", "Active",
-        "Suspended", and "Deleted".'
+      description: 'The status by which to filter the information about the user accounts. Valid values are: "N/A", "Staged", "Active", "Suspended", and "Deleted".'
       isArray: false
       name: status
       predefined:
@@ -840,7 +834,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.5.11789
   feed: false
   isfetch: true
   longRunning: false
@@ -851,3 +845,4 @@ script:
   type: python
 tests:
 - MicrosoftCloudAppSecurity-Test
+fromversion: 5.0.0

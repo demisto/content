@@ -2,9 +2,11 @@ commonfields:
   id: 80b5c44c-4eac-4e00-812f-6d409d57be31
   version: -1
 name: WhoisLookup
-script: |-
+script: >-
   domains = argToList( demisto.args()['domains'] )
+
   res= []
+
   for d in domains:
       whoisResults = demisto.executeCommand( 'whois', { 'query': d })
       if isError(whoisResults[0]):
@@ -34,3 +36,4 @@ dependson:
   must:
   - whois
 timeout: 0s
+fromversion: 5.0.0

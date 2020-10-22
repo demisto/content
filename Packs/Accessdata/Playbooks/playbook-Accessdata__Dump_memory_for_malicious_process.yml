@@ -1,9 +1,8 @@
 id: Accessdata_Dump_memory_for_malicious_process
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: 'Accessdata: Dump memory for malicious process'
-description: Use as a sub-playbook to dump memory if given process is running on legacy
-  AD agent
+description: Use as a sub-playbook to dump memory if given process is running on legacy AD agent
 starttaskid: "0"
 tasks:
   "0":
@@ -90,8 +89,7 @@ tasks:
       id: 0365d043-19bd-4a7d-8b65-d80671d992fa
       version: -1
       name: Read snapshot file from case folder
-      description: Reads a file from a case folder and saves the content in the current
-        context.
+      description: Reads a file from a case folder and saves the content in the current context.
       script: Accessdata|||accessdata-read-casefile
       type: regular
       iscommand: true
@@ -120,8 +118,7 @@ tasks:
       id: fd34f7f1-972f-4e34-8f9b-48e11804b387
       version: -1
       name: Check if process exists in process list
-      description: Reads the content of an XML file from context, converts it to a JSON file and
-        checks if the given filename exists in the process list. Returns yes or no.
+      description: Reads the content of an XML file from context, converts it to a JSON file and checks if the given filename exists in the process list. Returns yes or no.
       scriptName: AccessdataCheckProcessExistsInSnapshot
       type: regular
       iscommand: false
@@ -248,8 +245,7 @@ tasks:
       Timeout:
         simple: "60"
       dt:
-        simple: Accessdata.Job(val.State !== 'Finished' && val.State !== 'Success'
-          && val.State !== 'Completed' && val.State !== 'Failed').CaseJobID
+        simple: Accessdata.Job(val.State !== 'Finished' && val.State !== 'Success' && val.State !== 'Completed' && val.State !== 'Failed').CaseJobID
     separatecontext: true
     loop:
       iscommand: false
@@ -299,8 +295,7 @@ tasks:
       Timeout:
         simple: "60"
       dt:
-        simple: Accessdata.Job(val.State !== 'Finished' && val.State !== 'Success'
-          && val.State !== 'Completed' && val.State !== 'Failed').CaseJobID
+        simple: Accessdata.Job(val.State !== 'Finished' && val.State !== 'Success' && val.State !== 'Completed' && val.State !== 'Failed').CaseJobID
     separatecontext: true
     loop:
       iscommand: false
@@ -528,12 +523,10 @@ inputs:
   description: ""
 outputs:
 - contextPath: Accessdata.IsProcessDetected
-  description: Indicates if the process with the specified name was detected on the agent
-    machine during playbook execution.
+  description: Indicates if the process with the specified name was detected on the agent machine during playbook execution.
   type: boolean
 - contextPath: Accessdata.MemoryDumpPath
-  description: The path for the created memory dump file (if not created, it will be an empty
-    string).
+  description: The path for the created memory dump file (if not created, it will be an empty string).
   type: string
 tests:
-  - No test
+- No test

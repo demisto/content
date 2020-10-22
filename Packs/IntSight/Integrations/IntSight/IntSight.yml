@@ -12,15 +12,12 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: 'Alert type to fetch as incidents, allowed: "AttackIndication", "DataLeakage",
-    "Phishing", "BrandSecurity", "ExploitableData", "VIP"'
+- display: 'Alert type to fetch as incidents, allowed: "AttackIndication", "DataLeakage", "Phishing", "BrandSecurity", "ExploitableData", "VIP"'
   name: type
   required: false
   type: 0
 - defaultvalue: All
-  display: 'Minimum Alert severity level to fetch incidents incidents from, allowed
-    values are: ''All'', ''Low'', ''Medium'',''High''(Setting to All will fetch all
-    incidents)'
+  display: 'Minimum Alert severity level to fetch incidents incidents from, allowed values are: ''All'', ''Low'', ''Medium'',''High''(Setting to All will fetch all incidents)'
   name: severity_level
   required: false
   type: 0
@@ -500,8 +497,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The type of the IOC. Can be: "Urls", "Hashes", "IpAddresses",
-        or "domains".'
+      description: 'The type of the IOC. Can be: "Urls", "Hashes", "IpAddresses", or "domains".'
       isArray: false
       name: type
       predefined:
@@ -535,29 +531,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: Beginning of the date range when the IOC was first seen (MM/DD/YYYY).
-        Default is 0.
+      description: Beginning of the date range when the IOC was first seen (MM/DD/YYYY). Default is 0.
       isArray: false
       name: first-seen-from
       required: false
       secret: false
     - default: false
-      description: End of the date range when the IOC was first seen (MM/DD/YYYY).
-        Default is 0.
+      description: End of the date range when the IOC was first seen (MM/DD/YYYY). Default is 0.
       isArray: false
       name: first-seen-to
       required: false
       secret: false
     - default: false
-      description: Beginning of the date range when the IOC was last seen (MM/DD/YYYY).
-        Default is 0.
+      description: Beginning of the date range when the IOC was last seen (MM/DD/YYYY). Default is 0.
       isArray: false
       name: last-seen-from
       required: false
       secret: false
     - default: false
-      description: End of the date range when the IOC was last seen (MM/DD/YYYY).
-        Default is 0.
+      description: End of the date range when the IOC was last seen (MM/DD/YYYY). Default is 0.
       isArray: false
       name: last-seen-to
       required: false
@@ -672,8 +664,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The type of the alert. Can be: "AttackIndication", "DataLeakage",
-        "Phishing", "BrandSecurity", "ExploitableData", "VIP".'
+      description: 'The type of the alert. Can be: "AttackIndication", "DataLeakage", "Phishing", "BrandSecurity", "ExploitableData", "VIP".'
       isArray: false
       name: alert-type
       predefined:
@@ -698,8 +689,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The source type of the alert. Can be: "ApplicationStores", "BlackMarkets",
-        "HackingForums", "SocialMedia", "PasteSites", or "Others".'
+      description: 'The source type of the alert. Can be: "ApplicationStores", "BlackMarkets", "HackingForums", "SocialMedia", "PasteSites", or "Others".'
       isArray: false
       name: source-type
       predefined:
@@ -869,8 +859,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A comma separated list of each type of IOC. Options: Domains,
-        IPs, URLs'
+      description: 'A comma separated list of each type of IOC. Options: Domains, IPs, URLs'
       isArray: false
       name: type
       required: true
@@ -882,8 +871,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A comma separated list of the IOCs blocklist status. Options:
-        Sent, NotSent.'
+      description: 'A comma separated list of the IOCs blocklist status. Options: Sent, NotSent.'
       isArray: false
       name: blocklist-status
       required: true
@@ -926,9 +914,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The reason to close the alert. Can be: "ProblemSolved", "InformationalOnly",
-        "ProblemWeAreAlreadyAwareOf", "CompanyOwnedDomain", "LegitimateApplication/Profile",
-        "NotRelatedToMyCompany", "FalsePositive", or "Other".'
+      description: 'The reason to close the alert. Can be: "ProblemSolved", "InformationalOnly", "ProblemWeAreAlreadyAwareOf", "CompanyOwnedDomain", "LegitimateApplication/Profile", "NotRelatedToMyCompany", "FalsePositive", or "Other".'
       isArray: false
       name: reason
       predefined:
@@ -951,8 +937,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: The hidden status of the alert. Deletes an alert from the account
-        instance - only when reason is a FalsePositive).
+      description: The hidden status of the alert. Deletes an alert from the account instance - only when reason is a FalsePositive).
       isArray: false
       name: is-hidden
       predefined:
@@ -1006,3 +991,4 @@ script:
   subtype: python2
 tests:
 - IntSights Test
+fromversion: 5.0.0

@@ -3,7 +3,7 @@ version: -1
 name: Get Mails By Folder Paths
 description: Get emails from specific folders and pre-process them using EWS.
 starttaskid: "0"
-fromversion: "4.5.0"
+fromversion: "5.0.0"
 tasks:
   "0":
     id: "0"
@@ -18,7 +18,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -45,7 +45,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     scriptarguments:
       foldersPaths:
         simple: ${inputs.foldersPaths}${inputs.foldersPathsGlobal}
@@ -81,7 +81,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "4"
+      - "4"
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
@@ -114,7 +114,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "2"
+      - "2"
     scriptarguments:
       cleanHTML: {}
       dedupThreshold: {}
@@ -175,20 +175,20 @@ view: |-
     }
   }
 inputs:
-  - key: foldersPathsGlobal
-    value:
-      simple: inbox,inbox\TESTATTACH
-    required: true
-    description: "A comma-separated List of folder paths from the Inbox. \nFor example: inbox,inbox\\\\folder"
-  - key: listName
-    value: {}
-    required: true
-    description: Name of the list in which mails will be saved.
-  - key: limit
-    value:
-      simple: "10"
-    required: false
-    description: Maximum number of emails to fetch from each folder.
+- key: foldersPathsGlobal
+  value:
+    simple: inbox,inbox\TESTATTACH
+  required: true
+  description: "A comma-separated List of folder paths from the Inbox. \nFor example: inbox,inbox\\\\folder"
+- key: listName
+  value: {}
+  required: true
+  description: Name of the list in which mails will be saved.
+- key: limit
+  value:
+    simple: "10"
+  required: false
+  description: Maximum number of emails to fetch from each folder.
 outputs: []
 tests:
-  - Get EWS Folder Test
+- Get EWS Folder Test

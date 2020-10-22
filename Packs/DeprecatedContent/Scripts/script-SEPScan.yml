@@ -3,20 +3,28 @@ commonfields:
   version: -1
 name: SEPScan
 deprecated: true
-script: |-
+script: >-
   SCAN_DEFAULT_TIMEOUT = 600;
+
   SCAN_DEFAULT_INTERVAL = 30;
+
 
   if (!args.ip && !args.hostname) {
       throw 'Please provide an IP address or a hostname.'
   }
 
+
   var response = executeCommand("sep-scan", {scanType: args.scanType, ip: args.ip, hostname: args.hostname});
 
+
   var timeout = args.timeout ? parseInt(args.timeout) : SCAN_DEFAULT_TIMEOUT;
+
   var interval = args.interval ? parseInt(args.interval) : SCAN_DEFAULT_INTERVAL;
+
   var retries = timeout / interval;
+
   var isDone = false;
+
   for (var i = 0; i < retries; i++) {
       response = executeCommand("sep-command-status", {commandId: response[0].Contents.commandId});
       var stateId = response[0].Contents.cmdStatusDetail.stateId;
@@ -28,12 +36,16 @@ script: |-
       wait(interval);
   }
 
+
   endpoint = args.hostname ? args.hostname : args.ip;
+
   response[0].HumanReadable = '## Launched scan command for endpoint {0}, here is the output.\n'.format(endpoint) + response[0].HumanReadable;
+
 
   if (!isDone) {
       response[0].HumanReadable += '\n\n### Command timed out after {0} seconds.'.format(timeout);
   }
+
 
   return response;
 type: javascript
@@ -63,7 +75,8 @@ args:
 scripttarget: 0
 timeout: 600ns
 tests:
-  - No test - deprecated
+- No test - deprecated
 dependson:
   must:
   - sep-command-status
+fromversion: 5.0.0

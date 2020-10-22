@@ -1,6 +1,6 @@
 id: Account Enrichment - Generic v2.1
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Account Enrichment - Generic v2.1
 description: |-
   Enrich accounts using one or more integrations.
@@ -100,8 +100,7 @@ tasks:
       id: 98e13761-b371-4380-8815-9081204309db
       version: -1
       name: Is Active Directory Query v2 enabled?
-      description: Checks if there’s an active instance of the Active Directory Query
-        v2 integration enabled.
+      description: Checks if there’s an active instance of the Active Directory Query v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -226,4 +225,4 @@ outputs:
 - contextPath: ActiveDirectory.Users.memberOf
   description: Groups the user is a member of.
 tests:
-  - Account Enrichment - Generic v2.1 - Test
+- Account Enrichment - Generic v2.1 - Test

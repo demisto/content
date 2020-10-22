@@ -2,7 +2,8 @@ commonfields:
   id: SetContext
   version: -1
 name: SetContext
-script: demisto.setContext(demisto.args()['key'], demisto.args()['value'])
+script: >-
+  demisto.setContext(demisto.args()['key'], demisto.args()['value'])
 type: python
 subtype: python2
 tags:
@@ -21,3 +22,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

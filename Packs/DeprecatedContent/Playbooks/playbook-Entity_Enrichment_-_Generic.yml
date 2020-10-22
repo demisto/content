@@ -1,7 +1,7 @@
 id: entity_enrichment_generic
 version: -1
 name: Entity Enrichment - Generic
-fromversion: 3.6.0
+fromversion: 5.0.0
 description: Deprecated. Use "Entity Enrichment - Generic v3" playbook instead. Enrich entities using one or more integrations
 starttaskid: "0"
 hidden: true
@@ -449,4 +449,4 @@ outputs:
   description: The DBot score
   type: number
 tests:
-  - no test - each enrichment sub-playbook has or will have its own test
+- no test - each enrichment sub-playbook has or will have its own test

@@ -2,10 +2,12 @@ commonfields:
   id: EPOUpdateEndpoints
   version: -1
 name: EPOUpdateEndpoints
-script: |
+script: >
   res = []
 
+
   endpoints = demisto.get(demisto.args(), 'endpoints')
+
   if not endpoints:
       res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Received empty endpoints list!"})
   else:
@@ -61,21 +63,18 @@ args:
   required: true
   description: ePO instance to use
 - name: retryAttempts
-  description: Number of times the server will attempt to send the task to the client.
-    Defaults to 1.
+  description: Number of times the server will attempt to send the task to the client. Defaults to 1.
 - name: retryIntervalInSeconds
   description: Retry interval in seconds. Defaults to 30.
 - name: abortAfterMinutes
-  description: Maximum number of minutes before aborting all attempts. Defaults to
-    5.
+  description: Maximum number of minutes before aborting all attempts. Defaults to 5.
 - name: stopAfterMinutes
-  description: Maximum duration in minutes the client task is allowed to run. Defaults
-    to 20.
+  description: Maximum duration in minutes the client task is allowed to run. Defaults to 20.
 - name: randomizationInterval
-  description: Duration in minutes over which to randomly spread task execution. Defaults
-    to 0 (execute on all clients immediately).
+  description: Duration in minutes over which to randomly spread task execution. Defaults to 0 (execute on all clients immediately).
 scripttarget: 0
 dependson:
   must:
   - epo-command
 timeout: 0s
+fromversion: 5.0.0

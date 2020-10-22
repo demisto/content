@@ -2,7 +2,7 @@ commonfields:
   id: SendMessageToOnlineUsers
   version: -1
 name: SendMessageToOnlineUsers
-script: |-
+script: >-
   var commandAvailable = function(command) {
       var ret = false;
       var allModules = getModulesForCommand(command);
@@ -16,32 +16,46 @@ script: |-
       }
       return ret;
   };
+
   var medium = (args.medium) ? args.medium.toLowerCase() : 'email';
+
   var slackEnabled = commandAvailable('slack-send');
+
   var mattermostEnabled = commandAvailable('mattermost-send');
+
   var emailEnabled = commandAvailable('send-mail');
+
 
   if (!slackEnabled && !emailEnabled && !mattermostEnabled) {
       throw 'No available medium to send message';
   }
+
   if (medium === 'email' && !emailEnabled) {
     throw 'Email integration not available';
   }
+
   if (medium === 'slack' && !slackEnabled) {
     throw 'Slack integration not available';
   }
+
   if (medium === 'mattermost' && !mattermostEnabled) {
     throw 'Mattermost integration not available';
   }
 
+
   var res = executeCommand("getUsers", {online: true});
+
   if (isError(res[0])) {
       return res[0];
   }
+
   var users = dq(res[0].Contents,'email');
 
+
   var entries = [];
+
   var sent = [];
+
   users.forEach(function(user) {
       if ((medium === 'all' && emailEnabled) || medium === 'email') {
           res = executeCommand("send-mail", {to: user, subject: 'Notification from Demisto server', body: args.message});
@@ -69,9 +83,11 @@ script: |-
       }
   });
 
+
   if (sent.length > 0) {
       entries.push('Successfully sent ' + medium + ' message to ' + sent.join(','));
   }
+
 
   return entries;
 type: javascript
@@ -95,4 +111,5 @@ args:
 scripttarget: 0
 runonce: false
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

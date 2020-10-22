@@ -1,9 +1,8 @@
 id: PhishLabs - Whitelist false positives
 version: -1
 name: PhishLabs - Whitelist false positives
-fromversion: 4.0.0
-description: This playbook can be used in a job to whitelist indicators from PhishLabs
-  that were classified as false positives, according to a defined period of time.
+fromversion: 5.0.0
+description: This playbook can be used in a job to whitelist indicators from PhishLabs that were classified as false positives, according to a defined period of time.
 starttaskid: "0"
 tasks:
   "0":
@@ -198,4 +197,4 @@ inputs:
   description: Whitelist indicators within this duration (from now).
 outputs: []
 tests:
-  - PhishLabsTestPopulateIndicators
+- PhishLabsTestPopulateIndicators

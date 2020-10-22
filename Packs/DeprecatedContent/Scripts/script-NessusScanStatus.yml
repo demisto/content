@@ -2,11 +2,15 @@ commonfields:
   id: NessusScanStatus
   version: -1
 name: NessusScanStatus
-script: |
+script: >
   from time import ctime
+
   res = []
+
   dArgs = demisto.args()
+
   resCmd = demisto.executeCommand("scan-details", dArgs)
+
   try:
       for entry in resCmd:
           if isError(entry):
@@ -35,3 +39,4 @@ dependson:
   - Nessus|||scan-details
 timeout: 0s
 deprecated: true
+fromversion: 5.0.0

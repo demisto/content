@@ -2,21 +2,29 @@ commonfields:
   id: URLSSLVerification
   version: -1
 name: URLSSLVerification
-script: |-
+script: >-
   import requests
 
+
   NON_SSL_PREFIX = "http"
+
   SSL_PREFIX = "https"
+
   VENDOR = "URL SSL Verification"
+
   SUSPICIOUS_SCORE = 2
 
+
   urls = argToList(demisto.get(demisto.args(),"url"))
+
   url_list = []
+
 
   ec = {
       'URL': [],
       'DBotScore' : []
   }
+
 
   for url in urls:
       url_obj = {
@@ -63,9 +71,12 @@ script: |-
 
   ec["URL(val.Data && val.Data === obj.Data)"] = url_list
 
+
   preview_list = [{"URL": url["Data"],"Verified": url["Verified"], "Description": demisto.get(url, "Malicious.Description") or "SSL certificate is verified"} for url in url_list]
 
+
   md = tableToMarkdown("URL SSL Verification",preview_list,["URL","Verified","Description"])
+
 
   demisto.results({
       "Type" : entryTypes["note"],
@@ -111,3 +122,4 @@ outputs:
   type: number
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

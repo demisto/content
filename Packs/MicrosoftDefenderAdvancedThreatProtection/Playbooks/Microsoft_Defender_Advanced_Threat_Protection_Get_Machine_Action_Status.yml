@@ -1,7 +1,7 @@
 elasticcommonfields: {}
 id: Microsoft Defender Advanced Threat Protection Get Machine Action Status
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Microsoft Defender Advanced Threat Protection Get Machine Action Status
 description: This playbook used generic polling to get machine action information.
 starttaskid: "0"
@@ -72,8 +72,7 @@ tasks:
       Timeout:
         simple: "60"
       dt:
-        simple: MicrosoftATP.MachineAction(val.Status == "Pending" || val.Status ==
-          "InProgress" ).ID
+        simple: MicrosoftATP.MachineAction(val.Status == "Pending" || val.Status == "InProgress" ).ID
     separatecontext: true
     view: |-
       {
@@ -141,7 +140,7 @@ inputs:
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: MicrosoftATP.MachineAction.ID
   description: The machine action ID
@@ -176,8 +175,7 @@ outputs:
   description: The file identifier
   type: string
 - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-  description: 'The type of the file identifier with the possible values: "Sha1" ,"Sha256"
-    and "Md5"'
+  description: 'The type of the file identifier with the possible values: "Sha1" ,"Sha256" and "Md5"'
   type: string
 tests:
-    - No test - no testplaybook, but unitest exist
+- No test - no testplaybook, but unitest exist

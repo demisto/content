@@ -1678,3 +1678,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: test_MsGraphFiles
+fromversion: 5.0.0

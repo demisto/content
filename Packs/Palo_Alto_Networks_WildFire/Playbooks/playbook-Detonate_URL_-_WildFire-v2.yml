@@ -1,7 +1,7 @@
 id: Detonate URL - WildFire-v2
 version: -1
 name: Detonate URL - WildFire-v2
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: |-
   Detonate a webpage or a remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types -
@@ -409,8 +409,7 @@ inputs:
       root: URL
       accessor: Data
   required: false
-  description: URL of the webpage or file url to detonate. The URL is taken from the
-    context.
+  description: URL of the webpage or file url to detonate. The URL is taken from the context.
 - key: Interval
   value:
     simple: "1"
@@ -420,8 +419,7 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook
-    (in minutes)
+  description: The duration after which to stop pooling and to resume the playbook (in minutes)
 - key: ReportFileType
   value: {}
   required: false
@@ -518,4 +516,4 @@ outputs:
   description: The size of the submission
   type: number
 tests:
-  - Detonate URL - WildFire-v2 - Test
+- Detonate URL - WildFire-v2 - Test

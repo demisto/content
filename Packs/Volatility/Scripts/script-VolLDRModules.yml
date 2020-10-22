@@ -2,9 +2,11 @@ commonfields:
   id: VolLDRModules
   version: -1
 name: VolLDRModules
-script: |-
+script: >-
   var cmdline = 'ldrmodules';
+
   var out = executeCommand('Volatility', {memdump:args.memdump, profile:args.profile, system: args.system, cmd:cmdline});
+
   return out;
 type: javascript
 tags:
@@ -26,3 +28,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

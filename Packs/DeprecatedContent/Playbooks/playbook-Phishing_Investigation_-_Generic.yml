@@ -1,6 +1,6 @@
 id: Phishing Investigation - Generic
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Phishing Investigation - Generic
 description: |-
   Deprecated. Use "Phishing Investigation - Generic v2" playbook instead. Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
@@ -40,8 +40,7 @@ tasks:
       id: c4e87e26-a8fc-473a-8f84-e63335a552e8
       version: -1
       name: Assign to analyst
-      description: Assign the incident to an analyst based on the analyst's organizational
-        role.
+      description: Assign the incident to an analyst based on the analyst's organizational role.
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
@@ -104,8 +103,7 @@ tasks:
       id: 89d7dd49-06a3-4397-8b72-f4428bf24805
       version: -1
       name: Manually review the incident
-      description: Review the incident to determine if the email that the user reported
-        is malicious.
+      description: Review the incident to determine if the email that the user reported is malicious.
       type: regular
       iscommand: false
       brand: ""
@@ -240,10 +238,7 @@ tasks:
       attachNames: {}
       bcc: {}
       body:
-        simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from']
-          ? val.Account.DisplayName : val.incident.labels['Email/from']},\nWe've received
-          your email and are investigating.\nPlease do not touch the email until further
-          notice.\n\nCordially, \n  Your friendly neighborhood security team"
+        simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},\nWe've received your email and are investigating.\nPlease do not touch the email until further notice.\n\nCordially, \n  Your friendly neighborhood security team"
       cc: {}
       htmlBody: {}
       replyTo: {}
@@ -336,8 +331,7 @@ tasks:
       id: ac0d8fe7-8ec0-49b8-8947-75d3bb87437c
       version: -1
       name: Update  the user that the reported email is safe
-      description: Send an email to the user explaining that the email they reported
-        is safe.
+      description: Send an email to the user explaining that the email they reported is safe.
       scriptName: SendEmail
       type: regular
       iscommand: false
@@ -383,8 +377,7 @@ tasks:
       id: 3616a344-7c58-4ac0-86fe-bad84f58c2e2
       version: -1
       name: Update  the user that the reported email is malicious
-      description: Send an email to the user explaining that the email they reported
-        is malicious.
+      description: Send an email to the user explaining that the email they reported is malicious.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -682,10 +675,7 @@ tasks:
       id: 536ca1cd-adbe-4db2-89c1-318be024fc3e
       version: -1
       name: Manually remediate  the incident
-      description: "Consider the following:\n1. Search for and delete similar emails\n2.
-        Inform the organization about the threat\n3. Hunt the relevant IOCs\n4. Update
-        proxies and firewalls as necessary\n5. Block the malicious sender/ domain
-        in the mail-gateway "
+      description: "Consider the following:\n1. Search for and delete similar emails\n2. Inform the organization about the threat\n3. Hunt the relevant IOCs\n4. Update proxies and firewalls as necessary\n5. Block the malicious sender/ domain in the mail-gateway "
       type: regular
       iscommand: false
       brand: ""

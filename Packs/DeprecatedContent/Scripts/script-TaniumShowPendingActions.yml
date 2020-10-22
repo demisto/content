@@ -3,10 +3,12 @@ commonfields:
   version: -1
 name: TaniumShowPendingActions
 deprecated: true
-script: |
+script: >
   // An example script for asking Tanium a question
 
+
   /* name - The name of the Saved-Question in Tanium server (mandatory if no 'id' was specified)
+
   For example:
       Computer Name
       User Information
@@ -16,10 +18,14 @@ script: |
       Installed Applications
       ...
   */
+
   // id - The ID of the Saved-Question in Tanium server (mandatory if no 'name' was specified)
+
   // timeout - seconds to wait on each iteration while waiting for the question's result
 
+
   var fieldsToDisplay = ["name", "package_spec","comment"]; //, "approver"];
+
 
   var requestPendingObjects = "<object_list>\
                   <saved_actions/>\
@@ -43,6 +49,7 @@ script: |
 
 
   // Format a saved action as a table row, filtering unwanted fields.
+
   function formatAsRow(jsonSavedAction,fieldsToDisplay) {
     d = {};
     for(var i=0;i<fieldsToDisplay.length;i++) {
@@ -64,10 +71,14 @@ script: |
     return d;
   }
 
+
   var getObjArgs = {};
+
   getObjArgs["object-data"] = requestPendingObjects;
 
+
   var res = executeCommand('tn-get-object', getObjArgs);
+
   var entry = {
       Type: 1,
       ContentsFormat: 'json',
@@ -76,10 +87,15 @@ script: |
       HumanReadable: ""
   };
 
+
   responseData = res[0].Contents.Envelope.Body.return.result_object;
+
   respObj = JSON.parse(responseData);
+
   var savedActions = [];
+
   nResultObjects = respObj.result_objects.length;
+
   for (var i=0; i < nResultObjects; i++) {
       resultObj = respObj.result_objects[i];
       nItems = resultObj.saved_actions.length;
@@ -92,7 +108,9 @@ script: |
       }
   }
 
+
   // Display found pending actions as table
+
   if (savedActions.length === 0)
     return "No saved actions were found.";
   else {
@@ -124,9 +142,7 @@ script: |
 type: javascript
 tags:
 - tanium
-comment: Deprecated. Send a request for a formatted result of a saved question. To receive the
-  most up to date data, run the same command twice. See https://kb.tanium.com/SOAP
-  for more information
+comment: Deprecated. Send a request for a formatted result of a saved question. To receive the most up to date data, run the same command twice. See https://kb.tanium.com/SOAP for more information
 args:
 - name: fulljson
   default: true
@@ -149,3 +165,4 @@ dependson:
   must:
   - tn-get-object
 timeout: 0s
+fromversion: 5.0.0

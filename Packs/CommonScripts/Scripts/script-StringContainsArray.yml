@@ -2,13 +2,16 @@ commonfields:
   id: StringContainsArray
   version: -1
 name: StringContainsArray
-script: |
+script: >
   var str = args.left;
+
   var substring = args.right;
+
 
   if(!str || !substring){
       return false;
   }
+
 
   if (Array.isArray(substring)) {
       var arr = substring;
@@ -22,6 +25,7 @@ script: |
           return true;
       }
   }
+
 
   return false;
 type: javascript
@@ -39,4 +43,5 @@ args:
 scripttarget: 0
 runonce: false
 tests:
-  - StringContainsArray_test
+- StringContainsArray_test
+fromversion: 5.0.0

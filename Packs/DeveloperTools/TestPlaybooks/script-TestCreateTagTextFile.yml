@@ -2,15 +2,19 @@ commonfields:
   id: TestCreateTagTextFile
   version: -1
 name: TestCreateTagTextFile
-script: |
+script: >
   import base64, zlib
 
+
   lines = []
+
   for i in range(0,30):
       lines.append('This3 is3 an3 example3 of3 the3 text3 |tag|tag3')
   encoded_data = base64.encodestring(zlib.compress("\n".join(lines)))
 
+
   res = demisto.executeCommand("createList", {"listName": demisto.args()['listName'], "listData": encoded_data})
+
   demisto.results(res)
 type: python
 subtype: python2
@@ -24,3 +28,4 @@ args:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
+fromversion: 5.0.0

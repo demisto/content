@@ -128,8 +128,7 @@ tasks:
       id: 5892cd5d-eabd-44c1-86a9-4910e4fe165e
       version: -1
       name: Check results have host
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -196,3 +195,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

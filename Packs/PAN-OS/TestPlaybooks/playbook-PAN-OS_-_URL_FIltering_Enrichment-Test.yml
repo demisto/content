@@ -98,8 +98,7 @@ tasks:
       id: cf819707-ae55-4aa9-8c9f-01a68decb78b
       version: -1
       name: GetIndicatorDBotScore
-      description: Add into the incident's context the system internal DBot score
-        for the input indicator
+      description: Add into the incident's context the system internal DBot score for the input indicator
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -248,3 +247,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

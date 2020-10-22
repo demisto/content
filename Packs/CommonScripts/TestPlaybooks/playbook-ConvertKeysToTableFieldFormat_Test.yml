@@ -231,8 +231,7 @@ tasks:
       extend-context:
         simple: A_Input=.
       value:
-        simple: '{ "Engine": "val1", "Max Results": 13892378, "Key_With^Special   (characters)":
-          true }'
+        simple: '{ "Engine": "val1", "Max Results": 13892378, "Key_With^Special   (characters)": true }'
     separatecontext: false
     view: |-
       {
@@ -516,3 +515,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -72,8 +72,7 @@ tasks:
       id: fc63ce22-8bc1-4316-8ea5-d7b460729049
       version: -1
       name: Predict Sentence
-      description: Predict text label using a pre-trained machine learning phishing
-        model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -228,8 +227,7 @@ tasks:
       id: 20b2b299-83b0-4991-8277-72da22820677
       version: -1
       name: DBot Create Phishing Classifier V2 From File
-      description: Create a phishing classifier using machine learning. The classifier
-        is based on incidents files extracted from email content.
+      description: Create a phishing classifier using machine learning. The classifier is based on incidents files extracted from email content.
       playbookName: DBot Create Phishing Classifier V2 From File
       type: playbook
       iscommand: false
@@ -247,8 +245,7 @@ tasks:
       emailTextKey:
         simple: Email Body|Email Body HTML|details
       fileID:
-        simple: '${.=(val.File instanceof Array ? val.File[val.File.length-1].EntryID
-          : val.File.EntryID)}'
+        simple: '${.=(val.File instanceof Array ? val.File[val.File.length-1].EntryID : val.File.EntryID)}'
       hashSeed: {}
       incidentTypes:
         simple: Phishing
@@ -422,4 +419,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 4.5.0
+fromversion: 5.0.0

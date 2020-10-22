@@ -2,8 +2,9 @@ commonfields:
   id: GetStringsDistance
   version: -1
 name: GetStringsDistance
-script: |-
+script: >-
   import re
+
 
   def levenshtein(s1, s2):
       l1 = len(s1)
@@ -20,12 +21,17 @@ script: |-
       return matrix[l2][l1]
 
   res = []
+
   found = False
 
+
   close_distance = demisto.get(demisto.args(), 'distance')
+
   close_distance_int = int(close_distance) if close_distance else 3
 
+
   compare_string = argToList(demisto.get(demisto.args(), 'compareString'))
+
   if not compare_string:
       res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract compareString from arguments'})
   else:
@@ -65,15 +71,13 @@ tags:
 - server
 - phishing
 - Condition
-comment: Get the string distance between inputString and compareString (could be a
-  comma separated list) based on Levenshtein Distance algorithm.
+comment: Get the string distance between inputString and compareString (could be a comma separated list) based on Levenshtein Distance algorithm.
 system: true
 args:
 - name: compareString
   required: true
   default: true
-  description: The string(s) to compare with the input string. (could be multiple
-    strings with a comma separator)
+  description: The string(s) to compare with the input string. (could be multiple strings with a comma separator)
 - name: inputString
   required: true
   description: The input string to compare
@@ -85,3 +89,4 @@ outputs:
   description: The closeness of the sender domain to our configured domains
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

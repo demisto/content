@@ -726,8 +726,7 @@ tasks:
       - "9"
     scriptarguments:
       message:
-        simple: rule with the name ${inputs.rule_name} and source ${inputs.ip} was
-          not found in panorama
+        simple: rule with the name ${inputs.rule_name} and source ${inputs.ip} was not found in panorama
     separatecontext: false
     view: |-
       {
@@ -757,8 +756,7 @@ tasks:
       - "9"
     scriptarguments:
       message:
-        simple: rule with the name ${inputs.rule_name} and source ${inputs.ip2} was
-          not found in panorama
+        simple: rule with the name ${inputs.rule_name} and source ${inputs.ip2} was not found in panorama
     separatecontext: false
     view: |-
       {
@@ -802,3 +800,4 @@ inputs:
   required: false
   description: ""
 outputs: []
+fromversion: 5.0.0

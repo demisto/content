@@ -2,8 +2,8 @@ commonfields:
   id: PrintErrorEntry
   version: -1
 name: PrintErrorEntry
-fromversion: 4.0.0
-script: |-
+fromversion: 5.0.0
+script: >-
   demisto.results({
     "Type" : entryTypes["error"],
     "ContentsFormat" : formats["text"],

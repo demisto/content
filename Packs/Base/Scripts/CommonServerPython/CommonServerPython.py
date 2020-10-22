@@ -29,7 +29,10 @@ try:
     from urllib3.util import Retry
     from typing import Optional, List, Any
 except Exception:
-    pass
+    if sys.version_info[0] < 3:
+        # in python 2 an exception in the imports might still be raised even though it is caught.
+        # for more info see https://cosmicpercolator.com/2016/01/13/exception-leaks-in-python-2-and-3/
+        sys.exc_clear()
 
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
@@ -317,6 +320,9 @@ def auto_detect_indicator_type(indicator_value):
     if re.match(cveRegex, indicator_value):
         return FeedIndicatorType.CVE
 
+    if re.match(sha512Regex, indicator_value):
+        return FeedIndicatorType.File
+
     try:
         no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
         if no_cache_extract(indicator_value).suffix:
@@ -328,24 +334,6 @@ def auto_detect_indicator_type(indicator_value):
         pass
 
     return None
-
-
-# ===== Fix fetching credentials from vault instances =====
-# ====================================================================================
-try:
-    for k, v in demisto.params().items():
-        if isinstance(v, dict):
-            if 'credentials' in v:
-                vault = v['credentials'].get('vaultInstanceId')
-                if vault:
-                    v['identifier'] = v['credentials'].get('user')
-                break
-
-except Exception:
-    pass
-
-
-# ====================================================================================
 
 
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
@@ -961,6 +949,19 @@ def aws_table_to_markdown(response, table_header):
     return human_readable
 
 
+def stringUnEscape(st):
+    """
+       Unescape newline chars in the given string.
+
+       :type st: ``str``
+       :param st: The string to be modified (required).
+
+       :return: A modified string.
+       :rtype: ``str``
+    """
+    return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -1001,6 +1002,7 @@ class IntegrationLogger(object):
     def encode(self, message):
         try:
             res = str(message)
+            res = stringUnEscape(res)
         except UnicodeEncodeError as exception:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
@@ -1814,6 +1816,8 @@ def get_hash_type(hash_file):
         return 'sha1'
     elif (hash_len == 64):
         return 'sha256'
+    elif (hash_len == 128):
+        return 'sha512'
     else:
         return 'Unknown'
 
@@ -2745,7 +2749,7 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget``
+    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget`` or ``IAMUserProfile``
     :param results: A result object to return as a War-Room entry.
 
     :return: None
@@ -2770,6 +2774,10 @@ def return_results(results):
 
     if isinstance(results, GetRemoteDataResponse):
         demisto.results(results.extract_for_local())
+        return
+
+    if isinstance(results, IAMUserProfile):
+        demisto.results(results.to_entry())
         return
 
     demisto.results(results)
@@ -2993,6 +3001,7 @@ cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
 sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
+sha512Regex = re.compile(r'\b[0-9a-fA-F]{128}\b', regexFlags)
 
 pascalRegex = re.compile('([A-Z]?[a-z]+)')
 
@@ -3295,6 +3304,22 @@ class GetDemistoVersion:
 
 
 get_demisto_version = GetDemistoVersion()
+
+
+def get_demisto_version_as_str():
+    """Get the Demisto Server version as a string <version>-<build>. If unknown will return: 'Unknown'.
+    Meant to be use in places where we want to display the version. If you want to perform logic based upon vesrion
+    use: is_demisto_version_ge.
+
+    :return: Demisto version as string
+    :rtype: ``dict``
+    """
+    try:
+        ver_obj = get_demisto_version()
+        return '{}-{}'.format(ver_obj.get('version', 'Unknown'),
+                              ver_obj.get("buildNumber", 'Unknown'))
+    except AttributeError:
+        return "Unknown"
 
 
 def is_demisto_version_ge(version, build_number=''):
@@ -3839,10 +3864,15 @@ if 'requests' in sys.modules:
                             # Try to parse json error response
                             error_entry = res.json()
                             err_msg += '\n{}'.format(json.dumps(error_entry))
-                            raise DemistoException(err_msg)
+                            raise DemistoException(err_msg, res=error_entry)
                         except ValueError:
                             err_msg += '\n{}'.format(res.text)
-                            raise DemistoException(err_msg)
+                            try:
+                                error_entry = json.loads(res.text)
+                                raise DemistoException(err_msg, res=error_entry)
+                            except ValueError:
+                                # couldn't parse the response json, sending only the error message
+                                raise DemistoException(err_msg)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
@@ -3981,7 +4011,6 @@ def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None
 
 CONTEXT_UPDATE_RETRY_TIMES = 3
 MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
-MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT = '83267'
 
 
 def merge_lists(original_list, updated_list, key):
@@ -4076,9 +4105,7 @@ def is_versioned_context_available():
     :rtype: ``bool``
     :return: Whether versioned integration context is available
     """
-    return \
-        is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT) or \
-        is_demisto_version_ge('5.5.0', MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT)
+    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
 
 
 def set_to_integration_context_with_retries(context, object_keys=None, sync=True,
@@ -4189,7 +4216,14 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 
 class DemistoException(Exception):
-    pass
+    def __init__(self, message, exception=None, res=None, *args):
+        self.res = res if res else {}
+        self.message = message
+        self.exception = exception
+        super(DemistoException, self).__init__(message, exception, *args)
+
+    def __str__(self):
+        return str(self.message)
 
 
 class GetRemoteDataArgs:
@@ -4332,129 +4366,24 @@ class GetMappingFieldsResponse:
         return all_mappings
 
 
-def handle_incoming_error_in_mirror(incident_data, error):
-    """Handle incoming mirror error.
+def get_x_content_info_headers():
+    """Get X-Content-* headers to send in outgoing requests to use when performing requests to
+    external services such as oproxy.
 
-    :type incident_data: ``dict``
-    :param incident_data: the incoming incident info.
-
-    :type error: ``str``
-    :param error: The incoming mirror error message.
-
-    :return: GetRemoteDataResponse that will include the incoming error information.
-    :rtype: ``GetRemoteDataResponse``
-    """
-    error_entries = []
-    integration_cache = demisto.getIntegrationContext()
-
-    # setup new error if needed
-    if integration_cache.get('in_mirror_error') is None or integration_cache.get('in_mirror_error') != error:
-        demisto.debug("Error in incoming mirror for incident {0}: {1}".format(incident_data.get('id'), error))
-        integration_cache['in_mirror_error'] = error
-        integration_cache['in_error_printed'] = False
-
-    # handle incoming error
-    if integration_cache.get('in_mirror_error'):
-        incident_data['in_mirror_error'] = integration_cache.get('in_mirror_error')
-
-        # check if error was printed
-        if not integration_cache.get('in_error_printed'):
-            # TODO: change this to an error type
-            error_entries.append({
-                'Type': EntryType.NOTE,
-                'Contents': "",
-                'HumanReadable': "An error occurred while mirroring incoming data: {0}".format(
-                    integration_cache.get('in_mirror_error')),
-                'ReadableContentsFormat': EntryFormat.TEXT,
-                'ContentsFormat': EntryFormat.TEXT,
-            })
-            integration_cache['in_error_printed'] = True
-
-    demisto.setIntegrationContext(integration_cache)
-
-    # check for outgoing error
-    out_error_entry = handle_outgoing_error_in_mirror(incident_data)
-    if out_error_entry:
-        error_entries.append(out_error_entry)
-
-    return GetRemoteDataResponse(
-        mirrored_object=incident_data,
-        entries=error_entries
-    )
-
-
-def handle_outgoing_error_in_mirror(incident_data):
-    """Handle outgoing mirror error.
-
-    :type incident_data: ``dict``
-    :param incident_data: the incident info.
-
-    :return: An error entry if the current outgoing error was not printed, an empty dict otherwise.
+    :return: headers dict
     :rtype: ``dict``
     """
-    out_error_entry = {}
-    integration_cache = demisto.getIntegrationContext()
-
-    # handle incoming error
-    if integration_cache.get('out_mirror_error'):
-        incident_data['out_mirror_error'] = integration_cache.get('out_mirror_error')
-
-        # check if error was printed
-        if not integration_cache.get('out_error_printed'):
-            # TODO: change this to an error type
-            out_error_entry = {
-                'Type': EntryType.NOTE,
-                'Contents': "",
-                'HumanReadable': "An error occurred while mirroring outgoing data: {0}".format(
-                    integration_cache.get('out_mirror_error')),
-                'ReadableContentsFormat': EntryFormat.TEXT,
-                'ContentsFormat': EntryFormat.TEXT,
-            }
-            integration_cache['out_error_printed'] = integration_cache.get('out_mirror_error')
-            demisto.setIntegrationContext(integration_cache)
-
-    return out_error_entry
-
-
-def reset_incoming_and_outgoing_mirror_errors(incident_data):
-    """Handle incoming and outgoing mirror error reset.
-
-    :type incident_data: ``dict``
-    :param incident_data: the incident info.
-
-    :return: No data returned
-    :rtype: ``None``
-    """
-    integration_cache = demisto.getIntegrationContext()
-    integration_cache['in_mirror_error'] = None
-    incident_data['in_mirror_error'] = ''
-
-    if integration_cache.get('out_mirror_error') is None:
-        incident_data['out_mirror_error'] = ''
-
-    demisto.setIntegrationContext(integration_cache)
-
-
-def setup_outgoing_mirror_error(incident_id, error):
-    """Setup outgoing mirror error to be printed in handle outgoing error method.
-
-    :type incident_id: ``str``
-    :param incident_id: the mirrored incident id that had an outgoing error.
-
-    :type error: ``str``
-    :param error: the outgoing error message.
-
-    :return: the mirrored incident id that had an outgoing error.
-    :rtype: ``str``
-    """
-    integration_cache = demisto.getIntegrationContext()
-    if integration_cache.get('out_mirror_error') is None or integration_cache.get('out_mirror_error') != error:
-        demisto.debug("Error in outgoing mirror for incident {0}: {1}".format(incident_id, error))
-        integration_cache['out_mirror_error'] = error
-        integration_cache['out_error_printed'] = False
-
-    demisto.setIntegrationContext(integration_cache)
-    return incident_id
+    calling_context = demisto.callingContext.get('context', {})
+    brand_name = calling_context.get('IntegrationBrand', '')
+    instance_name = calling_context.get('IntegrationInstance', '')
+    headers = {
+        'X-Content-Version': CONTENT_RELEASE_VERSION,
+        'X-Content-Name': brand_name or instance_name or 'Name not found',
+        'X-Content-LicenseID': demisto.getLicenseID(),
+        'X-Content-Branch': CONTENT_BRANCH_NAME,
+        'X-Content-Server-Version': get_demisto_version_as_str(),
+    }
+    return headers
 
 
 class BaseWidget:
@@ -4657,3 +4586,228 @@ class TableOrListWidget(BaseWidget):
             'total': len(self.data),
             'data': self.data
         })
+
+
+class IAMErrors(object):
+    """
+    An enum class to manually handle errors in IAM integrations
+    :return: None
+    :rtype: ``None``
+    """
+    USER_DOES_NOT_EXIST = 404, 'User does not exist'
+    USER_ALREADY_EXISTS = 409, 'User already exists'
+
+
+class IAMActions(object):
+    """
+    Enum: contains all the IAM actions (e.g. get, update, create, etc.)
+    :return: None
+    :rtype: ``None``
+    """
+    GET_USER = 'get'
+    UPDATE_USER = 'update'
+    CREATE_USER = 'create'
+    DISABLE_USER = 'disable'
+    ENABLE_USER = 'enable'
+
+
+class IAMVendorActionResult:
+    """ This class is used in IAMUserProfile class to represent actions data.
+    :return: None
+    :rtype: ``None``
+    """
+
+    def __init__(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
+                 error_message=None, details=None, skip=False, skip_reason=None, action=None):
+        """ Sets the outputs and readable outputs attributes according to the given arguments.
+
+        :param success: (bool) whether or not the command succeeded.
+        :param active:  (bool) whether or not the user status is active.
+        :param iden: (str) the user ID.
+        :param username: (str) the username of the user.
+        :param email:  (str) the email of the user.
+        :param error_code: (str or int) the error code of the response, if exists.
+        :param error_message: (str) the error details of the response, if exists.
+        :param details: (dict) the full response.
+        :param skip: (bool) whether or not the command is skipped.
+        :param skip_reason: (str) If the command is skipped, describes the reason.
+        :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
+        """
+        self._brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
+        self._instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
+        self._success = success
+        self._active = active
+        self._iden = iden
+        self._username = username
+        self._email = email
+        self._error_code = error_code
+        self._error_message = error_message
+        self._details = details
+        self._skip = skip
+        self._skip_reason = skip_reason
+        self._action = action
+
+    def create_outputs(self):
+        """ Sets the outputs in `_outputs` attribute.
+        """
+        if not self._skip:
+            outputs = {
+                'brand': self._brand,
+                'instanceName': self._instance_name,
+                'action': self._action,
+                'success': self._success,
+                'active': self._active,
+                'id': self._iden,
+                'username': self._username,
+                'email': self._email,
+                'errorCode': self._error_code,
+                'errorMessage': self._error_message,
+                'details': self._details
+            }
+        else:
+            outputs = {
+                'brand': self._brand,
+                'instanceName': self._instance_name,
+                'action': self._action,
+                'skipped': True,
+                'reason': self._skip_reason
+            }
+        return outputs
+
+    def create_readable_outputs(self, outputs):
+        """ Sets the human readable output in `_readable_output` attribute.
+
+        :param outputs: (dict) the command outputs.
+        """
+        title = self._action.title() + ' User Results ({})'.format(self._brand)
+
+        if not self._skip:
+            headers = ["brand", "instanceName", "success", "active", "id", "username",
+                       "email", "errorCode", "errorMessage", "details"]
+        else:
+            headers = ["brand", "instanceName", "skipped", "reason"]
+
+        readable_output = tableToMarkdown(
+            name=title,
+            t=outputs,
+            headers=headers,
+            removeNull=True
+        )
+
+        return readable_output
+
+
+class IAMUserProfile:
+    """
+        A User Profile object class for IAM integrations.
+
+        Attributes:
+            _user_profile (str): The user profile information.
+            _user_profile_delta (str): The user profile delta.
+            _vendor_action_results (list): A List of data returned from the vendor.
+    :return: None
+    :rtype: ``None``
+    """
+
+    INDICATOR_TYPE = 'User Profile'
+
+    def __init__(self, user_profile, user_profile_delta=None):
+        """ IAMUserProfile c'tor.
+
+        :param user_profile: (dict) the user-profile argument.
+        :param user_profile_delta: (dict) the user-profile argument.
+        """
+        self._user_profile = safe_load_json(user_profile)
+        self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
+        self._vendor_action_results = []
+
+    def get_attribute(self, item):
+        return self._user_profile.get(item)
+
+    def to_entry(self):
+        """ Generates a XSOAR IAM entry from the data in _vendor_action_results.
+        Note: Currently we are using only the first element of the list, in the future we will support multiple results.
+
+        :return: (dict) A XSOAR entry.
+        """
+
+        outputs = self._vendor_action_results[0].create_outputs()
+        readable_output = self._vendor_action_results[0].create_readable_outputs(outputs)
+
+        entry_context = {
+            'IAM.UserProfile(val.email && val.email == obj.email)': self._user_profile,
+            'IAM.Vendor(val.instanceName && val.instanceName == self.instanceName && '
+            'val.email && val.email == obj.email)': outputs
+        }
+
+        return_entry = {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': outputs,
+            'HumanReadable': readable_output,
+            'EntryContext': entry_context
+        }
+
+        return return_entry
+
+    def set_result(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
+                   error_message=None, details=None, skip=False, skip_reason=None, action=None):
+        """ Sets the outputs and readable outputs attributes according to the given arguments.
+
+        :param success: (bool) whether or not the command succeeded.
+        :param active:  (bool) whether or not the user status is active.
+        :param iden: (str) the user ID.
+        :param username: (str) the username of the user.
+        :param email:  (str) the email of the user.
+        :param error_code: (str or int) the error code of the response, if exists.
+        :param error_message: (str) the error details of the response, if exists.
+        :param details: (dict) the full response.
+        :param skip: (bool) whether or not the command is skipped.
+        :param skip_reason: (str) If the command is skipped, describes the reason.
+        :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
+        """
+        if not email:
+            email = self.get_attribute('email')
+
+        vendor_action_result = IAMVendorActionResult(
+            success=success,
+            active=active,
+            iden=iden,
+            username=username,
+            email=email,
+            error_code=error_code,
+            error_message=error_message,
+            details=details,
+            skip=skip,
+            skip_reason=skip_reason,
+            action=action
+        )
+
+        self._vendor_action_results.append(vendor_action_result)
+
+    def map_object(self, mapper_name, mapping_type=None):
+        """ Returns the user data, in an application data format.
+
+        :param mapper_name: (str) The outgoing mapper from XSOAR to the application.
+        :param mapping_type: (str) The mapping type of the mapper (optional).
+        :return: (dict) the user data, in the app data format.
+        """
+        if not mapping_type:
+            mapping_type = IAMUserProfile.INDICATOR_TYPE
+        if not self._user_profile:
+            raise DemistoException('You must provide the user profile data.')
+        app_data = demisto.mapObject(self._user_profile, mapper_name, mapping_type)
+        return app_data
+
+    def update_with_app_data(self, app_data, mapper_name, mapping_type=None):
+        """ updates the user_profile attribute according to the given app_data
+
+        :param app_data: (dict) The user data in app
+        :param mapper_name: (str) incoming mapper name
+        :param mapping_type: (str) Optional - mapping type
+        """
+        if not mapping_type:
+            mapping_type = IAMUserProfile.INDICATOR_TYPE
+        if not isinstance(app_data, dict):
+            app_data = safe_load_json(app_data)
+        self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)

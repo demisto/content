@@ -2,10 +2,13 @@ commonfields:
   id: XBTimeline
   version: -1
 name: XBTimeline
-script: |-
+script: >-
   import time
+
   res = []
+
   entry = demisto.executeCommand('xb-timeline', {'username': demisto.args()['username']})[0]
+
   if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
       entities = demisto.get(entry, 'Contents.entities')
       if entities:
@@ -34,3 +37,4 @@ dependson:
   must:
   - xb-timeline
 timeout: 0s
+fromversion: 5.0.0

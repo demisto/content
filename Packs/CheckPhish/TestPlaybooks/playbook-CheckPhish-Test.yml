@@ -103,8 +103,7 @@ tasks:
       id: 8e46356a-dbb2-449b-8eac-84a49800cd5a
       version: -1
       name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -154,8 +153,7 @@ tasks:
       id: fe25f51d-093b-4cd1-8429-8c5a6f3daddd
       version: -1
       name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -205,8 +203,7 @@ tasks:
       id: 6e4276ec-723e-4eaa-8311-eeb649f1f4d6
       version: -1
       name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -256,8 +253,7 @@ tasks:
       id: f4fd148c-3f36-405e-832a-3fd3ab148377
       version: -1
       name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -368,8 +364,7 @@ tasks:
       id: 01facdeb-8f1b-4684-81e4-67f801086703
       version: -1
       name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -419,8 +414,7 @@ tasks:
       id: 683fc5e7-956b-4e4e-82fd-53ebd62e0bc3
       version: -1
       name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -470,8 +464,7 @@ tasks:
       id: ba309d4c-da11-4b19-8497-facdcae092cf
       version: -1
       name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -521,8 +514,7 @@ tasks:
       id: 1dafcee3-fc03-4de2-82e9-408bfecf1830
       version: -1
       name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -614,4 +606,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 4.1.0
+fromversion: 5.0.0
