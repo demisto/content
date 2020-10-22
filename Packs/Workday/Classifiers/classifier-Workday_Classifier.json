@@ -1,0 +1,18 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "308bccc2-8712-41ef-8035-5827644770bb",
+ "keyTypeMap": {
+  "Active": "IAM-Sync-User",
+  "Leave Of Absence": "IAM-Sync-User",
+  "Terminated": "IAM-Sync-User"
+ },
+ "name": "Workday Classifier",
+ "transformer": {
+  "complex": null,
+  "simple": "Employment_Status"
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}
