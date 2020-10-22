@@ -1,0 +1,52 @@
+args:
+- default: false
+  defaultValue: Generate_Password
+  isArray: false
+  name: pwdGenerationScript
+  required: false
+  secret: false
+- default: false
+  description: The user's profile.
+  isArray: false
+  name: userProfile
+  required: true
+  secret: false
+- default: false
+  description: The email address that the password will send to it.
+  isArray: false
+  name: email
+  required: true
+  secret: false
+- default: false
+  defaultValue: User Profile - Active Directory (Incoming)
+  description: The incoming mapper name.
+  isArray: false
+  name: mapperIn
+  required: false
+  secret: false
+comment: |-
+  Generates password,
+  Set an AD user account with this password.
+  Enable the account.
+  Send mail to the user with tha account information.
+  This script is runing `send-mail` command, make sure there is a matching Integration configurated.
+commonfields:
+  id: 8b3e09e8-7427-4606-80b9-1effb24fc552
+  version: -1
+enabled: true
+name: IAM-Init-AD-User
+script: '-'
+subtype: python3
+system: false
+tags:
+- active directory
+- Utility
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.5.4002
+runas: DBotWeakRole
+runonce: false
+dependson:
+  must:
+  - Active Directory Query v2|||ad-search
+pswd: ''
