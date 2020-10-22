@@ -1,0 +1,24 @@
+comment: "This enables to color the field according to the magnitude. The scale is\
+  \ \n1-3 green\n4-7 yellow\n8-10 red"
+commonfields:
+  id: QRadarMagnitude
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 2d7f0c2a-112d-4e2a-8c19-ecd81d58c420
+    propagationLabels: []
+    toServerVersion: ""
+dockerimage: demisto/python3:3.8.3.9324
+enabled: true
+name: QRadarMagnitude
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python

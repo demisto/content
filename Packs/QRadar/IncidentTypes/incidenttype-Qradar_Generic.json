@@ -1,0 +1,30 @@
+{
+	"autorun": false,
+	"closureScript": "",
+	"color": "#7C71F5",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Qradar Generic",
+	"itemVersion": "",
+	"layout": "c6f7c512-aaf2-4ab1-8910-403aa0b59e7b",
+	"locked": false,
+	"name": "Qradar Generic",
+	"packID": "2d7f0c2a-112d-4e2a-8c19-ecd81d58c420",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}
