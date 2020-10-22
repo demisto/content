@@ -16,8 +16,7 @@ if not demisto.params().get('proxy', False):
 # The command demisto.command() holds the command sent from the user.
 if demisto.command() == 'test-module':
 	url = 'https://' + server + '/external/v1/alerts/'
-	payload = {}
-	response = requests.put(url, data=json.dumps(payload), headers=headers, verify=ssl_check)
+	response = requests.put(url, headers=headers, verify=ssl_check)
 	# This is the call made when pressing the integration test button.
 	if response.status_code == requests.codes.ok:
 		demisto.results('ok')
