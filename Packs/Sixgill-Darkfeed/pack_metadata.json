@@ -1,11 +1,11 @@
 {
-    "name": "Sixgill Darkfeed - Core Edition",
-    "description": "Get contextual and actionable insights to proactively block underground threats in real-time with the most comprehensive, automated stream of IOCs \n\nFor organizations who are currently Darkfeed customers.",
+    "name": "Sixgill Darkfeed - Annual Subscription",
+    "description": "This edition of Sixgill Darkfeed is intended for customers who have a direct annual subscription to Sixgill Darkfeed.\n\nGet contextual and actionable insights to proactively block underground threats in real-time with the most comprehensive, automated stream of IOCs \n\nFor organizations who are currently Darkfeed customers.",
     "support": "partner",
-    "currentVersion": "1.2.0",
+    "currentVersion": "1.2.1",
     "author": "Sixgill",
     "url": "https://info.cybersixgill.com/darkfeed-demo-request?__hstc=243871258.1ada04342b527588fbfc3ce61f48de94.1595252142770.1595252142770.1595254236156.2&__hssc=243871258.1.1595254236156&__hsfp=3682459443",
-    "email": "sales@cybersixgill.com",
+    "email": "support@cybersixgill.com",
     "created": "2020-03-10T08:37:18Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"

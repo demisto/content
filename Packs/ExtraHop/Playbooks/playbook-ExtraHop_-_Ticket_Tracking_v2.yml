@@ -1,9 +1,14 @@
 id: ExtraHop - Ticket Tracking v2
 version: -1
 name: ExtraHop - Ticket Tracking v2
+<<<<<<< HEAD
 description: Deprecated. Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
 starttaskid: "0"
 hidden: true
+=======
+description: Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
+starttaskid: "0"
+>>>>>>> 7a4749182a67f33e557ed68a94fb2cf904ed7f88
 tasks:
   "0":
     id: "0"

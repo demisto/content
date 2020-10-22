@@ -18,6 +18,8 @@ from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
+from Tests.scripts.utils.content_packs_util import should_test_content_pack
+
 coloredlogs.install(level=logging.DEBUG,
                     fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s',
                     level_styles={
@@ -1121,6 +1123,29 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
+def remove_ignored_tests(tests: set, content_packs: set) -> set:
+    """Removes test playbooks, which are in .pack-ignore, from the given tests set
+
+    Args:
+        tests (set): Tests set to remove the tests to ignore from
+        content_packs (set): Content packs from which to check if test should be ignored
+
+    Return:
+         set: The filtered tests set
+    """
+    ignored_tests_set = set()
+
+    for pack in content_packs:
+        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
+
+    if ignored_tests_set:
+        readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
+        logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
+        tests.difference_update(ignored_tests_set)
+
+    return tests
+
+
 def get_test_list_and_content_packs_to_install(files_string, branch_name, minimum_server_version='0',
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
@@ -1198,6 +1223,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
+    tests = remove_ignored_tests(tests, packs_to_install)
+
     return tests, packs_to_install
 
 
@@ -1241,7 +1268,6 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
 def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=None, one_before_ga=None, ga=None):
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
-    two_before_ga = two_before_ga or AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
     one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
     ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
     """
@@ -1252,7 +1278,6 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
     envs_to_test = {
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
-        'Demisto one before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
         'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
         'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
@@ -1281,9 +1306,13 @@ def changed_files_to_string(changed_files):
 
 def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
-    tests_string = ''
-    packs_to_install_string = ''
-    if not is_nightly:
+    if is_nightly:
+        all_tests = set(CONF.get_test_playbook_ids())
+        # adding "Run all tests" which is required in test_content.extract_filtered_tests() for the nightly
+        all_tests.add(RUN_ALL_TESTS_FORMAT)
+        packs_to_install = set(filter(should_test_content_pack, os.listdir(PACKS_DIR)))
+        tests = remove_ignored_tests(all_tests, packs_to_install)
+    else:
         branches = tools.run_command("git branch")
         branch_name_reg = re.search(r"\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
@@ -1308,17 +1337,20 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              minimum_server_version)
-        tests_string = '\n'.join(tests)
-        packs_to_install_string = '\n'.join(packs_to_install)
+    tests_string = '\n'.join(tests)
+    packs_to_install_string = '\n'.join(packs_to_install)
 
-        if not skip_save:
-            logging.info("Creating filter_file.txt")
-            with open("./Tests/filter_file.txt", "w") as filter_file:
-                filter_file.write(tests_string)
-            logging.info("Creating content_packs_to_install.txt")
-            with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
-                content_packs_to_install.write(packs_to_install_string)
+    if not skip_save:
+        logging.info("Creating filter_file.txt")
+        with open("./Tests/filter_file.txt", "w") as filter_file:
+            filter_file.write(tests_string)
+        # content_packs_to_install.txt is not used in nightly build
+        logging.info("Creating content_packs_to_install.txt")
+        with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
+            content_packs_to_install.write(packs_to_install_string)
 
+    if not is_nightly:
+        # No need to print all content packs and all tests in nightly
         if tests_string:
             logging.info('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
