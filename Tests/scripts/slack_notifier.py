@@ -226,7 +226,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'master':
+    if branch_name == 'upload-packs-build-flow':
         print("Extracting build status")
         if test_type == UNITTESTS_TYPE:
             print_color("Starting Slack notifications about nightly build - unit tests", LOG_COLORS.GREEN)
@@ -252,7 +252,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         slack_client = SlackClient(slack_token)
         slack_client.api_call(
             "chat.postMessage",
-            channel="dmst-content-team",
+            channel="dmst-bucket-upload",
             username="Content CircleCI",
             as_user="False",
             attachments=content_team_attachments
@@ -266,6 +266,8 @@ def main():
                        options.slack,
                        options.test_type,
                        env_results_file_name=options.env_results_file_name)
+    elif options.bucket_upload:
+        pass
     elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, BUCKET_UPLOAD_TYPE,
                                SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
         slack_notifier(options.url, options.slack, options.test_type)
