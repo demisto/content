@@ -640,7 +640,7 @@ class Pack(object):
             bool: whether the operation succeeded.
         """
         task_status = True
-
+        delete_test_playbooks = True
         try:
             print(f'moshe is {delete_test_playbooks}')
             for directory in Pack.EXCLUDE_DIRECTORIES:
