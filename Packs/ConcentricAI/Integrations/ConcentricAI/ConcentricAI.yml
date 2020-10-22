@@ -54,6 +54,12 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- defaultvalue: 1 day
+  display: Time since last risk was generated.
+  hidden: false
+  name: firstFetch
+  required: false
+  type: 0
 description: Concentric’s Semantic Intelligence™ solution discovers and protects business
   critical, unstructured data. We use deep learning to identify risky sharing, inappropriate
   third party access, assets in the wrong location, mis-classified documents, or lateral

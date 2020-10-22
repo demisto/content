@@ -383,13 +383,17 @@ def test_module(client: LoginClient):
         return 'ok'
 
 
-def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: Dict[str, int], max_results: int):
+def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: Dict[str, int], max_results: int, fetch_time):
     global SCROLL_ID_INCIDENT
     last_fetch = last_run.get('last_fetch', None)
     scroll_id = last_run.get('scroll_id', None)
 
     if last_fetch is None:
-        from_time = 0
+        if fetch_time is not None:
+            from_epoch = parse_date_range(date_range=fetch_time, date_format='%s')
+            from_time = int(int(from_epoch[0]) * 1000)
+        else:
+            from_time = 0
         to_time = int(datetime.now().timestamp() * 1000)
         last_fetch = int(to_time)
         to_time = last_fetch
@@ -580,9 +584,10 @@ def main() -> None:
             )
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
+            fetch_time = demisto.params().get('firstFetch')
 
             last_run = demisto.getLastRun()
-            next_run, incidents = fetch_incidents(loginClient, queryClient, last_run, max_results)
+            next_run, incidents = fetch_incidents(loginClient, queryClient, last_run, max_results, fetch_time)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
