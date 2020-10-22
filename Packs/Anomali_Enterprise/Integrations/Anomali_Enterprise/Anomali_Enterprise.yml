@@ -28,16 +28,16 @@ script:
   commands:
   - arguments:
     - default: false
-      description: from todo.
+      description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes).
       isArray: false
       name: from
       required: true
       secret: false
     - default: false
-      description: to todo.
+      description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is now.
       isArray: false
       name: to
-      required: true
+      required: false
       secret: false
     - default: false
       description: Indicators to search.
@@ -50,18 +50,12 @@ script:
     execution: false
     name: anomali-enterprise-retro-forensic-search
     outputs:
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
+    - contextPath: AnomaliEnterprise.ForensicSearch.job_id
+      description: Job ID of the search.
       type: String
-    - contextPath: DBotScore.Type
-      description: The indicator type.
+    - contextPath: AnomaliEnterprise.ForensicSearch.status
+      description: Status of the search.
       type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
   - arguments:
     - default: false
       description: the forensic search job ID.
@@ -74,18 +68,12 @@ script:
     execution: false
     name: anomali-enterprise-retro-forensic-search-results
     outputs:
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
+    - contextPath: AnomaliEnterprise.ForensicSearch.job_id
+      description: Job ID of the search.
       type: String
-    - contextPath: DBotScore.Type
-      description: The indicator type.
+    - contextPath: AnomaliEnterprise.ForensicSearch.status
+      description: Status of the search.
       type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
   - arguments:
     - default: false
       description: Domains to search.
@@ -147,7 +135,7 @@ script:
       description: The vendor reporting the domain as malicious.
       type: String
     - contextPath: Domain.Malicious.Description
-      description: A description of the malicious Domain.
+      description: A description of the malicious domain.
       type: String
   dockerimage: demisto/python3:3.8.6.12176
   feed: false

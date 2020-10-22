@@ -20,6 +20,7 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy)
         self._username = username
         self._password = password
+        self._headers = {'Content-Type': 'application/json'}
 
     def start_search_job_request(self, from_: str, to_: str, indicators: List[str]) -> dict:
         """Initiate a search job.
@@ -32,8 +33,8 @@ class Client(BaseClient):
         """
         data = json.dumps({'username': self._username, 'password': self._password, 'from': from_, 'to': to_,
                            'indicators': indicators})
-        response = self._http_request(method='POST', url_suffix='/api/v1/mars/forensic', data=data)
-        return response
+        return self._http_request(method='POST', url_suffix='/api/v1/mars/forensic', headers=self._headers,
+                                  data=data)
 
     def get_search_job_result_request(self, job_id: str) -> dict:
         """Retrieve a search job results.
@@ -42,10 +43,11 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        data = json.dumps({'username': self._username, 'password': self._password})
+        # ae-authorization is needed only for get results
+        self._headers.update({'ae-authorization': f'{self._username}:{self._password}'})
         params = {'jobid': job_id}
-        response = self._http_request(method='GET', url_suffix='/api/v1/mars/forensic', data=data, params=params)
-        return response
+        return self._http_request(method='GET', url_suffix='/api/v1/mars/forensic', headers=self._headers,
+                                  params=params)
 
     def domain_request(self, domain: List[str]) -> dict:
         """Retrieve information regarding a domain.
@@ -55,9 +57,8 @@ class Client(BaseClient):
             Response from API.
         """
         data = json.dumps({'username': self._username, 'password': self._password, 'domains': domain})
-        response = self._http_request(method='POST', url_suffix='/api/v1/mars/dga_score', headers=self._headers,
-                                      data=data)
-        return response
+        return self._http_request(method='POST', url_suffix='/api/v1/mars/dga_score', headers=self._headers,
+                                  data=data)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -85,16 +86,28 @@ def start_search_job(client: Client, args: dict) -> CommandResults:
         CommandResults.
     """
     from_ = str(args.get('from'))
-    to_ = str(args.get('to'))
+    to_ = str(args.get('to', ''))
     indicators = argToList(args.get('indicators'))
-    response = client.start_search_job_request(from_, to_, indicators)
-    search_data = response.get('data', {})
-    search_data.update({'Status': 'In Progress'})
+
+    timestamp_format = '%Y-%m-%dT%H:%M:%S.%f'
+    from_iso = parse_date_range(from_, date_format=timestamp_format)[0]
+    if to_:
+        to_iso = parse_date_range(to_, date_format=timestamp_format)[0]
+    else:
+        to_iso = datetime.now().strftime(timestamp_format)
+
+    response = client.start_search_job_request(from_iso, to_iso, indicators)
+
+    start_search_outputs = {
+        'status': 'In Progress',
+        'job_id': response.get('jobid', '')
+    }
+
     return CommandResults(
         outputs_prefix='AnomaliEnterprise.ForensicSearch',
-        outputs_key_field='jobid',
-        outputs=response,
-        readable_output=tableToMarkdown(name="Forensic Search:", t=search_data, removeNull=True),
+        outputs_key_field='job_id',
+        outputs=start_search_outputs,
+        readable_output=tableToMarkdown(name="Forensic Search started:", t=start_search_outputs, removeNull=True),
         raw_response=response
     )
 
@@ -111,14 +124,14 @@ def get_search_job_result(client: Client, args: Dict) -> CommandResults:
     """
     job_id = str(args.get('job_id'))
     response = client.get_search_job_result_request(job_id)
-    result_data = response.get('data', {})
-    status = 'In Progress' if False else 'Completed'  # TODO
-    result_data.update({'Status': status})
+    if 'error' in response:
+        raise Exception(str(response.get('error')))
+    response.update({'job_id': job_id})
     return CommandResults(
         outputs_prefix='AnomaliEnterprise.ForensicSearch',
-        outputs_key_field='jobid',
+        outputs_key_field='job_id',
         outputs=response,
-        readable_output=tableToMarkdown(name="Forensic Results:", t=result_data, removeNull=True),
+        readable_output=tableToMarkdown(name="Forensic Results:", t=response.get('streamResults'), removeNull=True),
         raw_response=response
     )
 
