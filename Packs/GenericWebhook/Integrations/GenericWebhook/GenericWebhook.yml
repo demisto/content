@@ -9,7 +9,7 @@ configuration:
   type: 8
   required: false
   hidden: true
-- additionalinfo: Will run the webserver on this port from within Cortex XSOAR. Requires
+- additionalinfo: Runs the web server on this port from within Cortex XSOAR. Requires
     a unique port for each long-running integration instance. Do not use the same
     port for multiple instances.
   display: Listen Port
@@ -21,12 +21,12 @@ configuration:
   required: false
   type: 9
 - display: Certificate
-  additionalinfo: Required for HTTPS, in case not using the server rerouting
+  additionalinfo: Required for HTTPS, if not using server rerouting
   name: certificate
   required: false
   type: 12
 - display: Private Key
-  additionalinfo: Required for HTTPS, in case not using the server rerouting
+  additionalinfo: Required for HTTPS, if not using server rerouting
   name: key
   required: false
   type: 14
@@ -41,12 +41,12 @@ configuration:
   name: store_samples
   required: false
   type: 8
-description: Generic webhook to be triggered in order to create incident.
+description: The generic webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
 display: Generic Webhook
 name: Generic Webhook
 script:
   commands: []
-  dockerimage: demisto/fastapi:1.0.0.12531
+  dockerimage: demisto/fastapi:1.0.0.1231
   feed: false
   isfetch: false
   longRunning: true
