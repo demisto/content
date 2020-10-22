@@ -1,10 +1,8 @@
-Use the Zscaler integration to block manage domains using whitelists and blacklists.
-
-In order that the integration will work properly, one must use a Zscaler user with admin permissions.
-
-Category ID is the same as the category name, except all letters are capitalized and each word is separated with an underscored instead of spaces. For example, if the category name is Other Education, then the Category ID is OTHER\_EDUCATION.
-
-Custom category ID has the format `CUSTOM_01`, which is not indicative of the category. Use the using `zscaler-get-categories` command to get a custom category and its configured name.
+<p>Use the Zscaler integration to block and manage domains using whitelists and blacklists.</p>
+<p>For the integration to work properly, the Zscaler user must have admin permissions.</p>
+<p>Category ID is the same as the category name, except all letters are capitalized and each word is separated with an underscore instead of spaces. For example, if the category name is Other Education, then the Category ID is OTHER_EDUCATION.</p>
+<p>A custom category ID has the format <code>CUSTOM_01</code>, which is not indicative of the category. Use the <code style="font-size: 13px;">zscaler-get-categories</code> command to get a custom category and its configured name.</p>
+<h2>Use the Zscaler integration to block manage domains using whitelists and blacklists.
 
 ## Configure Zscaler on Cortex XSOAR
 
