@@ -640,11 +640,8 @@ class Pack(object):
             bool: whether the operation succeeded.
         """
         task_status = True
-        delete_test_playbooks = True
         try:
-            print(f'moshe is {delete_test_playbooks}')
             for directory in Pack.EXCLUDE_DIRECTORIES:
-                print(f'i am in {self._pack_path}/{directory}')
                 if delete_test_playbooks and os.path.isdir(f'{self._pack_path}/{directory}'):
                     shutil.rmtree(f'{self._pack_path}/{directory}')
                     print(f"Deleted {directory} directory from {self._pack_name} pack")
