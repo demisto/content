@@ -34,13 +34,13 @@ def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
 # Minimum supported version is:  1.38
 MIN_MAJOR_VERSION = 1
 MIN_MINOR_VERSION = 38
-FULL_INCIDENTS_SECONDS = 86400
+FULL_INCIDENTS_SECONDS = 86 # 400
 
 BREACHPOINT_LABEL = 'Demisto Breachpoint'
 CRITICAL_ASSET_LABEL = 'Demisto Critical Asset'
 DEFAULT_TIME_ID = 'timeAgo_days_7'
 PREVIOUS_DEFAULT_TIME_ID = 'timeAgo_days_7'
-XM_CYBER_INCIDENT_TYPE = 'XM Cyber Incident'
+XM_CYBER_INCIDENT_TYPE = 'XM Cyber Risk Score'
 TOP_ENTITIES = 5
 PAGE_SIZE = 50
 MAX_PAGES = 10
@@ -116,7 +116,7 @@ class EVENT_NAME:
 
 
 class SEVERITY:
-    Informational = 'Informational'
+    Informational = 'informational'
     Low = 'Low'
     Medium = 'Medium'
     High = 'High'
@@ -317,7 +317,7 @@ def create_xm_event(name, data, date = None):
         date = datetime.now()
 
     data["name"] = f'{EVENT_NAME.EventPrefix}{name}'
-    data["create_time"] = timestamp_to_datestring(datetime.timestamp(date)) # CommonServerPython.timestamp_to_datestring(date)
+    data["create_time"] = timestamp_to_datestring(date.timestamp()) # CommonServerPython.timestamp_to_datestring(date)
     data["type"] = XM_CYBER_INCIDENT_TYPE # TODO - add to PR
     data["severity"] = SEVERITY.Informational
 
@@ -478,9 +478,8 @@ def risk_score_trend_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
         outputs=risk_score
     )
 
-
-def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    writeLog('Running fetch incidents 2')
+def _fetch_incidents_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    events = []
     should_run = True
 
     if xm.is_fetch_incidents:
@@ -491,17 +490,22 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
             writeLog(f'last run is: {str(last_run)}')
             writeLog(f'last run start time is: {str(last_run["start_time"])}')
             start_time = datetime.fromisoformat(last_run["start_time"])
-            writeLog(f'Diff from previous run: {str(dates_diff_seconds(now, start_time))}')
-            if should_run < FULL_INCIDENTS_SECONDS:
+            diff = dates_diff_seconds(now, start_time)
+            writeLog(f'Diff from previous run: {str(diff)}')
+            if diff < FULL_INCIDENTS_SECONDS:
                 should_run = False
         else:
             writeLog(f'Last run is null')
 
     if not should_run:
-        return
+        events = xm.get_fetch_incidents_events()
 
-    events = xm.get_fetch_incidents_events()
     writeLog(f'Found {len(events)} events')
+    return events
+
+def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    writeLog('Running fetch incidents 2')
+    events = _fetch_incidents_internal(xm, args)
 
     if xm.is_fetch_incidents:
         incidents = []
@@ -511,7 +515,7 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 'occurred': event['create_time'],
                 'rawJson': json.dumps(event),
                 'type': event['type'],
-                'severity': event["severity"]
+                # 'severity': event["severity"]
             }
             incidents.append(incident)
 

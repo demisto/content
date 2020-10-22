@@ -28,6 +28,25 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch
+  name: first_fetch
+  required: false
+  type: 0
+
 script:
   commands:
   - name: xmcyber-affected-critical-assets-list
@@ -243,7 +262,7 @@ script:
         type: Number
 
   dockerimage: demisto/python3:3.8.6.12176
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
