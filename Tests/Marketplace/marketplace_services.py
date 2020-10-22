@@ -859,9 +859,8 @@ class Pack(object):
 
         # get the latest rn version in the changelog.json file
         changelog_rn_versions = [LooseVersion(ver) for ver in changelog]
-        changelog_rn_versions.sort()
         # no need to check if changelog_rn_versions isn't empty because changelog file exists
-        changelog_latest_rn_version = changelog_rn_versions[-1]
+        changelog_latest_rn_version = max(changelog_rn_versions)
 
         return changelog, changelog_latest_rn_version
 
@@ -891,8 +890,7 @@ class Pack(object):
 
             found_versions.append(LooseVersion(version))
 
-        found_versions.sort()
-        latest_release_notes_version = found_versions[-1]
+        latest_release_notes_version = max(found_versions)
         latest_release_notes = latest_release_notes_version.vstring
         print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
 
