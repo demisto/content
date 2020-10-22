@@ -214,7 +214,7 @@ def fetch_incidents(last_run: dict, first_fetch_period: str):
     result = advanced_case_search(
         startTimestamp=start_timestamp if start_timestamp else first_fetch_period,
         endTimestamp="now",
-        limit=0,
+        limit=demisto.params().get("max_fetch", 0),
         sortBy=["createdTimestamp"]
     )
     incidents = []
