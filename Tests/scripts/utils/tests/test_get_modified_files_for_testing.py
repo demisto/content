@@ -40,7 +40,8 @@ class TestGetModifiedFilesForTesting:
 
     def test_test_playbook(self):
         diff_line = "M Packs/HelloWorld/TestPlaybooks/HelloWorld.yml"
-        assert get_modified_files_for_testing(diff_line) == ([], ["Packs/HelloWorld/TestPlaybooks/HelloWorld.yml"], [], False, [], set(), False, False)
+        yml_file = "Packs/HelloWorld/TestPlaybooks/HelloWorld.yml"
+        assert get_modified_files_for_testing(diff_line) == ([], [yml_file], [], False, [], set(), False, False)
 
     def test_no_file_path(self):
         diff_line = ""
@@ -48,7 +49,8 @@ class TestGetModifiedFilesForTesting:
 
     def test_common_file_list(self):
         diff_line = f"M    {COMMON_YML_LIST[0]}"
-        assert get_modified_files_for_testing(diff_line) == ([], [], ["scripts/script-CommonIntegration.yml"], False, [], set(), False, False)
+        yml_file = "scripts/script-CommonIntegration.yml"
+        assert get_modified_files_for_testing(diff_line) == ([], [], [yml_file], False, [], set(), False, False)
 
     @pytest.mark.parametrize("path", (
         "Packs/HelloWorld/IndicatorTypes/reputation-cidr.json",
@@ -80,5 +82,5 @@ class TestGetModifiedFilesForTesting:
 
     def test_sample(self):
         diff_line = "M Tests/Util/Scripts/new_script.py"
-        assert get_modified_files_for_testing(diff_line) == ([], [], [], False, ["Tests/Util/Scripts/new_script.py"], set(), False, False)
-
+        py_file = "Tests/Util/Scripts/new_script.py"
+        assert get_modified_files_for_testing(diff_line) == ([], [], [], False, [py_file], set(), False, False)
