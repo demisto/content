@@ -98,7 +98,7 @@ def test_start_search_job_command(mocker):
     command_results = start_search_job(client, args={'from': '1 month', 'indicators': '8.8.8.8'})
     output = command_results.to_context().get('EntryContext', {})
     expected_result = {
-        'status': 'In Progress',
+        'status': 'in progress',
         'job_id': '1234'
     }
 

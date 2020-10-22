@@ -99,7 +99,7 @@ def start_search_job(client: Client, args: dict) -> CommandResults:
     response = client.start_search_job_request(from_iso, to_iso, indicators)
 
     start_search_outputs = {
-        'status': 'In Progress',
+        'status': 'in progress',
         'job_id': response.get('jobid', '')
     }
 
@@ -131,7 +131,7 @@ def get_search_job_result(client: Client, args: Dict) -> CommandResults:
     response.update({'job_id': job_id})
     if not response.get('complete'):
         human_readable = f'job ID: {job_id} is still in progress.'
-        response.update({'status': 'In Progress'})
+        response.update({'status': 'in progress'})
     else:
         if response.get('totalMatches'):
             human_readable = tableToMarkdown(name="Forensic Results:", t=response.get('streamResults'), removeNull=True)

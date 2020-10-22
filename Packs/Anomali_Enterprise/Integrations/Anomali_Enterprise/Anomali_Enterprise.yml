@@ -34,7 +34,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is now.
+      description: Last appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is now.
       isArray: false
       name: to
       required: false
@@ -43,7 +43,7 @@ script:
       description: Indicators to search.
       isArray: true
       name: indicators
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Initiates a forensic search of the indicators.
