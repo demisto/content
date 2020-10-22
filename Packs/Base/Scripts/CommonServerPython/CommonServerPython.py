@@ -2749,7 +2749,7 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget``
+    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget`` or ``IAMUserProfile``
     :param results: A result object to return as a War-Room entry.
 
     :return: None
@@ -2785,6 +2785,10 @@ def return_results(results):
 
     if isinstance(results, GetRemoteDataResponse):
         demisto.results(results.extract_for_local())
+        return
+
+    if isinstance(results, IAMUserProfile):
+        demisto.results(results.to_entry())
         return
 
     demisto.results(results)
