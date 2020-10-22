@@ -22,12 +22,15 @@ def test_domain_command_benign(mocker):
     dbot_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
                ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
     expected_result = {'Domain': [{'Name': 'test.com'}],
-                       'DBotScore': [
-                           {'Indicator': 'test.com',
-                            'Type': 'domain',
-                            'Vendor': 'Anomali Enterprise',
-                            'Score': 0}
-                       ]
+                       'DBotScore':
+                           [
+                               {
+                                   'Indicator': 'test.com',
+                                    'Type': 'domain',
+                                    'Vendor': 'Anomali Enterprise',
+                                    'Score': 0
+                                }
+                            ]
                        }
     assert output.get('Domain(val.Name && val.Name == obj.Name)', []) == expected_result.get('Domain')
     assert output.get(dbot_key, []) == expected_result.get('DBotScore')
