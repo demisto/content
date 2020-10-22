@@ -620,7 +620,7 @@ def get_components_command(client: Client, args: Dict[str, Any]) -> Union[str, C
         outputs=custom_ec,
         readable_output=hr,
         raw_response=resp,
-        indicators=standard_ec
+        indicators=standard_ec  # TODO: this will need to be updated
     )
 
 
@@ -657,7 +657,7 @@ def pt_whois_search_command(client_obj: Client, args: Dict[str, Any]) -> Union[C
         outputs_prefix='PassiveTotal.WHOIS',
         outputs_key_field='domain',
         outputs=custom_ec,
-        indicators=standard_ec,
+        indicators=standard_ec,  # TODO: this will need to be updated
         readable_output=hr,
         raw_response=response
     )
@@ -700,7 +700,7 @@ def get_trackers_command(client: Client, args: Dict[str, Any]) -> Union[str, Com
         outputs=custom_ec,
         readable_output=hr,
         raw_response=resp,
-        indicators=standard_ec
+        indicators=standard_ec  # TODO: this will need to be updated
     )
 
 
@@ -782,7 +782,7 @@ def get_pdns_details_command(client: Client, args: Dict[str, Any]) -> Union[str,
     return CommandResults(
         outputs_prefix=output_path,
         outputs_key_field='',
-        indicators=standard_ec,
+        indicators=standard_ec,  # TODO: this will need to be updated
         outputs=custom_ec,
         readable_output=hr,
         raw_response=resp
@@ -886,7 +886,7 @@ def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union
         outputs_prefix='PassiveTotal.Domain',
         outputs_key_field='domain',
         outputs=custom_domain_context,
-        indicators=domain_standard_list
+        indicators=domain_standard_list  # TODO: this will need to be updated
     )
 
 

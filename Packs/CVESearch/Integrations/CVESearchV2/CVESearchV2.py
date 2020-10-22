@@ -80,7 +80,7 @@ def cve_latest_command(client: Client, limit) -> CommandResults:
         outputs_key_field='ID',
         outputs=data,
         raw_response=res,
-        indicators=indicators
+        indicators=indicators  # TODO: this will need to be updated
     )
 
     command_results.readable_output = tableToMarkdown('Latest CVEs', data) if res else 'No results found.'
@@ -112,7 +112,7 @@ def cve_command(client: Client, args: dict) -> CommandResults:
         outputs_key_field='ID',
         outputs=data,
         raw_response=res,
-        indicators=indicators
+        indicators=indicators  # TODO: this will need to be updated
     )
 
     command_results.readable_output = tableToMarkdown('CVE Search results', data) if res else 'No results found.'

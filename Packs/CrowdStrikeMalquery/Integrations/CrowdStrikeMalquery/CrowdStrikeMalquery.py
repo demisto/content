@@ -317,7 +317,7 @@ def get_file_metadata_command(client: Client, args: dict):
         outputs=files,
         readable_output=human_readable,
         raw_response=raw_response,
-        indicators=file_indicator_list) # TODO: this will need to be updated
+        indicators=file_indicator_list)  # TODO: this will need to be updated
 
     return command_results
 

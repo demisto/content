@@ -401,7 +401,7 @@ def list_activities_command(client, args):
         outputs_prefix='MicrosoftCloudAppSecurity.Activities',
         outputs_key_field='_id',
         outputs=activities,
-        indicators=ip_indicators,  # TODO: Update this
+        indicators=ip_indicators,  # TODO: this will need to be updated
     )
 
 

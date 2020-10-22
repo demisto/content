@@ -519,7 +519,7 @@ def file_reputation(client: Client, args: Dict) -> CommandResults:
         outputs=application_data_list,
         readable_output=human_readable,
         raw_response=raw_response_list,
-        indicators=file_indicator_list  # TODO: Update this
+        indicators=file_indicator_list  # TODO: this will need to be updated
     )
     return command_results
 

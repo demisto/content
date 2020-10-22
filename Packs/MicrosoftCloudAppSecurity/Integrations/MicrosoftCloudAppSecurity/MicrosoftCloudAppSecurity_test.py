@@ -84,7 +84,7 @@ def test_list_activities_command(requests_mock):
                       json=activities["ACTIVITIES_BY_ID_DATA"])
     res = list_activities_command(client_mocker, {'activity_id': '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7'})
     assert res.outputs[0] == activities["ACTIVITIES_BY_ID_DATA_CONTEXT"]
-    # TODO: Update this
+    # TODO: this will need to be updated
     assert isinstance(res.indicator[0], Common.IP)
     assert res.indicator[0].ip == '8.8.8.8'
     assert res.indicator[0].geo_latitude == 32.0679

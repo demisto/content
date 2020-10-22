@@ -242,7 +242,7 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
         outputs=outputs,
         outputs_prefix='FalconIntel.Indicator',
         outputs_key_field='ID',
-        indicators=indicators,
+        indicators=indicators,  # TODO: this will need to be updated
         readable_output=md if md else tableToMarkdown(name=title, t=outputs, headerTransform=pascalToSpace),
         raw_response=res
     )
@@ -460,7 +460,7 @@ def cs_indicators_command(client: Client, args: Dict[str, str]) -> CommandResult
         outputs_key_field='ID',
         readable_output=md if md else tableToMarkdown(name=title, t=outputs, headerTransform=pascalToSpace),
         raw_response=res,
-        indicators=indicators
+        indicators=indicators  # TODO: this will need to be updated
     )
 
     return results

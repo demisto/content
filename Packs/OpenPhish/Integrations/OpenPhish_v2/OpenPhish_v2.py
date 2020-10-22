@@ -146,7 +146,7 @@ def url_command(client: Client, **kwargs) -> CommandResults:
         dbot = Common.DBotScore(url, DBotScoreType.URL, 'OpenPhish', dbotscore, desc)
         url_object_list.append(Common.URL(url, dbot))
 
-    return CommandResults(indicators=url_object_list, readable_output=markdown)
+    return CommandResults(indicators=url_object_list, readable_output=markdown)  # TODO: this will need to be updated
 
 
 def reload_command(client: Client, **kwargs) -> CommandResults:

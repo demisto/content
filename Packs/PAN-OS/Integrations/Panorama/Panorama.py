@@ -2334,7 +2334,7 @@ def panorama_get_url_category_command(url_cmd: str):
         outputs=url_category_output,
         readable_output=human_readable,
         raw_response=categories_dict,
-        indicators=url_indicator_list
+        indicators=url_indicator_list  # TODO: this will need to be updated
     )
     return_results(command_results)
 

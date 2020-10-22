@@ -52,12 +52,12 @@ def test_ip(requests_mock):
     assert response.outputs[0]['detection_ratio'] == "1/2"
 
     # This command also returns Common.IP data
-    assert isinstance(response.indicator, list)  # # TODO: Update this
-    assert len(response.indicator) == 1  # # TODO: Update this
-    assert isinstance(response.indicator[0], Common.IP)  # # TODO: Update this
-    assert response.indicator[0].ip == ip_to_check   # # TODO: Update this
-    assert type(response.indicator[0].detection_engines) == int  # # TODO: Update this
-    assert type(response.indicator[0].positive_engines) == int   # # TODO: Update this
+    assert isinstance(response.indicator, list)  # TODO: this will need to be updated
+    assert len(response.indicator) == 1  # TODO: this will need to be updated
+    assert isinstance(response.indicator[0], Common.IP)  # TODO: this will need to be updated
+    assert response.indicator[0].ip == ip_to_check   # TODO: this will need to be updated
+    assert type(response.indicator[0].detection_engines) == int  # TODO: this will need to be updated
+    assert type(response.indicator[0].positive_engines) == int   # TODO: this will need to be updated
 
 
 def test_url(requests_mock):
