@@ -1,28 +1,25 @@
 {
-	"description": "Incoming classifier of incidents into demisto",
-	"feed": false,
-	"id": "ConcentricAi",
-	"keyTypeMap": {
-		"high": "ConcentricAI Security Event"
-	},
-	"locked": false,
-	"logicalVersion": 2,
-	"name": "ConcentricAi",
-	"nameRaw": "ConcentricAi",
-	"packID": "",
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": {
-			"accessor": "",
-			"filters": [],
-			"root": "risk",
-			"transformers": []
-		},
-		"simple": ""
-	},
-	"type": "classification",
-	"version": -1,
-	"fromVersion": "6.0.0"
+    "description": "Incoming classifier of incidents into demisto",
+    "feed": false,
+    "id": "ConcentricAi",
+    "keyTypeMap": {
+        "high": "ConcentricAI Security Event"
+    },
+    "name": "ConcentricAi",
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [
+
+            ],
+            "root": "risk",
+            "transformers": [
+
+            ]
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

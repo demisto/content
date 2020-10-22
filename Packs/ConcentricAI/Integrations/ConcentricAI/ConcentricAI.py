@@ -90,7 +90,7 @@ def initialize_global_values():
     AUTHORIZATION = "Basic " + encoding(CLIENT_ID, CLIENT_SECRET)
     AUTH_HEADERS = get_headers_for_login()
     initialise_scrolls_and_rules()
-    MAX_INCIDENTS_TO_FETCH = 300
+    MAX_INCIDENTS_TO_FETCH = 200
 
 
 def callAPI(queryClient, payload, loginClient):
@@ -125,12 +125,11 @@ This class handles all query elements.
 
 class QueryClient(BaseClient):
 
-    def fetch_incidents(self, severity, from_time, to_time, pageIndex, loginClient: LoginClient):
-        # how do i parameterize self and send it to the object call directly ?
+    def fetch_incidents(self, severity, from_time, to_time, max_results, loginClient: LoginClient):
         global SCROLL_ID_INCIDENT
         payload = {
             "query": "{ allAlerts(severity: [" + severity + ", high] timerange: [" + from_time + "," + to_time + "]"
-            " pagination: { currentPage: " + pageIndex + " pageSize: 150 } _scroll_id: \"" + SCROLL_ID_INCIDENT + "\") "
+            " pagination: { currentPage: 1 pageSize: " + max_results + " } _scroll_id: \"" + SCROLL_ID_INCIDENT + "\") "
             "{ allContents{rows { cid risk_id name risk_timestamp service owner risk path } _scroll_id pagination } } }"
         }
         try:
@@ -388,6 +387,7 @@ def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run
     global SCROLL_ID_INCIDENT
     last_fetch = last_run.get('last_fetch', None)
     scroll_id = last_run.get('scroll_id', None)
+
     if last_fetch is None:
         from_time = 0
         to_time = int(datetime.now().timestamp() * 1000)
@@ -403,33 +403,17 @@ def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run
     if min_severity is None:
         min_severity = 'low'
 
-    flag = True
     newAlerts = True
-    pageIndex = 1
     answers: list = []
 
-    total_count = 0
-    max_records = None
-
-    while flag is True:
-        res = queryClient.fetch_incidents(min_severity, str(from_time), str(to_time), str(pageIndex), loginClient)
-        response = res['data']['allAlerts']['allContents']['rows']
-        if max_records is None:
-            max_records = res['data']['allAlerts']['allContents']['pagination']['totalRecords']
-        SCROLL_ID_INCIDENT = res['data']['allAlerts']['allContents']['_scroll_id']
-        count = len(response)
-        if(count == 0):
-            flag = False
-            if(total_count == 0):
-                newAlerts = False
-        else:
-            answers.extend(response)
-            total_count = len(answers)
-            pageIndex = pageIndex + 1
-            if total_count == max_records:
-                break
-            elif(total_count >= max_results):
-                break
+    res = queryClient.fetch_incidents(min_severity, str(from_time), str(to_time), str(max_results), loginClient)
+    response = res['data']['allAlerts']['allContents']['rows']
+    SCROLL_ID_INCIDENT = res['data']['allAlerts']['allContents']['_scroll_id']
+    count = len(response)
+    if(count == 0):
+        newAlerts = False
+    else:
+        answers.extend(response)
 
     incidents: List = []
     next_run = {'last_fetch': last_fetch, 'scroll_id': SCROLL_ID_INCIDENT}
@@ -603,19 +587,19 @@ def main() -> None:
             demisto.incidents(incidents)
 
         # this will fetch all file information
-        elif demisto.command() == 'get-file-details':
+        elif demisto.command() == 'ConcentricAI-get-file-details':
             path = demisto.getArg('path')
             name = demisto.getArg('file-name')
             result = fetch_file_information(loginClient, queryClient, path, name)
             return_results(result)
 
         # this will fetch all information about users-overview.
-        elif demisto.command() == "get-users-overview":
+        elif demisto.command() == "ConcentricAI-get-users-overview":
             result = get_users_overview(loginClient, queryClient)
             return_results(result)
 
         # this will fetch all user-details
-        elif demisto.command() == "get-user-details":
+        elif demisto.command() == "ConcentricAI-get-user-details":
             user = demisto.getArg('user')
             result = get_user_details(loginClient, queryClient, user)
             return_results(result)
