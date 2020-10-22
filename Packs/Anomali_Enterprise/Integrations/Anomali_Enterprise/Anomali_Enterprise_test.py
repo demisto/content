@@ -4,13 +4,14 @@ from Anomali_Enterprise import *
 def test_domain_command(mocker):
     """
     Given:
-        - a url
+        - a domain
 
     When:
-        - mocking the integration context data, runnig url_command
+        - mocking the server response, running domain_command
 
     Then:
-        - validating whether the url is malicious (in integration context)
+        - validating whether the domain is malicious
+        - validating the returned context data
 
     """
     client = Client(server_url='test', username='test', password='1234', verify=True, proxy=False)
@@ -21,7 +22,12 @@ def test_domain_command(mocker):
     dbot_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
                ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
     expected_result = {'Domain': [{'Name': 'test.com'}],
-                       'DBotScore': [{'Indicator': 'test.com', 'Type': 'domain', 'Vendor': 'Anomali Enterprise', 'Score': 0}]
+                       'DBotScore': [
+                           {'Indicator': 'test.com',
+                            'Type': 'domain',
+                            'Vendor': 'Anomali Enterprise',
+                            'Score': 0}
+                       ]
                        }
     assert output.get('Domain(val.Name && val.Name == obj.Name)', []) == expected_result.get('Domain')
     assert output.get(dbot_key, []) == expected_result.get('DBotScore')
