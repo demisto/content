@@ -22,7 +22,7 @@ class Client(BaseClient):
     def test_connect(self):
         return self._http_request(
             method='GET',
-            url_suffix=f'/info.php?',
+            url_suffix='/info.php?',
             params={
                 'indicator': 'pulsedive.com'
             }
@@ -31,7 +31,7 @@ class Client(BaseClient):
     def get_ip_reputation(self, ip: str, api_key) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
-            url_suffix=f'/info.php?',
+            url_suffix='/info.php?',
             params={
                 'indicator': ip,
                 'pretty': '1',
@@ -43,7 +43,7 @@ class Client(BaseClient):
     def get_domain_reputation(self, domain: str, api_key) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
-            url_suffix=f'/info.php?',
+            url_suffix='/info.php?',
             params={
                 'indicator': domain,
                 'pretty': '1',
@@ -54,7 +54,7 @@ class Client(BaseClient):
     def get_url_reputation(self, url: str, api_key) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
-            url_suffix=f'/info.php?',
+            url_suffix='/info.php?',
             params={
                 'indicator': url,
                 'pretty': '1',
