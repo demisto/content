@@ -1588,6 +1588,45 @@ class TestBaseClient:
         with raises(DemistoException, match='- {}\n.*{}'.format(reason, json_response["error"])):
             self.client._http_request('get', 'event', resp_type='text')
 
+    def test_exception_response_json_parsing_when_ok_code_is_invalid(self, requests_mock):
+        from CommonServerPython import DemistoException
+        reason = 'Bad Request'
+        json_response = {'error': 'additional text'}
+        requests_mock.get('http://example.com/api/v2/event',
+                          status_code=400,
+                          reason=reason,
+                          json=json_response)
+        try:
+            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+        except DemistoException as e:
+            assert e.res.get('error') == 'additional text'
+
+    def test_exception_response_text_parsing_when_ok_code_is_invalid(self, requests_mock):
+        from CommonServerPython import DemistoException
+        reason = 'Bad Request'
+        text_response = '{"error": "additional text"}'
+        requests_mock.get('http://example.com/api/v2/event',
+                          status_code=400,
+                          reason=reason,
+                          text=text_response)
+        try:
+            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+        except DemistoException as e:
+            assert e.res.get('error') == 'additional text'
+
+    def test_exception_response_parsing_fails_when_ok_code_is_invalid(self, requests_mock):
+        from CommonServerPython import DemistoException
+        reason = 'Bad Request'
+        text_response = 'Bad Request'
+        requests_mock.get('http://example.com/api/v2/event',
+                          status_code=400,
+                          reason=reason,
+                          text=text_response)
+        try:
+            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+        except DemistoException as e:
+            assert isinstance(e.res, dict) and not e.res
+
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
         from CommonServerPython import BaseClient
