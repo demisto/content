@@ -13,7 +13,7 @@ import coloredlogs
 import logging
 from distutils.version import LooseVersion
 from copy import deepcopy
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Set
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
@@ -229,77 +229,80 @@ def validate_not_a_package_test_script(file_path):
     return '_test' not in file_path and 'test_' not in file_path
 
 
-def get_modified_files_for_testing(files_string):
-    """Get a string of the modified files"""
-    is_conf_json = False
-    is_reputations_json = False
-    is_indicator_json = False
+class GetModifiedFilesForTesting:
+    def __init__(self, files_string: str):
+        self.files_string = files_string
+        self.files_to_filter: List[Tuple[str, FileType]] = self.create_diff_list()
+        self.is_conf_json = False
+        self.is_reputations_json = False
+        self.is_indicator_json = False
+        self.sample_tests = set()
+        self.modified_metadata_list = set()
+        self.changed_common = set()
+        self.modified_files_list = set()
+        self.modified_tests_list = set()
+        self.files_to_types: Dict[FileType, Set[str]] = dict()
+        self.build_files()
 
-    sample_tests = []
-    modified_metadata_list = set([])
-    changed_common = []
-    modified_files_list = []
-    modified_tests_list = []
-    all_files = files_string.split('\n')
+    def create_diff_list(self) -> List[Tuple[str, FileType]]:
+        files = list()
+        for line in self.files_string.split('\n'):
+            file_status, file_path = line.split(maxsplit=1)
+            # Get to right file_path on renamed
+            if file_status.startswith('r'):
+                _, file_path = file_path.split(maxsplit=1)
+            file_status = file_status.lower()
+            # ignoring deleted files.
+            # also, ignore files in ".circle", ".github" and ".hooks" directories and .
+            if file_path:
+                if (file_status in ('m', 'a') or file_status.startswith('r')) and not file_path.startswith('.'):
+                    files.append((file_path, tools.find_type(file_path)))
+        return files
 
-    for _file in all_files:
-        file_data = _file.split()
-        if not file_data:
-            continue
-        file_status = file_data[0]
-        if file_status.lower().startswith('r'):
-            file_path = file_data[2]
-        else:
-            file_path = file_data[1]
-        # ignoring deleted files.
-        # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
-        if ((file_status.lower() == 'm' or file_status.lower() == 'a' or file_status.lower().startswith('r'))
-                and not file_path.startswith('.')):
-            if checked_type(file_path, CODE_FILES_REGEX) and validate_not_a_package_test_script(file_path):
-                dir_path = os.path.dirname(file_path)
-                file_path = glob.glob(dir_path + "/*.yml")[0]
+    def check_no_type(self, file_path: str):
+        if re.match(CONF_PATH, file_path, re.IGNORECASE):
+            self.is_conf_json = True
+        # if is not part of packs meta file name or whitelisted
+        elif any(file in file_path for file in (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
+            self.modified_metadata_list.add(tools.get_pack_name(file_path))
+        # If is not whitelist
+        elif SECRETS_WHITE_LIST not in file_path:
+            self.sample_tests.add(file_path)
 
-            # Common scripts (globally used so must run all tests)
+    def build_files(self):
+        """Get a string of the modified files"""
+        for file_path, file_type in self.files_to_filter:
             if checked_type(file_path, COMMON_YML_LIST):
-                changed_common.append(file_path)
+                self.changed_common.add(file_path)
+            elif file_type is None:
+                self.check_no_type(file_path)
+            else:
+                if file_type in self.files_to_types:
+                    self.files_to_types[file_type].add(file_path)
+                else:
+                    self.files_to_types[file_type] = {file_path}
+        # Py files, Integration, script, playbook ymls
+        self.modified_files_list = set().union(
+            self.files_to_types.get(FileType.PYTHON_FILE, set()),
+            self.files_to_types.get(FileType.INTEGRATION, set()),
+            self.files_to_types.get(FileType.SCRIPT, set()),
+            self.files_to_types.get(FileType.PLAYBOOK, set()),
+        )
 
-            # integrations, scripts, playbooks, test-scripts
-            elif checked_type(file_path, CHECKED_TYPES_REGEXES):
-                modified_files_list.append(file_path)
+        self.modified_tests_list = self.files_to_types.get(FileType.TEST_PLAYBOOK, {})
 
-            # tests
-            elif checked_type(file_path, YML_TEST_PLAYBOOKS_REGEXES):
-                modified_tests_list.append(file_path)
+        self.is_reputations_json = FileType.REPUTATION in self.files_to_types
 
-            # reputations.json
-            elif re.match(INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(PACKS_INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(PACKS_INDICATOR_TYPE_JSON_REGEX, file_path, re.IGNORECASE):
-                is_reputations_json = True
+        self.is_indicator_json = FileType.INDICATOR_FIELD in self.files_to_types
 
-            elif checked_type(file_path, JSON_ALL_INDICATOR_FIELDS_REGEXES):
-                is_indicator_json = True
 
-            # conf.json
-            elif re.match(CONF_PATH, file_path, re.IGNORECASE):
-                is_conf_json = True
-
-            # docs and test files do not influence integration tests filtering
-            elif checked_type(file_path, FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES):
-                if os.path.splitext(file_path)[-1] not in FILE_TYPES_FOR_TESTING:
-                    continue
-
-            elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] in ['.md', '.png']:
-                continue
-
-            elif any(file in file_path for file in (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
-                modified_metadata_list.add(tools.get_pack_name(file_path))
-
-            elif SECRETS_WHITE_LIST not in file_path:
-                sample_tests.append(file_path)
-
-    return (modified_files_list, modified_tests_list, changed_common, is_conf_json, sample_tests,
-            modified_metadata_list, is_reputations_json, is_indicator_json)
+def get_modified_files_for_testing(files_string: str):
+    get_modified = GetModifiedFilesForTesting(files_string)
+    return (
+        get_modified.modified_files_list, get_modified.modified_tests_list, get_modified.changed_common,
+        get_modified.is_conf_json, get_modified.sample_tests, get_modified.modified_metadata_list,
+        get_modified.is_reputations_json, get_modified.is_indicator_json
+    )
 
 
 def get_name(file_path):
@@ -1128,9 +1131,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
      modified_metadata_list, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
-    all_modified_files_paths = set(
-        modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
-    ).union(modified_metadata_list)
+    all_modified_files_paths = modified_files_with_relevant_tests.union(
+        modified_tests_list, changed_common, sample_tests, modified_metadata_list
+    )
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
 
     create_filter_envs_file(from_version, to_version)
