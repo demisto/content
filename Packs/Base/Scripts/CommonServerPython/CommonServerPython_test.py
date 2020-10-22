@@ -992,7 +992,6 @@ class TestCommandResults:
         assert list(results.to_context()['EntryContext'].keys())[0] == \
                'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
-
     def test_readable_only_context(self):
         """
         Given:
@@ -2556,3 +2555,41 @@ def test_get_x_content_info_headers(mocker):
     headers = get_x_content_info_headers()
     assert headers['X-Content-LicenseID'] == test_license
     assert headers['X-Content-Name'] == test_brand
+
+
+def test_return_results_multiple_command_results(mocker):
+    """
+    Given:
+      - List of 2 CommandResult
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 2 times - with matching list items
+    """
+    from CommonServerPython import CommandResults, return_results
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = []
+    for i in range(2):
+        mock_output = {'MockContext': i}
+        mock_command_results.append(CommandResults(outputs_prefix='Mock', outputs=mock_output))
+    return_results(mock_command_results)
+    assert demisto_results_mock.call_count == 2
+    assert demisto_results_mock.call_args_list[0].args[0]['Contents'] == {'MockContext': 0}
+    assert demisto_results_mock.call_args_list[1].args[0]['Contents'] == {'MockContext': 1}
+
+
+def test_return_results_multiple_dict_results(mocker):
+    """
+    Given:
+      - List of 2 dictionaries
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 1 time with the list as an argument
+    """
+    from CommonServerPython import return_results
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [{'MockContext': 0}, {'MockContext': 1}]
+    return_results(mock_command_results)
+    assert demisto_results_mock.call_count == 1
+    assert demisto_results_mock.call_args.args[0] == mock_command_results

@@ -2760,6 +2760,17 @@ def return_results(results):
         demisto.results(None)
         return
 
+    if isinstance(results, list):
+        if not results:
+            # demisto.results([]) is invalid
+            demisto.results({})
+            return
+
+        elif not isinstance(results[0], dict):  # list of dict can be handled by default case
+            for result in results:
+                return_results(result)
+            return
+
     if isinstance(results, CommandResults):
         demisto.results(results.to_context())
         return
