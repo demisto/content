@@ -405,7 +405,8 @@ def main():
             for b in batch(indicators, batch_size=2000):
                 non_duplicates_dict: Dict[str, Dict] = dict()
                 for indicator in b:
-                    if indicator_value := indicator.get("value"):
+                    indicator_value = indicator.get("value")
+                    if indicator_value:
                         # each value is added to the dict only ones
                         if not non_duplicates_dict.get(str(indicator_value).lower()):
                             non_duplicates_dict[str(indicator_value.lower())] = indicator
