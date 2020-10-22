@@ -226,10 +226,10 @@ def domain_command(client: Client, args: dict) -> CommandResults:
 
 
 def calculate_dbot_score(domain_data: dict) -> int:
-    """There is no distinction between benign to unknown domain in Anomali Enterprise
-        malware family exists and prob > 0.6 -> 3
-       malware family exists and prob < 0.6 -> 2
-        else -> 0
+    """There is no distinction between benign to unknown domains in Anomali Enterprise
+    malware family exists and prob > 0.6 -> 3
+    malware family exists and prob < 0.6 -> 2
+    else -> 0
 
     Args:
         domain_data: the domain data
