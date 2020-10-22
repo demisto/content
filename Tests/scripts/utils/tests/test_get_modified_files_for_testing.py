@@ -4,6 +4,13 @@ from Tests.scripts.collect_tests_and_content_packs import get_modified_files_for
 
 
 class TestGetModifiedFilesForTesting:
+    """"
+    Given: A git-diff output.
+
+    When: Collecting tests
+
+    Then: Validate the output contains or not the given files
+    """
 
     def test_python_file(self, mocker):
         diff_line = "M       Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py"
@@ -18,12 +25,12 @@ class TestGetModifiedFilesForTesting:
         yml_file = "Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml"
         assert ([yml_file], [], [], False, [], set(), False, False) == get_modified_files_for_testing(diff_line)
 
-    def test_mock_non_relevant_file(self):
-        diff_line = "A       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/cert.pem"
+    def test_non_relevant_file(self):
+        diff_line = "A       Packs/HelloWorld/Integrations/HelloWorld/cert.pem"
         assert ([], [], [], False, [], set(), False, False) == get_modified_files_for_testing(diff_line)
 
     def test_test_file(self):
-        diff_line = "M       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/connection_test.py"
+        diff_line = "M       Packs/HelloWorld/Integrations/HelloWorld/connection_test.py"
         assert ([], [], [], False, [], set(), False, False) == get_modified_files_for_testing(diff_line)
 
     def test_renamed_file(self):
