@@ -1,9 +1,9 @@
 # pylint: disable=no-member
-from sklearn.feature_extraction.text import TfidfVectorizer
 from CommonServerUserPython import *
+from CommonServerPython import *
+from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 import uuid
-from CommonServerPython import *
 import spacy
 import string
 from html.parser import HTMLParser
@@ -301,7 +301,7 @@ def pre_process_single_text(raw_text, hash_seed, pre_process_type):
     return tokenized_text
 
 
-def pre_process_nlp(text, seed):
+def pre_process_tokenizer(text, seed):
     global tokenizer
     if tokenizer is None:
         tokenizer = Tokenizer(tokenization_method=demisto.args()['tokenizationMethod'],
@@ -319,7 +319,7 @@ def pre_process_none(text, seed):
 
 PRE_PROCESS_TYPES = {
     'none': pre_process_none,
-    'nlp': pre_process_nlp,
+    'nlp': pre_process_tokenizer,
 }
 
 
