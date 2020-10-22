@@ -29,23 +29,6 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: Used to notify any errors via email
-  display: Email Notification Ids (Separated by comma)
-  name: email_notification_ids
-  required: false
-  type: 0
-- display: SMTP Server Host
-  name: smtp_server
-  required: false
-  type: 0
-- display: SMTP Server Port
-  name: smtp_port
-  required: false
-  type: 0
-- display: From Email
-  name: from_email
-  required: false
-  type: 0
 - display: Fetch incidents
   name: isFetch
   required: false
