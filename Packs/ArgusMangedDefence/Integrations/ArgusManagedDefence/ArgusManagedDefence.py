@@ -152,6 +152,17 @@ def argus_status_to_demisto_status(status: str) -> int:
     return mapping.get(status, 0)
 
 
+def build_argus_priority_from_min_severity(min_severity: str) -> List[str]:
+    severities = ["low", "medium", "high", "critical"]
+    min_severity_list = []
+    for severity in severities:
+        if argus_priority_to_demisto_severity(
+            min_severity.lower()
+        ) <= argus_priority_to_demisto_severity(severity):
+            min_severity_list.append(severity)
+    return min_severity_list
+
+
 def build_tags_from_list(lst: list) -> List[Dict]:
     if not lst:
         return None
@@ -173,7 +184,7 @@ def str_to_dict(string: str) -> dict:
 
 
 def pretty_print_case_metadata(
-        result: dict, title: str = None
+    result: dict, title: str = None
 ) -> str:  # TODO improve: markdownify
     data = result["data"]
     string = title if title else f"# #{data['id']}: {data['subject']}\n"
@@ -191,8 +202,8 @@ def is_valid_service(service: str) -> bool:
 
 def is_valid_case_type(service: str, case_type: str) -> bool:
     return is_valid_service(service) and (
-            case_type
-            in next((s for s in services if s["shortName"] == service), {})["caseTypes"]
+        case_type
+        in next((s for s in services if s["shortName"] == service), {})["caseTypes"]
     )
 
 
@@ -211,30 +222,42 @@ def test_module_command() -> str:
 
 def fetch_incidents(last_run: dict, first_fetch_period: str):
     start_timestamp = last_run.get("start_timestamp", None) if last_run else None
+    # noinspection PyTypeChecker
     result = advanced_case_search(
         startTimestamp=start_timestamp if start_timestamp else first_fetch_period,
         endTimestamp="now",
         limit=demisto.params().get("max_fetch", 0),
-        sortBy=["createdTimestamp"]
+        sortBy=["createdTimestamp"],
+        priority=build_argus_priority_from_min_severity(
+            demisto.params().get("min_severity", "medium")
+        ),
+        subCriteria=[
+            {"exclude": True, "status": ["closed"]},
+        ],
+        timeFieldStrategy=["createdTimestamp"]
     )
     incidents = []
-    for case in result['data']:
-        incidents.append({
-            "name": f"#{case['id']}: {case['subject']}",
-            "occurred": case['createdTime'],
-            "severity": argus_priority_to_demisto_severity(case['priority']),
-            "status": argus_status_to_demisto_status(case['status']),
-            "details": case['description'],  # TODO markdownify
-            # "customFields": {
-            #     "service": case["service"]["name"],
-            #     "type": case['type'],
-            #     "category": case['category']['name'],
-            #     "lastUpdatedTime": case['lastUpdatedTime'],
-            #     "customer": case['customer']['shortName']
-            # },
-            "rawJson": json.dumps(case)
-        })
-    last_run["start_timestamp"] = incidents[-1].get("occurred", None)
+    for case in result["data"]:
+        incidents.append(
+            {
+                "id": str(case["id"]),
+                "name": f"#{case['id']}: {case['subject']}",
+                "occurred": case["createdTime"],
+                "created": case["createdTime"],
+                "severity": argus_priority_to_demisto_severity(case["priority"]),
+                "status": argus_status_to_demisto_status(case["status"]),
+                "details": case["description"],  # TODO markdownify
+                "customFields": {
+                    "type": case["type"],
+                    "category": case["category"]["name"] if case["category"] else None,
+                    "service": case["service"]["name"],
+                    "lastUpdatedTime": case["lastUpdatedTime"],
+                    "customer": case["customer"]["shortName"],
+                },
+                "rawJson": json.dumps(case),
+            }
+        )
+    last_run["start_timestamp"] = incidents[-1].get("occurred", None) if incidents else None
     return last_run, incidents
 
 

@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 BASE_URL = "https://api.mnemonic.no"
 CASE_ID = 1337
 COMMENT_ID = "some-long-hash"
@@ -8,6 +9,24 @@ TAG_ID = "some-long-hash"
 TAG_KEY = "test_key"
 TAG_VALUE = "test_value"
 ATTACHMENT_ID = "some-long-hash"
+
+
+def test_build_argus_priority_from_min_severity():
+    from ArgusManagedDefence import build_argus_priority_from_min_severity
+
+    assert build_argus_priority_from_min_severity("low") == [
+        "low",
+        "medium",
+        "high",
+        "critical",
+    ]
+    assert build_argus_priority_from_min_severity("medium") == [
+        "medium",
+        "high",
+        "critical",
+    ]
+    assert build_argus_priority_from_min_severity("high") == ["high", "critical"]
+    assert build_argus_priority_from_min_severity("critical") == ["critical"]
 
 
 def test_is_valid_service():
@@ -35,10 +54,12 @@ def test_fetch_incidents(requests_mock):
 
     method_url = f"/cases/v2/case/search"
 
-    requests_mock.post(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_SEARCH_RESULT)
+    requests_mock.post(
+        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_SEARCH_RESULT
+    )
     next_run, incidents = fetch_incidents(None, "-1 day")
     assert len(incidents) == 1
-    assert incidents[0]['name'] == "#0: string"
+    assert incidents[0]["name"] == "#0: string"
 
 
 def test_add_case_tag_command(requests_mock):
@@ -143,6 +164,7 @@ def test_delete_comment_command(requests_mock):
 
 def test_download_attachment_command(requests_mock):
     from ArgusManagedDefence import download_attachment_command
+
     with open("argus_json/argus_case_data.py", "rb") as file:
         content = file.read()
 
@@ -151,7 +173,7 @@ def test_download_attachment_command(requests_mock):
     requests_mock.get(f"{BASE_URL}{method_url}", content=content)
     args = {"case_id": CASE_ID, "attachment_id": ATTACHMENT_ID}
     result = download_attachment_command(args)
-    assert result['File'] == ATTACHMENT_ID
+    assert result["File"] == ATTACHMENT_ID
 
 
 def test_edit_comment_command(requests_mock):
@@ -284,7 +306,9 @@ def test_get_events_for_case_command(requests_mock):
 
     method_url = f"/events/v1/case/{CASE_ID}"
 
-    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENTS_FOR_CASE)
+    requests_mock.get(
+        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENTS_FOR_CASE
+    )
     args = {"case_id": CASE_ID}
     result = get_events_for_case_command(args)
     assert result.raw_response == argus_event_data.ARGUS_EVENTS_FOR_CASE
@@ -296,7 +320,9 @@ def test_find_aggregated_events_command(requests_mock):
 
     method_url = f"/events/v1/aggregated/search"
 
-    requests_mock.post(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENTS_FOR_CASE)
+    requests_mock.post(
+        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENTS_FOR_CASE
+    )
     result = find_aggregated_events_command({})
     assert result.raw_response == argus_event_data.ARGUS_EVENTS_FOR_CASE
 
@@ -307,7 +333,9 @@ def test_list_aggregated_events_command(requests_mock):
 
     method_url = f"/events/v1/aggregated"
 
-    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENTS_FOR_CASE)
+    requests_mock.get(
+        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENTS_FOR_CASE
+    )
     result = list_aggregated_events_command({})
     assert result.raw_response == argus_event_data.ARGUS_EVENTS_FOR_CASE
 
@@ -323,7 +351,12 @@ def test_get_event(requests_mock):
     method_url = f"/events/v1/{event_type}/{timestamp}/{customer_id}/{event_id}"
 
     requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT)
-    args = {"type": event_type, "timestamp": timestamp, "customer_id": customer_id, "event_id": event_id}
+    args = {
+        "type": event_type,
+        "timestamp": timestamp,
+        "customer_id": customer_id,
+        "event_id": event_id,
+    }
     result = get_event_command(args)
     assert result.raw_response == argus_event_data.ARGUS_EVENT
 
@@ -338,8 +371,15 @@ def test_get_payload_command(requests_mock):
     event_id = "some-hash"
     method_url = f"/events/v1/{event_type}/{timestamp}/{customer_id}/{event_id}/payload"
 
-    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_PAYLOAD)
-    args = {"type": event_type, "timestamp": timestamp, "customer_id": customer_id, "event_id": event_id}
+    requests_mock.get(
+        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_PAYLOAD
+    )
+    args = {
+        "type": event_type,
+        "timestamp": timestamp,
+        "customer_id": customer_id,
+        "event_id": event_id,
+    }
     result = get_payload_command(args)
     assert result.raw_response == argus_event_data.ARGUS_EVENT_PAYLOAD
 
@@ -358,18 +398,26 @@ def test_get_pcap_command(requests_mock):
     method_url = f"/events/v1/{event_type}/{timestamp}/{customer_id}/{event_id}/pcap"
 
     requests_mock.get(f"{BASE_URL}{method_url}", content=content)
-    args = {"type": event_type, "timestamp": timestamp, "customer_id": customer_id, "event_id": event_id}
+    args = {
+        "type": event_type,
+        "timestamp": timestamp,
+        "customer_id": customer_id,
+        "event_id": event_id,
+    }
     result = get_pcap_command(args)
-    assert result['File'] == f"{event_id}_pcap"
+    assert result["File"] == f"{event_id}_pcap"
 
 
 def test_search_records_command(requests_mock):
     from ArgusManagedDefence import search_records_command
     from argus_json import argus_event_data
+
     query = "mnemonic.no"
     method_url = f"/pdns/v3/search"
-    
-    requests_mock.post(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_PDNS)
+
+    requests_mock.post(
+        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_PDNS
+    )
     result = search_records_command({"query": query})
     assert result.raw_response == argus_event_data.ARGUS_EVENT_PDNS
 
@@ -381,7 +429,9 @@ def test_fetch_observations_for_domain_command(requests_mock):
     fqdn = "domain.test"
     method_url = f"/reputation/v1/observation/domain/{fqdn}"
 
-    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_OBSERVATION_DOMAIN)
+    requests_mock.get(
+        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_OBSERVATION_DOMAIN
+    )
     result = fetch_observations_for_domain_command({"fqdn": fqdn})
     assert result.raw_response == argus_event_data.ARGUS_EVENT_OBSERVATION_DOMAIN
 
@@ -393,18 +443,22 @@ def test_fetch_observations_for_i_p_command(requests_mock):
     ip = "0.0.0.0"
     method_url = f"/reputation/v1/observation/ip/{ip}"
 
-    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_OBSERVATION_IP)
+    requests_mock.get(
+        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_OBSERVATION_IP
+    )
     result = fetch_observations_for_i_p_command({"ip": ip})
     assert result.raw_response == argus_event_data.ARGUS_EVENT_OBSERVATION_IP
 
 
 def test_find_nids_events(requests_mock):
-    from ArgusManagedDefence import  find_nids_events_command
+    from ArgusManagedDefence import find_nids_events_command
     from argus_json import argus_event_data
 
     method_url = f"/events/v1/nids/search"
 
-    requests_mock.post(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_NIDS_EVENT)
+    requests_mock.post(
+        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_NIDS_EVENT
+    )
     result = find_nids_events_command({})
     assert result.raw_response == argus_event_data.ARGUS_NIDS_EVENT
 
