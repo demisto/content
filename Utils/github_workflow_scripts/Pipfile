@@ -10,7 +10,6 @@ flake8 = "*"
 pygithub = "*"
 requests = "*"
 blessings = "*"
-slackclient = "*"
 
 [requires]
 python_version = "3.8"
