@@ -1994,7 +1994,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         user_email = user.get('email')
         ticket['caller_id'] = user_email
 
-    if ticket.get('resolved_by'):
+    if ticket.get('resolved_by') or ticket.get('closed_at'):
         if params.get('close_incident'):
             demisto.debug(f'ticket is closed: {ticket}')
             entries.append({
