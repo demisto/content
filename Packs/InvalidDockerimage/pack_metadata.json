@@ -1,0 +1,14 @@
+{
+    "name": "invalid dockerimage",
+    "description": "this is a feed with invalid docker image",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "itay",
+    "url": "",
+    "email": "",
+    "created": "2020-10-22T06:18:09Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
