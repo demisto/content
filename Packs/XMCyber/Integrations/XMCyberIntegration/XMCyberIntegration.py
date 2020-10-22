@@ -322,7 +322,7 @@ def create_xm_event(name, data, date = None):
         date = datetime.now()
 
     data["name"] = f'{EVENT_NAME.EventPrefix}{name}'
-    data["create_time"] = timestamp_to_datestring(date.timestamp()) # CommonServerPython.timestamp_to_datestring(date)
+    data["create_time"] = timestamp_to_datestring(date.timestamp() * 1000) # CommonServerPython.timestamp_to_datestring(date)
     data["type"] = XM_CYBER_INCIDENT_TYPE # TODO - add to PR
     data["severity"] = SEVERITY.Informational
 
@@ -509,7 +509,7 @@ def _fetch_incidents_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
         else:
             writeLog(f'Last run is null')
 
-    if not should_run:
+    if should_run:
         events = xm.get_fetch_incidents_events()
 
     writeLog(f'Found {len(events)} events')
@@ -526,6 +526,8 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 'name': event['name'],
                 'occurred': event['create_time'],
                 'rawJson': json.dumps(event),
+                'trend': 4,
+                'xmcyberriskscoretrend': 1,
                 'type': event['type'],
                 # 'severity': event["severity"]
             }
