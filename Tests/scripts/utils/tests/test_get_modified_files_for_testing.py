@@ -34,7 +34,8 @@ class TestGetModifiedFilesForTesting:
         assert ([], [], [], False, [], set(), False, False) == get_modified_files_for_testing(diff_line)
 
     def test_renamed_file(self):
-        diff_line = "R100	Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml	Packs/HelloWorld/Integrations/HelloWorld/NewHelloWorld.yml"
+        diff_line = "R100	Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml	" \
+                    "Packs/HelloWorld/Integrations/HelloWorld/NewHelloWorld.yml"
         assert ([], [], [], False, [], set(), False, False) == get_modified_files_for_testing(diff_line)
 
     def test_test_playbook(self):
