@@ -1,173 +1,157 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "b5955000-e398-4b82-885f-9068fda553e8",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 8,
-	"mapping": {
-		"User Profile": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"c": {
-					"complex": null,
-					"simple": "country"
-				},
-				"cn": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "email",
-						"transformers": [
-							{
-								"args": {
-									"delimiter": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "@"
-										}
-									}
-								},
-								"operator": "split"
-							},
-							{
-								"args": {
-									"index": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "0"
-										}
-									}
-								},
-								"operator": "atIndex"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"countryCode": {
-					"complex": null,
-					"simple": "countrycodenumber"
-				},
-				"department": {
-					"complex": null,
-					"simple": "department"
-				},
-				"displayName": {
-					"complex": null,
-					"simple": "displayname"
-				},
-				"employeeID": {
-					"complex": null,
-					"simple": "employeeid"
-				},
-				"givenName": {
-					"complex": null,
-					"simple": "firstname"
-				},
-				"l": {
-					"complex": null,
-					"simple": "city"
-				},
-				"mail": {
-					"complex": null,
-					"simple": "email"
-				},
-				"mobile": {
-					"complex": null,
-					"simple": "mobilephone"
-				},
-				"ou": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "locationregion",
-						"transformers": [
-							{
-								"args": {
-									"applyIfEmpty": {
-										"isContext": false,
-										"value": null
-									},
-									"defaultValue": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "Americas"
-										}
-									}
-								},
-								"operator": "SetIfEmpty"
-							},
-							{
-								"args": {
-									"LocationOUMapper": {
-										"isContext": false,
-										"value": null
-									}
-								},
-								"operator": "a7f69908-828d-45a5-8a7c-4ecc6db30724"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"postalCode": {
-					"complex": null,
-					"simple": "zipcode"
-				},
-				"samaccountname": {
-					"complex": null,
-					"simple": "samaccountname"
-				},
-				"sn": {
-					"complex": null,
-					"simple": "lastname"
-				},
-				"st": {
-					"complex": null,
-					"simple": "state"
-				},
-				"streetAddress": {
-					"complex": null,
-					"simple": "streetaddress"
-				},
-				"telephoneNumber": {
-					"complex": null,
-					"simple": "workphone"
-				},
-				"title": {
-					"complex": null,
-					"simple": "title"
-				},
-				"userPrincipalName": {
-					"complex": null,
-					"simple": "username"
-				}
-			}
-		}
-	},
-	"name": "User Profile - Active Directory (Outgoing)",
-	"nameRaw": "User Profile - Active Directory (Outgoing)",
-	"packID": "",
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-outgoing",
-	"unclassifiedCases": null,
-	"version": -1
+ "description": "",
+ "feed": false,
+ "id": "b5955000-e398-4b82-885f-9068fda553e8",
+ "mapping": {
+  "User Profile": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "c": {
+     "complex": null,
+     "simple": "country"
+    },
+    "cn": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "email",
+      "transformers": [
+       {
+        "args": {
+         "delimiter": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "@"
+          }
+         }
+        },
+        "operator": "split"
+       },
+       {
+        "args": {
+         "index": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "0"
+          }
+         }
+        },
+        "operator": "atIndex"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "countryCode": {
+     "complex": null,
+     "simple": "countrycodenumber"
+    },
+    "department": {
+     "complex": null,
+     "simple": "department"
+    },
+    "displayName": {
+     "complex": null,
+     "simple": "displayname"
+    },
+    "employeeID": {
+     "complex": null,
+     "simple": "employeeid"
+    },
+    "givenName": {
+     "complex": null,
+     "simple": "firstname"
+    },
+    "l": {
+     "complex": null,
+     "simple": "city"
+    },
+    "mail": {
+     "complex": null,
+     "simple": "email"
+    },
+    "mobile": {
+     "complex": null,
+     "simple": "mobilephone"
+    },
+    "ou": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "locationregion",
+      "transformers": [
+       {
+        "args": {
+         "applyIfEmpty": {
+          "isContext": false,
+          "value": null
+         },
+         "defaultValue": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "Americas"
+          }
+         }
+        },
+        "operator": "SetIfEmpty"
+       },
+       {
+        "args": {
+         "LocationOUMapper": {
+          "isContext": false,
+          "value": null
+         }
+        },
+        "operator": "a7f69908-828d-45a5-8a7c-4ecc6db30724"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "postalCode": {
+     "complex": null,
+     "simple": "zipcode"
+    },
+    "samaccountname": {
+     "complex": null,
+     "simple": "samaccountname"
+    },
+    "sn": {
+     "complex": null,
+     "simple": "lastname"
+    },
+    "st": {
+     "complex": null,
+     "simple": "state"
+    },
+    "streetAddress": {
+     "complex": null,
+     "simple": "streetaddress"
+    },
+    "telephoneNumber": {
+     "complex": null,
+     "simple": "workphone"
+    },
+    "title": {
+     "complex": null,
+     "simple": "title"
+    },
+    "userPrincipalName": {
+     "complex": null,
+     "simple": "username"
+    }
+   }
+  }
+ },
+ "name": "User Profile - Active Directory (Outgoing)",
+ "type": "mapping-outgoing",
+ "version": -1,
+ "fromVersion": "6.0.0"
 }

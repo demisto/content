@@ -1,115 +1,92 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "e0bc1e9c-7878-40e0-8598-a65c563d270a",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 7,
-	"mapping": {
-		"User Profile": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				" Street Address": {
-					"complex": null,
-					"simple": "streetAddress"
-				},
-				"City": {
-					"complex": null,
-					"simple": "l"
-				},
-				"Country": {
-					"complex": null,
-					"simple": "c"
-				},
-				"Country Code Number": {
-					"complex": null,
-					"simple": "countryCode"
-				},
-				"Department": {
-					"complex": null,
-					"simple": "department"
-				},
-				"Display Name": {
-					"complex": null,
-					"simple": "displayName"
-				},
-				"Email": {
-					"complex": null,
-					"simple": "mail"
-				},
-				"Employee ID": {
-					"complex": null,
-					"simple": "employeeID"
-				},
-				"First Name": {
-					"complex": null,
-					"simple": "givenName"
-				},
-				"Last Name": {
-					"complex": null,
-					"simple": "sn"
-				},
-				"Mobile Phone": {
-					"complex": null,
-					"simple": "mobile"
-				},
-				"Phone Number": {
-					"complex": null,
-					"simple": "mobile"
-				},
-				"State": {
-					"complex": null,
-					"simple": "st"
-				},
-				"Street Address": {
-					"complex": null,
-					"simple": "streetAddress"
-				},
-				"Title": {
-					"complex": null,
-					"simple": "title"
-				},
-				"Username": {
-					"complex": null,
-					"simple": "userPrincipalName"
-				},
-				"Work Phone": {
-					"complex": null,
-					"simple": "telephoneNumber"
-				},
-				"Zip Code": {
-					"complex": null,
-					"simple": "postalCode"
-				},
-				"sAMAccountName": {
-					"complex": null,
-					"simple": "sAMAccountName"
-				}
-			}
-		}
-	},
-	"name": "User Profile - Active Directory (Incoming)",
-	"nameRaw": "User Profile - Active Directory (Incoming)",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+ "description": "",
+ "feed": false,
+ "id": "e0bc1e9c-7878-40e0-8598-a65c563d270a",
+ "mapping": {
+  "User Profile": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    " Street Address": {
+     "complex": null,
+     "simple": "streetAddress"
+    },
+    "City": {
+     "complex": null,
+     "simple": "l"
+    },
+    "Country": {
+     "complex": null,
+     "simple": "c"
+    },
+    "Country Code Number": {
+     "complex": null,
+     "simple": "countryCode"
+    },
+    "Department": {
+     "complex": null,
+     "simple": "department"
+    },
+    "Display Name": {
+     "complex": null,
+     "simple": "displayName"
+    },
+    "Email": {
+     "complex": null,
+     "simple": "mail"
+    },
+    "Employee ID": {
+     "complex": null,
+     "simple": "employeeID"
+    },
+    "First Name": {
+     "complex": null,
+     "simple": "givenName"
+    },
+    "Last Name": {
+     "complex": null,
+     "simple": "sn"
+    },
+    "Mobile Phone": {
+     "complex": null,
+     "simple": "mobile"
+    },
+    "Phone Number": {
+     "complex": null,
+     "simple": "mobile"
+    },
+    "State": {
+     "complex": null,
+     "simple": "st"
+    },
+    "Street Address": {
+     "complex": null,
+     "simple": "streetAddress"
+    },
+    "Title": {
+     "complex": null,
+     "simple": "title"
+    },
+    "Username": {
+     "complex": null,
+     "simple": "userPrincipalName"
+    },
+    "Work Phone": {
+     "complex": null,
+     "simple": "telephoneNumber"
+    },
+    "Zip Code": {
+     "complex": null,
+     "simple": "postalCode"
+    },
+    "sAMAccountName": {
+     "complex": null,
+     "simple": "sAMAccountName"
+    }
+   }
+  }
+ },
+ "name": "User Profile - Active Directory (Incoming)",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
 }
