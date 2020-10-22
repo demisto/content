@@ -195,9 +195,9 @@ Creates a new issue in Jira.
 | --- | --- | --- |
 | issueJson | The issue object (in JSON format). | Optional | 
 | summary | The summary of the issue. | Required | 
-| projectKey | The project key with which to associate the issue. | Optional | 
+| projectKey | The project key with which to associate the issue. | Required | 
 | issueTypeName |  Select an issue type by name, for example: "Problem".  | Optional | 
-| issueTypeId | Select an issue type by its numeric ID. | Optional | 
+| issueTypeId | Select an issue type by its numeric ID. | Required | 
 | projectName | The project name with which to associate the issue. | Optional | 
 | description | A description of the issue. | Optional | 
 | labels | A CSV list of labels.  | Optional | 
@@ -218,7 +218,7 @@ Creates a new issue in Jira.
 
 
 ##### Command Example
-```!jira-create-issue summary="test SOC issue26" projectKey=DEM issueJson=\`{"fields":{"issuetype":{"name":"Request for Action"}}}\````
+```!jira-create-issue summary="test SOC issue26" issueTypeId=10008 projectKey=DEM issueJson=\`{"fields":{"issuetype":{"name":"Request for Action"}}}\````
 
 ##### Context Example
 ```
