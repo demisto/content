@@ -67,9 +67,10 @@ def test_fetch_incidents(requests_mock):
     loginClient, queryClient = setup()
     last_run: dict = {}
     max_results = '100'
+    fetch_time = '3 days'
     mock_response = util_load_json('test_data/mock_incident.json')
     requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
-    _, new_incidents = fetch_incidents(loginClient, queryClient, last_run, max_results)
+    _, new_incidents = fetch_incidents(loginClient, queryClient, last_run, max_results, fetch_time)
     t = datetime.fromtimestamp(int('1600114903415') / 1000)
     inced_time = t.strftime('%Y-%m-%dT%H:%M:%SZ')
     rawJson = '{"cid": "8f4619ebc927276a5908db0e46be2e7da14df3bd", "rule_name": "risk1,risk3", ' \

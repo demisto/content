@@ -55,9 +55,9 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 1 day
-  display: Time since last risk was generated.
+  display: First Fetch Time of Risks
   hidden: false
-  name: firstFetch
+  name: first_fetch
   required: false
   type: 0
 description: Concentric’s Semantic Intelligence™ solution discovers and protects business

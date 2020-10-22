@@ -584,7 +584,7 @@ def main() -> None:
             )
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
-            fetch_time = demisto.params().get('firstFetch')
+            fetch_time = demisto.params().get('first_fetch')
 
             last_run = demisto.getLastRun()
             next_run, incidents = fetch_incidents(loginClient, queryClient, last_run, max_results, fetch_time)

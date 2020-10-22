@@ -1349,7 +1349,8 @@
             "instance_names": "use_python_requests_handler"
         },
         {
-            "integrations": "ConcentricAI"
+            "integrations": "ConcentricAI",
+            "playbookID": "ConcentricAI Demo Playbook"
         },
         {
             "integrations": "McAfee NSM",
@@ -3006,9 +3007,6 @@
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
-        },
-        {
-            "playbookID": "ConcentricAI Demo Playbook"
         }
     ],
     "skipped_tests": {
