@@ -1,6 +1,6 @@
 flake8==3.8.3
 bandit==1.6.2
-demisto-py==2.0.11
+demisto-py>=2.0.11
 demisto-sdk==1.2.6
 pytest==6.0.2
 pytest-mock==3.3.1
@@ -8,7 +8,7 @@ requests-mock==1.8.0
 ruamel.yaml==0.16.5
 pipenv>=2020.8.13
 autopep8==1.5.4
-mypy==0.782
+mypy==0.790
 networkx>=2.4
 gitpython>=3.1.0
 beautifulsoup4==4.8.1
