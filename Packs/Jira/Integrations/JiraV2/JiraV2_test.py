@@ -9,8 +9,19 @@ integration_params = {
     'query': 'status=Open'
 }
 
-integration_args_missing_mandatory = {
-    "summary": "test"
+integration_args_missing_mandatory_summary = {
+    "projectKey": "testKey",
+    "issueTypeId": "1234"
+}
+
+integration_args_missing_mandatory_project_key = {
+    "summary": "test",
+    "issueTypeId": "1234"
+}
+
+integration_args_missing_mandatory_issue_type_id = {
+    "summary": "test",
+    "projectKey": "testKey",
 }
 
 integration_args = {
@@ -41,14 +52,16 @@ def test_create_issue_command_after_fix_mandatory_args_issue(mocker):
     assert demisto.results.call_count == 1
 
 
-def test_create_issue_command_before_fix_mandatory_args_issue(mocker):
-    mocker.patch.object(demisto, 'args', return_value=integration_args_missing_mandatory)
+@pytest.mark.parametrize('args',
+                         [integration_args_missing_mandatory_summary,
+                          integration_args_missing_mandatory_issue_type_id,
+                          integration_args_missing_mandatory_project_key])
+def test_create_issue_command_before_fix_mandatory_args_summary_missing(mocker, args):
+    mocker.patch.object(demisto, 'args', return_value=args)
     from JiraV2 import create_issue_command
-    try:
+    with pytest.raises(Exception):
         # when there are missing arguments, an Exception is raised to the user
         create_issue_command()
-    except Exception:
-        assert True
 
 
 def test_issue_query_command_no_issues(mocker):
