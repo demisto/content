@@ -85,7 +85,7 @@ def start_search_job(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    from_ = str(args.get('from'))
+    from_ = str(args.get('from', '1 day'))
     to_ = str(args.get('to', ''))
     indicators = argToList(args.get('indicators'))
 

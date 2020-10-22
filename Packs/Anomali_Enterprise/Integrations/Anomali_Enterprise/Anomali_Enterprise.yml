@@ -28,10 +28,10 @@ script:
   commands:
   - arguments:
     - default: false
-      description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes).
+      description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is 1 day ago.
       isArray: false
       name: from
-      required: true
+      required: false
       secret: false
     - default: false
       description: Last appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is now.
