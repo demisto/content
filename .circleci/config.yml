@@ -444,27 +444,6 @@ references:
           - Install Packs in Demisto 6_0
           - Install Packs in Demisto Marketplace - Master
 
-
-  upload_packs_to_marketplace_storage: &upload_packs_to_marketplace_storage
-    run:
-      name: Upload Packs To Marketplace Storage
-      command: |
-        # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
-        if [[ $CIRCLE_BRANCH != master ]]; then
-          echo "Skipping packs uploading on non master branch"
-          exit 0
-        fi
-
-        EXTRACT_FOLDER=$(mktemp -d)
-        PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-        PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-        ID_SET=$CIRCLE_ARTIFACTS/id_set.json
-        GCS_PATH=$(mktemp)
-        echo $GCS_MARKET_KEY > $GCS_PATH
-        python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
-        rm $GCS_PATH
-      when: on_success
-
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     run:
       when:
@@ -991,7 +970,21 @@ jobs:
       - *add_ssh_keys
       - *prepare_environment
       - *check_user_permissions_to_upload_packs
-      - *upload_packs_to_marketplace_storage
+      - run:
+          name: Upload Packs To Marketplace Storage
+          command: |
+            EXTRACT_FOLDER=$(mktemp -d)
+            PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+            PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+            ID_SET=$CIRCLE_ARTIFACTS/id_set.json
+            GCS_PATH=$(mktemp)
+            echo $GCS_MARKET_KEY > $GCS_PATH
+            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
+            rm $GCS_PATH
+          when:
+            - equal:
+                - master
+                - << pipeline.git.branch >>
       - run:
           name: Slack Notifier
           shell: /bin/bash
