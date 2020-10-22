@@ -76,6 +76,12 @@ else
             echo "ERROR: virtualenv is missing. Please install using: pip install virtualenv" 1>&2
             exit 1
         fi
+        VIRTUALENV_VERSION=`virtualenv --version | virtualenv --version | grep -E "\d{1,2}\d.{1,2}\.\d{1,2}" --only-matching | tr -d " "`
+        if [[ $VIRTUALENV_VERSION != "16.7.7" ]]; then
+            echo "ERROR: You are using virtualenv version ${VIRTUALENV_VERSION}, Please install virtualenv version 16.7.7:
+            pip3 uninstall virtualenv && pip3 install virtualenv==16.7.7"
+            exit 1
+        fi
         SETUP_PY2=${SETUP_PY2:-auto}
         if [ "$SETUP_PY2" == "auto" ]; then
             # we only setup PY2 if our remote origin is pointing to the demisto content repo (not a fork)
