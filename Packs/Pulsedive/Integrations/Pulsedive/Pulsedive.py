@@ -1,6 +1,5 @@
-import json
 import traceback
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Union
 
 import dateparser
 import demistomock as demisto  # noqa: F401
@@ -13,10 +12,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INCIDENTS_TO_FETCH = 50
-HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 ''' CLIENT CLASS '''
 
@@ -28,7 +24,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix=f'/info.php?',
             params={
-                'value': 'pulsedive.com'
+                'indicator': 'pulsedive.com'
             }
         )
 
