@@ -191,6 +191,12 @@ def args_to_str(demisto_args, latest_incident_in_xdr):
     return args_to_str
 
 
+def create_incident_from_saved_data():
+    demisto_incident = json.dumps(demisto.incident(), indent=4)
+    return_error(demisto_incident)
+    # raw_json = demisto_incident.get('rawJSON')
+
+
 def get_latest_incident_from_xdr(incident_id):
     # get the latest incident from xdr
     latest_incident_in_xdr_result = demisto.executeCommand("xdr-get-incident-extra-data",
@@ -225,11 +231,10 @@ def get_latest_incident_from_xdr(incident_id):
 def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run, first_run, xdr_alerts_field,
                       xdr_file_artifacts_field, xdr_network_artifacts_field, incident_in_demisto, playbook_to_run,
                       verbose=True):
-    latest_incident_in_xdr_result, latest_incident_in_xdr, latest_incident_in_xdr_markdown = \
-        get_latest_incident_from_xdr(incident_id)
 
     if first_run:
-        xdr_incident_from_previous_run = latest_incident_in_xdr
+        xdr_incident_from_previous_run = create_incident_from_saved_data()
+
     else:
         if xdr_incident_from_previous_run:
             xdr_incident_from_previous_run = json.loads(xdr_incident_from_previous_run)

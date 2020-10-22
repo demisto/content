@@ -891,15 +891,12 @@ class Client(BaseClient):
 
     def save_modified_incidents_to_integration_context(self):
         last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time='desc')
-        modified_incidents_list = []
+        modified_incidents_context = {}
         for incident in last_modified_incidents:
-            modified_incidents_list.append(
-                {
-                    'id': incident.get('incident_id'),
-                    'last_modified': incident.get('modification_time')
-                }
-            )
-        set_integration_context({'modified_incidents': modified_incidents_list})
+            incident_id = incident.get('incident_id')
+            modified_incidents_context[incident_id] = incident.get('modification_time')
+
+        set_integration_context({'modified_incidents': modified_incidents_context})
 
 
 def get_incidents_command(client, args):
@@ -977,20 +974,21 @@ def get_incident_extra_data_command(client, args, return_only_updated_incident=F
         last_modified_incidents = get_integration_context().get('modified_incidents', {})
 
         demisto.debug(f"integration context: {last_modified_incidents}\n")  # type:ignore
-        for incident in last_modified_incidents:
-            if incident.get('id') == incident_id:  # search the incident in the list of modified incidents
-                current_incident_modified_time = int(str(incident.get('last_modified')))
 
-                demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"  # type:ignore
-                              f"modified time: {current_incident_modified_time}\n"
-                              f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
+        if incident_id in last_modified_incidents:  # search the incident in the dict of modified incidents
+            demisto_incident = json.dumps(demisto.incident())
 
-                if arg_to_timestamp(current_incident_modified_time, 'last_modified') > \
-                        arg_to_timestamp(remote_args.last_update, 'last_update'):   # need to update this incident
-                    break
-                else:
-                    return {}
-        else:  # the incident was not found in the list
+            return_error(demisto_incident)
+            current_incident_modified_time = int(str(last_modified_incidents[incident_id]))
+
+            demisto.debug(f"XDR incident {incident_id}\n"  # type:ignore
+                          f"modified time: {current_incident_modified_time}\n"
+                          f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
+
+            # if arg_to_timestamp(current_incident_modified_time, 'last_modified') > \
+            #         arg_to_timestamp(remote_args.last_update, 'last_update'):   # need to update this incident
+
+        else:  # the incident was not modified
             return {}
 
     raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
@@ -1994,39 +1992,45 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
 
-    for raw_incident in raw_incidents:
-        incident_id = raw_incident.get('incident_id')
+    try:
+        for raw_incident in raw_incidents:
+            incident_id = raw_incident.get('incident_id')
 
-        if demisto.params().get('extra_data'):
             incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
                                                                      "alerts_limit": 1000})[2].get('incident')
+
+            sort_all_list_incident_fields(incident_data)
+
+            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
+            incident_data['mirror_instance'] = demisto.integrationInstance()
+
+            description = raw_incident.get('description')
+            occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
+            incident = {
+                'name': f'#{incident_id} - {description}',
+                'occurred': occurred,
+                'rawJSON': json.dumps(incident_data),
+                'last_mirrored_in': datetime.now().isoformat()
+
+            }
+
+            if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
+                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
+
+            # Update last run and add incident if the incident is newer than last fetch
+            if raw_incident['creation_time'] > last_fetch:
+                last_fetch = raw_incident['creation_time']
+
+            incidents.append(incident)
+
+    except Exception as e:
+        if "Rate limit error" in str(e):
+            return_error("API rate limit")
         else:
-            incident_data = raw_incident
+            raise e
+    finally:
+        next_run = {'time': last_fetch + 1}
 
-        sort_all_list_incident_fields(incident_data)
-
-        incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
-        incident_data['mirror_instance'] = demisto.integrationInstance()
-        incident_data['last_mirrored_in'] = datetime.now().isoformat()
-
-        description = raw_incident.get('description')
-        occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
-        incident = {
-            'name': f'#{incident_id} - {description}',
-            'occurred': occurred,
-            'rawJSON': json.dumps(incident_data),
-        }
-
-        if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
-            incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
-
-        # Update last run and add incident if the incident is newer than last fetch
-        if raw_incident['creation_time'] > last_fetch:
-            last_fetch = raw_incident['creation_time']
-
-        incidents.append(incident)
-
-    next_run = {'time': last_fetch + 1}
     return next_run, incidents
 
 
