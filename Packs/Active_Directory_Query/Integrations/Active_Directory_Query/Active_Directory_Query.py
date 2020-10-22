@@ -18,8 +18,8 @@ conn: Optional[Connection] = None
 # userAccountControl is a bitmask used to store a number of settings.
 # find more at:
 # https://support.microsoft.com/en-gb/help/305144/how-to-use-the-useraccountcontrol-flags-to-manipulate-user-account-pro
-OUTGOING_MAPPER = "User Profile - Active Directory (Outgoing)"
-INCOMING_MAPPER = "User Profile - Active Directory (Incoming)"
+DEFAULT_OUTGOING_MAPPER = "User Profile - Active Directory (Outgoing)"
+DEFAULT_INCOMING_MAPPER = "User Profile - Active Directory (Incoming)"
 
 COOMON_ACCOUNT_CONTROL_FLAGS = {
     512: "Enabled Account",
@@ -443,14 +443,14 @@ def search_users(default_base_dn, page_size):
     demisto.results(demisto_entry)
 
 
-def get_user_iam(default_base_dn, page_size, args):
+def get_user_iam(default_base_dn, page_size, args, mapper_in):
     user_profile = args.get("user-profile")
     user_profile_delta = args.get('user-profile-delta')
     default_attribute = args.get('defult_attribute', "samaccountname")
 
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-    ad_user = iam_user_profile.map_object(mapper_name=OUTGOING_MAPPER)
+    ad_user = iam_user_profile.map_object(mapper_name=mapper_in)
 
     value = ad_user.get(default_attribute)
 
@@ -469,7 +469,10 @@ def get_user_iam(default_base_dn, page_size, args):
         )
 
         if not entries.get('flat'):
-            iam_user_profile.set_result(success=False, error_message="No user was found")
+            iam_user_profile.set_result(success=False,
+                                        error_message="No user was found",
+                                        action=IAMActions.GET_USER
+                                        )
         else:
             ad_user = entries.get('flat')[0]
             user_account_control = ad_user.get('userAccountControl') not in INACTIVE_LIST_OPTIONS
@@ -478,16 +481,20 @@ def get_user_iam(default_base_dn, page_size, args):
             iam_user_profile.set_result(success=True,
                                         email=ad_user.get('email'),
                                         username=ad_user.get('name'),
+                                        action=IAMActions.GET_USER,
                                         details=ad_user,
                                         active=user_account_control)
 
-            user_profile.update_with_app_data(ad_user, INCOMING_MAPPER)
+            user_profile.update_with_app_data(ad_user, mapper_in)
 
-        return_results(iam_user_profile)
+        return iam_user_profile
 
     except Exception as e:
-        iam_user_profile.set_result(success=False, error_message=str(e))
-        return_results(iam_user_profile)
+        iam_user_profile.set_result(success=False,
+                                    error_message=str(e),
+                                    action=IAMActions.GET_USER
+                                    )
+        return iam_user_profile
 
 
 def search_computers(default_base_dn, page_size):
@@ -670,20 +677,20 @@ def create_user():
     demisto.results(demisto_entry)
 
 
-def create_user_iam(default_base_dn, default_page_size, args):
+def create_user_iam(default_base_dn, default_page_size, args, mapper_out):
     assert conn is not None
 
     user_profile = args.get("user-profile")
     user_profile_delta = args.get('user-profile-delta')
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-    ad_user = iam_user_profile.map_object(mapper_name=OUTGOING_MAPPER, mapping_type='User Profile')
+    ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
     try:
         sam_account_name = ad_user.get("samaccountname")
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
         if user_exists:
-            return return_results("User already exists")
+            return "User already exists"
 
         user_dn = generate_dn_and_remove_from_user_profile(ad_user)
 
@@ -695,26 +702,33 @@ def create_user_iam(default_base_dn, default_page_size, args):
                                         email=ad_user.get('email'),
                                         username=ad_user.get('name'),
                                         details=ad_user,
-                                        active=ad_user.get("userAccountControl"))
+                                        action=IAMActions.CREATE_USER,
+                                        active=True)
 
         else:
-            iam_user_profile.set_result(success=False, error_message="Failed to create user")
+            iam_user_profile.set_result(success=False,
+                                        error_message="Failed to create user",
+                                        action=IAMActions.CREATE_USER
+                                        )
 
-        return_results(iam_user_profile)
+        return iam_user_profile
 
     except Exception as e:
-        iam_user_profile.set_result(success=False, error_message=str(e))
-        return_results(iam_user_profile)
+        iam_user_profile.set_result(success=False,
+                                    error_message=str(e),
+                                    action=IAMActions.CREATE_USER,
+                                    )
+        return (iam_user_profile)
 
 
-def update_user_iam(default_base_dn, default_page_size, args):
+def update_user_iam(default_base_dn, default_page_size, args, mapper_out):
     assert conn is not None
 
     user_profile = args.get("user-profile")
     user_profile_delta = args.get('user-profile-delta')
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-    ad_user = iam_user_profile.map_object(mapper_name=OUTGOING_MAPPER)
+    ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
     try:
         # check it user exists and if it doesn't, create it
@@ -728,7 +742,7 @@ def update_user_iam(default_base_dn, default_page_size, args):
         elif user_exists:
             dn = user_dn(sam_account_name, default_base_dn)
 
-            #  remove fields that can't be modified
+            #  עקמק fields that can't be modified
             # notice that we are changing the ou and that effects the dn and cn
             if ad_user.get("dn"):
                 ad_user.pop("dn")
@@ -750,22 +764,29 @@ def update_user_iam(default_base_dn, default_page_size, args):
                 fail_to_modify.append("ou")
 
             if fail_to_modify:
-                error_list = ','.join(fail_to_modify)
+                error_list = '\n'.join(fail_to_modify)
                 error_message = f"Fail to modify the following attributes: {error_list}"
-                iam_user_profile.set_result(success=False, error_message=error_message)
+                iam_user_profile.set_result(success=False,
+                                            error_message=error_message,
+                                            action=IAMActions.UPDATE_USER,
+                                            )
 
             else:
                 active = ad_user.get('userAccountControl') not in INACTIVE_LIST_OPTIONS
                 iam_user_profile.set_result(success=True,
                                             email=ad_user.get('email'),
                                             username=ad_user.get('name'),
+                                            action=IAMActions.UPDATE_USER,
                                             details=ad_user,
                                             active=active)
-        return_results(iam_user_profile)
+        return iam_user_profile
 
     except Exception as e:
-        iam_user_profile.set_result(success=False, error_message=str(e))
-        return_results(iam_user_profile)
+        iam_user_profile.set_result(success=False,
+                                    error_message=str(e),
+                                    action=IAMActions.UPDATE_USER
+                                    )
+        return iam_user_profile
 
 
 def create_contact():
@@ -1013,12 +1034,12 @@ def disable_user(default_base_dn):
     demisto.results(demisto_entry)
 
 
-def enable_user_iam(default_base_dn, default_page_size, group, args):
+def enable_user_iam(default_base_dn, default_page_size, disabled_users_group_cn, args, mapper_out):
     user_profile = args.get("user-profile")
     user_profile_delta = args.get('user-profile-delta')
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-    ad_user = iam_user_profile.map_object(mapper_name=OUTGOING_MAPPER)
+    ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
     # check it user exists and if it doesn't, create it
     sam_account_name = ad_user.get("samaccountname")
@@ -1038,40 +1059,47 @@ def enable_user_iam(default_base_dn, default_page_size, group, args):
     try:
         # Enable account and update with attributes if any
         modify_object(dn, modification)
-        if group:
-            grp_dn = group_dn(group, default_base_dn)
+        if disabled_users_group_cn:
+            grp_dn = group_dn(disabled_users_group_cn, default_base_dn)
             success = microsoft.removeMembersFromGroups.ad_remove_members_from_groups(conn, [dn], [grp_dn], True)
             if not success:
-                e = 'Failed to add user to {} group'.format(group)
-                iam_user_profile.set_result(success=False, error_message=e)
+                e = 'Failed to add user to {} group'.format(disabled_users_group_cn)
+                iam_user_profile.set_result(success=False,
+                                            error_message=e,
+                                            action=IAMActions.ENABLE_USER,
+                                            )
             else:
-                active = ad_user.get('userAccountControl') not in INACTIVE_LIST_OPTIONS
                 iam_user_profile.set_result(success=True,
                                             email=ad_user.get('email'),
                                             username=ad_user.get('name'),
+                                            action=IAMActions.ENABLE_USER,
                                             details=ad_user,
-                                            active=active)
+                                            active=True)
 
-        return_results(iam_user_profile)
+        return iam_user_profile
 
     except Exception as e:
-        iam_user_profile.set_result(success=False, error_message=str(e))
-        return_results(iam_user_profile)
+        iam_user_profile.set_result(success=False,
+                                    error_message=str(e),
+                                    action=IAMActions.ENABLE_USER,
+                                    )
+        return iam_user_profile
 
 
-def disable_user_iam(default_base_dn, default_page_size, group, args):
+def disable_user_iam(default_base_dn, default_page_size, disabled_users_group_cn, args, mapper_out):
     user_profile = args.get("user-profile")
     user_profile_delta = args.get('user-profile-delta')
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-    ad_user = iam_user_profile.map_object(mapper_name=OUTGOING_MAPPER)
+    ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
     sam_account_name = ad_user.get("samaccountname")
     user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
     if not user_exists:
-        iam_user_profile.set_result(success=True)
-        return_results(iam_user_profile)
-        return
+        iam_user_profile.set_result(success=True,
+                                    action=IAMActions.DISABLE_USER,
+                                    )
+        return iam_user_profile
 
     dn = user_dn(sam_account_name, default_base_dn)
 
@@ -1082,25 +1110,31 @@ def disable_user_iam(default_base_dn, default_page_size, group, args):
 
     try:
         modify_object(dn, modification)
-        if group:
-            grp_dn = group_dn(group, default_base_dn)
+        if disabled_users_group_cn:
+            grp_dn = group_dn(disabled_users_group_cn, default_base_dn)
             success = microsoft.addMembersToGroups.ad_add_members_to_groups(conn, [dn], [grp_dn])
             if not success:
-                e = 'Failed to add user to {} group'.format(group)
-                iam_user_profile.set_result(success=False, error_message=e)
+                e = 'Failed to remove user from {} group'.format(disabled_users_group_cn)
+                iam_user_profile.set_result(success=False,
+                                            error_message=e,
+                                            action=IAMActions.DISABLE_USER,
+                                            )
             else:
-                active = ad_user.get('userAccountControl') not in INACTIVE_LIST_OPTIONS
                 iam_user_profile.set_result(success=True,
                                             email=ad_user.get('email'),
                                             username=ad_user.get('name'),
+                                            action=IAMActions.DISABLE_USER,
                                             details=ad_user,
-                                            active=active)
+                                            active=False)
 
-        return_results(iam_user_profile)
+        return iam_user_profile
 
     except Exception as e:
-        iam_user_profile.set_result(success=False, error_message=str(e))
-        return_results(iam_user_profile)
+        iam_user_profile.set_result(success=False,
+                                    error_message=str(e),
+                                    action=IAMActions.DISABLE_USER
+                                    )
+        return iam_user_profile
 
 
 def add_member_to_group(default_base_dn):
@@ -1245,16 +1279,21 @@ def delete_group():
 
 def main():
     ''' INSTANCE CONFIGURATION '''
-    SERVER_IP = demisto.params().get('server_ip')
-    USERNAME = demisto.params().get('credentials')['identifier']
-    PASSWORD = demisto.params().get('credentials')['password']
-    DEFAULT_BASE_DN = demisto.params().get('base_dn')
-    SECURE_CONNECTION = demisto.params().get('secure_connection')
-    DEFAULT_PAGE_SIZE = int(demisto.params().get('page_size'))
-    NTLM_AUTH = demisto.params().get('ntlm')
-    UNSECURE = demisto.params().get('unsecure', False)
-    PORT = demisto.params().get('port')
-    GROUP_CN = demisto.params().get('group-cn')
+    params = demisto.params()
+
+    SERVER_IP = params.get('server_ip')
+    USERNAME = params.get('credentials')['identifier']
+    PASSWORD = params.get('credentials')['password']
+    DEFAULT_BASE_DN = params.get('base_dn')
+    SECURE_CONNECTION = params.get('secure_connection')
+    DEFAULT_PAGE_SIZE = int(params.get('page_size'))
+    NTLM_AUTH = params.get('ntlm')
+    UNSECURE = params.get('unsecure', False)
+    PORT = params.get('port')
+
+    disabled_users_group_cn = params.get('group-cn')
+    mapper_in = params.get('mapper-in', DEFAULT_INCOMING_MAPPER)
+    mapper_out = params.get('mapper-out', DEFAULT_OUTGOING_MAPPER)
 
     if PORT:
         # port was configured, cast to int
@@ -1380,20 +1419,25 @@ def main():
             delete_group()
 
         # AIM commands
-        if demisto.command() == 'get-user':
-            get_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args)
+        if demisto.command() == 'iam-get-user':
+            user_profile = get_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args, mapper_in)
+            return return_results(user_profile)
 
-        if demisto.command() == 'create-user':
-            create_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args)
+        if demisto.command() == 'iam-create-user':
+            user_profile = create_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args, mapper_out)
+            return return_results(user_profile)
 
-        if demisto.command() == 'update-user':
-            update_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args)
+        if demisto.command() == 'iam-update-user':
+            user_profile = update_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args, mapper_out)
+            return return_results(user_profile)
 
-        if demisto.command() == 'enable-user':
-            enable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, GROUP_CN, args)
+        if demisto.command() == 'iam-enable-user':
+            user_profile = enable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, disabled_users_group_cn, args, mapper_out)
+            return return_results(user_profile)
 
-        if demisto.command() == 'disable-user':
-            disable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, GROUP_CN, args)
+        if demisto.command() == 'iam-disable-user':
+            user_profile = disable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, disabled_users_group_cn, args, mapper_out)
+            return return_results(user_profile)
 
     except Exception as e:
         message = str(e)

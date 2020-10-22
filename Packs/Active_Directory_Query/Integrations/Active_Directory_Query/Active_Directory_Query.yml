@@ -49,6 +49,18 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- additionalinfo: Used in the IAM commands.
+  defaultvalue: User Profile - Active Directory (Incoming)
+  display: Incoming Mapper
+  name: mapper-in
+  required: true
+  type: 0
+- additionalinfo: Used in the IAM commands.
+  defaultvalue: User Profile - Active Directory (Outgoing)
+  display: Ougoing Mapper
+  name: mapper-out
+  required: true
+  type: 0
 - display: Group CN for terminated employees
   name: group-cn
   defaultvalue: ""
@@ -416,7 +428,7 @@ script:
     description: Creates an Active Directory user. This command requires a secure
       connection (SSL,TLS).
     execution: false
-    name: create-user
+    name: iam-create-user
     outputs:
     - contextPath: IAM.UserProfile
       description: The user's profile
@@ -470,7 +482,7 @@ script:
     deprecated: false
     execution: false
     description: ""
-    name: get-user
+    name: iam-get-user
     outputs:
     - contextPath: IAM.UserProfile
       description: The user's profile
@@ -529,7 +541,7 @@ script:
     deprecated: false
     execution: false
     description: ''
-    name: update-user
+    name: iam-update-user
     outputs:
     - contextPath: IAM.UserProfile
       description: The user's profile
@@ -588,7 +600,7 @@ script:
     deprecated: false
     description: Enables a user.
     execution: false
-    name: enable-user
+    name: iam-enable-user
     outputs:
     - contextPath: IAM.UserProfile
       description: The user's profile
@@ -636,7 +648,7 @@ script:
     deprecated: false
     description: Disables a user.
     execution: true
-    name: disable-user
+    name: iam-disable-user
     outputs:
     - contextPath: IAM.UserProfile
       description: The user's profile
