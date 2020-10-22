@@ -416,6 +416,34 @@ references:
     - Demisto SDK Nightly - Run against Cortex XSOAR:
         context: sdk_nightly_env
 
+  bucket_upload_jobs: &bucket_upload_jobs
+    - Setup Environment
+    - Create Instances:
+        context: bucket_upload_env
+        requires:
+          - Setup Environment
+    - Run Unit Testing And Lint:
+        context: bucket_upload_env
+        requires:
+          - Setup Environment
+    - Run Validations:
+        context: bucket_upload_env
+        requires:
+          - Setup Environment
+    - Install Packs in Demisto 6_0:
+        requires:
+          - Create Instances
+    - Install Packs in Demisto Marketplace - Master:
+        requires:
+          - Create Instances
+    - Upload Packs:
+        context: bucket_upload_env
+        requires:
+          - Run Unit Testing And Lint
+          - Run Validations
+          - Install Packs in Demisto 6_0
+          - Install Packs in Demisto Marketplace - Master
+
 
   upload_packs_to_marketplace_storage: &upload_packs_to_marketplace_storage
     run:
@@ -442,6 +470,24 @@ references:
         python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -sb $TARGET_PATH
         rm $GCS_PATH
       when: on_success
+
+  check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
+    run:
+      when:
+        or:
+          - << pipeline.parameters.force_pack_upload >>
+          - << pipeline.parameters.bucket_upload >>
+      name: Check User Permissions to Upload Pack
+      command: |
+        CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
+        LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
+        LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
+        if [[ -z "${CIRCLE_USERNAME}" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`" ]]; then
+            echo -e "User '${CIRCLE_USERNAME}' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
+            exit 1
+        else
+            echo "User '${CIRCLE_USERNAME}' is allowed to force pack uploads."
+        fi
 
   force_upload_packs_to_marketplace_storage: &force_upload_packs_to_marketplace_storage
     run:
@@ -937,19 +983,7 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
-      - run:
-          name: Check User Permissions to Force Upload Pack
-          command: |
-            CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
-            LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
-            LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
-            if [[ -z "${CIRCLE_USERNAME}" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`" ]]; then
-                echo -e "User '${CIRCLE_USERNAME}' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
-                exit 1
-            else
-                echo "User '${CIRCLE_USERNAME}' is allowed to force pack uploads."
-            fi
-
+      - *check_user_permissions_to_upload_packs
       - *force_upload_packs_to_marketplace_storage
       - *destroy_instances
       - *store_artifacts
@@ -1283,32 +1317,19 @@ workflows:
       *sdk_nightly_jobs
 
   bucket_upload:
-    # todo: delete the when
-    when: << pipeline.parameters.bucket_upload >>
+    triggers:
+      - schedule:
+          # should trigger every day at 10 PM UTC (1 AM Israel Time)
+          cron: "0 22 * * *"
+          filters:
+            branches:
+              only:
+                - master
     jobs:
-      - Setup Environment
-      - Create Instances:
-          context: bucket_upload_env
-          requires:
-            - Setup Environment
-      - Run Unit Testing And Lint:
-          context: bucket_upload_env
-          requires:
-            - Setup Environment
-      - Run Validations:
-          context: bucket_upload_env
-          requires:
-            - Setup Environment
-      - Install Packs in Demisto 6_0:
-          requires:
-            - Create Instances
-      - Install Packs in Demisto Marketplace - Master:
-          requires:
-            - Create Instances
-      - Upload Packs:
-          context: bucket_upload_env
-          requires:
-            - Run Unit Testing And Lint
-            - Run Validations
-            - Install Packs in Demisto 6_0
-            - Install Packs in Demisto Marketplace - Master
+      *bucket_upload_jobs
+
+  bucket_upload_trigger:
+    # will initiate when using the trigger script.
+    when: << pipeline.parameters.bucket_upload>>
+    jobs:
+      *bucket_upload_jobs
