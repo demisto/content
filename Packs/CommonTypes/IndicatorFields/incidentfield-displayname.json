@@ -25,13 +25,26 @@
   "shouldCommit": false,
   "shouldPublish": false,
   "associatedTypes": [
-    "Account"
+    "Account",
+	"IAM - New Hire",
+	"IAM - Terminate User",
+	"IAM - Update - User",
+	"User Profile",
+	"IAM - Sync User",
+	"IAM - Rehire User"
   ],
   "caseInsensitive": true,
   "columns": null,
   "placeholder": "",
   "useAsKpi": false,
-  "systemAssociatedTypes": null,
+  "systemAssociatedTypes":[
+    "IAM - New Hire",
+    "IAM - Terminate User",
+    "IAM - Update - User",
+    "User Profile",
+    "IAM - Sync User",
+    "IAM - Rehire User"
+],
   "prevName": "Display Name",
   "locked": false,
   "name": "Display Name",

@@ -1,6 +1,13 @@
 {
     "associatedToAll": true,
-    "associatedTypes": null,
+	"associatedTypes": [
+		"IAM - New Hire",
+		"IAM - Terminate User",
+		"IAM - Update - User",
+		"User Profile",
+		"IAM - Sync User",
+		"IAM - Rehire User"
+	],
     "breachScript": "",
     "caseInsensitive": true,
     "cliName": "state",
@@ -25,7 +32,14 @@
     "selectValues": null,
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
+	"systemAssociatedTypes":[
+		"IAM - New Hire",
+		"IAM - Terminate User",
+		"IAM - Update - User",
+		"User Profile",
+		"IAM - Sync User",
+		"IAM - Rehire User"
+],
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
