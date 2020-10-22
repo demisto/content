@@ -403,6 +403,8 @@ def main():
             indicators = fetch_indicators_command(client, client.indicator_type)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
+                # remove duplicates due to performance issue -
+                # https://github.com/demisto/etc/issues/25033
                 non_duplicates_dict: Dict[str, Dict] = dict()
                 for indicator in b:
                     indicator_value = indicator.get("value")
