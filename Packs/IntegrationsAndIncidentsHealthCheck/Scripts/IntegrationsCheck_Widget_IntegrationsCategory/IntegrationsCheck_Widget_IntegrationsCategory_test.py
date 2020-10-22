@@ -13,7 +13,6 @@ from IntegrationsCheck_Widget_IntegrationsCategory import main, random
       '"Forensics & Malware Analysis", "color": "#3e8"}]')),
     ({'Contents': ''}, '[{"data": [0], "name": "N\A", "color": "#00CD33"}')],
     ([{}], '[{"data": [0], "name": "N\A", "color": "#00CD33"}]'))
-
 def test_script(mocker, list_, expected):
     mocker.patch.object(random, 'randint', return_value=1000)
     mocker.patch.object(demisto, 'executeCommand', return_value=list_)
