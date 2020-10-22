@@ -10,6 +10,9 @@ urllib3.disable_warnings()
 VENDOR_NAME = 'Anomali Enterprise'
 
 
+''' CLIENT CLASS '''
+
+
 class Client(BaseClient):
     """
     Client to use in the Anomali Enterprise integration. Overrides BaseClient
@@ -57,6 +60,9 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='/api/v1/mars/dga_score', headers=self._headers,
                                       data=data)
         return response
+
+
+''' COMMAND FUNCTIONS '''
 
 
 def module(client: Client) -> str:
@@ -203,18 +209,21 @@ def calculate_dbot_score(domain_data: dict) -> int:
     Returns:
         DBot Score.
     """
-    score = 0
+    score = Common.DBotScore.NONE
     if domain_data.get('malware_family', {}):
         if float(domain_data.get('prob', 0)) > 0.6:
-            score = 3
+            score = Common.DBotScore.BAD
         else:
-            score = 2
+            score = Common.DBotScore.SUSPICIOUS
     return score
 
 
-def main():
+''' MAIN FUNCTION '''
+
+
+def main() -> None:
     """
-    PARSE AND VALIDATE INTEGRATION PARAMS
+    Parse and validates integration params, runs integration commands.
     """
     params = demisto.params()
     server_url = params.get('url')
@@ -224,7 +233,7 @@ def main():
     proxy = params.get('proxy') is True
 
     command = demisto.command()
-    LOG(f'Command being called in Anomali Enterprise is: {command}')
+    LOG(f'Command being called in {VENDOR_NAME} is: {command}')
 
     try:
         client = Client(server_url=server_url, username=username, password=password, verify=verify, proxy=proxy)
@@ -244,6 +253,9 @@ def main():
     except Exception as err:
         return_error(f'Failed to execute {command} command. Error: {str(err)} \n '
                      f'tracback: {traceback.format_exc()}')
+
+
+''' ENTRY POINT '''
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
