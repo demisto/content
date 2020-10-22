@@ -42,8 +42,8 @@ def test_domain_command_malicious(mocker):
         - mocking the server response for a malicious domain, running domain_command
 
     Then:
-        - validating the domain is unknown
-        - validating the returned context data
+        - validating the domain is malicious
+        - validating the returned context data, including the malicious context
 
     """
     client = Client(server_url='test', username='test', password='1234', verify=True, proxy=False)
