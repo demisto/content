@@ -1,6 +1,7 @@
-from requests import Response
-from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, enable_disable_user_command
-
+import demistomock as demisto
+from requests import Response, Session
+from Okta_IAM import Client, get_user_command  # , create_user_command, update_user_command, enable_user_command
+from CommonServerPython import IAMErrors, IAMUserProfile
 
 ''' ARGUMENTS '''
 
@@ -19,15 +20,29 @@ GET_USER_OUTPUT__EXISTING_USER = {
     "profile": {
         "firstName": "mock_first_name",
         "lastName": "mock_last_name",
-        "login": "dantavori222@paloaltonetworks.com",
-        "email": "dantavori222@paloaltonetworks.com"
+        "login": "testdemisto2@paloaltonetworks.com",
+        "email": "testdemisto2@paloaltonetworks.com"
     }
 }
 
 
+def test_exception_response_text_parsing_when_ok_code_is_invalid(self, requests_mock):
+    from CommonServerPython import DemistoException
+    reason = 'Bad Request'
+    text_response = '{"error": "additional text"}'
+    requests_mock.get('https://test.com/api/v1/',
+                      status_code=400,
+                      reason=reason,
+                      text=text_response)
+    try:
+        self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+    except DemistoException as e:
+        assert e.res.get('error') == 'additional text'
+
+
 GET_USER_REQUEST__BAD_RESPONSE = Response()
 GET_USER_REQUEST__BAD_RESPONSE.status_code = 500
-GET_USER_REQUEST__BAD_RESPONSE._content = {
+GET_USER_REQUEST__BAD_RESPONSE. = {
     'errorCode': 'mock_error_code',
     'errorSummary': 'mock_error_summary',
     'errorCauses': [
@@ -47,7 +62,7 @@ def mock_client():
 
 
 def get_outputs_from_user_profile(user_profile):
-    entry_context = user_profile.to_context()
+    entry_context = user_profile.to_entry()
     outputs = entry_context.get('Contents')
     return outputs
 
@@ -65,11 +80,11 @@ def test_get_user_command__existing_user(mocker):
     client = mock_client()
     args = USER_ARGS
 
-    mocker.patch.object('demisto', 'command', return_value='get-user')
+    mocker.patch.object(demisto, 'command', return_value='get-user')
     mocker.patch.object(client, 'get_user', return_value=GET_USER_OUTPUT__EXISTING_USER)
-    mocker.patch.object('IAMUserProfile', 'update_with_app_data', return_value={})
+    mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
-    user_profile = get_user_command(client, args)
+    user_profile = get_user_command(client, args, 'mocked_mapper_in')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == 'get'
@@ -94,10 +109,10 @@ def test_get_user_command__non_existing_user(mocker):
     client = mock_client()
     args = USER_ARGS
 
-    mocker.patch.object('demisto', 'command', return_value='get-user')
+    mocker.patch.object(demisto, 'command', return_value='get-user')
     mocker.patch.object(client, 'get_user', return_value=None)
 
-    user_profile = get_user_command(client, args)
+    user_profile = get_user_command(client, args, 'mocked_mapper_in')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == 'get'
@@ -120,10 +135,10 @@ def test_get_user_command__bad_response(mocker):
     client = mock_client()
     args = USER_ARGS
 
-    mocker.patch.object('demisto', 'command', return_value='get-user')
-    mocker.patch.object('Session', 'request', return_value=GET_USER_REQUEST__BAD_RESPONSE)
+    mocker.patch.object(demisto, 'command', return_value='get-user')
+    mocker.patch.object(Session, 'request', return_value=GET_USER_REQUEST__BAD_RESPONSE)
 
-    user_profile = get_user_command(client, args)
+    user_profile = get_user_command(client, args, 'mocked_mapper_in')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == 'get'
