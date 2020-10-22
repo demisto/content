@@ -1261,20 +1261,24 @@ def private_test_pack_zip():
         with open('./Tests/id_set.json', 'r') as conf_file:
             ID_SET = json.load(conf_file)
             test_pbs = ID_SET.get('TestPlaybooks', [])
+
     with open("./Tests/filter_file.txt", "r") as filter_file:
         tests_to_run = filter_file.readlines()
         for test_to_run in tests_to_run:
-            if test_to_run in test_pbs:
-                print("Found test to install")
-                tests_file_paths.add(test_pbs[test_to_run].get("file_path"))
+            test_clean = test_to_run.rstrip()
+            if any(test_clean in d for d in test_pbs):
+                for test_pb in test_pbs:
+                    if test_clean in test_pb:
+                        print(f"Here's the conf.json segment: {test_pb}")
+                        tests_file_paths.add(test_pb[test_clean].get("file_path"))
 
     with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
         for test_path, test in test_files(content_path):
-            print(f"test_path is: {test_path}")
-            print(f"test.name is: {test.name}")
             if test_path not in tests_file_paths:
                 continue
+            else:
+                print(f"found something. installing {test_path}")
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
