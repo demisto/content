@@ -14,6 +14,7 @@ Generic webhook to be triggered in order to create incident.
 | certificate | Certificate (Required for HTTPS, in case not using the server rerouting) | False |
 | key | Private Key (Required for HTTPS, in case not using the server rerouting) | False |
 | incidentType | Incident type | False |
+| store_samples | Store sample events for mapping (Because this is a push-based integration, it cannot fetch sample events in the mapping wizard). | False |
 
 4. Click **Done**.
 5. Navigate to  **Settings > About > Troubleshooting**.

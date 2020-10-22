@@ -34,7 +34,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- additionalinfo: Because this is a push-based streaming integration, it cannot fetch sample events in
+- additionalinfo: Because this is a push-based integration, it cannot fetch sample events in
     the mapping wizard.
   display: Store sample events for mapping
   hidden: false
