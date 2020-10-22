@@ -290,15 +290,20 @@ class TestHelperFunctions:
            Given:
                - Pack name & path.
            When:
-               - Before uploading a pack to the marketplace, delete unwanted files.
+               - Preparing packs before uploading to marketplace.
            Then:
-               - Assert the TestPlaybooks die was deleted.
+               - Assert `TestPlaybooks` directory was deleted from pack.
+               - Assert `TestPlaybooks` directory was not deleted from pack.
+
        """
         os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test')
         os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
+        os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
+        os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks/NonCircleTests')
         test_pack = Pack(pack_name="pack_to_test", pack_path='Tests/Marketplace/Tests/test_data/pack_to_test')
         test_pack.remove_unwanted_files()
         assert not os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
+        assert os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
         shutil.rmtree('Tests/Marketplace/Tests/test_data/pack_to_test')
 
 
