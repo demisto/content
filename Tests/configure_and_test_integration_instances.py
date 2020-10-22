@@ -1035,6 +1035,19 @@ def install_nightly_pack(build, prints_manager):
     sleep(45)
 
 
+def install_private_pack(build, prints_manager):
+    threads_print_manager = ParallelPrintsManager(len(build.servers))
+    private_test_pack_zip()
+    pack_path = '/home/runner/work/content-private/content-private/content/test_pack.zip'
+    nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs,
+                          pack_path=pack_path)
+
+    prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0,
+                                 include_timestamp=True)
+    prints_manager.execute_thread_prints(0)
+    sleep(45)
+
+
 def install_packs(build, prints_manager, pack_ids=None):
     pack_ids = get_pack_ids_to_install() if pack_ids is None else pack_ids
     installed_content_packs_successfully = True
@@ -1243,12 +1256,25 @@ def test_pack_metadata():
 def private_test_pack_zip():
     content_path = '/home/runner/work/content-private/content-private/content'
     target = '/home/runner/work/content-private/content-private/content/test_pack.zip'
+    tests_file_paths = set()
+    if os.path.isfile('./Tests/id_set.json'):
+        with open('./Tests/id_set.json', 'r') as conf_file:
+            ID_SET = json.load(conf_file)
+            test_pbs = ID_SET.get('TestPlaybooks', [])
+    with open("./Tests/filter_file.txt", "r") as filter_file:
+        tests_to_run = filter_file.readlines()
+        for test_to_run in tests_to_run:
+            if test_to_run in test_pbs:
+                print("Found test to install")
+                tests_file_paths.add(test_pbs[test_to_run].get("file_path"))
 
     with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
         for test_path, test in test_files(content_path):
             print(f"test_path is: {test_path}")
             print(f"test.name is: {test.name}")
+            if test_path not in tests_file_paths:
+                continue
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
@@ -1343,7 +1369,7 @@ def main():
         #  Done running tests so we are disabling the instances.
         disable_instances(build, all_module_instances, prints_manager)
 
-        test_pack_zip(build)
+        install_private_pack(build, prints_manager)
 
     else:
         if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
