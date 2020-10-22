@@ -107,6 +107,7 @@ class URLS:
     Techniques = '/systemReport/techniques'
     Assets_At_Risk = '/systemReport/assetsAtRiskByEntity'
     Entities_At_Risk = '/systemReport/affectedEntitiesByEntity'
+    Entity_Report = '/#/scenarioHub/entityReport'
 
 
 class EVENT_NAME:
@@ -345,7 +346,8 @@ def entity_obj_to_data(xm: XM, entity: Any):
              'count': technique['count']
              })
     entity_id = entity['entityId']
-    entity_report = urljoin(xm.get_base_url(), f'{URLS.System_Report}?entityId={entity_id}&timeId={DEFAULT_TIME_ID}')
+    instance_url = xm.get_base_url()[0:-4]
+    entity_report = urljoin(instance_url, f'{URLS.Entity_Report}/{entity_id}?timeId={DEFAULT_TIME_ID}')
     return {
         'entityId': entity['entityId'],
         'name': entity['name'],
