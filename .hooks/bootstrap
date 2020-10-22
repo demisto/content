@@ -77,7 +77,7 @@ else
             exit 1
         fi
         VIRTUALENV_VERSION=$(virtualenv --version)
-        if [[ $VIRTUALENV_VERSION != *16.7.* ]]; then
+        if [[ $VIRTUALENV_VERSION != *16.7.* && "${SETUP_PY2}^^" != "NO" ]]; then
             echo "ERROR: You are using virtualenv version ${VIRTUALENV_VERSION}, Please install virtualenv version 16.7.7:
             pip3 uninstall virtualenv && pip3 install virtualenv==16.7.7"
             exit 1
