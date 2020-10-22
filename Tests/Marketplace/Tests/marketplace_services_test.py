@@ -293,7 +293,7 @@ class TestHelperFunctions:
                - Preparing packs before uploading to marketplace.
            Then:
                - Assert `TestPlaybooks` directory was deleted from pack.
-               - Assert `TestPlaybooks` directory was not deleted from pack.
+               - Assert `Integrations` directory was not deleted from pack.
 
        """
         os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test')
