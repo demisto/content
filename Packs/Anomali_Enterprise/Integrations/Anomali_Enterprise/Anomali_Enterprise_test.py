@@ -26,9 +26,9 @@ def test_domain_command_benign(mocker):
                            [
                                {
                                    'Indicator': 'test.com',
-                                    'Type': 'domain',
-                                    'Vendor': 'Anomali Enterprise',
-                                    'Score': 0
+                                   'Type': 'domain',
+                                   'Vendor': 'Anomali Enterprise',
+                                   'Score': 0
                                 }
                             ]
                        }
