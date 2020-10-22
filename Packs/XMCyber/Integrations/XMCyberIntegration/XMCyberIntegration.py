@@ -92,6 +92,8 @@ class Client(BaseClient):
     def post_paginated(self, url_suffix, params={}, page_size=PAGE_SIZE, max_pages=MAX_PAGES, log=True):
         return self._paginated("POST", url_suffix, params, page_size, max_pages, log)
 
+    def get_base_url(self):
+        return self._base_url
 
 class URLS:
     Version = '/version'
@@ -224,6 +226,9 @@ class XM:
             'entityId': entity_id,
             'timeId': time_id
         })
+    
+    def get_base_url(self):
+        return self.client.get_base_url()
 
     def _create_event_for_risk_score(self, events):
         risk_score = self.risk_score()
@@ -328,7 +333,7 @@ def path_to_compromising_technique(path: Any):
     return path[-1]['event']['displayName']
 
 
-def entity_obj_to_data(entity: Any):
+def entity_obj_to_data(xm: XM, entity: Any):
     try:
         is_asset = entity['asset']
     except KeyError:
@@ -339,6 +344,8 @@ def entity_obj_to_data(entity: Any):
              'name': technique['displayName'], 
              'count': technique['count']
              })
+    entity_id = entity['entityId']
+    entity_report = urljoin(xm.get_base_url(), f'{URLS.System_Report}?entityId={entity_id}&timeId={DEFAULT_TIME_ID}')
     return {
         'entityId': entity['entityId'],
         'name': entity['name'],
@@ -349,17 +356,22 @@ def entity_obj_to_data(entity: Any):
         'criticalAssetsAtRiskLevel': entity['affectedUniqueAssets']['count']['level'],
         'isAsset': is_asset,
         'compromisingTechniques': techniques,
-        'entityType': entity['entityTypeDisplayName']
+        'entityType': entity['entityTypeDisplayName'],
+        'entityReport': entity_report
     }
 
 
 def entity_score(entity: Any):
     score = 0
-    reputation = entity['affectedUniqueAssets']['count']['level']
-    if reputation == 'none':
-        score = Common.DBotScore.GOOD
-    else:
-        score = Common.DBotScore.BAD
+    try:
+        reputation = entity['affectedUniqueAssets']['count']['level']
+        if reputation == 'none':
+            score = Common.DBotScore.GOOD
+        else:
+            score = Common.DBotScore.BAD
+    except (KeyError, AttributeError):
+        reputation = 'N/A'
+        score = Common.DBotScore.NONE
     return score, reputation
 
 ''' COMMAND FUNCTIONS '''
@@ -608,11 +620,22 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
             readable_output = f'**Resolved the following entities for IP {ip}**'
         else:
             readable_output = f'**No entity with the IP {ip}'
+            dbot_score = Common.DBotScore(
+                indicator=ip,
+                indicator_type=DBotScoreType.IP,
+                integration_name='XMCyber',
+                score=Common.DBotScore.NONE,
+                malicious_description=f'No entity found with this IP'
+            )
+            ip_standard_context = Common.IP(
+                ip=ip,
+                dbot_score=dbot_score
+            )
+            ip_standard_list.append(ip_standard_context)
         for entity in entity_ids:
             name = entity['name']
             readable_output += f'\n- {name}'
             score, reputation = entity_score(entity)
-
             dbot_score = Common.DBotScore(
                 indicator=ip,
                 indicator_type=DBotScoreType.IP,
@@ -620,16 +643,13 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 score=score,
                 malicious_description=f'XM Cyber affected assets {reputation}'
             )
-
+            xm_data_list.append(entity_obj_to_data(xm, entity))
             ip_standard_context = Common.IP(
                 ip=ip,
                 dbot_score=dbot_score
             )
-
             ip_standard_list.append(ip_standard_context)
 
-            xm_data_list = entity_obj_to_data(entity)
-    
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='XMCyber',
@@ -673,8 +693,7 @@ def hostname_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
             except (TypeError, AttributeError, KeyError):
                 endpoint_standard_context = Common.Endpoint(ID, hostname=hostname)
             endpoint_standard_list.append(endpoint_standard_context)
-
-            xm_data_list = entity_obj_to_data(entity)
+            xm_data_list.append(entity_obj_to_data(xm, entity))
     
     return CommandResults(
         readable_output=readable_output,
@@ -684,6 +703,31 @@ def hostname_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
         indicators=endpoint_standard_list
     )
 
+
+def entity_get_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    hostnames = argToList(args.get('hostname'))
+    ips = argToList(args.get('ip'))
+    if len(ips) == 0 and len(hostnames):
+        raise ValueError('No input specified')
+    entities = []
+    for ip in ips:
+        entities.extend(xm.search_entities(ip))
+    for hostname in hostnames:
+        entities.extend(xm.search_entities(hostname))
+    if len(entities) > 0:
+        readable_output = f'**Matched the following entities**'
+    else:
+        readable_output = f'**No entity matched the input {ips} {hostnames}'
+    for entity in entities:
+        xm_data_list = entity_obj_to_data(xm, entity)
+        name = entity['name']
+        readable_output += f'\n- {name}'
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='XMCyber',
+        outputs_key_field='entityId',
+        outputs=xm_data_list
+    )
 
 ''' MAIN FUNCTION '''
 
@@ -726,6 +770,7 @@ def main() -> None:
             "xmcyber-critical-asset-add": critical_asset_add_command,
             "xmcyber-affected-critical-assets-list": affected_critical_assets_list_command,
             "xmcyber-affected-entities-list": affected_entities_list_command,
+            "xmcyber-entity-get": entity_get_command,
             # Common commands
             "ip": ip_command,
             "hostname": hostname_command

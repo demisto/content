@@ -108,7 +108,7 @@ script:
     description: Check if current XM version supports Demisto integration
     outputs:
       - contextPath: XMCyber.IsVersion.valid
-        description: 'Flag that indicates if the version is valid'
+        description: Flag that indicates if the version is valid
         type: Boolean
     
   - name: xmcyber-get-version
@@ -157,6 +157,9 @@ script:
       - contextPath: entityType
         description: Entity Type
         type: String
+      - contextPath: entityReport
+        description: Link to the Entity Report
+        type: String
       - contextPath: DBotScore.Indicator
         description: The indicator that was tested.
         type: String
@@ -180,6 +183,54 @@ script:
         type: String
       - contextPath: IP.ASN
         description: The autonomous system name for the IP address.
+        type: String
+
+  - name: xmcyber-entity-get
+    description: Return data on Entity by IP or Hostname from XM Cyber
+    arguments:
+      - name: ip
+        default: true
+        description: List of IPs.
+        isArray: true
+        required: false
+      - name: hostname
+        default: true
+        description: List of hostnames.
+        isArray: true
+        required: false
+    outputs:
+      - contextPath: entityId
+        description: XMCyber Entity ID
+        type: String
+      - contextPath: name
+        description: Entity Name
+        type: String
+      - contextPath: isAsset
+        description: Is Entity a Critical Asset
+        type: Boolean
+      - contextPath: affectedEntities
+        description: Number of unique entities at risk from this entity
+        type: Number
+      - contextPath: averageComplexity
+        description: Average complexity to compromise this entity
+        type: Number
+      - contextPath: criticalAssetsAtRisk
+        description: Number of unique critical assets at risk from this entity
+        type: Number
+      - contextPath: averageComplexityLevel
+        description: Level of the average complexity to compromise this entity
+        type: String
+      - contextPath: compromisingTechniques.name
+        description: Technique compromising this entity
+        type: String
+      - contextPath: compromisingTechniques.count
+        description: Number of vectors with this technique compromising this entity
+        type: Number
+      - contextPath: entityType
+        description: Entity Type
+        type: String
+      - contextPath: entityReport
+        description: Link to the Entity Report
         type: String
   
   - name: hostname
@@ -220,6 +271,9 @@ script:
         type: Number
       - contextPath: entityType
         description: Entity Type
+        type: String
+      - contextPath: entityReport
+        description: Link to the Entity Report
         type: String
       - contextPath: Host.Domain
         description: The domain of the host.

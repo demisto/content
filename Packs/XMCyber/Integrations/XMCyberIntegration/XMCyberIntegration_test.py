@@ -107,7 +107,7 @@ def test_hostname(requests_mock):
 
     assert response.outputs_prefix == 'XMCyber'
     assert response.outputs_key_field == 'entityId'
-    assert response.outputs == {
+    assert response.outputs == [{
         'entityId': '3110337924893579985',
         'name': 'CorporateDC',
         'affectedEntities': 29,
@@ -120,8 +120,9 @@ def test_hostname(requests_mock):
             {'count': 46,'name': 'DNS Heap Overflow (CVE-2018-8626)'},
             {'count': 34, 'name': 'SIGRed (CVE-2020-1350)'}
         ],
-        'entityType': 'Sensor'
-    }
+        'entityType': 'Sensor',
+        'entityReport': 'https://test.com/api/systemReport/entity?entityId=3110337924893579985&timeId=timeAgo_days_7'
+    }]
 
 def test_ip(requests_mock):
     """Tests ip command function.
@@ -139,7 +140,7 @@ def test_ip(requests_mock):
 
     assert response.outputs_prefix == 'XMCyber'
     assert response.outputs_key_field == 'entityId'
-    assert response.outputs == {
+    assert response.outputs == [{
         'entityId': '3110337924893579985',
         'name': 'CorporateDC',
         'affectedEntities': 29,
@@ -152,5 +153,6 @@ def test_ip(requests_mock):
             {'count': 46,'name': 'DNS Heap Overflow (CVE-2018-8626)'},
             {'count': 34, 'name': 'SIGRed (CVE-2020-1350)'}
         ],
-        'entityType': 'Sensor'
-    }
+        'entityType': 'Sensor',
+        'entityReport': 'https://test.com/api/systemReport/entity?entityId=3110337924893579985&timeId=timeAgo_days_7'
+    }]

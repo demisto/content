@@ -16,21 +16,31 @@ script: |-
       'criticalAssetsAtRiskList':'xmcybercriticalassetsatrisklist',
       'isAsset': 'xmcyberiscriticalasset',
       'entityType': 'xmcyberentitytype',
-      'name': 'xmcyberhostname'
+      'name': 'xmcyberhostname',
+      'entityReport': 'xmcyberentityreport'
   }
-  context_values = {key : demisto.get(demisto.context(), 'XMCyber.' + key) for key in fields.keys()}
+  context = demisto.context()
+  xmcyber_obj = context['XMCyber']
+  if isinstance(context['XMCyber'], list):
+      for i in xmcyber_obj:
+          try:
+              xmcyber_obj = i
+              entity_id = xmcyber_obj['entityId']
+              break
+          except (KeyError, AttributeError):
+              continue
+  context_values = {key : xmcyber_obj[key] for key in fields.keys()}
 
 
-  demisto.executeCommand('setIncident', {fields[key]: context_values[key] for key in fields.keys()})
+  res = demisto.executeCommand('setIncident', {fields[key]: context_values[key] for key in fields.keys() if context_values[key]})
+
+  demisto.log('Completed mapping, excute command result:')
+  demisto.log(res)
 type: python
 tags:
 - XM Cyber
 comment: Maps the XM Cyber context to fields
 enabled: true
-important:
-- contextPath: sadsa
-  description: sada
-  related: dsa
 scripttarget: 0
 subtype: python3
 runonce: false
