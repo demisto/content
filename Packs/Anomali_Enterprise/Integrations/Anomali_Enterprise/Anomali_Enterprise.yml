@@ -98,17 +98,14 @@ script:
     execution: false
     name: anomali-enterprise-dga-domain-status
     outputs:
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
+    - contextPath: AnomaliEnterprise.DGA.domain
+      description: The domain that was checked.
       type: String
-    - contextPath: DBotScore.Type
-      description: The indicator type.
+    - contextPath: AnomaliEnterprise.DGA.malware_family
+      description: Malware family associated with the domain.
       type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
+    - contextPath: AnomaliEnterprise.DGA.domain
+      description: The probabilty of the domain being malicious.
       type: Number
   - arguments:
     - default: true
@@ -122,9 +119,15 @@ script:
     execution: false
     name: domain
     outputs:
-    - contextPath: AnomaliEnterprise.DGA
-      description: The indicator that was tested.
+    - contextPath: AnomaliEnterprise.DGA.domain
+      description: The domain that was checked.
       type: String
+    - contextPath: AnomaliEnterprise.DGA.malware_family
+      description: Malware family associated with the domain.
+      type: String
+    - contextPath: AnomaliEnterprise.DGA.domain
+      description: The probabilty of the domain being malicious.
+      type: Number
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -137,6 +140,15 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: Domain.Name
+      description: The domain name. For example, "google.com".
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description of the malicious Domain.
+      type: String
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false

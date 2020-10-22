@@ -1,14 +1,12 @@
 from typing import Dict, Callable
 
 import urllib3
-
 from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 VENDOR_NAME = 'Anomali Enterprise'
-
 
 ''' CLIENT CLASS '''
 
@@ -173,13 +171,14 @@ def domain_command(client: Client, args: dict) -> CommandResults:
         'malware_family': domain_data.get(domain, {}).get('malware_family'),
         'probability': domain_data.get(domain, {}).get('probability')
     }
-    score = calculate_dbot_score(domain_data)
+    score = calculate_dbot_score(domain_data.get(domain, {}))
 
     dbot_score = Common.DBotScore(
         indicator=domain,
         indicator_type=DBotScoreType.DOMAIN,
         integration_name=VENDOR_NAME,
-        score=score
+        score=score,
+        malicious_description=str(output.get('malware_family', ''))
     )
 
     domain = Common.Domain(
@@ -211,7 +210,7 @@ def calculate_dbot_score(domain_data: dict) -> int:
     """
     score = Common.DBotScore.NONE
     if domain_data.get('malware_family', {}):
-        if float(domain_data.get('prob', 0)) > 0.6:
+        if float(domain_data.get('probability', 0)) > 0.6:
             score = Common.DBotScore.BAD
         else:
             score = Common.DBotScore.SUSPICIOUS
@@ -256,7 +255,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
