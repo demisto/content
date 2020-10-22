@@ -11,7 +11,7 @@ import string
 import subprocess
 from pathlib import Path
 
-WORKING_DIR = Path("/app")
+WORKING_DIR = Path("/tmp")
 INPUT_FILE_PATH = 'sample.json'
 OUTPUT_FILE_PATH = 'out{id}.pdf'
 DISABLE_LOGOS = True  # Bugfix before sane-reports can work with image files.
