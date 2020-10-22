@@ -343,8 +343,7 @@ def run_test_logic(tests_settings, c, failed_playbooks,
         error_message = 'Failed: {} failed'.format(test_message)
         prints_manager.add_print_job(error_message, print_error, thread_index)
         playbook_id_with_mock = playbook_id
-        if not is_mock_run:
-            playbook_id_with_mock += " (Mock Disabled)"
+        playbook_id_with_mock += " (Mock Disabled)"
         failed_playbooks.append(playbook_id_with_mock)
         if not tests_settings.is_local_run:
             notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url,
