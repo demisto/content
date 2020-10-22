@@ -655,6 +655,12 @@ jobs:
                 cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
             exit 1
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
+          when: always
       - *collect_test_list_and_content_packs
       - *calculate_packs_dependencies
       - unless:
@@ -688,12 +694,6 @@ jobs:
             - *setup_instance
             - *store_artifacts
       - *persist_to_workspace
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
-          when: always
 
   Server 5_0:
     <<: *container_config
