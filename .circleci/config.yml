@@ -165,6 +165,7 @@ references:
         python --version
         python3 --version
         demisto-sdk --version
+        exit 1
 
   download_configuration: &download_configuration
     run:
@@ -634,6 +635,12 @@ jobs:
       - checkout
       - *restore_cache
       - *prepare_environment
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
+          when: always
       - *get_contribution_pack
       - *add_ssh_keys
       - *create_id_set
@@ -654,13 +661,6 @@ jobs:
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
                 cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
-            exit 1
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
-          when: always
       - *collect_test_list_and_content_packs
       - *calculate_packs_dependencies
       - unless:
