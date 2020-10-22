@@ -20,7 +20,7 @@ def results_return(command, thingtoreturn):
         dbot_score = Common.DBotScore(
             indicator=item['Address'],
             indicator_type=DBotScoreType.IP,
-            integration_name='Barracuda(BRBL)',
+            integration_name='Barracuda',
             malicious_description=description,
             score=score
         )
@@ -29,7 +29,7 @@ def results_return(command, thingtoreturn):
             dbot_score=dbot_score
         )
         results = CommandResults(
-            outputs_prefix='Barracuda(BRBL).' + str(command),
+            outputs_prefix='Barracuda.' + str(command),
             outputs_key_field='indicator',
             outputs=ip_reputation,
             indicators=[ip]
@@ -47,14 +47,14 @@ def get_ip_details(ip):
             result = socket.gethostbyname(address)
             if result == '127.0.0.2':
                 data = {'Address': item,
-                        'Malicious': {'Vendor': 'Barracuda(BRBL)',
+                        'Malicious': {'Vendor': 'Barracuda',
                                       'Description': 'IP was found to be on the Barracuda(BRBL) block list'}}
                 finaldata.append(data)
         except gaierror:
             data = {'Address': item}
             finaldata.append(data)
         except Exception as e:
-            return_error(f'Error from Barracuda(BRBL) - {str(e)}.')
+            return_error(f'Error from Barracuda - {str(e)}.')
 
     return finaldata
 
@@ -70,11 +70,11 @@ def test_module():
     address = reverselist[3] + '.' + reverselist[2] + '.' + reverselist[1] + '.' + reverselist[0] + '.b.barracudacentral.org'
     try:
         testresult = socket.gethostbyname(address)
-        return 'Test Failed. Barracuda(BRBL) is blocklisted ' + str(testresult)
+        return 'Test Failed. Barracuda is blocklisted ' + str(testresult)
     except gaierror:
         return 'ok'
     except Exception as e:
-        return f'Error from Barracuda(BRBL) - {str(e)}.'
+        return f'Error from Barracuda - {str(e)}.'
 
 
 def main():

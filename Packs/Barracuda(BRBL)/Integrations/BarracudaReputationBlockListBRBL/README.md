@@ -56,7 +56,7 @@ Get IP Reputation
         "Indicator": "1.1.1.1",
         "Score": 0,
         "Type": "ip",
-        "Vendor": "Barracuda(BRBL)"
+        "Vendor": "Barracuda"
     },
     "IP": {
         "Address": "1.1.1.1"
