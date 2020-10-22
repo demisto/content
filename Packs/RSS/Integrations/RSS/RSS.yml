@@ -15,14 +15,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 56a553c7-c360-4bc1-856f-7a0361a42b97
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: Simple RSS reader than can ingest new items as Incidents
 display: RSS
 name: RSS
@@ -30,10 +22,13 @@ script:
   commands:
   - arguments: []
     name: test-fetch-rss
+    description: ''
   dockerimage: feedparser:latest
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: Active Directory (Fake)
+fromversion: 6.0.0
+tests:
+- No tests
