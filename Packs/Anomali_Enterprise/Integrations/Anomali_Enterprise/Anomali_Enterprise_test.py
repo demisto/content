@@ -70,3 +70,95 @@ def test_domain_command_malicious(mocker):
 
     assert output.get('Domain(val.Name && val.Name == obj.Name)', []) == expected_result.get('Domain')
     assert output.get(dbot_key, []) == expected_result.get('DBotScore')
+
+
+def test_start_search_job_command(mocker):
+    """
+    Given:
+        - a from_, to_ and indicators to search
+
+    When:
+        - mocking the server response for the start of a job, running start_search_job
+
+    Then:
+        - validating the arguments are parsed correctly
+        - validating the returned context data
+
+    """
+    client = Client(server_url='test', username='test', password='1234', verify=True, proxy=False)
+    return_data = {'jobid': '1234'}
+    mocker.patch.object(client, 'start_search_job_request', return_value=return_data)
+    command_results = start_search_job(client, args={'from': '1 month', 'indicators': '8.8.8.8'})
+    output = command_results.to_context().get('EntryContext', {})
+    expected_result = {
+        'status': 'In Progress',
+        'job_id': '1234'
+    }
+
+    assert output.get('AnomaliEnterprise.ForensicSearch(val.job_id == obj.job_id)', []) == expected_result
+
+
+def test_get_search_job_result_command_with_matches(mocker):
+    """
+    Given:
+        - a job_id
+
+    When:
+        - mocking the server response for getting the results of a job with matches, running get_search_job_result
+
+    Then:
+        - validating the returned context data
+
+    """
+    client = Client(server_url='test', username='test', password='1234', verify=True, proxy=False)
+    return_data = {
+        'status': 'completed', 'category': 'forensic_api_result', 'totalFiles': 1,
+        'streamResults': [{
+            'count': '1', 'indicator': '', 'itype': '', 'severity': '',
+            'event_time': '2020-10-14T09:10:00.000+0000', 'age': '', 'event.dest': '8.8.8.8',
+            'confidence': '', 'event.src': '8.8.8.8'}],
+        'scannedEvents': 269918, 'result_file_name': 'org0_1234_job1234_result.tar.gz',
+        'complete': True, 'processedFiles': 1, 'totalMatches': 1
+    }
+    mocker.patch.object(client, 'get_search_job_result_request', return_value=return_data)
+    command_results = get_search_job_result(client, args={'job_id': '111'})
+    output = command_results.to_context().get('EntryContext', {})
+    expected_result = {
+        'status': 'completed', 'category': 'forensic_api_result', 'totalFiles': 1,
+        'streamResults': [{
+            'count': '1', 'indicator': '', 'itype': '', 'severity': '',
+            'event_time': '2020-10-14T09:10:00.000+0000', 'age': '', 'event.dest': '8.8.8.8',
+            'confidence': '', 'event.src': '8.8.8.8'}],
+        'scannedEvents': 269918, 'result_file_name': 'org0_1234_job1234_result.tar.gz', 'complete': True,
+        'processedFiles': 1, 'totalMatches': 1, 'job_id': '111'
+    }
+
+    assert output.get('AnomaliEnterprise.ForensicSearch(val.job_id == obj.job_id)', []) == expected_result
+
+
+def test_get_search_job_result_command_without_matches(mocker):
+    """
+    Given:
+        - a job_id
+
+    When:
+        - mocking the server response for getting the results of a job without matches, running get_search_job_result
+
+    Then:
+        - validating the returned context data
+
+    """
+    client = Client(server_url='test', username='test', password='1234', verify=True, proxy=False)
+    return_data = {
+        'totalFiles': 0, 'streamResults': [], 'scannedEvents': 269918,
+        'complete': True, 'processedFiles': 0, 'totalMatches': 0
+    }
+    mocker.patch.object(client, 'get_search_job_result_request', return_value=return_data)
+    command_results = get_search_job_result(client, args={'job_id': '222'})
+    output = command_results.to_context().get('EntryContext', {})
+    expected_result = {
+        'status': 'completed', 'totalFiles': 0, 'streamResults': [],
+        'scannedEvents': 269918, 'complete': True, 'processedFiles': 0, 'totalMatches': 0, 'job_id': '222'
+    }
+
+    assert output.get('AnomaliEnterprise.ForensicSearch(val.job_id == obj.job_id)', []) == expected_result

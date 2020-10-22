@@ -123,15 +123,27 @@ def get_search_job_result(client: Client, args: Dict) -> CommandResults:
         CommandResults.
     """
     job_id = str(args.get('job_id'))
+
     response = client.get_search_job_result_request(job_id)
     if 'error' in response:
         raise Exception(str(response.get('error')))
+
     response.update({'job_id': job_id})
+    if not response.get('complete'):
+        human_readable = f'job ID: {job_id} is still in progress.'
+        response.update({'status': 'In Progress'})
+    else:
+        if response.get('totalMatches'):
+            human_readable = tableToMarkdown(name="Forensic Results:", t=response.get('streamResults'), removeNull=True)
+        else:
+            human_readable = f'No matches found for the given job ID: {job_id}.'
+            response.update({'status': 'completed'})
+
     return CommandResults(
         outputs_prefix='AnomaliEnterprise.ForensicSearch',
         outputs_key_field='job_id',
         outputs=response,
-        readable_output=tableToMarkdown(name="Forensic Results:", t=response.get('streamResults'), removeNull=True),
+        readable_output=human_readable,
         raw_response=response
     )
 
@@ -147,7 +159,9 @@ def dga_domain_status(client: Client, args: dict) -> CommandResults:
         CommandResults.
     """
     domains = argToList(str(args.get('domains')))
+
     response = client.domain_request(domains)
+
     domains_data = response.get('data', {})
     outputs = []
     for domain in domains:
@@ -177,7 +191,9 @@ def domain_command(client: Client, args: dict) -> CommandResults:
         CommandResults and DBotScore.
     """
     domain = str(args.get('domain'))
+
     response = client.domain_request([domain])
+
     domain_data = response.get('data', {})
     output = {
         'domain': domain,
