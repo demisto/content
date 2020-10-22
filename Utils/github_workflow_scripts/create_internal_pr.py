@@ -33,7 +33,6 @@ def main():
         raise ValueError('EVENT_PAYLOAD env variable not set or empty')
     payload = json.loads(payload_str)
     print(f'{t.cyan}Creation of Internal PR started{t.normal}')
-    print(f'{t.cyan}event payload: {payload}{t.normal}')
 
     org_name = 'demisto'
     repo_name = 'content'
