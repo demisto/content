@@ -20,7 +20,7 @@ if demisto.command() == 'test-module':
 	response = requests.put(url, data=json.dumps(payload), headers=headers, verify=ssl_check)
 	# This is the call made when pressing the integration test button.
 	if response.status_code == requests.codes.ok:
-	demisto.results('ok')
+		demisto.results('ok')
 	else:
 		demisto.results(response.status_code)
 	sys.exit(0)
