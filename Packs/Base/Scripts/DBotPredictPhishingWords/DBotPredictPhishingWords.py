@@ -59,7 +59,6 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         word_threshold,
         top_word_limit
     )
-    explain_result = list(explain_result)[0]
     explain_result['Probability'] = float(explain_result["Probability"])
     predicted_prob = explain_result["Probability"]
     if predicted_prob < label_threshold:
