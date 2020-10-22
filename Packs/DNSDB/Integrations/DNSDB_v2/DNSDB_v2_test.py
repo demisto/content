@@ -398,6 +398,105 @@ class TestClient(object):
         with pytest.raises(DNSDB.QueryError):
             c.summarize_rdata_ip(ip)
 
+    def test_lookup_rdata_raw(self, requests_mock):
+        c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
+        records = [
+            '{"count": 7, "time_first": 1380044973, "time_last": 1380141734, "rrname": "207.4.20.149.in-addr.fsi.io.",'
+            ' "rrtype": "PTR", "rdata": "farsightsecurity.com."}',
+            '{"count": 3, "time_first": 1372650830, "time_last": 1375220475, "rrname": "7.0.2.0.0.0.0.0.0.0.0.0.0.0.0.'
+            '0.6.6.0.0.1.0.0.0.8.f.4.0.1.0.0.2.ip6.arpa.", "rrtype": "PTR", "rdata": "farsightsecurity.com."}',
+            '{"count": 11, "time_first": 1380141403, "time_last": 1381263825, "rrname": "81.64-26.140.160.66.in-addr.a'
+            'rpa.", "rrtype": "PTR", "rdata": "farsightsecurity.com."}',
+            '{"count": 4, "time_first": 1373922472, "time_last": 1374071997, "rrname": "207.192-26.4.20.149.in-addr.ar'
+            'pa.", "rrtype": "PTR", "rdata": "farsightsecurity.com."}',
+        ]
+        raw = '0123456789ABCDEF'
+
+        requests_mock.get(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{raw}?swclient={swclient}&version={version}'.format(
+                server=DNSDB.DEFAULT_DNSDB_SERVER,
+                mode='rdata',
+                type='raw',
+                raw=DNSDB.quote(raw),
+                swclient=DNSDB.SWCLIENT,
+                version=DNSDB.VERSION,
+            ),
+            text=_saf_wrap(records))
+
+        for rrset in c.lookup_rdata_raw(raw):
+            assert rrset == json.loads(records[0])
+            records = records[1:]
+        assert len(records) == 0
+
+    def test_summarize_rdata_raw(self, requests_mock):
+        c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
+        record = '{"count": 7, "num_results": 5, "time_first": 1380044973, "time_last": 1380141734}'
+        raw = '0123456789ABCDEF'
+
+        requests_mock.get(
+            '{server}/dnsdb/v2/summarize/{mode}/{type}/{raw}?swclient={swclient}&version={version}'.format(
+                server=DNSDB.DEFAULT_DNSDB_SERVER,
+                mode='rdata',
+                type='raw',
+                raw=DNSDB.quote(raw),
+                swclient=DNSDB.SWCLIENT,
+                version=DNSDB.VERSION,
+            ),
+            text=_saf_wrap([record]))
+
+        rrset = c.summarize_rdata_raw(raw)
+        assert rrset == json.loads(record)
+
+    def test_summarize_rdata_raw_empty(self, requests_mock):
+        c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
+        raw = '0123456789ABCDEF'
+
+        requests_mock.get(
+            '{server}/dnsdb/v2/summarize/{mode}/{type}/{raw}?swclient={swclient}&version={version}'.format(
+                server=DNSDB.DEFAULT_DNSDB_SERVER,
+                mode='rdata',
+                type='raw',
+                raw=DNSDB.quote(raw),
+                swclient=DNSDB.SWCLIENT,
+                version=DNSDB.VERSION,
+            ),
+            text='')
+
+        with pytest.raises(DNSDB.QueryError):
+            c.summarize_rdata_raw(raw)
+
+    def test_rdata_raw_rrtype(self, requests_mock):
+        c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
+        records = [
+            '{"count": 7, "time_first": 1380044973, "time_last": 1380141734, "rrname": "207.4.20.149.in-addr.fsi.io.",'
+            ' "rrtype": "PTR", "rdata": "farsightsecurity.com."}',
+            '{"count": 3, "time_first": 1372650830, "time_last": 1375220475, "rrname": "7.0.2.0.0.0.0.0.0.0.0.0.0.0.0.'
+            '0.6.6.0.0.1.0.0.0.8.f.4.0.1.0.0.2.ip6.arpa.", "rrtype": "PTR", "rdata": "farsightsecurity.com."}',
+            '{"count": 11, "time_first": 1380141403, "time_last": 1381263825, "rrname": "81.64-26.140.160.66.in-addr.a'
+            'rpa.", "rrtype": "PTR", "rdata": "farsightsecurity.com."}',
+            '{"count": 4, "time_first": 1373922472, "time_last": 1374071997, "rrname": "207.192-26.4.20.149.in-addr.ar'
+            'pa.", "rrtype": "PTR", "rdata": "farsightsecurity.com."}',
+        ]
+        raw = '0123456789ABCDEF'
+        rrtype = 'PTR'
+
+        requests_mock.get(
+            '{server}/dnsdb/v2/lookup/{mode}/{type}/{raw}/{rrtype}?swclient={swclient}&version={version}'.format(
+                server=DNSDB.DEFAULT_DNSDB_SERVER,
+                mode='rdata',
+                type='raw',
+                raw=raw,
+                rrtype=rrtype,
+                swclient=DNSDB.SWCLIENT,
+                version=DNSDB.VERSION,
+            ),
+            text=_saf_wrap(records))
+
+        for rrset in c.lookup_rdata_raw(raw, rrtype=rrtype):
+            assert rrset == json.loads(records[0])
+            records = records[1:]
+        assert len(records) == 0
+
     def test_500(self, requests_mock):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         name = 'farsightsecurity.com'
@@ -770,6 +869,49 @@ class TestRDataCommand:
 
         self._run_test(requests_mock, args, input, expected_readable, expected_prefix, expected_outputs)
 
+    def test_raw(self, requests_mock):
+        args = {
+            'type': 'raw',
+            'value': '0123456789ABCDEF',
+            'limit': '10',
+        }
+        input = [
+            '{"count":1078,"zone_time_first":1374250920,"zone_time_last":1468253883,"rrname":"farsightsecurity.com.","rrtype":"NS","rdata":"ns5.dnsmadeeasy.com."}',  # noqa: E501
+            '{"count":706617,"time_first":1374096380,"time_last":1468334926,"rrname":"farsightsecurity.com.","rrtype":"NS","rdata":"ns5.dnsmadeeasy.com."}',  # noqa: E501
+        ]
+
+        expected_readable = textwrap.dedent('''\
+            ### Farsight DNSDB Lookup
+            |RRName|RRType|RData|Count|TimeFirst|TimeLast|FromZoneFile|
+            |---|---|---|---|---|---|---|
+            | farsightsecurity.com | NS | ns5.dnsmadeeasy.com. | 1078 | 2013-07-19T16:22:00Z | 2016-07-11T16:18:03Z | True |
+            | farsightsecurity.com | NS | ns5.dnsmadeeasy.com. | 706617 | 2013-07-17T21:26:20Z | 2016-07-12T14:48:46Z | False |
+            ''')  # noqa: E501
+
+        expected_output_prefix = 'DNSDB.Record'
+        expected_outputs = [
+            {
+                'Count': 1078,
+                'RData': 'ns5.dnsmadeeasy.com.',
+                'RRName': 'farsightsecurity.com',
+                'RRType': 'NS',
+                'TimeFirst': '2013-07-19T16:22:00Z',
+                'TimeLast': '2016-07-11T16:18:03Z',
+                'FromZoneFile': True,
+            },
+            {
+                'Count': 706617,
+                'RData': 'ns5.dnsmadeeasy.com.',
+                'RRName': 'farsightsecurity.com',
+                'RRType': 'NS',
+                'TimeFirst': '2013-07-17T21:26:20Z',
+                'TimeLast': '2016-07-12T14:48:46Z',
+                'FromZoneFile': False,
+            }
+        ]
+
+        self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
+
     @staticmethod
     def _run_test(requests_mock, args: dict, input: list, expected_readable: str, expected_output_prefix: str,
                   expected_outputs: list):
@@ -836,6 +978,34 @@ class TestSummarizeRDataCommand:
                 | 1127 | 2 | 2019-05-14T18:41:53Z | 2019-06-14T18:35:33Z |
                 ''')
 
+        expected_output_prefix = 'DNSDB.Summary'
+        expected_outputs = {
+            'Count': 1127,
+            'NumResults': 2,
+            'TimeFirst': '2019-05-14T18:41:53Z',
+            'TimeLast': '2019-06-14T18:35:33Z',
+            'FromZoneFile': False,
+        }
+
+        self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
+
+    def test_raw(self, requests_mock):
+        args = {
+            'type': 'raw',
+            'value': '0123456789ABCDEF',
+            'limit': '2',
+            'max_count': '5000',
+        }
+        input = [
+            '{"count": 1127, "num_results": 2, "time_first": 1557859313, "time_last": 1560537333}',
+        ]
+
+        expected_readable = textwrap.dedent('''\
+                ### Farsight DNSDB Summarize
+                |Count|NumResults|TimeFirst|TimeLast|
+                |---|---|---|---|
+                | 1127 | 2 | 2019-05-14T18:41:53Z | 2019-06-14T18:35:33Z |
+                ''')
         expected_output_prefix = 'DNSDB.Summary'
         expected_outputs = {
             'Count': 1127,
