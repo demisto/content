@@ -1,4 +1,4 @@
-import traceback
+ip_reputation_commandimport traceback
 from typing import Any, Dict, List
 from urllib.parse import urlparse
 from datetime import timezone
@@ -315,8 +315,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         readable_output=readable_output,
         outputs_prefix='CyberTotal.IP',
         outputs_key_field='task_id',
-        outputs=ip_data_list,
-        indicators=ip_standard_list
+        outputs=ip_data_list,  # TODO: This will need to be fixed
+        indicators=ip_standard_list  # TODO: This will need to be updated
     )
 
 

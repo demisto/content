@@ -211,9 +211,10 @@ def test_scan_results(mocker, requests_mock):
     assert response.outputs_key_field == 'scan_id'
 
     # This command also returns Common.CVE data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) > 0
-    assert isinstance(response.indicators[0], Common.CVE)
+    # TODO: Update this
+    assert isinstance(response.indicator, list)
+    assert len(response.indicator) > 0
+    assert isinstance(response.indicator[0], Common.CVE)
 
 
 def test_search_alerts(requests_mock):
@@ -366,10 +367,11 @@ def test_ip(requests_mock):
     assert response.outputs_key_field == 'ip'
 
     # This command also returns Common.IP data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.IP)
-    assert response.indicators[0].ip == ip_to_check
+    # TODO: Update this
+    assert isinstance(response.indicator, list)
+    assert len(response.indicator) == 1
+    assert isinstance(response.indicator[0], Common.IP)
+    assert response.indicator[0].ip == ip_to_check
 
 
 def test_domain(requests_mock):
@@ -413,10 +415,11 @@ def test_domain(requests_mock):
     assert response.outputs_key_field == 'domain'
 
     # This command also returns Common.Domain data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.Domain)
-    assert response.indicators[0].domain == domain_to_check
+    # TODO: Update this
+    assert isinstance(response.indicator, list)
+    assert len(response.indicator) == 1
+    assert isinstance(response.indicator[0], Common.Domain)
+    assert response.indicator[0].domain == domain_to_check
 
 
 def test_fetch_incidents(requests_mock):

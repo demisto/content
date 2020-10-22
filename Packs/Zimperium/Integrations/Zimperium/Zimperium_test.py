@@ -63,7 +63,7 @@ def test_file_reputation(mocker):
     command_results = file_reputation(client,
                                       args={'file': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"})
 
-    assert command_results.indicators[0].dbot_score.score == 1
+    assert command_results.indicator[0].dbot_score.score == 1  # TODO: Update this
 
 
 def test_file_reputation_404(mocker):
@@ -87,7 +87,7 @@ def test_file_reputation_404(mocker):
 
     command_results = file_reputation(client,
                                       args={'file': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"})
-    assert command_results.indicators[0].dbot_score.score == 0
+    assert command_results.indicator[0].dbot_score.score == 0  # TODO: Update this
 
 
 def test_fetch_incidents(mocker):

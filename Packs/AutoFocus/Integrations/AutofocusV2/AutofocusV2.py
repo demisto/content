@@ -1307,10 +1307,7 @@ def search_ip_command(ip):
     indicator_type = 'IP'
     ip_list = argToList(ip)
 
-    ip_indicators = []
-    outputs = []
-    raw_response = []
-    human_readable = ''
+    command_results = []
 
     for ip_address in ip_list:
         raw_res = search_indicator('ipv4_address', ip_address)
@@ -1346,21 +1343,14 @@ def search_ip_command(ip):
         else:
             md = tableToMarkdown(table_name, autofocus_ip_output)
 
-        human_readable += md
-
-        ip_indicators.append(ip)
-        outputs.append(autofocus_ip_output)
-        raw_response.append(raw_res)
-
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.IP',
-        outputs_key_field='IndicatorValue',
-        outputs=outputs,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=ip_indicators
-    )
+        command_results.append(CommandResults(
+            outputs_prefix='AutoFocus.IP',
+            outputs_key_field='IndicatorValue',
+            outputs=autofocus_ip_output,
+            readable_output=md,
+            raw_response=raw_res,
+            indicator=ip
+        ))
 
     return command_results
 

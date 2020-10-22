@@ -52,12 +52,12 @@ def test_ip(requests_mock):
     assert response.outputs[0]['detection_ratio'] == "1/2"
 
     # This command also returns Common.IP data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.IP)
-    assert response.indicators[0].ip == ip_to_check
-    assert type(response.indicators[0].detection_engines) == int
-    assert type(response.indicators[0].positive_engines) == int
+    assert isinstance(response.indicator, list)  # # TODO: Update this
+    assert len(response.indicator) == 1  # # TODO: Update this
+    assert isinstance(response.indicator[0], Common.IP)  # # TODO: Update this
+    assert response.indicator[0].ip == ip_to_check   # # TODO: Update this
+    assert type(response.indicator[0].detection_engines) == int  # # TODO: Update this
+    assert type(response.indicator[0].positive_engines) == int   # # TODO: Update this
 
 
 def test_url(requests_mock):
@@ -99,12 +99,12 @@ def test_url(requests_mock):
     assert response.outputs[0]['detection_ratio'] == "1/2"
 
     # This command also returns Common.URL data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.URL)
-    assert response.indicators[0].url == url_to_check
-    assert type(response.indicators[0].detection_engines) == int
-    assert type(response.indicators[0].positive_detections) == int
+    assert isinstance(response.indicator, list)
+    assert len(response.indicator) == 1
+    assert isinstance(response.indicator[0], Common.URL)
+    assert response.indicator[0].url == url_to_check
+    assert type(response.indicator[0].detection_engines) == int
+    assert type(response.indicator[0].positive_detections) == int
 
 
 def test_domain(requests_mock):
@@ -146,12 +146,12 @@ def test_domain(requests_mock):
     assert response.outputs[0]['detection_ratio'] == "1/2"
 
     # This command also returns Common.Domain data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.Domain)
-    assert response.indicators[0].domain == domain_to_check
-    assert type(response.indicators[0].detection_engines) == int
-    assert type(response.indicators[0].positive_detections) == int
+    assert isinstance(response.indicator, list)
+    assert len(response.indicator) == 1
+    assert isinstance(response.indicator[0], Common.Domain)
+    assert response.indicator[0].domain == domain_to_check
+    assert type(response.indicator[0].detection_engines) == int
+    assert type(response.indicator[0].positive_detections) == int
 
 
 def test_file(requests_mock):
@@ -193,10 +193,10 @@ def test_file(requests_mock):
     assert response.outputs[0]['detection_ratio'] == "1/2"
 
     # This command also returns Common.File data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.File)
-    assert response.indicators[0].md5 == file_to_check
+    assert isinstance(response.indicator, list)
+    assert len(response.indicator) == 1
+    assert isinstance(response.indicator[0], Common.File)
+    assert response.indicator[0].md5 == file_to_check
 
 
 def test_ip_whois(requests_mock):

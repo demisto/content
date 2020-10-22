@@ -963,7 +963,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         outputs_prefix='HelloWorld.IP',
         outputs_key_field='ip',
         outputs=ip_data_list,
-        indicators=ip_standard_list
+        indicators=ip_standard_list  # TODO: Update this
     )
 
 

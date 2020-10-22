@@ -84,10 +84,11 @@ def test_list_activities_command(requests_mock):
                       json=activities["ACTIVITIES_BY_ID_DATA"])
     res = list_activities_command(client_mocker, {'activity_id': '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7'})
     assert res.outputs[0] == activities["ACTIVITIES_BY_ID_DATA_CONTEXT"]
-    assert isinstance(res.indicators[0], Common.IP)
-    assert res.indicators[0].ip == '8.8.8.8'
-    assert res.indicators[0].geo_latitude == 32.0679
-    assert res.indicators[0].geo_longitude == 34.7604
+    # TODO: Update this
+    assert isinstance(res.indicator[0], Common.IP)
+    assert res.indicator[0].ip == '8.8.8.8'
+    assert res.indicator[0].geo_latitude == 32.0679
+    assert res.indicator[0].geo_longitude == 34.7604
 
 
 def test_list_files_command(requests_mock):

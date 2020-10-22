@@ -2641,8 +2641,8 @@ class CommandResults:
     :type outputs: ``list`` or ``dict``
     :param outputs: the data to be returned and will be set to context
 
-    :type indicators: ``list``
-    :param indicators: must be list of Indicator types, like Common.IP, Common.URL, Common.File, etc.
+    :type indicator: ``Common.Indicator``
+    :param indicator: must be list of Indicator types, like Common.IP, Common.URL, Common.File, etc.
 
     :type readable_output: ``str``
     :param readable_output: (Optional) markdown string that will be presented in the warroom, should be human readable -
@@ -2659,13 +2659,15 @@ class CommandResults:
     :rtype: ``None``
     """
 
-    def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
+    def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicator=None, readable_output=None,
                  raw_response=None, indicators_timeline=None):
         # type: (str, object, object, list, str, object, IndicatorsTimeline) -> None
         if raw_response is None:
             raw_response = outputs
 
-        self.indicators = indicators
+        if indicator and not isinstance(indicator, Common.Indicator):
+            raise TypeError('indicator must be of type Common.Indicator')
+        self.indicator = indicator
 
         self.outputs_prefix = outputs_prefix
 
@@ -2697,15 +2699,14 @@ class CommandResults:
         raw_response = None  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
 
-        if self.indicators:
-            for indicator in self.indicators:
-                context_outputs = indicator.to_context()
+        if self.indicator:
+            context_outputs = self.indicator.to_context()
 
-                for key, value in context_outputs.items():
-                    if key not in outputs:
-                        outputs[key] = []
+            for key, value in context_outputs.items():
+                if key not in outputs:
+                    outputs[key] = []
 
-                    outputs[key].append(value)
+                outputs[key].append(value)
 
         if self.raw_response:
             raw_response = self.raw_response
@@ -2759,6 +2760,17 @@ def return_results(results):
         # backward compatibility reasons
         demisto.results(None)
         return
+
+    if isinstance(results, list):
+        if not results:
+            demisto.results({})
+            return
+
+        # handle result classes list case, dict list case will be handled by default case
+        elif not isinstance(results[0], dict):
+            for result in results:
+                return_results(result)
+            return
 
     if isinstance(results, CommandResults):
         demisto.results(results.to_context())
