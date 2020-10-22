@@ -280,6 +280,7 @@ script:
   - arguments:
     - default: true
       name: url
+      description: List of URLs.
       isArray: true
       required: true
     description: Returns URL information and reputation.
