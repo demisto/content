@@ -1,15 +1,14 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Qradar Generic",
-		"Qradar Generic2"
+		"Qradar Generic"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
 	"cliName": "assetstable",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "A table view of all assets related to the offense.",
 	"editForm": true,
@@ -47,5 +46,6 @@
 	"useAsKpi": false,
 	"validatedError": "",
 	"validationRegex": "",
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }

@@ -8,7 +8,7 @@
 	"cliName": "relevanceoffense",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "The relevance of the offense.",
 	"editForm": true,
@@ -46,5 +46,6 @@
 	"useAsKpi": false,
 	"validatedError": "",
 	"validationRegex": "",
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }

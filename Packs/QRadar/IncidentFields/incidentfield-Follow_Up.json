@@ -8,7 +8,7 @@
 	"cliName": "followup",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "True if marked for follow up.",
 	"editForm": true,
@@ -46,5 +46,6 @@
 	"useAsKpi": false,
 	"validatedError": "",
 	"validationRegex": "",
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }

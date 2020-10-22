@@ -8,7 +8,7 @@
 	"cliName": "statusoffense",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "The status of the offense. One of \"OPEN\", \"HIDDEN\", or \"CLOSED\".",
 	"editForm": true,
@@ -46,5 +46,6 @@
 	"useAsKpi": false,
 	"validatedError": "",
 	"validationRegex": "",
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }
