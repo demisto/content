@@ -1,9 +1,9 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Dict
 
 '''IMPORTS'''
+from typing import Dict
 import time
 import requests
 import collections
