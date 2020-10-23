@@ -84,19 +84,6 @@ def makehash():
     return collections.defaultdict(makehash)
 
 
-def is_valid_ip(s):
-    a = s.split('.')
-    if len(a) != 4:
-        return False
-    for x in a:
-        if not x.isdigit():
-            return False
-        i = int(x)
-        if i < 0 or i > 255:
-            return False
-    return True
-
-
 def get_result_page():
     uuid = demisto.args().get('uuid')
     uri = BASE_URL + 'result/{}'.format(uuid)
@@ -407,16 +394,16 @@ def urlscan_search_command():
     LIMIT = int(demisto.args().get('limit'))
     HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date']
     raw_query = demisto.args().get('searchParameter', '')
-    if is_valid_ip(raw_query):
+    if is_ip_valid(raw_query, accept_v6_ips=True):
         search_type = 'ip'
-
-    # Parsing query to see if it's a url
-    parsed = urlparse(raw_query)
-    # Checks to see if Netloc is present. If it's not a url, Netloc will not exist
-    if parsed[1] == '' and len(raw_query) == 64:
-        search_type = 'hash'
     else:
-        search_type = 'page.url'
+        # Parsing query to see if it's a url
+        parsed = urlparse(raw_query)
+        # Checks to see if Netloc is present. If it's not a url, Netloc will not exist
+        if parsed[1] == '' and len(raw_query) == 64:
+            search_type = 'hash'
+        else:
+            search_type = 'page.url'
 
     # Making the query string safe for Elastic Search
     query = quote(raw_query, safe='')
