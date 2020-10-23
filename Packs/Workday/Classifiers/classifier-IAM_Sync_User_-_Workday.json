@@ -1,455 +1,450 @@
 {
-	"brands": [
-		"WorkdayITAdmin"
-	],
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "IAM Sync User - Workday",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 25,
-	"mapping": {
-		"IAM-Sync-User": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"ADP Id": {
-					"complex": null,
-					"simple": "ADP_ID"
-				},
-				"CN": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Email_Address",
-						"transformers": [
-							{
-								"args": {
-									"delimiter": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "@"
-										}
-									}
-								},
-								"operator": "split"
-							},
-							{
-								"args": {
-									"index": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "0"
-										}
-									}
-								},
-								"operator": "atIndex"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"City": {
-					"complex": null,
-					"simple": "City"
-				},
-				"Cost Center": {
-					"complex": null,
-					"simple": "Cost_Center_Description"
-				},
-				"Cost Center Code": {
-					"complex": null,
-					"simple": "Cost_Center_Code"
-				},
-				"Country": {
-					"complex": null,
-					"simple": "Work_Country_Abbrev"
-				},
-				"Country Code Number": {
-					"complex": null,
-					"simple": "Work_Country_Code"
-				},
-				"Country Name": {
-					"complex": null,
-					"simple": "Country_Name"
-				},
-				"Department": {
-					"complex": null,
-					"simple": "Department"
-				},
-				"Director Flag": {
-					"complex": null,
-					"simple": "Director_Flag"
-				},
-				"Director Flag Number": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Director_Flag",
-						"transformers": [
-							{
-								"args": {
-									"limit": {
-										"isContext": false,
-										"value": null
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "1"
-										}
-									},
-									"toReplace": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "Y"
-										}
-									}
-								},
-								"operator": "replace"
-							},
-							{
-								"args": {
-									"limit": {
-										"isContext": false,
-										"value": null
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "0"
-										}
-									},
-									"toReplace": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "N"
-										}
-									}
-								},
-								"operator": "replace"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Display Name": {
-					"complex": null,
-					"simple": "Preferred_Name"
-				},
-				"Email": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Email_Address",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "toLowerCase"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Employee ID": {
-					"complex": null,
-					"simple": "Emp_ID"
-				},
-				"Employee Type": {
-					"complex": null,
-					"simple": "Employment_Type"
-				},
-				"Employment Status": {
-					"complex": null,
-					"simple": "Employment_Status"
-				},
-				"Exec Admin Flag": {
-					"complex": null,
-					"simple": "Exec_Admin_Flag"
-				},
-				"External Id": {
-					"complex": null,
-					"simple": "Workday_ID"
-				},
-				"First Name": {
-					"complex": null,
-					"simple": "Preferred_Name_-_First_Name"
-				},
-				"Hire Date": {
-					"complex": null,
-					"simple": "Last_Hire_Date"
-				},
-				"Job Code": {
-					"complex": null,
-					"simple": "Job_Code"
-				},
-				"Job Family": {
-					"complex": null,
-					"simple": "Job_Family"
-				},
-				"Job Function": {
-					"complex": null,
-					"simple": "Job_Function"
-				},
-				"Laptop Selection": {
-					"complex": null,
-					"simple": "Laptop_Selection"
-				},
-				"Last Day of Work": {
-					"complex": null,
-					"simple": "Last_Day_of_Work"
-				},
-				"Last Name": {
-					"complex": null,
-					"simple": "Preferred_Name_-_Last_Name"
-				},
-				"Leadership": {
-					"complex": null,
-					"simple": "Leadership"
-				},
-				"Location": {
-					"complex": null,
-					"simple": "Location"
-				},
-				"Location Region": {
-					"complex": null,
-					"simple": "PAN_CF_Okta_Location_Region"
-				},
-				"Management Level 1": {
-					"complex": null,
-					"simple": "Management_Level_1"
-				},
-				"Management Level 2": {
-					"complex": null,
-					"simple": "Management_Level_2"
-				},
-				"Management Level 3": {
-					"complex": null,
-					"simple": "Management_Level_3"
-				},
-				"Management Level 4": {
-					"complex": null,
-					"simple": "Management_Level_4"
-				},
-				"Management Level 5": {
-					"complex": null,
-					"simple": "Management_Level_5"
-				},
-				"Manager": {
-					"complex": null,
-					"simple": "Manager_Email_Address"
-				},
-				"Manager Email": {
-					"complex": null,
-					"simple": "Manager_Email_Address"
-				},
-				"Manager Name": {
-					"complex": null,
-					"simple": "Manager_Preferred_Name"
-				},
-				"Manager Username": {
-					"complex": null,
-					"simple": "Manager_Username"
-				},
-				"Mobile Phone": {
-					"complex": null,
-					"simple": "Public_Work_Mobile_Phone_Number"
-				},
-				"Org Level 1": {
-					"complex": null,
-					"simple": "Org_Level_1"
-				},
-				"Org Level 2": {
-					"complex": null,
-					"simple": "Org_Level_2"
-				},
-				"Org Level 3": {
-					"complex": null,
-					"simple": "Org_Level_3"
-				},
-				"People Manager Flag": {
-					"complex": null,
-					"simple": "People_Manager_Flag"
-				},
-				"Personal Email": {
-					"complex": null,
-					"simple": "Email_-_Primary_Home"
-				},
-				"Prehire Flag": {
-					"complex": null,
-					"simple": "Hide_from_GAL"
-				},
-				"Rehired Employee": {
-					"complex": null,
-					"simple": "Rehired_Employee"
-				},
-				"Source Of Truth": {
-					"complex": null,
-					"simple": "\"Workday\""
-				},
-				"State": {
-					"complex": null,
-					"simple": "State"
-				},
-				"Street Address": {
-					"complex": null,
-					"simple": "Street_Address"
-				},
-				"Sup Org Level 1": {
-					"complex": null,
-					"simple": "SupOrg_Level_1"
-				},
-				"Sup Org Level 2": {
-					"complex": null,
-					"simple": "SupOrg_Level_2"
-				},
-				"Sup Org Level 3": {
-					"complex": null,
-					"simple": "SupOrg_Level_3"
-				},
-				"Sup Org Level 4": {
-					"complex": null,
-					"simple": "SupOrg_Level_4"
-				},
-				"Sup Org Level 5": {
-					"complex": null,
-					"simple": "SupOrg_Level_5"
-				},
-				"Termination Date": {
-					"complex": null,
-					"simple": "Termination_Date"
-				},
-				"Title": {
-					"complex": null,
-					"simple": "Title"
-				},
-				"User Type": {
-					"complex": null,
-					"simple": "\"EMPLOYEE\""
-				},
-				"UserProfile": {
-					"complex": null,
-					"simple": "UserProfile"
-				},
-				"Username": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Email_Address",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "toLowerCase"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"VP Flag": {
-					"complex": null,
-					"simple": "VP_Flag"
-				},
-				"Work Country Code": {
-					"complex": null,
-					"simple": "Work_Country_Abbrev"
-				},
-				"Work Country Code Number": {
-					"complex": null,
-					"simple": "Work_Country_Code"
-				},
-				"Work Phone": {
-					"complex": null,
-					"simple": "Work_Phone"
-				},
-				"Zip Code": {
-					"complex": null,
-					"simple": "Postal_Code"
-				},
-				"name": {
-					"complex": null,
-					"simple": "Preferred_Name"
-				},
-				"sAMAccountName": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Email_Address",
-						"transformers": [
-							{
-								"args": {
-									"delimiter": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "@"
-										}
-									}
-								},
-								"operator": "split"
-							},
-							{
-								"args": {
-									"index": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "0"
-										}
-									}
-								},
-								"operator": "atIndex"
-							},
-							{
-								"args": {},
-								"operator": "toLowerCase"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"value": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Email_Address",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "toLowerCase"
-							}
-						]
-					},
-					"simple": ""
-				}
-			}
-		}
-	},
-	"name": "IAM Sync User - Workday",
-	"nameRaw": "IAM Sync User - Workday",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+ "description": "",
+ "feed": false,
+ "id": "IAM Sync User - Workday",
+ "mapping": {
+  "IAM-Sync-User": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "ADP Id": {
+     "complex": null,
+     "simple": "ADP_ID"
+    },
+    "CN": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Email_Address",
+      "transformers": [
+       {
+        "args": {
+         "delimiter": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "@"
+          }
+         }
+        },
+        "operator": "split"
+       },
+       {
+        "args": {
+         "index": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "0"
+          }
+         }
+        },
+        "operator": "atIndex"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "City": {
+     "complex": null,
+     "simple": "City"
+    },
+    "Cost Center": {
+     "complex": null,
+     "simple": "Cost_Center_Description"
+    },
+    "Cost Center Code": {
+     "complex": null,
+     "simple": "Cost_Center_Code"
+    },
+    "Country": {
+     "complex": null,
+     "simple": "Work_Country_Abbrev"
+    },
+    "Country Code Number": {
+     "complex": null,
+     "simple": "Work_Country_Code"
+    },
+    "Country Name": {
+     "complex": null,
+     "simple": "Country_Name"
+    },
+    "Department": {
+     "complex": null,
+     "simple": "Department"
+    },
+    "Director Flag": {
+     "complex": null,
+     "simple": "Director_Flag"
+    },
+    "Director Flag Number": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Director_Flag",
+      "transformers": [
+       {
+        "args": {
+         "limit": {
+          "isContext": false,
+          "value": null
+         },
+         "replaceWith": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "1"
+          }
+         },
+         "toReplace": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "Y"
+          }
+         }
+        },
+        "operator": "replace"
+       },
+       {
+        "args": {
+         "limit": {
+          "isContext": false,
+          "value": null
+         },
+         "replaceWith": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "0"
+          }
+         },
+         "toReplace": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "N"
+          }
+         }
+        },
+        "operator": "replace"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Display Name": {
+     "complex": null,
+     "simple": "Preferred_Name"
+    },
+    "Email": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Email_Address",
+      "transformers": [
+       {
+        "args": {
+
+        },
+        "operator": "toLowerCase"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Employee ID": {
+     "complex": null,
+     "simple": "Emp_ID"
+    },
+    "Employee Type": {
+     "complex": null,
+     "simple": "Employment_Type"
+    },
+    "Employment Status": {
+     "complex": null,
+     "simple": "Employment_Status"
+    },
+    "Exec Admin Flag": {
+     "complex": null,
+     "simple": "Exec_Admin_Flag"
+    },
+    "External Id": {
+     "complex": null,
+     "simple": "Workday_ID"
+    },
+    "First Name": {
+     "complex": null,
+     "simple": "Preferred_Name_-_First_Name"
+    },
+    "Hire Date": {
+     "complex": null,
+     "simple": "Last_Hire_Date"
+    },
+    "Job Code": {
+     "complex": null,
+     "simple": "Job_Code"
+    },
+    "Job Family": {
+     "complex": null,
+     "simple": "Job_Family"
+    },
+    "Job Function": {
+     "complex": null,
+     "simple": "Job_Function"
+    },
+    "Laptop Selection": {
+     "complex": null,
+     "simple": "Laptop_Selection"
+    },
+    "Last Day of Work": {
+     "complex": null,
+     "simple": "Last_Day_of_Work"
+    },
+    "Last Name": {
+     "complex": null,
+     "simple": "Preferred_Name_-_Last_Name"
+    },
+    "Leadership": {
+     "complex": null,
+     "simple": "Leadership"
+    },
+    "Location": {
+     "complex": null,
+     "simple": "Location"
+    },
+    "Location Region": {
+     "complex": null,
+     "simple": "PAN_CF_Okta_Location_Region"
+    },
+    "Management Level 1": {
+     "complex": null,
+     "simple": "Management_Level_1"
+    },
+    "Management Level 2": {
+     "complex": null,
+     "simple": "Management_Level_2"
+    },
+    "Management Level 3": {
+     "complex": null,
+     "simple": "Management_Level_3"
+    },
+    "Management Level 4": {
+     "complex": null,
+     "simple": "Management_Level_4"
+    },
+    "Management Level 5": {
+     "complex": null,
+     "simple": "Management_Level_5"
+    },
+    "Manager": {
+     "complex": null,
+     "simple": "Manager_Email_Address"
+    },
+    "Manager Email": {
+     "complex": null,
+     "simple": "Manager_Email_Address"
+    },
+    "Manager Name": {
+     "complex": null,
+     "simple": "Manager_Preferred_Name"
+    },
+    "Manager Username": {
+     "complex": null,
+     "simple": "Manager_Username"
+    },
+    "Mobile Phone": {
+     "complex": null,
+     "simple": "Public_Work_Mobile_Phone_Number"
+    },
+    "Org Level 1": {
+     "complex": null,
+     "simple": "Org_Level_1"
+    },
+    "Org Level 2": {
+     "complex": null,
+     "simple": "Org_Level_2"
+    },
+    "Org Level 3": {
+     "complex": null,
+     "simple": "Org_Level_3"
+    },
+    "People Manager Flag": {
+     "complex": null,
+     "simple": "People_Manager_Flag"
+    },
+    "Personal Email": {
+     "complex": null,
+     "simple": "Email_-_Primary_Home"
+    },
+    "Prehire Flag": {
+     "complex": null,
+     "simple": "Hide_from_GAL"
+    },
+    "Rehired Employee": {
+     "complex": null,
+     "simple": "Rehired_Employee"
+    },
+    "Source Of Truth": {
+     "complex": null,
+     "simple": "\"Workday\""
+    },
+    "State": {
+     "complex": null,
+     "simple": "State"
+    },
+    "Street Address": {
+     "complex": null,
+     "simple": "Street_Address"
+    },
+    "Sup Org Level 1": {
+     "complex": null,
+     "simple": "SupOrg_Level_1"
+    },
+    "Sup Org Level 2": {
+     "complex": null,
+     "simple": "SupOrg_Level_2"
+    },
+    "Sup Org Level 3": {
+     "complex": null,
+     "simple": "SupOrg_Level_3"
+    },
+    "Sup Org Level 4": {
+     "complex": null,
+     "simple": "SupOrg_Level_4"
+    },
+    "Sup Org Level 5": {
+     "complex": null,
+     "simple": "SupOrg_Level_5"
+    },
+    "Termination Date": {
+     "complex": null,
+     "simple": "Termination_Date"
+    },
+    "Title": {
+     "complex": null,
+     "simple": "Title"
+    },
+    "User Type": {
+     "complex": null,
+     "simple": "\"EMPLOYEE\""
+    },
+    "UserProfile": {
+     "complex": null,
+     "simple": "UserProfile"
+    },
+    "Username": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Email_Address",
+      "transformers": [
+       {
+        "args": {
+
+        },
+        "operator": "toLowerCase"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "VP Flag": {
+     "complex": null,
+     "simple": "VP_Flag"
+    },
+    "Work Country Code": {
+     "complex": null,
+     "simple": "Work_Country_Abbrev"
+    },
+    "Work Country Code Number": {
+     "complex": null,
+     "simple": "Work_Country_Code"
+    },
+    "Work Phone": {
+     "complex": null,
+     "simple": "Work_Phone"
+    },
+    "Zip Code": {
+     "complex": null,
+     "simple": "Postal_Code"
+    },
+    "name": {
+     "complex": null,
+     "simple": "Preferred_Name"
+    },
+    "sAMAccountName": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Email_Address",
+      "transformers": [
+       {
+        "args": {
+         "delimiter": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "@"
+          }
+         }
+        },
+        "operator": "split"
+       },
+       {
+        "args": {
+         "index": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "0"
+          }
+         }
+        },
+        "operator": "atIndex"
+       },
+       {
+        "args": {
+
+        },
+        "operator": "toLowerCase"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "value": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Email_Address",
+      "transformers": [
+       {
+        "args": {
+
+        },
+        "operator": "toLowerCase"
+       }
+      ]
+     },
+     "simple": ""
+    }
+   }
+  }
+ },
+ "name": "IAM Sync User - Workday",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
 }

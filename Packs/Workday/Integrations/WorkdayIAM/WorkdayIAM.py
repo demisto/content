@@ -24,13 +24,15 @@ class Client(BaseClient):
     Client will implement the service API, should not contain Cortex XSOAR logic.
     Should do requests and return data
     """
-    def __init__(self, base_url: Any, verify: bool, headers: dict, proxy: bool, ok_codes: tuple, auth: Any, report_url: str):
+    def __init__(self, base_url: Any, verify: bool, headers: dict, proxy: bool, ok_codes: tuple,
+                 auth: Any, report_url: str):
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy, ok_codes=ok_codes, auth=auth)
         self._report_url = report_url
 
     # Getting Workday Full User Report with a given report URL. This uses RaaS
     def get_full_report(self):
-        return self._http_request(method="GET", full_url=self._report_url, url_suffix="", timeout=READ_TIME_OUT_IN_SECONDS)
+        return self._http_request(method="GET", full_url=self._report_url, url_suffix="",
+                                  timeout=READ_TIME_OUT_IN_SECONDS)
 
 
 def convert_incident_fields_to_cli_names(data):
@@ -95,8 +97,9 @@ def fetch_incidents(client, last_run, fetch_time):
                 terminate_date_arrived = check_if_user_should_be_terminated(workday_user)
                 does_email_exist = does_email_exist_in_xsoar(workday_user.get('email'))
 
-                if ((demisto_user and len(profile_changed_fields) == 0) or (not demisto_user and does_email_exist)) and not terminate_date_arrived:
-                    # either no change in user profile (by employee id), or user profile doesn't exist but the email is already used
+                if ((demisto_user and len(profile_changed_fields) == 0) or (not demisto_user and does_email_exist))\
+                        and not terminate_date_arrived:
+                    # either no change in user profile or user profile doesn't exist but the email is already used
                     # in both cases, don't create the incident
                     continue
 
