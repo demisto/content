@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 '''IMPORTS'''
-from typing import Dict
 import time
 import requests
 import collections
@@ -35,7 +34,7 @@ BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
 
 def http_request(method, url_suffix, json=None, wait=0, retries=0):
     if method == 'GET':
-        headers = {}  # type: Dict[str, str]
+        headers = {}  # type: ignore
     elif method == 'POST':
         headers = {
             'API-Key': APIKEY,
