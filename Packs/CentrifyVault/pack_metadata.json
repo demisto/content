@@ -1,0 +1,14 @@
+{
+    "name": "Centrify Vault",
+    "description": "This pack contains the integration of Centrify Vault to create and manage Secrets.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Prashasth Baliga",
+    "url": "",
+    "email": "",
+    "created": "2020-10-23T12:12:23Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
