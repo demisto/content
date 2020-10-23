@@ -21,6 +21,7 @@ def random_string(size=10):
     return ''.join(
         random.choices(string.ascii_uppercase + string.digits, k=size))
 
+
 def find_zombie_processes():
     """find zombie proceses
     Returns:
@@ -38,6 +39,7 @@ def find_zombie_processes():
                 zombies.append(pinfo[0])
     return zombies, ps_out
 
+
 def quit_driver_and_reap_children():
     try:
         zombies, ps_out = find_zombie_processes()
@@ -50,6 +52,7 @@ def quit_driver_and_reap_children():
             demisto.debug(f'No zombie processes found for ps output: {ps_out}')
     except Exception as e:
         demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
+
 
 try:
     sane_json_b64 = demisto.args().get('sane_pdf_report_base64', '').encode(
