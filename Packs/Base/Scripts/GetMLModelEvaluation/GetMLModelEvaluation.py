@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import precision_score, recall_score, precision_recall_curve
 from tabulate import tabulate
-
+from typing import Dict
 from CommonServerPython import *
 
 # pylint: disable=no-member
@@ -178,7 +178,7 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
 def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_recall, detailed_output=True):
     y_true = convert_str_to_json(y_true_str, 'yTrue')
     y_pred_all_classes = convert_str_to_json(y_pred_str, 'yPred')
-    labels = sorted(set(y_true + y_pred_all_classes[0].keys()))
+    labels = sorted(set(y_true + list(y_pred_all_classes[0].keys())))
     n_instances = len(y_true)
     y_true_per_class = {class_: np.zeros(n_instances) for class_ in labels}
     for i, y in enumerate(y_true):
@@ -231,7 +231,7 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
             threshold_candidates = sorted(list(threshold_per_class.values()))
             for threshold in threshold_candidates:
                 legal_threshold_for_all_classes = True
-                threshold_precision = sys.maxint
+                threshold_precision = sys.maxsize
                 for class_ in labels:
                     i = np.argmax(class_to_arrs[class_]['thresholds'] >= threshold)
                     threshold_precision_for_class = class_to_arrs[class_]['precisions'][i]
