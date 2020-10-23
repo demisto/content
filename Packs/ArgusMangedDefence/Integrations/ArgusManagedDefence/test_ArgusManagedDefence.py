@@ -64,9 +64,27 @@ def test_fetch_incidents(requests_mock):
     requests_mock.post(
         f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_SEARCH_RESULT
     )
-    next_run, incidents = fetch_incidents(None, "-1 day")
+    last_run = {"start_time": 1603372183576}
+    next_run, incidents = fetch_incidents(last_run, "-1 day")
     assert len(incidents) == 1
     assert incidents[0]["name"] == "#0: string"
+    assert next_run.get("start_time") == "string"
+
+
+def test_fetch_incidents_increment_timestamp(requests_mock):
+    from ArgusManagedDefence import fetch_incidents
+    from argus_json import argus_case_data
+
+    method_url = "/cases/v2/case/search"
+    timestamp = 327645
+    json = argus_case_data.ARGUS_CASE_SEARCH_RESULT
+    json['data'][0]['createdTimestamp'] = timestamp
+
+    requests_mock.post(f"{BASE_URL}{method_url}", json=json)
+
+    next_run, incidents = fetch_incidents({}, "-1 day")
+    assert len(incidents) == 1
+    assert next_run.get("start_time") == timestamp + 1
 
 
 def test_add_case_tag_command(requests_mock):

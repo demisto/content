@@ -247,26 +247,27 @@ def fetch_incidents(last_run: dict, first_fetch_period: str):
     for case in result["data"]:
         incidents.append(
             {
-                "id": str(case["id"]),
                 "name": f"#{case['id']}: {case['subject']}",
                 "occurred": case["createdTime"],
-                "created": case["createdTime"],
                 "severity": argus_priority_to_demisto_severity(case["priority"]),
                 "status": argus_status_to_demisto_status(case["status"]),
-                "details": case["description"],  # TODO markdownify
+                "details": case["description"]
+                + str(demisto.getLastRun()),  # TODO markdownify
                 "customFields": {
+                    "argus_id": str(case["id"]),
                     "type": case["type"],
                     "category": case["category"]["name"] if case["category"] else None,
                     "service": case["service"]["name"],
                     "lastUpdatedTime": case["lastUpdatedTime"],
+                    "createdTimestamp": case["createdTimestamp"],
                     "customer": case["customer"]["shortName"],
                 },
                 "rawJson": json.dumps(case),
             }
         )
-    last_run["start_time"] = (
-        incidents[-1].get("occurred", None) if incidents else None
-    )
+    if result["data"]:
+        last_run["start_time"] = result["data"][-1]["createdTimestamp"] + 1
+
     return last_run, incidents
 
 
