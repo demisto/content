@@ -127,16 +127,16 @@ def main() -> None:
                     else:
                         demisto.debug('Starting HTTP Server')
 
-                    default_log_stream = StringIO()
+                    integration_logger = IntegrationLogger()
+                    integration_logger.buffering = False
                     log_config = uvicorn.config.LOGGING_CONFIG
-                    log_config['handlers']['default']['stream'] = default_log_stream
-                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, access_log=False, **ssl_args)
+                    log_config['handlers']['default']['stream'] = integration_logger
+                    log_config['handlers']['access']['stream'] = integration_logger
+                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
                 except Exception as e:
                     demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
                     demisto.updateModuleHealth(f'An error occurred: {str(e)}')
                 finally:
-                    if default_log_stream:
-                        default_log_stream.close()
                     if certificate_path:
                         os.unlink(certificate_path)
                     if private_key_path:
