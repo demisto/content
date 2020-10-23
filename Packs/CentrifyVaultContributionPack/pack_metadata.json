@@ -1,0 +1,14 @@
+{
+    "name": "Centrify Vault Contribution Pack",
+    "description": "Unit testing playbook for Centrify Vault Integration",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "prashasthbaliga",
+    "url": "",
+    "email": "",
+    "created": "2020-10-23T12:15:26Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

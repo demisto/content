@@ -1,0 +1,1906 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 00aa7ac4-2f88-40f3-8925-ede40f611e6d
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: TestCentrifyPlaybook
+inputs: []
+name: TestCentrifyPlaybook
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 35144e56-0d96-4eab-8f90-1ad70a985c67
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 35144e56-0d96-4eab-8f90-1ad70a985c67
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5f582dab-fa04-4cc9-8606-db7a71556249
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 5f582dab-fa04-4cc9-8606-db7a71556249
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      holderName:
+        simple: ${Centrify.Set.SetName}
+      holderType:
+        simple: Set
+      secretName:
+        simple: ${Centrify.Secrets.SecretName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e0d2b196-c429-4781-84dd-2c81cc8e2b54
+      iscommand: true
+      name: centrify-retrieve-secrets
+      script: '|||centrify-retrieve-secrets'
+      type: regular
+      version: -1
+    taskid: e0d2b196-c429-4781-84dd-2c81cc8e2b54
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1505
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretText
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretID
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2b36b2b2-eba8-4bb0-83e3-0d70312a7bf5
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 2b36b2b2-eba8-4bb0-83e3-0d70312a7bf5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1680
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folderDescription:
+        simple: Testing Playbook Folder Creation
+      folderName:
+        simple: Test_Playbook_Folder
+      parentFolderName:
+        simple: CortexXSOAR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9356d551-e265-45e8-8241-fd70212deb8b
+      iscommand: true
+      name: centrify-create-secretfolder
+      script: '|||centrify-create-secretfolder'
+      type: regular
+      version: -1
+    taskid: 9356d551-e265-45e8-8241-fd70212deb8b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3300
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Folder.FolderName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Folder.FolderID
+          operator: isNotEmpty
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6958729b-d995-4a11-861a-da738bbd01cb
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 6958729b-d995-4a11-861a-da738bbd01cb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3485
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      holderName:
+        simple: ${Centrify.Set.SetName}
+      holderType:
+        simple: Set
+      secretDescription:
+        simple: TEST_SECRET_DESCRIPTION
+      secretName:
+        simple: TEST_SECRET
+      secretText:
+        simple: TEST_SECRET_TEXT
+      secretType:
+        simple: Text
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b9eeaa22-e331-4de3-8b80-bf81c93d07bd
+      iscommand: true
+      name: centrify-create-secret
+      script: '|||centrify-create-secret'
+      type: regular
+      version: -1
+    taskid: b9eeaa22-e331-4de3-8b80-bf81c93d07bd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.holderType
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretID
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SetName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SetID
+          operator: isNotEmpty
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f4cca75d-5294-4ba6-8177-70e46f438e73
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: f4cca75d-5294-4ba6-8177-70e46f438e73
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      setDescription:
+        simple: Testing Set creation in test playbook
+      setName:
+        simple: Test_Playbook_Set
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e1d0d829-5f04-4089-8f52-adb5ecb41eb3
+      iscommand: true
+      name: centrify-create-set
+      script: '|||centrify-create-set'
+      type: regular
+      version: -1
+    taskid: e1d0d829-5f04-4089-8f52-adb5ecb41eb3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Set.SetName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Set.SetID
+          operator: isNotEmpty
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 51e1c39a-8421-4f38-84dd-ceeb108d4638
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 51e1c39a-8421-4f38-84dd-ceeb108d4638
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f116d8b0-8e6a-446f-8d54-16f62964946d
+      iscommand: true
+      name: centrify-retrieve-folders
+      script: '|||centrify-retrieve-folders'
+      type: regular
+      version: -1
+    taskid: f116d8b0-8e6a-446f-8d54-16f62964946d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6310
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Folder.FolderName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Folder.FolderID
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Folder.ParentFolder
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Folder.FolderDescription
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Folder.FolderDirectory
+          operator: isNotEmpty
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 54d07e68-1f6d-4480-80f0-b6ef46cadced
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 54d07e68-1f6d-4480-80f0-b6ef46cadced
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6485
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "56"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folderName:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Centrify.Folder.FolderName
+              operator: isEqualString
+              right:
+                value:
+                  simple: Test_Playbook_Folder
+          root: Centrify.Folder.FolderName
+      parentFolderName:
+        simple: CortexXSOAR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1281dedb-aafd-4e46-8066-639b66388e27
+      iscommand: true
+      name: centrify-delete-folder
+      script: '|||centrify-delete-folder'
+      type: regular
+      version: -1
+    taskid: 1281dedb-aafd-4e46-8066-639b66388e27
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6805
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folderName:
+        simple: ${Centrify.Secrets.FolderName}
+      matchPartOfSecret:
+        simple: "No"
+      recursiveDelete:
+        simple: "No"
+      secretName:
+        complex:
+          accessor: SecretName
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Centrify.Secrets.SecretText
+              operator: isNotEmpty
+          root: Centrify.Secrets
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 67f3e324-36c4-4da7-8d9d-667ee5b612e2
+      iscommand: true
+      name: centrify-delete-secret
+      script: '|||centrify-delete-secret'
+      type: regular
+      version: -1
+    taskid: 67f3e324-36c4-4da7-8d9d-667ee5b612e2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5990
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      secretId:
+        complex:
+          accessor: SecretID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Centrify.Secrets.SecretText
+              operator: isNotEmpty
+          root: Centrify.Secrets
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bf270e90-e085-47ae-8294-d7c9f70b4a04
+      iscommand: true
+      name: centrify-delete-secret-by-secretid
+      script: '|||centrify-delete-secret-by-secretid'
+      type: regular
+      version: -1
+    taskid: bf270e90-e085-47ae-8294-d7c9f70b4a04
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      secretId:
+        simple: ${Centrify.Secrets.SecretID}
+      setName:
+        simple: ${Centrify.Set.SetName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 40100413-e95b-4b4a-887c-05d409d3d403
+      iscommand: true
+      name: centrify-add-secret-to-set
+      script: '|||centrify-add-secret-to-set'
+      type: regular
+      version: -1
+    taskid: 40100413-e95b-4b4a-887c-05d409d3d403
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4650
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ccc5b27e-09ca-400c-8de2-0370afc9b274
+      iscommand: true
+      name: centrify-retrieve-sets
+      script: '|||centrify-retrieve-sets'
+      type: regular
+      version: -1
+    taskid: ccc5b27e-09ca-400c-8de2-0370afc9b274
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2320
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Set.SetName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Set.SetID
+          operator: isNotEmpty
+      label: "yes"
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c017e621-075b-48be-86ab-3d591a04c3bf
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: c017e621-075b-48be-86ab-3d591a04c3bf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2495
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "48"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      setName:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Centrify.Set.SetName
+              operator: isEqualString
+              right:
+                value:
+                  simple: Test_Playbook_Set
+          root: Centrify.Set.SetName
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b5584e44-c4d7-42d1-8c43-510b6f59bf9f
+      iscommand: true
+      name: centrify-delete-set
+      script: '|||centrify-delete-set'
+      type: regular
+      version: -1
+    taskid: b5584e44-c4d7-42d1-8c43-510b6f59bf9f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2815
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9a494dcb-5c70-4536-8499-51e24221543a
+      iscommand: false
+      name: Test Done
+      type: title
+      version: -1
+    taskid: 9a494dcb-5c70-4536-8499-51e24221543a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8700
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3f93b316-18d2-4325-8970-e4fda97000e3
+      iscommand: false
+      name: Secret Set Creation
+      type: title
+      version: -1
+    taskid: 3f93b316-18d2-4325-8970-e4fda97000e3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 890ba8bd-8012-4e40-8fff-e56f1c9b0ab9
+      iscommand: false
+      name: Retrieve Sets
+      type: title
+      version: -1
+    taskid: 890ba8bd-8012-4e40-8fff-e56f1c9b0ab9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2175
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0735e374-8fa6-42c9-873f-84bfb270e4b1
+      iscommand: false
+      name: Delete the Secret Set
+      type: title
+      version: -1
+    taskid: 0735e374-8fa6-42c9-873f-84bfb270e4b1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2670
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6a69194b-3d47-4a05-8222-dc20e361b87d
+      iscommand: false
+      name: Create a secret folder
+      type: title
+      version: -1
+    taskid: 6a69194b-3d47-4a05-8222-dc20e361b87d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3165
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cd5951f4-6569-4aeb-891c-8a950d273706
+      iscommand: false
+      name: Retrieve Folders
+      type: title
+      version: -1
+    taskid: cd5951f4-6569-4aeb-891c-8a950d273706
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6165
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3ed67a9f-aec7-4583-806c-797b95462bcb
+      iscommand: false
+      name: Delete Secret Folder
+      type: title
+      version: -1
+    taskid: 3ed67a9f-aec7-4583-806c-797b95462bcb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6660
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      holderName:
+        simple: ${Centrify.Folder.ParentFolderName}/${Centrify.Folder.FolderName}
+      holderType:
+        simple: Folder
+      secretDescription:
+        simple: TESTING SECRET CREATION IN FOLDER
+      secretName:
+        simple: TEST_SECRET_IN_FOLDER
+      secretText:
+        simple: TEST_SECRET_TEXT
+      secretType:
+        simple: Text
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7a94c0be-a5c7-404c-8b90-0ba241952798
+      iscommand: true
+      name: centrify-create-secret
+      script: '|||centrify-create-secret'
+      type: regular
+      version: -1
+    taskid: 7a94c0be-a5c7-404c-8b90-0ba241952798
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3805
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 98a04a72-8eae-464f-8af6-2d42628cc69a
+      iscommand: false
+      name: Create a Secret in Set
+      type: title
+      version: -1
+    taskid: 98a04a72-8eae-464f-8af6-2d42628cc69a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3f8f3345-5954-4df8-8556-c990efd1399f
+      iscommand: false
+      name: Retrieve Secrets in Set
+      type: title
+      version: -1
+    taskid: 3f8f3345-5954-4df8-8556-c990efd1399f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      holderName:
+        simple: ${Centrify.Folder.ParentFolderName}/${Centrify.Folder.FolderName}
+      holderType:
+        simple: Folder
+      secretName: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 05e19975-9634-4e64-8468-fa0a6bd95d52
+      iscommand: true
+      name: centrify-retrieve-secrets
+      script: '|||centrify-retrieve-secrets'
+      type: regular
+      version: -1
+    taskid: 05e19975-9634-4e64-8468-fa0a6bd95d52
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5495
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a0c5e030-49a7-4fc1-8ec5-d1755ed19ca0
+      iscommand: false
+      name: Delete Secret in Set by Secret ID
+      type: title
+      version: -1
+    taskid: a0c5e030-49a7-4fc1-8ec5-d1755ed19ca0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1855
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 836a3fba-607e-43b0-87e4-d8a0da8037b4
+      iscommand: false
+      name: Create Secret in Folder
+      type: title
+      version: -1
+    taskid: 836a3fba-607e-43b0-87e4-d8a0da8037b4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3660
+        }
+      }
+  "41":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.holderType
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretID
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.FolderName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.FolderID
+          operator: isNotEmpty
+      label: "yes"
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cd5c6ed9-8873-4154-8e81-2aaeba5294d2
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: cd5c6ed9-8873-4154-8e81-2aaeba5294d2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3980
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 37525c58-4c93-49fc-8edf-8fc77940e0d5
+      iscommand: false
+      name: Retrieve Secrets in Folder
+      type: title
+      version: -1
+    taskid: 37525c58-4c93-49fc-8edf-8fc77940e0d5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5350
+        }
+      }
+  "44":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretText
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretID
+          operator: isNotEmpty
+      label: "yes"
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "52"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1e02964a-ffe1-45bd-8bd6-af8d0e091ffa
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 1e02964a-ffe1-45bd-8bd6-af8d0e091ffa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5670
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 69f310c1-5b17-4669-8a95-774e371908ef
+      iscommand: false
+      name: Add created secret to set
+      type: title
+      version: -1
+    taskid: 69f310c1-5b17-4669-8a95-774e371908ef
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4155
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "47"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      setDescription:
+        simple: Testing Set creation to add secret in test playbook
+      setName:
+        simple: Test_Playbook_Set_2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cd37850d-c75e-403e-8f6d-095576ff8f78
+      iscommand: true
+      name: centrify-create-set
+      script: '|||centrify-create-set'
+      type: regular
+      version: -1
+    taskid: cd37850d-c75e-403e-8f6d-095576ff8f78
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4300
+        }
+      }
+  "47":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Set.SetName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Set.SetID
+          operator: isNotEmpty
+      label: "yes"
+    id: "47"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 12ede347-bdcb-41c3-87e7-68ea459376e4
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 12ede347-bdcb-41c3-87e7-68ea459376e4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4475
+        }
+      }
+  "48":
+    id: "48"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5f153fbc-0d6e-4a4d-806f-4a7726159799
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 5f153fbc-0d6e-4a4d-806f-4a7726159799
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2990
+        }
+      }
+  "49":
+    id: "49"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      setName:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Centrify.Set.SetName
+              operator: isEqualString
+              right:
+                value:
+                  simple: Test_Playbook_Set_2
+          root: Centrify.Set.SetName
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6e45d71e-fc67-4a21-83c0-ae11b8f95b2a
+      iscommand: true
+      name: centrify-delete-set
+      script: '|||centrify-delete-set'
+      type: regular
+      version: -1
+    taskid: 6e45d71e-fc67-4a21-83c0-ae11b8f95b2a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5175
+        }
+      }
+  "50":
+    id: "50"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "51"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      holderName:
+        simple: ${Centrify.Set.SetName}
+      holderType:
+        simple: Set
+      secretName:
+        simple: ${Centrify.Secrets.SecretName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4fecee27-d823-4286-897b-3032d7548198
+      iscommand: true
+      name: centrify-retrieve-secrets
+      script: '|||centrify-retrieve-secrets'
+      type: regular
+      version: -1
+    taskid: 4fecee27-d823-4286-897b-3032d7548198
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4825
+        }
+      }
+  "51":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretText
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretID
+          operator: isNotEmpty
+      label: "yes"
+    id: "51"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "49"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5b7bdcb3-1bb9-48a6-8f73-e034bf6b3baf
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 5b7bdcb3-1bb9-48a6-8f73-e034bf6b3baf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ee4ee3df-f968-4e9a-8a8f-7b098d7cdedc
+      iscommand: false
+      name: Delete Secret in the Folder
+      type: title
+      version: -1
+    taskid: ee4ee3df-f968-4e9a-8a8f-7b098d7cdedc
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5845
+        }
+      }
+  "54":
+    id: "54"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "55"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      secretId:
+        simple: ${Centrify.Secrets.SecretID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieves the secret from centrify vault based on secret ID.
+      id: 7f6ba5e2-9cab-4b0e-8a95-14aa30a2bf8c
+      iscommand: true
+      name: centrify-retrieve-secret-by-secretid
+      script: '|||centrify-retrieve-secret-by-secretid'
+      type: regular
+      version: -1
+    taskid: 7f6ba5e2-9cab-4b0e-8a95-14aa30a2bf8c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8000
+        }
+      }
+  "55":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretID
+          operator: isNotEmpty
+      label: "yes"
+    id: "55"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "62"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d070e936-307d-4ed9-897f-3f9f33c4cd48
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: d070e936-307d-4ed9-897f-3f9f33c4cd48
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8175
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "57"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b1680107-3b10-40d3-84c9-99d4a507e92c
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: b1680107-3b10-40d3-84c9-99d4a507e92c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6980
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 963cf743-658f-48f0-89aa-b50df23368b0
+      iscommand: false
+      name: Retrieve and Delete Secret by Secret ID
+      type: title
+      version: -1
+    taskid: 963cf743-658f-48f0-89aa-b50df23368b0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7155
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "59"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      setDescription:
+        simple: Testing Set creation in test playbook
+      setName:
+        simple: Test_Playbook_Set
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5d32450e-6244-467a-83aa-65c7becd0923
+      iscommand: true
+      name: centrify-create-set
+      script: '|||centrify-create-set'
+      type: regular
+      version: -1
+    taskid: 5d32450e-6244-467a-83aa-65c7becd0923
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7300
+        }
+      }
+  "59":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Set.SetName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Set.SetID
+          operator: isNotEmpty
+      label: "yes"
+    id: "59"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "60"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ee65147e-18a4-4fc6-8cfa-68df5f1d7ca4
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: ee65147e-18a4-4fc6-8cfa-68df5f1d7ca4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7475
+        }
+      }
+  "60":
+    id: "60"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "61"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      holderName:
+        simple: ${Centrify.Set.SetName}
+      holderType:
+        simple: Set
+      secretDescription:
+        simple: TEST_SECRET_DESCRIPTION
+      secretName:
+        simple: TEST_SECRET
+      secretText:
+        simple: TEST_SECRET_TEXT
+      secretType:
+        simple: Text
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4f1dc6f5-3a12-4213-8110-03f7290224e1
+      iscommand: true
+      name: centrify-create-secret
+      script: '|||centrify-create-secret'
+      type: regular
+      version: -1
+    taskid: 4f1dc6f5-3a12-4213-8110-03f7290224e1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7650
+        }
+      }
+  "61":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.holderType
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SecretID
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SetName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Centrify.Secrets.SetID
+          operator: isNotEmpty
+      label: "yes"
+    id: "61"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "54"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a2963a73-95a0-4732-897c-5b9025067e67
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: a2963a73-95a0-4732-897c-5b9025067e67
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7825
+        }
+      }
+  "62":
+    id: "62"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "63"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      secretId:
+        simple: ${Centrify.Secrets.SecretID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 33d808bb-5f4b-4812-82fc-67cd35df51a9
+      iscommand: true
+      name: centrify-delete-secret-by-secretid
+      script: '|||centrify-delete-secret-by-secretid'
+      type: regular
+      version: -1
+    taskid: 33d808bb-5f4b-4812-82fc-67cd35df51a9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8350
+        }
+      }
+  "63":
+    id: "63"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      setName:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Centrify.Set.SetName
+              operator: isEqualString
+              right:
+                value:
+                  simple: Test_Playbook_Set
+          root: Centrify.Set.SetName
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 87d111d7-f6a4-4d99-8344-712763699806
+      iscommand: true
+      name: centrify-delete-set
+      script: '|||centrify-delete-set'
+      type: regular
+      version: -1
+    taskid: 87d111d7-f6a4-4d99-8344-712763699806
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8525
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 8715,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
