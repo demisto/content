@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from typing import Dict
 
 '''IMPORTS'''
 import time
@@ -120,8 +121,9 @@ def is_truthy(val):
     return bool(val)
 
 
-def poll(target, step, args=(), kwargs=None, timeout=None, max_tries=None, check_success=is_truthy,
-         step_function=step_constant, ignore_exceptions=(), poll_forever=False, collect_values=None, *a, **k):
+def poll(target, step, args=(), kwargs=None, timeout=None,
+         check_success=is_truthy, step_function=step_constant,
+         ignore_exceptions=(), collect_values=None, **k):
 
     kwargs = kwargs or dict()
     values = collect_values or Queue()
