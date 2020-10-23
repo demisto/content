@@ -21,6 +21,35 @@ def random_string(size=10):
     return ''.join(
         random.choices(string.ascii_uppercase + string.digits, k=size))
 
+def find_zombie_processes():
+    """find zombie proceses
+    Returns:
+        ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
+    """
+    ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,stime,cmd'],
+                                     stderr=subprocess.STDOUT, universal_newlines=True)
+    lines = ps_out.splitlines()
+    pid = str(os.getpid())
+    zombies = []
+    if len(lines) > 1:
+        for line in lines[1:]:
+            pinfo = line.split()
+            if pinfo[2] == 'Z' and pinfo[1] == pid:  # zombie process
+                zombies.append(pinfo[0])
+    return zombies, ps_out
+
+def quit_driver_and_reap_children():
+    try:
+        zombies, ps_out = find_zombie_processes()
+        if zombies:
+            demisto.info(f'Found zombie processes will waitpid: {ps_out}')
+            for pid in zombies:
+                waitres = os.waitpid(int(pid), os.WNOHANG)[1]
+                demisto.info(f'waitpid result: {waitres}')
+        else:
+            demisto.debug(f'No zombie processes found for ps output: {ps_out}')
+    except Exception as e:
+        demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
 
 try:
     sane_json_b64 = demisto.args().get('sane_pdf_report_base64', '').encode(
@@ -87,3 +116,6 @@ except Exception:
     wrap = "=====sane-pdf-reports error====="
     err = f'{wrap}\n{tb}{wrap}\n'
     return_error(f'[SanePdfReports Automation Error] - {err}')
+
+finally:
+    quit_driver_and_reap_children()
