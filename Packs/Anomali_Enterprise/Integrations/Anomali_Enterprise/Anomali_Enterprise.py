@@ -107,7 +107,7 @@ def start_search_job(client: Client, args: dict) -> CommandResults:
         outputs_prefix='AnomaliEnterprise.ForensicSearch',
         outputs_key_field='job_id',
         outputs=start_search_outputs,
-        readable_output=tableToMarkdown(name="Forensic Search started:", t=start_search_outputs, removeNull=True),
+        readable_output=tableToMarkdown(name="Forensic search started:", t=start_search_outputs, removeNull=True),
         raw_response=response
     )
 
@@ -134,7 +134,7 @@ def get_search_job_result(client: Client, args: Dict) -> CommandResults:
         response.update({'status': 'in progress'})
     else:
         if response.get('totalMatches'):
-            human_readable = tableToMarkdown(name="Forensic Results:", t=response.get('streamResults'), removeNull=True)
+            human_readable = tableToMarkdown(name="Forensic search results:", t=response.get('streamResults'), removeNull=True)
         else:
             human_readable = f'No matches found for the given job ID: {job_id}.'
             response.update({'status': 'completed'})
