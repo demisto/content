@@ -718,7 +718,7 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
-  dockerimage: demisto/ldap:1.0.0.11282
+  dockerimage: demisto/ldap:1.0.0.12410
   runonce: false
 fromversion: 5.0.0
 tests:

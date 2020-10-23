@@ -737,7 +737,7 @@ def update_user_iam(default_base_dn, default_page_size, args, mapper_out):
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
 
         if not user_exists and args.get('create-if-not-exists') == "true":
-            create_user_iam(default_base_dn, default_page_size, args)
+            create_user_iam(default_base_dn, default_page_size, args, mapper_out)
 
         elif user_exists:
             dn = user_dn(sam_account_name, default_base_dn)
@@ -1046,7 +1046,7 @@ def enable_user_iam(default_base_dn, default_page_size, disabled_users_group_cn,
     user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
 
     if not user_exists and args.get('create-if-not-exists') == "true":
-        create_user_iam(default_base_dn, default_page_size, iam_user_profile)
+        create_user_iam(default_base_dn, default_page_size, iam_user_profile, mapper_out)
         return
 
     dn = user_dn(sam_account_name, default_base_dn)

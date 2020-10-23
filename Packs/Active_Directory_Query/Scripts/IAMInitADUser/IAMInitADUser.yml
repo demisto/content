@@ -31,7 +31,7 @@ comment: |-
   Send mail to the user with tha account information.
   This script is runing `send-mail` command, make sure there is a matching Integration configurated.
 commonfields:
-  id: 8b3e09e8-7427-4606-80b9-1effb24fc552
+  id: IAM-Init-AD-User
   version: -1
 enabled: true
 name: IAM-Init-AD-User
@@ -49,4 +49,6 @@ runonce: false
 dependson:
   must:
   - Active Directory Query v2|||ad-search
-pswd: ''
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
