@@ -25,30 +25,12 @@ GET_USER_OUTPUT__EXISTING_USER = {
     }
 }
 
-
-def test_exception_response_text_parsing_when_ok_code_is_invalid(self, requests_mock):
-    from CommonServerPython import DemistoException
-    reason = 'Bad Request'
-    text_response = '{"error": "additional text"}'
-    requests_mock.get('https://test.com/api/v1/',
-                      status_code=400,
-                      reason=reason,
-                      text=text_response)
-    try:
-        self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
-    except DemistoException as e:
-        assert e.res.get('error') == 'additional text'
-
-
 GET_USER_REQUEST__BAD_RESPONSE = Response()
 GET_USER_REQUEST__BAD_RESPONSE.status_code = 500
-GET_USER_REQUEST__BAD_RESPONSE. = {
-    'errorCode': 'mock_error_code',
-    'errorSummary': 'mock_error_summary',
-    'errorCauses': [
-        'reason_1', 'reason_2'
-    ]
-}
+GET_USER_REQUEST__BAD_RESPONSE._content = b'{"errorCode": "mock_error_code", ' \
+                                          b'"errorSummary": "mock_error_summary", ' \
+                                          b'"errorCauses": [{"errorSummary": "reason_1"}, ' \
+                                          b'{"errorSummary": "reason_2"}]}'
 
 
 def mock_client():
@@ -144,4 +126,4 @@ def test_get_user_command__bad_response(mocker):
     assert outputs.get('action') == 'get'
     assert outputs.get('success') is False
     assert outputs.get('errorCode') == 'mock_error_code'
-    assert outputs.get('errorMessage') == 'mock_error_summary. Reason:\n1. reason_1\n2.reason_2'
+    assert outputs.get('errorMessage') == 'mock_error_summary. Reason:\n1. reason_1\n2. reason_2\n'
