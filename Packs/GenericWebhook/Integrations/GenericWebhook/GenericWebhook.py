@@ -1,5 +1,4 @@
 from collections import deque
-from io import StringIO
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
@@ -91,7 +90,6 @@ def fetch_samples() -> None:
 def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        default_log_stream = None
         try:
             port = int(demisto.params().get('longRunningPort'))
         except ValueError as e:
