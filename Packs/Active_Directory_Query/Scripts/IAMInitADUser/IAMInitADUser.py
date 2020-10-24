@@ -67,7 +67,7 @@ def send_email(name, sAMAccountName, email, password):
         demisto.executeCommand("send-mail", {"to": to, "subject": subject, "body": email_body})
     except Exception as e:
         # Absorb the exception. We can just log error if send email failed.
-        demisto.error(f'Failed to send email. Exception: {e}.\n'  + traceback.format_exc())
+        demisto.error(f'Failed to send email. Exception: {e}.\n' + traceback.format_exc())
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

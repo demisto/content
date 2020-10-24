@@ -29,7 +29,7 @@ comment: |-
   Set an AD user account with this password.
   Enable the account.
   Send mail to the user with tha account information.
-  This script is runing `send-mail` command, make sure there is a matching Integration configurated.
+  This script is running `send-mail` command, make sure there is a matching Integration configurated.
 commonfields:
   id: IAM-Init-AD-User
   version: -1

@@ -166,8 +166,8 @@ def check_if_user_exists_by_samaccountname(default_base_dn, page_size, samaccoun
         query,
         default_base_dn,
         attributes=["samaccountname"],
-        size_limit=DEFAULT_LIMIT,
-        page_size=page_size
+        size_limit=1,
+        page_size=1
     )
 
     if entries.get('flat'):
@@ -464,8 +464,8 @@ def get_user_iam(default_base_dn, page_size, args, mapper_in):
             query,
             default_base_dn,
             attributes=attributes,
-            size_limit=DEFAULT_LIMIT,
-            page_size=page_size
+            size_limit=1,
+            page_size=1
         )
 
         if not entries.get('flat'):
@@ -688,6 +688,8 @@ def create_user_iam(default_base_dn, default_page_size, args, mapper_out):
 
     try:
         sam_account_name = ad_user.get("samaccountname")
+        if not sam_account_name:
+            raise DemistoException("User must have SAMAccountName")
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
         if user_exists:
             return "User already exists"
@@ -733,6 +735,9 @@ def update_user_iam(default_base_dn, default_page_size, args, mapper_out):
     try:
         # check it user exists and if it doesn't, create it
         sam_account_name = ad_user.get("samaccountname")
+        if not sam_account_name:
+            raise DemistoException("User must have SAMAccountName")
+
         new_ou = ad_user.get("ou")
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
 
@@ -1043,6 +1048,9 @@ def enable_user_iam(default_base_dn, default_page_size, disabled_users_group_cn,
 
     # check it user exists and if it doesn't, create it
     sam_account_name = ad_user.get("samaccountname")
+    if not sam_account_name:
+        raise DemistoException("User must have SAMAccountName")
+
     user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
 
     if not user_exists and args.get('create-if-not-exists') == "true":
@@ -1094,6 +1102,9 @@ def disable_user_iam(default_base_dn, default_page_size, disabled_users_group_cn
     ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
     sam_account_name = ad_user.get("samaccountname")
+    if not sam_account_name:
+        raise DemistoException("User must have SAMAccountName")
+
     user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
     if not user_exists:
         iam_user_profile.set_result(success=True,
