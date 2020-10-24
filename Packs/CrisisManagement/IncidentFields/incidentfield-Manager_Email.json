@@ -25,22 +25,9 @@
 	"group": 0,
 	"hidden": false,
 	"associatedTypes": [
-		"Employee Health Check",
-		"IAM - New Hire",
-		"IAM - Terminate User",
-		"IAM - Update - User",
-		"User Profile",
-		"IAM - Sync User",
-		"IAM - Rehire User"
+		"Employee Health Check"
 	],
-	"systemAssociatedTypes":[
-		"IAM - New Hire",
-		"IAM - Terminate User",
-		"IAM - Update - User",
-		"User Profile",
-		"IAM - Sync User",
-		"IAM - Rehire User"
-	],
+	"systemAssociatedTypes": null,
 	"associatedToAll": false,
 	"unmapped": false,
 	"unsearchable": false,
