@@ -1271,7 +1271,7 @@ def private_test_pack_zip():
                 for test_pb in test_pbs:
                     if test_clean in test_pb:
                         print(f"Here's the conf.json segment: {test_pb}")
-                        tests_file_paths.add(test_pb[test_clean].get("file_path"))
+                        tests_file_paths.add("/home/runner/work/content-private/content-private/content/"+test_pb[test_clean].get("file_path"))
     print(f"Here's the file paths: {tests_file_paths}")
     with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
