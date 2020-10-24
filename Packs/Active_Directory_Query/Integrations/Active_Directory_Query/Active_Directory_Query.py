@@ -494,15 +494,13 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
             ad_user = entries.get('flat')[0]
             user_account_control = ad_user.get('userAccountControl') not in INACTIVE_LIST_OPTIONS
             ad_user["userAccountControl"] = user_account_control
-
+            user_profile.update_with_app_data(ad_user, mapper_in)
             iam_user_profile.set_result(success=True,
                                         email=ad_user.get('email'),
                                         username=ad_user.get('name'),
                                         action=IAMActions.GET_USER,
                                         details=ad_user,
                                         active=user_account_control)
-
-            user_profile.update_with_app_data(ad_user, mapper_in)
 
         return iam_user_profile
 
@@ -697,7 +695,6 @@ def create_user():
 def create_user_iam(default_base_dn, args, mapper_out):
     """Creates an AD user by User Profile.
     :param default_base_dn: The location in the DIT where the search will start
-    :param default_page_size: The default page size used in the query
     :param args: Demisto args.
     :param mapper_out: Mapping User Profiles to AD users.
     :return: The user that was created
@@ -707,7 +704,6 @@ def create_user_iam(default_base_dn, args, mapper_out):
     user_profile = args.get("user-profile")
     user_profile_delta = args.get('user-profile-delta')
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
-
     ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
     try:
@@ -750,7 +746,6 @@ def create_user_iam(default_base_dn, args, mapper_out):
 def update_user_iam(default_base_dn, args, mapper_out):
     """Update an AD user by User Profile.
     :param default_base_dn: The location in the DIT where the search will start
-    :param default_page_size: The default page size used in the query
     :param args: Demisto args.
     :param mapper_out: Mapping User Profiles to AD users.
     :return: Updated User
@@ -1073,7 +1068,6 @@ def disable_user(default_base_dn):
 def enable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out):
     """Enables an AD user by User Profile.
     :param default_base_dn: The location in the DIT where the search will start
-    :param default_page_size: The default page size used in the query
     :param disabled_users_group_cn: The disabled group cn, the user will be removed from this group when enabled
     :param args: Demisto args.
     :param mapper_out: Mapping User Profiles to AD users.
@@ -1136,7 +1130,6 @@ def enable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out):
 def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out):
     """Disables an AD user by User Profile.
     :param default_base_dn: The location in the DIT where the search will start
-    :param default_page_size: The default page size used in the query
     :param disabled_users_group_cn: The disabled group cn, the user will be added from this group when enabled
     :param args: Demisto args.
     :param mapper_out: Mapping User Profiles to AD users.
@@ -1338,7 +1331,6 @@ def delete_group():
 def main():
     ''' INSTANCE CONFIGURATION '''
     params = demisto.params()
-
     SERVER_IP = params.get('server_ip')
     USERNAME = params.get('credentials')['identifier']
     PASSWORD = params.get('credentials')['password']
