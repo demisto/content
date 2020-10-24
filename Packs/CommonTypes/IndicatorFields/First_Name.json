@@ -1,13 +1,13 @@
 {
-	"id": "indicator_lastname",
+	"id": "indicator_firstname",
 	"version": -1,
-	"modified": "2020-04-30T12:06:24.131496043Z",
+	"modified": "2020-04-30T12:06:07.419033663Z",
 	"fromVersion": "5.5.0",
-	"name": "Last Name",
+	"name": "First Name",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "The employee's last name.",
-	"cliName": "lastname",
+	"description": "The employee's first name.",
+	"cliName": "firstname",
 	"type": "shortText",
 	"closeForm": false,
 	"editForm": true,
@@ -26,9 +26,22 @@
 	"mergeStrategy": "",
 	"hidden": false,
 	"associatedTypes": [
-		"Employee"
+		"Employee",
+		"IAM - New Hire",
+		"IAM - Terminate User",
+		"IAM - Update - User",
+		"User Profile",
+		"IAM - Sync User",
+		"IAM - Rehire User"
 	],
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes":[
+		"IAM - New Hire",
+		"IAM - Terminate User",
+		"IAM - Update - User",
+		"User Profile",
+		"IAM - Sync User",
+		"IAM - Rehire User"
+	],
 	"associatedToAll": false,
 	"unmapped": false,
 	"unsearchable": false,
