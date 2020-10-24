@@ -150,6 +150,11 @@ def base_dn_verified(base_dn):
 
 
 def generate_dn_and_remove_from_user_profile(user):
+    """Generates a user dn, in case user dn is included in the user, will return it, otherwise
+    will generate one using the cn and ou values
+    :param user: The user dict including his values
+    :return: The user's dn.
+    """
     user_dn = user.get("dn")
     if user_dn:
         user.pop("dn")
@@ -160,7 +165,12 @@ def generate_dn_and_remove_from_user_profile(user):
     return 'CN=' + str(cn) + ',' + str(ou)
 
 
-def check_if_user_exists_by_samaccountname(default_base_dn, page_size, samaccountname):
+def check_if_user_exists_by_samaccountname(default_base_dn, samaccountname):
+    """Check if user exists base on his samaccountname
+    :param default_base_dn: The location in the DIT where the search will start
+    :param samaccountname: The user's unique samaccountname
+    :return: True if the user exists, False otherwise.
+    """
     query = f'(&(objectClass=User)(objectCategory=person)(samaccountname={samaccountname}))'
     entries = search_with_paging(
         query,
@@ -443,14 +453,21 @@ def search_users(default_base_dn, page_size):
     demisto.results(demisto_entry)
 
 
-def get_user_iam(default_base_dn, page_size, args, mapper_in):
+def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
+    """Gets an AD user by User Profile.
+    :param default_base_dn: The location in the DIT where the search will start
+    :param args: Demisto args.
+    :param mapper_in: Mapping AD user to User Profiles
+    :param mapper_out: Mapping User Profiles to AD users.
+    :return: User Profile of the AD user
+    """
     user_profile = args.get("user-profile")
     user_profile_delta = args.get('user-profile-delta')
     default_attribute = args.get('defult_attribute', "samaccountname")
 
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-    ad_user = iam_user_profile.map_object(mapper_name=mapper_in)
+    ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
     value = ad_user.get(default_attribute)
 
@@ -677,7 +694,14 @@ def create_user():
     demisto.results(demisto_entry)
 
 
-def create_user_iam(default_base_dn, default_page_size, args, mapper_out):
+def create_user_iam(default_base_dn, args, mapper_out):
+    """Creates an AD user by User Profile.
+    :param default_base_dn: The location in the DIT where the search will start
+    :param default_page_size: The default page size used in the query
+    :param args: Demisto args.
+    :param mapper_out: Mapping User Profiles to AD users.
+    :return: The user that was created
+    """
     assert conn is not None
 
     user_profile = args.get("user-profile")
@@ -690,7 +714,7 @@ def create_user_iam(default_base_dn, default_page_size, args, mapper_out):
         sam_account_name = ad_user.get("samaccountname")
         if not sam_account_name:
             raise DemistoException("User must have SAMAccountName")
-        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
+        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
         if user_exists:
             return "User already exists"
 
@@ -723,7 +747,14 @@ def create_user_iam(default_base_dn, default_page_size, args, mapper_out):
         return (iam_user_profile)
 
 
-def update_user_iam(default_base_dn, default_page_size, args, mapper_out):
+def update_user_iam(default_base_dn, args, mapper_out):
+    """Update an AD user by User Profile.
+    :param default_base_dn: The location in the DIT where the search will start
+    :param default_page_size: The default page size used in the query
+    :param args: Demisto args.
+    :param mapper_out: Mapping User Profiles to AD users.
+    :return: Updated User
+    """
     assert conn is not None
 
     user_profile = args.get("user-profile")
@@ -739,10 +770,10 @@ def update_user_iam(default_base_dn, default_page_size, args, mapper_out):
             raise DemistoException("User must have SAMAccountName")
 
         new_ou = ad_user.get("ou")
-        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
+        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
 
         if not user_exists and args.get('create-if-not-exists') == "true":
-            create_user_iam(default_base_dn, default_page_size, args, mapper_out)
+            create_user_iam(default_base_dn, args, mapper_out)
 
         elif user_exists:
             dn = user_dn(sam_account_name, default_base_dn)
@@ -1039,7 +1070,15 @@ def disable_user(default_base_dn):
     demisto.results(demisto_entry)
 
 
-def enable_user_iam(default_base_dn, default_page_size, disabled_users_group_cn, args, mapper_out):
+def enable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out):
+    """Enables an AD user by User Profile.
+    :param default_base_dn: The location in the DIT where the search will start
+    :param default_page_size: The default page size used in the query
+    :param disabled_users_group_cn: The disabled group cn, the user will be removed from this group when enabled
+    :param args: Demisto args.
+    :param mapper_out: Mapping User Profiles to AD users.
+    :return: The enabled user
+    """
     user_profile = args.get("user-profile")
     user_profile_delta = args.get('user-profile-delta')
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
@@ -1051,10 +1090,10 @@ def enable_user_iam(default_base_dn, default_page_size, disabled_users_group_cn,
     if not sam_account_name:
         raise DemistoException("User must have SAMAccountName")
 
-    user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
+    user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
 
     if not user_exists and args.get('create-if-not-exists') == "true":
-        create_user_iam(default_base_dn, default_page_size, iam_user_profile, mapper_out)
+        create_user_iam(default_base_dn, iam_user_profile, mapper_out)
         return
 
     dn = user_dn(sam_account_name, default_base_dn)
@@ -1094,7 +1133,15 @@ def enable_user_iam(default_base_dn, default_page_size, disabled_users_group_cn,
         return iam_user_profile
 
 
-def disable_user_iam(default_base_dn, default_page_size, disabled_users_group_cn, args, mapper_out):
+def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out):
+    """Disables an AD user by User Profile.
+    :param default_base_dn: The location in the DIT where the search will start
+    :param default_page_size: The default page size used in the query
+    :param disabled_users_group_cn: The disabled group cn, the user will be added from this group when enabled
+    :param args: Demisto args.
+    :param mapper_out: Mapping User Profiles to AD users.
+    :return: The disabled user
+    """
     user_profile = args.get("user-profile")
     user_profile_delta = args.get('user-profile-delta')
     iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
@@ -1105,7 +1152,7 @@ def disable_user_iam(default_base_dn, default_page_size, disabled_users_group_cn
     if not sam_account_name:
         raise DemistoException("User must have SAMAccountName")
 
-    user_exists = check_if_user_exists_by_samaccountname(default_base_dn, default_page_size, sam_account_name)
+    user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
     if not user_exists:
         iam_user_profile.set_result(success=True,
                                     action=IAMActions.DISABLE_USER,
@@ -1431,23 +1478,23 @@ def main():
 
         # AIM commands
         if demisto.command() == 'iam-get-user':
-            user_profile = get_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args, mapper_in)
+            user_profile = get_user_iam(DEFAULT_BASE_DN, args, mapper_in, mapper_out)
             return return_results(user_profile)
 
         if demisto.command() == 'iam-create-user':
-            user_profile = create_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args, mapper_out)
+            user_profile = create_user_iam(DEFAULT_BASE_DN, args, mapper_out)
             return return_results(user_profile)
 
         if demisto.command() == 'iam-update-user':
-            user_profile = update_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, args, mapper_out)
+            user_profile = update_user_iam(DEFAULT_BASE_DN, args, mapper_out)
             return return_results(user_profile)
 
         if demisto.command() == 'iam-enable-user':
-            user_profile = enable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, disabled_users_group_cn, args, mapper_out)
+            user_profile = enable_user_iam(DEFAULT_BASE_DN, disabled_users_group_cn, args, mapper_out)
             return return_results(user_profile)
 
         if demisto.command() == 'iam-disable-user':
-            user_profile = disable_user_iam(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE, disabled_users_group_cn, args, mapper_out)
+            user_profile = disable_user_iam(DEFAULT_BASE_DN, disabled_users_group_cn, args, mapper_out)
             return return_results(user_profile)
 
     except Exception as e:
