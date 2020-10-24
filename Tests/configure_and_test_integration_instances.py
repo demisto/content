@@ -3,6 +3,7 @@ from __future__ import print_function
 import argparse
 import logging
 import os
+import shutil
 import uuid
 import json
 import ast
@@ -1313,6 +1314,9 @@ def test_pack_zip(build: Build):
                 else:
                     test_target = f'test_pack/TestPlaybooks/{test}'
                 zip_file.writestr(test_target, test_file.read())
+    shutil.copy("/home/runner/work/content-private/content-private/content/test_pack.zip",
+                f'/home/runner/work/content-private/content'
+                f'-private/content/artifacts/packs/test_pack.zip')
 
 
 def get_non_added_packs_ids(build: Build):
