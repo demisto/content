@@ -13,6 +13,8 @@ EMPLOYEE_ACTIVE_STATUS = 'active'
 WORKDAY_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 WORKDAY_DATE_FORMAT = "%m/%d/%Y"
 READ_TIME_OUT_IN_SECONDS = 300
+INCIDENT_TYPE = 'IAM-Sync-User'
+DEFAULT_MAPPER_IN = 'IAM Sync User - Workday'
 
 
 # Disable insecure warnings
@@ -62,7 +64,7 @@ def get_time_elapsed(fetch_time, last_run):
     return time_elapsed_in_minutes, last_run_time
 
 
-def fetch_incidents(client, last_run, fetch_time):
+def fetch_incidents(client, last_run, fetch_time, mapper_in):
     """
     This function will execute each interval (default is 1 minute).
 
@@ -90,7 +92,7 @@ def fetch_incidents(client, last_run, fetch_time):
             report_data = client.get_full_report()
             report_entries = report_data.get('Report_Entry')
             for entry in report_entries:
-                workday_user = demisto.mapObject(entry, 'IAM Sync User - Workday', 'IAM-Sync-User')
+                workday_user = demisto.mapObject(entry, mapper_in, INCIDENT_TYPE)
                 workday_user = convert_incident_fields_to_cli_names(workday_user)
                 demisto_user = get_demisto_user(workday_user)
                 profile_changed_fields = get_profile_changed_fields(workday_user, demisto_user)
@@ -171,7 +173,7 @@ def check_if_user_should_be_terminated(workday_user):
     return is_term_event
 
 
-def test_module(client, params):
+def test_module(client, params, mapper_in):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     Anything else will fail the test.
@@ -182,20 +184,21 @@ def test_module(client, params):
         fetch_incidents(
             client=client,
             last_run={},
-            fetch_time=params.get('fetch_events_time_minutes')
+            fetch_time=params.get('fetch_events_time_minutes'),
+            mapper_in=mapper_in
         )
 
     return 'ok'
 
 
-def entry_to_user_profile(entry):
-    user_profile = demisto.mapObject(entry, 'IAM Sync User - Workday', 'IAM-Sync-User')
+def entry_to_user_profile(entry, mapper_in):
+    user_profile = demisto.mapObject(entry, mapper_in, INCIDENT_TYPE)
     user_profile = convert_incident_fields_to_cli_names(user_profile)
     return user_profile
 
 
-def report_to_indicators(report_entries):
-    user_profiles = [entry_to_user_profile(e) for e in report_entries]
+def report_to_indicators(report_entries, mapper_in):
+    user_profiles = [entry_to_user_profile(e, mapper_in) for e in report_entries]
     indicators = [user_profile_to_indicator(u) for u in user_profiles]
     return indicators
 
@@ -209,9 +212,9 @@ def user_profile_to_indicator(user_profile):
     return indicator
 
 
-def workday_first_run_command(client):
+def workday_first_run_command(client, mapper_in):
     report_data = client.get_full_report()
-    indicators = report_to_indicators(report_data.get('Report_Entry'))
+    indicators = report_to_indicators(report_data.get('Report_Entry'), mapper_in)
     for b in batch(indicators, batch_size=2000):
         demisto.createIndicators(b)
     demisto.results("Indicators were created successfully")
@@ -224,6 +227,7 @@ def main():
     report_url = params.get('report_url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    mapper_in = params.get('mapper_in', DEFAULT_MAPPER_IN)
     workday_username = params.get('credentials', {}).get('identifier')
     workday_password = params.get('credentials', {}).get('password')
 
@@ -244,7 +248,7 @@ def main():
 
     try:
         if command == 'test-module':
-            return_results(test_module(client, params))
+            return_results(test_module(client, params, mapper_in))
 
         if command == 'fetch-incidents':
             '''
@@ -262,14 +266,16 @@ def main():
                     run_first_command = True
 
             if not run_first_command:
-                workday_first_run_command(client)
+                workday_first_run_command(client, mapper_in)
 
             if not events:
                 # Get the events from Workday by making an API call. Last run is updated only when API call is made
                 last_run, events = fetch_incidents(
                     client=client,
                     last_run=last_run,
-                    fetch_time=params.get('fetch_events_time_minutes'))
+                    fetch_time=params.get('fetch_events_time_minutes'),
+                    mapper_in=mapper_in
+                )
 
             fetch_limit = int(params.get('max_fetch'))
 
@@ -280,11 +286,8 @@ def main():
             workday_context = {'events': events[fetch_limit:]}
             demisto.setIntegrationContext(workday_context)
 
-        if command == 'workday-first-run':
-            workday_first_run_command(client)
-
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {demisto.command()} command, Error: {e}. Traceback: {traceback.format_exc()}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

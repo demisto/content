@@ -43,6 +43,12 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+- defaultvalue: IAM Sync User - Workday
+  display: Mapper (incoming)
+  hidden: false
+  name: mapper_in
+  required: false
+  type: 0
 description: Use the Workday IAM Integration as part of the IAM premium pack.
 display: Workday IAM
 name: WorkdayIAM
