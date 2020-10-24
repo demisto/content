@@ -1,6 +1,6 @@
 > <i>Note:</i> This integration should be used along with our IAM premium pack. For further details, visit our IAM pack documentation.
 
-Integrate with Okta's Identity Access Management service to streamline users' lifecycle processes.
+Integrate with Okta's Identity Access Management service to execute CRUD operations to employee lifecycle processes.
 This integration was integrated and tested with version v1 of Okta.
 ## Configure Okta IAM on Cortex XSOAR
 
@@ -18,7 +18,7 @@ This integration was integrated and tested with version v1 of Okta.
 | update-user-enabled | Update User Command Enabled | False |
 | enable-disable-user-enabled | Enable/Disable User Commands Enabled | False |
 | mapper-in | Incoming Mapper | True |
-| mapper-out | Ougoing Mapper | True |
+| mapper-out | Outgoing Mapper | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -45,8 +45,8 @@ Creates a user.
 | --- | --- | --- |
 | IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Gives the user information if the API is success, else error information. | 
-| IAM.Vendor.email | String | The email address of the employee. | 
+| IAM.Vendor.details | string | Gives the user information if the API was successful, otherwise error information. | 
+| IAM.Vendor.email | String | The employee's email address. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
@@ -79,7 +79,7 @@ Updates an existing user with the data passed in the user-profile argument.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator. | Required | 
-| create-if-not-exists | Whether or not to create the user if not found. | Optional | 
+| create-if-not-exists | If true the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
 
 
 #### Context Output
@@ -88,8 +88,8 @@ Updates an existing user with the data passed in the user-profile argument.
 | --- | --- | --- |
 | IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Gives the user information if the API is success, else error information. | 
-| IAM.Vendor.email | String | The email address of the employee. | 
+| IAM.Vendor.details | string | Gives the user information if the API was successful, otherwise error information. | 
+| IAM.Vendor.email | String | The employee's email address. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
@@ -130,8 +130,8 @@ Retrieves a single user resource.
 | --- | --- | --- |
 | IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Gives the user information if the API is success, else error information. | 
-| IAM.Vendor.email | String | The email address of the employee. | 
+| IAM.Vendor.details | string | Gives the user information if the API was successful, otherwise error information. | 
+| IAM.Vendor.email | String | The employee's email address. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
@@ -173,8 +173,8 @@ Disable an active user.
 | --- | --- | --- |
 | IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Gives the user information if the API is success, else error information. | 
-| IAM.Vendor.email | String | The email address of the employee. | 
+| IAM.Vendor.details | string | Gives the user information if the API was successful, otherwise error information. | 
+| IAM.Vendor.email | String | The employee's email address. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
@@ -207,7 +207,7 @@ Enable a deprovisioned user.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator. | Required | 
-| create-if-not-exists | Whether or not to create the user if not found. | Optional | 
+| create-if-not-exists | If true the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
 
 
 #### Context Output
@@ -216,8 +216,8 @@ Enable a deprovisioned user.
 | --- | --- | --- |
 | IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Gives the user information if the API is success, else error information. | 
-| IAM.Vendor.email | String | The email address of the employee. | 
+| IAM.Vendor.details | string | Gives the user information if the API was successful, otherwise error information. | 
+| IAM.Vendor.email | String | The employee's email address. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
