@@ -1,6 +1,7 @@
 args:
 - default: false
   defaultValue: Generate_Password
+  description: The generate password script.
   isArray: false
   name: pwdGenerationScript
   required: false
@@ -46,9 +47,9 @@ type: python
 dockerimage: demisto/python3:3.7.5.4002
 runas: DBotWeakRole
 runonce: false
+tests:
+- No tests (auto formatted)
 dependson:
   must:
   - Active Directory Query v2|||ad-search
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
