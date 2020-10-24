@@ -730,6 +730,7 @@ def execute_testing(tests_settings, server_ip, all_tests,
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
+    playbook_skipped_integration = set([])
 
     disable_all_integrations(xsoar_client, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
@@ -743,13 +744,32 @@ def execute_testing(tests_settings, server_ip, all_tests,
             t = private_tests_queue.get()
             executed_in_current_round = update_round_set_and_sleep_if_round_completed(
                 executed_in_current_round, prints_manager, t, thread_index)
-            run_test_scenario(tests_settings, t, default_test_timeout, skipped_tests_conf,
-                              nightly_integrations, skipped_integrations_conf, skipped_integration,
-                              run_all_tests, is_filter_configured, filtered_tests, skipped_tests,
-                              secret_params, failed_playbooks, unmockable_integrations,
-                              succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                              server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
-                              prints_manager)
+            run_test_scenario(tests_settings,
+                              t,
+                              default_test_timeout,
+                              skipped_tests_conf,
+                              nightly_integrations,
+                              skipped_integrations_conf,
+                              skipped_integration,
+                              run_all_tests,
+                              is_filter_configured,
+                              filtered_tests,
+                              skipped_tests,
+                              secret_params,
+                              failed_playbooks,
+                              playbook_skipped_integration,
+                              succeed_playbooks,
+                              slack,
+                              circle_ci,
+                              build_number,
+                              server,
+                              build_name,
+                              server_numeric_version,
+                              demisto_user,
+                              demisto_pass,
+                              demisto_api_key,
+                              prints_manager,
+                              thread_index=thread_index)
             prints_manager.execute_thread_prints(thread_index)
 
     except Exception as exc:
