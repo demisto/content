@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import argparse
+import glob
 import logging
 import os
 import shutil
@@ -1262,7 +1263,7 @@ def private_test_pack_zip():
         with open('./Tests/id_set.json', 'r') as conf_file:
             ID_SET = json.load(conf_file)
             test_pbs = ID_SET.get('TestPlaybooks', [])
-
+    #  Adding test playbooks
     with open("./Tests/filter_file.txt", "r") as filter_file:
         tests_to_run = filter_file.readlines()
         for test_to_run in tests_to_run:
@@ -1272,6 +1273,12 @@ def private_test_pack_zip():
                     if test_clean in test_pb:
                         print(f"Here's the conf.json segment: {test_pb}")
                         tests_file_paths.add("/home/runner/work/content-private/content-private/content/"+test_pb[test_clean].get("file_path"))
+    #  Adding contents of DeveloperPack
+    developer_pack_items = glob.glob("/home/runner/work/content-private/content-private/content/Packs"
+                                     "/DeveloperTools/TestPlaybooks/*.yml")
+    for dev_pack_item in developer_pack_items:
+        tests_file_paths.add(dev_pack_item)
+
     print(f"Here's the file paths: {tests_file_paths}")
     with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
