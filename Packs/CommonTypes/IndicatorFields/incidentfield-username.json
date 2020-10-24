@@ -25,7 +25,8 @@
   "shouldCommit": false,
   "shouldPublish": false,
   "associatedTypes": [
-    "Account"
+    "Account",
+    "User Profile"
   ],
   "caseInsensitive": true,
   "columns": null,
