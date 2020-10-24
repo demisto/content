@@ -40,12 +40,11 @@ configuration:
   required: true
   type: 0
 - defaultvalue: User Profile - Okta (Outgoing)
-  display: Ougoing Mapper
+  display: Outgoing Mapper
   name: mapper-out
   required: true
   type: 0
-description: Integrate with Okta's Identity Access Management service to streamline
-  users' lifecycle processes.
+description: Integrate with Okta's Identity Access Management service to execute CRUD operations to employee lifecycle processes.
 display: Okta IAM
 name: Okta IAM
 script:
@@ -69,10 +68,10 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API is success, else error information.
+      description: Gives the user information if the API was successful, otherwise error information.
       type: string
     - contextPath: IAM.Vendor.email
-      description: The email address of the employee.
+      description: The employee's email address.
       type: String
     - contextPath: IAM.Vendor.errorCode
       description: HTTP error response code.
@@ -102,7 +101,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether or not to create the user if not found.
+      description: If true the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'.
       isArray: false
       name: create-if-not-exists
       predefined:
@@ -123,10 +122,10 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API is success, else error information.
+      description: Gives the user information if the API was successful, otherwise error information.
       type: string
     - contextPath: IAM.Vendor.email
-      description: The email address of the employee.
+      description: The employee's email address.
       type: String
     - contextPath: IAM.Vendor.errorCode
       description: HTTP error response code.
@@ -165,10 +164,10 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API is success, else error information.
+      description: Gives the user information if the API was successful, otherwise error information.
       type: string
     - contextPath: IAM.Vendor.email
-      description: The email address of the employee.
+      description: The employee's email address.
       type: String
     - contextPath: IAM.Vendor.errorCode
       description: HTTP error response code.
@@ -198,7 +197,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether or not to create the user if not found.
+      description: If true the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'.
       isArray: false
       name: create-if-not-exists
       predefined:
@@ -218,10 +217,10 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API is success, else error information.
+      description: Gives the user information if the API was successful, otherwise error information.
       type: string
     - contextPath: IAM.Vendor.email
-      description: The email address of the employee.
+      description: The employee's email address.
       type: String
     - contextPath: IAM.Vendor.errorCode
       description: HTTP error response code.
@@ -260,10 +259,10 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API is success, else error information.
+      description: Gives the user information if the API was successful, otherwise error information.
       type: string
     - contextPath: IAM.Vendor.email
-      description: The email address of the employee.
+      description: The employee's email address.
       type: String
     - contextPath: IAM.Vendor.errorCode
       description: HTTP error response code.
