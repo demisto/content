@@ -1272,7 +1272,7 @@ def private_test_pack_zip():
                     if test_clean in test_pb:
                         print(f"Here's the conf.json segment: {test_pb}")
                         tests_file_paths.add(test_pb[test_clean].get("file_path"))
-
+    print(f"Here's the file paths: {tests_file_paths}")
     with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
         for test_path, test in test_files(content_path):
@@ -1291,6 +1291,11 @@ def private_test_pack_zip():
                 else:
                     test_target = f'test_pack/TestPlaybooks/{test}'
                 zip_file.writestr(test_target, test_file.read())
+                print("Finished writing test pack.")
+    shutil.copy("/home/runner/work/content-private/content-private/content/test_pack.zip",
+                f'/home/runner/work/content-private/content'
+                f'-private/content/artifacts/packs/test_pack.zip')
+    print("Finished copying test pack")
 
 
 def test_pack_zip(build: Build):
