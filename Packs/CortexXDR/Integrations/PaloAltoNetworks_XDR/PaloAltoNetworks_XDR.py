@@ -2083,7 +2083,6 @@ def main():
 
         elif demisto.command() == 'fetch-incidents':
             next_run, incidents = fetch_incidents(client, first_fetch_time, demisto.getLastRun(), max_fetch)
-
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
