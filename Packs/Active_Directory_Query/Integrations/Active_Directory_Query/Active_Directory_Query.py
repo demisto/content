@@ -1331,6 +1331,7 @@ def delete_group():
 def main():
     ''' INSTANCE CONFIGURATION '''
     params = demisto.params()
+
     SERVER_IP = params.get('server_ip')
     USERNAME = params.get('credentials')['identifier']
     PASSWORD = params.get('credentials')['password']
