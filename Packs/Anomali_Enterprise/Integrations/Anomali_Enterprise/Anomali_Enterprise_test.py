@@ -10,7 +10,7 @@ def test_domain_command_benign(mocker):
         - mocking the server response for a benign domain, running domain_command
 
     Then:
-        - validating the domain is unknown
+        - validating that the domain score is unknown
         - validating the returned context data
 
     """
@@ -49,7 +49,7 @@ def test_domain_command_suspicious(mocker):
         - mocking the server response for a suspicious domain, running domain_command
 
     Then:
-        - validating the domain is suspicious
+        - validating that the domain score is suspicious
         - validating the returned context data, including the suspicious context
 
     """
@@ -88,7 +88,7 @@ def test_domain_command_malicious(mocker):
         - mocking the server response for a malicious domain, running domain_command
 
     Then:
-        - validating the domain is malicious
+        - validating that the domain score is malicious
         - validating the returned context data, including the malicious context
 
     """
