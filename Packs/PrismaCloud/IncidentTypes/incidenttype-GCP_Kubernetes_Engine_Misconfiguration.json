@@ -18,5 +18,6 @@
     "fromVersion": "5.0.0",
     "layout": "GCP Kubernetes Engine Misconfiguration",
     "weeks": 0,
-    "weeksR": 0
+    "weeksR": 0,
+    "preProcessingScript": ""
 }

@@ -1,0 +1,14 @@
+{
+    "kind": "indicatorsQuickView",
+    "layout": {
+        "id": "GCP Kubernetes Engine Misconfiguration",
+        "name": "GCP Kubernetes Engine Misconfiguration",
+        "version": -1,
+        "kind": "indicatorsQuickView",
+        "typeId": "GCP Kubernetes Engine Misconfiguration"
+    },
+    "fromVersion": "4.1.0",
+    "toVersion": "5.9.9",
+    "typeId": "GCP Kubernetes Engine Misconfiguration",
+    "version": -1
+}
