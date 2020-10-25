@@ -60,7 +60,7 @@
 				},
 				"state": {
 					"complex": null,
-					"simple": "statename"
+					"simple": "state"
 				},
 				"streetAddress": {
 					"complex": null,
