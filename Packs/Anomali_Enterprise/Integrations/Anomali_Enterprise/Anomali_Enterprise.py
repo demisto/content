@@ -126,7 +126,7 @@ def get_search_job_result(client: Client, args: Dict) -> CommandResults:
 
     response = client.get_search_job_result_request(job_id)
     if 'error' in response:
-        raise Exception(str(response.get('error')))
+        raise Exception(f"{str(response.get('error'))}. Job ID might have expired.")
 
     response.update({'job_id': job_id})
     if not response.get('complete'):
@@ -134,7 +134,8 @@ def get_search_job_result(client: Client, args: Dict) -> CommandResults:
         response.update({'status': 'in progress'})
     else:
         if response.get('totalMatches'):
-            human_readable = tableToMarkdown(name="Forensic search results:", t=response.get('streamResults'), removeNull=True)
+            human_readable = tableToMarkdown(name="Forensic search results:", t=response.get('streamResults'),
+                                             removeNull=True)
         else:
             human_readable = f'No matches found for the given job ID: {job_id}.'
             response.update({'status': 'completed'})

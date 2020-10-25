@@ -1,3 +1,4 @@
+import pytest
 from Anomali_Enterprise import *
 
 
@@ -192,6 +193,7 @@ def test_get_search_job_result_command_without_matches(mocker):
 
     Then:
         - validating the returned context data
+        - validating the returned human readable
 
     """
     client = Client(server_url='test', username='test', password='1234', verify=True, proxy=False)
@@ -201,10 +203,38 @@ def test_get_search_job_result_command_without_matches(mocker):
     }
     mocker.patch.object(client, 'get_search_job_result_request', return_value=return_data)
     command_results = get_search_job_result(client, args={'job_id': '222'})
+
     output = command_results.to_context().get('EntryContext', {})
     expected_result = {
         'status': 'completed', 'totalFiles': 0, 'streamResults': [],
         'scannedEvents': 269918, 'complete': True, 'processedFiles': 0, 'totalMatches': 0, 'job_id': '222'
     }
-
     assert output.get('AnomaliEnterprise.ForensicSearch(val.job_id == obj.job_id)', []) == expected_result
+
+    hr_ = command_results.to_context().get('HumanReadable', '')
+    assert hr_ == 'No matches found for the given job ID: 222.'
+
+
+
+
+def test_get_search_job_result_command_expired_job_id(mocker):
+    """
+    Given:
+        - a job_id
+
+    When:
+        - mocking the server response for an expired job id, running get_search_job_result
+
+    Then:
+        - validating the raised error
+
+    """
+    client = Client(server_url='test', username='test', password='1234', verify=True, proxy=False)
+    return_data = {
+        'error': 'Error: Cannot find the jobId: job222'
+    }
+    mocker.patch.object(client, 'get_search_job_result_request', return_value=return_data)
+    try:
+        _ = get_search_job_result(client, args={'job_id': 'job222'})
+    except Exception as err:
+        assert 'Error: Cannot find the jobId: job222. Job ID might have expired.' in str(err)
