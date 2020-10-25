@@ -163,7 +163,7 @@ Returns the properties of an email.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
-| message_id | The message ID. | Required | 
+| message_id | The message ID. This could be extracted from - msgraph-mail-list-emails command results. | Required | 
 | folder_id | The folder ID. | Optional | 
 | odata | The OData. | Optional | 
 | get_body | Whether to return the message body. Can be "true" or "false". | Optional | 
