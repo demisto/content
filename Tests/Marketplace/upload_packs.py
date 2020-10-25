@@ -16,7 +16,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, init_big
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
-def get_packs_names(target_packs):
+def get_packs_names(target_packs, last_upload_commit_hash):
     """Detects and returns packs names to upload.
 
     In case that `Modified` is passed in target_packs input, checks the git difference between two commits,
@@ -26,6 +26,7 @@ def get_packs_names(target_packs):
     Args:
         target_packs (str): csv packs names or `All` for all available packs in content
                             or `Modified` for only modified packs (currently not in use).
+        last_upload_commit_hash (str): last head commit hash that was uploaded to the bucket
 
     Returns:
         set: unique collection of packs names to upload.
@@ -42,7 +43,7 @@ def get_packs_names(target_packs):
                          f"at the following path: {PACKS_FULL_PATH}"))
             sys.exit(1)
     elif target_packs.lower() == "modified":
-        cmd = "git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
+        cmd = f"git diff --name-only HEAD..{last_upload_commit_hash} | grep 'Packs/'"
         modified_packs_path = run_command(cmd).splitlines()
         modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
         print(f"Number of modified packs is: {len(modified_packs)}")
@@ -541,7 +542,7 @@ def check_if_index_is_updated(content_repo, current_commit_hash, last_upload_com
     Args:
         content_repo (git.repo.base.Repo): content repo object.
         current_commit_hash (str): last commit hash of head.
-        last_upload_commit_hash (str): last origin/master commit hash that was uploaded to the bucket
+        last_upload_commit_hash (str): last head commit hash that was uploaded to the bucket
         storage_bucket: public storage bucket.
 
     """
@@ -773,7 +774,7 @@ def main():
     current_commit_hash, last_upload_commit_hash = get_recent_commits_data(content_repo, index_folder_path)
 
     # detect packs to upload
-    pack_names = get_packs_names(target_packs)
+    pack_names = get_packs_names(target_packs, last_upload_commit_hash)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
