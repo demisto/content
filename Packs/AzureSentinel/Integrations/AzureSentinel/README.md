@@ -453,7 +453,6 @@ Gets a list of an entity's relations from Azure Sentinel.
 ***
 Tests connectivity to Azure Sentinel.
 
-
 ##### Base Command
 
 `azure-sentinel-test`
