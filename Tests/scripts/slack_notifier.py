@@ -98,6 +98,7 @@ def get_entities_fields(entity_title, report_file_name='', job_name=None):
         failed_entities = get_faild_steps_list()
     entity_fields = []
     if job_name:
+        print('wwwwwww')
         return [{
             "title": f'{job_name} job failed, failed steps are:',
             "value": '\n'.join(failed_entities),
@@ -130,6 +131,7 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
 
 
 def get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE, job_name=None):
+    print(job_name)
     steps_fields = get_entities_fields(entity_title="Failed Steps", job_name=job_name)
     color = 'good' if not steps_fields else 'danger'
     title = f'{build_title} - Success' if not steps_fields else f'{build_title} - Failure'
@@ -275,7 +277,6 @@ def main():
                        options.test_type,
                        env_results_file_name=options.env_results_file_name)
     elif options.bucket_upload:
-        print('wow main')
         slack_notifier(options.url, options.slack, options.test_type, options.job_name)
     elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, BUCKET_UPLOAD_TYPE,
                                SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
