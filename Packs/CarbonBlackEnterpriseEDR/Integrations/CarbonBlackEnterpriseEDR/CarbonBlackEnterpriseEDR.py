@@ -345,7 +345,7 @@ class Client(BaseClient):
         return self._http_request('GET', suffix_url)
 
     def create_search_process_request(self, process_hash: str, process_name: str, event_id: str, query: str,
-                                      limit: int = None) -> dict:
+                                      limit: int) -> dict:
         if not process_hash and not process_name and not event_id and not query:
             raise ValueError("To perform an process search, please provide at least one of the following: "
                              "'process_hash', 'process_name', 'event_id' or 'query'")
@@ -362,6 +362,7 @@ class Client(BaseClient):
             start=0
 
         )
+        demisto.log(str(body))
         return self._http_request('POST', suffix_url, json_data=body)
 
     def get_search_process_request(self, job_id) -> dict:
@@ -370,13 +371,13 @@ class Client(BaseClient):
         return self._http_request('GET', suffix_url)
 
     def create_search_event_by_process_request(self, process_guid: str, event_type: str,
-                                               query: str, limit: int = None) -> dict:
+                                               query: str, limit: int) -> dict:
         if event_type and event_type not in ['filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc']:
             raise ValueError("Only the following event types can be searched: "
                              "'filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc'")
         if not event_type and not query:
             raise ValueError("To perform an event search, please provide either event_type or query.")
-        suffix_url = f'/api/investigate/v2/orgs/{self.cb_org_key}/events/{process_guid}/_search'
+        suffix_url = f'/api/investigate/v2/orgs/{self.cb_org_key}/events/{process_guid}/_search/'
         body = assign_params(
             criteria=assign_params(event_type=argToList(event_type)),
             query=query,
@@ -1186,7 +1187,11 @@ def process_search_command(client: Client, args: Dict) -> CommandResults:
     process_hash = args.get('process_hash', '')
     event_id = args.get('event_id', '')
     query = args.get('query', '')
-    limit = args.get('limit', '20')
+    limit = args.get('limit', 20)
+    try:
+        limit = int(limit)
+    except ValueError:
+        raise ValueError("Please provide a number as limit.")
 
     raw_respond = client.create_search_process_request(process_name=process_name, process_hash=process_hash,
                                                        event_id=event_id, query=query, limit=limit)
@@ -1203,7 +1208,11 @@ def event_by_process_search_command(client: Client, args: Dict) -> CommandResult
     process_guid = args.get('process_guid', '')
     event_type = args.get('event_type', '')
     query = args.get('query', '')
-    limit = args.get('limit', '20')
+    limit = args.get('limit', 20)
+    try:
+        limit = int(limit)
+    except ValueError:
+        raise ValueError("Please provide a number as limit.")
 
     result = client.create_search_event_by_process_request(
         process_guid=process_guid, event_type=event_type,
