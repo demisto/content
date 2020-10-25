@@ -1365,8 +1365,6 @@ def main():
         tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests,
                                         build.is_nightly)
         print(f"List of tests to run: {tests_for_iteration}")
-        #  Installing test pack first
-        install_private_pack(build, prints_manager)
         # #  Setting the marketplace url in the server to point to the test bucket.
         # set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
         #  Installing the packs.
