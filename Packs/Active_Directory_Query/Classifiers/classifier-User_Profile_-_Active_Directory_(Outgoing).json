@@ -46,10 +46,6 @@
      },
      "simple": ""
     },
-    "countryCode": {
-     "complex": null,
-     "simple": "countrycodenumber"
-    },
     "department": {
      "complex": null,
      "simple": "department"
@@ -64,7 +60,7 @@
     },
     "givenName": {
      "complex": null,
-     "simple": "firstname"
+     "simple": "givenname"
     },
     "l": {
      "complex": null,
@@ -79,65 +75,60 @@
      "simple": "mobilephone"
     },
     "ou": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-
-      ],
-      "root": "locationregion",
-      "transformers": [
-       {
-        "args": {
-         "applyIfEmpty": {
-          "isContext": false,
-          "value": null
-         },
-         "defaultValue": {
-          "isContext": false,
-          "value": {
-           "complex": null,
-           "simple": "Americas"
-          }
-         }
-        },
-        "operator": "SetIfEmpty"
-       },
-       {
-        "args": {
-         "LocationOUMapper": {
-          "isContext": false,
-          "value": null
-         }
-        },
-        "operator": "a7f69908-828d-45a5-8a7c-4ecc6db30724"
-       }
-      ]
-     },
-     "simple": ""
+     "complex": null,
+     "simple": "locationregion"
     },
     "postalCode": {
      "complex": null,
      "simple": "zipcode"
     },
     "samaccountname": {
-     "complex": null,
-     "simple": "samaccountname"
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "email",
+      "transformers": [
+       {
+        "args": {
+         "delimiter": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "@"
+          }
+         }
+        },
+        "operator": "split"
+       },
+       {
+        "args": {
+         "index": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "0"
+          }
+         }
+        },
+        "operator": "atIndex"
+       }
+      ]
+     },
+     "simple": ""
     },
     "sn": {
      "complex": null,
-     "simple": "lastname"
+     "simple": "surname"
     },
     "st": {
      "complex": null,
-     "simple": "state"
+     "simple": "statename"
     },
     "streetAddress": {
      "complex": null,
      "simple": "streetaddress"
-    },
-    "telephoneNumber": {
-     "complex": null,
-     "simple": "workphone"
     },
     "title": {
      "complex": null,

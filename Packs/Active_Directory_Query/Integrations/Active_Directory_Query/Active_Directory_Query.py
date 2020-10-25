@@ -50,6 +50,9 @@ DEFAULT_COMPUTER_ATTRIBUTES = [
     'name',
     'memberOf'
 ]
+FIELDS_THAT_CANT_BE_MODIFIED = [
+    "dn", "samaccountname", "cn", "ou"
+]
 
 ''' HELPER FUNCTIONS '''
 
@@ -162,6 +165,10 @@ def generate_dn_and_remove_from_user_profile(user):
 
     cn = user.get("cn")
     ou = user.get("ou")
+
+    # orel delete!
+    ou = "CN=Users,DC=demisto,DC=ninja"
+
     return 'CN=' + str(cn) + ',' + str(ou)
 
 
@@ -494,7 +501,7 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
             ad_user = entries.get('flat')[0]
             user_account_control = ad_user.get('userAccountControl') not in INACTIVE_LIST_OPTIONS
             ad_user["userAccountControl"] = user_account_control
-            user_profile.update_with_app_data(ad_user, mapper_in)
+            iam_user_profile.update_with_app_data(ad_user, mapper_in)
             iam_user_profile.set_result(success=True,
                                         email=ad_user.get('email'),
                                         username=ad_user.get('name'),
@@ -773,14 +780,11 @@ def update_user_iam(default_base_dn, args, mapper_out):
         elif user_exists:
             dn = user_dn(sam_account_name, default_base_dn)
 
-            #  עקמק fields that can't be modified
+            # fields that can't be modified
             # notice that we are changing the ou and that effects the dn and cn
-            if ad_user.get("dn"):
-                ad_user.pop("dn")
-            if ad_user.get("samaccountname"):
-                ad_user.pop("samaccountname")
-            if ad_user.get("cn"):
-                ad_user.pop("cn")
+            for field in FIELDS_THAT_CANT_BE_MODIFIED:
+                if ad_user.get(field):
+                    ad_user.pop(field)
 
             fail_to_modify = []
 

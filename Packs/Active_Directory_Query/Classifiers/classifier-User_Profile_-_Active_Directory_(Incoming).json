@@ -14,13 +14,9 @@
      "complex": null,
      "simple": "l"
     },
-    "Country": {
+    "Country Name": {
      "complex": null,
      "simple": "c"
-    },
-    "Country Code Number": {
-     "complex": null,
-     "simple": "countryCode"
     },
     "Department": {
      "complex": null,
@@ -38,11 +34,11 @@
      "complex": null,
      "simple": "employeeID"
     },
-    "First Name": {
+    "Given Name": {
      "complex": null,
      "simple": "givenName"
     },
-    "Last Name": {
+    "Surname": {
      "complex": null,
      "simple": "sn"
     },
@@ -50,11 +46,7 @@
      "complex": null,
      "simple": "mobile"
     },
-    "Phone Number": {
-     "complex": null,
-     "simple": "mobile"
-    },
-    "State": {
+    "State Name": {
      "complex": null,
      "simple": "st"
     },
@@ -77,10 +69,6 @@
     "Zip Code": {
      "complex": null,
      "simple": "postalCode"
-    },
-    "sAMAccountName": {
-     "complex": null,
-     "simple": "sAMAccountName"
     }
    }
   }
