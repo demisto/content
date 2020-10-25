@@ -247,9 +247,8 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                 for pack_data in results:
                     # If the pack already installed, and the current version is the right one, ignore it.
                     if pack_data.get('id') == pack[0] and pack_data.get('currentVersion') == pack[1]:
-                        print('This should pass:')
-                        print(pack_data.get('id'))
-                        pass
+                        print(f'Skipping {pack} since already installed.')
+                        continue
 
                 if 200 <= status_code < 300:
                     message = f'The pack {pack} successfully installed!\n'
