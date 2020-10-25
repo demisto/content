@@ -1,4 +1,4 @@
-"""EmailRep Integration for Cortex XSOAR - Unit Tests file"""
+"""EmailRepIO Integration for Cortex XSOAR - Unit Tests file"""
 from CommonServerPython import Common, DBotScoreType
 
 import pytest
@@ -14,7 +14,7 @@ def util_load_json(path):
 
 
 def emailrep_client():
-    from EmailRep import INTEGRATION_NAME, Client
+    from EmailRepIO import INTEGRATION_NAME, Client
     return Client(
         base_url='https://emailrep.io',
         verify=False,
@@ -34,7 +34,7 @@ def test_email_reputation_get(requests_mock):
     Then:
         - Returns email json as received from API
     """
-    from EmailRep import INTEGRATION_NAME, email_reputation_command
+    from EmailRepIO import INTEGRATION_NAME, email_reputation_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
@@ -91,7 +91,7 @@ def test_input_email_reputation_get():
     Then:
         - Raises Value error for missing email address
     """
-    from EmailRep import email_reputation_command
+    from EmailRepIO import email_reputation_command
 
     client = emailrep_client()
     with pytest.raises(ValueError) as error_info:
@@ -109,7 +109,7 @@ def test_report_email_address(requests_mock):
     Then:
         - Returns success
     """
-    from EmailRep import INTEGRATION_NAME, report_email_address_command
+    from EmailRepIO import INTEGRATION_NAME, report_email_address_command
 
     mock_response = {
         "status": "success"
@@ -139,7 +139,7 @@ def test_input_invalid_tags_report_email_address():
     Then:
         - Raises Value error for bad tag
     """
-    from EmailRep import report_email_address_command
+    from EmailRepIO import report_email_address_command
 
     client = emailrep_client()
     args = {
@@ -160,7 +160,7 @@ def test_input_tags_report_email_address():
     Then:
         - Raises Value error for missing tags field
     """
-    from EmailRep import report_email_address_command
+    from EmailRepIO import report_email_address_command
 
     client = emailrep_client()
     args = {
@@ -180,7 +180,7 @@ def test_input_email_report_email_address():
     Then:
         - Raises Value error for missing email_address field
     """
-    from EmailRep import report_email_address_command
+    from EmailRepIO import report_email_address_command
 
     client = emailrep_client()
     args = {
@@ -200,7 +200,7 @@ def test_email(requests_mock):
     Then:
         - Returns DBot score and API outputs
     """
-    from EmailRep import INTEGRATION_NAME, email_command
+    from EmailRepIO import INTEGRATION_NAME, email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
@@ -264,7 +264,7 @@ def test_email_score_good(requests_mock):
     Then:
         - Returns GOOD DBot score
     """
-    from EmailRep import email_command
+    from EmailRepIO import email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
@@ -289,7 +289,7 @@ def test_email_score_suspicious(requests_mock):
     Then:
         - Returns SUSPICIOUS DBot score
     """
-    from EmailRep import email_command
+    from EmailRepIO import email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
@@ -317,7 +317,7 @@ def test_email_score_bad_malicious_activity_recent(requests_mock):
     Then:
         - Returns BAD DBot score and malicious_description accordingly
     """
-    from EmailRep import email_command
+    from EmailRepIO import email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
@@ -332,7 +332,7 @@ def test_email_score_bad_malicious_activity_recent(requests_mock):
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     response = email_command(client, args)
     assert response.indicators[0].dbot_score.score == Common.DBotScore.BAD
-    assert response.indicators[0].dbot_score.malicious_description == 'EmailRep returned malicious_activity_recent'
+    assert response.indicators[0].dbot_score.malicious_description == 'EmailRepIO returned malicious_activity_recent'
 
 
 def test_email_score_bad_credentials_leaked_recent(requests_mock):
@@ -346,7 +346,7 @@ def test_email_score_bad_credentials_leaked_recent(requests_mock):
     Then:
         - Returns BAD DBot score and malicious_description accordingly
     """
-    from EmailRep import email_command
+    from EmailRepIO import email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
@@ -361,7 +361,7 @@ def test_email_score_bad_credentials_leaked_recent(requests_mock):
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     response = email_command(client, args)
     assert response.indicators[0].dbot_score.score == Common.DBotScore.BAD
-    assert response.indicators[0].dbot_score.malicious_description == 'EmailRep returned credentials_leaked_recent'
+    assert response.indicators[0].dbot_score.malicious_description == 'EmailRepIO returned credentials_leaked_recent'
 
 
 def test_email_score_bad_malicious_activity_and_credentials_leaked_recent(requests_mock):
@@ -375,7 +375,7 @@ def test_email_score_bad_malicious_activity_and_credentials_leaked_recent(reques
     Then:
         - Returns BAD DBot score and malicious_description accordingly
     """
-    from EmailRep import email_command
+    from EmailRepIO import email_command
 
     mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
@@ -391,7 +391,7 @@ def test_email_score_bad_malicious_activity_and_credentials_leaked_recent(reques
     response = email_command(client, args)
     assert response.indicators[0].dbot_score.score == Common.DBotScore.BAD
     assert response.indicators[0].dbot_score.malicious_description == \
-        'EmailRep returned malicious_activity_recent credentials_leaked_recent'
+        'EmailRepIO returned malicious_activity_recent credentials_leaked_recent'
 
 
 def test_input_email():
@@ -403,7 +403,7 @@ def test_input_email():
     Then:
         - Raises Value error for missing email field
     """
-    from EmailRep import email_command
+    from EmailRepIO import email_command
 
     client = emailrep_client()
     with pytest.raises(ValueError) as error_info:

@@ -1,4 +1,4 @@
-"""EmailRep Integration for Cortex XSOAR"""
+"""EmailRepIO Integration for Cortex XSOAR"""
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -17,13 +17,13 @@ urllib3.disable_warnings()
 ACCEPTED_TAGS = ['account_takeover', 'bec', 'brand_impersonation', 'browser_exploit', 'credential_phishing',
                  'generic_phishing', 'malware', 'scam', 'spam', 'spoofed', 'task_request', 'threat_actor']
 APP_NAME = 'Cortex-XSOAR'
-INTEGRATION_NAME = 'EmailRep'
+INTEGRATION_NAME = 'EmailRepIO'
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the EmailRep service API"""
+    """Client class to interact with the EmailRepIO service API"""
 
     def get_email_address_reputation(self, email: str) -> Dict[str, Any]:
         """Get email reputation using the '/{email}' API endpoint"""
@@ -72,7 +72,7 @@ def test_module(client: Client) -> str:
 
 
 def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Get email address reputation from EmailRep and calculate DBotScore.
+    """Get email address reputation from EmailRepIO and calculate DBotScore.
 
     DBot score:
     Good: Suspicious = false
@@ -127,7 +127,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Get email address reputation from EmailRep"""
+    """Get email address reputation from EmailRepIO"""
 
     emails = argToList(args.get('email_address'))
     if len(emails) == 0 or emails is None:
@@ -147,7 +147,7 @@ def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def report_email_address_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Report email address to EmailRep"""
+    """Report email address to EmailRepIO"""
 
     email_address = args.get('email_address')
     if email_address is None:
@@ -211,13 +211,13 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'emailrep-email-reputation-get':
+        if demisto.command() == 'emailrepio-email-reputation-get':
             return_results(email_reputation_command(client, demisto.args()))
 
         elif demisto.command() == 'email':
             return_results(email_command(client, demisto.args()))
 
-        elif demisto.command() == 'emailrep-email-address-report':
+        elif demisto.command() == 'emailrepio-email-address-report':
             return_results(report_email_address_command(client, demisto.args()))
 
         elif demisto.command() == 'test-module':

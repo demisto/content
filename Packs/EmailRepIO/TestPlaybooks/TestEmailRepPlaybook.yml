@@ -118,137 +118,137 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.reputation
+              simple: EmailRepIO.Email.reputation
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.suspicious
+              simple: EmailRepIO.Email.suspicious
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.references
+              simple: EmailRepIO.Email.references
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.blacklisted
+              simple: EmailRepIO.Email.details.blacklisted
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.malicious_activity
+              simple: EmailRepIO.Email.details.malicious_activity
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.malicious_activity_recent
+              simple: EmailRepIO.Email.details.malicious_activity_recent
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.credentials_leaked
+              simple: EmailRepIO.Email.details.credentials_leaked
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.credentials_leaked_recent
+              simple: EmailRepIO.Email.details.credentials_leaked_recent
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.data_breach
+              simple: EmailRepIO.Email.details.data_breach
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.details.first_seen
+              simple: EmailRepIO.Email.details.first_seen
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.details.last_seen
+              simple: EmailRepIO.Email.details.last_seen
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.domain_exists
+              simple: EmailRepIO.Email.details.domain_exists
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.details.domain_reputation
+              simple: EmailRepIO.Email.details.domain_reputation
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.new_domain
+              simple: EmailRepIO.Email.details.new_domain
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.details.days_since_domain_creation
+              simple: EmailRepIO.Email.details.days_since_domain_creation
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.suspicious_tld
+              simple: EmailRepIO.Email.details.suspicious_tld
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.spam
+              simple: EmailRepIO.Email.details.spam
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.free_provider
+              simple: EmailRepIO.Email.details.free_provider
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.disposable
+              simple: EmailRepIO.Email.details.disposable
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.deliverable
+              simple: EmailRepIO.Email.details.deliverable
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.accept_all
+              simple: EmailRepIO.Email.details.accept_all
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.valid_mx
+              simple: EmailRepIO.Email.details.valid_mx
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.spoofable
+              simple: EmailRepIO.Email.details.spoofable
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.spf_strict
+              simple: EmailRepIO.Email.details.spf_strict
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.dmarc_enforced
+              simple: EmailRepIO.Email.details.dmarc_enforced
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.details.profiles
+              simple: EmailRepIO.Email.details.profiles
             iscontext: true
       - - operator: isEqualString
           left:
             value:
-              simple: EmailRep.Email.email
+              simple: EmailRepIO.Email.email
             iscontext: true
           right:
             value:
@@ -342,11 +342,11 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: EmailRep
+              simple: EmailRepIO
       - - operator: isEqualString
           left:
             value:
-              simple: EmailRep.Email.email
+              simple: EmailRepIO.Email.email
             iscontext: true
           right:
             value:
@@ -354,132 +354,132 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.reputation
+              simple: EmailRepIO.Email.reputation
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.suspicious
+              simple: EmailRepIO.Email.suspicious
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.references
+              simple: EmailRepIO.Email.references
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.blacklisted
+              simple: EmailRepIO.Email.details.blacklisted
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.malicious_activity
+              simple: EmailRepIO.Email.details.malicious_activity
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.malicious_activity_recent
+              simple: EmailRepIO.Email.details.malicious_activity_recent
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.credentials_leaked
+              simple: EmailRepIO.Email.details.credentials_leaked
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.credentials_leaked_recent
+              simple: EmailRepIO.Email.details.credentials_leaked_recent
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.data_breach
+              simple: EmailRepIO.Email.details.data_breach
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.details.first_seen
+              simple: EmailRepIO.Email.details.first_seen
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.details.last_seen
+              simple: EmailRepIO.Email.details.last_seen
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.domain_exists
+              simple: EmailRepIO.Email.details.domain_exists
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.details.domain_reputation
+              simple: EmailRepIO.Email.details.domain_reputation
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.new_domain
+              simple: EmailRepIO.Email.details.new_domain
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.details.days_since_domain_creation
+              simple: EmailRepIO.Email.details.days_since_domain_creation
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.suspicious_tld
+              simple: EmailRepIO.Email.details.suspicious_tld
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.spam
+              simple: EmailRepIO.Email.details.spam
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.free_provider
+              simple: EmailRepIO.Email.details.free_provider
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.disposable
+              simple: EmailRepIO.Email.details.disposable
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.deliverable
+              simple: EmailRepIO.Email.details.deliverable
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.accept_all
+              simple: EmailRepIO.Email.details.accept_all
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.valid_mx
+              simple: EmailRepIO.Email.details.valid_mx
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.spoofable
+              simple: EmailRepIO.Email.details.spoofable
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.spf_strict
+              simple: EmailRepIO.Email.details.spf_strict
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EmailRep.Email.details.dmarc_enforced
+              simple: EmailRepIO.Email.details.dmarc_enforced
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: EmailRep.Email.details.profiles
+              simple: EmailRepIO.Email.details.profiles
             iscontext: true
     view: |-
       {
