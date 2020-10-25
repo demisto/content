@@ -1,8 +1,8 @@
-id: TestEmailRepPlaybook
+id: TestEmailRepIOPlaybook
 version: -1
 fromversion: 5.0.0
 vcShouldKeepItemLegacyProdMachine: false
-name: TestEmailRepPlaybook
+name: TestEmailRepIOPlaybook
 starttaskid: "0"
 tasks:
   "0":
@@ -73,8 +73,8 @@ tasks:
     task:
       id: 2d1e6132-3f92-462f-8887-555be4c4682b
       version: -1
-      name: emailrep-email-reputation-get
-      script: '|||emailrep-email-reputation-get'
+      name: emailrepio-email-reputation-get
+      script: '|||emailrepio-email-reputation-get'
       type: regular
       iscommand: true
       brand: ""
@@ -500,8 +500,8 @@ tasks:
     task:
       id: 7f201e96-74b2-4ed9-8847-7b4189315886
       version: -1
-      name: emailrep-email-address-report
-      script: '|||emailrep-email-address-report'
+      name: emailrepio-email-address-report
+      script: '|||emailrepio-email-address-report'
       type: regular
       iscommand: true
       brand: ""
