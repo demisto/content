@@ -3,49 +3,9 @@
  "feed": false,
  "id": "IAM Sync User - Workday",
  "mapping": {
-  "IAM-Sync-User": {
+  "IAM - Sync User": {
    "dontMapEventToLabels": true,
    "internalMapping": {
-    "ADP Id": {
-     "complex": null,
-     "simple": "ADP_ID"
-    },
-    "CN": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-
-      ],
-      "root": "Email_Address",
-      "transformers": [
-       {
-        "args": {
-         "delimiter": {
-          "isContext": false,
-          "value": {
-           "complex": null,
-           "simple": "@"
-          }
-         }
-        },
-        "operator": "split"
-       },
-       {
-        "args": {
-         "index": {
-          "isContext": false,
-          "value": {
-           "complex": null,
-           "simple": "0"
-          }
-         }
-        },
-        "operator": "atIndex"
-       }
-      ]
-     },
-     "simple": ""
-    },
     "City": {
      "complex": null,
      "simple": "City"
@@ -57,10 +17,6 @@
     "Cost Center Code": {
      "complex": null,
      "simple": "Cost_Center_Code"
-    },
-    "Country Code Number": {
-     "complex": null,
-     "simple": "Work_Country_Code"
     },
     "Country Name": {
      "complex": null,
