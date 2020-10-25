@@ -723,13 +723,13 @@ Create an AD user.
 Used in the IAM premium pack.
 
 #### Base Command
-`create-user`
+`iam-create-user`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-profile | User Profile indicator details. | Required | 
+| user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
 
 
 #### Context Output
@@ -746,12 +746,12 @@ Used in the IAM premium pack.
 | IAM.Vendor.instanceName | String | Name of the integration instance. | 
 | IAM.Vendor.success | Boolean | If true, the command was executed successfully, otherwise false. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
-| IAM.Vendor.UserProfile | Any | The user profile indicator | 
+| IAM.Vendor.action | String | The command name. | 
 
 #### Command Example
 
 ```
-!create-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"lastname\":\"Test\",\"firstname\":\"Demisto\"}
+!iam-create-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"lastname\":\"Test\",\"firstname\":\"Demisto\"}
 ```
 #### Human Readable Output
 
@@ -769,13 +769,13 @@ Updates an existing AD user with the data passed in the user-profile argument.
 Used in the IAM premium pack.
 
 #### Base Command
-`update-user`
+`iam-update-user`
 
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-profile | A User Profile indicator. | Required | 
-| create-if-not-exists | Whether or not to create the user if not found. | Optional | 
+| user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
+| create-if-not-exists | If true the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
 
 
 #### Context Output
@@ -792,12 +792,12 @@ Used in the IAM premium pack.
 | IAM.Vendor.instanceName | String | Name of the integration instance. | 
 | IAM.Vendor.success | Boolean | If true, the command was executed successfully, otherwise false. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
-| IAM.Vendor.UserProfile | Any | The user profile indicator | 
+| IAM.Vendor.action | String | The command name. | 
 
 
 #### Command Example
 ```
-!update-user user-profile={\"email\":\"testdemisto22@paloaltonetworks.com\", \"name\":\"testdemisto2\"}
+!iam-update-user user-profile={\"email\":\"testdemisto22@paloaltonetworks.com\", \"name\":\"testdemisto2\"}
 ```
 
 #### Human Readable Output
@@ -816,14 +816,14 @@ Used in the IAM premium pack.
 
 
 #### Base Command
-`get-user`
+`iam-get-user`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-profile | A User Profile indicator. | Required | 
-| default_attribute | The unique attribute in AD, default: samaccountname | Optional | 
+| user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
+| default_attribute | The unique attribute in AD. Default is samaccountname. | Optional | 
 
 #### Context Output
 
@@ -839,11 +839,11 @@ Used in the IAM premium pack.
 | IAM.Vendor.instanceName | String | Name of the integration instance. | 
 | IAM.Vendor.success | Boolean | If true, the command was executed successfully, otherwise false. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
-| IAM.Vendor.UserProfile | Any | The user profile indicator | 
+| IAM.Vendor.action | String | The command name. | 
 
 #### Command Example
 ```
-!get-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}
+!iam-get-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}
 ```
 
 #### Human Readable Output
@@ -860,13 +860,13 @@ Enable an active AD user.
 Used in the IAM premium pack.
 
 #### Base Command
-`enable-user`
+`iam-enable-user`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-profile | A User Profile indicator. | Required | 
-| create-if-not-exists | Whether or not to create the user if not found. | Optional | 
+| user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
+| create-if-not-exists | If true the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
 
 #### Context Output
 
@@ -882,11 +882,11 @@ Used in the IAM premium pack.
 | IAM.Vendor.instanceName | String | Name of the integration instance. | 
 | IAM.Vendor.success | Boolean | If true, the command was executed successfully, otherwise false. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
-| IAM.Vendor.UserProfile | Any | The user profile indicator | 
+| IAM.Vendor.action | String | The command name. | 
 
 #### Command Example
 ```
-!enable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}
+!iam-enable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}
 ```
 #### Human Readable Output
 
@@ -902,12 +902,12 @@ Disable an active AD user.
 Used in the IAM premium pack.
 
 #### Base Command
-`disable-user`
+`iam-disable-user`
 
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-profile | A User Profile indicator. | Required | 
+| user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
 
 #### Context Output
 
@@ -923,12 +923,12 @@ Used in the IAM premium pack.
 | IAM.Vendor.instanceName | String | Name of the integration instance. | 
 | IAM.Vendor.success | Boolean | If true, the command was executed successfully, otherwise false. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
-| IAM.Vendor.UserProfile | Any | The user profile indicator | 
+| IAM.Vendor.action | String | The command name. | 
 
 #### Command Example
 
 ```
-!disable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}
+!iam-disable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}
 ```
 
 #### Human Readable Output
