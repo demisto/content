@@ -2766,9 +2766,9 @@ def return_results(results):
             demisto.results({})
             return
 
-        elif not isinstance(results[0], dict):  # list of dict can be handled by default case
+        elif not isinstance(results[0], CommandResults):  # other cases should be handled by default case
             for result in results:
-                return_results(result)
+                demisto.results(result)
             return
 
     if isinstance(results, CommandResults):
