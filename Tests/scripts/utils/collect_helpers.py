@@ -1,24 +1,25 @@
 """
 Helper functions for collect_tests.
 """
-from demisto_sdk.commands.common.constants import *  # noqa: E402
 import re
 from typing import List
 
+import demisto_sdk.commands.common.constants as constants
+
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
-PACKS_SCRIPT_REGEX = r'{}/([^/]+)/{}/(script-[^\\/]+)\.yml$'.format(PACKS_DIR, SCRIPTS_DIR)
-FILE_IN_INTEGRATIONS_DIR_REGEX = r'{}/(.+)'.format(INTEGRATIONS_DIR)
-FILE_IN_SCRIPTS_DIR_REGEX = r'{}/(.+)'.format(SCRIPTS_DIR)
+PACKS_SCRIPT_REGEX = r'{}/([^/]+)/{}/(script-[^\\/]+)\.yml$'.format(constants.PACKS_DIR, constants.SCRIPTS_DIR)
+FILE_IN_INTEGRATIONS_DIR_REGEX = r'{}/(.+)'.format(constants.INTEGRATIONS_DIR)
+FILE_IN_SCRIPTS_DIR_REGEX = r'{}/(.+)'.format(constants.SCRIPTS_DIR)
 FILE_IN_PACKS_INTEGRATIONS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
-    PACKS_DIR, INTEGRATIONS_DIR)
+    constants.PACKS_DIR, constants.INTEGRATIONS_DIR)
 FILE_IN_PACKS_SCRIPTS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
-    PACKS_DIR, SCRIPTS_DIR)
+    constants.PACKS_DIR, constants.SCRIPTS_DIR)
 
 TEST_DATA_INTEGRATION_YML_REGEX = r'Tests\/scripts\/infrastructure_tests\/tests_data\/mock_integrations\/.*\.yml'
 INTEGRATION_REGEXES = [
-    PACKS_INTEGRATION_PY_REGEX,
-    PACKS_INTEGRATION_PS_TEST_REGEX,
+    constants.PACKS_INTEGRATION_PY_REGEX,
+    constants.PACKS_INTEGRATION_PS_TEST_REGEX,
     TEST_DATA_INTEGRATION_YML_REGEX
 ]
 TEST_DATA_SCRIPT_YML_REGEX = r'Tests/scripts/infrastructure_tests/tests_data/mock_scripts/.*.yml'
@@ -26,7 +27,7 @@ SCRIPT_REGEXES = [
     TEST_DATA_SCRIPT_YML_REGEX
 ]
 INCIDENT_FIELD_REGEXES = [
-    PACKS_INCIDENT_FIELD_JSON_REGEX
+    constants.PACKS_INCIDENT_FIELD_JSON_REGEX
 ]
 FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
     FILE_IN_INTEGRATIONS_DIR_REGEX,
@@ -36,19 +37,19 @@ FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
 ]
 CHECKED_TYPES_REGEXES = [
     # Integrations
-    PACKS_INTEGRATION_PY_REGEX,
-    PACKS_INTEGRATION_YML_REGEX,
-    PACKS_INTEGRATION_NON_SPLIT_YML_REGEX,
-    PACKS_INTEGRATION_PS_REGEX,
+    constants.PACKS_INTEGRATION_PY_REGEX,
+    constants.PACKS_INTEGRATION_YML_REGEX,
+    constants.PACKS_INTEGRATION_NON_SPLIT_YML_REGEX,
+    constants.PACKS_INTEGRATION_PS_REGEX,
 
     # Scripts
     PACKS_SCRIPT_REGEX,
-    PACKS_SCRIPT_YML_REGEX,
-    PACKS_SCRIPT_NON_SPLIT_YML_REGEX,
+    constants.PACKS_SCRIPT_YML_REGEX,
+    constants.PACKS_SCRIPT_NON_SPLIT_YML_REGEX,
 
     # Playbooks
-    PLAYBOOK_REGEX,
-    PLAYBOOK_YML_REGEX
+    constants.PLAYBOOK_REGEX,
+    constants.PLAYBOOK_YML_REGEX
 ]
 
 # File names
@@ -69,3 +70,12 @@ def checked_type(file_path: str, regex_list: List[str]) -> bool:
         if re.match(regex, file_path, re.IGNORECASE):
             return True
     return False
+
+
+def is_pytest_file(file_path: str) -> bool:
+    """Whatever is a pytest file or not depends on the file name.
+
+    Args:
+        file_path: File path to check
+    """
+    return '_test' in file_path or 'test_' in file_path

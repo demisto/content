@@ -423,7 +423,8 @@ class TestSampleTesting:
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Tests/scripts/integration-test.yml"
 
-    def test_sample_tests(self):
+    def test_sample_tests(self, mocker):
+        mocker.patch("Tests.scripts.utils.get_modified_files_for_testing.tools.find_type", return_value=None)
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM

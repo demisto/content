@@ -12,15 +12,18 @@ import random
 import sys
 from copy import deepcopy
 from distutils.version import LooseVersion
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 
 import coloredlogs
 import demisto_sdk.commands.common.tools as tools
+from demisto_sdk.commands.common.constants import YML_SCRIPT_REGEXES, YML_PLAYBOOKS_NO_TESTS_REGEXES, \
+    YML_INTEGRATION_REGEXES, API_MODULE_REGEXES, RUN_ALL_TESTS_FORMAT
 
+import Tests.scripts.utils.collect_helpers as collect_helpers
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
-from Tests.scripts.utils.collect_helpers import *  # noqa: E402
 from Tests.scripts.utils.content_packs_util import should_test_content_pack
-from Tests.scripts.utils.get_modified_files_for_testing import GetModifiedFilesForTesting
+from Tests.scripts.utils.get_modified_files_for_testing import \
+    GetModifiedFilesForTesting
 
 coloredlogs.install(level=logging.DEBUG,
                     fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s',
@@ -166,14 +169,12 @@ def is_runnable_in_server_version(from_v, server_v, to_v):
     return tools.server_version_compare(from_v, server_v) <= 0 and tools.server_version_compare(server_v, to_v) <= 0
 
 
-def validate_not_a_package_test_script(file_path):
-    return '_test' not in file_path and 'test_' not in file_path
-
-
-def get_modified_files_for_testing(files_string: str):
+def get_modified_files_for_testing(
+        files_string: str
+) -> Tuple[List[str], List[str], List[str], bool, List[str], set, bool, bool]:
     get_modified = GetModifiedFilesForTesting(files_string)
     return (
-        list(get_modified.modified_files_list), list(get_modified.modified_tests_list), list(get_modified.changed_common),
+        list(get_modified.modified_files), list(get_modified.modified_tests), list(get_modified.changed_common),
         get_modified.is_conf_json, list(get_modified.sample_tests), get_modified.modified_metadata_list,
         get_modified.is_reputations_json, get_modified.is_indicator_json
     )
@@ -398,8 +399,8 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
     for file_path in modified_files:
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
-            if test in test_ids or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
-                if checked_type(file_path, INTEGRATION_REGEXES):
+            if test in test_ids or collect_helpers.re.match(collect_helpers.NO_TESTS_FORMAT, test, collect_helpers.re.IGNORECASE):
+                if collect_helpers.checked_type(file_path, collect_helpers.INTEGRATION_REGEXES):
                     _id = tools.get_script_or_integration_id(file_path)
 
                 else:
@@ -496,7 +497,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     playbook_to_version = {}
     integration_to_version = {}
     for file_path in modified_files:
-        if checked_type(file_path, SCRIPT_REGEXES + YML_SCRIPT_REGEXES):
+        if collect_helpers.checked_type(file_path, collect_helpers.SCRIPT_REGEXES + YML_SCRIPT_REGEXES):
             name = get_name(file_path)
             script_names.add(name)
             script_to_version[name] = (tools.get_from_version(file_path), tools.get_to_version(file_path))
@@ -506,17 +507,17 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
                 catched_scripts.add(name)
                 tests_set.add('Found a unittest for the script {}'.format(package_name))
 
-        elif checked_type(file_path, YML_PLAYBOOKS_NO_TESTS_REGEXES):
+        elif collect_helpers.checked_type(file_path, YML_PLAYBOOKS_NO_TESTS_REGEXES):
             name = get_name(file_path)
             playbook_names.add(name)
             playbook_to_version[name] = (tools.get_from_version(file_path), tools.get_to_version(file_path))
 
-        elif checked_type(file_path, INTEGRATION_REGEXES + YML_INTEGRATION_REGEXES):
+        elif collect_helpers.checked_type(file_path, collect_helpers.INTEGRATION_REGEXES + YML_INTEGRATION_REGEXES):
             _id = tools.get_script_or_integration_id(file_path)
             integration_ids.add(_id)
             integration_to_version[_id] = (tools.get_from_version(file_path), tools.get_to_version(file_path))
 
-        if checked_type(file_path, API_MODULE_REGEXES):
+        if collect_helpers.checked_type(file_path, API_MODULE_REGEXES):
             api_module_name = tools.get_script_or_integration_id(file_path)
             changed_api_modules.add(api_module_name)
 
@@ -825,12 +826,12 @@ def get_test_from_conf(branch_name, conf=deepcopy(CONF)):
     tests = set([])
     changed = set([])
     change_string = tools.run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
-    added_groups = re.findall(r'(\+[ ]+")(.*)(":)', change_string)
+    added_groups = collect_helpers.re.findall(r'(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
             changed.add(group[1])
 
-    deleted_groups = re.findall(r'(-[ ]+")(.*)(":)', change_string)
+    deleted_groups = collect_helpers.re.findall(r'(-[ ]+")(.*)(":)', change_string)
     if deleted_groups:
         for group in deleted_groups:
             changed.add(group[1])
@@ -945,7 +946,7 @@ def get_random_tests(tests_num, rand, conf=deepcopy(CONF), id_set=deepcopy(ID_SE
 def get_tests_for_pack(pack_path):
     pack_yml_files = tools.get_files_in_dir(pack_path, ['yml'])
     pack_test_playbooks = [tools.collect_ids(file) for file in pack_yml_files if
-                           checked_type(file, YML_TEST_PLAYBOOKS_REGEXES)]
+                           collect_helpers.checked_type(file, collect_helpers.YML_TEST_PLAYBOOKS_REGEXES)]
     return pack_test_playbooks
 
 
@@ -1025,12 +1026,11 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
-
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
      modified_metadata_list, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
-    all_modified_files_paths = modified_files_with_relevant_tests.union(
-        modified_tests_list, changed_common, sample_tests, modified_metadata_list
-    )
+    all_modified_files_paths = set(
+        modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
+    ).union(modified_metadata_list)
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
 
     create_filter_envs_file(from_version, to_version)
@@ -1184,12 +1184,12 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     if is_nightly:
         all_tests = set(CONF.get_test_playbook_ids())
         # adding "Run all tests" which is required in test_content.extract_filtered_tests() for the nightly
-        all_tests.add(RUN_ALL_TESTS_FORMAT)
-        packs_to_install = set(filter(should_test_content_pack, os.listdir(PACKS_DIR)))
+        all_tests.add(collect_helpers.RUN_ALL_TESTS_FORMAT)
+        packs_to_install = set(filter(should_test_content_pack, os.listdir(collect_helpers.PACKS_DIR)))
         tests = remove_ignored_tests(all_tests, packs_to_install)
     else:
         branches = tools.run_command("git branch")
-        branch_name_reg = re.search(r"\* (.*)", branches)
+        branch_name_reg = collect_helpers.re.search(r"\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
 
         logging.info("Getting changed files from the branch: {0}".format(branch_name))
