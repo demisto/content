@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: Mandatory for emailrep-email-address-report command
+- additionalinfo: Mandatory for emailrepio-email-address-report command
   display: API Key
   name: apikey
   required: false
@@ -36,7 +36,7 @@ script:
     deprecated: false
     description: Get EmailRepIO reputation for email address
     execution: false
-    name: emailrep-email-reputation-get
+    name: emailrepio-email-reputation-get
     outputs:
     - contextPath: EmailRepIO.Email.email
       type: String
@@ -297,7 +297,7 @@ script:
     deprecated: false
     description: Report email address to EmailRepIO
     execution: false
-    name: emailrep-email-address-report
+    name: emailrepio-email-address-report
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false

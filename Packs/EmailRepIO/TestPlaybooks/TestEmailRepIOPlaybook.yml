@@ -281,7 +281,7 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      email_address:
+      email:
         simple: test@example.com
     separatecontext: false
     view: |-
