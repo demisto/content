@@ -14,10 +14,6 @@
 					"complex": null,
 					"simple": "costCenter"
 				},
-				"Country Code Number": {
-					"complex": null,
-					"simple": "countryCode"
-				},
 				"Department": {
 					"complex": null,
 					"simple": "department"
@@ -30,7 +26,7 @@
 					"complex": null,
 					"simple": "email"
 				},
-				"Employee Number": {
+				"Employee ID": {
 					"complex": null,
 					"simple": "employeeNumber"
 				},
@@ -66,7 +62,7 @@
 					"complex": null,
 					"simple": "title"
 				},
-				"User Type": {
+				"Employee Type": {
 					"complex": null,
 					"simple": "userType"
 				},
