@@ -344,8 +344,8 @@ class TestGetModifiedFilesForTesting:
         assert is_indicator_json is False
 
     @pytest.mark.parametrize("file_path", (
-            "Tests/scripts/integration-test.yml",
-            "Tests/Util/Scripts/new_script.py"
+        "Tests/scripts/integration-test.yml",
+        "Tests/Util/Scripts/new_script.py"
     ))
     def test_sample(self, file_path):
         diff_line = "M Tests/Util/Scripts/new_script.py"

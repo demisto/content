@@ -11,8 +11,12 @@ from demisto_sdk.commands.common.constants import FileType
 from demisto_sdk.commands.common import tools
 
 from Tests.scripts.utils.collect_helpers import (
-    COMMON_YML_LIST, FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES,
-    SECRETS_WHITE_LIST, checked_type, is_pytest_file)
+    COMMON_YML_LIST,
+    FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES,
+    SECRETS_WHITE_LIST,
+    checked_type,
+    is_pytest_file,
+)
 
 
 class GetModifiedFilesForTesting:
@@ -33,7 +37,7 @@ class GetModifiedFilesForTesting:
     def create_diff_list(self) -> List[Tuple[str, FileType]]:
         """Classified the diff list using tools.find_type
 
-        Returns: 
+        Returns:
             Tuple of file_path, FileType
         """
         files = list()
@@ -72,33 +76,29 @@ class GetModifiedFilesForTesting:
             file will be added to self.sample_tests
         """
         # reputations.json
-        if checked_type(file_path, [
-            constants.INDICATOR_TYPES_REPUTATIONS_REGEX,
-            constants.PACKS_INDICATOR_TYPES_REPUTATIONS_REGEX,
-            constants.PACKS_INDICATOR_TYPE_JSON_REGEX
-        ]):
+        if checked_type(
+            file_path,
+            [
+                constants.INDICATOR_TYPES_REPUTATIONS_REGEX,
+                constants.PACKS_INDICATOR_TYPES_REPUTATIONS_REGEX,
+                constants.PACKS_INDICATOR_TYPE_JSON_REGEX,
+            ],
+        ):
             self.is_reputations_json = True
 
-        elif re.match(
-            constants.CONF_PATH,
-            file_path,
-            re.IGNORECASE,
-        ):
+        elif re.match(constants.CONF_PATH, file_path, re.IGNORECASE,):
             self.is_conf_json = True
         # if is not part of packs meta file name or whitelisted
         elif any(
             file in file_path
             for file in (
-                    constants.PACKS_PACK_META_FILE_NAME,
-                    constants.PACKS_WHITELIST_FILE_NAME,
+                constants.PACKS_PACK_META_FILE_NAME,
+                constants.PACKS_WHITELIST_FILE_NAME,
             )
         ):
             self.modified_metadata_list.add(tools.get_pack_name(file_path))
         elif checked_type(file_path, FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES):
-            if (
-                os.path.splitext(file_path)[-1]
-                not in constants.FILE_TYPES_FOR_TESTING
-            ):
+            if os.path.splitext(file_path)[-1] not in constants.FILE_TYPES_FOR_TESTING:
                 return
         # If is not whitelist
         elif SECRETS_WHITE_LIST not in file_path:
@@ -118,32 +118,18 @@ class GetModifiedFilesForTesting:
                     self.files_to_types[file_type] = {file_path}
 
         self.modified_files = self.modified_files.union(
-            self.files_to_types.get(
-                FileType.INTEGRATION, set()
-            ),
-            self.files_to_types.get(
-                FileType.SCRIPT, set()
-            ),
-            self.files_to_types.get(
-                FileType.PLAYBOOK, set()
-            ),
+            self.files_to_types.get(FileType.INTEGRATION, set()),
+            self.files_to_types.get(FileType.SCRIPT, set()),
+            self.files_to_types.get(FileType.PLAYBOOK, set()),
         )
 
         self.filter_python_files()
 
-        self.modified_tests = self.files_to_types.get(
-            FileType.TEST_PLAYBOOK, {}
-        )
+        self.modified_tests = self.files_to_types.get(FileType.TEST_PLAYBOOK, {})
 
-        self.is_reputations_json = (
-                FileType.REPUTATION
-                in self.files_to_types
-        )
+        self.is_reputations_json = FileType.REPUTATION in self.files_to_types
 
-        self.is_indicator_json = (
-                FileType.INDICATOR_FIELD
-                in self.files_to_types
-        )
+        self.is_indicator_json = FileType.INDICATOR_FIELD in self.files_to_types
 
     def filter_python_files(self):
         """Filtering out Python files that should not be tested.
@@ -156,14 +142,10 @@ class GetModifiedFilesForTesting:
         """
         yml_paths = set()
         pytest_files = set()
-        for file_path in self.files_to_types.get(
-            FileType.PYTHON_FILE, {}
-        ):
+        for file_path in self.files_to_types.get(FileType.PYTHON_FILE, {}):
             if is_pytest_file(file_path):
                 pytest_files.add(file_path)
-            elif not checked_type(
-                file_path, constants.CODE_FILES_REGEX
-            ):
+            elif not checked_type(file_path, constants.CODE_FILES_REGEX):
                 self.sample_tests.add(file_path)
             else:
                 # Py files, Integration, script, playbook ymls
@@ -172,20 +154,10 @@ class GetModifiedFilesForTesting:
                 yml_paths.add(file_path)
 
         if FileType.PYTHON_FILE in self.files_to_types:
-            self.files_to_types[
-                FileType.PYTHON_FILE
-            ] = (
-                self.files_to_types[
-                    FileType.PYTHON_FILE
-                ]
-                - self.sample_tests
+            self.files_to_types[FileType.PYTHON_FILE] = (
+                self.files_to_types[FileType.PYTHON_FILE] - self.sample_tests
             )
-            self.files_to_types[
-                FileType.PYTHON_FILE
-            ] = (
-                self.files_to_types[
-                    FileType.PYTHON_FILE
-                ]
-                - pytest_files
+            self.files_to_types[FileType.PYTHON_FILE] = (
+                self.files_to_types[FileType.PYTHON_FILE] - pytest_files
             )
         self.modified_files = self.modified_files.union(yml_paths)
