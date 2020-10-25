@@ -125,7 +125,7 @@ def fetch_incidents(client, last_run, fetch_time, mapper_in, report_url):
 def get_all_user_profiles(batch_size=1000):
     employee_id_to_user_profile = {}
     email_to_user_profile = {}
-    query_result = demisto.searchIndicators(query=f"type:\"User Profile\"").get('iocs', [])
+    query_result = demisto.searchIndicators(query='type:\"User Profile\"').get('iocs', [])
     for user_profile in query_result:
         employee_id = user_profile.get('employeeid')
         email = user_profile.get('email')
@@ -275,7 +275,7 @@ def main():
                 Returns the first x events (x being the fetch limit) and stores the remaining in integration context
             '''
             workday_context = demisto.getIntegrationContext()
-            events = workday_context.get('events')
+            events = workday_context.get('events', [])
             report_url = params.get('report_url')
 
             last_run = demisto.getLastRun()
