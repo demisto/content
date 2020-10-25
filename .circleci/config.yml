@@ -165,7 +165,6 @@ references:
         python --version
         python3 --version
         demisto-sdk --version
-        exit 1
 
   download_configuration: &download_configuration
     run:
@@ -323,6 +322,7 @@ references:
       name: Create ID Set
       when: always
       command: |
+        exit 1
         demisto-sdk create-id-set -o ./Tests/id_set.json
         cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
 
@@ -515,12 +515,6 @@ jobs:
       - *get_contribution_pack
       - *add_ssh_keys
       - *persist_to_workspace
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
-          when: always
 
   Run Unit Testing And Lint:
     <<: *container_config
@@ -544,7 +538,7 @@ jobs:
                 shell: /bin/bash
                 command: |
                   ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
-                  ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
+                  ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Run Unit Testing And Lint'
                 when: always
             - *store_artifacts
 
@@ -625,6 +619,12 @@ jobs:
                     echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CIRCLE_BRANCH.\n Merge it in order to merge the current branch into content repo."
                     exit 1
                   fi
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Run Validations'
+          when: always
 
   Create Instances:
     <<: *container_config
@@ -635,12 +635,6 @@ jobs:
       - checkout
       - *restore_cache
       - *prepare_environment
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
-          when: always
       - *get_contribution_pack
       - *add_ssh_keys
       - *create_id_set
@@ -694,6 +688,12 @@ jobs:
             - *setup_instance
             - *store_artifacts
       - *persist_to_workspace
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Create Instances'
+          when: always
 
   Server 5_0:
     <<: *container_config
@@ -1009,7 +1009,7 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Upload Packs'
           when: always
       - *destroy_instances
       - *store_artifacts
@@ -1168,7 +1168,7 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Install Packs in Demisto 6_0'
           when: always
 
   Install Packs in Demisto Marketplace - Master:
@@ -1201,7 +1201,7 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Install Packs in Demisto Marketplace - Master'
           when: always
 
 workflows:

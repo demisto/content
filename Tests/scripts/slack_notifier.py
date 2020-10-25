@@ -19,7 +19,7 @@ SDK_RUN_AGAINST_FAILED_STEPS_TYPE = 'sdk_run_against_failed_steps'
 BUCKET_UPLOAD_TYPE = 'bucket_upload'
 SDK_BUILD_TITLE = 'SDK Nightly Build'
 SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
-BUCKET_UPLOAD_BUILD_TITLE = 'Upload to Production Bucket'
+BUCKET_UPLOAD_BUILD_TITLE = 'Upload Packs To Marketplace Storage'
 
 
 def get_faild_steps_list():
@@ -69,6 +69,7 @@ def options_handler():
     parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address',
                         required=True)
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', required=True)
+    parser.add_argument('-j', '--job_name', help='The job name that is running the slack notifier', required=True)
     options = parser.parse_args()
 
     return options
@@ -90,12 +91,18 @@ def get_failing_unit_tests_file_data():
     return failing_ut_list
 
 
-def get_entities_fields(entity_title, report_file_name=''):
+def get_entities_fields(entity_title, report_file_name='', job_name=None):
     if 'lint' in report_file_name:  # lint case
         failed_entities = get_failing_unit_tests_file_data()
     else:
         failed_entities = get_faild_steps_list()
     entity_fields = []
+    if job_name:
+        return [{
+            "title": f'{job_name} job failed, failed steps are:',
+            "value": '\n'.join(failed_entities),
+            "short": False
+        }]
     if failed_entities:
         entity_fields.append({
             "title": f'{entity_title} - ({len(failed_entities)})',
@@ -122,8 +129,8 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
     return content_team_attachment
 
 
-def get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE):
-    steps_fields = get_entities_fields(entity_title="Failed Steps")
+def get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE, job_name=None):
+    steps_fields = get_entities_fields(entity_title="Failed Steps", job_name=job_name)
     color = 'good' if not steps_fields else 'danger'
     title = f'{build_title} - Success' if not steps_fields else f'{build_title} - Failure'
 
@@ -221,7 +228,7 @@ def get_fields():
     return content_team_fields, content_fields, failed_tests
 
 
-def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None):
+def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, job_name=None):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
@@ -242,7 +249,8 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
             content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE)
         elif test_type == BUCKET_UPLOAD_TYPE:
             print_color('Starting Slack notifications about upload to production bucket build', LOG_COLORS.GREEN)
-            content_team_attachments = get_attachments_for_all_steps(build_url, build_title=BUCKET_UPLOAD_BUILD_TITLE)
+            content_team_attachments = get_attachments_for_all_steps(build_url, build_title=BUCKET_UPLOAD_BUILD_TITLE,
+                                                                     job_name=job_name)
         elif test_type == SDK_RUN_AGAINST_FAILED_STEPS_TYPE:
             content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_XSOAR_BUILD_TITLE)
         else:
@@ -267,7 +275,7 @@ def main():
                        options.test_type,
                        env_results_file_name=options.env_results_file_name)
     elif options.bucket_upload:
-        slack_notifier(options.url, options.slack, options.test_type)
+        slack_notifier(options.url, options.slack, options.test_type, options.job_name)
     elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, BUCKET_UPLOAD_TYPE,
                                SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
         slack_notifier(options.url, options.slack, options.test_type)
