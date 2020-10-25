@@ -169,7 +169,7 @@ def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, p
 
 
 def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999,
-                  private_install=False):
+                  private_install=False, is_nightly=False):
     """ Make a packs installation request.
 
     Args:
@@ -245,11 +245,12 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                                                                                     _request_timeout=request_timeout)
                 results = ast.literal_eval(response_data)
                 for pack_data in results:
-                    # If the pack already installed, and the current version is the right one, ignore it.
-                    if not (pack_data.get('id') == pack[0] and pack_data.get('currentVersion') == pack[1]):
-                        continue
-                    else:
-                        print(f'Skipping {pack} since already installed.')
+                    print(pack_data)
+                #     # If the pack already installed, and the current version is the right one, ignore it.
+                #     if not (pack_data.get('id') == pack[0] and pack_data.get('currentVersion') == pack[1]):
+                #         continue
+                #     else:
+                #         print(f'Skipping {pack} since already installed.')
 
                 if 200 <= status_code < 300:
                     message = f'The pack {pack} successfully installed!\n'
