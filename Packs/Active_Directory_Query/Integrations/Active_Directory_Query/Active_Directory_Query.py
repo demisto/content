@@ -166,9 +166,6 @@ def generate_dn_and_remove_from_user_profile(user):
     cn = user.get("cn")
     ou = user.get("ou")
 
-    # orel delete!
-    ou = "CN=Users,DC=demisto,DC=ninja"
-
     return 'CN=' + str(cn) + ',' + str(ou)
 
 
