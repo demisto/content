@@ -515,6 +515,12 @@ jobs:
       - *get_contribution_pack
       - *add_ssh_keys
       - *persist_to_workspace
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
+          when: always
 
   Run Unit Testing And Lint:
     <<: *container_config
@@ -619,12 +625,6 @@ jobs:
                     echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CIRCLE_BRANCH.\n Merge it in order to merge the current branch into content repo."
                     exit 1
                   fi
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
-          when: always
 
   Create Instances:
     <<: *container_config
