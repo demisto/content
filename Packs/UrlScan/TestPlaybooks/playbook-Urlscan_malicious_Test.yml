@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ea63e051-33b1-4a6f-863a-169298759981
+    taskid: 1b2f49f5-53b0-4141-8a6f-f8d7c9959f01
     type: start
     task:
-      id: ea63e051-33b1-4a6f-863a-169298759981
+      id: 1b2f49f5-53b0-4141-8a6f-f8d7c9959f01
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: e039ac7f-7fa0-4fef-8113-590aea23fa49
+    taskid: c1b07b2a-0149-4afa-81da-a40104c43138
     type: regular
     task:
-      id: e039ac7f-7fa0-4fef-8113-590aea23fa49
+      id: c1b07b2a-0149-4afa-81da-a40104c43138
       version: -1
       name: Check Malicious url
       description: Check if file MD5 is malicious
@@ -62,10 +62,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 660d0ea8-da7d-407b-87f3-392c1a132417
+    taskid: 65e8c9b0-6cc9-40d0-8ea7-ca3ab5f12eb4
     type: regular
     task:
-      id: 660d0ea8-da7d-407b-87f3-392c1a132417
+      id: 65e8c9b0-6cc9-40d0-8ea7-ca3ab5f12eb4
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -93,13 +93,16 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: aa129b6a-759b-42e1-8c01-940a6d9edb86
+    taskid: 02157fa2-3963-4a10-841b-0596d0bada61
     type: condition
     task:
-      id: aa129b6a-759b-42e1-8c01-940a6d9edb86
+      id: 02157fa2-3963-4a10-841b-0596d0bada61
       version: -1
       name: Get result
-      description: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
+      description: Filter context keys by applying one of the various available manipulations
+        and storing in a new context key. Please notice that the resulting context
+        key will not be available automatically as an option but you can still specify
+        it.
       type: condition
       iscommand: false
       brand: ""
@@ -136,10 +139,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: c7d9a72d-c1be-4d91-822a-192e883a1532
+    taskid: 3237f7e4-e4fa-4eb5-8e49-ad2f23bf118c
     type: title
     task:
-      id: c7d9a72d-c1be-4d91-822a-192e883a1532
+      id: 3237f7e4-e4fa-4eb5-8e49-ad2f23bf118c
       version: -1
       name: Not Malicious URLs
       type: title
@@ -161,10 +164,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: e28b9c44-6bd9-4e9c-838d-41caee5c715a
+    taskid: 6c72f5ea-dd7f-4e66-8a17-ae974035ec50
     type: regular
     task:
-      id: e28b9c44-6bd9-4e9c-838d-41caee5c715a
+      id: 6c72f5ea-dd7f-4e66-8a17-ae974035ec50
       version: -1
       name: Check non-malicious url
       description: Check if file MD5 is malicious
@@ -194,13 +197,16 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 06cffd37-650e-41c4-812a-51789f03771c
+    taskid: 2ca88cf6-7c65-4687-8690-ecacb29a0f36
     type: condition
     task:
-      id: 06cffd37-650e-41c4-812a-51789f03771c
+      id: 2ca88cf6-7c65-4687-8690-ecacb29a0f36
       version: -1
       name: Get result
-      description: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
+      description: Filter context keys by applying one of the various available manipulations
+        and storing in a new context key. Please notice that the resulting context
+        key will not be available automatically as an option but you can still specify
+        it.
       type: condition
       iscommand: false
       brand: ""
@@ -237,10 +243,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: a124863b-c027-421d-8622-647ef81ac352
+    taskid: 3004003d-51f8-4a6d-8d66-81087b140e34
     type: title
     task:
-      id: a124863b-c027-421d-8622-647ef81ac352
+      id: 3004003d-51f8-4a6d-8d66-81087b140e34
       version: -1
       name: Rate Limiting Test
       type: title
@@ -262,10 +268,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 97ab4e87-b89c-47fa-80e1-ebfea613944a
+    taskid: 8dd01b56-72cc-49dd-87bd-3dff007bbe9e
     type: regular
     task:
-      id: 97ab4e87-b89c-47fa-80e1-ebfea613944a
+      id: 8dd01b56-72cc-49dd-87bd-3dff007bbe9e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -296,10 +302,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 9fc52f8b-997f-4338-8802-c8cd08e521a8
+    taskid: 3e45154e-b716-4d6d-8fad-d416c186896a
     type: regular
     task:
-      id: 9fc52f8b-997f-4338-8802-c8cd08e521a8
+      id: 3e45154e-b716-4d6d-8fad-d416c186896a
       version: -1
       name: Multiple url submission(rate limit test)
       description: Submit a url to scan
@@ -335,10 +341,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 9beb3f70-5c01-4ed5-83ff-6be35945035d
+    taskid: 61544975-9029-427d-8d83-e43c86dad240
     type: regular
     task:
-      id: 9beb3f70-5c01-4ed5-83ff-6be35945035d
+      id: 61544975-9029-427d-8d83-e43c86dad240
       version: -1
       name: url
       description: Submit a url to scan
@@ -374,10 +380,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 0979373f-503b-441f-895c-bfdfd9958237
+    taskid: 23fc1127-f6c8-48e2-8685-e64b282f47fe
     type: regular
     task:
-      id: 0979373f-503b-441f-895c-bfdfd9958237
+      id: 23fc1127-f6c8-48e2-8685-e64b282f47fe
       version: -1
       name: url
       description: Submit a url to scan
@@ -413,10 +419,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: ac163943-88fc-49bf-8d83-5667a2266696
+    taskid: ff7950c6-6dcf-43b3-828a-ad4ca46e1c0c
     type: regular
     task:
-      id: ac163943-88fc-49bf-8d83-5667a2266696
+      id: ff7950c6-6dcf-43b3-828a-ad4ca46e1c0c
       version: -1
       name: Check another Malicious url
       description: Submit a url to scan
@@ -428,6 +434,7 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
+      continue_on_blacklisted_urls: {}
       limit: {}
       long: {}
       public: {}
@@ -438,7 +445,7 @@ tasks:
       threshold: {}
       timeout: {}
       url:
-        simple: steel-apparatus-278809.el.r.appspot.com
+        simple: bandung.pojoksatu.id/read/2018/07/07/mantap-lagu-exo-akan-dimainkan-di-final-piala-dunia/
       wait:
         simple: "10"
     separatecontext: false
@@ -452,12 +459,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 5a056b1b-637b-4d9c-88ff-f3cbf2dea99f
+    taskid: fcce6e58-4f4a-4445-89ca-359a37719f93
     type: regular
     task:
-      id: 5a056b1b-637b-4d9c-88ff-f3cbf2dea99f
+      id: fcce6e58-4f4a-4445-89ca-359a37719f93
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -486,12 +495,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 7aba8ec6-7d38-4ef9-8fb0-60ef9a6ed7c9
+    taskid: 11d429d6-9fc1-4346-89b4-a1ab0f471b15
     type: condition
     task:
-      id: 7aba8ec6-7d38-4ef9-8fb0-60ef9a6ed7c9
+      id: 11d429d6-9fc1-4346-89b4-a1ab0f471b15
       version: -1
       name: Check DBot score is 3
       type: condition
@@ -504,16 +515,13 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: DBotScore
                 accessor: Score
             iscontext: true
-          right:
-            value:
-              simple: "3"
     view: |-
       {
         "position": {
@@ -526,10 +534,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 5aed811e-b2c7-41d1-8e8f-9180c86daf32
+    taskid: fecd97bf-7c09-4c40-8aae-0034ff2875b6
     type: title
     task:
-      id: 5aed811e-b2c7-41d1-8e8f-9180c86daf32
+      id: fecd97bf-7c09-4c40-8aae-0034ff2875b6
       version: -1
       name: Done
       type: title
@@ -548,10 +556,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 7b525f77-394a-495b-8e14-f17e254258de
+    taskid: 616e5d48-76c1-49d3-88a2-f1063088f79d
     type: title
     task:
-      id: 7b525f77-394a-495b-8e14-f17e254258de
+      id: 616e5d48-76c1-49d3-88a2-f1063088f79d
       version: -1
       name: Malicious URLs
       type: title
@@ -573,10 +581,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: bd84959b-e9aa-4dd4-8e1f-5087b29b40c2
+    taskid: 64368a8e-ab3b-42f9-85ec-721cb900a65a
     type: title
     task:
-      id: bd84959b-e9aa-4dd4-8e1f-5087b29b40c2
+      id: 64368a8e-ab3b-42f9-85ec-721cb900a65a
       version: -1
       name: Batch URLs Test
       type: title
@@ -598,10 +606,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 8791d497-23ee-469a-882d-7bfe6ca786e8
+    taskid: 6554bb7f-62b5-4183-8152-3af862522a31
     type: regular
     task:
-      id: 8791d497-23ee-469a-882d-7bfe6ca786e8
+      id: 6554bb7f-62b5-4183-8152-3af862522a31
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -632,10 +640,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: da77b165-1bbe-4efb-86bb-7d5b7e738c1c
+    taskid: e95c7767-8370-43ea-8f28-a242fc93406e
     type: regular
     task:
-      id: da77b165-1bbe-4efb-86bb-7d5b7e738c1c
+      id: e95c7767-8370-43ea-8f28-a242fc93406e
       version: -1
       name: Batch URL Submission
       description: Submits a URL to scan.
@@ -673,10 +681,10 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: b492243e-12f1-42aa-880e-d842ae0d0880
+    taskid: 6c80f202-a55b-4c68-842c-d2b6b3669ea2
     type: condition
     task:
-      id: b492243e-12f1-42aa-880e-d842ae0d0880
+      id: 6c80f202-a55b-4c68-842c-d2b6b3669ea2
       version: -1
       name: Validate Results
       type: condition
@@ -739,6 +747,6 @@ view: |-
       }
     }
   }
+fromversion: 5.0.0
 inputs: []
 outputs: []
-fromversion: 5.0.0
