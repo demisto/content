@@ -1,3 +1,4 @@
+import pytest
 from Anomali_Enterprise import *
 
 
@@ -231,7 +232,6 @@ def test_get_search_job_result_command_expired_job_id(mocker):
         'error': 'Error: Cannot find the jobId: job222'
     }
     mocker.patch.object(client, 'get_search_job_result_request', return_value=return_data)
-    try:
-        _ = get_search_job_result(client, args={'job_id': 'job222'})
-    except Exception as err:
-        assert 'Error: Cannot find the jobId: job222. Job ID might have expired.' in str(err)
+
+    with pytest.raises(Exception, match="Error: Cannot find the jobId: job222. Job ID might have expired."):
+        get_search_job_result(client, args={'job_id': 'job222'})

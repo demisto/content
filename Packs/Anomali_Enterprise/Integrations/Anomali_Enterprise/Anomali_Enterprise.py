@@ -31,10 +31,10 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        data = json.dumps({'username': self._username, 'password': self._password, 'from': from_, 'to': to_,
-                           'indicators': indicators})
+        data = {'username': self._username, 'password': self._password, 'from': from_, 'to': to_,
+                           'indicators': indicators}
         return self._http_request(method='POST', url_suffix='/api/v1/mars/forensic', headers=self._headers,
-                                  data=data)
+                                  json_data=data)
 
     def get_search_job_result_request(self, job_id: str) -> dict:
         """Retrieve a search job results.
@@ -56,9 +56,9 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        data = json.dumps({'username': self._username, 'password': self._password, 'domains': domain})
+        data = {'username': self._username, 'password': self._password, 'domains': domain}
         return self._http_request(method='POST', url_suffix='/api/v1/mars/dga_score', headers=self._headers,
-                                  data=data)
+                                  json_data=data)
 
 
 ''' COMMAND FUNCTIONS '''
