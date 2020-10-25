@@ -137,6 +137,10 @@
     "userPrincipalName": {
      "complex": null,
      "simple": "username"
+    },
+    "ou":{
+     "complex": null,
+     "simple": ""
     }
    }
   }
