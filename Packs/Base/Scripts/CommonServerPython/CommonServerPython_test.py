@@ -2564,7 +2564,7 @@ def test_return_results_multiple_command_results(mocker):
     When:
       - Calling return_results()
     Then:
-      - demisto.results() is called 2 times - with matching list items
+      - demisto.results() is called 2 times (with the list items)
     """
     from CommonServerPython import CommandResults, return_results
     demisto_results_mock = mocker.patch.object(demisto, 'results')
@@ -2574,8 +2574,6 @@ def test_return_results_multiple_command_results(mocker):
         mock_command_results.append(CommandResults(outputs_prefix='Mock', outputs=mock_output))
     return_results(mock_command_results)
     assert demisto_results_mock.call_count == 2
-    assert demisto_results_mock.call_args_list[0].args[0]['Contents'] == {'MockContext': 0}
-    assert demisto_results_mock.call_args_list[1].args[0]['Contents'] == {'MockContext': 1}
 
 
 def test_return_results_multiple_dict_results(mocker):
@@ -2585,11 +2583,10 @@ def test_return_results_multiple_dict_results(mocker):
     When:
       - Calling return_results()
     Then:
-      - demisto.results() is called 1 time with the list as an argument
+      - demisto.results() is called 1 time (with the list as an argument)
     """
     from CommonServerPython import return_results
     demisto_results_mock = mocker.patch.object(demisto, 'results')
     mock_command_results = [{'MockContext': 0}, {'MockContext': 1}]
     return_results(mock_command_results)
     assert demisto_results_mock.call_count == 1
-    assert demisto_results_mock.call_args.args[0] == mock_command_results
