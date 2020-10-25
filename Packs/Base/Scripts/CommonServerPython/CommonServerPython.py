@@ -949,9 +949,9 @@ def aws_table_to_markdown(response, table_header):
     return human_readable
 
 
-def stringUnEscape(st):
+def stringEscape(st):
     """
-       Unescape newline chars in the given string.
+       Escape newline chars in the given string.
 
        :type st: ``str``
        :param st: The string to be modified (required).
@@ -959,7 +959,7 @@ def stringUnEscape(st):
        :return: A modified string.
        :rtype: ``str``
     """
-    return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
+    return st.replace('\r', '\\r').replace('\n', '\\n').replace('\t', '\\t')
 
 
 class IntegrationLogger(object):
@@ -1028,7 +1028,7 @@ class IntegrationLogger(object):
             Add strings which will be replaced when logging.
             Meant for avoiding passwords and so forth in the log.
         '''
-        to_add = [stringUnEscape(self.encode(a)) for a in args if a]
+        to_add = [stringEscape(self.encode(a)) for a in args if a]
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
