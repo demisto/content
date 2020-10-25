@@ -91,7 +91,7 @@ def get_failing_unit_tests_file_data():
     return failing_ut_list
 
 
-def get_entities_fields(entity_title, report_file_name='', job_name=None):
+def get_entities_fields(entity_title, report_file_name='', job_name=""):
     if 'lint' in report_file_name:  # lint case
         failed_entities = get_failing_unit_tests_file_data()
     else:
@@ -130,7 +130,7 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
     return content_team_attachment
 
 
-def get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE, job_name=None):
+def get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE, job_name=""):
     print(job_name)
     steps_fields = get_entities_fields(entity_title="Failed Steps", job_name=job_name)
     color = 'good' if not steps_fields else 'danger'
@@ -230,7 +230,7 @@ def get_fields():
     return content_team_fields, content_fields, failed_tests
 
 
-def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, job_name=None):
+def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, job_name=""):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
@@ -277,7 +277,6 @@ def main():
                        options.test_type,
                        env_results_file_name=options.env_results_file_name)
     elif options.bucket_upload:
-        print('main' + options.job_name)
         slack_notifier(options.url, options.slack, options.test_type, options.job_name)
     elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, BUCKET_UPLOAD_TYPE,
                                SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
