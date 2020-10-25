@@ -2,7 +2,7 @@ elasticcommonfields: {}
 id: Get EWS Folder Test
 version: -1
 name: Get EWS Folder Test
-fromversion: 4.5.0
+fromversion: 5.0.0
 description: ""
 starttaskid: "0"
 tasks:

@@ -2,7 +2,7 @@ id: QRadarFullSearch
 version: -1
 name: QRadarFullSearch
 description: This playbook runs a QRadar query and return its results to the context.
-fromversion: 4.0.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":

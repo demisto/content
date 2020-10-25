@@ -1,6 +1,6 @@
 id: Calculate Severity - Critical Assets v2
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Calculate Severity - Critical Assets v2
 description: |-
   Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of "Critical" if at least one critical asset is associated with the investigation.
@@ -42,8 +42,7 @@ tasks:
       id: 424aaa79-feb8-4351-8818-b15b2999b7a6
       version: -1
       name: Do required user inputs exist?
-      description: Checks whether there is at least one user involved in the incident
-        and at least one user defined as a critical asset.
+      description: Checks whether there is at least one user involved in the incident and at least one user defined as a critical asset.
       type: condition
       iscommand: false
       brand: ''
@@ -85,8 +84,7 @@ tasks:
       id: ae8f3642-3d2e-46e9-80e7-806b6cfbeca3
       version: -1
       name: Is a critical user involved in the incident?
-      description: Checks if at least one of the usernames involved in the incident
-        is listed in the "CriticalUsers" list.
+      description: Checks if at least one of the usernames involved in the incident is listed in the "CriticalUsers" list.
       type: condition
       iscommand: false
       brand: ''
@@ -156,8 +154,7 @@ tasks:
       id: e94c9609-239f-4032-827a-8dc4b44b987a
       version: -1
       name: Is a critical endpoint involved in the incident?
-      description: Checks if at least one of the endpoints involved in the incident
-        is listed in the "CriticalEndpoints" list.
+      description: Checks if at least one of the endpoints involved in the incident is listed in the "CriticalEndpoints" list.
       type: condition
       iscommand: false
       brand: ''
@@ -351,8 +348,7 @@ tasks:
       id: 3f7ea2b9-d2c9-400c-8972-e64ec0ec7863
       version: -1
       name: Is a critical endpoint group involved in the incident?
-      description: Checks if at least one critical endpoint group is involved in the
-        incident.
+      description: Checks if at least one critical endpoint group is involved in the incident.
       type: condition
       iscommand: false
       brand: ''
@@ -517,8 +513,7 @@ tasks:
       id: f43d598e-ba8f-4dc0-8405-46fbbd12ec79
       version: -1
       name: Are there user-defined critical groups?
-      description: Checks if there are any user-defined critical groups in the playbook
-        inputs.
+      description: Checks if there are any user-defined critical groups in the playbook inputs.
       type: condition
       iscommand: false
       brand: ''
@@ -760,8 +755,7 @@ tasks:
       id: d0e85e0c-9d5f-46a2-8f7d-37c5cccfb2af
       version: -1
       name: Do required endpoint inputs exist?
-      description: Checks whether there is at least one endpoint involved in the incident
-        and at least one hostname defined as a critical asset.
+      description: Checks whether there is at least one endpoint involved in the incident and at least one hostname defined as a critical asset.
       type: condition
       iscommand: false
       brand: ''
@@ -1039,8 +1033,7 @@ tasks:
       id: a680f6b3-2306-407d-8a2b-a8a7bf1a4df6
       version: -1
       name: Set critical endpoints to output
-      description: Sets the critical endpoints to the CriticalAssets.CriticalEndpoints
-        context key, which is an output of this playbook.
+      description: Sets the critical endpoints to the CriticalAssets.CriticalEndpoints context key, which is an output of this playbook.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1086,8 +1079,7 @@ tasks:
       id: 7c4d5151-dc5e-40c3-8697-440b4e3e9cae
       version: -1
       name: Set critical endpoint groups to output
-      description: Sets the critical endpoint groups to the CriticalAssets.CriticalEndpointGroups
-        context key, which is an output of this playbook.
+      description: Sets the critical endpoint groups to the CriticalAssets.CriticalEndpointGroups context key, which is an output of this playbook.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1133,8 +1125,7 @@ tasks:
       id: 82bd69bb-ecc0-4438-8aa3-79626adf62a9
       version: -1
       name: Set critical user groups to output
-      description: Sets the critical user groups to the CriticalAssets.CriticalUserGroups
-        context key, which is an output of this playbook.
+      description: Sets the critical user groups to the CriticalAssets.CriticalUserGroups context key, which is an output of this playbook.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1179,8 +1170,7 @@ tasks:
       id: 40a52d56-8468-4161-8832-9f3a8edbdc20
       version: -1
       name: Set critical users to output
-      description: Sets the critical users to the CriticalAssets.CriticalUsers context
-        key, which is an output of this playbook.
+      description: Sets the critical users to the CriticalAssets.CriticalUsers context key, which is an output of this playbook.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1226,8 +1216,7 @@ tasks:
       id: 9337a013-1493-4943-8d8f-42fe0feb437e
       version: -1
       name: Set critical assets to incident field
-      description: Sets the critical assets to an incident field which can be displayed
-        in the incident layout.
+      description: Sets the critical assets to an incident field which can be displayed in the incident layout.
       scriptName: PopulateCriticalAssets
       type: regular
       iscommand: false
@@ -1336,4 +1325,4 @@ outputs:
   description: Critical user-groups involved in the incident.
   type: unknown
 tests:
-  - Calculate Severity - Generic v2 - Test
+- Calculate Severity - Generic v2 - Test

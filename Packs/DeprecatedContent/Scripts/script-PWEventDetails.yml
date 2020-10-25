@@ -2,14 +2,20 @@ commonfields:
   id: PWEventDetails
   version: -1
 name: PWEventDetails
-script: |
+script: >
   res = []
+
   dArgs = demisto.args()
+
   dArgs["using-brand"] = "ProtectWise"
+
   # TODO decide whether we want to support multiple events here, since each event ID returns 3 tables. If yes - run pw-event-get for each ID as it seems it doesn't support a csv of IDs
+
   #dArgs["id"] = argToList(demisto.get(dArgs, 'id'))
 
+
   resCmd = demisto.executeCommand("pw-event-get", dArgs)
+
   try:
       for entry in resCmd:
           if isError(entry):
@@ -39,7 +45,7 @@ type: python
 subtype: python2
 tags:
 - protectwise
-comment: Retrieve details for a specific event from ProtectWise
+comment: Deprecated. Retrieve details for a specific event from ProtectWise
 system: true
 args:
 - name: id
@@ -52,3 +58,4 @@ dependson:
   - pw-event-get
 timeout: 0s
 deprecated: true
+fromversion: 5.0.0

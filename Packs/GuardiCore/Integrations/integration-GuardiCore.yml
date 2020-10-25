@@ -28,8 +28,9 @@ configuration:
   type: 8
   required: false
 script:
-  script: |+
+  script: >+
     var server = params.server.replace(/[\/]+$/, '') + '/api/v3.0/';
+
 
     var urlDictionary = {
         login: 'authenticate',
@@ -53,6 +54,7 @@ script:
         'guardicore-search-network-log': 'network-events',
     };
 
+
     var methodDictionary = {
         login: 'POST',
         logout: 'POST',
@@ -75,7 +77,9 @@ script:
     };
 
 
+
     // converts raw data to readable strings, for both the war room and the context
+
     OUTPUT_DOMAINS = [
         {from: 'domain', to: 'Domain'},
         {from: 'count', to: 'Count'},
@@ -91,8 +95,11 @@ script:
         }}
     ];
 
+
     // Used for direct parsing/formatting.
+
     // In case several inputs are needed for a single output, it will be done in the specific parsing function.
+
     var outputsDictionary = {
         'guardicore-get-incident': [
             {from: 'source_ip', to: 'Source IP'},
@@ -179,6 +186,7 @@ script:
         ]
     };
 
+
     var mapObjFunction = function(mapFields) {
         return function(obj) {
             var res = {};
@@ -194,6 +202,7 @@ script:
         }
     }
 
+
     var convertKeysToPascalCase = function(dict) {
         var pascalDict = {};
         for (var key in dict) {
@@ -204,6 +213,7 @@ script:
         return pascalDict;
     }
 
+
     var doesResultExist = function(result) {
         return (
             result &&
@@ -211,6 +221,7 @@ script:
             (!(result instanceof Object) || Object.keys(result).length)
         );
     }
+
 
     var formatIncidentDescription = function(unformattedDescription) {
         var description = '';
@@ -221,9 +232,11 @@ script:
         return description;
     }
 
+
     var buildEmptyEntryContext = function() {
         return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
     }
+
 
     var parseGetIncident = function(command, response) {
         var output = mapObjFunction(outputsDictionary[command])(response);
@@ -236,7 +249,9 @@ script:
         return entry;
     }
 
+
     IOCS_NON_VALUE_KEYS = ['_id', '_cls', 'creation_time', 'first_seen', 'last_seen', 'doc_version'];
+
     var parseGetIncidentIOCs = function(command, response) {
         var outputs = [];
         var contexts = [];
@@ -289,6 +304,7 @@ script:
         return entry;
     }
 
+
     var parseGetIncidents = function(command, response) {
         var internalCommand = 'guardicore-get-incident';
         var outputs = [];
@@ -310,6 +326,7 @@ script:
 
         return entry;
     }
+
 
     var parseGetIncidentEvents = function(command, response) {
         var outputs = [];
@@ -338,9 +355,11 @@ script:
         return entry;
     }
 
+
     var buildClientStr = function(displayName, ip, id) {
         return '{0} - {1} - {2}'.format(displayName, ip, id);
     }
+
 
     var parseDomainClients = function(clients) {
         var contextData = [];
@@ -356,6 +375,7 @@ script:
 
         return contextData;
     }
+
 
     var parseDomains = function(command, response) {
         var outputs = [];
@@ -401,6 +421,7 @@ script:
         return entry;
     }
 
+
     var parseMisconfigurations = function(command, response) {
         var outputs = [];
         var contexts = [];
@@ -441,6 +462,7 @@ script:
         return entry;
     }
 
+
     var parseDnsRequests = function(command, response) {
         var outputs = [];
         var contexts = [];
@@ -480,6 +502,7 @@ script:
         return entry;
     }
 
+
     RELEVANT_SUMMARY_KEYS = [
         'blocked_connections_count',
         'file_detected_incidents_count',
@@ -490,6 +513,7 @@ script:
         'network_scan_incidents_count',
         'total_incidents_count'
     ]
+
     var parseShowEndpoint = function(command, response) {
         var output = mapObjFunction(outputsDictionary[command])(response);
         var context = {
@@ -524,6 +548,7 @@ script:
         return entries;
     }
 
+
     var parseHostIds = function(response) {
         var hostIds = [];
         for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
@@ -533,9 +558,11 @@ script:
         return hostIds;
     }
 
+
     var parseIncidentPcap = function(response) {
         return {'honeypotId': response.honeypot_id, 'fileId': response.pcap.file_id};
     }
+
 
     var parseIncidentAttachments = function(response) {
         var attachmentsInfo = {'honeypotId': response.honeypot_id, 'filesData': []};
@@ -548,6 +575,7 @@ script:
 
         return attachmentsInfo;
     }
+
 
     var parseSearchNetworkLog = function(command, response) {
         var outputs = [];
@@ -564,6 +592,7 @@ script:
 
         return entry;
     }
+
 
     var entriesFromResponse = function(command, response, token) {
         var entry;
@@ -699,6 +728,7 @@ script:
         return entry;
     }
 
+
     var sendRequest = function(method, url, token, args, isRawOutput, shouldIgnoreUrlArgs) {
         var headers = {'Content-Type': ['application/json']};
         if (token) {
@@ -737,11 +767,16 @@ script:
         }
     }
 
+
     // workaround - this parameter should not be visible in the BYOI integration code
+
     delete(args['raw-response']);
 
+
     var token = sendRequest(methodDictionary.login, urlDictionary.login, undefined, {username: params.credentials.identifier, password: params.credentials.password}).access_token;
+
     var commandUrlKey;
+
     switch (command) {
         case 'test-module':
             sendRequest(methodDictionary.logout, urlDictionary.logout, token);
@@ -757,6 +792,7 @@ script:
             break
     }
 
+
     var result = sendRequest(
         methodDictionary[command],
         replaceInTemplatesAndRemove(urlDictionary[commandUrlKey], args),
@@ -764,8 +800,11 @@ script:
         args
     );
 
+
     var entries = entriesFromResponse(command, result, token);
+
     sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+
 
     return entries;
 
@@ -857,6 +896,6 @@ script:
     - name: uuid
       description: Filter by Event ID.
     description: Searches within the network log (with filters).
-fromversion: 3.5.0
+fromversion: 5.0.0
 tests:
-  - No tests
+- No tests

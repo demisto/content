@@ -49,9 +49,7 @@ configuration:
   defaultvalue: New
   type: 0
   required: false
-- display: Whether to return worklogs - If "ALL," all worklogs are returned for each
-    ticket. If "UPDATED", all worklogs added since last acknowledgement are returned.
-    If "NONE," the path returns no worklogs. Default is "ALL."
+- display: Whether to return worklogs - If "ALL," all worklogs are returned for each ticket. If "UPDATED", all worklogs added since last acknowledgement are returned. If "NONE," the path returns no worklogs. Default is "ALL."
   name: worklogs
   defaultvalue: ALL
   type: 0
@@ -66,14 +64,21 @@ configuration:
   type: 0
   required: false
 script:
-  script: |-
+  script: >-
     var SERVER_URL = params.server.replace(/[\/]+$/, '') + '/api/ticket/v3/';
+
     var EVENT_SOURCE_HEALTH_TYPE = "CTP_HEALTH";
+
     var CATEGORIZATION_CLASS_HEALTH_TYPE = "Health";
+
     var MAX_LIMIT = 500;
+
     // The following is the designated field to mark fetched tickets with
+
     var DIRTY_FIELD = 'customerMiscellaneous4';
+
     var DIRTY_VALUE = 'MARKED';
+
 
 
     function sendRequest(path, method, queryParams, body){
@@ -103,6 +108,7 @@ script:
         return JSON.parse(res.Body);
     }
 
+
     function convertTicketDates(response){
         if(!(response instanceof Array)){
             response = [response];
@@ -114,6 +120,7 @@ script:
             element.dateClosed = element.dateClosed ? new Date(element.dateClosed).toString() : '';
         });
     }
+
 
     function createTicketCommand(){
         var response = createTicket(args.clientRef,
@@ -171,6 +178,7 @@ script:
 
         return entry;
     }
+
 
     function createTicket(
         clientRef,
@@ -331,6 +339,7 @@ script:
         return response;
     }
 
+
     function updateTicketCommand(){
         var id = args['id'];
         var response = updateTicket(id,
@@ -368,6 +377,7 @@ script:
 
         return entry;
     }
+
 
     function updateTicket(ticketId,
                           externalTicketNum,
@@ -423,6 +433,7 @@ script:
         return response;
     }
 
+
     function getTicketCountCommand(){
         var countObject = getTicketCount(args.ticketType);
 
@@ -446,6 +457,7 @@ script:
         return entry;
     }
 
+
     function getTicketCount(ticketType){
         var queryParams = {}
 
@@ -457,6 +469,7 @@ script:
 
         return response;
     }
+
 
     function assignTicketCommand(){
         var id = args['id'];
@@ -492,6 +505,7 @@ script:
         return entry;
     }
 
+
     function assignTicket(id,
                 worklog,
                 riskAssessment,
@@ -515,6 +529,7 @@ script:
 
         return response;
     }
+
 
     function closeTicketCommand(){
         var id = args['id'];
@@ -547,6 +562,7 @@ script:
         return entry;
     }
 
+
     function closeTicket(id,
             worklogContent,
             closeCode){
@@ -565,6 +581,7 @@ script:
 
         return response;
     }
+
 
     function addTicketWorklogCommand(){
         var id = args['id'];
@@ -595,6 +612,7 @@ script:
         return entry;
     }
 
+
     function addTicketWorklog(id, content) {
         var worklogBody = {content: content};
 
@@ -602,6 +620,7 @@ script:
 
         return response;
     }
+
 
     function getTicketCommand() {
         var ticket = getTicket(args['id'], args.includeWorklogs);
@@ -666,6 +685,7 @@ script:
         return entries;
     }
 
+
     function getTicket(ticketId, includeWorklogs) {
         var queryParams = {};
         if(includeWorklogs){
@@ -675,6 +695,7 @@ script:
 
         return response;
     }
+
 
 
     function getTicketAttachmentsEntries(ticket) {
@@ -699,6 +720,7 @@ script:
 
         return entries;
     }
+
 
     function getTicketsIdsCommand() {
             var response = getTicketsIds(args.ticketType, args.limit, args.groupingType);
@@ -747,6 +769,7 @@ script:
         return response;
     }
 
+
     function getTicketsUpdatesCommand() {
         var tickets = getTicketsUpdates(
         args.acknowledge,
@@ -788,6 +811,7 @@ script:
 
         return entry;
     }
+
 
     function getTicketsUpdates(acknowledge,
         limit,
@@ -838,11 +862,13 @@ script:
         return tickets;
     }
 
+
     function acknowledgeTickets(tickets) {
         var response = sendRequest('tickets/acknowledge', 'POST', '', tickets);
 
         return response;
     }
+
 
     function getCloseCodesCommand(){
         var id = args['id'];
@@ -875,11 +901,13 @@ script:
         return entry;
     }
 
+
     function getCloseCodes(ticketId){
         var response = sendRequest('tickets/' + ticketId + '/close-codes', 'GET');
 
         return response;
     }
+
 
     function markTicket(ticketId){
            var updateBody = {};
@@ -887,6 +915,7 @@ script:
 
            sendRequest('tickets/' + ticketId, 'POST', '', updateBody);
     }
+
 
     function fetchIncidents(){
         var queryParams = {};
@@ -991,7 +1020,9 @@ script:
         return JSON.stringify(incidents);
     }
 
+
     var entry = {};
+
     switch(command){
         case 'test-module':
             var updates = getTicketsUpdates();
@@ -1029,6 +1060,7 @@ script:
             entry = getTicketCountCommand();
             break;
     }
+
 
     return entry;
   type: javascript
@@ -1412,25 +1444,21 @@ script:
   - name: secure-works-get-tickets-updates
     arguments:
     - name: limit
-      description: A maximum number of tickets to be returned (default 10), between
-        1 and 500
+      description: A maximum number of tickets to be returned (default 10), between 1 and 500
     - name: ticketType
       auto: PREDEFINED
       predefined:
       - SERVICE_REQUEST
       - INCIDENT
       - CHANGE
-      description: Tickets matching the ticketType. If not specified, the path returns
-        all ticket types
+      description: Tickets matching the ticketType. If not specified, the path returns all ticket types
     - name: worklogs
       auto: PREDEFINED
       predefined:
       - ALL
       - NONE
       - UPDATED
-      description: If "ALL," all worklogs are returned for each ticket. If "UPDATED",
-        all worklogs added since last acknowledgement are returned. If "NONE," the
-        path returns no worklogs. Default is "ALL."
+      description: If "ALL," all worklogs are returned for each ticket. If "UPDATED", all worklogs added since last acknowledgement are returned. If "NONE," the path returns no worklogs. Default is "ALL."
     - name: groupingType
       auto: PREDEFINED
       predefined:
@@ -1438,8 +1466,7 @@ script:
       - CHANGE
       - HEALTH
       - SECURITY
-      description: If provided, limit response to tickets matching the grouping type(s)
-        identified
+      description: If provided, limit response to tickets matching the grouping type(s) identified
     - name: acknowledge
       auto: PREDEFINED
       predefined:
@@ -1528,14 +1555,7 @@ script:
       description: Ticket worklog type
     - contextPath: SecureWorks.Ticket.closeCodes
       description: Ticket close codes
-    description: Retrieves tickets from 24 hours prior to when the updates command
-      is executed. If a limit is specified, it will retrieve up to that many tickets
-      (max is 500 tickets). Tickets must be updated within the last 24 hours to be
-      visible in the command results. When executing this command you also receive
-      the ticket worklogs. In order to view the attachment information of a specific
-      ticket, you must use the get-ticket command. This command will return the list
-      of attachments available for that particular ticket. Use acknowledge to confirm
-      the updates.
+    description: Retrieves tickets from 24 hours prior to when the updates command is executed. If a limit is specified, it will retrieve up to that many tickets (max is 500 tickets). Tickets must be updated within the last 24 hours to be visible in the command results. When executing this command you also receive the ticket worklogs. In order to view the attachment information of a specific ticket, you must use the get-ticket command. This command will return the list of attachments available for that particular ticket. Use acknowledge to confirm the updates.
   - name: secure-works-get-close-codes
     arguments:
     - name: id
@@ -1557,11 +1577,9 @@ script:
       - SERVICE_REQUEST
       - INCIDENT
       - CHANGE
-      description: Tickets matching the ticketType. If not specified, the path returns
-        all ticket types
+      description: Tickets matching the ticketType. If not specified, the path returns all ticket types
     - name: limit
-      description: If provided, limit response to that number of tickets. If not provided,
-        a maximum of 10 tickets are returned
+      description: If provided, limit response to that number of tickets. If not provided, a maximum of 10 tickets are returned
     - name: groupingType
       auto: PREDEFINED
       predefined:
@@ -1569,13 +1587,11 @@ script:
       - CHANGE
       - HEALTH
       - SECURITY
-      description: If provided, limit response to tickets matching the grouping type(s)
-        identified
+      description: If provided, limit response to tickets matching the grouping type(s) identified
     outputs:
     - contextPath: SecureWorks.IDs
       description: The ticket IDs
-    description: Get a list of ticket IDs in the same order as the tickets returned
-      by the GET /tickets/updates command.
+    description: Get a list of ticket IDs in the same order as the tickets returned by the GET /tickets/updates command.
   - name: secure-works-get-ticket-count
     arguments:
     - name: ticketType
@@ -1592,6 +1608,6 @@ script:
     description: Retrieve a count of tickets that have been updated and not yet acknowledged
   isfetch: true
   runonce: false
-fromversion: 3.6.0
+fromversion: 5.0.0
 tests:
-    - secureworks_test
+- secureworks_test

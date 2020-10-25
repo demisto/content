@@ -1,0 +1,349 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: DNSDB_v2
+  version: -1
+configuration:
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: DNSDB Service URL
+  name: url
+  defaultvalue: https://api.dnsdb.info/
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+description: >
+  Farsight Security DNSDB
+
+  DNSDB is a Passive DNS (pDNS) historical database that provides a unique, fact-based,
+  multifaceted view of the
+  configuration of the global Internet infrastructure DNSDB leverages the richness
+  of Farsight’s Security Information
+  Exchange (SIE) data-sharing platform and is engineered and operated by leading DNS
+  experts.
+display: Farsight DNSDB v2
+name: DNSDB_v2
+script:
+  commands:
+  - name: dnsdb-rdata
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - name
+      - ip
+      description: Query type
+    - name: value
+      required: true
+      description: Query value
+    - name: rrtype
+      description: query rrtype
+    - name: limit
+      description: Limit the number of returned records
+      defaultValue: "50"
+    - name: time_first_before
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_last_before
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_first_after
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_last_after
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
+        relative if negative)
+    - name: aggr
+      description: Aggregate identical RRsets
+      auto: PREDEFINED
+      predefined:
+        - 'True'
+        - 'False'
+    - name: offset
+      description: How many rows to offset in the results.
+    outputs:
+    - contextPath: DNSDB.Record.RRName
+      type: string
+      description: The owner name of the resource record in DNS presentation format.
+    - contextPath: DNSDB.Record.RRType
+      type: string
+      description: >
+        The resource record type of the resource record, either using the standard
+        DNS type mnemonic, or an RFC 3597
+        generic type, i.e. the string TYPE immediately followed by the decimal RRtype
+        number.
+    - contextPath: DNSDB.Record.RData
+      type: string
+      description: >
+        The record data value. The Rdata value is converted to the standard presentation
+        format based on the rrtype
+        value. If the encoder lacks a type-specific presentation format for the resource
+        record's type, then the RFC
+        3597 generic Rdata encoding will be used.
+    - contextPath: DNSDB.Record.Count
+      type: number
+      description: The number of times the resource record was observed via passive
+        DNS replication.
+    - contextPath: DNSDB.Record.TimeFirst
+      type: date
+      description: The first time that the resource record was observed.
+    - contextPath: DNSDB.Record.TimeLast
+      type: date
+      description: The most recent time that the resource record was observed.
+    - contextPath: DNSDB.Record.FromZoneFile
+      type: bool
+      description: False if the resource record was observed via passive DNS replication,
+        True if by zone file import.
+    description: Lookup RData records
+  - name: dnsdb-summarize-rdata
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - name
+      - ip
+      description: Query type
+    - name: value
+      required: true
+      description: Query value
+    - name: rrtype
+      description: query rrtype
+    - name: limit
+      description: Limit the number of returned records
+      defaultValue: "50"
+    - name: time_first_before
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_last_before
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_first_after
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_last_after
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
+        relative if negative)
+    - name: aggr
+      description: Aggregate identical RRsets
+      auto: PREDEFINED
+      predefined:
+        - 'True'
+        - 'False'
+    - name: max_count
+      description: Stop when the summary count is reached
+    outputs:
+    - contextPath: DNSDB.Summary.Count
+      type: number
+      description: The number of times the resource record was observed via passive
+        DNS replication.
+    - contextPath: DNSDB.Summary.NumResults
+      type: number
+      description: The number of results (resource records) that would be returned
+        from a Lookup.
+    - contextPath: DNSDB.Summary.TimeFirst
+      type: date
+      description: The first time that the resource record was observed via passive DNS replication.
+    - contextPath: DNSDB.Summary.TimeLast
+      type: date
+      description: The most recent time that the resource record was observed via passive DNS replication.
+    - contextPath: DNSDB.Summary.ZoneTimeFirst
+      type: date
+      description: The first time that the resource record was observed in a zone file.
+    - contextPath: DNSDB.Summary.ZoneTimeLast
+      type: date
+      description: The most recent time that the resource record was observed in a zone file.
+    description: Summarize RData records
+  - name: dnsdb-rrset
+    arguments:
+    - name: owner_name
+      required: true
+      description: Owner name to query
+    - name: rrtype
+      description: rrtype value to query
+    - name: bailiwick
+      description: Bailiwick value to query
+    - name: limit
+      description: Limit the number of returned records
+      defaultValue: "50"
+    - name: time_first_before
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_first_after
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_last_before
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_last_after
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
+        relative if negative)
+    - name: aggr
+      description: Aggregate identical RRsets
+      auto: PREDEFINED
+      predefined:
+        - 'True'
+        - 'False'
+    - name: offset
+      description: How many rows to offset in the results.
+    outputs:
+    - contextPath: DNSDB.Record.RRName
+      type: string
+      description: The owner name of the RRset in DNS presentation format.
+    - contextPath: DNSDB.Record.RRType
+      type: string
+      description: >
+        The resource record type of the RRset, either using the standard DNS type
+        mnemonic, or an RFC 3597 generic
+        type, i.e. the string TYPE immediately followed by the decimal RRtype number.
+    - contextPath: DNSDB.Record.Bailiwick
+      type: string
+      description: >
+        The closest enclosing zone delegated to a nameserver which served the RRset,
+        or the name of the zone containing
+        the RRset if FromZoneFile is True.
+    - contextPath: DNSDB.Record.RData
+      type: string
+      description: >
+        An array of one or more Rdata values. The Rdata values are converted to the
+        standard presentation format based
+        on the rrtype value. If the encoder lacks a type-specific presentation format
+        for the RRset's rrtype, then the
+        RFC 3597 generic Rdata encoding will be used.
+    - contextPath: DNSDB.Record.Count
+      type: number
+      description: The number of times the RRset was observed via passive DNS replication.
+    - contextPath: DNSDB.Record.TimeFirst
+      type: date
+      description: The first time that the RRset was observed.
+    - contextPath: DNSDB.Record.TimeLast
+      type: date
+      description: The most recent time that the RRset was observed.
+    - contextPath: DNSDB.Record.FromZoneFile
+      type: bool
+      description: False if the RRset was observed via passive DNS replication, True
+        if by zone file import.
+    description: Lookup RRset records
+  - name: dnsdb-summarize-rrset
+    arguments:
+    - name: owner_name
+      required: true
+      description: Owner name to query
+    - name: rrtype
+      description: rrtype value to query
+    - name: bailiwick
+      description: Bailiwick value to query
+    - name: limit
+      description: Limit the number of returned records
+      defaultValue: "50"
+    - name: time_first_before
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_first_after
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_last_before
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_last_after
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
+        relative if negative)
+    - name: aggr
+      description: Aggregate identical RRsets
+      auto: PREDEFINED
+      predefined:
+        - 'True'
+        - 'False'
+    - name: max_count
+      description: Stop when the summary count is reached
+    outputs:
+    - contextPath: DNSDB.Summary.Count
+      type: number
+      description: The number of times the resource record was observed via passive
+        DNS replication.
+    - contextPath: DNSDB.Summary.NumResults
+      type: number
+      description: The number of results (resource records) that would be returned
+        from a Lookup.
+    - contextPath: DNSDB.Summary.TimeFirst
+      type: date
+      description: The first time that the resource record was observed via passive DNS replication.
+    - contextPath: DNSDB.Summary.TimeLast
+      type: date
+      description: The most recent time that the resource record was observed via passive DNS replication.
+    - contextPath: DNSDB.Summary.ZoneTimeFirst
+      type: date
+      description: The first time that the resource record was observed in a zone file.
+    - contextPath: DNSDB.Summary.ZoneTimeLast
+      type: date
+      description: The most recent time that the resource record was observed in a zone file.
+    description: Lookup RRset records
+  - name: dnsdb-rate-limit
+    outputs:
+    - contextPath: DNSDB.Rate.Limit
+      type: number
+      description: The maximum number of API lookups that may be performed. This is
+        the initial quota.
+    - contextPath: DNSDB.Rate.Unlimited
+      type: bool
+      description: True if there is no maximum number of API lookups that may be performed.
+    - contextPath: DNSDB.Rate.Remaining
+      type: number
+      description: |
+        For time-based quotas: the remaining number of API lookups that may be performed until the reset time.
+        For block-based quotas: the remaining number of API lookups in the block quota.
+    - contextPath: DNSDB.Rate.Reset
+      type: date
+      description: |
+        For time-based quotas: When the quota limit will be reset. Usually this is at 00:00 (midnight) UTC.
+    - contextPath: DNSDB.Rate.NeverResets
+      type: bool
+      description: True for block-based quotas that do not reset.
+    - contextPath: DNSDB.Rate.Expires
+      type: date
+      description: Only present for block-based quota. When the quota will expire.
+    - contextPath: DNSDB.Rate.ResultsMax
+      type: number
+      description: >
+        The maximum number of results that can be returned by these lookup methods.
+        This overrides a "limit" query
+        parameter if provided. For example, if "?limit=20000" is appended to the URL
+        path but results_max=1000 then
+        only up to 1000 results will be returned.
+    - contextPath: DNSDB.Rate.OffsetMax
+      type: number
+      description: >
+        The maximum value that the offset query parameter can be. If it is higher
+        then an HTTP 416 "Requested Range Not
+        Satisfiable" response code will be returned with message "Error: offset value
+        greater than maximum allowed."
+    - contextPath: DNSDB.Rate.OffsetNotAllowed
+      type: number
+      description: True if the offset parameter is not allowed for this API key, and
+        similar 416 error will be generated.
+    - contextPath: DNSDB.Rate.BurstSize
+      type: number
+      description: The maximum number of API lookups that may be performed within
+        this burst_window number of seconds.
+    - contextPath: DNSDB.Rate.BurstWindow
+      type: number
+      description: The number of seconds over which a burst of queries is measured.
+    description: Retrieve service limits
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.8.5.10845
+  isfetch: false
+fromversion: 5.0.0

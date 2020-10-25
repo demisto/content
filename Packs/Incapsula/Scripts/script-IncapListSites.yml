@@ -2,9 +2,10 @@ commonfields:
   id: IncapListSites
   version: -1
 name: IncapListSites
-script: |2
+script: >2
 
   resp = demisto.executeCommand("incap-list-sites", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -24,8 +25,7 @@ comment: List sites for an account
 system: true
 args:
 - name: account_id
-  description: Numeric identifier of the account to operate on. If not specified,
-    operation will be performed on the account identified by the authentication parameters
+  description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters
 - name: page_size
   description: The number of objects to return in the response. Defaults to 50
 - name: page_num
@@ -35,3 +35,4 @@ dependson:
   must:
   - incap-list-sites
 timeout: 0s
+fromversion: 5.0.0

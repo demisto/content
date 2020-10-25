@@ -2,13 +2,18 @@ commonfields:
   id: ADGetEmailForAllUsers
   version: -1
 name: ADGetEmailForAllUsers
-script: |
+script: >
   mails = []
+
   MAIL_CONTEXT_KEY = "Mailboxes"
 
+
   attrs = 'mail'
+
   filterstr = r"(&(objectClass=User))"
+
   resp = demisto.executeCommand( 'ad-search' , { 'filter' : filterstr, 'attributes' : attrs } )
+
   if isError(resp[0]):
       demisto.results(resp)
   else:
@@ -23,7 +28,7 @@ type: python
 subtype: python2
 tags:
 - active directory
-comment: Use Active Directory to retrieve the email address associated with all users.
+comment: Deprecated. Use Active Directory to retrieve the email address associated with all users.
 system: true
 scripttarget: 0
 deprecated: true
@@ -31,3 +36,4 @@ dependson:
   must:
   - ad-search
 timeout: 0s
+fromversion: 5.0.0

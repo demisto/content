@@ -2,13 +2,13 @@ id: Endace Search Archive Download PCAP
 version: -1
 hidden: true
 name: Endace Search Archive Download PCAP
-description: "DEPRECATED - This playbook has been deprecated. Use Endace Search Archive Download\
+description: Deprecated. This playbook has been deprecated. Use Endace Search Archive Download\
   \ PCAP v2 instead. This playbook uses Endace APIs to search, archive and download\
   \ PCAP file from either a single EndaceProbe or many via the InvestigationManager.\
   \      The workflow accepts inputs like “the date and time of the incident or a\
   \ timeframe”, “source or destination IP address of the incident”,  “source or destination\
   \ IP port of the incident”,  “protocol of the incident” and name of archive file.\
-  \ \nThe Workflow in this playbook : \n1. Finds the packet history related to the\
+  \ \nThe Workflow in this playbook - \n1. Finds the packet history related to the\
   \ search items. Multiple Search Items in an argument field are OR'd. Search Items\
   \ between multiple arguments are AND'd. \n2.  A successful Search is followed by\
   \ an auto archival process of matching packets on EndaceProbe which can be accessed\
@@ -17,7 +17,7 @@ description: "DEPRECATED - This playbook has been deprecated. Use Endace Search 
   \ Finally Download the archived PCAP file to XSOAR system provided the file size\
   \ is less than a user defined threshold say 10MB. Files greater than 10MB can be\
   \ accessed or analyzed on EndaceProbe via \"Download PCAP link\" or \"Endace PivotToVision\
-  \ link\" displayed on Evidence Board.\n"
+  \ link\" displayed on Evidence Board.\n
 starttaskid: "0"
 tasks:
   "0":

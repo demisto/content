@@ -1,8 +1,7 @@
 id: Process Email - Generic for Rasterize
 version: -1
 name: Process Email - Generic for Rasterize
-description: Add email details to the relevant context entities and handle the case
-  where original emails are attached.
+description: Add email details to the relevant context entities and handle the case where original emails are attached.
 starttaskid: "0"
 tasks:
   "0":
@@ -37,8 +36,7 @@ tasks:
       id: 70863b9a-af3f-4f0a-8e91-cae2c88f5488
       version: -1
       name: Do we have original emails attached?
-      description: Check if we have any attachments with relevant attachment types
-        like eml or rfc822
+      description: Check if we have any attachments with relevant attachment types like eml or rfc822
       scriptName: Exists
       type: condition
       iscommand: false
@@ -50,13 +48,7 @@ tasks:
       - "3"
     scriptarguments:
       value:
-        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0
-          || val.Type.toLowerCase().indexOf('smtp mail') >= 0 || val.Type.toLowerCase().indexOf('cdfv2
-          microsoft outlook message') >= 0 || val.Type.toLowerCase().indexOf('news
-          or mail') >= 0 || (val.Type.toLowerCase().indexOf('composite document file
-          v2 document') >= 0 && val.Extension.toLowerCase() == 'msg') || (val.Extension.toLowerCase()
-          == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 && val.Type.toLowerCase().indexOf('crlf')
-          >= 0)).EntryID}
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Type.toLowerCase().indexOf('smtp mail') >= 0 || val.Type.toLowerCase().indexOf('cdfv2 microsoft outlook message') >= 0 || val.Type.toLowerCase().indexOf('news or mail') >= 0 || (val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 && val.Extension.toLowerCase() == 'msg') || (val.Extension.toLowerCase() == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 && val.Type.toLowerCase().indexOf('crlf') >= 0)).EntryID}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -89,9 +81,7 @@ tasks:
       key:
         simple: Email
       value:
-        simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''],
-          Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''],
-          Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
+        simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''], Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''], Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -112,9 +102,7 @@ tasks:
       id: 4ac2b332-b76d-463e-824e-717895c5b644
       version: -1
       name: Add original email attachments to context
-      description: Parses an email from an EML or MSG file and populates all relevant
-        context data to investigate the email. Also extracts indicators from the email
-        messages.
+      description: Parses an email from an EML or MSG file and populates all relevant context data to investigate the email. Also extracts indicators from the email messages.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
@@ -124,13 +112,7 @@ tasks:
       - "19"
     scriptarguments:
       entryid:
-        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0
-          || val.Type.toLowerCase().indexOf('smtp mail') >= 0 || val.Type.toLowerCase().indexOf('cdfv2
-          microsoft outlook message') >= 0 || val.Type.toLowerCase().indexOf('news
-          or mail') >= 0 || (val.Type.toLowerCase().indexOf('composite document file
-          v2 document') >= 0 && val.Extension.toLowerCase() == 'msg') || (val.Extension.toLowerCase()
-          == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 && val.Type.toLowerCase().indexOf('crlf')
-          >= 0)).EntryID}
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Type.toLowerCase().indexOf('smtp mail') >= 0 || val.Type.toLowerCase().indexOf('cdfv2 microsoft outlook message') >= 0 || val.Type.toLowerCase().indexOf('news or mail') >= 0 || (val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 && val.Extension.toLowerCase() == 'msg') || (val.Extension.toLowerCase() == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 && val.Type.toLowerCase().indexOf('crlf') >= 0)).EntryID}
     reputationcalc: 2
     results:
     - AttachmentName
@@ -287,8 +269,7 @@ tasks:
       id: 9d6defc4-5ef1-4523-8136-08372aa15544
       version: -1
       name: Set incident with the Email object data
-      description: Updates Demisto incident fields using data from the email object.
-        Also extracts indicators from the email message.
+      description: Updates Demisto incident fields using data from the email object. Also extracts indicators from the email message.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1212,3 +1193,4 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
+fromversion: 5.0.0

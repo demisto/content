@@ -29,8 +29,9 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var wisdomURL = 'https://api.alphasoc.net/v1/wisdom'
+
 
     var sendRequest = function(requestUrl) {
         var res = http(
@@ -67,6 +68,7 @@ script:
         }
     };
 
+
     var extractDomainName = function(url) {
         var hostname;
 
@@ -83,6 +85,7 @@ script:
 
         return hostname;
     }
+
 
     var getDomainWisdom = function(domain) {
         var extractedDomain = extractDomainName(domain);
@@ -116,6 +119,7 @@ script:
         };
     }
 
+
     var getIPWisdom = function(proto, ip, port) {
         var escapedIP = ip.indexOf(':') > 0 ? '[' + ip + ']' : ip;
         var query = proto + ':' + escapedIP + ':' + port;
@@ -148,7 +152,9 @@ script:
         };
     }
 
+
     // The command input arg holds the command sent from the user.
+
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
@@ -172,8 +178,7 @@ script:
       description: Domain name
     - contextPath: Wisdom.Flag
       description: The AlphaSOC security category or feature
-    description: Returns a list of flags (categories and features) assigned to a domain
-      by AlphaSOC Threat Intelligence
+    description: Returns a list of flags (categories and features) assigned to a domain by AlphaSOC Threat Intelligence
   - name: wisdom-ip-flags
     arguments:
     - name: proto
@@ -189,7 +194,6 @@ script:
     outputs:
     - contextPath: Wisdom.Flag
       description: The AlphaSOC security category or feature
-    description: Returns a list of flags (categories and features) assigned to an
-      IP connection (defined by protocol, destination address and port number) by
-      AlphaSOC Threat Intelligence
+    description: Returns a list of flags (categories and features) assigned to an IP connection (defined by protocol, destination address and port number) by AlphaSOC Threat Intelligence
   runonce: false
+fromversion: 5.0.0

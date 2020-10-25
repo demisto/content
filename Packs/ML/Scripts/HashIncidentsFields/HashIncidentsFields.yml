@@ -12,17 +12,13 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'The start date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+  description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00 +0200").'
   isArray: false
   name: fromDate
   required: false
   secret: false
 - default: false
-  description: 'The end date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+  description: 'The end date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00 +0200").'
   isArray: false
   name: toDate
   required: false
@@ -37,8 +33,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: created
-  description: The incident field to specify for the date range. Can be "created"
-    or "modified". The default is "created".
+  description: The incident field to specify for the date range. Can be "created" or "modified". The default is "created".
   isArray: false
   name: timeField
   predefined:
@@ -47,15 +42,14 @@ args:
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of non-empty value incident field names by which
-    to filter incidents.
+  description: A comma-separated list of non-empty value incident field names by which to filter incidents.
   isArray: false
   name: NonEmptyFields
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: pickle
+  defaultValue: json
   description: The output file format.
   isArray: false
   name: outputFormat
@@ -72,7 +66,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: A comma-separated list of fields to hash.
+  description: A comma-separated list of fields to hash. Support wildcards.
   isArray: false
   name: fieldsToHash
   required: false
@@ -81,6 +75,29 @@ args:
   description: A comma-separated list of context keys to keep.
   isArray: false
   name: contextKeys
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Remove incident labels
+  isArray: false
+  name: removeLabels
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  description: A comma-separated list of fields in the object to un-poplulate.
+  isArray: false
+  name: unPopulateFields
+  required: false
+  secret: false
+- default: false
+  description: Random salt to the hash function
+  isArray: false
+  name: addRandomSalt
   required: false
   secret: false
 comment: |-
@@ -106,6 +123,7 @@ tags:
 - ml
 timeout: '0'
 type: python
+dockerimage: demisto/python3:3.8.5.10845
 tests:
 - hashIncidentFields-test
-fromversion: 4.5.0
+fromversion: 5.0.0

@@ -43,8 +43,7 @@ tasks:
       id: 09f337a9-fb19-48ce-8b0f-902e0dc9f047
       version: -1
       name: Get File Sample By Hash - Carbon Black Enterprise Response
-      description: Returns to the war-room a file sample correlating to MD5 hashes
-        in the input using Carbon Black Enterprise Response integration
+      description: Returns to the war-room a file sample correlating to MD5 hashes in the input using Carbon Black Enterprise Response integration
       playbookName: Get File Sample By Hash - Carbon Black Enterprise Response
       type: playbook
       iscommand: false
@@ -103,8 +102,7 @@ tasks:
       id: 3a3ab19d-7b69-4631-847b-27eb7f7f80ee
       version: -1
       name: Get File Sample By Hash - Cylance Protect v2
-      description: This playbook returns a file sample to the war-room given the file's
-        SHA256 hash, using Cylance Protect v2 integration.
+      description: This playbook returns a file sample to the war-room given the file's SHA256 hash, using Cylance Protect v2 integration.
       playbookName: Get File Sample By Hash - Cylance Protect v2
       type: playbook
       iscommand: false
@@ -164,6 +162,6 @@ outputs:
 - contextPath: File
   description: File sample object
   type: unknown
-fromversion: 4.0.0
+fromversion: 5.0.0
 tests:
 - No test

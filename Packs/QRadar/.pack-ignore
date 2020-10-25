@@ -3,3 +3,6 @@ ignore=BA101
 
 [file:QRadar]
 ignore=PA116
+
+[file:QRadar.yml]
+ignore=IN126

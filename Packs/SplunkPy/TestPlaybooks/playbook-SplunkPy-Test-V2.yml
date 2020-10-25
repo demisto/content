@@ -276,8 +276,7 @@ tasks:
       id: b71e43c9-6d14-40bf-8277-ca7306a895ce
       version: -1
       name: Get job results
-      description: Returns the results of a previous Splunk search. You can use this
-        command in conjunction with the splunk-job-create command.
+      description: Returns the results of a previous Splunk search. You can use this command in conjunction with the splunk-job-create command.
       script: '|||splunk-results'
       type: regular
       iscommand: true
@@ -416,14 +415,7 @@ tasks:
         simple: rawEvent
       stringify: {}
       value:
-        simple: 1531041382, search_name="0 - Azure AD-Concurrent Access From Different
-          GEO", logon_ip="xx.xx.xx.xx", logon_ip="xx.xx.xx.xx", logon_ip="xx.xx.xx.xx",
-          logon_source_Country="Egypt", logon_source_Country="Germany", logon_source_info="Potentially_unauthorized",
-          logon_source_info="VPN", timestamps="2018-07-08T08:22:41", timestamps="2018-07-08T08:28:50",
-          timestamps="2018-07-08T08:35:31", country_count="2", country_in_AD="United
-          Arab Emirates", info_max_time="+Infinity", info_min_time="0.000", muid="xx.xx.xx.xx",
-          service="AzureActiveDirectory", user="xx.xx.xx.xx", user_type="A regular
-          user", users_bunit="xx.xx.xx.xx"
+        simple: 1531041382, search_name="0 - Azure AD-Concurrent Access From Different GEO", logon_ip="xx.xx.xx.xx", logon_ip="xx.xx.xx.xx", logon_ip="xx.xx.xx.xx", logon_source_Country="Egypt", logon_source_Country="Germany", logon_source_info="Potentially_unauthorized", logon_source_info="VPN", timestamps="2018-07-08T08:22:41", timestamps="2018-07-08T08:28:50", timestamps="2018-07-08T08:35:31", country_count="2", country_in_AD="United Arab Emirates", info_max_time="+Infinity", info_min_time="0.000", muid="xx.xx.xx.xx", service="AzureActiveDirectory", user="xx.xx.xx.xx", user_type="A regular user", users_bunit="xx.xx.xx.xx"
     separatecontext: false
     view: |-
       {
@@ -473,8 +465,7 @@ tasks:
       id: 73fccbae-ceee-4eb7-81a4-70ebe47c8061
       version: -1
       name: Is the raw parsed?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -595,3 +586,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -2,10 +2,13 @@ commonfields:
   id: SNListTickets
   version: -1
 name: SNListTickets
-script: |-
+script: >-
   res = []
+
   dArgs = demisto.args()
+
   resCmd = demisto.executeCommand("servicenow-incidents-query", dArgs)
+
   try:
       for entry in resCmd:
           if isError(entry):
@@ -27,7 +30,7 @@ type: python
 subtype: python2
 tags:
 - servicenow
-comment: "List tickets from ServiceNow"
+comment: Deprecated. List tickets from ServiceNow
 system: true
 deprecated: true
 args:
@@ -41,3 +44,4 @@ dependson:
   must:
   - servicenow-incidents-query
 timeout: 0s
+fromversion: 5.0.0

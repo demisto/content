@@ -79,8 +79,7 @@ tasks:
       id: c9799048-288a-40cc-8d2f-c561d0ea2f6b
       version: -1
       name: Is McAfee ePolicy Orchestrator enabled?
-      description: Checks if there is an active instance of the McAfee ePolicy Orchestrator
-        integration enabled.
+      description: Checks if there is an active instance of the McAfee ePolicy Orchestrator integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -237,8 +236,7 @@ tasks:
       id: 9fa921fa-d196-40ba-8419-ed0c4f838ab8
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
-      description: Checks if there is an active instance of the Carbon Black Enterprise
-        Response integration enabled.
+      description: Checks if there is an active instance of the Carbon Black Enterprise Response integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -331,8 +329,7 @@ tasks:
       id: 216aed2b-2f34-4c5e-8c54-60b978218896
       version: -1
       name: Is CrowdStrike Falcon Host enabled?
-      description: Checks if there is an active instance of the CrowdStrike Falcon
-        Host integration enabled.
+      description: Checks if there is an active instance of the CrowdStrike Falcon Host integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -497,8 +494,7 @@ tasks:
       id: f7f190b9-5a39-4d8a-83a5-77d5a023f0d4
       version: -1
       name: Is Active Directory Query v2 enabled?
-      description: Checks if there is an active instance of the Active Directory Query
-        v2 integration enabled.
+      description: Checks if there is an active instance of the Active Directory Query v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -664,9 +660,7 @@ tasks:
       id: f74a190a-1427-4557-8cf1-ff7865da3042
       version: -1
       name: Get Crowdstrike device ID
-      description: Gets the Crowdstrike Falcon Host device ID that corresponds to
-        the endpoint that is being enriched. The device ID is necessary to get information
-        about the endpoint.
+      description: Gets the Crowdstrike Falcon Host device ID that corresponds to the endpoint that is being enriched. The device ID is necessary to get information about the endpoint.
       script: '|||cs-device-search'
       type: regular
       iscommand: true
@@ -712,8 +706,7 @@ tasks:
       id: 9c60a60d-b2f3-4707-8b0f-690891e080d0
       version: -1
       name: Was a device ID found?
-      description: Checks whether a Crowdstrike device ID was found for the hostname
-        that is being enriched.
+      description: Checks whether a Crowdstrike device ID was found for the hostname that is being enriched.
       type: condition
       iscommand: false
       brand: ""
@@ -816,8 +809,7 @@ tasks:
       id: 58c8b4be-657c-45f6-8eca-5a01da85f1f3
       version: -1
       name: Is ExtraHop Reveal(x) enabled?
-      description: Checks if there is an active instance of the ExtraHop Reveal(x)
-        integration enabled.
+      description: Checks if there is an active instance of the ExtraHop Reveal(x) integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -966,8 +958,7 @@ outputs:
   description: The domain names of the endpoints that were enriched.
   type: string
 - contextPath: CylanceProtectDevice
-  description: The device information about the hostname that was enriched using Cylance
-    Protect v2.
+  description: The device information about the hostname that was enriched using Cylance Protect v2.
   type: unknown
 - contextPath: ExtraHop.Device.Macaddr
   description: The MAC Address of the device.
@@ -976,8 +967,7 @@ outputs:
   description: The class of the device.
   type: String
 - contextPath: ExtraHop.Device.UserModTime
-  description: The time of the most recent update, expressed in milliseconds since
-    the epoch.
+  description: The time of the most recent update, expressed in milliseconds since the epoch.
   type: Number
 - contextPath: ExtraHop.Device.AutoRole
   description: The role automatically detected by the ExtraHop.
@@ -1004,8 +994,7 @@ outputs:
   description: Whether the device is on the advanced analysis whitelist.
   type: Boolean
 - contextPath: ExtraHop.Device.ModTime
-  description: The time of the most recent update, expressed in milliseconds since
-    the epoch.
+  description: The time of the most recent update, expressed in milliseconds since the epoch.
   type: Number
 - contextPath: ExtraHop.Device.IsL3
   description: Indicates whether the device is a Layer 3 device.
@@ -1049,6 +1038,6 @@ outputs:
 - contextPath: ExtraHop.Device.Url
   description: Link to the device details page in ExtraHop.
   type: string
-fromversion: 4.1.0
+fromversion: 5.0.0
 tests:
 - Endpoint Enrichment - Generic v2.1 - Test

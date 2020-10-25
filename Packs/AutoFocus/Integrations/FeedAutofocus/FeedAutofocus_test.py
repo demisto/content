@@ -1,3 +1,4 @@
+import pytest
 from FeedAutofocus import Client, fetch_indicators_command
 
 INDICATORS = [
@@ -40,20 +41,27 @@ def test_url_format():
     assert client.url_format(url2) == "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID2}/{Name2}"
 
 
-def test_feed_tags_param(mocker):
+@pytest.mark.parametrize('tlp_color', ['', None, 'AMBER'])
+def test_feed_tags_param(mocker, tlp_color):
     """Unit test
     Given
     - fetch indicators command
     - command args
     - command raw response
+    - tlp_color
     When
     - mock the feed tags param.
     - mock the Client's daily_http_request.
     Then
     - run the fetch incidents command using the Client
     Validate The value of the tags field.
+    Validate the value of trafficlightprotocol incident field.
     """
     client = Client(api_key="a", insecure=False, proxy=None, indicator_feeds='Daily Threat Feed')
     mocker.patch.object(client, 'daily_custom_http_request', return_value=INDICATORS)
-    indicators = fetch_indicators_command(client, ['test_tag'])
+    indicators = fetch_indicators_command(client, ['test_tag'], tlp_color)
     assert indicators[0].get('fields').get('tags') == ['test_tag']
+    if tlp_color:
+        assert indicators[0].get('fields').get('trafficlightprotocol') == tlp_color
+    else:
+        assert not indicators[0].get('fields').get('trafficlightprotocol')

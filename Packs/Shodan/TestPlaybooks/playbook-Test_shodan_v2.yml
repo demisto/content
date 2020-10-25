@@ -431,8 +431,7 @@ tasks:
       id: 03034089-6818-4b6d-8674-e1c209dde605
       version: -1
       name: search
-      description: Search Shodan using the same query syntax as the website and use
-        facets to get summary information for different properties.
+      description: Search Shodan using the same query syntax as the website and use facets to get summary information for different properties.
       script: Shodan_v2|||search
       type: regular
       iscommand: true
@@ -1033,3 +1032,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

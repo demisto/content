@@ -56,8 +56,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Query IP address or CIDR blocks (/32 up to /23) for SSL certificates
-      history.
+    description: Query IP address or CIDR blocks (/32 up to /23) for SSL certificates history.
     execution: false
     name: circl-ssl-list-certificates
     outputs:
@@ -144,3 +143,4 @@ script:
   subtype: python2
 tests:
 - CirclIntegrationTest
+fromversion: 5.0.0

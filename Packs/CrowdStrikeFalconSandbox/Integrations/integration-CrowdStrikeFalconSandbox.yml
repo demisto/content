@@ -66,6 +66,22 @@ script:
         serverUrl = serverUrl.substring(0, serverUrl.length - 1);
     }
 
+    // Add `contains` to String prototype.
+
+    if (!('contains' in String.prototype))
+        String.prototype.contains = function(str, startIndex) {
+            return -1 !== String.prototype.indexOf.call(this, str, startIndex);
+        };
+
+    function argToBool(arg){
+        switch (typeof arg){
+            case 'boolean': return arg;
+            case 'string': return (arg === 'true');
+            case 'undefined': return false;
+        }
+
+    }
+
     function entryError(errorCode, text) {
         var error = 'Falcon Sandbox returned an error (' + errorCode + ') - ' + text;
         return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: error};
@@ -606,11 +622,20 @@ script:
         throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
     }
 
-    function submitUrlCmd(url, environmentID) {
+    function submitUrlCmd(url, environmentID, dontThrowErrorOnFileDetonation) {
         if (version === 'v1') {
             throw 'This command is supported only in API v2.'
         }
-        var response = submitUrl(url, environmentID);
+        try {
+          var response = submitUrl(url, environmentID);
+        } catch (exception) {
+              var notSupported = 'The provided URL resolves to a file.'
+              if (dontThrowErrorOnFileDetonation && exception.contains(notSupported)){
+                  return 'The file format is not supported, use the command "crowdstrike-submit-file-by-url" instead.';
+              } else {
+                  throw exception;
+              }
+        }
         var context = {
             'File(val.hash && val.hash === obj.hash)': {
                 'SHA256': response['sha256'],
@@ -790,7 +815,7 @@ script:
         case 'crowdstrike-detonate-file':
             return detonateFile(args.entryId, args.delay, args.timeout);
         case 'crowdstrike-submit-url':
-            return submitUrlCmd(args.url, args.environmentID);
+            return submitUrlCmd(args.url, args.environmentID, argToBool(args.dontThrowErrorOnFileDetonation));
         case 'crowdstrike-get-screenshots':
             return getScreenshotsCmd(args.file, args.environmentID, args.JobID);
         case 'file':
@@ -1304,6 +1329,13 @@ script:
       required: true
       description: Environment ID to submit URL to
       defaultValue: "100"
+    - name: dontThrowErrorOnFileDetonation
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Not throwing an error when sending a URL, which points to a file.
+      defaultValue: "false"
     outputs:
     - contextPath: File.SHA256
       description: File SHA256
@@ -1437,3 +1469,4 @@ script:
 tests:
 - VxStream Test
 - detonate_file_-_generic_test
+fromversion: 5.0.0

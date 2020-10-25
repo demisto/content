@@ -450,7 +450,6 @@ def file_command():
             })
 
     except Exception:
-        print(traceback.format_exc())
         demisto.debug(traceback.format_exc())
         return_error('Failed getting file data, please verify the arguments and parameters')
 

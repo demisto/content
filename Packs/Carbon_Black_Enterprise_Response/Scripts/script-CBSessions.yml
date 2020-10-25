@@ -2,13 +2,19 @@ commonfields:
   id: CBSessions
   version: -1
 name: CBSessions
-script: |-
+script: >-
   //Show a list of carbon black sessions.
+
   //Argument: Verbose = true, to show all properties.
+
   var output = [];
+
   var entries = executeCommand("cb-list-sessions", {});
+
   var array = entries[0].Contents;
+
   var outTable = [];
+
   for (var index in array) {
       var item = array[index];
       var outItem = {};
@@ -26,7 +32,9 @@ script: |-
       }
       outTable.push(outItem);
   }
+
   output.push({ContentsFormat: formats.table, Type: entryTypes.note, Contents: outTable});
+
   return output;
 type: javascript
 tags:
@@ -42,3 +50,4 @@ dependson:
   must:
   - cb-list-sessions
 timeout: 0s
+fromversion: 5.0.0

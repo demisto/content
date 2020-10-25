@@ -50,6 +50,18 @@
 </li>
 </ol>
 </li>
+<li>Create a predefined security profiles with the best practices by Palo Alto Networks.</li>
+<li>Get security profiles best practices as defined by Palo Alto Networks.
+<br>For more inforamtion about Palo Alto Networks best practices, visit <a href="https://docs.paloaltonetworks.com/best-practices/9-0/internet-gateway-best-practices/best-practice-internet-gateway-security-policy/create-best-practice-security-profiles">Palo Alto Networks best practices</a>.</li>
+<li>Apply security profiles to specific rule.</li>
+<li>Set default categories to block in the URL filtering profile.</li>
+<li>Enforce WildFire best practice.
+<ol>
+<li>Set file upload to the maximum size.</li>
+<li>WildFire Update Schedule is set to download and install updates every minute.</li>
+<li>All file types are forwarded.</li>
+</ol>
+</li>
 </ul>
 <h2>Known Limitations</h2>
 <ul>
@@ -148,6 +160,42 @@
 <li><a href="#53-panorama-query-logs" target="_self">Query logs: panorama-query-logs</a></li>
 <li><a href="#54-panorama-check-logs-status" target="_self">Check the query status of logs: panorama-check-logs-status</a></li>
 <li><a href="#55-panorama-get-logs" target="_self">Get the data of a logs query: panorama-get-logs</a></li>
+<li><a href="#panorama-security-policy-match" target="_self">Checks whether a session matches the specified security policy. This command is only available on Firewall instances: panorama-security-policy-match</a></li>
+<li><a href="#panorama-list-static-routes" target="_self">Lists the static routes of a virtual router: panorama-list-static-routes</a></li>
+<li><a href="#panorama-get-static-route" target="_self">Returns the specified static route of a virtual router: panorama-get-static-route</a></li>
+<li><a href="#panorama-add-static-route" target="_self">Adds a static route: panorama-add-static-route</a></li>
+<li><a href="#panorama-delete-static-route" target="_self">Deletes a static route: panorama-delete-static-route</a></li>
+<li><a href="#panorama-show-device-version" target="_self">Show firewall device software version: panorama-show-device-version</a></li>
+<li><a href="#panorama-download-latest-content-update" target="_self">Downloads the latest content update: panorama-download-latest-content-update</a></li>
+<li><a href="#panorama-content-update-download-status" target="_self">Checks the download status of a content update: panorama-content-update-download-status</a></li>
+<li><a href="#panorama-install-latest-content-update" target="_self">Installs the latest content update: panorama-install-latest-content-update</a></li>
+<li><a href="#panorama-content-update-install-status" target="_self">Gets the installation status of the content update: panorama-content-update-install-status</a></li>
+<li><a href="#panorama-check-latest-panos-software" target="_self">Checks the PAN-OS software version from the repository: panorama-check-latest-panos-software</a></li>
+<li><a href="#panorama-download-panos-version" target="_self">Downloads the target PAN-OS software version to install on the target device: panorama-download-panos-version</a></li>
+<li><a href="#panorama-download-panos-status" target="_self">Gets the download status of the target PAN-OS software: panorama-download-panos-status</a></li>
+<li><a href="#panorama-install-panos-version" target="_self">Installs the target PAN-OS version on the specified target device: panorama-install-panos-version</a></li>
+<li><a href="#panorama-install-panos-status" target="_self">Gets the installation status of the PAN-OS software: panorama-install-panos-status</a></li>
+<li><a href="#panorama-device-reboot" target="_self">Reboots the Firewall device: panorama-device-reboot</a></li>
+<li><a href="#panorama-show-location-ip" target="_self">Show the IP location information: panorama-show-location-ip</a></li>
+<li><a href="#panorama-get-licences" target="_self">Get information about PAN-OS available licenses and their statuses: panorama-get-licences</a></li>
+<li><a href="#panorama-get-security-profiles" target="_self">Get information about profiles: panorama-get-security-profiles</a></li>
+<li><a href="#panorama-apply-security-profile" target="_self">Apply profile to specific rules / rules with specific tag: panorama-apply-security-profile</a></li>
+<li><a href="#panorama-get-ssl-decryption-rules" target="_self">Show ssl decryption rules under policies -> decryption -> rules: panorama-get-ssl-decryption-rules</a></li>
+<li><a href="#panorama-get-wildfire-configuration" target="_self">Retrieve Wildfire Configuration: panorama-get-wildfire-configuration</a></li>
+<li><a href="#panorama-url-filtering-block-default-categories" target="_self">Set default categories to block in the URL filtering profile: panorama-url-filtering-block-default-categories</a></li>
+<li><a href="#panorama-get-anti-spyware-best-practice" target="_self">Show anti-spyware best practices: panorama-get-anti-spyware-best-practice</a></li>
+<li><a href="#panorama-get-file-blocking-best-practice" target="_self">Show file-blocking best practices: panorama-get-file-blocking-best-practice</a></li>
+<li><a href="#panorama-get-antivirus-best-practice" target="_self">Show anti-virus best practices: panorama-get-antivirus-best-practice</a></li>
+<li><a href="#panorama-get-vulnerability-protection-best-practice" target="_self">Show vulnerability-protection best practices: panorama-get-vulnerability-protection-best-practice</a></li>
+<li><a href="#panorama-get-wildfire-best-practice" target="_self">Show WildFire best practices: panorama-get-wildfire-best-practice</a></li>
+<li><a href="#panorama-get-url-filtering-best-practice" target="_self">Show URL Filtering best practices: panorama-get-url-filtering-best-practice</a></li>
+<li><a href="#panorama-enforce-wildfire-best-practice" target="_self">Enforce wildfire file upload to the maximum size + all file types are forwarded and update schedule: panorama-enforce-wildfire-best-practice</a></li>
+<li><a href="#panorama-create-antivirus-best-practice-profile" target="_self">Create antivirus best practice profile: panorama-create-antivirus-best-practice-profile</a></li>
+<li><a href="#panorama-create-anti-spyware-best-practice-profile" target="_self">Create Anti Spyware best practice profile: panorama-create-anti-spyware-best-practice-profile</a></li>
+<li><a href="#panorama-create-vulnerability-best-practice-profile" target="_self">Create vulnerability protection best practice profile: panorama-create-vulnerability-best-practice-profile</a></li>
+<li><a href="#panorama-create-url-filtering-best-practice-profile" target="_self">Create URL filtering best practice profile: panorama-create-url-filtering-best-practice-profile</a></li>
+<li><a href="#panorama-create-file-blocking-best-practice-profile" target="_self">Create file blocking best practice profile: panorama-create-file-blocking-best-practice-profile</a></li>
+<li><a href="#panorama-create-wildfire-best-practice-profile" target="_self">Create WildFire analysis best practice profile: panorama-create-wildfire-best-practice-profile</a></li>
 </ol>
 <h3 id="h_7040597420811545892921540">1. Run any command supported in the PAN-OS API</h3>
 <hr>
@@ -755,7 +803,7 @@
 <pre>!panorama-list-address-groups</pre>
 <h5>Human Readable Output</h5>
 <p><a href="https://user-images.githubusercontent.com/37335599/50421902-e2602800-084c-11e9-9c87-c21fb77d4553.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/50421902-e2602800-084c-11e9-9c87-c21fb77d4553.png" alt="screen shot 2018-12-25 at 13 56 20"></a></p>
-<h3 id="h_17078113636441545893426970">9. Get information for an address group</h3>
+<h3 id="h_17078113636441545893426970">9. Get information for an address group. A dynamic address group with a tag will return only the tag name, not the IPs associated with this tag.</h3>
 <hr>
 <p>Returns details for the specified address group.</p>
 <h5>Base Command</h5>
@@ -3132,6 +3180,16 @@
 <td style="width: 532px;">The password for Panorama. This is only required for the "dlp-pcap" PCAP type.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 137px;">deviceName</td>
+<td style="width: 532px;">The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 137px;">sessionID</td>
+<td style="width: 532px;">The Session ID of the PCAP. For further information, see the Panorama XML API Documentation.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -3815,6 +3873,21 @@
 <td style="width: 288px;">device-group</td>
 <td style="width: 289px;">
 <span>The device group for which to return addresses (Panorama instances).</span> If no value is supplied, the default group configured integration parameter is applied.</td>
+<td style="width: 163px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 288px;">edl_type</td>
+<td style="width: 289px;">The type of the EDL. Required when refreshing an EDL object which is configured on Panorama.</td>
+<td style="width: 163px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 288px;">location</td>
+<td style="width: 289px;">The location of the EDL. Required when refreshing an EDL object which is configured on Panorama.</td>
+<td style="width: 163px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 288px;">vsys</td>
+<td style="width: 289px;">The Vsys of the EDL. Required when refreshing an EDL object which is configured on Panorama.</td>
 <td style="width: 163px;">Optional</td>
 </tr>
 </tbody>
@@ -4838,3 +4911,2771 @@
 <h3>PAN-OS EDL Setup</h3>
 </div>
 </div>
+<h3 id="panorama-get-licences">77. panorama-get-licences</h3>
+<hr>
+<p>Get information about PAN-OS available licenses and their statuses.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-get-licences</code>
+</p>
+
+<h5>Input</h5>
+There are no inputs for this command.
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Panorama.License.Authcode</td>
+      <td>String</td>
+      <td>License authentication code.</td>
+    </tr>
+    <tr>
+      <td>Panorama.License.Base-license-name</td>
+      <td>String</td>
+      <td>Base License name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.License.Description</td>
+      <td>String</td>
+      <td>The License description.</td>
+    </tr>
+    <tr>
+      <td>Panorama.License.Expired</td>
+      <td>String</td>
+      <td>Is the license expired.</td>
+    </tr>
+    <tr>
+      <td>Panorama.License.Expires</td>
+      <td>String</td>
+      <td>When the license will be expired.</td>
+    </tr>
+    <tr>
+      <td>Panorama.License.Feature</td>
+      <td>String</td>
+      <td>The license feature.</td>
+    </tr>
+    <tr>
+      <td>Panorama.License.Issued</td>
+      <td>String</td>
+      <td>When the license was issued.</td>
+    </tr>
+    <tr>
+      <td>Panorama.License.Serial</td>
+      <td>String</td>
+      <td>The license serial.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <pre>!panorama-get-licences</pre>
+</p>
+
+<h5>Human Readable Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Authcode</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Feature</strong>
+      </th>
+      <th>
+        <strong>Serial</strong>
+      </th>
+      <th>
+        <strong>Expired</strong>
+      </th>
+      <th>
+        <strong>Expires</strong>
+      </th>
+      <th>
+        <strong>Issued</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>I9805928</td>
+      <td>NFR Support</td>
+      <td>NFR Support</td>
+      <td>007DEMISTO1t</td>
+      <td>no</td>
+      <td>Never</td>
+      <td>November 25, 2019</td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<h3 id="panorama-get-security-profiles">78. panorama-get-security-profiles</h3>
+<hr>
+<p>Get information about profiles.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-get-security-profiles</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>security_profile</td>
+      <td>The security profile to get.</td>
+      <td>Optional</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Panorama.Spyware.Name</td>
+      <td>String</td>
+      <td>Profile Name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.Rules.Action</td>
+      <td>String</td>
+      <td>The rule action</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.Rules.Cateogry</td>
+      <td>String</td>
+      <td>The category to apply the rule on.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.Rules.Name</td>
+      <td>String</td>
+      <td>Rule name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.Rules.Packet-capture</td>
+      <td>String</td>
+      <td>Is packet capture enabled.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.Rules.Severity</td>
+      <td>String</td>
+      <td>Rule severity.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.Rules.Threat-name</td>
+      <td>String</td>
+      <td>Threat name to apply the rule.</td>
+    </tr>
+    <tr>
+      <td>Panorama.URLFilter.Name</td>
+      <td>String</td>
+      <td>Profile name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.URLFilter.Rules.Category.Action</td>
+      <td>String</td>
+      <td>Rule action to apply on the category.</td>
+    </tr>
+    <tr>
+      <td>Panorama.URLFilter.Rules.Category.Name</td>
+      <td>String</td>
+      <td>Category name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.Name</td>
+      <td>String</td>
+      <td>WildFire profile name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.Rules.Analysis</td>
+      <td>String</td>
+      <td>Rule analysis.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.Rules.Application</td>
+      <td>String</td>
+      <td>Application to apply the rule on.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.Rules.File-type</td>
+      <td>String</td>
+      <td>File type to apply the rule on.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.Rules.Name</td>
+      <td>String</td>
+      <td>Rule name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Name</td>
+      <td>String</td>
+      <td>Vulnerability profile name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rules.Vendor-id</td>
+      <td>String</td>
+      <td>Vendor ID to apply the rule on.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rules.Packet-capture</td>
+      <td>String</td>
+      <td>Is packet capture enabled.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rules.Host</td>
+      <td>String</td>
+      <td>Rule host.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rules.Name</td>
+      <td>String</td>
+      <td>Rule name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rules.Cateogry</td>
+      <td>String</td>
+      <td>Category to apply the rule on.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rules.CVE</td>
+      <td>String</td>
+      <td>CVE to apply the rule on.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rules.Action</td>
+      <td>String</td>
+      <td>Rule action.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rules.Severity</td>
+      <td>String</td>
+      <td>Rule severity.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rules.Threat-name</td>
+      <td>String</td>
+      <td>Threat to apply the rule on.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Antivirus.Name</td>
+      <td>String</td>
+      <td>Antivirus profile name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Antivirus.Rules.Action</td>
+      <td>String</td>
+      <td>Rule action.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Antivirus.Rules.Name</td>
+      <td>String</td>
+      <td>Rule name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Antivirus.Rules.WildFire-action</td>
+      <td>String</td>
+      <td>WildFire action.</td>
+    </tr>
+    <tr>
+      <td>Panorama.FileBlocking.Name</td>
+      <td>String</td>
+      <td>File blocking profile name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.FileBlocking.Rules.Action</td>
+      <td>String</td>
+      <td>Rule action.</td>
+    </tr>
+    <tr>
+      <td>Panorama.FileBlocking.Rules.Application</td>
+      <td>String</td>
+      <td>Application to apply the rule.</td>
+    </tr>
+    <tr>
+      <td>Panorama.FileBlocking.Rules.File-type</td>
+      <td>String</td>
+      <td>File type to apply the rule.</td>
+    </tr>
+    <tr>
+      <td>Panorama.FileBlocking.Rules.Name</td>
+      <td>String</td>
+      <td>Rule name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.DataFiltering.Name</td>
+      <td>String</td>
+      <td>Data filtering profile name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.DataFiltering.Rules.Alert-threshold</td>
+      <td>String</td>
+      <td>Alert threshold.</td>
+    </tr>
+    <tr>
+      <td>Panorama.DataFiltering.Rules.Application</td>
+      <td>String</td>
+      <td>Application to apply the rule.</td>
+    </tr>
+    <tr>
+      <td>Panorama.DataFiltering.Rules.Block-threshold</td>
+      <td>String</td>
+      <td>Block threshold.</td>
+    </tr>
+    <tr>
+      <td>Panorama.DataFiltering.Rules.Data-object</td>
+      <td>String</td>
+      <td>Data object.</td>
+    </tr>
+    <tr>
+      <td>Panorama.DataFiltering.Rules.Direction</td>
+      <td>String</td>
+      <td>Rule direction.</td>
+    </tr>
+    <tr>
+      <td>Panorama.DataFiltering.Rules.File-type</td>
+      <td>String</td>
+      <td>File type to apply the rule on.</td>
+    </tr>
+    <tr>
+      <td>Panorama.DataFiltering.Rules.Log-severity</td>
+      <td>String</td>
+      <td>Log severity.</td>
+    </tr>
+    <tr>
+      <td>Panorama.DataFiltering.Rules.Name</td>
+      <td>String</td>
+      <td>Rule name.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <pre>!panorama-get-security-profiles security_profile=spyware</pre>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Name</strong>
+      </th>
+      <th>
+        <strong>Rules</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>best-practice</td>
+      <td>
+{'Name': 'simple-critical', 'Action': {'reset-both': None}, 'Category': 'any', 'Severity': 'critical', 'Threat-name': 'any', 'Packet-capture': 'disable'},<br><br>
+{'Name': 'simple-high', 'Action': {'reset-both': None}, 'Category': 'any', 'Severity': 'high', 'Threat-name': 'any', 'Packet-capture': 'disable'},<br><br>
+{'Name': 'simple-medium', 'Action': {'reset-both': None}, 'Category': 'any', 'Severity': 'medium', 'Threat-name': 'any', 'Packet-capture': 'disable'},<br><br>
+{'Name': 'simple-informational', 'Action': {'default': None}, 'Category': 'any', 'Severity': 'informational', 'Threat-name': 'any', 'Packet-capture': 'disable'},<br><br>
+{'Name': 'simple-low', 'Action': {'default': None}, 'Category': 'any', 'Severity': 'low', 'Threat-name': 'any', 'Packet-capture': 'disable'}</td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<h3 id="panorama-apply-security-profile">79. panorama-apply-security-profile</h3>
+<hr>
+<p>Apply profile to specific rules / rules with specific tag.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-apply-security-profile</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>profile_type</td>
+      <td>Security profile type.</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>rule_name</td>
+      <td>The rule name to apply.</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>profile_name</td>
+      <td>The profile name to apply to the rule.</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>pre_post</td>
+      <td>Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.</td>
+      <td>Optional</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <pre>!panorama-apply-security-profile profile_name=test profile_type=spyware rule_name=rule1 pre_post="pre-rulebase"</pre>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+
+The profile test has been applied to the rule rule1
+</p>
+
+<h3 id="panorama-get-ssl-decryption-rules">80. panorama-get-ssl-decryption-rules</h3>
+<hr>
+<p>Show ssl decryption rules under policies -> decryption -> rules</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-get-ssl-decryption-rules</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>pre_post</td>
+      <td>Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.</td>
+      <td>Optional</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Panorama.SSLRule.From</td>
+      <td>String</td>
+      <td>SSL rule from source.</td>
+    </tr>
+    <tr>
+      <td>Panorama.SSLRule.Name</td>
+      <td>String</td>
+      <td>Name of the SSL rule.</td>
+    </tr>
+    <tr>
+      <td>Panorama.SSLRule.Destination</td>
+      <td>String</td>
+      <td>Destination of the SSL rule.</td>
+    </tr>
+    <tr>
+      <td>Panorama.SSLRule.Target</td>
+      <td>String</td>
+      <td>The target od the SSL rule.</td>
+    </tr>
+    <tr>
+      <td>Panorama.SSLRule.Service</td>
+      <td>String</td>
+      <td>SSL rule service.</td>
+    </tr>
+    <tr>
+      <td>Panorama.SSLRule.Action</td>
+      <td>String</td>
+      <td>SSL rule action.</td>
+    </tr>
+    <tr>
+      <td>Panorama.SSLRule.Type</td>
+      <td>String</td>
+      <td>SSL rule type.</td>
+    </tr>
+    <tr>
+      <td>Panorama.SSLRule.Source</td>
+      <td>String</td>
+      <td>The source of the SSL rule.</td>
+    </tr>
+    <tr>
+      <td>Panorama.SSLRule.To</td>
+      <td>String</td>
+      <td>SSL rule to destination.</td>
+    </tr>
+    <tr>
+      <td>Panorama.SSLRule.UUID</td>
+      <td>String</td>
+      <td>SSl rule UUID.</td>
+    </tr>
+    <tr>
+      <td>Panorama.SSLRule.Description</td>
+      <td>String</td>
+      <td>SSL rule description.</td>
+    </tr>
+    <tr>
+      <td>Panorama.SSLRule.Source-user</td>
+      <td>String</td>
+      <td>SSL rule source user.</td>
+    </tr>
+    <tr>
+      <td>Panorama.SSLRule.Category</td>
+      <td>String</td>
+      <td>SSL rule category.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <pre>!panorama-get-ssl-decryption-rules pre_post="pre-rulebase"</pre>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+SSL Decryption Rules
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Name</strong>
+      </th>
+      <th>
+        <strong>UUID</strong>
+      </th>
+      <th>
+        <strong>Target</strong>
+      </th>
+      <th>
+        <strong>Service</strong>
+      </th>
+      <th>
+        <strong>Category</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>From</strong>
+      </th>
+      <th>
+        <strong>To</strong>
+      </th>
+      <th>
+        <strong>Source</strong>
+      </th>
+      <th>
+        <strong>Destination</strong>
+      </th>
+      <th>
+        <strong>Action</strong>
+      </th>
+      <th>
+        <strong>Source-user</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>test</td>
+      <td>cd3f0487-3872-4691-8387-1a15e7de142b</td>
+      <td>negate: no</td>
+      <td>any</td>
+      <td>member: any</td>
+      <td>ssl-forward-proxy: null</td>
+      <td>any</td>
+      <td>any</td>
+      <td>any</td>
+      <td>any</td>
+      <td>no-decrypt</td>
+      <td>any</td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<h3 id="panorama-get-wildfire-configuration">81. panorama-get-wildfire-configuration</h3>
+<hr>
+<p>Retrieve Wildfire Configuration</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-get-wildfire-configuration</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>template</td>
+      <td>The template name.</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Panorama.WildFire.Name</td>
+      <td>String</td>
+      <td>File type.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.Size-limit</td>
+      <td>String</td>
+      <td>File size limit.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.recurring</td>
+      <td>String</td>
+      <td>Schedule recurring</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!panorama-get-wildfire-configuration template=WildFire</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "Panorama.WildFire": [
+        {
+            "Name": "pe",
+            "Size-limit": "10"
+        },
+        {
+            "Name": "apk",
+            "Size-limit": "30"
+        },
+        {
+            "Name": "pdf",
+            "Size-limit": "1000"
+        },
+        {
+            "Name": "ms-office",
+            "Size-limit": "2000"
+        },
+        {
+            "Name": "jar",
+            "Size-limit": "5"
+        },
+        {
+            "Name": "flash",
+            "Size-limit": "5"
+        },
+        {
+            "Name": "MacOSX",
+            "Size-limit": "1"
+        },
+        {
+            "Name": "archive",
+            "Size-limit": "10"
+        },
+        {
+            "Name": "linux",
+            "Size-limit": "2"
+        },
+        {
+            "Name": "script",
+            "Size-limit": "20"
+        }
+    ],
+    "Panorama.WildFire.Schedule": {
+        "recurring": {
+            "every-min": {
+                "action": "download-and-install"
+            }
+        }
+    }
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>WildFire Configuration</h3>
+<p>
+ Report Grayware File: yes
+</p>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Name</strong></th>
+      <th><strong>Size-limit</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> pe </td>
+      <td> 10 </td>
+    </tr>
+    <tr>
+      <td> apk </td>
+      <td> 30 </td>
+    </tr>
+    <tr>
+      <td> pdf </td>
+      <td> 1000 </td>
+    </tr>
+    <tr>
+      <td> ms-office </td>
+      <td> 2000 </td>
+    </tr>
+    <tr>
+      <td> jar </td>
+      <td> 5 </td>
+    </tr>
+    <tr>
+      <td> flash </td>
+      <td> 5 </td>
+    </tr>
+    <tr>
+      <td> MacOSX </td>
+      <td> 1 </td>
+    </tr>
+    <tr>
+      <td> archive </td>
+      <td> 10 </td>
+    </tr>
+    <tr>
+      <td> linux </td>
+      <td> 2 </td>
+    </tr>
+    <tr>
+      <td> script </td>
+      <td> 20 </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>The updated schedule for Wildfire</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>recurring</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> every-min: {"action": "download-and-install"} </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<h3 id="panorama-url-filtering-block-default-categories">82. panorama-url-filtering-block-default-categories</h3>
+<hr>
+<p>Set default categories to block in the URL filtering profile.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-url-filtering-block-default-categories</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>profile_name</td>
+      <td>The url-filtering profile name. Get the name by running get-security-profiles command.</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!panorama-url-filtering-block-default-categories profile_name=test</code>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+The default categories to block has been set successfully to test
+</p>
+
+
+<h3 id="panorama-get-anti-spyware-best-practice">83. panorama-get-anti-spyware-best-practice</h3>
+<hr>
+<p>Show anti-spyware best practices.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-get-anti-spyware-best-practice</code>
+</p>
+
+<h5>Input</h5>
+There are no input arguments for this command.
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Panorama.Spyware.BotentDomain.Name</td>
+      <td>String</td>
+      <td>Botnet domain name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.BotentDomain.Action</td>
+      <td>String</td>
+      <td>Botnet domain action.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.BotentDomain.Packet-capture</td>
+      <td>String</td>
+      <td>Is packet capture enabled.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.BotentDomain.Sinkhole.ipv4-address</td>
+      <td>String</td>
+      <td>Botnet domain ipv4 address.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.BotentDomain.Sinkhole.ipv6-address</td>
+      <td>String</td>
+      <td>Botnet domain ipv6 address.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.Rule.Cateogry</td>
+      <td>String</td>
+      <td>Rule category.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.Rule.Action</td>
+      <td>String</td>
+      <td>Rule action.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.Rule.Name</td>
+      <td>String</td>
+      <td>Rule name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.Rule.Severity</td>
+      <td>String</td>
+      <td>Rule severity.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.Rule.Threat-name</td>
+      <td>String</td>
+      <td>Rule threat name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Spyware.BotentDomain.Max_version</td>
+      <td>String</td>
+      <td>Botnet domain max version.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!panorama-get-anti-spyware-best-practice</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "Panorama.Spyware.BotentDomain": [
+        {
+            "Action": {
+                "sinkhole": null
+            },
+            "Name": "default-paloalto-dns",
+            "Packet-capture": "disable"
+        },
+        {
+            "Action": {
+                "allow": null
+            },
+            "Max_version": "9.1.9",
+            "Name": "default-paloalto-cloud",
+            "Packet-capture": "disable"
+        }
+    ],
+    "Panorama.Spyware.BotentDomain.Sinkhole": [
+        {
+            "ipv4-address": "pan-sinkhole-default-ip",
+            "ipv6-address": "::1"
+        }
+    ],
+    "Panorama.Spyware.Rule": [
+        {
+            "Action": {
+                "reset-both": null
+            },
+            "Category": "any",
+            "Name": "simple-critical",
+            "Severity": "critical",
+            "Threat-name": "any"
+        },
+        {
+            "Action": {
+                "reset-both": null
+            },
+            "Category": "any",
+            "Name": "simple-high",
+            "Severity": "high",
+            "Threat-name": "any"
+        },
+        {
+            "Action": {
+                "reset-both": null
+            },
+            "Category": "any",
+            "Name": "simple-medium",
+            "Severity": "medium",
+            "Threat-name": "any"
+        },
+        {
+            "Action": {
+                "default": null
+            },
+            "Category": "any",
+            "Name": "simple-informational",
+            "Severity": "informational",
+            "Threat-name": "any"
+        },
+        {
+            "Action": {
+                "default": null
+            },
+            "Category": "any",
+            "Name": "simple-low",
+            "Severity": "low",
+            "Threat-name": "any"
+        }
+    ]
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>Anti Spyware Botnet-Domains Best Practice</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Name</strong></th>
+      <th><strong>Action</strong></th>
+      <th><strong>Packet-capture</strong></th>
+      <th><strong>ipv4-address</strong></th>
+      <th><strong>ipv6-address</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> default-paloalto-dns </td>
+      <td> sinkhole: null </td>
+      <td> disable </td>
+      <td>  </td>
+      <td>  </td>
+    </tr>
+    <tr>
+      <td> default-paloalto-cloud </td>
+      <td> allow: null </td>
+      <td> disable </td>
+      <td>  </td>
+      <td>  </td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>  </td>
+      <td>  </td>
+      <td> pan-sinkhole-default-ip </td>
+      <td> ::1 </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Anti Spyware Best Practice Rules</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Name</strong></th>
+      <th><strong>Severity</strong></th>
+      <th><strong>Action</strong></th>
+      <th><strong>Category</strong></th>
+      <th><strong>Threat-name</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> simple-critical </td>
+      <td> critical </td>
+      <td> reset-both: null </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-high </td>
+      <td> high </td>
+      <td> reset-both: null </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-medium </td>
+      <td> medium </td>
+      <td> reset-both: null </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-informational </td>
+      <td> informational </td>
+      <td> default: null </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-low </td>
+      <td> low </td>
+      <td> default: null </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<h3 id="panorama-get-file-blocking-best-practice">84. panorama-get-file-blocking-best-practice</h3>
+<hr>
+<p>Show file-blocking best practices.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-get-file-blocking-best-practice</code>
+</p>
+
+<h5>Input</h5>
+There are no input arguments for this command.
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Panorama.FileBlocking.Rule.Action</td>
+      <td>String</td>
+      <td>Rule action.</td>
+    </tr>
+    <tr>
+      <td>Panorama.FileBlocking.Rule.Application</td>
+      <td>String</td>
+      <td>Rule application.</td>
+    </tr>
+    <tr>
+      <td>Panorama.FileBlocking.Rule.File-type</td>
+      <td>String</td>
+      <td>Rule file type.</td>
+    </tr>
+    <tr>
+      <td>Panorama.FileBlocking.Rule.Name</td>
+      <td>String</td>
+      <td>Rule name.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!panorama-get-file-blocking-best-practice</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "Panorama.FileBlocking.Rule": [
+        {
+            "Action": "block",
+            "Application": "any",
+            "File-type": [
+                "7z",
+                "bat",
+                "cab",
+                "chm",
+                "class",
+                "cpl",
+                "dll",
+                "exe",
+                "flash",
+                "hlp",
+                "hta",
+                "jar",
+                "msi",
+                "Multi-Level-Encoding",
+                "ocx",
+                "PE",
+                "pif",
+                "rar",
+                "scr",
+                "tar",
+                "torrent",
+                "vbe",
+                "wsf"
+            ],
+            "Name": "Block all risky file types"
+        },
+        {
+            "Action": "block",
+            "Application": "any",
+            "File-type": [
+                "encrypted-rar",
+                "encrypted-zip"
+            ],
+            "Name": "Block encrypted files"
+        },
+        {
+            "Action": "alert",
+            "Application": "any",
+            "File-type": "any",
+            "Name": "Log all other file types"
+        }
+    ]
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>File Blocking Profile Best Practice</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Name</strong></th>
+      <th><strong>Action</strong></th>
+      <th><strong>File-type</strong></th>
+      <th><strong>Application</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> Block all risky file types </td>
+      <td> block </td>
+      <td> 7z,<br>bat,<br>cab,<br>chm,<br>class,<br>cpl,<br>dll,<br>exe,<br>flash,<br>hlp,<br>hta,<br>jar,<br>msi,<br>Multi-Level-Encoding,<br>ocx,<br>PE,<br>pif,<br>rar,<br>scr,<br>tar,<br>torrent,<br>vbe,<br>wsf </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> Block encrypted files </td>
+      <td> block </td>
+      <td> encrypted-rar,<br>encrypted-zip </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> Log all other file types </td>
+      <td> alert </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<h3 id="panorama-get-antivirus-best-practice">85. panorama-get-antivirus-best-practice</h3>
+<hr>
+<p>Show anti-virus best practices.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-get-antivirus-best-practice</code>
+</p>
+
+<h5>Input</h5>
+There are no input arguments for this command.
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Panorama.Antivirus.Decoder.Action</td>
+      <td>String</td>
+      <td>Rule action.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Antivirus.Decoder.Name</td>
+      <td>String</td>
+      <td>Rule name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Antivirus.Decoder.WildFire-action</td>
+      <td>String</td>
+      <td>WildFire action.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!panorama-get-antivirus-best-practice</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "Panorama.Antivirus.Decoder": [
+        {
+            "Action": "default",
+            "Name": "http",
+            "WildFire-action": "default"
+        },
+        {
+            "Action": "default",
+            "Name": "http2",
+            "WildFire-action": "default"
+        },
+        {
+            "Action": "default",
+            "Name": "smtp",
+            "WildFire-action": "default"
+        },
+        {
+            "Action": "default",
+            "Name": "imap",
+            "WildFire-action": "default"
+        },
+        {
+            "Action": "default",
+            "Name": "pop3",
+            "WildFire-action": "default"
+        },
+        {
+            "Action": "default",
+            "Name": "ftp",
+            "WildFire-action": "default"
+        },
+        {
+            "Action": "default",
+            "Name": "smb",
+            "WildFire-action": "default"
+        }
+    ]
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>Antivirus Best Practice Profile</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Name</strong></th>
+      <th><strong>Action</strong></th>
+      <th><strong>WildFire-action</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> http </td>
+      <td> default </td>
+      <td> default </td>
+    </tr>
+    <tr>
+      <td> http2 </td>
+      <td> default </td>
+      <td> default </td>
+    </tr>
+    <tr>
+      <td> smtp </td>
+      <td> default </td>
+      <td> default </td>
+    </tr>
+    <tr>
+      <td> imap </td>
+      <td> default </td>
+      <td> default </td>
+    </tr>
+    <tr>
+      <td> pop3 </td>
+      <td> default </td>
+      <td> default </td>
+    </tr>
+    <tr>
+      <td> ftp </td>
+      <td> default </td>
+      <td> default </td>
+    </tr>
+    <tr>
+      <td> smb </td>
+      <td> default </td>
+      <td> default </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<h3 id="panorama-get-vulnerability-protection-best-practice">86. panorama-get-vulnerability-protection-best-practice</h3>
+<hr>
+<p>Show vulnerability-protection best practices.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-get-vulnerability-protection-best-practice</code>
+</p>
+
+<h5>Input</h5>
+There are no input arguments for this command.
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Panorama.Vulnerability.Rule.Action</td>
+      <td>String</td>
+      <td>Rule action.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rule.CVE</td>
+      <td>String</td>
+      <td>Rule CVE.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rule.Cateogry</td>
+      <td>String</td>
+      <td>Rule category.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rule.Host</td>
+      <td>String</td>
+      <td>The rule host.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rule.Name</td>
+      <td>String</td>
+      <td>Rule name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rule.Severity</td>
+      <td>String</td>
+      <td>The rule severity.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rule.Threat-name</td>
+      <td>String</td>
+      <td>The threat name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.Vulnerability.Rule.Vendor-id</td>
+      <td>String</td>
+      <td>The vendor ID.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!panorama-get-vulnerability-protection-best-practice</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "Panorama.Vulnerability.Rule": [
+        {
+            "Action": {
+                "reset-both": null
+            },
+            "CVE": "any",
+            "Category": "any",
+            "Host": "client",
+            "Name": "simple-client-critical",
+            "Severity": "critical",
+            "Threat-name": "any",
+            "Vendor-id": "any"
+        },
+        {
+            "Action": {
+                "reset-both": null
+            },
+            "CVE": "any",
+            "Category": "any",
+            "Host": "client",
+            "Name": "simple-client-high",
+            "Severity": "high",
+            "Threat-name": "any",
+            "Vendor-id": "any"
+        },
+        {
+            "Action": {
+                "reset-both": null
+            },
+            "CVE": "any",
+            "Category": "any",
+            "Host": "client",
+            "Name": "simple-client-medium",
+            "Severity": "medium",
+            "Threat-name": "any",
+            "Vendor-id": "any"
+        },
+        {
+            "Action": {
+                "default": null
+            },
+            "CVE": "any",
+            "Category": "any",
+            "Host": "client",
+            "Name": "simple-client-informational",
+            "Severity": "informational",
+            "Threat-name": "any",
+            "Vendor-id": "any"
+        },
+        {
+            "Action": {
+                "default": null
+            },
+            "CVE": "any",
+            "Category": "any",
+            "Host": "client",
+            "Name": "simple-client-low",
+            "Severity": "low",
+            "Threat-name": "any",
+            "Vendor-id": "any"
+        },
+        {
+            "Action": {
+                "reset-both": null
+            },
+            "CVE": "any",
+            "Category": "any",
+            "Host": "server",
+            "Name": "simple-server-critical",
+            "Severity": "critical",
+            "Threat-name": "any",
+            "Vendor-id": "any"
+        },
+        {
+            "Action": {
+                "reset-both": null
+            },
+            "CVE": "any",
+            "Category": "any",
+            "Host": "server",
+            "Name": "simple-server-high",
+            "Severity": "high",
+            "Threat-name": "any",
+            "Vendor-id": "any"
+        },
+        {
+            "Action": {
+                "reset-both": null
+            },
+            "CVE": "any",
+            "Category": "any",
+            "Host": "server",
+            "Name": "simple-server-medium",
+            "Severity": "medium",
+            "Threat-name": "any",
+            "Vendor-id": "any"
+        },
+        {
+            "Action": {
+                "default": null
+            },
+            "CVE": "any",
+            "Category": "any",
+            "Host": "server",
+            "Name": "simple-server-informational",
+            "Severity": "informational",
+            "Threat-name": "any",
+            "Vendor-id": "any"
+        },
+        {
+            "Action": {
+                "default": null
+            },
+            "CVE": "any",
+            "Category": "any",
+            "Host": "server",
+            "Name": "simple-server-low",
+            "Severity": "low",
+            "Threat-name": "any",
+            "Vendor-id": "any"
+        }
+    ]
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>vulnerability Protection Best Practice Profile</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Name</strong></th>
+      <th><strong>Action</strong></th>
+      <th><strong>Host</strong></th>
+      <th><strong>Severity</strong></th>
+      <th><strong>Category</strong></th>
+      <th><strong>Threat-name</strong></th>
+      <th><strong>CVE</strong></th>
+      <th><strong>Vendor-id</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> simple-client-critical </td>
+      <td> reset-both: null </td>
+      <td> client </td>
+      <td> critical </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-client-high </td>
+      <td> reset-both: null </td>
+      <td> client </td>
+      <td> high </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-client-medium </td>
+      <td> reset-both: null </td>
+      <td> client </td>
+      <td> medium </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-client-informational </td>
+      <td> default: null </td>
+      <td> client </td>
+      <td> informational </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-client-low </td>
+      <td> default: null </td>
+      <td> client </td>
+      <td> low </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-server-critical </td>
+      <td> reset-both: null </td>
+      <td> server </td>
+      <td> critical </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-server-high </td>
+      <td> reset-both: null </td>
+      <td> server </td>
+      <td> high </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-server-medium </td>
+      <td> reset-both: null </td>
+      <td> server </td>
+      <td> medium </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-server-informational </td>
+      <td> default: null </td>
+      <td> server </td>
+      <td> informational </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+    <tr>
+      <td> simple-server-low </td>
+      <td> default: null </td>
+      <td> server </td>
+      <td> low </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<h3 id="panorama-get-wildfire-best-practice">87. panorama-get-wildfire-best-practice</h3>
+<hr>
+<p>Show WildFire best practices.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-get-wildfire-best-practice</code>
+</p>
+
+<h5>Input</h5>
+There are no input arguments for this command.
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Panorama.WildFire.Analysis</td>
+      <td>String</td>
+      <td>WildFire analysis.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.Application</td>
+      <td>String</td>
+      <td>WildFire application.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.File.File-size</td>
+      <td>String</td>
+      <td>Recommended file size.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.File.Name</td>
+      <td>String</td>
+      <td>File name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.File-type</td>
+      <td>String</td>
+      <td>WildFire profile file type.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.Name</td>
+      <td>String</td>
+      <td>WildFire profile name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.SSLDecrypt</td>
+      <td>String</td>
+      <td>SSL decrypt content.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.Schedule.Action</td>
+      <td>String</td>
+      <td>WildFire schedule action.</td>
+    </tr>
+    <tr>
+      <td>Panorama.WildFire.Schedule.Recurring</td>
+      <td>String</td>
+      <td>WildFire schedule recurring.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!panorama-get-wildfire-best-practice</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "Panorama.WildFire": {
+        "Analysis": "public-cloud",
+        "Application": "any",
+        "File-type": "any",
+        "Name": "default"
+    },
+    "Panorama.WildFire.File": [
+        {
+            "File-size": "10",
+            "Name": "pe"
+        },
+        {
+            "File-size": "30",
+            "Name": "apk"
+        },
+        {
+            "File-size": "1000",
+            "Name": "pdf"
+        },
+        {
+            "File-size": "2000",
+            "Name": "ms-office"
+        },
+        {
+            "File-size": "5",
+            "Name": "jar"
+        },
+        {
+            "File-size": "5",
+            "Name": "flash"
+        },
+        {
+            "File-size": "1",
+            "Name": "MacOS"
+        },
+        {
+            "File-size": "10",
+            "Name": "archive"
+        },
+        {
+            "File-size": "2",
+            "Name": "linux"
+        },
+        {
+            "File-size": "20",
+            "Name": "script"
+        }
+    ],
+    "Panorama.WildFire.SSLDecrypt": {
+        "allow-forward-decrypted-content": "yes"
+    },
+    "Panorama.WildFire.Schedule": {
+        "Action": "download-and-install",
+        "Recurring": "every-minute"
+    }
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>WildFire Best Practice Profile</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Name</strong></th>
+      <th><strong>Analysis</strong></th>
+      <th><strong>Application</strong></th>
+      <th><strong>File-type</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> default </td>
+      <td> public-cloud </td>
+      <td> any </td>
+      <td> any </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Wildfire Best Practice Schedule</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Action</strong></th>
+      <th><strong>Recurring</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> download-and-install </td>
+      <td> every-minute </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Wildfire SSL Decrypt Settings</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>allow-forward-decrypted-content</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> yes </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Wildfire System Settings</h3>
+<p>
+ report-grayware-file: yes
+</p>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Name</strong></th>
+      <th><strong>File-size</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> pe </td>
+      <td> 10 </td>
+    </tr>
+    <tr>
+      <td> apk </td>
+      <td> 30 </td>
+    </tr>
+    <tr>
+      <td> pdf </td>
+      <td> 1000 </td>
+    </tr>
+    <tr>
+      <td> ms-office </td>
+      <td> 2000 </td>
+    </tr>
+    <tr>
+      <td> jar </td>
+      <td> 5 </td>
+    </tr>
+    <tr>
+      <td> flash </td>
+      <td> 5 </td>
+    </tr>
+    <tr>
+      <td> MacOS </td>
+      <td> 1 </td>
+    </tr>
+    <tr>
+      <td> archive </td>
+      <td> 10 </td>
+    </tr>
+    <tr>
+      <td> linux </td>
+      <td> 2 </td>
+    </tr>
+    <tr>
+      <td> script </td>
+      <td> 20 </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<h3 id="panorama-get-url-filtering-best-practice">88. panorama-get-url-filtering-best-practice</h3>
+<hr>
+<p>Show URL Filtering best practices.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-get-url-filtering-best-practice</code>
+</p>
+
+<h5>Input</h5>
+There are no input arguments for this command.
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Panorama.URLFilter.Category.Action</td>
+      <td>String</td>
+      <td>The action to perform on the category.</td>
+    </tr>
+    <tr>
+      <td>Panorama.URLFilter.Category.Name</td>
+      <td>String</td>
+      <td>Category name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.URLFilter.DeviceGroup</td>
+      <td>String</td>
+      <td>Device group name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.URLFilter.Name</td>
+      <td>String</td>
+      <td>Profile name.</td>
+    </tr>
+    <tr>
+      <td>Panorama.URLFilter.Header.log-container-page-only</td>
+      <td>String</td>
+      <td>Log container page only.</td>
+    </tr>
+    <tr>
+      <td>Panorama.URLFilter.Header.log-http-hdr-referer</td>
+      <td>String</td>
+      <td>Log HTTP header referer.</td>
+    </tr>
+    <tr>
+      <td>Panorama.URLFilter.Header.log-http-hdr-user</td>
+      <td>String</td>
+      <td>Log HTTP header user.</td>
+    </tr>
+    <tr>
+      <td>Panorama.URLFilter.Header.log-http-hdr-xff</td>
+      <td>String</td>
+      <td>Log HTTP header xff.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!panorama-get-url-filtering-best-practice</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "Panorama.URLFilter": {
+        "Category": [
+            {
+                "Action": "alert",
+                "Name": "abortion"
+            },
+            {
+                "Action": "alert",
+                "Name": "abused-drugs"
+            },
+            {
+                "Action": "alert",
+                "Name": "adult"
+            },
+            {
+                "Action": "alert",
+                "Name": "alcohol-and-tobacco"
+            },
+            {
+                "Action": "alert",
+                "Name": "auctions"
+            },
+            {
+                "Action": "alert",
+                "Name": "business-and-economy"
+            },
+            {
+                "Action": "alert",
+                "Name": "computer-and-internet-info"
+            },
+            {
+                "Action": "alert",
+                "Name": "content-delivery-networks"
+            },
+            {
+                "Action": "alert",
+                "Name": "cryptocurrency"
+            },
+            {
+                "Action": "alert",
+                "Name": "dating"
+            },
+            {
+                "Action": "alert",
+                "Name": "educational-institutions"
+            },
+            {
+                "Action": "alert",
+                "Name": "entertainment-and-arts"
+            },
+            {
+                "Action": "alert",
+                "Name": "financial-services"
+            },
+            {
+                "Action": "alert",
+                "Name": "gambling"
+            },
+            {
+                "Action": "alert",
+                "Name": "games"
+            },
+            {
+                "Action": "alert",
+                "Name": "government"
+            },
+            {
+                "Action": "alert",
+                "Name": "grayware"
+            },
+            {
+                "Action": "alert",
+                "Name": "health-and-medicine"
+            },
+            {
+                "Action": "alert",
+                "Name": "high-risk"
+            },
+            {
+                "Action": "alert",
+                "Name": "home-and-garden"
+            },
+            {
+                "Action": "alert",
+                "Name": "hunting-and-fishing"
+            },
+            {
+                "Action": "alert",
+                "Name": "insufficient-content"
+            },
+            {
+                "Action": "alert",
+                "Name": "internet-communications-and-telephony"
+            },
+            {
+                "Action": "alert",
+                "Name": "internet-portals"
+            },
+            {
+                "Action": "alert",
+                "Name": "job-search"
+            },
+            {
+                "Action": "alert",
+                "Name": "legal"
+            },
+            {
+                "Action": "alert",
+                "Name": "low-risk"
+            },
+            {
+                "Action": "alert",
+                "Name": "medium-risk"
+            },
+            {
+                "Action": "alert",
+                "Name": "military"
+            },
+            {
+                "Action": "alert",
+                "Name": "motor-vehicles"
+            },
+            {
+                "Action": "alert",
+                "Name": "music"
+            },
+            {
+                "Action": "alert",
+                "Name": "newly-registered-domain"
+            },
+            {
+                "Action": "alert",
+                "Name": "news"
+            },
+            {
+                "Action": "alert",
+                "Name": "not-resolved"
+            },
+            {
+                "Action": "alert",
+                "Name": "nudity"
+            },
+            {
+                "Action": "alert",
+                "Name": "online-storage-and-backup"
+            },
+            {
+                "Action": "alert",
+                "Name": "peer-to-peer"
+            },
+            {
+                "Action": "alert",
+                "Name": "personal-sites-and-blogs"
+            },
+            {
+                "Action": "alert",
+                "Name": "philosophy-and-political-advocacy"
+            },
+            {
+                "Action": "alert",
+                "Name": "private-ip-addresses"
+            },
+            {
+                "Action": "alert",
+                "Name": "questionable"
+            },
+            {
+                "Action": "alert",
+                "Name": "real-estate"
+            },
+            {
+                "Action": "alert",
+                "Name": "recreation-and-hobbies"
+            },
+            {
+                "Action": "alert",
+                "Name": "reference-and-research"
+            },
+            {
+                "Action": "alert",
+                "Name": "religion"
+            },
+            {
+                "Action": "alert",
+                "Name": "search-engines"
+            },
+            {
+                "Action": "alert",
+                "Name": "sex-education"
+            },
+            {
+                "Action": "alert",
+                "Name": "shareware-and-freeware"
+            },
+            {
+                "Action": "alert",
+                "Name": "shopping"
+            },
+            {
+                "Action": "alert",
+                "Name": "social-networking"
+            },
+            {
+                "Action": "alert",
+                "Name": "society"
+            },
+            {
+                "Action": "alert",
+                "Name": "sports"
+            },
+            {
+                "Action": "alert",
+                "Name": "stock-advice-and-tools"
+            },
+            {
+                "Action": "alert",
+                "Name": "streaming-media"
+            },
+            {
+                "Action": "alert",
+                "Name": "swimsuits-and-intimate-apparel"
+            },
+            {
+                "Action": "alert",
+                "Name": "training-and-tools"
+            },
+            {
+                "Action": "alert",
+                "Name": "translation"
+            },
+            {
+                "Action": "alert",
+                "Name": "travel"
+            },
+            {
+                "Action": "alert",
+                "Name": "weapons"
+            },
+            {
+                "Action": "alert",
+                "Name": "web-advertisements"
+            },
+            {
+                "Action": "alert",
+                "Name": "web-based-email"
+            },
+            {
+                "Action": "alert",
+                "Name": "web-hosting"
+            },
+            {
+                "Action": "block",
+                "Name": "command-and-control"
+            },
+            {
+                "Action": "block",
+                "Name": "copyright-infringement"
+            },
+            {
+                "Action": "block",
+                "Name": "dynamic-dns"
+            },
+            {
+                "Action": "block",
+                "Name": "extremism"
+            },
+            {
+                "Action": "block",
+                "Name": "hacking"
+            },
+            {
+                "Action": "block",
+                "Name": "malware"
+            },
+            {
+                "Action": "block",
+                "Name": "parked"
+            },
+            {
+                "Action": "block",
+                "Name": "phishing"
+            },
+            {
+                "Action": "block",
+                "Name": "proxy-avoidance-and-anonymizers"
+            },
+            {
+                "Action": "block",
+                "Name": "unknown"
+            }
+        ],
+        "DeviceGroup": "Demisto sales lab",
+        "Name": "best-practice"
+    },
+    "Panorama.URLFilter.Header": {
+        "log-container-page-only": "no",
+        "log-http-hdr-referer": "yes",
+        "log-http-hdr-user": "yes",
+        "log-http-hdr-xff": "yes"
+    }
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>URL Filtering Best Practice Profile Categories</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Category</strong></th>
+      <th><strong>DeviceGroup</strong></th>
+      <th><strong>Name</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> {'Name': 'abortion', 'Action': 'alert'},<br>{'Name': 'abused-drugs', 'Action': 'alert'},<br>{'Name': 'adult', 'Action': 'alert'},<br>{'Name': 'alcohol-and-tobacco', 'Action': 'alert'},<br>{'Name': 'auctions', 'Action': 'alert'},<br>{'Name': 'business-and-economy', 'Action': 'alert'},<br>{'Name': 'computer-and-internet-info', 'Action': 'alert'},<br>{'Name': 'content-delivery-networks', 'Action': 'alert'},<br>{'Name': 'cryptocurrency', 'Action': 'alert'},<br>{'Name': 'dating', 'Action': 'alert'},<br>{'Name': 'educational-institutions', 'Action': 'alert'},<br>{'Name': 'entertainment-and-arts', 'Action': 'alert'},<br>{'Name': 'financial-services', 'Action': 'alert'},<br>{'Name': 'gambling', 'Action': 'alert'},<br>{'Name': 'games', 'Action': 'alert'},<br>{'Name': 'government', 'Action': 'alert'},<br>{'Name': 'grayware', 'Action': 'alert'},<br>{'Name': 'health-and-medicine', 'Action': 'alert'},<br>{'Name': 'high-risk', 'Action': 'alert'},<br>{'Name': 'home-and-garden', 'Action': 'alert'},<br>{'Name': 'hunting-and-fishing', 'Action': 'alert'},<br>{'Name': 'insufficient-content', 'Action': 'alert'},<br>{'Name': 'internet-communications-and-telephony', 'Action': 'alert'},<br>{'Name': 'internet-portals', 'Action': 'alert'},<br>{'Name': 'job-search', 'Action': 'alert'},<br>{'Name': 'legal', 'Action': 'alert'},<br>{'Name': 'low-risk', 'Action': 'alert'},<br>{'Name': 'medium-risk', 'Action': 'alert'},<br>{'Name': 'military', 'Action': 'alert'},<br>{'Name': 'motor-vehicles', 'Action': 'alert'},<br>{'Name': 'music', 'Action': 'alert'},<br>{'Name': 'newly-registered-domain', 'Action': 'alert'},<br>{'Name': 'news', 'Action': 'alert'},<br>{'Name': 'not-resolved', 'Action': 'alert'},<br>{'Name': 'nudity', 'Action': 'alert'},<br>{'Name': 'online-storage-and-backup', 'Action': 'alert'},<br>{'Name': 'peer-to-peer', 'Action': 'alert'},<br>{'Name': 'personal-sites-and-blogs', 'Action': 'alert'},<br>{'Name': 'philosophy-and-political-advocacy', 'Action': 'alert'},<br>{'Name': 'private-ip-addresses', 'Action': 'alert'},<br>{'Name': 'questionable', 'Action': 'alert'},<br>{'Name': 'real-estate', 'Action': 'alert'},<br>{'Name': 'recreation-and-hobbies', 'Action': 'alert'},<br>{'Name': 'reference-and-research', 'Action': 'alert'},<br>{'Name': 'religion', 'Action': 'alert'},<br>{'Name': 'search-engines', 'Action': 'alert'},<br>{'Name': 'sex-education', 'Action': 'alert'},<br>{'Name': 'shareware-and-freeware', 'Action': 'alert'},<br>{'Name': 'shopping', 'Action': 'alert'},<br>{'Name': 'social-networking', 'Action': 'alert'},<br>{'Name': 'society', 'Action': 'alert'},<br>{'Name': 'sports', 'Action': 'alert'},<br>{'Name': 'stock-advice-and-tools', 'Action': 'alert'},<br>{'Name': 'streaming-media', 'Action': 'alert'},<br>{'Name': 'swimsuits-and-intimate-apparel', 'Action': 'alert'},<br>{'Name': 'training-and-tools', 'Action': 'alert'},<br>{'Name': 'translation', 'Action': 'alert'},<br>{'Name': 'travel', 'Action': 'alert'},<br>{'Name': 'weapons', 'Action': 'alert'},<br>{'Name': 'web-advertisements', 'Action': 'alert'},<br>{'Name': 'web-based-email', 'Action': 'alert'},<br>{'Name': 'web-hosting', 'Action': 'alert'},<br>{'Name': 'command-and-control', 'Action': 'block'},<br>{'Name': 'copyright-infringement', 'Action': 'block'},<br>{'Name': 'dynamic-dns', 'Action': 'block'},<br>{'Name': 'extremism', 'Action': 'block'},<br>{'Name': 'hacking', 'Action': 'block'},<br>{'Name': 'malware', 'Action': 'block'},<br>{'Name': 'parked', 'Action': 'block'},<br>{'Name': 'phishing', 'Action': 'block'},<br>{'Name': 'proxy-avoidance-and-anonymizers', 'Action': 'block'},<br>{'Name': 'unknown', 'Action': 'block'} </td>
+      <td> Demisto sales lab </td>
+      <td> best-practice </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Best Practice Headers</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>log-container-page-only</strong></th>
+      <th><strong>log-http-hdr-referer</strong></th>
+      <th><strong>log-http-hdr-user</strong></th>
+      <th><strong>log-http-hdr-xff</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> no </td>
+      <td> yes </td>
+      <td> yes </td>
+      <td> yes </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<h3 id="panorama-enforce-wildfire-best-practice">89. panorama-enforce-wildfire-best-practice</h3>
+<hr>
+<p>Enforce wildfire file upload to the maximum size + all file types are forwarded and update schedule.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-enforce-wildfire-best-practice</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>template</td>
+      <td>The template name.</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!panorama-enforce-wildfire-best-practice template=WildFire</code>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+The schedule was updated according to the best practice.
+Recurring every minute with the action of "download and install"
+The file upload for all file types is set to the maximum size.
+</p>
+
+<h3 id="panorama-create-antivirus-best-practice-profile">90. panorama-create-antivirus-best-practice-profile</h3>
+<hr>
+<p>Create antivirus best practice profile.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-create-antivirus-best-practice-profile</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>profile_name</td>
+      <td>The name of the profile</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <pre>!panorama-create-antivirus-best-practice-profile profile_name=test</pre>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+The profile test was created successfully.
+</p>
+
+<h3 id="panorama-create-anti-spyware-best-practice-profile">91. panorama-create-anti-spyware-best-practice-profile</h3>
+<hr>
+<p>Create Anti Spyware best practice profile.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-create-anti-spyware-best-practice-profile</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>profile_name</td>
+      <td>The profile name.</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <pre>!panorama-create-anti-spyware-best-practice-profile profile_name=test</pre>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+The profile test was created successfully.
+</p>
+
+<h3 id="panorama-create-vulnerability-best-practice-profile">92. panorama-create-vulnerability-best-practice-profile</h3>
+<hr>
+<p>Create vulnerability protection best practice profile.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-create-vulnerability-best-practice-profile</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>profile_name</td>
+      <td>The profile name.</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <pre>!panorama-create-vulnerability-best-practice-profile profile_name=test</pre>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+The profile test was created successfully.
+</p>
+
+<h3 id="panorama-create-url-filtering-best-practice-profile">93. panorama-create-url-filtering-best-practice-profile</h3>
+<hr>
+<p>Create URL filtering best practice profile.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-create-url-filtering-best-practice-profile</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>profile_name</td>
+      <td>The profile name.</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <pre>!panorama-create-url-filtering-best-practice-profile profile_name=test</pre>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+
+The profile test was created successfully.
+</p>
+
+<h3 id="panorama-create-file-blocking-best-practice-profile">94. panorama-create-file-blocking-best-practice-profile</h3>
+<hr>
+<p>Create file blocking best practice profile.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-create-file-blocking-best-practice-profile</code>
+</p>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>profile_name</td>
+      <td>The name of the profile.</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <pre>!panorama-create-file-blocking-best-practice-profile profile_name=test</pre>
+</p>
+
+<h5>Human Readable Output</h5>
+The profile test was created successfully.
+</p>
+
+<h3 id="panorama-create-wildfire-best-practice-profile">95. panorama-create-wildfire-best-practice-profile</h3>
+<hr>
+<p>Create WildFire analysis best practice profile.</p>
+<h5>Base Command</h5>
+<p>
+  <code>panorama-create-wildfire-best-practice-profile</code>
+</p>
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>profile_name</td>
+      <td>The name of the profile.</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+<pre> !panorama-create-wildfire-best-practice-profile profile_name=test </pre>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+The profile test was created successfully.
+</p>

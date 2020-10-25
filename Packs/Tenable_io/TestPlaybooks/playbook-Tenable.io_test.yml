@@ -70,8 +70,7 @@ tasks:
       id: 9634a316-8a3b-4465-81fe-57ffad58de35
       version: -1
       name: tenable-io-get-scan-status
-      description: 'Check the status of a specific scan using its ID. The status can
-        hold following possible values : Running, Completed and Empty (Ready to run).'
+      description: 'Check the status of a specific scan using its ID. The status can hold following possible values : Running, Completed and Empty (Ready to run).'
       script: '|||tenable-io-get-scan-status'
       type: regular
       iscommand: true
@@ -210,8 +209,7 @@ tasks:
       id: ba50515f-f1cb-4bf9-85ee-78917ce6d9c3
       version: -1
       name: tenable-io-get-vulnerabilities-by-asset
-      description: Get a list of up to 5000 of the vulnerabilities recorded for a
-        given asset. By default, this list is sorted by vulnerability count, descending.
+      description: Get a list of up to 5000 of the vulnerabilities recorded for a given asset. By default, this list is sorted by vulnerability count, descending.
       script: '|||tenable-io-get-vulnerabilities-by-asset'
       type: regular
       iscommand: true
@@ -252,3 +250,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,39 @@
+{
+    "Data": {
+        "SyslogType": "web_security",
+        "SyslogName": "Web Security",
+        "SyslogOutputFormat": "1",
+        "CurrentPage": {
+            "PageToken": 0,
+            "SinceTime": 0
+        },
+        "NextPage": {
+            "PageToken": 5,
+            "SinceTime": 1592726567
+        },
+        "Next": null,
+        "Count": 5,
+        "Logs": [
+            "Jul 14 2020 00:49:42 myvxkp.manage.trendmicro.com CEF:0|Trend Micro|Apex Central|2019|WB:36|36|3|deviceExternalId=1 rt=Jun 21 2020 07:56:09 GMT+00:00 app=5 cnt=1 dpt=80 act=2 src=10.128.0.11 cs1Label=SLF_PolicyName cs1=Internal User Policy deviceDirection=2 cat=36 dvchost=CU-PRO1-8254-2 request=http://www.eicar.org/download/eicar.com.txt duser=TRENDMICROAPEX-\\admin shost=TRENDMICROAPEX- deviceProcessName=C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe cn3Label=Web_Reputation_Rating cn3=49 deviceFacility=Apex One cn2Label=SLF_SeverityLevel cn2=100 ",
+            "Jul 14 2020 00:49:42 myvxkp.manage.trendmicro.com CEF:0|Trend Micro|Apex Central|2019|WB:36|36|3|deviceExternalId=2 rt=Jun 21 2020 07:56:28 GMT+00:00 app=5 cnt=1 dpt=80 act=2 src=10.128.0.11 cs1Label=SLF_PolicyName cs1=Internal User Policy deviceDirection=2 cat=36 dvchost=CU-PRO1-8254-2 request=http://www.eicar.org/download/eicar.com duser=TRENDMICROAPEX-\\admin shost=TRENDMICROAPEX- deviceProcessName=C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe cn3Label=Web_Reputation_Rating cn3=49 deviceFacility=Apex One cn2Label=SLF_SeverityLevel cn2=100 ",
+            "Jul 14 2020 00:49:42 myvxkp.manage.trendmicro.com CEF:0|Trend Micro|Apex Central|2019|WB:36|36|3|deviceExternalId=3 rt=Jun 21 2020 08:01:40 GMT+00:00 app=5 cnt=1 dpt=80 act=2 src=10.128.0.11 cs1Label=SLF_PolicyName cs1=Internal User Policy deviceDirection=2 cat=36 dvchost=CU-PRO1-8254-2 request=http://www.eicar.org/download/eicar.com.txt duser=TRENDMICROAPEX-\\admin shost=TRENDMICROAPEX- deviceProcessName=C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe cn3Label=Web_Reputation_Rating cn3=49 deviceFacility=Apex One cn2Label=SLF_SeverityLevel cn2=100 ",
+            "Jul 14 2020 00:49:42 myvxkp.manage.trendmicro.com CEF:0|Trend Micro|Apex Central|2019|WB:36|36|3|deviceExternalId=4 rt=Jun 21 2020 08:01:48 GMT+00:00 app=5 cnt=1 dpt=80 act=2 src=10.128.0.11 cs1Label=SLF_PolicyName cs1=Internal User Policy deviceDirection=2 cat=36 dvchost=CU-PRO1-8254-2 request=http://www.eicar.org/download/eicar.com.txt duser=TRENDMICROAPEX-\\admin shost=TRENDMICROAPEX- deviceProcessName=C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe cn3Label=Web_Reputation_Rating cn3=49 deviceFacility=Apex One cn2Label=SLF_SeverityLevel cn2=100 ",
+            "Jul 14 2020 00:49:42 myvxkp.manage.trendmicro.com CEF:0|Trend Micro|Apex Central|2019|WB:36|36|3|deviceExternalId=5 rt=Jun 21 2020 08:02:11 GMT+00:00 app=5 cnt=1 dpt=80 act=2 src=10.128.0.11 cs1Label=SLF_PolicyName cs1=Internal User Policy deviceDirection=2 cat=36 dvchost=CU-PRO1-8254-2 request=http://www.eicar.org/download/eicarcom2.zip duser=TRENDMICROAPEX-\\admin shost=TRENDMICROAPEX- deviceProcessName=C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe cn3Label=Web_Reputation_Rating cn3=49 deviceFacility=Apex One cn2Label=SLF_SeverityLevel cn2=100 "
+        ]
+    },
+    "Meta": {
+        "Result": 1,
+        "ErrorCode": 0,
+        "ErrorMsg": ""
+    },
+    "PermissionCtrl": {
+        "permission": "255",
+        "elements": null
+    },
+    "FeatureCtrl": {
+        "mode": "0"
+    },
+    "SystemCtrl": {
+        "TmcmSoDist_Role": "none"
+    }
+}

@@ -1,7 +1,7 @@
 id: Detonate URL - ThreatStream
 version: -1
 name: Detonate URL - ThreatStream
-fromversion: 4.5.0
+fromversion: 5.0.0
 description: |-
   Detonates one or more URLs using the Anomali ThreatStream v2 sandbox integration.
   Returns relevant reports to the War Room and URL reputations to the context data.
@@ -302,8 +302,7 @@ inputs:
   value:
     simple: "120"
   required: false
-  description: The duration after which to stop polling and to resume the playbook
-    (in minutes).
+  description: The duration after which to stop polling and to resume the playbook (in minutes).
 - key: VM
   value: {}
   required: false
@@ -502,4 +501,4 @@ outputs:
   description: Task analysis status.
   type: String
 tests:
-  - No test
+- No test

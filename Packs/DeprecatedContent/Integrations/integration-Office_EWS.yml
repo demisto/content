@@ -6,7 +6,7 @@ display: EWS (Deprecated)
 deprecated: true
 category: Messaging
 image: data:image/png;base64,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
-description: Exchange Web Services and Office 365 (mail)
+description: Deprecated. Exchange Web Services and Office 365 (mail)
 detaileddescription: |-
   For Office 365, use https://outlook.office365.com/EWS/Exchange.asmx (default) as the Server  URL.
   Default version is used when accessing the EWS API to determine the API version.
@@ -78,12 +78,16 @@ configuration:
   type: 0
   required: false
 script:
-  script: |
+  script: >
     var server = params.server.replace(/[\/]+$/, '') + '/';
+
     var defaultPageSize = 100;
+
     var office365address = 'https://outlook.office365.com/EWS/Exchange.asmx/';
 
+
     // map of argument that can contain distinguished item as values
+
     var distinguishedArgs = {
         'folders-ids': { // view https://msdn.microsoft.com/en-us/library/office/aa580808(v=exchg.150).aspx
             template: '<t:DistinguishedFolderId Id="%id%">' +
@@ -104,6 +108,7 @@ script:
                                 'root', 'junkemail', 'searchfolders', 'voicemail']
         }
     }
+
 
     var commandsDictionary = {
         'ews-find-folders': {
@@ -530,12 +535,14 @@ script:
         }
     };
 
+
     function getDefaultTargetMailbox() {
         if (params.defaultTargetMailbox) {
             return params.defaultTargetMailbox;
         }
         return params.credentials.identifier + '@' + params.domain;
     }
+
 
     function setImpersonation(args) {
         args['impersonation'] = '';
@@ -547,6 +554,7 @@ script:
                     '</t:ExchangeImpersonation>', args);
         }
     }
+
 
     var mapObjFunction = function(mapFields) {
         var transformSingleObj= function(obj) {
@@ -567,6 +575,7 @@ script:
             return transformSingleObj(obj);
         }
     }
+
 
     var createContext = function(data, extraData) {
         var createContextSingle = function(obj) {
@@ -601,6 +610,7 @@ script:
         return createContextSingle(data);
     }
 
+
     var buildDisplay = function(currentCommand, translated) {
         var createDisplaySingle = function(obj) {
             var disp = {};
@@ -621,6 +631,7 @@ script:
         }
         return createDisplaySingle(translated);
     }
+
 
     var execute = function(command, args, returnRaw) {
         var currentCommand = commandsDictionary[command];
@@ -676,6 +687,7 @@ script:
         return createEntry(currentCommand, raw, hrTitle, ids);
     }
 
+
     function createEntry(currentCommand, raw, hrTitle, deletedContext){
         var entry = {
             Type: entryTypes.note,
@@ -725,6 +737,7 @@ script:
         return entry;
     }
 
+
     function buildBody(command, args) {
         var currentCommand = commandsDictionary[command];
         if (currentCommand.defaultArgs) {
@@ -758,6 +771,7 @@ script:
         return replaceInTemplates(currentCommand.template, args);
     }
 
+
     function sendRequest(tmpl, reqArgs, resStatusPath) {
         var readyBody = replaceInTemplates(tmpl, reqArgs);
         var httpParams = {
@@ -788,6 +802,7 @@ script:
 
         return raw;
     }
+
 
     function parseItemAttachment(rawItem, args) {
         var itemPath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.ItemAttachment';
@@ -849,6 +864,7 @@ script:
         return entry;
     }
 
+
     function parseFileAttachment(raw, args) {
         var fileNamePath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.FileAttachment.Name';
         var fileContentPath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.FileAttachment.Content';
@@ -860,21 +876,35 @@ script:
         return entry;
     }
 
+
     function getAttachment(attachArgs, isItem) {
         var attachmentTmpl = '<?xml version="1.0" encoding="utf-8"?>' +
     '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
+
     '  <soap:Header>' +
+
     '<t:RequestServerVersion Version="%version%" />' +
+
     '%impersonation%'+
+
     ' </soap:Header>' +
+
     '  <soap:Body>' +
+
     '    <GetAttachment xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
+
     '      <AttachmentShape/>' +
+
     '     <AttachmentIds>' +
+
     '        <t:AttachmentId Id="%attachment-id%"/>' +
+
     '      </AttachmentIds>' +
+
     '    </GetAttachment>' +
+
     '   </soap:Body>' +
+
     ' </soap:Envelope>';
         raw = sendRequest(attachmentTmpl, attachArgs, 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.-ResponseClass');
         var entry;
@@ -894,6 +924,7 @@ script:
         }
         return entry;
     }
+
 
     function fetchEmailsAsIncidents() {
         var lastRun = getLastRun();
@@ -915,36 +946,65 @@ script:
         //Will fetch emails according to time stamp
             var fetchTmpl = '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
     '    <soap:Header>' +
+
     '        <t:RequestServerVersion Version="%version%" />' +
+
     '%impersonation%'+
+
     '    </soap:Header>' +
+
     '    <soap:Body>' +
+
     '        <m:FindItem Traversal="Shallow">' +
+
     '            <m:ItemShape>' +
+
     '                <t:BaseShape>IdOnly</t:BaseShape>' +
+
     '            </m:ItemShape>' +
+
     '            <m:IndexedPageItemView MaxEntriesReturned="100" Offset="0" BasePoint="Beginning" />' +
+
     '            <m:Restriction>' +
+
     '                <t:And>' +
+
     '                    <t:IsGreaterThan>' +
+
     '                        <t:FieldURI FieldURI="item:DateTimeReceived" />' +
+
     '                        <t:FieldURIOrConstant>' +
+
     '                            <t:Constant Value="%last_time%"/>' +
+
     '                        </t:FieldURIOrConstant>' +
+
     '                    </t:IsGreaterThan>' +
+
     '                </t:And>' +
+
     '            </m:Restriction>' +
+
     '            <m:SortOrder>' +
+
     '                <t:FieldOrder Order="Ascending">' +
+
     '                    <t:FieldURI FieldURI="item:DateTimeReceived" />' +
+
     '                </t:FieldOrder>' +
+
     '            </m:SortOrder>' +
+
     '            <m:ParentFolderIds>' +
                 '%target-folder%'+
     '            </m:ParentFolderIds>' +
+
     '        </m:FindItem>' +
+
     '    </soap:Body>' +
+
     '</soap:Envelope>';
+
 
     var defaultTargetTargetFolderTmpl ='<t:DistinguishedFolderId Id="inbox">' +
                         '<t:Mailbox>' +
@@ -959,9 +1019,13 @@ script:
         if (lastRun.lastId) {
             lastItemOp = '                    <t:IsNotEqualTo>' +
     '                        <t:FieldURI FieldURI="item:ItemId" />' +
+
     '                        <t:FieldURIOrConstant>' +
+
     '                            <t:Constant Value="%last_item%"/>' +
+
     '                        </t:FieldURIOrConstant>' +
+
     '                    </t:IsNotEqualTo>';
             opArgs = {};
             opArgs.last_item = lastRun.lastId;
@@ -1113,6 +1177,7 @@ script:
         return JSON.stringify(incidents);
     }
 
+
     function searchMailboxes(args){
         if (!args['mailbox-search-scope']) {
             var mailboxes = execute('ews-get-searchable-mailboxes', {}, true);
@@ -1158,8 +1223,11 @@ script:
         return createEntry(currentCommand, lastRes, replaceInTemplates(currentCommand.tableTitle, args));
     }
 
+
     // test credentials with GetInboxRules operation
+
     // operation doc can be found at https://msdn.microsoft.com/en-us/library/office/ff709501(v=exchg.150).aspx
+
     function testModule() {
         var xml =
             '<?xml version="1.0" encoding="utf-8"?>' +
@@ -1192,15 +1260,20 @@ script:
         return 'ok';
     }
 
+
     if (!args.version) {
         args.version = params.defaultServerVersion;
     }
+
     if (!args['target-mailbox']) {
         args['target-mailbox'] = getDefaultTargetMailbox();
     }
+
     args['target-mailbox'] = args['target-mailbox'].replace(/(&)/g, '&amp;');
 
+
     setImpersonation(args);
+
 
     switch (command) {
         case 'test-module':
@@ -1230,8 +1303,7 @@ script:
     - name: target-mailbox
       description: The user email address
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     outputs:
     - contextPath: EWS.Folders.ChildFolderCount
       description: Folder child folder count
@@ -1257,8 +1329,7 @@ script:
     - name: target-mailbox
       description: The user email address
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     outputs:
     - contextPath: EWS.DeletedItems.ID
       description: ID of deleted items
@@ -1274,8 +1345,7 @@ script:
     - name: target-mailbox
       description: The user email address
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     outputs:
     - contextPath: EWS.DeletedAttachments.ID
       description: ID of the deleted attachment
@@ -1291,8 +1361,7 @@ script:
     - name: target-mailbox
       description: The user email address
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     - name: include-mime-content
       description: Include file content
     outputs:
@@ -1352,8 +1421,7 @@ script:
     - name: target-mailbox
       description: The user email address
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     - name: max-entries-returned
       description: Stop querying after specified number is reached
     outputs:
@@ -1379,10 +1447,7 @@ script:
       description: Mail size
     - contextPath: EWS.SearchItems.Subject
       description: Mail subject
-    description: 'Find items in a mailbox. The user account which is used to interact
-      with the Exchange MUST have permissions to impersonate other users. Otherwise,
-      any operation on a mailbox that does not belong to that user will fail. Instructions
-      on how to configure exchange impersonation can be found here: https://msdn.microsoft.com/en-us/library/bb204095.aspx'
+    description: 'Find items in a mailbox. The user account which is used to interact with the Exchange MUST have permissions to impersonate other users. Otherwise, any operation on a mailbox that does not belong to that user will fail. Instructions on how to configure exchange impersonation can be found here: https://msdn.microsoft.com/en-us/library/bb204095.aspx'
   - name: ews-get-contacts
     deprecated: true
     arguments:
@@ -1394,10 +1459,10 @@ script:
     - name: target-mailbox
       description: The user email address
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     description: Retrieve contact items from the Contacts folder
   - name: ews-get-searchable-mailboxes
+    deprecated: true
     arguments:
     - name: filter
       description: Search filter, default is empty
@@ -1418,11 +1483,9 @@ script:
       required: true
       description: Filter to search upon
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     - name: mailbox-search-scope
-      description: An array of mail boxes references id, or string semicolon separated
-        ids
+      description: An array of mail boxes references id, or string semicolon separated ids
       isArray: true
     outputs:
     - contextPath: EWS.Searchs.Search.Results.ItemID
@@ -1566,20 +1629,16 @@ script:
       description: The item ID (can be found in results from ews-search-mailbox command)
     - name: folder-id
       required: true
-      description: The folder id or distinguished id. Distinguished id is the folder
-        name reference (e.g. 'inbox', 'junkemail') while folder id is alphanumeric
-        (e.g.'AAMkAGY3OTQyMzMzLW'). All folder-ids are listed in ews-find-folders
-        command.
+      description: The folder id or distinguished id. Distinguished id is the folder name reference (e.g. 'inbox', 'junkemail') while folder id is alphanumeric (e.g.'AAMkAGY3OTQyMzMzLW'). All folder-ids are listed in ews-find-folders command.
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     outputs:
     - contextPath: EWS.MovedItems.NewItemID
       description: The new item id
     - contextPath: EWS.MovedItems.item-id
       description: The old item id
-    description: Move one or more item to one destination folder. Note that after
-      an item is moved, a new id will be associated with it.
+    description: Move one or more item to one destination folder. Note that after an item is moved, a new id will be associated with it.
   isfetch: true
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

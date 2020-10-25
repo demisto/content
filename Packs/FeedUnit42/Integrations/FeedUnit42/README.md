@@ -12,6 +12,7 @@ This integration was integrated and tested with version xx of Unit42 Feed
 | feed | Fetch indicators | False |
 | feedReputation | Indicator Reputation | False |
 | feedReliability | Source Reliability | True |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
 | feedExpirationPolicy |  | False |
 | feedExpirationInterval |  | False |
 | feedFetchInterval | Feed Fetch Interval | False |

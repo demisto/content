@@ -3,8 +3,7 @@ commonfields:
   id: Nozomi Networks
   version: -1
 configuration:
-- additionalinfo: Your Nozomi Networks appliance endpoint URL
-    appliance
+- additionalinfo: Your Nozomi Networks appliance endpoint URL appliance
   defaultvalue: https://nozomi_instance.com
   display: Endpoint url
   name: endpoint
@@ -80,17 +79,13 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximun number of assets get from Nozomi, can't be bigger than
-        100
+      description: Maximun number of assets get from Nozomi, can't be bigger than 100
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: This command permits you to get some assets from Nozomi, you can
-      use the query filter to to refine your search. With the limits you can decide
-      the max number of assets you can retrieve from Nozomi, the limit can't be bigger
-      than 100.
+    description: This command permits you to get some assets from Nozomi, you can use the query filter to to refine your search. With the limits you can decide the max number of assets you can retrieve from Nozomi, the limit can't be bigger than 100.
     execution: false
     name: nozomi-find-assets
     outputs:
@@ -215,3 +210,4 @@ script:
   type: python
 tests:
 - No tests - partner instance test in NonCircleFolder
+fromversion: 5.0.0
