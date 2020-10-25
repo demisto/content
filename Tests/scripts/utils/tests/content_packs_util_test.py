@@ -5,7 +5,7 @@ from demisto_sdk.commands.common.constants import (PACK_METADATA_CERTIFICATION,
                                                    PACK_METADATA_SUPPORT,
                                                    PACKS_PACK_META_FILE_NAME)
 
-from Tests.scripts.utils.content_packs_util import (is_pack_certified,
+from Tests.scripts.utils.content_packs_util import (is_pack_xsoar_supported,
                                                     should_test_content_pack)
 
 
@@ -31,7 +31,7 @@ def test_is_pack_certified(tmp_path, pack_metadata_content, expected):
     """
     pack_metadata_file = tmp_path / PACKS_PACK_META_FILE_NAME
     pack_metadata_file.write_text(json.dumps(pack_metadata_content))
-    assert is_pack_certified(str(tmp_path)) == expected
+    assert is_pack_xsoar_supported(str(tmp_path)) == expected
 
 
 def test_is_pack_certified_pack_metadata_does_not_exist(tmp_path):
@@ -45,7 +45,7 @@ def test_is_pack_certified_pack_metadata_does_not_exist(tmp_path):
     Then:
         - Verify content pack counts as non-certified
     """
-    assert not is_pack_certified(str(tmp_path))
+    assert not is_pack_xsoar_supported(str(tmp_path))
 
 
 @pytest.mark.parametrize("pack_name, expected", [

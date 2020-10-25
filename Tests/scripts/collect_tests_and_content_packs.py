@@ -18,7 +18,7 @@ from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
-from Tests.scripts.utils.content_packs_util import should_test_content_pack
+from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_test_pack_name
 
 coloredlogs.install(level=logging.DEBUG,
                     fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s',
@@ -358,6 +358,11 @@ def collect_tests_and_content_packs(
         test_playbook_id = list(test_playbook.keys())[0]
         test_playbook_data = list(test_playbook.values())[0]
         test_playbook_name = test_playbook_data.get('name')
+
+        # skip non xsoar and non supported packs.
+        if not should_test_content_pack(test_playbook_data.get('pack')):
+            continue
+
         for script in test_playbook_data.get('implementing_scripts', []):
             if script in script_ids:
                 detected_usage = True
@@ -387,12 +392,11 @@ def collect_tests_and_content_packs(
                           " which means no test with it will run. please update the conf.json file accordingly"
                           .format(test_playbook_name))
 
-    missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
-                                      integration_ids, playbook_ids, script_ids)
+    ids_with_no_tests = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
+                                            integration_ids, playbook_ids, script_ids)
 
     # remove skipped integrations from the list
-    missing_ids = missing_ids - set(skipped_integrations)
-
+    ids_with_no_tests = ids_with_no_tests - set(skipped_integrations)
     packs_to_install = set()
     id_set_test_playbooks = id_set.get('TestPlaybooks', [])
     for test_playbook in id_set_test_playbooks:
@@ -407,7 +411,7 @@ def collect_tests_and_content_packs(
             else:
                 logging.warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to install')
 
-    return test_ids, missing_ids, caught_missing_test, packs_to_install
+    return test_ids, ids_with_no_tests, caught_missing_test, packs_to_install
 
 
 def update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, integration_ids, playbook_ids,
@@ -507,7 +511,7 @@ def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcop
 
     if len(missing_ids) > 0:
         test_string = '\n'.join(missing_ids)
-        message = "You've failed to provide tests for:\n{0}".format(test_string)
+        message = "Was not able to find tests for:\n{0}".format(test_string)
         logging.error(message)
 
     if caught_missing_test or len(missing_ids) > 0:
@@ -533,11 +537,11 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
                 missing_ids = missing_ids - {_id}
                 tests.add(test)
 
-            else:
-                message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
-                logging.error(message)
-                global _FAILED
-                _FAILED = True
+            # else:
+            #     message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
+            #     logging.error(message)
+            #     global _FAILED
+            #     _FAILED = True
 
     return missing_ids
 
@@ -563,7 +567,8 @@ def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playboo
         if integration_id in integration_ids:
             integration_pack = integration_object.get('pack')
             if integration_pack:
-                logging.info(f'Found integration {integration_id} in pack {integration_pack} - adding to packs to install')
+                logging.info(
+                    f'Found integration {integration_id} in pack {integration_pack} - adding to packs to install')
                 packs_to_install.add(integration_object.get('pack'))
             else:
                 logging.warning(f'Found integration {integration_id} without pack - not adding to packs to install')
@@ -915,10 +920,10 @@ def get_test_conf_from_conf(test_id, server_version, conf=deepcopy(CONF)):
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
-        test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
-                                          server_v=server_version,
-                                          to_v=test_conf.get('toversion', '99.99.99')))), None)
+            test_conf.get('playbookID') == test_id
+            and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
+                                              server_v=server_version,
+                                              to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
@@ -1146,6 +1151,28 @@ def remove_ignored_tests(tests: set, content_packs: set) -> set:
     return tests
 
 
+def remove_tests_for_non_supported_packs(tests: set, id_set: json):
+    for test in tests:
+        tests_that_should_not_be_tested = set()
+        id_set_test_playbook_pack_name = get_test_pack_name(test, id_set)
+
+        # We don't want to test playbooks from Non-certified partners.
+        if not should_test_content_pack(id_set_test_playbook_pack_name):
+            logging.info('The test playbook {} belongs to a non XSOAR supported pack, hence it will not be '
+                         'tested'.format(test))
+            tests_that_should_not_be_tested.add(test)
+
+    tests.difference_update(tests_that_should_not_be_tested)
+    return tests
+
+
+def filter_tests(tests: set, content_packs: set, id_set: json) -> set:
+    tests_without_ignored = remove_ignored_tests(tests, content_packs)
+    tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
+
+    return tests_without_non_supported
+
+
 def get_test_list_and_content_packs_to_install(files_string, branch_name, minimum_server_version='0',
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
@@ -1153,15 +1180,19 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
      modified_metadata_list, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
+
     all_modified_files_paths = set(
         modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
     ).union(modified_metadata_list)
+
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
 
     create_filter_envs_file(from_version, to_version)
 
     tests = set([])
     packs_to_install = set([])
+
+    # Get packs and tests for scripts integration playbooks
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
@@ -1223,7 +1254,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
-    tests = remove_ignored_tests(tests, packs_to_install)
+    tests = filter_tests(tests, packs_to_install, id_set)
 
     return tests, packs_to_install
 

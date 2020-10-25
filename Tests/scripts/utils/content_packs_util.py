@@ -21,7 +21,7 @@ def get_pack_metadata(file_path: str) -> dict:
         return json.load(pack_metadata)
 
 
-def is_pack_certified(pack_path: str) -> bool:
+def is_pack_xsoar_supported(pack_path: str) -> bool:
     """Checks whether the pack is certified or not (Supported by xsoar/certified partner).
     Tests are not being collected for non-certified packs.
 
@@ -35,8 +35,8 @@ def is_pack_certified(pack_path: str) -> bool:
     if not os.path.isfile(pack_metadata_path):
         return False
     pack_metadata = get_pack_metadata(pack_metadata_path)
-    return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() == "xsoar" or\
-        pack_metadata.get(PACK_METADATA_CERTIFICATION, '').lower() == "certified"
+    return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() == "xsoar" or \
+           pack_metadata.get(PACK_METADATA_CERTIFICATION, '').lower() == "certified"
 
 
 def should_test_content_pack(pack_name: str) -> bool:
@@ -50,5 +50,26 @@ def should_test_content_pack(pack_name: str) -> bool:
     Returns:
         bool: True if should be tested, False otherwise
     """
+    if not pack_name:
+        return False
     pack_path = os.path.join(PACKS_DIR, pack_name)
-    return pack_name not in SKIPPED_PACKS and is_pack_certified(pack_path)
+    return pack_name not in SKIPPED_PACKS and is_pack_xsoar_supported(pack_path)
+
+
+def get_test_pack_name(test_id: str, id_set: json) -> str:
+    """Returns a the pack name containing the given test
+
+    Args:
+        test_id (str): The test id to be searched
+        id_set (json): Json representing the content id set
+
+    Returns:
+        str: the pack name containing the given test
+    """
+    id_set_test_playbooks = id_set['TestPlaybooks']
+    for id_set_test_playbook_entry in id_set_test_playbooks:
+        id_set_test_playbook_id = list(id_set_test_playbook_entry.keys())[0]
+        if id_set_test_playbook_id == test_id:
+            id_set_test_playbook_data = list(id_set_test_playbook_entry.values())[0]
+            id_set_test_playbook_pack_name = id_set_test_playbook_data.get('pack')
+            return id_set_test_playbook_pack_name
