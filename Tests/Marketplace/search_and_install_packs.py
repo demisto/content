@@ -6,6 +6,7 @@ import json
 import glob
 import sys
 import demisto_client
+import prettytable
 from demisto_client.demisto_api.rest import ApiException
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list, print_error
@@ -244,7 +245,11 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                                                                                 _request_timeout=request_timeout)
 
             if 200 <= status_code < 300:
-                message = f'Packs were successfully installed!\nResponse data: {str(response_data)}'
+                table = prettytable.PrettyTable()
+                table.field_names = ['Pack ID', 'Pack Version']
+                for pack_data in response_data:
+                    table.add_row([pack_data.get('id'), pack_data.get('currentVersion')])
+                message = f'Successfully installed {len(response_data)} packs!\n{table}'
                 prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
                                              include_timestamp=True)
             else:
