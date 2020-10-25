@@ -420,8 +420,6 @@ references:
     - Setup Environment
     - Create Instances:
         context: bucket_upload_env
-        requires:
-          - Setup Environment
     - Run Unit Testing And Lint:
         context: bucket_upload_env
         requires:
@@ -630,7 +628,6 @@ jobs:
     resource_class: medium
     <<: *environment
     steps:
-      - *attach_workspace
       - checkout
       - *restore_cache
       - *prepare_environment
@@ -1170,6 +1167,7 @@ jobs:
           command: |
             ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Install Packs in Demisto 6_0'
           when: always
+      - *persist_to_workspace
 
   Install Packs in Demisto Marketplace - Master:
     <<: *container_config
