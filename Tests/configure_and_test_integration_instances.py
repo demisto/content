@@ -1365,6 +1365,8 @@ def main():
         tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests,
                                         build.is_nightly)
         print(f"List of tests to run: {tests_for_iteration}")
+        #  Installing test pack first
+        install_private_pack(build, prints_manager)
         #  Installing the packs.
         installed_content_packs_successfully = install_packs_private(build, prints_manager)
         #  Get a list of the integrations that have changed.
@@ -1388,8 +1390,6 @@ def main():
                                                                     pre_update=False)
         #  Done running tests so we are disabling the instances.
         disable_instances(build, all_module_instances, prints_manager)
-
-        install_private_pack(build, prints_manager)
 
     else:
         if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
