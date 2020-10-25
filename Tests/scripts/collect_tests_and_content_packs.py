@@ -250,6 +250,7 @@ class GetModifiedFilesForTesting:
         files = list()
         for line in self.files_string.split('\n'):
             file_status, file_path = line.split(maxsplit=1)
+            file_status = file_status.lower()
             # Get to right file_path on renamed
             if file_status.startswith('r'):
                 _, file_path = file_path.split(maxsplit=1)
@@ -267,6 +268,9 @@ class GetModifiedFilesForTesting:
         # if is not part of packs meta file name or whitelisted
         elif any(file in file_path for file in (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
             self.modified_metadata_list.add(tools.get_pack_name(file_path))
+        elif checked_type(file_path, FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES):
+            if os.path.splitext(file_path)[-1] not in FILE_TYPES_FOR_TESTING:
+                pass
         # If is not whitelist
         elif SECRETS_WHITE_LIST not in file_path:
             self.sample_tests.add(file_path)
@@ -283,13 +287,23 @@ class GetModifiedFilesForTesting:
                     self.files_to_types[file_type].add(file_path)
                 else:
                     self.files_to_types[file_type] = {file_path}
-        # Py files, Integration, script, playbook ymls
-        self.modified_files_list = set().union(
-            self.files_to_types.get(FileType.PYTHON_FILE, set()),
+
+        self.modified_files_list = self.modified_files_list.union(
             self.files_to_types.get(FileType.INTEGRATION, set()),
             self.files_to_types.get(FileType.SCRIPT, set()),
             self.files_to_types.get(FileType.PLAYBOOK, set()),
         )
+
+        yml_paths = set()
+
+        for file_path in self.files_to_types.get(FileType.PYTHON_FILE, {}):
+            if not ('test_' in file_path or '_test' in file_path):
+                # Py files, Integration, script, playbook ymls
+                dir_path = os.path.dirname(file_path)
+                file_path = glob.glob(dir_path + "/*.yml")[0]
+                yml_paths.add(file_path)
+
+        self.modified_files_list = self.modified_files_list.union(yml_paths)
 
         self.modified_tests_list = self.files_to_types.get(FileType.TEST_PLAYBOOK, {})
 
@@ -301,8 +315,8 @@ class GetModifiedFilesForTesting:
 def get_modified_files_for_testing(files_string: str):
     get_modified = GetModifiedFilesForTesting(files_string)
     return (
-        get_modified.modified_files_list, get_modified.modified_tests_list, get_modified.changed_common,
-        get_modified.is_conf_json, get_modified.sample_tests, get_modified.modified_metadata_list,
+        list(get_modified.modified_files_list), list(get_modified.modified_tests_list), list(get_modified.changed_common),
+        get_modified.is_conf_json, list(get_modified.sample_tests), get_modified.modified_metadata_list,
         get_modified.is_reputations_json, get_modified.is_indicator_json
     )
 
