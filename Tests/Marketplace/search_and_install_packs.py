@@ -224,7 +224,6 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                 upload_zipped_packs(client=client, host=host, prints_manager=prints_manager,
                                     thread_index=thread_index, pack_path=local_pack)
     else:
-
         packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
         message = 'Installing the following packs in server {}:\n{}'.format(host, packs_to_install_str)
         prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
@@ -236,12 +235,12 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         }
 
         # make the pack installation request
-        if is_nightly:
-            for pack in packs_to_install:
-                request_data = {
-                    'packs': [pack],
-                    'ignoreWarnings': True
-                }
+        # if is_nightly:
+        #     for pack in packs_to_install:
+        #         request_data = {
+        #             'packs': [pack],
+        #             'ignoreWarnings': True
+        #         }
         try:
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
@@ -249,25 +248,25 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                                                                                 body=request_data,
                                                                                 accept='application/json',
                                                                                 _request_timeout=request_timeout)
-            results = ast.literal_eval(response_data)
-            # If the pack already installed, and the current version is the right one, ignore it.
-            for pack in packs_to_install:
-                if pack not in results:
-                    continue
-                else:
-                    print(f'Skipping {pack} since already installed.')
+            # results = ast.literal_eval(response_data)
+            # # If the pack already installed, and the current version is the right one, ignore it.
+            # for pack in packs_to_install:
+            #     if pack not in results:
+            #         continue
+            #     else:
+            #         print(f'Skipping {pack} since already installed.')
 
-                if 200 <= status_code < 300:
-                    message = f'The pack {pack} successfully installed!\n'
-                    prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
-                                                 include_timestamp=True)
-                else:
-                    result_object = ast.literal_eval(response_data)
-                    message = result_object.get('message', '')
-                    err_msg = f'Failed to install pack {pack} - with status code {status_code}\n' \
-                        f'{message}\n'
-                    prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-                    raise Exception(err_msg)
+            if 200 <= status_code < 300:
+                message = 'The packs successfully installed!\n'
+                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                             include_timestamp=True)
+            else:
+                result_object = ast.literal_eval(response_data)
+                message = result_object.get('message', '')
+                err_msg = f'Failed to install packs - with status code {status_code}\n' \
+                    f'{message}\n'
+                prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+                raise Exception(err_msg)
 
         except Exception as e:
             err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
@@ -331,12 +330,12 @@ def add_pack_to_installation_request(pack_id, installation_request_body):
 
 
 def install_all_content_packs(client, host, prints_manager, thread_index=0):
-    all_packs = []
 
     for pack_id in os.listdir(PACKS_FULL_PATH):
+        all_packs = []
         if pack_id not in IGNORED_FILES:
             add_pack_to_installation_request(pack_id, all_packs)
-    install_packs(client, host, prints_manager, thread_index, all_packs, is_nightly=True)
+        install_packs(client, host, prints_manager, thread_index, [pack_id])
 
 
 def upload_zipped_packs(client, host, prints_manager, thread_index, pack_path):
