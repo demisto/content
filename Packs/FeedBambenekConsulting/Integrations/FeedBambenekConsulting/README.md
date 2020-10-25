@@ -38,7 +38,7 @@ Use the Bambenek Consulting feed integration to fetch indicators from the feed.
 
 ## Troubleshooting  
 ---
-Bambenek Consulting have 2 licenses types: Commercial and Non-Commercial.
+Bambenek Consulting has two license types: Commercial and Non-Commercial, each of which have specific feeds available.
 
 List of commercial feeds:
 * DGA Domain Feed
