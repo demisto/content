@@ -246,9 +246,10 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                 results = ast.literal_eval(response_data)
                 for pack_data in results:
                     # If the pack already installed, and the current version is the right one, ignore it.
-                    if pack_data.get('id') == pack[0] and pack_data.get('currentVersion') == pack[1]:
-                        print(f'Skipping {pack} since already installed.')
+                    if not (pack_data.get('id') == pack[0] and pack_data.get('currentVersion') == pack[1]):
                         continue
+                    else:
+                        print(f'Skipping {pack} since already installed.')
 
                 if 200 <= status_code < 300:
                     message = f'The pack {pack} successfully installed!\n'
