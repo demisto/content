@@ -514,8 +514,8 @@ def arrange_alerts_by_incident_type(alerts):
 
 def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time, last_run):
     incidents = []
-    new_last_fetch_id = ''
-    last_fetched_id = last_run.get('last_fetch_id')
+    new_last_incident_fetched = ''
+    last_incident_fetched = last_run.get('last_fetch_id')
     for alert in alerts:
         incident_created_time = (alert['timestamp'])
         incident_created_datetime = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()
@@ -525,12 +525,11 @@ def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time, last_run)
             'occurred': incident_occurred[0] + 'Z',
             'rawJSON': json.dumps(alert)
         }
-        new_last_fetch_id = alert['_id']
-        if alert['_id'] != last_fetched_id:
-            incidents.append(incident)
+        new_last_incident_fetched = alert['_id']
+        incidents.append(incident)
         if incident_created_time > fetch_start_time:
             fetch_start_time = incident_created_time
-    return incidents, fetch_start_time, new_last_fetch_id
+    return incidents, fetch_start_time, new_last_incident_fetched
 
 
 def fetch_incidents(client, max_results, last_run, first_fetch, filters):

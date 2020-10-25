@@ -138,10 +138,10 @@ def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
                       json=incidents["incidents"])
     res_incidents, fetch_start_time, new_last_fetch_id = \
-        alerts_to_incidents_and_fetch_start_from(incidents["incidents"], 1602771392519, {"last_fetch": 1603365903000,
+        alerts_to_incidents_and_fetch_start_from(incidents["incidents"], 1602771392519, {"last_fetch": 1603365903,
                                                  "last_fetch_id": "5f919e55b0703c2f5a23d9d7"})
     assert fetch_start_time == 1603378041000
     assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d7"
-    assert res_incidents == [{'name': 'block0', 'occurred': '2020-10-22T17:47:21Z',
+    assert res_incidents == [{'name': 'block0', 'occurred': '2020-10-22T14:47:21Z',
                               'rawJSON': '{"_id": "5f919e55b0703c2f5a23d9d8", "timestamp": 1603378041000, '
                               '"title": "block0"}'}]
