@@ -864,5 +864,19 @@
       "max": 100,
       "total": 1,
       "moreThanTotal": false
-  }
+  },
+  "incidents": [{"_id": "5f919e55b0703c2f5a23d9d8",
+                "timestamp": 1603378041000,
+                "title": "block0"},
+                {"_id": "5f919e55b0703c2f5a23d9d7",
+                "timestamp": 1603365903000,
+                  "title": "block1"}
+
+  ],
+  "incidents2": [{"name": "block0",
+   "occurred": "2020-10-22T17:47:21Z",
+   "rawJSON": "{'_id': '5f919e55b0703c2f5a23d9d8', 'timestamp': 1603378041000, 'title': 'block0'}"},
+  {"name": "block1",
+   "occurred": "2020-10-22T14:25:03Z",
+   "rawJSON": "{'_id': '5f919e55b0703c2f5a23d9d7', 'timestamp': 1603365903000, 'title': 'block1'}"}]
 }
