@@ -751,7 +751,7 @@ class Pack(object):
             content_repo (git.repo.base.Repo): content repo object.
             index_folder_path (str): full path to downloaded index folder.
             current_commit_hash (str): last commit hash of head.
-            last_upload_commit_hash (str): previous commit of origin/master (origin/master~1)
+            last_upload_commit_hash (str): last head commit hash that was uploaded to the bucket
 
         Returns:
             bool: whether the operation succeeded.

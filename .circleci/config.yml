@@ -420,8 +420,6 @@ references:
     - Setup Environment
     - Create Instances:
         context: bucket_upload_env
-        requires:
-          - Setup Environment
     - Run Unit Testing And Lint:
         context: bucket_upload_env
         requires:
