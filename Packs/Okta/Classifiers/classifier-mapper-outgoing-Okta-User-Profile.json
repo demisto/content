@@ -26,10 +26,6 @@
 					"complex": null,
 					"simple": "displayname"
 				},
-				"division": {
-					"complex": null,
-					"simple": "division"
-				},
 				"email": {
 					"complex": null,
 					"simple": "email"
@@ -40,7 +36,7 @@
 				},
 				"firstName": {
 					"complex": null,
-					"simple": "firstname"
+					"simple": "givenname"
 				},
 				"id": {
 					"complex": null,
@@ -48,7 +44,7 @@
 				},
 				"lastName": {
 					"complex": null,
-					"simple": "lastname"
+					"simple": "surname"
 				},
 				"login": {
 					"complex": null,
@@ -68,7 +64,7 @@
 				},
 				"state": {
 					"complex": null,
-					"simple": "state"
+					"simple": "statename"
 				},
 				"streetAddress": {
 					"complex": null,

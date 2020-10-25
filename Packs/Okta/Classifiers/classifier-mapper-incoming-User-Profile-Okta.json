@@ -26,10 +26,6 @@
 					"complex": null,
 					"simple": "displayName"
 				},
-				"Division": {
-					"complex": null,
-					"simple": "division"
-				},
 				"Email": {
 					"complex": null,
 					"simple": "email"
@@ -38,11 +34,11 @@
 					"complex": null,
 					"simple": "employeeNumber"
 				},
-				"First Name": {
+				"Given Name": {
 					"complex": null,
 					"simple": "firstName"
 				},
-				"Last Name": {
+				"Surname": {
 					"complex": null,
 					"simple": "lastName"
 				},
@@ -58,7 +54,7 @@
 					"complex": null,
 					"simple": "organization"
 				},
-				"State": {
+				"State Name": {
 					"complex": null,
 					"simple": "state"
 				},
