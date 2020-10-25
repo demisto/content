@@ -3176,7 +3176,6 @@
         "playbook-feodoteackerhash_test": "Issue 29304",
         "urlscan_malicious_Test": "Issue 20111",
         "TCPUtils-Test": "Issue 29677",
-        "CrowdStrike Falcon Intel v2 - Test": "Issue 29778",
         "OpenCTI Feed Test": "Issue 29592",
         "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
         "Polygon-Test": "Issue 29060"
