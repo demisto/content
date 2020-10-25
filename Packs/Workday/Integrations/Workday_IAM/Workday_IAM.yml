@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: WorkdayIAM
+  id: Workday IAM
   version: -1
 configuration:
 - display: Username
@@ -38,11 +38,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 - defaultvalue: IAM Sync User - Workday
   display: Mapper (incoming)
   hidden: false
@@ -51,7 +46,7 @@ configuration:
   type: 0
 description: Use the Workday IAM Integration as part of the IAM premium pack.
 display: Workday IAM
-name: WorkdayIAM
+name: Workday IAM
 script:
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
@@ -62,6 +57,9 @@ script:
   script: '-'
   subtype: python3
   type: python
+defaultmapperin: IAM Sync User - Workday
+defaultclassifier: Workday Classifier
+ismappable: true
 tests:
 - No tests
 fromversion: 5.0.0

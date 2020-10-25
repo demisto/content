@@ -1,11 +1,11 @@
 {
  "description": "",
  "feed": false,
- "id": "308bccc2-8712-41ef-8035-5827644770bb",
+ "id": "Workday Classifier",
  "keyTypeMap": {
-  "Active": "IAM-Sync-User",
-  "Leave Of Absence": "IAM-Sync-User",
-  "Terminated": "IAM-Sync-User"
+  "Active": "IAM - Sync User",
+  "Leave Of Absence": "IAM - Sync User",
+  "Terminated": "IAM - Sync User"
  },
  "name": "Workday Classifier",
  "transformer": {

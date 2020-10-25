@@ -22,7 +22,6 @@ When using the Integration for the first time, run the ***workday-first-run*** c
 | incidentType | Incident type | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
-| incidentFetchInterval | Incidents Fetch Interval | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

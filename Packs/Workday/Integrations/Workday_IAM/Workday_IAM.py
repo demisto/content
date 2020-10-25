@@ -13,7 +13,7 @@ EMPLOYEE_ACTIVE_STATUS = 'active'
 WORKDAY_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 WORKDAY_DATE_FORMAT = "%m/%d/%Y"
 READ_TIME_OUT_IN_SECONDS = 300
-INCIDENT_TYPE = 'IAM-Sync-User'
+INCIDENT_TYPE = 'IAM - Sync User'
 DEFAULT_MAPPER_IN = 'IAM Sync User - Workday'
 
 
@@ -26,14 +26,9 @@ class Client(BaseClient):
     Client will implement the service API, should not contain Cortex XSOAR logic.
     Should do requests and return data
     """
-    def __init__(self, base_url: Any, verify: bool, headers: dict, proxy: bool, ok_codes: tuple,
-                 auth: Any, report_url: str):
-        super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy, ok_codes=ok_codes, auth=auth)
-        self._report_url = report_url
-
     # Getting Workday Full User Report with a given report URL. This uses RaaS
-    def get_full_report(self):
-        return self._http_request(method="GET", full_url=self._report_url, url_suffix="",
+    def get_full_report(self, report_url):
+        return self._http_request(method="GET", full_url=report_url, url_suffix="",
                                   timeout=READ_TIME_OUT_IN_SECONDS)
 
 
@@ -47,7 +42,7 @@ def convert_incident_fields_to_cli_names(data):
 
 def get_time_elapsed(fetch_time, last_run):
     now = datetime.now()
-    demisto.info("Workday Last Run: " + str(last_run))
+    demisto.debug("Workday Last Run: " + str(last_run))
     if 'time' in last_run:
         # Get Last run and parse to date format. Workday report will be pulled from last run time to current time
         last_run_time = last_run['time']
@@ -64,7 +59,7 @@ def get_time_elapsed(fetch_time, last_run):
     return time_elapsed_in_minutes, last_run_time
 
 
-def fetch_incidents(client, last_run, fetch_time, mapper_in):
+def fetch_incidents(client, last_run, fetch_time, mapper_in, report_url):
     """
     This function will execute each interval (default is 1 minute).
 
@@ -72,6 +67,7 @@ def fetch_incidents(client, last_run, fetch_time, mapper_in):
         client: Workday client
         last_run: The greatest incident created_time we fetched from last fetch
         fetch_time: The time interval when the function should execute and return events/incidents
+        report_url: The report full URL.
 
     Returns:
         last_run: This will be last_run in the next fetch-incidents
@@ -82,6 +78,8 @@ def fetch_incidents(client, last_run, fetch_time, mapper_in):
     from_date_time = '###'
     to_date_time = '$$$'
     try:
+        employee_id_to_user_profile, email_to_user_profile = get_all_user_profiles()
+
         # If there is no fetch time configured, it will be set to 0 and no events will be pulled
         fetch_time = int(fetch_time) if fetch_time else 0
         time_elapsed_in_minutes, last_run_time = get_time_elapsed(fetch_time, last_run)
@@ -89,15 +87,16 @@ def fetch_incidents(client, last_run, fetch_time, mapper_in):
         from_date_time = last_run_time
         if fetch_time != 0 and time_elapsed_in_minutes >= fetch_time:
             to_date_time = datetime.now().strftime(WORKDAY_DATE_TIME_FORMAT)
-            report_data = client.get_full_report()
+            report_data = client.get_full_report(report_url)
             report_entries = report_data.get('Report_Entry')
             for entry in report_entries:
                 workday_user = demisto.mapObject(entry, mapper_in, INCIDENT_TYPE)
                 workday_user = convert_incident_fields_to_cli_names(workday_user)
-                demisto_user = get_demisto_user(workday_user)
+
+                demisto_user = get_demisto_user(employee_id_to_user_profile, workday_user)
                 profile_changed_fields = get_profile_changed_fields(workday_user, demisto_user)
                 terminate_date_arrived = check_if_user_should_be_terminated(workday_user)
-                does_email_exist = does_email_exist_in_xsoar(workday_user.get('email'))
+                does_email_exist = does_user_email_exist_in_xsoar(email_to_user_profile, workday_user)
 
                 if ((demisto_user and len(profile_changed_fields) == 0) or (not demisto_user and does_email_exist))\
                         and not terminate_date_arrived:
@@ -115,7 +114,7 @@ def fetch_incidents(client, last_run, fetch_time, mapper_in):
             demisto.info(f'Workday Fetch Events Completed. Response Time:'
                          f' {(datetime.now() - start).total_seconds()} seconds')
 
-        last_run = {'time': last_run_time, "sync_users": True}
+        last_run = {'time': last_run_time, 'synced_users': True}
     except Exception as e:
         demisto.error(f'Failed to fetch events. From Date = {from_date_time}. To Date = {to_date_time}')
         raise e
@@ -123,18 +122,31 @@ def fetch_incidents(client, last_run, fetch_time, mapper_in):
     return last_run, events
 
 
-def get_demisto_user(workday_user):
+def get_all_user_profiles(batch_size=1000):
+    employee_id_to_user_profile = {}
+    email_to_user_profile = {}
+    query_result = demisto.searchIndicators(query=f"type:\"User Profile\"").get('iocs', [])
+    for user_profile in query_result:
+        employee_id = user_profile.get('employeeid')
+        email = user_profile.get('email')
+        employee_id_to_user_profile[employee_id] = user_profile
+        email_to_user_profile[email] = user_profile
+
+    return employee_id_to_user_profile, email_to_user_profile
+
+
+def get_demisto_user(employee_id_to_user_profile, workday_user):
     employee_id = workday_user.get('employeeid')
-    data = demisto.searchIndicators(query=f"type:\"User Profile\" and employeeid:\"{employee_id}\"").get('iocs')
-    if data:
-        return data[0]
+    if employee_id:
+        return employee_id_to_user_profile.get(employee_id)
     return None
 
 
-def does_email_exist_in_xsoar(email_address):
-    data = demisto.searchIndicators(query=f"type:\"User Profile\" and value:\"{email_address}\"").get('iocs')
-    does_email_exist = (data and len(data) > 0)
-    return does_email_exist
+def does_user_email_exist_in_xsoar(email_to_user_profile, workday_user):
+    email_address = workday_user.get('email')
+    if email_address:
+        return email_to_user_profile.get(email_address) is not None
+    return False
 
 
 def get_profile_changed_fields(workday_user, demisto_user):
@@ -173,19 +185,20 @@ def check_if_user_should_be_terminated(workday_user):
     return is_term_event
 
 
-def test_module(client, params, mapper_in):
+def test_module(client, is_fetch, fetch_events_time_minutes, report_url, mapper_in):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     Anything else will fail the test.
     """
-    client.get_full_report()
+    client.get_full_report(report_url)
 
-    if params.get('isFetch'):
+    if is_fetch:
         fetch_incidents(
             client=client,
             last_run={},
-            fetch_time=params.get('fetch_events_time_minutes'),
-            mapper_in=mapper_in
+            fetch_time=fetch_events_time_minutes,
+            mapper_in=mapper_in,
+            report_url=report_url
         )
 
     return 'ok'
@@ -212,18 +225,24 @@ def user_profile_to_indicator(user_profile):
     return indicator
 
 
-def workday_first_run_command(client, mapper_in):
-    report_data = client.get_full_report()
+def workday_first_run_command(client, mapper_in, report_url):
+    report_data = client.get_full_report(report_url)
     indicators = report_to_indicators(report_data.get('Report_Entry'), mapper_in)
     for b in batch(indicators, batch_size=2000):
         demisto.createIndicators(b)
-    demisto.results("Indicators were created successfully")
+
+    last_run_time = datetime.now().strftime(WORKDAY_DATE_TIME_FORMAT)
+    last_run = {'synced_users': True, 'time': last_run_time}
+    # return_results("Indicators were created successfully.")
+    return last_run
 
 
 def main():
     command = demisto.command()
     params = demisto.params()
 
+    is_fetch = params.get('isFetch')
+    fetch_events_time_minutes = params.get('fetch_events_time_minutes')
     report_url = params.get('report_url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -231,10 +250,10 @@ def main():
     workday_username = params.get('credentials', {}).get('identifier')
     workday_password = params.get('credentials', {}).get('password')
 
-    LOG(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
 
     client = Client(
-        base_url=None,
+        base_url='',  # using report_url in _http_request
         verify=verify_certificate,
         headers={
             'Accept': 'application/json',
@@ -242,13 +261,12 @@ def main():
         },
         proxy=proxy,
         ok_codes=(200, 204),
-        auth=requests.auth.HTTPBasicAuth(workday_username, workday_password),
-        report_url=report_url
+        auth=requests.auth.HTTPBasicAuth(workday_username, workday_password)
     )
 
     try:
         if command == 'test-module':
-            return_results(test_module(client, params, mapper_in))
+            return_results(test_module(client, is_fetch, fetch_events_time_minutes, report_url, mapper_in))
 
         if command == 'fetch-incidents':
             '''
@@ -258,23 +276,20 @@ def main():
             '''
             workday_context = demisto.getIntegrationContext()
             events = workday_context.get('events')
+            report_url = params.get('report_url')
 
             last_run = demisto.getLastRun()
-            run_first_command = False
-            if last_run:
-                if last_run.get("sync_users"):
-                    run_first_command = True
+            if not last_run.get('synced_users'):
+                last_run = workday_first_run_command(client, mapper_in, report_url)
 
-            if not run_first_command:
-                workday_first_run_command(client, mapper_in)
-
-            if not events:
+            elif not events:
                 # Get the events from Workday by making an API call. Last run is updated only when API call is made
                 last_run, events = fetch_incidents(
                     client=client,
                     last_run=last_run,
                     fetch_time=params.get('fetch_events_time_minutes'),
-                    mapper_in=mapper_in
+                    mapper_in=mapper_in,
+                    report_url=report_url
                 )
 
             fetch_limit = int(params.get('max_fetch'))
