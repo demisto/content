@@ -2509,6 +2509,31 @@ def test_set_latest_integration_context(mocker):
     assert int_context_args_2 == (int_context['context'], True, int_context['version'] + 1)
 
 
+def test_set_latest_integration_context_es(mocker):
+    import CommonServerPython
+
+    # Set
+    mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
+    mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
+    es_inv_context_version_first = {'version': 5, 'sequenceNumber': 807, 'primaryTerm': 1}
+    es_inv_context_version_second = {'version': 7, 'sequenceNumber': 831, 'primaryTerm': 1}
+    mocker.patch.object(CommonServerPython, 'update_integration_context',
+                        side_effect=[({}, es_inv_context_version_first),
+                                     ({}, es_inv_context_version_second)])
+    mocker.patch.object(CommonServerPython, 'set_integration_context', side_effect=[ValueError, {}])
+
+    # Arrange
+    CommonServerPython.set_to_integration_context_with_retries({})
+    int_context_calls = CommonServerPython.set_integration_context.call_count
+    int_context_args_1 = CommonServerPython.set_integration_context.call_args_list[0][0]
+    int_context_args_2 = CommonServerPython.set_integration_context.call_args_list[1][0]
+
+    # Assert
+    assert int_context_calls == 2
+    assert int_context_args_1[1:] == (True, es_inv_context_version_first)
+    assert int_context_args_2[1:] == (True, es_inv_context_version_second)
+
+
 def test_set_latest_integration_context_fail(mocker):
     import CommonServerPython
 
