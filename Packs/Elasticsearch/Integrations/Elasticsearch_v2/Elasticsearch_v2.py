@@ -298,7 +298,7 @@ def test_general_query(es):
         query = QueryString(query='*')
         search = Search(using=es, index='*').query(query)[0:1]
         response = search.execute().to_dict()
-        _, total_results = get_total_results(response)
+        get_total_results(response)
 
     except NotFoundError as e:
         return_error("Failed executing general search command - please check the Server URL and port number "
