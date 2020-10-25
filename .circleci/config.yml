@@ -537,8 +537,10 @@ jobs:
                 shell: /bin/bash
                 command: |
                   ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
+                  ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Run Unit Testing And Lint'
                 when: always
             - *store_artifacts
+
   Run Validations:
     <<: *container_config
     resource_class: medium
@@ -616,6 +618,13 @@ jobs:
                     echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CIRCLE_BRANCH.\n Merge it in order to merge the current branch into content repo."
                     exit 1
                   fi
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Run Validations'
+          when: always
+
   Create Instances:
     <<: *container_config
     resource_class: medium
@@ -678,6 +687,13 @@ jobs:
             - *setup_instance
             - *store_artifacts
       - *persist_to_workspace
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Create Instances'
+          when: always
+
   Server 5_0:
     <<: *container_config
     resource_class: medium
@@ -993,7 +1009,7 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Upload Packs'
           when: always
       - *destroy_instances
       - *store_artifacts
@@ -1148,6 +1164,12 @@ jobs:
             source $BASH_ENV
             ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
             exit $RETVAL
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Install Packs in Demisto 6_0'
+          when: always
 
   Install Packs in Demisto Marketplace - Master:
     <<: *container_config
@@ -1175,6 +1197,12 @@ jobs:
             source $BASH_ENV
             ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
             exit $RETVAL
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Install Packs in Demisto Marketplace - Master'
+          when: always
 
 workflows:
   version: 2
