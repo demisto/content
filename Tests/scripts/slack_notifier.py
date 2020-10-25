@@ -69,7 +69,7 @@ def options_handler():
     parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address',
                         required=True)
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', required=True)
-    parser.add_argument('-j', '--job_name', help='The job name that is running the slack notifier', required=True)
+    parser.add_argument('-j', '--job_name', help='The job name that is running the slack notifier')
     options = parser.parse_args()
 
     return options
@@ -275,6 +275,7 @@ def main():
                        options.test_type,
                        env_results_file_name=options.env_results_file_name)
     elif options.bucket_upload:
+        print('wow main')
         slack_notifier(options.url, options.slack, options.test_type, options.job_name)
     elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, BUCKET_UPLOAD_TYPE,
                                SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
