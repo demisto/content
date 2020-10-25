@@ -330,12 +330,13 @@ def add_pack_to_installation_request(pack_id, installation_request_body):
 
 
 def install_all_content_packs(client, host, prints_manager, thread_index=0):
+    all_packs = []
 
     for pack_id in os.listdir(PACKS_FULL_PATH):
-        all_packs = []
         if pack_id not in IGNORED_FILES:
             add_pack_to_installation_request(pack_id, all_packs)
-        install_packs(client, host, prints_manager, thread_index, [pack_id])
+    for pack in all_packs:
+        install_packs(client, host, prints_manager, thread_index, [pack])
 
 
 def upload_zipped_packs(client, host, prints_manager, thread_index, pack_path):
