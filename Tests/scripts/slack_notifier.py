@@ -231,6 +231,7 @@ def get_fields():
 
 
 def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, job_name=""):
+    print("job name  2 is: ".format(job_name))
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
@@ -278,8 +279,9 @@ def main():
                        options.test_type,
                        env_results_file_name=options.env_results_file_name)
     elif options.bucket_upload:
-        print(options.job_name)
-        slack_notifier(options.url, options.slack, options.test_type, options.job_name)
+        jn = options.job_name
+        print('job name is: {}'.format(jn))
+        slack_notifier(options.url, options.slack, options.test_type, job_name=jn)
     elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, BUCKET_UPLOAD_TYPE,
                                SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
         slack_notifier(options.url, options.slack, options.test_type)
