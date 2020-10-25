@@ -165,6 +165,7 @@ references:
         python --version
         python3 --version
         demisto-sdk --version
+        exit 1
 
   download_configuration: &download_configuration
     run:
@@ -322,7 +323,6 @@ references:
       name: Create ID Set
       when: always
       command: |
-        exit 1
         demisto-sdk create-id-set -o ./Tests/id_set.json
         cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
 
@@ -507,6 +507,12 @@ jobs:
       - checkout
       - *restore_cache
       - *prepare_environment
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Setup Environment'
+          when: always
       - save_cache:
           paths:
             - venv
