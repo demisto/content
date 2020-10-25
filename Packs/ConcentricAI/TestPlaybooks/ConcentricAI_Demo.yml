@@ -79,7 +79,18 @@ tasks:
       brand: ""
     scriptarguments:
       user:
-        simple: ${incident.agentid}
+        complex:
+          root: incident
+          accessor: agentid
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '@'
+              fields:
+                value:
+                  simple: "1"
     separatecontext: false
     view: |-
       {
