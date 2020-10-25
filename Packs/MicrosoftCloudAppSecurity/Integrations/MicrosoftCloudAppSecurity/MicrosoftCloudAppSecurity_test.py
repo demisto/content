@@ -1,6 +1,5 @@
 import pytest
 import json
-import demistomock as demisto
 from MicrosoftCloudAppSecurity import Client
 
 
