@@ -79,13 +79,12 @@ def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Malicious: Suspicious = true + (malicious_activity_recent = true or credentials_leaked_recent = true)
     Suspicious: Suspicious = true and not malicious
     """
-
-    email = argToList(args.get('email'))
-    if email is None:
+    emails = argToList(args.get('email'))
+    if len(emails) == 0 or emails is None:
         raise ValueError('Email(s) not specified')
 
+    email = emails[0]
     email_data = client.get_email_address_reputation(email)
-    score = Common.DBotScore.NONE
     description = f'{INTEGRATION_NAME} returned'
     suspicious = email_data.get('suspicious')
     malicious_activity_recent = email_data.get('details.malicious_activity_recent')
@@ -123,17 +122,18 @@ def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix=f'{INTEGRATION_NAME}.EmailScore',
         outputs_key_field='email',
         outputs=email_data,
-        indicators=email_context
+        indicators=[email_context]
     )
 
 
 def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get email address reputation from EmailRep"""
 
-    email = argToList(args.get('email_address'))
-    if email is None:
+    emails = argToList(args.get('email_address'))
+    if len(emails) == 0 or emails is None:
         raise ValueError('Email(s) not specified')
 
+    email = emails[0]
     email_data = client.get_email_address_reputation(email)
 
     readable_output = tableToMarkdown('Email', email_data)

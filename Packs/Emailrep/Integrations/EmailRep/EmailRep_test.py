@@ -40,14 +40,14 @@ def test_email_reputation_get(requests_mock):
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     client = emailrep_client()
     args = {
-        'email_address': 'test@example.com'
+        'email_address': f'{TEST_EMAIL_ADDRESS}'
     }
 
     response = email_reputation_command(client, args)
 
     assert response.outputs_prefix == f'{INTEGRATION_NAME}.Email'
     assert response.outputs_key_field == 'email'
-    assert response.outputs == [{
+    assert response.outputs == {
         "details": {
             "blacklisted": True,
             "malicious_activity": True,
@@ -79,7 +79,7 @@ def test_email_reputation_get(requests_mock):
         "reputation": "none",
         "suspicious": True,
         "references": 143
-    }]
+    }
 
 
 def test_input_email_reputation_get():
@@ -213,7 +213,7 @@ def test_email(requests_mock):
 
     assert response.outputs_prefix == f'{INTEGRATION_NAME}.EmailScore'
     assert response.outputs_key_field == 'email'
-    assert response.outputs == [{
+    assert response.outputs == {
         "details": {
             "blacklisted": True,
             "malicious_activity": True,
@@ -245,7 +245,7 @@ def test_email(requests_mock):
         "reputation": "none",
         "suspicious": True,
         "references": 143
-    }]
+    }
 
     # Assert SUSPICIOUS dbot score
     assert response.indicators[0].email_address == TEST_EMAIL_ADDRESS
