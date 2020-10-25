@@ -1,0 +1,21 @@
+{
+    "autorun": false,
+    "color": "#7C71F5",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Trend Micro CAS Event",
+    "layout": "6045d835-0203-4db1-86b3-6aed9789d660",
+    "locked": false,
+    "name": "Trend Micro CAS Event",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

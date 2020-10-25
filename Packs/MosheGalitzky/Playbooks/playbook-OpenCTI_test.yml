@@ -1,0 +1,85 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: ad7e5edd-96d1-43ff-88e7-cab2be2f829a
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 74e03d8c-5885-4978-8347-afaa48568263
+inputs: []
+name: OpenCTI_test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 87bd4431-9549-497d-8921-fab6b422d972
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 87bd4431-9549-497d-8921-fab6b422d972
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicator_types:
+        simple: all
+      last_id: {}
+      limit:
+        simple: "10"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets indicators from the feed.
+      id: 2719014f-a958-4a4c-8fd6-6ee7bcb91d1a
+      iscommand: true
+      name: get indicators
+      script: '|||opencti-get-indicators'
+      type: regular
+      version: -1
+    taskid: 2719014f-a958-4a4c-8fd6-6ee7bcb91d1a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
