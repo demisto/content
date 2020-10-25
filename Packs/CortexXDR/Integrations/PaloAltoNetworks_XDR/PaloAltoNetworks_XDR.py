@@ -1872,6 +1872,10 @@ def get_remote_data_command(client, args):
     except Exception as e:
         demisto.debug(f"Error in XDR incoming mirror for incident {remote_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
+
+        if "Rate limit exceeded" in str(e):
+            return_error("API rate limit")
+
         if incident_data:
             incident_data['in_mirror_error'] = str(e)
             sort_all_list_incident_fields(incident_data)
@@ -1955,14 +1959,22 @@ def update_remote_system_command(client, args):
 def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: int = 10):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
-
+    incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
+                                                                                                dict) else None
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
 
     incidents = []
-    raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
-                                         limit=max_fetch, sort_by_creation_time='asc')
+    if incidents_from_previous_run:
+        raw_incidents = incidents_from_previous_run
+    else:
+        raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
+                                             limit=max_fetch, sort_by_creation_time='asc')
+
+    # maintain a list of non created incidents in a case of a rate limit exception
+    non_created_incidents: list = raw_incidents.copy()
+    next_run = dict()
 
     try:
         for raw_incident in raw_incidents:
@@ -1976,7 +1988,8 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
 
             sort_all_list_incident_fields(incident_data)
 
-            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
+            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
+                                                                     None)
             incident_data['mirror_instance'] = demisto.integrationInstance()
 
             description = raw_incident.get('description')
@@ -1995,10 +2008,26 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
                 last_fetch = raw_incident['creation_time']
 
             incidents.append(incident)
-    except Exception as e:
-        if
+            non_created_incidents.remove(raw_incident)
 
-    next_run = {'time': last_fetch + 1}
+    except Exception as e:
+        if "Rate limit exceeded" in str(e):
+            # To prevent an infinite loop without erroring out
+            if non_created_incidents == incidents_from_previous_run:
+                raise
+            else:
+                demisto.debug("Cortex XDR - rate limit exceeded, saving the non created incidents for the next run.\n")
+
+        else:
+            raise
+
+    if non_created_incidents:
+        next_run['incidents_from_previous_run'] = non_created_incidents
+    else:
+        next_run['incidents_from_previous_run'] = []
+
+    next_run['time'] = last_fetch + 1
+
     return next_run, incidents
 
 
@@ -2054,6 +2083,7 @@ def main():
 
         elif demisto.command() == 'fetch-incidents':
             next_run, incidents = fetch_incidents(client, first_fetch_time, demisto.getLastRun(), max_fetch)
+
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
@@ -2130,7 +2160,7 @@ def main():
         if demisto.command() == 'fetch-incidents':
             LOG(str(err))
             raise
-
+        demisto.debug(f'last_run: {demisto.getLastRun()}')
         demisto.error(traceback.format_exc())
         return_error(str(err))
 
