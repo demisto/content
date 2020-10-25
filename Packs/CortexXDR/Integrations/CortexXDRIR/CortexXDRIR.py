@@ -2646,25 +2646,6 @@ def run_script_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     )
 
 
-def run_snippet_code_script_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    # todo:  change this code when the issue resolved,
-    #  was told not to implement this command, since xdr will change something at their side.
-    endpoint_ids: list = argToList(args.get('endpoint_ids'))
-    snippet_code = args.get('snippet_code')
-    timeout: int = arg_to_int(arg=args.get('timeout'), arg_name='timeout')
-
-    action_id = client.run_snippet_code_script(endpoint_ids, snippet_code, timeout)
-
-    return (
-        tableToMarkdown(name='Run Snipped Code Script', t={'Action Id': action_id},
-                        headers=['Action Id'], removeNull=True),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.runSnippetCodeScript.actionId(val.actionId == obj.actionId)': action_id
-        },
-        action_id
-    )
-
-
 def get_script_execution_status_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     action_id = args.get('action_id')
 
@@ -2677,40 +2658,6 @@ def get_script_execution_status_command(client: Client, args: Dict[str, str]) ->
             f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionStatus(val.actionId == obj.actionId)': reply
         },
         reply
-    )
-
-
-def get_script_execution_results_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    # todo: we have an issue with the output of this command, at the xdr side,
-    # change this code when the issue resolved
-    action_id = args.get('action_id')
-
-    reply = client.get_script_execution_results(action_id)
-    reply["action_id"] = action_id
-
-    return (
-        tableToMarkdown(name='Script Execution Results', t=reply.get('results'), removeNull=True),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionResults(val.actionId == obj.actionId)': reply
-        },
-        reply
-    )
-
-
-def get_script_execution_result_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    # todo: we have an issue with the output of this command, at the xdr side,
-    # change this code when the issue resolved
-    action_id = args.get('action_id')
-    endpoint_id = args.get('endpoint_id')
-
-    data = client.get_script_execution_result_files(action_id, endpoint_id)
-
-    return (
-        f'Script execution data is: {data}',
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionResultFile(val.actionId == obj.actionId)': data
-        },
-        data
     )
 
 
@@ -2922,17 +2869,8 @@ def main():
         elif demisto.command() == 'xdr-run-script':
             return_outputs(*run_script_command(client, args))
 
-        elif demisto.command() == 'xdr-run-snippet-code-script':
-            return_outputs(*run_snippet_code_script_command(client, args))
-
         elif demisto.command() == 'xdr-get-script-execution-status':
             return_outputs(*get_script_execution_status_command(client, args))
-
-        elif demisto.command() == 'xdr-get-script-execution-results':
-            return_outputs(*get_script_execution_results_command(client, args))
-
-        elif demisto.command() == 'xdr-get-script-execution-result-files':
-            return_outputs(*get_script_execution_result_files_command(client, args))
 
         elif demisto.command() == 'xdr-insert-simple-indicators':
             return_outputs(*insert_simple_indicators_command(client, args))

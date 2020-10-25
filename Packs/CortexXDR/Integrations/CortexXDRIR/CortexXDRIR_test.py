@@ -1282,69 +1282,6 @@ def test_get_script_execution_status_command(requests_mock):
     assert get_script_execution_status_expected_result == context
 
 
-def test_get_script_execution_results_command(requests_mock):
-    # todo: change this test once command fixed
-    """
-        Given:
-            -action_id
-        When:
-            Retrieve the result of a script execution action.
-        Then:
-            - returns markdown, context data and raw response.
-        """
-    from CortexXDRIR import get_script_execution_results_command, Client
-
-    get_script_execution_results_reply = load_test_data('./test_data/get_script_execution_results.json')
-    expected_context = get_script_execution_results_reply.get('reply')
-    expected_context["action_id"] = '1799'
-    get_script_execution_results_command_expected_result = {
-        'PaloAltoNetworksXDR.scriptExecutionResults(val.actionId == obj.actionId)':
-            expected_context}
-    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_execution_results/',
-                       json=get_script_execution_results_reply)
-
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
-    args = {
-        'action_id': '1799'
-    }
-
-    _, context, _ = get_script_execution_results_command(client, args)
-    assert get_script_execution_results_command_expected_result == context
-
-
-# def test_get_script_execution_result_files_command(requests_mock):
-# todo: change this test once command fixed
-#     """
-#         Given:
-#             -action_id,
-#             -endpoint_id
-#         When:
-#             Retrieve the result of a script execution action.
-#         Then:
-#             - returns markdown, context data and raw response.
-#         """
-#     from CortexXDRIR import get_script_execution_result_files_command, Client
-#
-#     get_script_execution_results_files_reply = load_test_data('./test_data/get_script_execution_results_files.json')
-#     get_script_execution_results_files_command_expected_result = {
-#         'PaloAltoNetworksXDR.scriptExecutionResultFile(val.actionId == obj.actionId)':
-#             get_script_execution_results_files_reply.get('reply').get('data')}
-#     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_execution_results_files/',
-#                        json=get_script_execution_results_files_reply)
-#
-#     client = Client(
-#         base_url=f'{XDR_URL}/public_api/v1', headers={}
-#     )
-#     args = {
-#         'action_id': '1799'
-#     }
-#
-#     _, context, _ = get_script_execution_result_files_command(client, args)
-#     assert get_script_execution_results_files_command_expected_result == context
-
-
 def test_get_script_code_command(requests_mock):
     """
         Given:
