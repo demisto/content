@@ -3,22 +3,24 @@
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 Overview can be found at: https://confluence.paloaltonetworks.com/display/DemistoContent/Configure+Test+Filter
 """
-import os
-import sys
-import json
-import glob
-import random
 import argparse
-import coloredlogs
+import glob
+import json
 import logging
-from distutils.version import LooseVersion
+import os
+import random
+import sys
 from copy import deepcopy
-from typing import Dict, Tuple, Set
-from Tests.Marketplace.marketplace_services import IGNORED_FILES
-import demisto_sdk.commands.common.tools as tools
-from demisto_sdk.commands.common.constants import *  # noqa: E402
+from distutils.version import LooseVersion
+from typing import Dict, Tuple
 
+import coloredlogs
+import demisto_sdk.commands.common.tools as tools
+
+from Tests.Marketplace.marketplace_services import IGNORED_FILES
+from Tests.scripts.utils.collect_helpers import *  # noqa: E402
 from Tests.scripts.utils.content_packs_util import should_test_content_pack
+from Tests.scripts.utils.get_modified_files_for_testing import GetModifiedFilesForTesting
 
 coloredlogs.install(level=logging.DEBUG,
                     fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s',
@@ -127,60 +129,6 @@ class TestConf(object):
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
-# Search Keyword for the changed file
-NO_TESTS_FORMAT = 'No test( - .*)?'
-PACKS_SCRIPT_REGEX = r'{}/([^/]+)/{}/(script-[^\\/]+)\.yml$'.format(PACKS_DIR, SCRIPTS_DIR)
-FILE_IN_INTEGRATIONS_DIR_REGEX = r'{}/(.+)'.format(INTEGRATIONS_DIR)
-FILE_IN_SCRIPTS_DIR_REGEX = r'{}/(.+)'.format(SCRIPTS_DIR)
-FILE_IN_PACKS_INTEGRATIONS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
-    PACKS_DIR, INTEGRATIONS_DIR)
-FILE_IN_PACKS_SCRIPTS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
-    PACKS_DIR, SCRIPTS_DIR)
-
-TEST_DATA_INTEGRATION_YML_REGEX = r'Tests\/scripts\/infrastructure_tests\/tests_data\/mock_integrations\/.*\.yml'
-INTEGRATION_REGEXES = [
-    PACKS_INTEGRATION_PY_REGEX,
-    PACKS_INTEGRATION_PS_TEST_REGEX,
-    TEST_DATA_INTEGRATION_YML_REGEX
-]
-TEST_DATA_SCRIPT_YML_REGEX = r'Tests/scripts/infrastructure_tests/tests_data/mock_scripts/.*.yml'
-SCRIPT_REGEXES = [
-    TEST_DATA_SCRIPT_YML_REGEX
-]
-INCIDENT_FIELD_REGEXES = [
-    PACKS_INCIDENT_FIELD_JSON_REGEX
-]
-FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
-    FILE_IN_INTEGRATIONS_DIR_REGEX,
-    FILE_IN_SCRIPTS_DIR_REGEX,
-    FILE_IN_PACKS_INTEGRATIONS_DIR_REGEX,
-    FILE_IN_PACKS_SCRIPTS_DIR_REGEX
-]
-CHECKED_TYPES_REGEXES = [
-    # Integrations
-    PACKS_INTEGRATION_PY_REGEX,
-    PACKS_INTEGRATION_YML_REGEX,
-    PACKS_INTEGRATION_NON_SPLIT_YML_REGEX,
-    PACKS_INTEGRATION_PS_REGEX,
-
-    # Scripts
-    PACKS_SCRIPT_REGEX,
-    PACKS_SCRIPT_YML_REGEX,
-    PACKS_SCRIPT_NON_SPLIT_YML_REGEX,
-
-    # Playbooks
-    PLAYBOOK_REGEX,
-    PLAYBOOK_YML_REGEX
-]
-
-# File names
-COMMON_YML_LIST = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
-                   "Packs/Base/Scripts/script-CommonServer.yml", "scripts/script-CommonServerUserPython.yml",
-                   "scripts/script-CommonUserServer.yml",
-                   "Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml"]
-
-# secrets white list file to be ignored in tests to prevent full tests running each time it is updated
-SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
 # number of random tests to run when there're no runnable tests
 RANDOM_TESTS_NUM = 3
@@ -218,98 +166,8 @@ def is_runnable_in_server_version(from_v, server_v, to_v):
     return tools.server_version_compare(from_v, server_v) <= 0 and tools.server_version_compare(server_v, to_v) <= 0
 
 
-def checked_type(file_path, regex_list):
-    """Check if the file_path is from the regex list"""
-    for regex in regex_list:
-        if re.match(regex, file_path, re.IGNORECASE):
-            return True
-
-    return False
-
-
 def validate_not_a_package_test_script(file_path):
     return '_test' not in file_path and 'test_' not in file_path
-
-
-class GetModifiedFilesForTesting:
-    def __init__(self, files_string: str):
-        self.files_string = files_string
-        self.files_to_filter: List[Tuple[str, FileType]] = self.create_diff_list()
-        self.is_conf_json = False
-        self.is_reputations_json = False
-        self.is_indicator_json = False
-        self.sample_tests = set()
-        self.modified_metadata_list = set()
-        self.changed_common = set()
-        self.modified_files_list = set()
-        self.modified_tests_list = set()
-        self.files_to_types: Dict[FileType, Set[str]] = dict()
-        self.build_files()
-
-    def create_diff_list(self) -> List[Tuple[str, FileType]]:
-        files = list()
-        for line in self.files_string.split('\n'):
-            file_status, file_path = line.split(maxsplit=1)
-            file_status = file_status.lower()
-            # Get to right file_path on renamed
-            if file_status.startswith('r'):
-                _, file_path = file_path.split(maxsplit=1)
-            file_status = file_status.lower()
-            # ignoring deleted files.
-            # also, ignore files in ".circle", ".github" and ".hooks" directories and .
-            if file_path:
-                if (file_status in ('m', 'a') or file_status.startswith('r')) and not file_path.startswith('.'):
-                    files.append((file_path, tools.find_type(file_path)))
-        return files
-
-    def check_no_type(self, file_path: str):
-        if re.match(CONF_PATH, file_path, re.IGNORECASE):
-            self.is_conf_json = True
-        # if is not part of packs meta file name or whitelisted
-        elif any(file in file_path for file in (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
-            self.modified_metadata_list.add(tools.get_pack_name(file_path))
-        elif checked_type(file_path, FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES):
-            if os.path.splitext(file_path)[-1] not in FILE_TYPES_FOR_TESTING:
-                pass
-        # If is not whitelist
-        elif SECRETS_WHITE_LIST not in file_path:
-            self.sample_tests.add(file_path)
-
-    def build_files(self):
-        """Get a string of the modified files"""
-        for file_path, file_type in self.files_to_filter:
-            if checked_type(file_path, COMMON_YML_LIST):
-                self.changed_common.add(file_path)
-            elif file_type is None:
-                self.check_no_type(file_path)
-            else:
-                if file_type in self.files_to_types:
-                    self.files_to_types[file_type].add(file_path)
-                else:
-                    self.files_to_types[file_type] = {file_path}
-
-        self.modified_files_list = self.modified_files_list.union(
-            self.files_to_types.get(FileType.INTEGRATION, set()),
-            self.files_to_types.get(FileType.SCRIPT, set()),
-            self.files_to_types.get(FileType.PLAYBOOK, set()),
-        )
-
-        yml_paths = set()
-
-        for file_path in self.files_to_types.get(FileType.PYTHON_FILE, {}):
-            if not ('test_' in file_path or '_test' in file_path):
-                # Py files, Integration, script, playbook ymls
-                dir_path = os.path.dirname(file_path)
-                file_path = glob.glob(dir_path + "/*.yml")[0]
-                yml_paths.add(file_path)
-
-        self.modified_files_list = self.modified_files_list.union(yml_paths)
-
-        self.modified_tests_list = self.files_to_types.get(FileType.TEST_PLAYBOOK, {})
-
-        self.is_reputations_json = FileType.REPUTATION in self.files_to_types
-
-        self.is_indicator_json = FileType.INDICATOR_FIELD in self.files_to_types
 
 
 def get_modified_files_for_testing(files_string: str):
