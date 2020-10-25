@@ -31,7 +31,7 @@ Get IP Reputation
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ip | String | Get IP details from Barracuda\(BRBL\) service | 
-| Barracuda(BRBL).IP | String | IP details | 
+| Barracuda.IP | String | IP details | 
 | DbotScore.Indicator | String | The indicator itself | 
 | DbotScore.Score | Number | Score | 
 | DbotScore.Type | String | Type of the indicator | 
