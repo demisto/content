@@ -9,10 +9,60 @@ integration_params = {
     'query': 'status=Open'
 }
 
+integration_args_missing_mandatory_summary = {
+    "projectKey": "testKey",
+    "issueTypeId": "1234"
+}
+
+integration_args_missing_mandatory_project_key = {
+    "summary": "test",
+    "issueTypeId": "1234"
+}
+
+integration_args_missing_mandatory_issue_type_id = {
+    "summary": "test",
+    "projectKey": "testKey",
+}
+
+integration_args = {
+    "summary": "test",
+    "projectKey": "testKey",
+    "issueTypeId": "1234"
+}
+
 
 @pytest.fixture(autouse=True)
 def set_params(mocker):
     mocker.patch.object(demisto, 'params', return_value=integration_params)
+
+
+def test_create_issue_command_after_fix_mandatory_args_issue(mocker):
+    from JiraV2 import create_issue_command
+    mocker.patch.object(demisto, 'args', return_value=integration_args)
+    user_data = {
+        "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=1234", "accountId": "1234",
+        "emailAddress": "admin@demistodev.com", "displayName": "test", "active": True,
+        "timeZone": "Asia/Jerusalem", "locale": "en_US", "groups": {"size": 1, "items": []},
+        "applicationRoles": {"size": 1, "items": []}, "expand": "groups,applicationRoles",
+        "projects": [{'id': '1234', 'key': 'testKey', 'name': 'testName'}]
+    }
+    mocker.patch('JiraV2.jira_req', return_value=user_data)
+    mocker.patch.object(demisto, "results")
+    create_issue_command()
+    assert demisto.results.call_count == 1
+
+
+@pytest.mark.parametrize('args',
+                         [integration_args_missing_mandatory_summary,
+                          integration_args_missing_mandatory_issue_type_id,
+                          integration_args_missing_mandatory_project_key])
+def test_create_issue_command_before_fix_mandatory_args_summary_missing(mocker, args):
+    mocker.patch.object(demisto, 'args', return_value=args)
+    from JiraV2 import create_issue_command
+    with pytest.raises(Exception) as e:
+        # when there are missing arguments, an Exception is raised to the user
+        create_issue_command()
+    assert e
 
 
 def test_issue_query_command_no_issues(mocker):
