@@ -123,7 +123,8 @@ inputs:
   description: Query with Carbon Black API syntax
   playbookInputQuery:
 - key: process_name
-  value: {}
+  value:
+    simple: vmtoolsd.exe
   required: false
   description: Tokenized file path of the process’ main module.
   playbookInputQuery:
