@@ -2749,7 +2749,7 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget``
+    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget`` or ``IAMUserProfile``
     :param results: A result object to return as a War-Room entry.
 
     :return: None
@@ -2774,6 +2774,10 @@ def return_results(results):
 
     if isinstance(results, GetRemoteDataResponse):
         demisto.results(results.extract_for_local())
+        return
+
+    if isinstance(results, IAMUserProfile):
+        demisto.results(results.to_entry())
         return
 
     demisto.results(results)
@@ -3860,10 +3864,15 @@ if 'requests' in sys.modules:
                             # Try to parse json error response
                             error_entry = res.json()
                             err_msg += '\n{}'.format(json.dumps(error_entry))
-                            raise DemistoException(err_msg)
+                            raise DemistoException(err_msg, res=error_entry)
                         except ValueError:
                             err_msg += '\n{}'.format(res.text)
-                            raise DemistoException(err_msg)
+                            try:
+                                error_entry = json.loads(res.text)
+                                raise DemistoException(err_msg, res=error_entry)
+                            except ValueError:
+                                # couldn't parse the response json, sending only the error message
+                                raise DemistoException(err_msg)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
@@ -4050,7 +4059,7 @@ def set_integration_context(context, sync=True, version=-1):
     :type sync: ``bool``
     :param sync: Whether to save the context directly to the DB.
 
-    :type version: ``int``
+    :type version: ``Any``
     :param version: The version of the context to set.
 
     :rtype: ``dict``
@@ -4058,8 +4067,7 @@ def set_integration_context(context, sync=True, version=-1):
     """
     demisto.debug('Setting integration context {}:'.format(str(context)))
     if is_versioned_context_available():
-        context['version'] = str(version + 1)
-        demisto.debug('Updating integration context to version {}. Sync: {}'.format(version + 1, sync))
+        demisto.debug('Updating integration context with version {}. Sync: {}'.format(version, sync))
         return demisto.setIntegrationContextVersioned(context, version, sync)
     else:
         return demisto.setIntegrationContext(context)
@@ -4139,8 +4147,8 @@ def set_to_integration_context_with_retries(context, object_keys=None, sync=True
         attempt += 1
         try:
             set_integration_context(integration_context, sync, version)
-            demisto.debug('Successfully updated integration context. New version is {}.'
-                          ''.format(version + 1 if version != -1 else version))
+            demisto.debug('Successfully updated integration context with version {}.'
+                          ''.format(version))
             break
         except ValueError as ve:
             demisto.debug('Failed updating integration context with version {}: {} Attempts left - {}'
@@ -4207,7 +4215,14 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 
 class DemistoException(Exception):
-    pass
+    def __init__(self, message, exception=None, res=None, *args):
+        self.res = res if res else {}
+        self.message = message
+        self.exception = exception
+        super(DemistoException, self).__init__(message, exception, *args)
+
+    def __str__(self):
+        return str(self.message)
 
 
 class GetRemoteDataArgs:
@@ -4570,3 +4585,228 @@ class TableOrListWidget(BaseWidget):
             'total': len(self.data),
             'data': self.data
         })
+
+
+class IAMErrors(object):
+    """
+    An enum class to manually handle errors in IAM integrations
+    :return: None
+    :rtype: ``None``
+    """
+    USER_DOES_NOT_EXIST = 404, 'User does not exist'
+    USER_ALREADY_EXISTS = 409, 'User already exists'
+
+
+class IAMActions(object):
+    """
+    Enum: contains all the IAM actions (e.g. get, update, create, etc.)
+    :return: None
+    :rtype: ``None``
+    """
+    GET_USER = 'get'
+    UPDATE_USER = 'update'
+    CREATE_USER = 'create'
+    DISABLE_USER = 'disable'
+    ENABLE_USER = 'enable'
+
+
+class IAMVendorActionResult:
+    """ This class is used in IAMUserProfile class to represent actions data.
+    :return: None
+    :rtype: ``None``
+    """
+
+    def __init__(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
+                 error_message=None, details=None, skip=False, skip_reason=None, action=None):
+        """ Sets the outputs and readable outputs attributes according to the given arguments.
+
+        :param success: (bool) whether or not the command succeeded.
+        :param active:  (bool) whether or not the user status is active.
+        :param iden: (str) the user ID.
+        :param username: (str) the username of the user.
+        :param email:  (str) the email of the user.
+        :param error_code: (str or int) the error code of the response, if exists.
+        :param error_message: (str) the error details of the response, if exists.
+        :param details: (dict) the full response.
+        :param skip: (bool) whether or not the command is skipped.
+        :param skip_reason: (str) If the command is skipped, describes the reason.
+        :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
+        """
+        self._brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
+        self._instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
+        self._success = success
+        self._active = active
+        self._iden = iden
+        self._username = username
+        self._email = email
+        self._error_code = error_code
+        self._error_message = error_message
+        self._details = details
+        self._skip = skip
+        self._skip_reason = skip_reason
+        self._action = action
+
+    def create_outputs(self):
+        """ Sets the outputs in `_outputs` attribute.
+        """
+        if not self._skip:
+            outputs = {
+                'brand': self._brand,
+                'instanceName': self._instance_name,
+                'action': self._action,
+                'success': self._success,
+                'active': self._active,
+                'id': self._iden,
+                'username': self._username,
+                'email': self._email,
+                'errorCode': self._error_code,
+                'errorMessage': self._error_message,
+                'details': self._details
+            }
+        else:
+            outputs = {
+                'brand': self._brand,
+                'instanceName': self._instance_name,
+                'action': self._action,
+                'skipped': True,
+                'reason': self._skip_reason
+            }
+        return outputs
+
+    def create_readable_outputs(self, outputs):
+        """ Sets the human readable output in `_readable_output` attribute.
+
+        :param outputs: (dict) the command outputs.
+        """
+        title = self._action.title() + ' User Results ({})'.format(self._brand)
+
+        if not self._skip:
+            headers = ["brand", "instanceName", "success", "active", "id", "username",
+                       "email", "errorCode", "errorMessage", "details"]
+        else:
+            headers = ["brand", "instanceName", "skipped", "reason"]
+
+        readable_output = tableToMarkdown(
+            name=title,
+            t=outputs,
+            headers=headers,
+            removeNull=True
+        )
+
+        return readable_output
+
+
+class IAMUserProfile:
+    """
+        A User Profile object class for IAM integrations.
+
+        Attributes:
+            _user_profile (str): The user profile information.
+            _user_profile_delta (str): The user profile delta.
+            _vendor_action_results (list): A List of data returned from the vendor.
+    :return: None
+    :rtype: ``None``
+    """
+
+    INDICATOR_TYPE = 'User Profile'
+
+    def __init__(self, user_profile, user_profile_delta=None):
+        """ IAMUserProfile c'tor.
+
+        :param user_profile: (dict) the user-profile argument.
+        :param user_profile_delta: (dict) the user-profile argument.
+        """
+        self._user_profile = safe_load_json(user_profile)
+        self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
+        self._vendor_action_results = []
+
+    def get_attribute(self, item):
+        return self._user_profile.get(item)
+
+    def to_entry(self):
+        """ Generates a XSOAR IAM entry from the data in _vendor_action_results.
+        Note: Currently we are using only the first element of the list, in the future we will support multiple results.
+
+        :return: (dict) A XSOAR entry.
+        """
+
+        outputs = self._vendor_action_results[0].create_outputs()
+        readable_output = self._vendor_action_results[0].create_readable_outputs(outputs)
+
+        entry_context = {
+            'IAM.UserProfile(val.email && val.email == obj.email)': self._user_profile,
+            'IAM.Vendor(val.instanceName && val.instanceName == self.instanceName && '
+            'val.email && val.email == obj.email)': outputs
+        }
+
+        return_entry = {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': outputs,
+            'HumanReadable': readable_output,
+            'EntryContext': entry_context
+        }
+
+        return return_entry
+
+    def set_result(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
+                   error_message=None, details=None, skip=False, skip_reason=None, action=None):
+        """ Sets the outputs and readable outputs attributes according to the given arguments.
+
+        :param success: (bool) whether or not the command succeeded.
+        :param active:  (bool) whether or not the user status is active.
+        :param iden: (str) the user ID.
+        :param username: (str) the username of the user.
+        :param email:  (str) the email of the user.
+        :param error_code: (str or int) the error code of the response, if exists.
+        :param error_message: (str) the error details of the response, if exists.
+        :param details: (dict) the full response.
+        :param skip: (bool) whether or not the command is skipped.
+        :param skip_reason: (str) If the command is skipped, describes the reason.
+        :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
+        """
+        if not email:
+            email = self.get_attribute('email')
+
+        vendor_action_result = IAMVendorActionResult(
+            success=success,
+            active=active,
+            iden=iden,
+            username=username,
+            email=email,
+            error_code=error_code,
+            error_message=error_message,
+            details=details,
+            skip=skip,
+            skip_reason=skip_reason,
+            action=action
+        )
+
+        self._vendor_action_results.append(vendor_action_result)
+
+    def map_object(self, mapper_name, mapping_type=None):
+        """ Returns the user data, in an application data format.
+
+        :param mapper_name: (str) The outgoing mapper from XSOAR to the application.
+        :param mapping_type: (str) The mapping type of the mapper (optional).
+        :return: (dict) the user data, in the app data format.
+        """
+        if not mapping_type:
+            mapping_type = IAMUserProfile.INDICATOR_TYPE
+        if not self._user_profile:
+            raise DemistoException('You must provide the user profile data.')
+        app_data = demisto.mapObject(self._user_profile, mapper_name, mapping_type)
+        return app_data
+
+    def update_with_app_data(self, app_data, mapper_name, mapping_type=None):
+        """ updates the user_profile attribute according to the given app_data
+
+        :param app_data: (dict) The user data in app
+        :param mapper_name: (str) incoming mapper name
+        :param mapping_type: (str) Optional - mapping type
+        """
+        if not mapping_type:
+            mapping_type = IAMUserProfile.INDICATOR_TYPE
+        if not isinstance(app_data, dict):
+            app_data = safe_load_json(app_data)
+        self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)
