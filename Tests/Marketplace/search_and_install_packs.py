@@ -224,10 +224,6 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                 upload_zipped_packs(client=client, host=host, prints_manager=prints_manager,
                                     thread_index=thread_index, pack_path=local_pack)
     else:
-        request_data = {
-            'packs': packs_to_install,
-            'ignoreWarnings': True
-        }
 
         packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
         message = 'Installing the following packs in server {}:\n{}'.format(host, packs_to_install_str)
@@ -235,32 +231,40 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         prints_manager.execute_thread_prints(thread_index)
 
         # make the pack installation request
-        try:
-            response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                path='/contentpacks/marketplace/install',
-                                                                                method='POST',
-                                                                                body=request_data,
-                                                                                accept='application/json',
-                                                                                _request_timeout=request_timeout)
+        for pack in packs_to_install:
+            request_data = {
+                'packs': [pack],
+                'ignoreWarnings': True
+            }
+            try:
+                response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                                    path='/contentpacks/marketplace/install',
+                                                                                    method='POST',
+                                                                                    body=request_data,
+                                                                                    accept='application/json',
+                                                                                    _request_timeout=request_timeout)
 
-            if 200 <= status_code < 300:
-                message = 'Packs were successfully installed!\n'
-                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
-                                             include_timestamp=True)
-            else:
-                result_object = ast.literal_eval(response_data)
-                message = result_object.get('message', '')
-                err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
+                print(ast.literal_eval(response_data))
+                print(status_code)
+
+                if 200 <= status_code < 300:
+                    message = 'Packs were successfully installed!\n'
+                    prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                                 include_timestamp=True)
+                else:
+                    result_object = ast.literal_eval(response_data)
+                    message = result_object.get('message', '')
+                    err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
+                    prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+                    raise Exception(err_msg)
+            except Exception as e:
+                err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
                 prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-                raise Exception(err_msg)
-        except Exception as e:
-            err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
-            prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
 
-            global SUCCESS_FLAG
-            SUCCESS_FLAG = False
-        finally:
-            prints_manager.execute_thread_prints(thread_index)
+                global SUCCESS_FLAG
+                SUCCESS_FLAG = False
+            finally:
+                prints_manager.execute_thread_prints(thread_index)
 
 
 def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install,
