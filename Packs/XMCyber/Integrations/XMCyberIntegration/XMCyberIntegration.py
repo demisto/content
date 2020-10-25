@@ -227,21 +227,55 @@ class XM:
             'entityId': entity_id,
             'timeId': time_id
         })
-    
+
     def get_base_url(self):
+        writeLog(f"Base url is: {self.client.get_base_url()}")
         return self.client.get_base_url()
+
+    def get_entity_report_url(self, entityId, timeId=DEFAULT_TIME_ID):
+        return f"{self.get_base_url()}/#/scenarioHub/entityReport/{entityId}?timeId={timeId}"
+
+    def get_dashboard_url(self):
+        return f"{self.get_base_url()}/#/dashboard"
+
+    def get_technique_url(self, technique, timeId=DEFAULT_TIME_ID):
+        return f"{self.get_base_url()}/#/scenarioHub/systemReport/attackTechniques/{technique}?timeId={timeId}"
+
+    def get_link_for_report(self, event_type, data):
+        if event_type == EVENT_NAME.AssetAtRisk or event_type == EVENT_NAME.ChokePoint:
+            return self.get_entity_report_url(data["entityId"])
+
+        if event_type == EVENT_NAME.TopTechnique:
+            return self.get_technique_url(data["technique"])
+
+        if event_Type == EVENT_NAME.RiskScore:
+            return self.get_dashboard_url()
+
+        return ''
+
+    def create_xm_event(self, name, data, date = None):
+        if date is None:
+            date = datetime.now()
+
+        data["name"] = f'{EVENT_NAME.EventPrefix}{name}'
+        data["create_time"] = timestamp_to_datestring(date.timestamp() * 1000) # CommonServerPython.timestamp_to_datestring(date)
+        data["type"] = XM_CYBER_INCIDENT_TYPE # TODO - add to PR
+        data["severity"] = SEVERITY.Informational
+        data["linkToReport"] = self.get_link_for_report(name, data)
+
+        return data
 
     def _create_event_for_risk_score(self, events):
         risk_score = self.risk_score()
         trend = risk_score["trend"]
         if trend is not None and trend != '' and trend > 0: # < 0:
-            events.append(create_xm_event(EVENT_NAME.RiskScore, risk_score))
+            events.append(self.create_xm_event(EVENT_NAME.RiskScore, risk_score))
 
     def _create_events_from_top_dashboard(self, events_array, top_list, event_name):
         for top in top_list:
             trend = top["trend"]
             if trend is not None and trend != '' and int(trend) >= 0: # < 0:
-                events_array.append(create_xm_event(event_name, top))
+                events_array.append(self.create_xm_event(event_name, top))
 
     def _create_events_from_top_techniques(self, events_array, current_techniques, previous_techniques):
         for current_tech in current_techniques:
@@ -252,7 +286,7 @@ class XM:
                     break
 
             if previous_tech is None or current_tech["criticalAssets"] == previous_tech["criticalAssets"]: # should be >
-                events_array.append(create_xm_event(EVENT_NAME.TopTechnique, current_tech))
+                events_array.append(self.create_xm_event(EVENT_NAME.TopTechnique, current_tech))
 
     def get_fetch_incidents_events(self):
         events = []
@@ -318,16 +352,6 @@ def dates_diff_seconds(date1, date2):
     return (date1 - date2).total_seconds()
 
 
-def create_xm_event(name, data, date = None):
-    if date is None:
-        date = datetime.now()
-
-    data["name"] = f'{EVENT_NAME.EventPrefix}{name}'
-    data["create_time"] = timestamp_to_datestring(date.timestamp() * 1000) # CommonServerPython.timestamp_to_datestring(date)
-    data["type"] = XM_CYBER_INCIDENT_TYPE # TODO - add to PR
-    data["severity"] = SEVERITY.Informational
-
-    return data
 
 
 def path_to_compromising_technique(path: Any):
@@ -528,17 +552,16 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 'name': event['name'],
                 'occurred': event['create_time'],
                 'rawJson': json.dumps(event),
-                'trend': 4,
-                'xmcyberriskscoretrend': 1,
                 'type': event['type'],
                 # 'severity': event["severity"]
             }
             incidents.append(incident)
 
         writeLog(f'Finish incidents: {len(incidents)}')
-        demisto.setLastRun({
-            'start_time': datetime.now().isoformat()
-        })
+        if len(incidents) > 0:
+            demisto.setLastRun({
+                'start_time': datetime.now().isoformat()
+            })
 
         writeLog(f'Finish set last run')
         demisto.incidents(incidents)
@@ -733,6 +756,15 @@ def entity_get_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
         outputs=xm_data_list
     )
 
+
+def get_base_url(xm: XM, args: Dict[str, Any]) -> CommandResults:
+    return CommandResults(
+        readable_output=xm.get_base_url(),
+        outputs_prefix='XMCyber',
+        outputs_key_field='url',
+        outputs=xm.get_base_url()
+    )
+
 ''' MAIN FUNCTION '''
 
 
@@ -775,6 +807,7 @@ def main() -> None:
             "xmcyber-affected-critical-assets-list": affected_critical_assets_list_command,
             "xmcyber-affected-entities-list": affected_entities_list_command,
             "xmcyber-entity-get": entity_get_command,
+            "xmcyber-get-base-url": get_base_url,
             # Common commands
             "ip": ip_command,
             "hostname": hostname_command

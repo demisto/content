@@ -36,12 +36,12 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: '10'
+- defaultvalue: '30'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
-- defaultvalue: 7 days
+- defaultvalue: ''
   display: First fetch
   name: first_fetch
   required: false
@@ -314,6 +314,13 @@ script:
       - contextPath: Host.Processors
         description: The number of processors that the host is using.
         type: Number
+
+  - name: xmcyber-get-base-url
+    description: Get current xm version
+    outputs:
+      - contextPath: XMCyber.Version.system
+        description: 'Get current base url'
+        type: String
 
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: true
