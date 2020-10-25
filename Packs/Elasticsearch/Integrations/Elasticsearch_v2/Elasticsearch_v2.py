@@ -302,7 +302,7 @@ def test_general_query(es):
 
     except NotFoundError as e:
         return_error("Failed executing general search command - please check the Server URL and port number "
-                     "and the supplied credentials.\nError message: {}.".format(str(e).split(',')[2][2:-1]))
+                     "and the supplied credentials.\nError message: {}.".format(str(e)))
 
 
 def test_time_field_query(es):
