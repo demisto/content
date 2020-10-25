@@ -1,7 +1,7 @@
 {
  "description": "Default Mapping for Qradar Offenses, Events, and Assets.",
  "feed": false,
- "id": "9821d7f5-870a-49fd-8014-f0614ae70d43",
+ "id": "QRadar - Generic Incoming Mapper",
  "mapping": {
   "Access": {
    "dontMapEventToLabels": false,
