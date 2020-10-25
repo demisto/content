@@ -2160,7 +2160,6 @@ def main():
         if demisto.command() == 'fetch-incidents':
             LOG(str(err))
             raise
-        demisto.debug(f'last_run: {demisto.getLastRun()}')
         demisto.error(traceback.format_exc())
         return_error(str(err))
 
