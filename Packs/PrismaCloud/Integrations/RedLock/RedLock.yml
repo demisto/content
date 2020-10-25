@@ -55,71 +55,71 @@ script:
   subtype: python2
   commands:
   - name: redlock-get-rql-response
-    description: Run RQL query on Prisma Cloud
+    description: Runs an RQL query on the Prisma Cloud.
     arguments:
     - name: limit
       required: false
       default: false
       isArray: false
-      description: "determines the limit on the results. '; limit search records to {}' is appended to every query where {} is the value of limit or 1 if not passed"
+      description: "The maximum number of records to return. '; limit search records to {}' is appended to every query where {} is the maximum number of records to return. If no value is provided, only 1 record is returned."
     - name: rql  
       required: true
       default: false
       isArray: false
-      description: "the RQL query to run. Example RQL queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1."
+      description: "The RQL query to run. Examples of RQL queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1."
     outputs:
     - contextPath: Redlock.RQL.cloudType
-      description: The cloud type
+      description: The cloud type.
       type: String
     - contextPath: Redlock.RQL.data.nextPageToken
-      description: The next page token
+      description: The next page token.
       type: String
     - contextPath: Redlock.RQL.data.totalRows
-      description: Total rows returned by the query
+      description: The total number of rows returned by the query.
       type: Number
     - contextPath: Redlock.RQL.description
-      description: The RQL description
+      description: The RQL description.
       type: String
     - contextPath: Redlock.RQL.id
-      description: The Policy ID
+      description: The policy ID.
       type: String
     - contextPath: Redlock.RQL.name
-      description: The name
+      description: The name.
       type: String
     - contextPath: Redlock.RQL.query
-      description: The RQL query
+      description: The RQL query that was run.
       type: String
     - contextPath: Redlock.RQL.saved
-      description: Boolean for if saved
+      description: Boolean for if saved.
       type: Number
     - contextPath: Redlock.RQL.searchType
-      description: The RQL search type
+      description: The RQL search type.
       type: String
     - contextPath: Redlock.RQL.timeRange.type
-      description: The timerange type
+      description: The time range type.
       type: String
     - contextPath: Redlock.RQL.timeRange.value.endTime
-      description: The endtime of the time range
+      description: The end time of the time range.
       type: Date
     - contextPath: Redlock.RQL.timeRange.value.startTime
-      description: The starttime of the time range
+      description: The start time of the time range.
       type: Date
   - name: redlock-remediate-alerts
-    description: Remediate alerts in Prisma Cloud
+    description: Remediate alerts in Prisma Cloud.
     arguments:
     - name: alert-id
       required: true
       default: false
       isArray: true
-      description: The alert id to remediate. You can retrieve alerts using the redlock-search-alerts command
+      description: The ID of the alert to remediate. You can retrieve alerts using the redlock-search-alerts command.
   - name: redlock-search-alerts
     arguments:
     - name: time-range-date-from
-      description: Start time for search in the following string format -  MM/DD/YYYY
+      description: The start date for which to search in the following format - MM/DD/YYYY
     - name: time-range-date-to
-      description: End time for search in the following format -  MM/DD/YYYY
+      description: The end date for which to search in the following format - MM/DD/YYYY
     - name: time-range-value
-      description: The amount of units to go back in time
+      description: The number of units to search.
     - name: time-range-unit
       auto: PREDEFINED
       predefined:
@@ -130,7 +130,7 @@ script:
       - year
       - login
       - epoch
-      description: The search unit. login and epoch are only available if timeRangeValue is not provided.
+      description: 'The time range unit. Possible values are: "hour", "day", "week", "month", "year", "login", and "epoch". "login" and "epoch" are only available if time-range-value is not provided.'
     - name: policy-name
       auto: PREDEFINED
       predefined:
@@ -164,40 +164,40 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      description: The policy name
+      description: The policy name.
     - name: policy-label
-      description: The policy label
+      description: The policy label.
     - name: policy-compliance-standard
-      description: The policy compliance standard
+      description: The policy compliance standard.
     - name: cloud-account
-      description: The cloud account
+      description: The cloud account.
     - name: cloud-region
-      description: The cloud region
+      description: The cloud region.
     - name: alert-rule-name
-      description: The alert rule name
+      description: The alert rule name.
     - name: resource-id
-      description: The resource ID
+      description: The resource ID.
     - name: resource-name
-      description: The resource name
+      description: The resource name.
     - name: resource-type
-      description: The resource type
+      description: The resource type.
     - name: alert-status
       auto: PREDEFINED
       predefined:
       - open
       - resolved
       - dismissed
-      description: The alert status
+      description: 'The alert status. Possible values are: "open", "resolved", and "dismissed". Default is "open".'
       defaultValue: open
     - name: alert-id
-      description: The alert ID
+      description: The alert ID.
     - name: cloud-type
       auto: PREDEFINED
       predefined:
       - aws
       - azure
       - gcp
-      description: The cloud type
+      description: 'The cloud type. Possible values are: "aws", "azure", and "gcp".'
     - name: risk-grade
       auto: PREDEFINED
       predefined:
@@ -205,7 +205,7 @@ script:
       - B
       - C
       - F
-      description: The risk grade
+      description: 'The risk grade. Possible values are: "A", "B", "C", and "F".'
     - name: policy-type
       auto: PREDEFINED
       predefined:
@@ -213,49 +213,49 @@ script:
       - audit_event
       - config
       - network
-      description: The policy type
+      description: 'The policy type. Possible values are: "high", "medium", and "low".'
     - name: policy-severity
       auto: PREDEFINED
       predefined:
       - high
       - medium
       - low
-      description: The policy severity
+      description: The policy severity.
     outputs:
     - contextPath: Redlock.Alert.ID
-      description: ID of returned alert
+      description: The ID of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Status
-      description: Status of returned alert
+      description: The status of the returned alert.
       type: string
     - contextPath: Redlock.Alert.AlertTime
-      description: Time of alert
+      description: The time of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.ID
-      description: The policy ID
+      description: The policy ID of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.Name
-      description: The policy name
+      description: The policy name of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.Type
-      description: The policy type
+      description: The policy type of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.Severity
-      description: The policy severity
+      description: The policy severity of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.Remediable
-      description: Whether or not the policy is remediable
+      description: Whether or not the policy is remediable.
       type: boolean
     - contextPath: Redlock.Alert.RiskDetail.Rating
-      description: The risk rating
+      description: The risk rating of the returned alert.
       type: string
     - contextPath: Redlock.Alert.RiskDetail.Score
-      description: The risk score
+      description: The risk score of the returned alert.
       type: string
     - contextPath: Redlock.Metadata.CountOfAlerts
-      description: The number of alerts found
+      description: The number of alerts found.
       type: number
-    description: Search alerts on the Prisma Cloud (RedLock) platform
+    description: Search alerts on the Prisma Cloud (RedLock) platform.
   - name: redlock-get-alert-details
     arguments:
     - name: alert-id
