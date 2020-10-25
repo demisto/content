@@ -251,17 +251,17 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                         print(pack_data.get('id'))
                         pass
 
-                    if 200 <= status_code < 300:
-                        message = f'The pack {pack_data.get("id")} successfully installed!\n'
-                        prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
-                                                     include_timestamp=True)
-                    else:
-                        result_object = ast.literal_eval(response_data)
-                        message = result_object.get('message', '')
-                        err_msg = f'Failed to install pack {pack_data.get("id")} - with status code {status_code}\n' \
-                            f'{message}\n'
-                        prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-                        raise Exception(err_msg)
+                if 200 <= status_code < 300:
+                    message = f'The pack {pack} successfully installed!\n'
+                    prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                                 include_timestamp=True)
+                else:
+                    result_object = ast.literal_eval(response_data)
+                    message = result_object.get('message', '')
+                    err_msg = f'Failed to install pack {pack} - with status code {status_code}\n' \
+                        f'{message}\n'
+                    prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+                    raise Exception(err_msg)
             except Exception as e:
                 err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
                 prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
