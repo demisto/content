@@ -4,7 +4,7 @@
  "modified": "2020-09-29T12:45:24.182324577Z",
  "name": "Event Action",
  "ownerOnly": false,
- "description": " Action taken on user accounts - Create, Update, Deactivate, Reactivate",
+ "description": "Action taken on user accounts - Create, Update, Deactivate, Reactivate",
  "cliName": "eventaction",
  "type": "singleSelect",
  "closeForm": false,
