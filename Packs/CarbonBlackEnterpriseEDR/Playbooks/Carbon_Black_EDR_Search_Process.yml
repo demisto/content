@@ -154,15 +154,6 @@ tasks:
       job_id:
         complex:
           root: CarbonBlackEEDR.SearchProcess
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: CarbonBlackEEDR.SearchProcess.status
-                iscontext: true
-              right:
-                value:
-                  simple: Completed
           accessor: job_id
     separatecontext: false
     view: |-
