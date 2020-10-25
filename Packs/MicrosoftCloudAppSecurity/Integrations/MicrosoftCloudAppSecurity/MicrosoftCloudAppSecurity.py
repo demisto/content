@@ -526,7 +526,8 @@ def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time, last_run)
             'rawJSON': json.dumps(alert)
         }
         new_last_incident_fetched = alert['_id']
-        incidents.append(incident)
+        if new_last_incident_fetched != last_incident_fetched:
+            incidents.append(incident)
         if incident_created_time > fetch_start_time:
             fetch_start_time = incident_created_time
     return incidents, fetch_start_time, new_last_incident_fetched
