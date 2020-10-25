@@ -32,7 +32,9 @@
   "columns": null,
   "placeholder": "",
   "useAsKpi": false,
-  "systemAssociatedTypes": null,
+  "systemAssociatedTypes":[
+    "User Profile"
+  ],
   "prevName": "Username",
   "locked": false,
   "name": "Username",
