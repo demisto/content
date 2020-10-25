@@ -1,6 +1,6 @@
 args:
 - default: false
-  defaultValue: Generate_AD_Password
+  defaultValue: GeneratePassword
   description: The generate password script.
   isArray: false
   name: pwdGenerationScript
