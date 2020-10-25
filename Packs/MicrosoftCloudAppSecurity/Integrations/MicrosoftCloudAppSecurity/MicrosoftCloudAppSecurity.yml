@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: MicrosoftCloudAppSecurity
+  id: MicrosoftCloudAppSecurity_test
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
@@ -66,8 +66,8 @@ configuration:
   required: false
   type: 0
 description: Microsoft Cloud App Security is a multimode Cloud Access Security Broker (CASB). It provides rich visibility, control over data travel, and sophisticated analytics to identify and combat cyber threats across all your cloud services. Use the integration to view and resolve alerts, view activities, view files, and view user accounts.
-display: Microsoft Cloud App Security
-name: MicrosoftCloudAppSecurity
+display: Microsoft Cloud App Security_test
+name: MicrosoftCloudAppSecurity_test
 script:
   commands:
   - arguments:
@@ -834,7 +834,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
   longRunning: false
