@@ -230,28 +230,32 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
         prints_manager.execute_thread_prints(thread_index)
 
+        request_data = {
+            'packs': packs_to_install,
+            'ignoreWarnings': True
+        }
+
         # make the pack installation request
-        for pack in packs_to_install:
-            request_data = {
-                'packs': [pack],
-                'ignoreWarnings': True
-            }
-            try:
-                response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                    path='/contentpacks/marketplace/install',
-                                                                                    method='POST',
-                                                                                    body=request_data,
-                                                                                    accept='application/json',
-                                                                                    _request_timeout=request_timeout)
-                results = ast.literal_eval(response_data)
-                for pack_data in results:
-                    print(pack_data)
-                    # If the pack already installed, and the current version is the right one, ignore it.
-                    if pack not in results:
-                        print(pack)
-                        continue
-                    else:
-                        print(f'Skipping {pack} since already installed.')
+        if is_nightly:
+            for pack in packs_to_install:
+                request_data = {
+                    'packs': [pack],
+                    'ignoreWarnings': True
+                }
+        try:
+            response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                                path='/contentpacks/marketplace/install',
+                                                                                method='POST',
+                                                                                body=request_data,
+                                                                                accept='application/json',
+                                                                                _request_timeout=request_timeout)
+            results = ast.literal_eval(response_data)
+            # If the pack already installed, and the current version is the right one, ignore it.
+            for pack in packs_to_install:
+                if pack not in results:
+                    continue
+                else:
+                    print(f'Skipping {pack} since already installed.')
 
                 if 200 <= status_code < 300:
                     message = f'The pack {pack} successfully installed!\n'
@@ -264,14 +268,15 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                         f'{message}\n'
                     prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
                     raise Exception(err_msg)
-            except Exception as e:
-                err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
-                prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
 
-                global SUCCESS_FLAG
-                SUCCESS_FLAG = False
-            finally:
-                prints_manager.execute_thread_prints(thread_index)
+        except Exception as e:
+            err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
+            prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+
+            global SUCCESS_FLAG
+            SUCCESS_FLAG = False
+        finally:
+            prints_manager.execute_thread_prints(thread_index)
 
 
 def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install,
@@ -331,7 +336,7 @@ def install_all_content_packs(client, host, prints_manager, thread_index=0):
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if pack_id not in IGNORED_FILES:
             add_pack_to_installation_request(pack_id, all_packs)
-    install_packs(client, host, prints_manager, thread_index, all_packs)
+    install_packs(client, host, prints_manager, thread_index, all_packs, is_nightly=True)
 
 
 def upload_zipped_packs(client, host, prints_manager, thread_index, pack_path):
