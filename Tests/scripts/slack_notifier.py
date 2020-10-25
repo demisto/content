@@ -99,7 +99,7 @@ def get_entities_fields(entity_title, report_file_name='', job_name=""):
     entity_fields = []
     if job_name:
         return [{
-            "title": f'{job_name} job failed',
+            "title": f'Job Failed: {job_name}',
             "value": '',
             "short": False
         }, {

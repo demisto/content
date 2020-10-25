@@ -165,7 +165,6 @@ references:
         python --version
         python3 --version
         demisto-sdk --version
-        exit 1
 
   download_configuration: &download_configuration
     run:
@@ -507,12 +506,6 @@ jobs:
       - checkout
       - *restore_cache
       - *prepare_environment
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Setup Environment'
-          when: always
       - save_cache:
           paths:
             - venv
