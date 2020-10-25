@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: EmailRep
+  id: EmailRepTest
   version: -1
 configuration:
 - defaultvalue: https://emailrep.io
@@ -22,8 +22,8 @@ configuration:
   required: false
   type: 8
 description: EmailRep Provides email address reputation and reports.
-display: EmailRep
-name: EmailRep
+display: EmailRepTest
+name: EmailRepTest
 script:
   commands:
   - arguments:
