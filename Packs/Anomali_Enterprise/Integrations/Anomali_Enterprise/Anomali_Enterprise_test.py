@@ -19,7 +19,7 @@ def test_domain_command_benign(mocker):
     return_data = {'data': {'test.com': {'malware_family': '', 'probability': 0}}, 'result': 'success'}
     mocker.patch.object(client, 'domain_request', return_value=return_data)
     command_results = domain_command(client, args={'domain': 'test.com'})
-    output = command_results.to_context().get('EntryContext', {})
+    output = command_results[0].to_context().get('EntryContext', {})
     dbot_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
                ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
     expected_result = {
@@ -59,7 +59,7 @@ def test_domain_command_suspicious(mocker):
                    'result': 'success'}
     mocker.patch.object(client, 'domain_request', return_value=return_data)
     command_results = domain_command(client, args={'domain': 'suspicious.com'})
-    output = command_results.to_context().get('EntryContext', {})
+    output = command_results[0].to_context().get('EntryContext', {})
     dbot_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
                ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
     expected_result = {
@@ -97,7 +97,7 @@ def test_domain_command_malicious(mocker):
     return_data = {'data': {'malicious.com': {'malware_family': 'my_malware', 'probability': 0.9}}, 'result': 'success'}
     mocker.patch.object(client, 'domain_request', return_value=return_data)
     command_results = domain_command(client, args={'domain': 'malicious.com'})
-    output = command_results.to_context().get('EntryContext', {})
+    output = command_results[0].to_context().get('EntryContext', {})
     dbot_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
                ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
     expected_result = {

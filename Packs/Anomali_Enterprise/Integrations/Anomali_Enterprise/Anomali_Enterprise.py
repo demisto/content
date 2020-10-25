@@ -1,4 +1,4 @@
-from typing import Dict, Callable
+from typing import Dict
 
 import urllib3
 from CommonServerPython import *
@@ -32,7 +32,7 @@ class Client(BaseClient):
             Response from API.
         """
         data = {'username': self._username, 'password': self._password, 'from': from_, 'to': to_,
-                           'indicators': indicators}
+                'indicators': indicators}
         return self._http_request(method='POST', url_suffix='/api/v1/mars/forensic', headers=self._headers,
                                   json_data=data)
 
@@ -181,7 +181,7 @@ def dga_domain_status(client: Client, args: dict) -> CommandResults:
     )
 
 
-def domain_command(client: Client, args: dict) -> CommandResults:
+def domain_command(client: Client, args: dict) -> List[CommandResults]:
     """Search domain DGA status.
 
     Args:
@@ -191,39 +191,43 @@ def domain_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults and DBotScore.
     """
-    domain = str(args.get('domain'))
+    domain_list = argToList(args.get('domain'))
 
-    response = client.domain_request([domain])
+    response = client.domain_request(domain_list)
+    domains_data = response.get('data', {})
+    command_results_list = []
+    for domain in domain_list:
+        output = {
+            'domain': domain,
+            'malware_family': domains_data.get(domain, {}).get('malware_family'),
+            'probability': domains_data.get(domain, {}).get('probability')
+        }
+        score = calculate_dbot_score(domains_data.get(domain, {}))
 
-    domain_data = response.get('data', {})
-    output = {
-        'domain': domain,
-        'malware_family': domain_data.get(domain, {}).get('malware_family'),
-        'probability': domain_data.get(domain, {}).get('probability')
-    }
-    score = calculate_dbot_score(domain_data.get(domain, {}))
+        dbot_score = Common.DBotScore(
+            indicator=domain,
+            indicator_type=DBotScoreType.DOMAIN,
+            integration_name=VENDOR_NAME,
+            score=score,
+            malicious_description=str(output.get('malware_family', ''))
+        )
 
-    dbot_score = Common.DBotScore(
-        indicator=domain,
-        indicator_type=DBotScoreType.DOMAIN,
-        integration_name=VENDOR_NAME,
-        score=score,
-        malicious_description=str(output.get('malware_family', ''))
-    )
+        domain = Common.Domain(
+            domain=domain,
+            dbot_score=dbot_score,
+        )
 
-    domain = Common.Domain(
-        domain=domain,
-        dbot_score=dbot_score,
-    )
+        command_results = CommandResults(
+            outputs_prefix='AnomaliEnterprise.DGA',
+            outputs_key_field='domain',
+            outputs=output,
+            readable_output=tableToMarkdown(name="Domains DGA:", t=output, removeNull=True),
+            indicators=[domain],
+            raw_response=response
+        )
+        command_results_list.append(command_results)
 
-    return CommandResults(
-        outputs_prefix='AnomaliEnterprise.DGA',
-        outputs_key_field='domain',
-        outputs=output,
-        readable_output=tableToMarkdown(name="Domains DGA:", t=output, removeNull=True),
-        indicators=[domain],
-        raw_response=response
-    )
+    return command_results_list
 
 
 def calculate_dbot_score(domain_data: dict) -> int:
@@ -266,7 +270,7 @@ def main() -> None:
 
     try:
         client = Client(server_url=server_url, username=username, password=password, verify=verify, proxy=proxy)
-        commands: Dict[str, Callable[[Client, Dict[Any, Any]], CommandResults]] = {
+        commands = {
             'anomali-enterprise-retro-forensic-search': start_search_job,
             'anomali-enterprise-retro-forensic-search-results': get_search_job_result,
             'anomali-enterprise-dga-domain-status': dga_domain_status,
