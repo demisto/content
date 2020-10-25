@@ -155,11 +155,15 @@ args:
     - ''
   required: false
   secret: false
-- default: false
+- auto: PREDEFINED
+  default: false
   defaultValue: nlp
-  description: Tokenizer method for the model to use
+  description: Text pre-processing type. The default is "json".
   isArray: false
   name: preProcessType
+  predefined:
+    - nlp
+    - none
   required: false
   secret: false
 comment: Train a machine learning text classifier.
