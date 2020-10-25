@@ -940,9 +940,9 @@ def restart_server_legacy(server):
         print(exc.output)
 
 
-def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, is_private=False):
+def get_tests(server_numeric_version, prints_manager, tests):
     if Build.run_environment == Running.CIRCLECI_RUN:
-        filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
+        filtered_tests, filter_configured, run_all_tests = extract_filtered_tests()
         if run_all_tests:
             # skip test button testing
             skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(
@@ -1287,8 +1287,7 @@ def main():
     else:
         installed_content_packs_successfully = True
 
-    tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly,
-                                    build.is_private)
+    tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests)
     new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
     all_module_instances, brand_new_integrations = \
         configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)

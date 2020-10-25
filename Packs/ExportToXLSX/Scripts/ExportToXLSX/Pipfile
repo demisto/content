@@ -4,10 +4,13 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pylint = "*"
+pytest = "==5.0.1"
+flake8 = "*"
+pytest-mock = "*"
 
 [packages]
-pygithub = "*"
-requests = "*"
+xlsxwriter = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"

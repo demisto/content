@@ -1588,6 +1588,45 @@ class TestBaseClient:
         with raises(DemistoException, match='- {}\n.*{}'.format(reason, json_response["error"])):
             self.client._http_request('get', 'event', resp_type='text')
 
+    def test_exception_response_json_parsing_when_ok_code_is_invalid(self, requests_mock):
+        from CommonServerPython import DemistoException
+        reason = 'Bad Request'
+        json_response = {'error': 'additional text'}
+        requests_mock.get('http://example.com/api/v2/event',
+                          status_code=400,
+                          reason=reason,
+                          json=json_response)
+        try:
+            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+        except DemistoException as e:
+            assert e.res.get('error') == 'additional text'
+
+    def test_exception_response_text_parsing_when_ok_code_is_invalid(self, requests_mock):
+        from CommonServerPython import DemistoException
+        reason = 'Bad Request'
+        text_response = '{"error": "additional text"}'
+        requests_mock.get('http://example.com/api/v2/event',
+                          status_code=400,
+                          reason=reason,
+                          text=text_response)
+        try:
+            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+        except DemistoException as e:
+            assert e.res.get('error') == 'additional text'
+
+    def test_exception_response_parsing_fails_when_ok_code_is_invalid(self, requests_mock):
+        from CommonServerPython import DemistoException
+        reason = 'Bad Request'
+        text_response = 'Bad Request'
+        requests_mock.get('http://example.com/api/v2/event',
+                          status_code=400,
+                          reason=reason,
+                          text=text_response)
+        try:
+            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+        except DemistoException as e:
+            assert isinstance(e.res, dict) and not e.res
+
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
         from CommonServerPython import BaseClient
@@ -2469,6 +2508,31 @@ def test_set_latest_integration_context(mocker):
     assert int_context_calls == 2
     assert int_context_args_1 == (int_context['context'], True, int_context['version'])
     assert int_context_args_2 == (int_context['context'], True, int_context['version'] + 1)
+
+
+def test_set_latest_integration_context_es(mocker):
+    import CommonServerPython
+
+    # Set
+    mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
+    mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
+    es_inv_context_version_first = {'version': 5, 'sequenceNumber': 807, 'primaryTerm': 1}
+    es_inv_context_version_second = {'version': 7, 'sequenceNumber': 831, 'primaryTerm': 1}
+    mocker.patch.object(CommonServerPython, 'update_integration_context',
+                        side_effect=[({}, es_inv_context_version_first),
+                                     ({}, es_inv_context_version_second)])
+    mocker.patch.object(CommonServerPython, 'set_integration_context', side_effect=[ValueError, {}])
+
+    # Arrange
+    CommonServerPython.set_to_integration_context_with_retries({})
+    int_context_calls = CommonServerPython.set_integration_context.call_count
+    int_context_args_1 = CommonServerPython.set_integration_context.call_args_list[0][0]
+    int_context_args_2 = CommonServerPython.set_integration_context.call_args_list[1][0]
+
+    # Assert
+    assert int_context_calls == 2
+    assert int_context_args_1[1:] == (True, es_inv_context_version_first)
+    assert int_context_args_2[1:] == (True, es_inv_context_version_second)
 
 
 def test_set_latest_integration_context_fail(mocker):
