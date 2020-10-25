@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import random
+import re
 import sys
 from copy import deepcopy
 from distutils.version import LooseVersion
@@ -17,7 +18,7 @@ from typing import Dict, Tuple, List
 import coloredlogs
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import YML_SCRIPT_REGEXES, YML_PLAYBOOKS_NO_TESTS_REGEXES, \
-    YML_INTEGRATION_REGEXES, API_MODULE_REGEXES, RUN_ALL_TESTS_FORMAT
+    YML_INTEGRATION_REGEXES, API_MODULE_REGEXES, RUN_ALL_TESTS_FORMAT, PACKS_DIR, YML_TEST_PLAYBOOKS_REGEXES
 
 import Tests.scripts.utils.collect_helpers as collect_helpers
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
@@ -399,7 +400,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
     for file_path in modified_files:
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
-            if test in test_ids or collect_helpers.re.match(collect_helpers.NO_TESTS_FORMAT, test, collect_helpers.re.IGNORECASE):
+            if test in test_ids or re.match(collect_helpers.NO_TESTS_FORMAT, test, re.IGNORECASE):
                 if collect_helpers.checked_type(file_path, collect_helpers.INTEGRATION_REGEXES):
                     _id = tools.get_script_or_integration_id(file_path)
 
@@ -826,12 +827,12 @@ def get_test_from_conf(branch_name, conf=deepcopy(CONF)):
     tests = set([])
     changed = set([])
     change_string = tools.run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
-    added_groups = collect_helpers.re.findall(r'(\+[ ]+")(.*)(":)', change_string)
+    added_groups = re.findall(r'(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
             changed.add(group[1])
 
-    deleted_groups = collect_helpers.re.findall(r'(-[ ]+")(.*)(":)', change_string)
+    deleted_groups = re.findall(r'(-[ ]+")(.*)(":)', change_string)
     if deleted_groups:
         for group in deleted_groups:
             changed.add(group[1])
@@ -946,7 +947,7 @@ def get_random_tests(tests_num, rand, conf=deepcopy(CONF), id_set=deepcopy(ID_SE
 def get_tests_for_pack(pack_path):
     pack_yml_files = tools.get_files_in_dir(pack_path, ['yml'])
     pack_test_playbooks = [tools.collect_ids(file) for file in pack_yml_files if
-                           collect_helpers.checked_type(file, collect_helpers.YML_TEST_PLAYBOOKS_REGEXES)]
+                           collect_helpers.checked_type(file, YML_TEST_PLAYBOOKS_REGEXES)]
     return pack_test_playbooks
 
 
@@ -1184,12 +1185,12 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     if is_nightly:
         all_tests = set(CONF.get_test_playbook_ids())
         # adding "Run all tests" which is required in test_content.extract_filtered_tests() for the nightly
-        all_tests.add(collect_helpers.RUN_ALL_TESTS_FORMAT)
-        packs_to_install = set(filter(should_test_content_pack, os.listdir(collect_helpers.PACKS_DIR)))
+        all_tests.add(RUN_ALL_TESTS_FORMAT)
+        packs_to_install = set(filter(should_test_content_pack, os.listdir(PACKS_DIR)))
         tests = remove_ignored_tests(all_tests, packs_to_install)
     else:
         branches = tools.run_command("git branch")
-        branch_name_reg = collect_helpers.re.search(r"\* (.*)", branches)
+        branch_name_reg = re.search(r"\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
 
         logging.info("Getting changed files from the branch: {0}".format(branch_name))
