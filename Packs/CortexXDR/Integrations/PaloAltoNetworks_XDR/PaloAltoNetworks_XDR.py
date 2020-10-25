@@ -966,25 +966,32 @@ def get_incidents_command(client, args):
     )
 
 
-def get_incident_extra_data_command(client, args, return_only_updated_incident=False):
+def get_incident_extra_data_command(client, args):
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
+    return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
 
     if return_only_updated_incident:
+        # demisto_incident = json.dumps(demisto.incident(), indent=4)
+        demisto_incident = demisto.incident()
+        labels = demisto_incident.get('labels')
+        # return_error(demisto_incident.get('labels'))
+        for label in labels:
+            if label.get('type') == 'lastMirroredIn':
+                last_mirrored_time = label.get('value')
         last_modified_incidents = get_integration_context().get('modified_incidents', {})
 
         demisto.debug(f"integration context: {last_modified_incidents}\n")  # type:ignore
 
         if incident_id in last_modified_incidents:  # search the incident in the dict of modified incidents
-            demisto_incident = json.dumps(demisto.incident())
 
-            return_error(demisto_incident)
             current_incident_modified_time = int(str(last_modified_incidents[incident_id]))
 
             demisto.debug(f"XDR incident {incident_id}\n"  # type:ignore
                           f"modified time: {current_incident_modified_time}\n"
-                          f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
+                          f"last mirrored time: {last_mirrored_time}")
 
+            return_error("after time comparison")
             # if arg_to_timestamp(current_incident_modified_time, 'last_modified') > \
             #         arg_to_timestamp(remote_args.last_update, 'last_update'):   # need to update this incident
 
@@ -2003,6 +2010,7 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
 
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
             incident_data['mirror_instance'] = demisto.integrationInstance()
+            incident_data['last_mirrored_in'] = int(datetime.now().timestamp()*1000)
 
             description = raw_incident.get('description')
             occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
@@ -2010,8 +2018,6 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
                 'name': f'#{incident_id} - {description}',
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
-                'last_mirrored_in': datetime.now().isoformat()
-
             }
 
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):

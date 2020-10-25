@@ -201,9 +201,8 @@ def get_latest_incident_from_xdr(incident_id):
     # get the latest incident from xdr
     latest_incident_in_xdr_result = demisto.executeCommand("xdr-get-incident-extra-data",
                                                            {"incident_id": incident_id,
-                                                            "return_only_updated_incident": True})
+                                                            "return_only_updated_incident": 'True'})
 
-    return_error('Done with extra data')
     if not latest_incident_in_xdr_result:
         return {}, {}, {}
     elif is_error(latest_incident_in_xdr_result):
@@ -232,8 +231,14 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
                       xdr_file_artifacts_field, xdr_network_artifacts_field, incident_in_demisto, playbook_to_run,
                       verbose=True):
 
+    latest_incident_in_xdr_result, latest_incident_in_xdr, latest_incident_in_xdr_markdown = \
+        get_latest_incident_from_xdr(incident_id)
+
+    return_error('Script- here')
     if first_run:
-        xdr_incident_from_previous_run = create_incident_from_saved_data()
+        xdr_incident_from_previous_run = latest_incident_in_xdr
+    # if first_run:
+    #     xdr_incident_from_previous_run = create_incident_from_saved_data()
 
     else:
         if xdr_incident_from_previous_run:
@@ -390,26 +395,26 @@ def main(args):
 
         demisto.error(traceback.format_exc())
         return_error(str(e), e)
-    finally:
-        # even if error occurred keep trigger sync
-        if latest_incident_in_xdr is None:
-            args = args_to_str(args, xdr_incident_from_previous_run)
-        else:
-            args = args_to_str(args, latest_incident_in_xdr)
-
-        res = demisto.executeCommand("ScheduleCommand", {
-            'command': '''!XDRSyncScript {}'''.format(args),
-            'cron': '*/{} * * * *'.format(interval),
-            'times': 1
-        })
-
-        if is_error(res):
-            # return the error entries to warroom
-            demisto.results(res)
-            return
-
-        scheduled_task_id = res[0]["Contents"].get("id")
-        demisto.setContext("XDRSyncScriptTaskID", scheduled_task_id)
+    # finally:
+    #     # even if error occurred keep trigger sync
+    #     if latest_incident_in_xdr is None:
+    #         args = args_to_str(args, xdr_incident_from_previous_run)
+    #     else:
+    #         args = args_to_str(args, latest_incident_in_xdr)
+    #
+    #     res = demisto.executeCommand("ScheduleCommand", {
+    #         'command': '''!XDRSyncScript {}'''.format(args),
+    #         'cron': '*/{} * * * *'.format(interval),
+    #         'times': 1
+    #     })
+    #
+    #     if is_error(res):
+    #         # return the error entries to warroom
+    #         demisto.results(res)
+    #         return
+    #
+    #     scheduled_task_id = res[0]["Contents"].get("id")
+    #     demisto.setContext("XDRSyncScriptTaskID", scheduled_task_id)
 
         if verbose:
             demisto.results("XDRSyncScriptTaskID: {}".format(scheduled_task_id))
