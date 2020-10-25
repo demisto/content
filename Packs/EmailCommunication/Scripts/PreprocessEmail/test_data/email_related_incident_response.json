@@ -1,0 +1,396 @@
+{
+    "CustomFields": {
+        "attachmentcount": 0,
+        "attachmentextension": "",
+        "attachmentid": "",
+        "attachmentname": "",
+        "attachmentsize": "",
+        "attachmenttype": "",
+        "detectionsla": {
+            "accumulatedPause": 0,
+            "breachTriggered": false,
+            "dueDate": "0001-01-01T00:00:00Z",
+            "endDate": "0001-01-01T00:00:00Z",
+            "lastPauseDate": "0001-01-01T00:00:00Z",
+            "runStatus": "idle",
+            "sla": 20,
+            "slaStatus": -1,
+            "startDate": "0001-01-01T00:00:00Z",
+            "totalDuration": 0
+        },
+        "emailbody": "Hi there sup sup\r\n",
+        "emailcc": "",
+        "emailfrom": "bgenish@paloaltonetworks.com",
+        "emailhtml": "\u003chtml\u003e\u003chead\u003e\r\n\u003cmeta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"\u003e\u003c/head\u003e\u003cbody\u003e\u003cdiv dir=\"ltr\"\u003eHi there sup sup\u003c/div\u003e\u003c/body\u003e\u003c/html\u003e",
+        "emailmessageid": "\u003cCAOGpW8nUaHpcSfXngLV-cdNZYn5JUaU=hg0NkQ0hWsmJyFXgvg@mail.gmail.com\u003e",
+        "emailreceived": "avishai@demistodev.onmicrosoft.com",
+        "emailreturnpath": "bgenish@paloaltonetworks.com",
+        "emailsize": 61737,
+        "emailsubject": "Final test",
+        "emailto": "avishai@demistodev.onmicrosoft.com",
+        "emailtocount": "1",
+        "remediationsla": {
+            "accumulatedPause": 0,
+            "breachTriggered": false,
+            "dueDate": "0001-01-01T00:00:00Z",
+            "endDate": "0001-01-01T00:00:00Z",
+            "lastPauseDate": "0001-01-01T00:00:00Z",
+            "runStatus": "idle",
+            "sla": 7200,
+            "slaStatus": -1,
+            "startDate": "0001-01-01T00:00:00Z",
+            "totalDuration": 0
+        },
+        "timetoassignment": {
+            "accumulatedPause": 0,
+            "breachTriggered": false,
+            "dueDate": "0001-01-01T00:00:00Z",
+            "endDate": "0001-01-01T00:00:00Z",
+            "lastPauseDate": "0001-01-01T00:00:00Z",
+            "runStatus": "idle",
+            "sla": 0,
+            "slaStatus": -1,
+            "startDate": "0001-01-01T00:00:00Z",
+            "totalDuration": 0
+        },
+        "urlsslverification": []
+    },
+    "ShardID": 0,
+    "account": "",
+    "activated": "0001-01-01T00:00:00Z",
+    "allRead": false,
+    "allReadWrite": false,
+    "attachment": null,
+    "autime": 1603280327579852000,
+    "canvases": null,
+    "category": "",
+    "closeNotes": "",
+    "closeReason": "",
+    "closed": "0001-01-01T00:00:00Z",
+    "closingUserId": "",
+    "created": "2020-10-21T14:38:47.579852+03:00",
+    "dbotCreatedBy": "",
+    "dbotCurrentDirtyFields": null,
+    "dbotDirtyFields": null,
+    "dbotMirrorDirection": "",
+    "dbotMirrorId": "",
+    "dbotMirrorInstance": "",
+    "dbotMirrorLastSync": "0001-01-01T00:00:00Z",
+    "dbotMirrorTags": null,
+    "details": "Hi there sup sup\r\n",
+    "droppedCount": 0,
+    "dueDate": "0001-01-01T00:00:00Z",
+    "feedBased": false,
+    "hasRole": false,
+    "id": "119",
+    "investigationId": "119",
+    "isPlayground": false,
+    "labels": [
+        {
+            "type": "Email/subject",
+            "value": "Final test"
+        },
+        {
+            "type": "Email",
+            "value": "avishai@demistodev.onmicrosoft.com"
+        },
+        {
+            "type": "Email/from",
+            "value": "bgenish@paloaltonetworks.com"
+        },
+        {
+            "type": "Email/text",
+            "value": "Hi there sup sup\r\n"
+        },
+        {
+            "type": "Email/html",
+            "value": "\u003chtml\u003e\u003chead\u003e\r\n\u003cmeta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"\u003e\u003c/head\u003e\u003cbody\u003e\u003cdiv dir=\"ltr\"\u003eHi there sup sup\u003c/div\u003e\u003c/body\u003e\u003c/html\u003e"
+        },
+        {
+            "type": "Email/format",
+            "value": "HTML"
+        },
+        {
+            "type": "Email/Header/Received",
+            "value": "from AM6PR07MB3960.eurprd07.prod.outlook.com (2603:10a6:209:3c::15) by DB7PR07MB5769.eurprd07.prod.outlook.com with HTTPS; Wed, 21 Oct 2020 11:37:55 +0000"
+        },
+        {
+            "type": "Email/Header/Received",
+            "value": "from AM6PR02CA0001.eurprd02.prod.outlook.com (2603:10a6:20b:6e::14) by AM6PR07MB3960.eurprd07.prod.outlook.com (2603:10a6:209:3c::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.11; Wed, 21 Oct 2020 11:37:54 +0000"
+        },
+        {
+            "type": "Email/Header/Received",
+            "value": "from VE1EUR01FT008.eop-EUR01.prod.protection.outlook.com (2603:10a6:20b:6e:cafe::f6) by AM6PR02CA0001.outlook.office365.com (2603:10a6:20b:6e::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Wed, 21 Oct 2020 11:37:54 +0000"
+        },
+        {
+            "type": "Email/Header/Received",
+            "value": "from mx0b-00169c01.pphosted.com (67.231.156.123) by VE1EUR01FT008.mail.protection.outlook.com (10.152.2.67) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Wed, 21 Oct 2020 11:37:53 +0000"
+        },
+        {
+            "type": "Email/Header/Received",
+            "value": "from pps.filterd (m0048189.ppops.net [127.0.0.1])\tby mx0b-00169c01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09LBXkYL007496\tfor \u003cavishai@demistodev.onmicrosoft.com\u003e; Wed, 21 Oct 2020 04:37:52 -0700"
+        },
+        {
+            "type": "Email/Header/Received",
+            "value": "from mail-vk1-f198.google.com (mail-vk1-f198.google.com [209.85.221.198])\tby mx0b-00169c01.pphosted.com with ESMTP id 3480466e7n-1\t(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)\tfor \u003cavishai@demistodev.onmicrosoft.com\u003e; Wed, 21 Oct 2020 04:37:52 -0700"
+        },
+        {
+            "type": "Email/Header/Received",
+            "value": "by mail-vk1-f198.google.com with SMTP id e6so556737vkb.11        for \u003cavishai@demistodev.onmicrosoft.com\u003e; Wed, 21 Oct 2020 04:37:52 -0700 (PDT)"
+        },
+        {
+            "type": "Email/Header/Authentication-Results",
+            "value": "spf=pass (sender IP is 67.231.156.123) smtp.mailfrom=paloaltonetworks.com; demistodev.onmicrosoft.com; dkim=pass (signature was verified) header.d=paloaltonetworks.com;demistodev.onmicrosoft.com; dmarc=pass action=none header.from=paloaltonetworks.com;compauth=pass reason=100"
+        },
+        {
+            "type": "Email/Header/Received-SPF",
+            "value": "Pass (protection.outlook.com: domain of paloaltonetworks.com designates 67.231.156.123 as permitted sender) receiver=protection.outlook.com; client-ip=67.231.156.123; helo=mx0b-00169c01.pphosted.com;"
+        },
+        {
+            "type": "Email/Header/DKIM-Signature",
+            "value": "v=1; a=rsa-sha256; c=relaxed/relaxed; d=paloaltonetworks.com; h=mime-version : from : date : message-id : subject : to : content-type; s=PPS12012017; bh=CGXc0O9tVRV4DoUL6d0KuMFJRxoIXJkKyofzG7E+jgk=; b=QOMvRt4e7UTy35bsWfHwe6egZ0Vr1YrdR47jgzY3imPNI97TY1WTLpLLxdsGY3wSrc5n T5uKGBT82nE5lgGqADry8AWUCmr8dRyKYIz3kJ/wC+K7sgTxwmsXN8XHoigS9OeDQS1A AgjQ6XyrXfwFXGjkNETGqGoSPODf07AYX/Z8gr4q42fM4m1gzK4u2HVMg4rmf7ygnMvI fUUN5N0OJ/C+JGahVykz2qLefuh1LvtQ0cX9ITjj1eoQEDiL6UAZGAkaLwCVtI6ahr9M c0gtHEuXYI3sxDMS+Oj04cKYZKUuRuMeAcKBc86tJGtT0YHncGGSmabKpuCBT1S0i1Hd 4A== "
+        },
+        {
+            "type": "Email/Header/DKIM-Signature",
+            "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=paloaltonetworks-com.20150623.gappssmtp.com; s=20150623;        h=mime-version:from:date:message-id:subject:to;        bh=CGXc0O9tVRV4DoUL6d0KuMFJRxoIXJkKyofzG7E+jgk=;        b=cPHWfF56fd5Yj0H2tBDeOKUQOE3RFECZSpvLTx19ntgiIJE9SygJjyF99IE60YmjSX         RsZbmjdMIJeLf4D5R1yCyTPns6E3IA8UQjswhzUrEcnQaVZ3+QKy0E8RjMmfYohAPxKL         OB1CVjGjR0LKKStcPYtM6Qe3VM/yvXnY1U4JLz+7CDB0fE2p/FHuFrrqfDhvFKacfcEW         ffM7coCF2Zs7crbvdi3LEDiQ8AbINGl5Do5SgOE4f42cTC7CBqhcwFOgc0rn6O4yblD5         12P1AZBaF1pyg22ycHcGw7kcoQJ8VG+c5zzllBuA8K88Db0z1PMnN+2rPO+eXt+3yLhZ         25JQ=="
+        },
+        {
+            "type": "Email/Header/X-Google-DKIM-Signature",
+            "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20161025;        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;        bh=CGXc0O9tVRV4DoUL6d0KuMFJRxoIXJkKyofzG7E+jgk=;        b=dIqqWSa6GhEni3i9t3olJK74B4bFtVWCRvUVPKeRiyqAAc+CSnvSizhlMPqz6dThdy         Y7BPcbI9RHHysJPwGwa8WZuEmbDtcdyv1oeH0R/Da++LhRuy8Ei+doCYlusO+fd+JVGW         b5GKuecm7LFBUEk6+ek+AFlHzUa4hIGlzoCwsj1zhPwagyaW9AggqtvfcheSJJpRd0Vr         A7dADcyCP2h1/Ax149dMg4VngQtpyLqqQ0LRhzZS4+4uJ/K79frQHI0SU1MAhaRtBhyL         /6U5p8lZutGrqhxbiCcBEQHV3C7XRU9C3xBjpXPwAe2uJOnGHnC0zrivO0/r46Zv78BE         LduA=="
+        },
+        {
+            "type": "Email/Header/X-Gm-Message-State",
+            "value": "AOAM531oBxP5UlcYrOz3lVDuP/IvuzMfYmrFknhrtE/BE4T7sAKs7Cl2\tDEm21iu97GPMpL631fFNeD1gVCyVrv9zzOBtDZ8w56N0GzhwpBfVnY0UKRs8N/p9B8Bu0hl5y46\t9b6CIOpKAEf2Pu4LWXu76AD/5IIQa7cDYgQxEDh7sKhUUCbMt"
+        },
+        {
+            "type": "Email/Header/X-Received",
+            "value": "by 2002:a05:6102:3211:: with SMTP id r17mr1041815vsf.27.1603280271448;        Wed, 21 Oct 2020 04:37:51 -0700 (PDT)"
+        },
+        {
+            "type": "Email/Header/X-Received",
+            "value": "by 2002:a05:6102:3211:: with SMTP id r17mr1041802vsf.27.1603280271230; Wed, 21 Oct 2020 04:37:51 -0700 (PDT)"
+        },
+        {
+            "type": "Email/Header/X-Google-Smtp-Source",
+            "value": "ABdhPJyz4F1YZ4/0gxv0A7TAvkSjPvYqgwq3zUKgEpznRaWfI7GYfPpQwNTUJI160xS81Qglk9NsActOWV2jjkz0WiY="
+        },
+        {
+            "type": "Email/Header/MIME-Version",
+            "value": "1.0"
+        },
+        {
+            "type": "Email/Header/Date",
+            "value": "Wed, 21 Oct 2020 14:37:40 +0300"
+        },
+        {
+            "type": "Email/Header/Message-ID",
+            "value": "\u003cCAOGpW8nUaHpcSfXngLV-cdNZYn5JUaU=hg0NkQ0hWsmJyFXgvg@mail.gmail.com\u003e"
+        },
+        {
+            "type": "Email/Header/Subject",
+            "value": "Final test"
+        },
+        {
+            "type": "Email/Header/Content-Type",
+            "value": "multipart/alternative"
+        },
+        {
+            "type": "Email/Header/X-Proofpoint-Virus-Version",
+            "value": "vendor=fsecure engine=2.50.10434:6.0.235,18.0.737 definitions=2020-10-21_05:2020-10-20,2020-10-21 signatures=0"
+        },
+        {
+            "type": "Email/Header/X-Proofpoint-Spam-Details",
+            "value": "rule=outbound_spam_notspam policy=outbound_spam score=0 lowpriorityscore=0 suspectscore=1 bulkscore=0 malwarescore=0 clxscore=1015 priorityscore=1501 impostorscore=0 mlxscore=0 phishscore=0 adultscore=0 spamscore=0 mlxlogscore=344 classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000 definitions=main-2010210092"
+        },
+        {
+            "type": "Email/Header/Return-Path",
+            "value": "bgenish@paloaltonetworks.com"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-Organization-ExpirationStartTime",
+            "value": "21 Oct 2020 11:37:53.9064 (UTC)"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-Organization-ExpirationStartTimeReason",
+            "value": "OriginalSubmit"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-Organization-ExpirationInterval",
+            "value": "1:00:00:00.0000000"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-Organization-ExpirationIntervalReason",
+            "value": "OriginalSubmit"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-Organization-Network-Message-Id",
+            "value": "69830886-d164-46e8-9048-08d875b5bfb9"
+        },
+        {
+            "type": "Email/Header/X-EOPAttributedMessage",
+            "value": "0"
+        },
+        {
+            "type": "Email/Header/X-EOPTenantAttributedMessage",
+            "value": "ebac1a16-81bf-449b-8d43-5732c3c1d999:0"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-Organization-MessageDirectionality",
+            "value": "Incoming"
+        },
+        {
+            "type": "Email/Header/X-MS-PublicTrafficType",
+            "value": "Email"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-Organization-AuthSource",
+            "value": "VE1EUR01FT008.eop-EUR01.prod.protection.outlook.com"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-Organization-AuthAs",
+            "value": "Anonymous"
+        },
+        {
+            "type": "Email/Header/X-MS-Office365-Filtering-Correlation-Id",
+            "value": "69830886-d164-46e8-9048-08d875b5bfb9"
+        },
+        {
+            "type": "Email/Header/X-MS-TrafficTypeDiagnostic",
+            "value": "AM6PR07MB3960:"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-AtpMessageProperties",
+            "value": "SA|SL"
+        },
+        {
+            "type": "Email/Header/X-MS-Oob-TLC-OOBClassifiers",
+            "value": "OLM:2150;"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-Organization-SCL",
+            "value": "1"
+        },
+        {
+            "type": "Email/Header/X-Microsoft-Antispam",
+            "value": "BCL:0;"
+        },
+        {
+            "type": "Email/Header/X-Forefront-Antispam-Report",
+            "value": "CIP:67.231.156.123;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mx0b-00169c01.pphosted.com;PTR:mx0b-00169c01.pphosted.com;CAT:NONE;SFS:(4636009)(6666004)(6916009)(7116003)(5660300002)(9686003)(86362001)(1096003)(2160300002)(356005)(55446002)(7636003)(42186006)(3480700007)(26005)(336012)(7596003)(8676002)(564344004)(33964004);DIR:INB;"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-ATPSafeLinks-Stat",
+            "value": "0"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-ATPSafeLinks-BitVector",
+            "value": "1000:0x0|0x0|0x1000;"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-CrossTenant-OriginalArrivalTime",
+            "value": "21 Oct 2020 11:37:53.4597 (UTC)"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-CrossTenant-Network-Message-Id",
+            "value": "69830886-d164-46e8-9048-08d875b5bfb9"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-CrossTenant-Id",
+            "value": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-CrossTenant-AuthSource",
+            "value": "VE1EUR01FT008.eop-EUR01.prod.protection.outlook.com"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-CrossTenant-AuthAs",
+            "value": "Anonymous"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-CrossTenant-FromEntityHeader",
+            "value": "Internet"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-Transport-CrossTenantHeadersStamped",
+            "value": "AM6PR07MB3960"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-Transport-EndToEndLatency",
+            "value": "00:00:01.9995845"
+        },
+        {
+            "type": "Email/Header/X-MS-Exchange-Processed-By-BccFoldering",
+            "value": "15.20.3499.017"
+        },
+        {
+            "type": "Email/Header/X-Microsoft-Antispam-Mailbox-Delivery",
+            "value": "ucf:0;jmr:0;auth:0;dest:I;ENG:(20160514016)(750128)(520011016)(944506458)(944626604);"
+        },
+        {
+            "type": "Email/Header/X-Microsoft-Antispam-Message-Info",
+            "value": "aiWZ/q1IbXNtlTqGWycR1jDwr4+4bKgxHDBovTGwbkrdkCfU+9lgE3Nv43Ig6qLXuiHgPovQMWOL0sE5dDYZ8Qk9HDJfarHqPq8JXfY0RJtGmF636wwVizGC6HLNRawj4e6TfFcP5HeQm8tXszRLKX8603biDPyQJyQ6/mpMmIFpnMyUi3BdfGbMwAq+8LpMWtGWq1rloRw7muur1HYgmLupdVSaxIMgdSR+ceVRJ/Sl852HH5v8f1xBleWJ205ub5ltzXhW4+KyxTLICbAFV2Peqpnq1kVJQ8UeDkeTwzGGEWTQUb3zoe1VB8ZgQialq1KF1OjMEHq87vyIMJk3TEjk09zAh8R3OvNtXj4Rve5Bk/PGarz8RL/47V2EgKq62ZQKJZSpxwWDO3pWYbPe9YSILJe6Oj0Kp6wWSivIoZdix4bLx2lwzW9RS+lcGqihA7Z8lxKuEu+FogHVr3q7voVd+zU/PPub+3/dz9zeiOs15eBSoLT6h6XftYF/oMmQjFm0XIeFe/OuTjpLHRq7RqYkVvCqcklblNPpGGF+sT09bn1jGEneZhQ8RTqjemmgnnTcMQwI4VGmGs2UkZRwZNwKHTaMfV4KXlVgWtK6hvzlidoO160OUyHODC7+hH8ROikySf88/e9jEnIpfCFjnvPEQIDnf+5YRJirS37NaXHSLV5TSLOZwqXkBbHEB+04yUelgWVLnHrNpZTa4ZEl8AnRM3nJtg/CkYe9I4awP/XzysksMSbMGGUYIfRtBArrbr8Z9AS8cBoD8Og6V/UjqYXLamXoWGuktUmTLaPeyXZzT2OBcFHTgj4eEvhhgSGyB0bujXEmoxGJX6kTfqI75hyrgseBjczKqPv+xBnKFB9GKUBsWUkcp6IyqJBEd6TDW2M2dd6ompFuiy+18N79+FvWfPWAZBLUONlcv3GMpD6I5ssXnonYBDa5HWyVREKP6i4Aev3eRSiihoYx6D5pn7tKPyy37iI6wLEUlCKgoL7dNYAcNbYlMOFSGEO6l+7Nk617e+bMkbSb/rDrxxT0AiQ5SATrNzPqEQ1Cj5MUdLDduJb1P/auKYEPGP5mFIjnJQuyFBHBw0yMhCRbcGbKQNQVNWD94Hkb8hCRTpIsbS/WLF/pREN494dry6WFjzEoLGCorkj0M0wesyIAroRFiWX2WA7fKiI1DPWkSGX9uhpKLPCYDL/3rTT+uoTCsmPa"
+        },
+        {
+            "type": "Email/headers",
+            "value": "Received: from AM6PR07MB3960.eurprd07.prod.outlook.com (2603:10a6:209:3c::15) by DB7PR07MB5769.eurprd07.prod.outlook.com with HTTPS; Wed, 21 Oct 2020 11:37:55 +0000\r\nReceived: from AM6PR02CA0001.eurprd02.prod.outlook.com (2603:10a6:20b:6e::14) by AM6PR07MB3960.eurprd07.prod.outlook.com (2603:10a6:209:3c::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.11; Wed, 21 Oct 2020 11:37:54 +0000\r\nReceived: from VE1EUR01FT008.eop-EUR01.prod.protection.outlook.com (2603:10a6:20b:6e:cafe::f6) by AM6PR02CA0001.outlook.office365.com (2603:10a6:20b:6e::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Wed, 21 Oct 2020 11:37:54 +0000\r\nReceived: from mx0b-00169c01.pphosted.com (67.231.156.123) by VE1EUR01FT008.mail.protection.outlook.com (10.152.2.67) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Wed, 21 Oct 2020 11:37:53 +0000\r\nReceived: from pps.filterd (m0048189.ppops.net [127.0.0.1])\tby mx0b-00169c01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09LBXkYL007496\tfor \u003cavishai@demistodev.onmicrosoft.com\u003e; Wed, 21 Oct 2020 04:37:52 -0700\r\nReceived: from mail-vk1-f198.google.com (mail-vk1-f198.google.com [209.85.221.198])\tby mx0b-00169c01.pphosted.com with ESMTP id 3480466e7n-1\t(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)\tfor \u003cavishai@demistodev.onmicrosoft.com\u003e; Wed, 21 Oct 2020 04:37:52 -0700\r\nReceived: by mail-vk1-f198.google.com with SMTP id e6so556737vkb.11        for \u003cavishai@demistodev.onmicrosoft.com\u003e; Wed, 21 Oct 2020 04:37:52 -0700 (PDT)\r\nAuthentication-Results: spf=pass (sender IP is 67.231.156.123) smtp.mailfrom=paloaltonetworks.com; demistodev.onmicrosoft.com; dkim=pass (signature was verified) header.d=paloaltonetworks.com;demistodev.onmicrosoft.com; dmarc=pass action=none header.from=paloaltonetworks.com;compauth=pass reason=100\r\nReceived-SPF: Pass (protection.outlook.com: domain of paloaltonetworks.com designates 67.231.156.123 as permitted sender) receiver=protection.outlook.com; client-ip=67.231.156.123; helo=mx0b-00169c01.pphosted.com;\r\nDKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=paloaltonetworks.com; h=mime-version : from : date : message-id : subject : to : content-type; s=PPS12012017; bh=CGXc0O9tVRV4DoUL6d0KuMFJRxoIXJkKyofzG7E+jgk=; b=QOMvRt4e7UTy35bsWfHwe6egZ0Vr1YrdR47jgzY3imPNI97TY1WTLpLLxdsGY3wSrc5n T5uKGBT82nE5lgGqADry8AWUCmr8dRyKYIz3kJ/wC+K7sgTxwmsXN8XHoigS9OeDQS1A AgjQ6XyrXfwFXGjkNETGqGoSPODf07AYX/Z8gr4q42fM4m1gzK4u2HVMg4rmf7ygnMvI fUUN5N0OJ/C+JGahVykz2qLefuh1LvtQ0cX9ITjj1eoQEDiL6UAZGAkaLwCVtI6ahr9M c0gtHEuXYI3sxDMS+Oj04cKYZKUuRuMeAcKBc86tJGtT0YHncGGSmabKpuCBT1S0i1Hd 4A== \r\nDKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;        d=paloaltonetworks-com.20150623.gappssmtp.com; s=20150623;        h=mime-version:from:date:message-id:subject:to;        bh=CGXc0O9tVRV4DoUL6d0KuMFJRxoIXJkKyofzG7E+jgk=;        b=cPHWfF56fd5Yj0H2tBDeOKUQOE3RFECZSpvLTx19ntgiIJE9SygJjyF99IE60YmjSX         RsZbmjdMIJeLf4D5R1yCyTPns6E3IA8UQjswhzUrEcnQaVZ3+QKy0E8RjMmfYohAPxKL         OB1CVjGjR0LKKStcPYtM6Qe3VM/yvXnY1U4JLz+7CDB0fE2p/FHuFrrqfDhvFKacfcEW         ffM7coCF2Zs7crbvdi3LEDiQ8AbINGl5Do5SgOE4f42cTC7CBqhcwFOgc0rn6O4yblD5         12P1AZBaF1pyg22ycHcGw7kcoQJ8VG+c5zzllBuA8K88Db0z1PMnN+2rPO+eXt+3yLhZ         25JQ==\r\nX-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20161025;        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;        bh=CGXc0O9tVRV4DoUL6d0KuMFJRxoIXJkKyofzG7E+jgk=;        b=dIqqWSa6GhEni3i9t3olJK74B4bFtVWCRvUVPKeRiyqAAc+CSnvSizhlMPqz6dThdy         Y7BPcbI9RHHysJPwGwa8WZuEmbDtcdyv1oeH0R/Da++LhRuy8Ei+doCYlusO+fd+JVGW         b5GKuecm7LFBUEk6+ek+AFlHzUa4hIGlzoCwsj1zhPwagyaW9AggqtvfcheSJJpRd0Vr         A7dADcyCP2h1/Ax149dMg4VngQtpyLqqQ0LRhzZS4+4uJ/K79frQHI0SU1MAhaRtBhyL         /6U5p8lZutGrqhxbiCcBEQHV3C7XRU9C3xBjpXPwAe2uJOnGHnC0zrivO0/r46Zv78BE         LduA==\r\nX-Gm-Message-State: AOAM531oBxP5UlcYrOz3lVDuP/IvuzMfYmrFknhrtE/BE4T7sAKs7Cl2\tDEm21iu97GPMpL631fFNeD1gVCyVrv9zzOBtDZ8w56N0GzhwpBfVnY0UKRs8N/p9B8Bu0hl5y46\t9b6CIOpKAEf2Pu4LWXu76AD/5IIQa7cDYgQxEDh7sKhUUCbMt\r\nX-Received: by 2002:a05:6102:3211:: with SMTP id r17mr1041815vsf.27.1603280271448;        Wed, 21 Oct 2020 04:37:51 -0700 (PDT)\r\nX-Received: by 2002:a05:6102:3211:: with SMTP id r17mr1041802vsf.27.1603280271230; Wed, 21 Oct 2020 04:37:51 -0700 (PDT)\r\nX-Google-Smtp-Source: ABdhPJyz4F1YZ4/0gxv0A7TAvkSjPvYqgwq3zUKgEpznRaWfI7GYfPpQwNTUJI160xS81Qglk9NsActOWV2jjkz0WiY=\r\nMIME-Version: 1.0\r\nDate: Wed, 21 Oct 2020 14:37:40 +0300\r\nMessage-ID: \u003cCAOGpW8nUaHpcSfXngLV-cdNZYn5JUaU=hg0NkQ0hWsmJyFXgvg@mail.gmail.com\u003e\r\nSubject: Final test\r\nContent-Type: multipart/alternative\r\nX-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.737 definitions=2020-10-21_05:2020-10-20,2020-10-21 signatures=0\r\nX-Proofpoint-Spam-Details: rule=outbound_spam_notspam policy=outbound_spam score=0 lowpriorityscore=0 suspectscore=1 bulkscore=0 malwarescore=0 clxscore=1015 priorityscore=1501 impostorscore=0 mlxscore=0 phishscore=0 adultscore=0 spamscore=0 mlxlogscore=344 classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000 definitions=main-2010210092\r\nReturn-Path: bgenish@paloaltonetworks.com\r\nX-MS-Exchange-Organization-ExpirationStartTime: 21 Oct 2020 11:37:53.9064 (UTC)\r\nX-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit\r\nX-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000\r\nX-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit\r\nX-MS-Exchange-Organization-Network-Message-Id: 69830886-d164-46e8-9048-08d875b5bfb9\r\nX-EOPAttributedMessage: 0\r\nX-EOPTenantAttributedMessage: ebac1a16-81bf-449b-8d43-5732c3c1d999:0\r\nX-MS-Exchange-Organization-MessageDirectionality: Incoming\r\nX-MS-PublicTrafficType: Email\r\nX-MS-Exchange-Organization-AuthSource: VE1EUR01FT008.eop-EUR01.prod.protection.outlook.com\r\nX-MS-Exchange-Organization-AuthAs: Anonymous\r\nX-MS-Office365-Filtering-Correlation-Id: 69830886-d164-46e8-9048-08d875b5bfb9\r\nX-MS-TrafficTypeDiagnostic: AM6PR07MB3960:\r\nX-MS-Exchange-AtpMessageProperties: SA|SL\r\nX-MS-Oob-TLC-OOBClassifiers: OLM:2150;\r\nX-MS-Exchange-Organization-SCL: 1\r\nX-Microsoft-Antispam: BCL:0;\r\nX-Forefront-Antispam-Report: CIP:67.231.156.123;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mx0b-00169c01.pphosted.com;PTR:mx0b-00169c01.pphosted.com;CAT:NONE;SFS:(4636009)(6666004)(6916009)(7116003)(5660300002)(9686003)(86362001)(1096003)(2160300002)(356005)(55446002)(7636003)(42186006)(3480700007)(26005)(336012)(7596003)(8676002)(564344004)(33964004);DIR:INB;\r\nX-MS-Exchange-ATPSafeLinks-Stat: 0\r\nX-MS-Exchange-ATPSafeLinks-BitVector: 1000:0x0|0x0|0x1000;\r\nX-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2020 11:37:53.4597 (UTC)\r\nX-MS-Exchange-CrossTenant-Network-Message-Id: 69830886-d164-46e8-9048-08d875b5bfb9\r\nX-MS-Exchange-CrossTenant-Id: ebac1a16-81bf-449b-8d43-5732c3c1d999\r\nX-MS-Exchange-CrossTenant-AuthSource: VE1EUR01FT008.eop-EUR01.prod.protection.outlook.com\r\nX-MS-Exchange-CrossTenant-AuthAs: Anonymous\r\nX-MS-Exchange-CrossTenant-FromEntityHeader: Internet\r\nX-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR07MB3960\r\nX-MS-Exchange-Transport-EndToEndLatency: 00:00:01.9995845\r\nX-MS-Exchange-Processed-By-BccFoldering: 15.20.3499.017\r\nX-Microsoft-Antispam-Mailbox-Delivery: ucf:0;jmr:0;auth:0;dest:I;ENG:(20160514016)(750128)(520011016)(944506458)(944626604);\r\nX-Microsoft-Antispam-Message-Info: aiWZ/q1IbXNtlTqGWycR1jDwr4+4bKgxHDBovTGwbkrdkCfU+9lgE3Nv43Ig6qLXuiHgPovQMWOL0sE5dDYZ8Qk9HDJfarHqPq8JXfY0RJtGmF636wwVizGC6HLNRawj4e6TfFcP5HeQm8tXszRLKX8603biDPyQJyQ6/mpMmIFpnMyUi3BdfGbMwAq+8LpMWtGWq1rloRw7muur1HYgmLupdVSaxIMgdSR+ceVRJ/Sl852HH5v8f1xBleWJ205ub5ltzXhW4+KyxTLICbAFV2Peqpnq1kVJQ8UeDkeTwzGGEWTQUb3zoe1VB8ZgQialq1KF1OjMEHq87vyIMJk3TEjk09zAh8R3OvNtXj4Rve5Bk/PGarz8RL/47V2EgKq62ZQKJZSpxwWDO3pWYbPe9YSILJe6Oj0Kp6wWSivIoZdix4bLx2lwzW9RS+lcGqihA7Z8lxKuEu+FogHVr3q7voVd+zU/PPub+3/dz9zeiOs15eBSoLT6h6XftYF/oMmQjFm0XIeFe/OuTjpLHRq7RqYkVvCqcklblNPpGGF+sT09bn1jGEneZhQ8RTqjemmgnnTcMQwI4VGmGs2UkZRwZNwKHTaMfV4KXlVgWtK6hvzlidoO160OUyHODC7+hH8ROikySf88/e9jEnIpfCFjnvPEQIDnf+5YRJirS37NaXHSLV5TSLOZwqXkBbHEB+04yUelgWVLnHrNpZTa4ZEl8AnRM3nJtg/CkYe9I4awP/XzysksMSbMGGUYIfRtBArrbr8Z9AS8cBoD8Og6V/UjqYXLamXoWGuktUmTLaPeyXZzT2OBcFHTgj4eEvhhgSGyB0bujXEmoxGJX6kTfqI75hyrgseBjczKqPv+xBnKFB9GKUBsWUkcp6IyqJBEd6TDW2M2dd6ompFuiy+18N79+FvWfPWAZBLUONlcv3GMpD6I5ssXnonYBDa5HWyVREKP6i4Aev3eRSiihoYx6D5pn7tKPyy37iI6wLEUlCKgoL7dNYAcNbYlMOFSGEO6l+7Nk617e+bMkbSb/rDrxxT0AiQ5SATrNzPqEQ1Cj5MUdLDduJb1P/auKYEPGP5mFIjnJQuyFBHBw0yMhCRbcGbKQNQVNWD94Hkb8hCRTpIsbS/WLF/pREN494dry6WFjzEoLGCorkj0M0wesyIAroRFiWX2WA7fKiI1DPWkSGX9uhpKLPCYDL/3rTT+uoTCsmPa"
+        },
+        {
+            "type": "Email/MessageId",
+            "value": "\u003cCAOGpW8nUaHpcSfXngLV-cdNZYn5JUaU=hg0NkQ0hWsmJyFXgvg@mail.gmail.com\u003e"
+        },
+        {
+            "type": "Email/ID",
+            "value": "AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq/zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq/zTrN6vWSzK4OWAAPYQGEYAAA="
+        },
+        {
+            "type": "Email/itemId",
+            "value": "AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq/zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq/zTrN6vWSzK4OWAAPYQGEYAAA="
+        },
+        {
+            "type": "Email/ConversionID",
+            "value": "AAQkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNAAQABeAjdOi2hdNnc4bPRCjYWc="
+        },
+        {
+            "type": "Brand",
+            "value": "EWS v2"
+        },
+        {
+            "type": "Instance",
+            "value": "EWS v2_instance_1"
+        }
+    ],
+    "lastJobRunTime": "0001-01-01T00:00:00Z",
+    "lastOpen": "0001-01-01T00:00:00Z",
+    "linkedCount": 0,
+    "linkedIncidents": null,
+    "modified": "2020-10-21T14:38:54.953665+03:00",
+    "name": "Final test",
+    "notifyTime": "0001-01-01T00:00:00Z",
+    "occurred": "2020-10-21T14:37:55+03:00",
+    "openDuration": 0,
+    "owner": "",
+    "parent": "",
+    "phase": "",
+    "playbookId": "",
+    "previousAllRead": false,
+    "previousAllReadWrite": false,
+    "previousRoles": null,
+    "rawCategory": "",
+    "rawCloseReason": "",
+    "rawJSON": "",
+    "rawName": "Final test",
+    "rawPhase": "",
+    "rawType": "Email Communication",
+    "reason": "",
+    "reminder": "0001-01-01T00:00:00Z",
+    "roles": null,
+    "runStatus": "",
+    "severity": 0,
+    "sla": 0,
+    "sortValues": null,
+    "sourceBrand": "EWS v2",
+    "sourceInstance": "EWS v2_instance_1",
+    "status": 1,
+    "type": "Email Communication",
+    "version": 2
+}
