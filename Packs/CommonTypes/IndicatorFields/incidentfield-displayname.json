@@ -33,8 +33,9 @@
   "placeholder": "",
   "useAsKpi": false,
   "systemAssociatedTypes":[
-    "User Profile"
-],
+    "Account",
+	"User Profile"
+    ],
   "prevName": "Display Name",
   "locked": false,
   "name": "Display Name",

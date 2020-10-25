@@ -33,6 +33,7 @@
   "placeholder": "",
   "useAsKpi": false,
   "systemAssociatedTypes":[
+    "Account",
     "User Profile"
   ],
   "prevName": "Username",

@@ -32,6 +32,7 @@
 	"IAM - Rehire User"
 ],
 "systemAssociatedTypes":[
+	"GDPR Data Breach",
 	"IAM - New Hire",
 	"IAM - Terminate User",
 	"IAM - Update - User",
