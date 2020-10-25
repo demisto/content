@@ -1,4 +1,3 @@
-import pytest
 from Anomali_Enterprise import *
 
 
@@ -213,8 +212,6 @@ def test_get_search_job_result_command_without_matches(mocker):
 
     hr_ = command_results.to_context().get('HumanReadable', '')
     assert hr_ == 'No matches found for the given job ID: 222.'
-
-
 
 
 def test_get_search_job_result_command_expired_job_id(mocker):
