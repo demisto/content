@@ -1,7 +1,7 @@
 {
     "name": "EmailRep",
     "description": "Provide email address reputation and reports from EmailRep.io.",
-    "support": "community",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://emailrep.io",
@@ -11,11 +11,5 @@
     "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": [],
-    "dependencies": {
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        }
-    }
+    "keywords": []
 }

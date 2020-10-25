@@ -49,8 +49,6 @@ class Client(BaseClient):
         if expires:
             request_params["expires"] = expires
 
-        demisto.debug(f"DDDD:  {request_params}")
-
         return self._http_request(
             method='POST',
             url_suffix='/report',
@@ -82,79 +80,69 @@ def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Suspicious: Suspicious = true and not malicious
     """
 
-    emails = argToList(args.get('email'))
-    if len(emails) == 0 or emails is None:
+    email = argToList(args.get('email'))
+    if email is None:
         raise ValueError('Email(s) not specified')
 
-    email_data_list: List[Dict[str, Any]] = []
-    email_score_list: List[Common.Email] = []
-    for email in emails:
-        email_data = client.get_email_address_reputation(email)
-        email_data_list.append(email_data)
+    email_data = client.get_email_address_reputation(email)
+    score = Common.DBotScore.NONE
+    description = f'{INTEGRATION_NAME} returned'
+    suspicious = email_data.get('suspicious')
+    malicious_activity_recent = email_data.get('details.malicious_activity_recent')
+    credentials_leaked_recent = email_data.get('details.credentials_leaked_recent')
+    if not suspicious:
+        score = Common.DBotScore.GOOD
+        description = ''
+    elif malicious_activity_recent or credentials_leaked_recent:
+        if malicious_activity_recent:
+            description += ' malicious_activity_recent'
+        if credentials_leaked_recent:
+            description += ' credentials_leaked_recent'
+        score = Common.DBotScore.BAD
+    else:
+        score = Common.DBotScore.SUSPICIOUS
+        description = ''
 
-        score = Common.DBotScore.NONE
-        description = f'{INTEGRATION_NAME} returned'
-        suspicious = email_data.get('suspicious')
-        malicious_activity_recent = email_data.get('details.malicious_activity_recent')
-        credentials_leaked_recent = email_data.get('details.credentials_leaked_recent')
-        if not suspicious:
-            score = Common.DBotScore.GOOD
-            description = ''
-        elif malicious_activity_recent or credentials_leaked_recent:
-            if malicious_activity_recent:
-                description += ' malicious_activity_recent'
-            if credentials_leaked_recent:
-                description += ' credentials_leaked_recent'
-            score = Common.DBotScore.BAD
-        else:
-            score = Common.DBotScore.SUSPICIOUS
-            description = ''
+    dbot_score = Common.DBotScore(
+        indicator=email,
+        indicator_type=DBotScoreType.EMAIL_ADDRESS,
+        integration_name=INTEGRATION_NAME,
+        score=score,
+        malicious_description=description
+    )
 
-        dbot_score = Common.DBotScore(
-            indicator=email,
-            indicator_type=DBotScoreType.EMAIL_ADDRESS,
-            integration_name=INTEGRATION_NAME,
-            score=score,
-            malicious_description=description
-        )
+    email_context = Common.Email(
+        email_address=email,
+        dbot_score=dbot_score
+    )
 
-        email_context = Common.Email(
-            email_address=email,
-            dbot_score=dbot_score
-        )
-
-        email_score_list.append(email_context)
-
-    readable_output = tableToMarkdown('Email List', email_data_list)
+    readable_output = tableToMarkdown('Email', email_data)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_NAME}.EmailScore',
         outputs_key_field='email',
-        outputs=email_data_list,
-        indicators=email_score_list
+        outputs=email_data,
+        indicators=email_context
     )
 
 
 def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get email address reputation from EmailRep"""
 
-    emails = argToList(args.get('email_address'))
-    if len(emails) == 0 or emails is None:
+    email = argToList(args.get('email_address'))
+    if email is None:
         raise ValueError('Email(s) not specified')
 
-    email_data_list: List[Dict[str, Any]] = []
-    for email in emails:
-        email_data = client.get_email_address_reputation(email)
-        email_data_list.append(email_data)
+    email_data = client.get_email_address_reputation(email)
 
-    readable_output = tableToMarkdown('Email', email_data_list)
+    readable_output = tableToMarkdown('Email', email_data)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_NAME}.Email',
         outputs_key_field='email',
-        outputs=email_data_list
+        outputs=email_data
     )
 
 
