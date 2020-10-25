@@ -110,7 +110,7 @@ script:
     description: Get's user details
     execution: false
     name: ConcentricAI-get-user-details
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
   longRunning: false
