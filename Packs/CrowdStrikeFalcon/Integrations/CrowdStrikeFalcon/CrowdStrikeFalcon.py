@@ -1242,7 +1242,7 @@ def get_fetch_times_and_offset(incident_type):
 
 def fetch_incidents():
     incidents = []  # type:List
-    current_fetch_info = {}
+    current_fetch_info = demisto.getLastRun()
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
 
     if 'Detections' in fetch_incidents_or_detections:
@@ -1285,6 +1285,7 @@ def fetch_incidents():
                 current_fetch_info['detection_offset'] = offset + INCIDENTS_PER_FETCH
             else:
                 current_fetch_info['first_behavior_detection_time'] = last_fetch_time
+                current_fetch_info['detection_offset'] = 0
 
     if 'Incidents' in fetch_incidents_or_detections:
         incident_type = 'incident'
@@ -1334,6 +1335,7 @@ def fetch_incidents():
                 current_fetch_info['last_fetched_incident'] = new_last_incident_fetched
             else:
                 current_fetch_info['first_behavior_incident_time'] = last_fetch_time
+                current_fetch_info['incident_offset'] = 0
                 current_fetch_info['last_fetched_incident'] = new_last_incident_fetched
 
     demisto.setLastRun(current_fetch_info)

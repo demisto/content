@@ -2202,7 +2202,7 @@ class TestFetch:
                                                                  'last_detection_id': 1234})
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:10Z',
-                                                          'detection_offset': 2}
+                                                          'detection_offset': 2, 'last_detection_id': 1234}
 
     def test_new_fetch_with_offset(self, set_up_mocks, mocker):
         """
@@ -2241,7 +2241,8 @@ class TestFetch:
                                                 'max_severity_displayname': 'Low'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:11Z'}
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:11Z',
+                                                          'detection_offset': 0}
 
 
 class TestIncidentFetch:
@@ -2267,7 +2268,8 @@ class TestIncidentFetch:
                                                                  'last_incident_id': 1234})
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
-                                                          'incident_offset': 2, 'last_fetched_incident': 'ldt:1'}
+                                                          'incident_offset': 2, 'last_fetched_incident': 'ldt:1',
+                                                          'last_incident_id': 1234}
 
     def test_new_fetch_with_offset(self, set_up_mocks, mocker):
         mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z'})
@@ -2286,7 +2288,7 @@ class TestIncidentFetch:
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:11Z',
-                                                          'last_fetched_incident': 'ldt:1'}
+                                                          'last_fetched_incident': 'ldt:1', 'incident_offset': 0}
 
 
 def get_fetch_data():
