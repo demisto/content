@@ -1,3 +1,4 @@
+import shutil
 import pytest
 import json
 import os
@@ -283,6 +284,27 @@ class TestHelperFunctions:
         dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
         dummy_pack.is_feed_pack(yaml_context, yaml_type)
         assert dummy_pack.is_feed == is_actually_feed
+
+    def test_remove_unwanted_files(self):
+        """
+           Given:
+               - Pack name & path.
+           When:
+               - Preparing packs before uploading to marketplace.
+           Then:
+               - Assert `TestPlaybooks` directory was deleted from pack.
+               - Assert `Integrations` directory was not deleted from pack.
+
+       """
+        os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test')
+        os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
+        os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
+        os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks/NonCircleTests')
+        test_pack = Pack(pack_name="pack_to_test", pack_path='Tests/Marketplace/Tests/test_data/pack_to_test')
+        test_pack.remove_unwanted_files()
+        assert not os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
+        assert os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
+        shutil.rmtree('Tests/Marketplace/Tests/test_data/pack_to_test')
 
 
 class TestVersionSorting:
