@@ -1470,7 +1470,7 @@ def main():
         if demisto.command() == 'ad-delete-group':
             delete_group()
 
-        # AIM commands
+        # IAM commands
         if demisto.command() == 'iam-get-user':
             user_profile = get_user_iam(DEFAULT_BASE_DN, args, mapper_in, mapper_out)
             return return_results(user_profile)
