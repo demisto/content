@@ -500,9 +500,9 @@ class TestClient(object):
     def test_flex(self, requests_mock):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         records = [
-            '{"rdata": "10 lists.farsightsecurity.com.", "rrtype": "MX", "raw_rdata": "000A056C69737473106661727369676874736563757269747903636F6D00"}',
-            '{"rdata": "10 support.farsightsecurity.com.", "rrtype": "MX", "raw_rdata": "000A07737570706F7274106661727369676874736563757269747903636F6D00"}',
-            '{"rdata": "x.support.farsightsecurity.com.", "rrtype": "CNAME", "raw_rdata": "017807737570706F7274106661727369676874736563757269747903636F6D00"}',
+            '{"rdata": "10 lists.farsightsecurity.com.", "rrtype": "MX", "raw_rdata": "000A056C69737473106661727369676874736563757269747903636F6D00"}',  # noqa: E501
+            '{"rdata": "10 support.farsightsecurity.com.", "rrtype": "MX", "raw_rdata": "000A07737570706F7274106661727369676874736563757269747903636F6D00"}',  # noqa: E501
+            '{"rdata": "x.support.farsightsecurity.com.", "rrtype": "CNAME", "raw_rdata": "017807737570706F7274106661727369676874736563757269747903636F6D00"}',  # noqa: E501
         ]
         method = 'regex'
         key = 'rdata'
