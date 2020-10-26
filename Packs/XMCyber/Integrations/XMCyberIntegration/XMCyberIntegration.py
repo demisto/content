@@ -409,38 +409,6 @@ def entity_score(entity: Any):
 
 ''' COMMAND FUNCTIONS '''
 
-def breachpoint_update_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    ips = argToList(args.get('ip'))
-    if len(ips) == 0:
-        raise ValueError('IP(s) not specified')
-    entities = xm.search_entities(ips)
-    xm.label_entities(entities, BREACHPOINT_LABEL)
-    labeled_entities = xm.get_entities_by_label(BREACHPOINT_LABEL)
-    readable_output = 'The {0} has been updated, there are {1} labeled entities'.format(
-        BREACHPOINT_LABEL, len(labeled_entities))
-    return CommandResults(
-        outputs_prefix='XMCyber.Entity',
-        outputs_key_field='entityId',
-        outputs=labeled_entities,
-        readable_output=readable_output
-    )
-
-
-def critical_asset_add_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    ips = argToList(args.get('ip'))
-    if len(ips) == 0:
-        raise ValueError('IP(s) not specified')
-    entities = xm.search_entities(ips)
-    xm.label_entities(entities, CRITICAL_ASSET_LABEL)
-    labeled_entities = xm.get_entities_by_label(CRITICAL_ASSET_LABEL)
-    readable_output = f'The {CRITICAL_ASSET_LABEL} has been updated, there are {len(labeled_entities)} labeled entities'
-    return CommandResults(
-        outputs_prefix='XMCyber.Entity',
-        outputs_key_field='entityId',
-        outputs=labeled_entities,
-        readable_output=readable_output
-    )
-
 
 def affected_critical_assets_list_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     time_id = args.get('time_id')

@@ -173,6 +173,39 @@ def test_ip(requests_mock):
         'entityReport': 'https://test.com/#/scenarioHub/entityReport/3110337924893579985?timeId=timeAgo_days_7'
     }]
 
+def test_xmcyber_entity_get(requests_mock):
+    """Tests xmcyber-entity-get command function.
+
+    Configures requests_mock instance to generate the appropriate search
+    API response. Checks the output of the command function with the expected output.
+    """
+
+    mock_url = f'{TEST_URL}{URLS.Entities}?search=%2F172.0.0.1%2Fi&page=1&pageSize={PAGE_SIZE}'
+    xm = mock_request_and_get_xm_mock('test_data/hostname.json', requests_mock, mock_url)
+
+    response = ip_command(xm, {
+        'ip': '172.0.0.1'
+    })
+
+    assert response.outputs_prefix == 'XMCyber'
+    assert response.outputs_key_field == 'entityId'
+    assert response.outputs == [{
+        'entityId': '3110337924893579985',
+        'name': 'CorporateDC',
+        'affectedEntities': 29,
+        'averageComplexity': 2,
+        'criticalAssetsAtRisk': 14,
+        'criticalAssetsAtRiskLevel': 'medium',
+        'averageComplexityLevel': 'medium',
+        'isAsset': True,
+        'compromisingTechniques': [
+            {'count': 46,'name': 'DNS Heap Overflow (CVE-2018-8626)'},
+            {'count': 34, 'name': 'SIGRed (CVE-2020-1350)'}
+        ],
+        'entityType': 'Sensor',
+        'entityReport': 'https://test.com/#/scenarioHub/entityReport/3110337924893579985?timeId=timeAgo_days_7'
+    }]
+
 def test_get_version(requests_mock):
     mock_url = f'{TEST_URL}{URLS.Version}'
     xm = mock_request_and_get_xm_mock('test_data/version.json', requests_mock, mock_url)
