@@ -128,7 +128,8 @@ references:
 
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
-        sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+        sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS/
+        mkdir -p $CIRCLE_ARTIFACTS/logs
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/lastest_server_build_scripts/*
         if [ ! -e "venv" ]; then
@@ -289,6 +290,10 @@ references:
         python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
         python3 -m pytest ./Tests/Marketplace/Tests/ -v
         python3 -m pytest ./Tests/scripts/utils/tests -v
+
+        # TODO: replace this line with running all unit tests in Utils directory
+        # see issue https://github.com/demisto/etc/issues/29435
+        python3 -m pytest ./Utils/github_workflow_scripts/ -v
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
           ./Tests/scripts/sdk_pylint_check.sh
