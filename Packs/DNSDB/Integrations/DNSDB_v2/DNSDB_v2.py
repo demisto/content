@@ -235,15 +235,15 @@ class Client(BaseClient):
                          time_last_before: timeval = None, time_last_after: timeval = None,
                          aggr: bool = None, offset: int = None) -> Iterator[Dict]:
         return self._query_rdata_raw("lookup",
-                                      raw=value,
-                                      rrtype=rrtype,
-                                      limit=limit,
-                                      time_first_before=time_first_before,
-                                      time_first_after=time_first_after,
-                                      time_last_before=time_last_before,
-                                      time_last_after=time_last_after,
-                                      aggr=aggr,
-                                      offset=offset)
+                                     raw=value,
+                                     rrtype=rrtype,
+                                     limit=limit,
+                                     time_first_before=time_first_before,
+                                     time_first_after=time_first_after,
+                                     time_last_before=time_last_before,
+                                     time_last_after=time_last_after,
+                                     aggr=aggr,
+                                     offset=offset)
 
     def summarize_rdata_raw(self, value: str, rrtype: str = None,
                             limit: int = None, time_first_before: timeval = None, time_first_after: timeval = None,
@@ -251,15 +251,15 @@ class Client(BaseClient):
                             aggr: bool = None, max_count: int = None) -> dict:
         try:
             return next(self._query_rdata_raw("summarize",
-                                               raw=value,
-                                               rrtype=rrtype,
-                                               limit=limit,
-                                               time_first_before=time_first_before,
-                                               time_first_after=time_first_after,
-                                               time_last_before=time_last_before,
-                                               time_last_after=time_last_after,
-                                               aggr=aggr,
-                                               max_count=max_count))
+                                              raw=value,
+                                              rrtype=rrtype,
+                                              limit=limit,
+                                              time_first_before=time_first_before,
+                                              time_first_after=time_first_after,
+                                              time_last_before=time_last_before,
+                                              time_last_after=time_last_after,
+                                              aggr=aggr,
+                                              max_count=max_count))
         except StopIteration:
             raise QueryError("no data")
 
@@ -635,7 +635,8 @@ def dnsdb_flex(client, args):
         skip = skip_rdata
 
     return CommandResults(
-        readable_output=lookup_to_markdown(res, title='Farsight DNSDB Flex Search', want_bailiwick=False, header_filter=skip),
+        readable_output=lookup_to_markdown(res, title='Farsight DNSDB Flex Search', want_bailiwick=False,
+                                           header_filter=skip),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{RECORD_SUBCONTEXT_NAME}',
         outputs_key_field='',
         outputs=[build_result_context(r) for r in res],
