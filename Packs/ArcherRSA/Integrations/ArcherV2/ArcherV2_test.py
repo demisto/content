@@ -1,3 +1,4 @@
+import pytest
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value
 import demistomock as demisto
 
@@ -30,11 +31,13 @@ FIELD_DEFINITION_RES = [
     {"IsSuccessful": True, "RequestedObject": {"Id": 2, "Type": 1, "Name": "Device Name", "IsRequired": True,
                                                "RelatedValuesListId": 8}}]
 
-GET_LEVELS_BY_APP = [{'level': 123, 'mapping':
-                     {'1': {'Type': 7, 'Name': 'External Links', 'FieldId': "1",
-                            'IsRequired': False, 'RelatedValuesListId': None},
-                      '2': {'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
-                            'IsRequired': True, 'RelatedValuesListId': 8}}}]
+GET_LEVELS_BY_APP = [
+    {'level': 123, 'mapping': {'1': {
+        'Type': 7, 'Name': 'External Links', 'FieldId': "1", 'IsRequired': False, 'RelatedValuesListId': None},
+        '2': {
+            'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
+            'IsRequired': True, 'RelatedValuesListId': 8}
+    }}]
 
 GET_FIElD_DEFINITION_RES = {"RequestedObject":
                             {"RelatedValuesListId": 62},
@@ -138,9 +141,10 @@ def test_extract_from_xml():
     assert field_id == '6969'
 
 
-def test_get_level_by_app_id(requests_mock):
+@pytest.mark.parametrize('requested_object', ['', 'RequestedObject', ])
+def test_get_level_by_app_id(requests_mock, requested_object):
     requests_mock.post(BASE_URL + 'api/core/security/login',
-                       json={'RequestedObject': {'SessionToken': 'session-id'}})
+                       json={requested_object: {'SessionToken': 'session-id'}})
 
     requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
     requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
