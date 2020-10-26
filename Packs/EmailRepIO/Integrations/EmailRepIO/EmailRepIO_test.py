@@ -211,7 +211,7 @@ def test_email(requests_mock):
     }
     response = email_command(client, args)
 
-    assert response.outputs_prefix == f'{INTEGRATION_NAME}.EmailScore'
+    assert response.outputs_prefix == f'{INTEGRATION_NAME}.Email'
     assert response.outputs_key_field == 'email'
     assert response.outputs == {
         "details": {
