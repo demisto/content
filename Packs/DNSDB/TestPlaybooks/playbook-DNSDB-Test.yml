@@ -71,7 +71,7 @@ tasks:
       version: -1
       name: dnsdb-flex
       description: DNSDB flex search
-      script: DNSDB_v2|||dnsdb-flex
+      script: dnsdb-flex
       type: regular
       iscommand: true
       brand: DNSDB_v2
