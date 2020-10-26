@@ -57,6 +57,30 @@
           "selectValues": null
       },
       {
+        "key": "name",
+        "displayName": "Name",
+        "type": "shortText",
+        "required": false,
+        "script": "",
+        "width": 150,
+        "isDefault": true,
+        "fieldCalcScript": "",
+        "isReadOnly": false,
+        "selectValues": null
+      },
+      {
+        "key": "criticality",
+        "displayName": "Criticality",
+        "type": "number",
+        "required": false,
+        "script": "",
+        "width": 150,
+        "isDefault": true,
+        "fieldCalcScript": "",
+        "isReadOnly": false,
+        "selectValues": null
+      },
+      {
           "key": "criticalitylabel",
           "displayName": "CriticalityLabel",
           "type": "shortText",
@@ -91,6 +115,18 @@
           "fieldCalcScript": "",
           "isReadOnly": false,
           "selectValues": null
+      },
+      {
+        "key": "mitigationstring",
+        "displayName": "MitigationString",
+        "type": "shortText",
+        "required": false,
+        "script": "",
+        "width": 150,
+        "isDefault": true,
+        "fieldCalcScript": "",
+        "isReadOnly": false,
+        "selectValues": null
       }
   ],
   "defaultRows": [],

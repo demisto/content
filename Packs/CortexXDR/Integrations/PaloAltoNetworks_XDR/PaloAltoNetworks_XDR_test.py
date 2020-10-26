@@ -1017,7 +1017,7 @@ def test_get_update_args_close_incident():
     from PaloAltoNetworks_XDR import get_update_args
     delta = {'closeReason': 'Other', "closeNotes": "Not Relevant"}
     update_args = get_update_args(delta, 2)
-    assert update_args.get('status') == 'resloved_other'
+    assert update_args.get('status') == 'resolved_other'
     assert update_args.get('resolve_comment') == 'Not Relevant'
 
 
