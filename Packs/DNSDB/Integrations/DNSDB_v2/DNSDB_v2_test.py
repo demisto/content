@@ -696,7 +696,6 @@ class TestBuildResultContext(object):
         }, {
             'RRName': 'www.xn--frsight-exa.com',
             'Bailiwick': 'xn--frsight-exa.com',
-            'FromZoneFile': False,
         })
 
     @staticmethod

@@ -441,6 +441,7 @@ def build_result_context(results: Dict) -> Dict:
             ('RRType', 'rrtype', str),
             ('Bailiwick', 'bailiwick', format_name_for_context),
             ('RData', 'rdata', nop),
+            ('RawRData', 'raw_rdata', nop),
             ('Count', 'count', int),
             ('NumResults', 'num_results', int),
             ('TimeFirst', 'time_first', parse_unix_time),
@@ -451,7 +452,8 @@ def build_result_context(results: Dict) -> Dict:
         if rkey in results:
             ctx[ckey] = f(results[rkey])  # type: ignore[operator]
 
-    ctx['FromZoneFile'] = 'zone_time_first' in results
+    if 'zone_time_first' in results or 'time_first' in results:
+        ctx['FromZoneFile'] = 'zone_time_first' in results
 
     return ctx
 
