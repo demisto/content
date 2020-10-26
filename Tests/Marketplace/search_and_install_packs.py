@@ -233,6 +233,13 @@ def install_packs_private(client, host, prints_manager, thread_index, packs_to_i
     """
     install_testing_license(client, host, prints_manager, thread_index)
     install_packs_from_artifacts(client, host, prints_manager, thread_index, packs_to_install)
+    #  Sometimes DeveloperTools is not included in the install from bucket. This ensures it is
+    #  always installed
+    msg = f'Installing DeveloperTools pack'
+    prints_manager.add_print_job(msg, print_color, thread_index, LOG_COLORS.GREEN)
+    developertools_pack = [{"id": "DeveloperTools", "version": "1.0.1"}]
+
+    install_packs(client, host, prints_manager, thread_index, packs_to_install=developertools_pack)
 
 
 def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999):
@@ -407,13 +414,6 @@ def search_and_install_packs_and_their_dependencies_private(pack_ids, client, pr
     msg = f'Starting to search and install packs in server: {host}'
     prints_manager.add_print_job(msg, print_color, thread_index, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(thread_index)
-    #  Sometimes DeveloperTools is not included in the install from bucket. This ensures it is
-    #  always installed
-    msg = f'Installing DeveloperTools pack'
-    prints_manager.add_print_job(msg, print_color, thread_index, LOG_COLORS.GREEN)
-    developertools_pack = [{"id": "DeveloperTools", "version": "1.0.1"}]
-
-    install_packs(client, host, prints_manager, thread_index, packs_to_install=developertools_pack)
 
     packs_to_install = []  # we save all the packs we want to install, to avoid duplications
     installation_request_body = []  # the packs to install, in the request format
