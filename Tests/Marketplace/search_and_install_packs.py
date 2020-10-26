@@ -168,6 +168,58 @@ def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, p
         lock.release()
 
 
+def install_packs_nightly(client, prints_manager, thread_index, packs_to_install, request_timeout=999999):
+    """
+    Make nightly packs installation request, install the packs one by one.
+    Args:
+        client (demisto_client): The configured client to use.
+        prints_manager (ParallelPrintsManager): Print manager object.
+        thread_index (int): the thread index.
+        packs_to_install (list): A list of the packs to install.
+        request_timeout (int): Timeout settings for the installation request.
+
+    """
+    for pack in packs_to_install:
+        request_data = {
+            'packs': [pack],
+            'ignoreWarnings': True
+        }
+        try:
+            response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                                path='/contentpacks/marketplace/install',
+                                                                                method='POST',
+                                                                                body=request_data,
+                                                                                accept='application/json',
+                                                                                _request_timeout=request_timeout)
+            results = ast.literal_eval(response_data)
+            # If the pack already installed, and the current version is the right one, ignore it.
+            if pack.get('id') not in results:
+                if 200 <= status_code < 300:
+                    message = f'The pack {pack} successfully installed!\n'
+                    prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                                 include_timestamp=True)
+                else:
+                    result_object = ast.literal_eval(response_data)
+                    message = result_object.get('message', '')
+                    err_msg = f'Failed to install pack {pack} - with status code {status_code}\n' \
+                        f'{message}\n'
+                    prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+                    raise Exception(err_msg)
+                continue
+            else:
+                print(f'Skipping {pack} since already installed.')
+                pass
+
+        except Exception as e:
+            err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
+            prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+
+            global SUCCESS_FLAG
+            SUCCESS_FLAG = False
+        finally:
+            prints_manager.execute_thread_prints(thread_index)
+
+
 def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999,
                   private_install=False, is_nightly=False):
     """ Make a packs installation request.
@@ -182,7 +234,6 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
     """
 
     if private_install:
-        print('### im here in PRIVATE_INSTALL')
         license_path = '/home/runner/work/content-private/content-private/content-test-conf/demisto.lic'
         header_params = {
             'Content-Type': 'multipart/form-data'
@@ -231,82 +282,41 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         prints_manager.execute_thread_prints(thread_index)
 
         # make the pack installation request
-        request_data = {
-            'packs': packs_to_install,
-            'ignoreWarnings': True
-        }
-
         if is_nightly:
-            for pack in packs_to_install:
-                # pack = [pack]
-                # packs_install.append(pack)
-                request_data = {
-                    'packs': [pack],
-                    'ignoreWarnings': True
-                }
-                print('This is the request -')
-                print(request_data)
-                try:
-                    response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                        path='/contentpacks/marketplace/install',
-                                                                                        method='POST',
-                                                                                        body=request_data,
-                                                                                        accept='application/json',
-                                                                                        _request_timeout=request_timeout)
-                    results = ast.literal_eval(response_data)
-                    print(results)
-                    # If the pack already installed, and the current version is the right one, ignore it.
-                    if pack not in results:
-                        if 200 <= status_code < 300:
-                            message = f'The pack {pack} successfully installed!\n'
-                            prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
-                                                         include_timestamp=True)
-                        else:
-                            result_object = ast.literal_eval(response_data)
-                            message = result_object.get('message', '')
-                            err_msg = f'Failed to install pack {pack} - with status code {status_code}\n' \
-                                f'{message}\n'
-                            prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-                            raise Exception(err_msg)
-                        continue
-                    else:
-                        print(f'Skipping {pack} since already installed.')
-                except Exception as e:
-                    err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
-                    prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+            install_packs_nightly(client, prints_manager, thread_index, packs_to_install)
+        else:
+            request_data = {
+                'packs': packs_to_install,
+                'ignoreWarnings': True
+            }
 
-                    global SUCCESS_FLAG
-                    SUCCESS_FLAG = False
-                finally:
-                    prints_manager.execute_thread_prints(thread_index)
-        # else:
-        #     try:
-        #         response_data, status_code, _ = demisto_client.generic_request_func(client,
-        #                                                                             path='/contentpacks/marketplace/install',
-        #                                                                             method='POST',
-        #                                                                             body=request_data,
-        #                                                                             accept='application/json',
-        #                                                                             _request_timeout=request_timeout)
-        #         if 200 <= status_code < 300:
-        #             message = 'The packs successfully installed!\n'
-        #             prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
-        #                                          include_timestamp=True)
-        #         else:
-        #             result_object = ast.literal_eval(response_data)
-        #             message = result_object.get('message', '')
-        #             err_msg = f'Failed to install packs - with status code {status_code}\n' \
-        #                 f'{message}\n'
-        #             prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-        #             raise Exception(err_msg)
-        #
-        #     except Exception as e:
-        #         err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
-        #         prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-        #
-        #         global SUCCESS_FLAG
-        #         SUCCESS_FLAG = False
-        #     finally:
-        #         prints_manager.execute_thread_prints(thread_index)
+            try:
+                response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                                    path='/contentpacks/marketplace/install',
+                                                                                    method='POST',
+                                                                                    body=request_data,
+                                                                                    accept='application/json',
+                                                                                    _request_timeout=request_timeout)
+                if 200 <= status_code < 300:
+                    message = 'The packs successfully installed!\n'
+                    prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                                 include_timestamp=True)
+                else:
+                    result_object = ast.literal_eval(response_data)
+                    message = result_object.get('message', '')
+                    err_msg = f'Failed to install packs - with status code {status_code}\n' \
+                        f'{message}\n'
+                    prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+                    raise Exception(err_msg)
+
+            except Exception as e:
+                err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
+                prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+
+                global SUCCESS_FLAG
+                SUCCESS_FLAG = False
+            finally:
+                prints_manager.execute_thread_prints(thread_index)
 
 
 def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install,
@@ -366,9 +376,6 @@ def install_all_content_packs(client, host, prints_manager, thread_index=0):
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if pack_id not in IGNORED_FILES:
             add_pack_to_installation_request(pack_id, all_packs)
-    # for pack in all_packs:
-    print('This is all_packs param')
-    print(all_packs)
     install_packs(client, host, prints_manager, thread_index, all_packs, is_nightly=True)
 
 
