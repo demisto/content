@@ -2091,6 +2091,7 @@ script:
     - name: checkpoint-package-list
     arguments:
     - name: identifier
+      description: Object unique identifier or name.
       required: true
     - name: session_id
       description: Execute command with a specific session ID
