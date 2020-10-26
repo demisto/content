@@ -724,7 +724,7 @@ def __get_investigation_playbook_state(client, inv_id, prints_manager, thread_in
 def __delete_incident(client, incident, prints_manager, thread_index=0):
     try:
         body = {
-            'ids': [incident['id']],
+            'ids': [incident.id],
             'filter': {},
             'all': False
         }
