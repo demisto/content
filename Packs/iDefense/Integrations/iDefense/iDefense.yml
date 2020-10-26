@@ -19,11 +19,11 @@ configuration:
   type: 8
   required: false
 - display: Use system proxy settings
-  name: useproxy
+  name: use_proxy
   defaultvalue: ""
   type: 8
   required: false
-description: This is the Hello World integration for getting started.
+description: IDefense provides intelligence regarding security threats and vulnerabilities.
 display: iDefense v2
 name: iDefense_v2
 script:
@@ -94,40 +94,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
     description: Check URL reputation
-#  - name: idefense-general
-#    arguments:
-#    - name: max_result
-#      default: true
-#      description: Maximum amount of results
-#      defaultValue: "300"
-#    outputs:
-#    - contextPath: IP.Address
-#      description: Bad IP Address found
-#    - contextPath: IP.Malicious.Vendor
-#      description: For malicious IPs, the vendor that made the decision
-#    - contextPath: IP.Malicious.Description
-#      description: For malicious IPs, the reason for the vendor to make the decision
-#    - contextPath: Domain.Name
-#      description: Bad domain found
-#    - contextPath: Domain.Malicious.Vendor
-#      description: For malicious domains, the vendor that made the decision
-#    - contextPath: Domain.Malicious.Description
-#      description: For malicious domains, the reason for the vendor to make the decision
-#    - contextPath: URL.Data
-#      description: Bad URLs found
-#    - contextPath: URL.Malicious.Vendor
-#      description: For malicious URLs, the vendor that made the decision
-#    - contextPath: URL.Malicious.Description
-#      description: For malicious URLs, the reason for the vendor to make the decision
-#    - contextPath: DBotScore.Indicator
-#      description: The indicator that was tested.
-#    - contextPath: DBotScore.Type
-#      description: The indicator type.
-#    - contextPath: DBotScore.Vendor
-#      description: The vendor used to calculate the score.
-#    - contextPath: DBotScore.Score
-#      description: The actual score.
-#    description: Get threats from iDefense database. Returns all records of ip/url/domain
   - name: idefense-get-ioc-by-uuid
     arguments:
     - name: uuid
@@ -162,13 +128,15 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
     description: Get specific indicator reputation
-  dockerimage: demisto/python3:3.8.3.9324
-#  feed: false
-#  isfetch: true
-#  longRunning: false
-#  longRunningPort: false
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests
