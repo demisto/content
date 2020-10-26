@@ -190,14 +190,19 @@ script:
     arguments:
       - name: ip
         default: true
-        description: List of IPs.
+        description: List of IPs
         isArray: true
         required: false
       - name: hostname
         default: true
-        description: List of hostnames.
+        description: List of hostnames
         isArray: true
         required: false
+      - name: entityId
+        description: List of XMCyber Entity IDs
+        isArray: true
+        required: false
+        default: true
     outputs:
       - contextPath: entityId
         description: XMCyber Entity ID
