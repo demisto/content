@@ -52,7 +52,7 @@ commonfields:
   id: GetIndicatorsByQuery
   version: -1
 enabled: true
-name: GetIndicatorsByQuery
+name: HashIndicatorsFields
 script: '-'
 subtype: python3
 system: false
