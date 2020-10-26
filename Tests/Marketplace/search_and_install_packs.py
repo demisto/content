@@ -191,24 +191,20 @@ def install_packs_nightly(client, prints_manager, thread_index, packs_to_install
                                                                                 body=request_data,
                                                                                 accept='application/json',
                                                                                 _request_timeout=request_timeout)
-            results = ast.literal_eval(response_data)
+            # results = ast.literal_eval(response_data)
             # If the pack already installed, and the current version is the right one, ignore it.
-            if pack.get('id') not in results:
-                if 200 <= status_code < 300:
-                    message = f'The pack {pack} successfully installed!\n'
-                    prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
-                                                 include_timestamp=True)
-                else:
-                    result_object = ast.literal_eval(response_data)
-                    message = result_object.get('message', '')
-                    err_msg = f'Failed to install pack {pack} - with status code {status_code}\n' \
-                        f'{message}\n'
-                    prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-                    raise Exception(err_msg)
-                continue
+            if 200 <= status_code < 300:
+                message = f'The pack {pack} successfully installed!\n'
+                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                             include_timestamp=True)
             else:
-                print(f'Skipping {pack} since already installed.')
-                pass
+                result_object = ast.literal_eval(response_data)
+                message = result_object.get('message', '')
+                err_msg = f'Failed to install pack {pack} - with status code {status_code}\n' \
+                    f'{message}\n'
+                prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+                raise Exception(err_msg)
+            continue
 
         except Exception as e:
             err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
