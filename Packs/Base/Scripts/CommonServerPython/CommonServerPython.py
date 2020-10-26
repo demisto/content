@@ -2642,7 +2642,10 @@ class CommandResults:
     :param outputs: the data to be returned and will be set to context
 
     :type indicators: ``list``
-    :param indicators: must be list of Indicator types, like Common.IP, Common.URL, Common.File, etc.
+    :param indicators: DEPRECATED: Please use indicator instead.
+
+    :type indicator: ``Common.Indicator``
+    :param indicator: single indicator like Common.IP, Common.URL, Common.File, etc.
 
     :type readable_output: ``str``
     :param readable_output: (Optional) markdown string that will be presented in the warroom, should be human readable -
@@ -2660,12 +2663,15 @@ class CommandResults:
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None):
+                 raw_response=None, indicators_timeline=None, indicator=None):
         # type: (str, object, object, list, str, object, IndicatorsTimeline) -> None
         if raw_response is None:
             raw_response = outputs
 
-        self.indicators = indicators
+        if indicators and indicator:
+            raise ValueError('indicator cannot be used when indicators is not empty')
+        self.indicators = indicators  # type: Optional[List[Common.Indicator]]
+        self.indicator = indicator  # type: Optional[Common.Indicator]
 
         self.outputs_prefix = outputs_prefix
 
@@ -2696,9 +2702,10 @@ class CommandResults:
             human_readable = None  # type: ignore[assignment]
         raw_response = None  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
+        indicators = [self.indicator] if self.indicator else self.indicators
 
-        if self.indicators:
-            for indicator in self.indicators:
+        if indicators:
+            for indicator in indicators:
                 context_outputs = indicator.to_context()
 
                 for key, value in context_outputs.items():
@@ -2759,17 +2766,6 @@ def return_results(results):
         # backward compatibility reasons
         demisto.results(None)
         return
-
-    if isinstance(results, list):
-        if not results:
-            demisto.results({})
-            return
-
-        # handle result classes list case, dict list case will be handled by default case
-        elif not isinstance(results[0], dict):
-            for result in results:
-                return_results(result)
-            return
 
     if isinstance(results, CommandResults):
         demisto.results(results.to_context())

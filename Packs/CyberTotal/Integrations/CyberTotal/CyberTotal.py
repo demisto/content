@@ -1,4 +1,4 @@
-ip_reputation_commandimport traceback
+import traceback
 from typing import Any, Dict, List
 from urllib.parse import urlparse
 from datetime import timezone
