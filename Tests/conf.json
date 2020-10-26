@@ -242,6 +242,7 @@
         {
             "integrations": "Bambenek Consulting Feed",
             "playbookID": "BambenekConsultingFeed_Test",
+            "memory_threshold": 250,
             "fromversion": "5.5.0"
         },
         {
