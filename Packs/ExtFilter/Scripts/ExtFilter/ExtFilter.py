@@ -17,8 +17,9 @@ class Value:
         self.value = value
 
 
-class Ddict(dict):
-    def __search(self, val: Union[Dict[str, Any], List[Dict[str, Any]]], comps: List[str]) -> Optional[Tuple[str, Any, List[str]]]:
+class Ddict:
+    @staticmethod
+    def __search(val: Union[Dict[str, Any], List[Dict[str, Any]]], comps: List[str]) -> Optional[Tuple[str, Any, List[str]]]:
         for i in range(len(comps), 0, -1):
             key = '.'.join(comps[:i])
 
@@ -27,61 +28,84 @@ class Ddict(dict):
                     v = None
                 else:
                     v = Value([v.get(key) if v else None for v in val])
-            elif val == self:
-                v = Value(dict.get(self, key)) if key in val else None
             else:
                 v = Value(val.get(key)) if key in val else None
 
             if v is not None:
                 return (key, v.value, comps[i:])
-
         return None
 
-    def search(self, path: str) -> Optional[Tuple[str, Any, str]]:
-        res = self.__search(self, path.split('.'))
+    @staticmethod
+    def search(node: Union[Dict[str, Any]], path: str) -> Optional[Tuple[str, Any, str]]:
+        """ Get a child node
+
+            :param node: A root node.
+            :param path: A path to separete a child and names under the child.
+            :return: child_name, child_value, descendant_name.
+        """
+        res = Ddict.__search(node, path.split('.'))
         if res is None:
             return None
         return (res[0], res[1], '.'.join(res[2]))
 
-    def getValue(self, path: [str]) -> Optional[Value]:
+    @staticmethod
+    def set(node: [Dict[str, Any]], path: [str], value: [Any]):
+        comps = path.split('.')
+        while comps:
+            parent = node
+            res = Ddict.__search(parent, comps)
+            if res is None:
+                name = comps[0]
+                comps = comps[1:]
+            else:
+                name, node, comps = res
+
+            if not isinstance(node, dict):
+                parent[name] = node = {}
+        parent[name] = value
+
+    @staticmethod
+    def get_value(node: [Dict[str, Any]], path: [str]) -> Optional[Value]:
         val = None
         comps = path.split('.')
         while comps:
-            res = self.__search(self if val is None else val, comps)
+            res = Ddict.__search(node if val is None else val, comps)
             if res is None:
                 return None
             _, val, comps = res
 
         return None if val is None else Value(val)
 
-    def get(self, path: [str]) -> Any:
-        val = self.getValue(path)
+    @staticmethod
+    def get(node: [Dict[str, Any]], path: [str]) -> Any:
+        val = Ddict.get_value(node, path)
         return val.value if val else None
 
 
 class ContextData:
-    def __init__(self, demisto: Optional[Dict[str, Any]] = None, inputs: Optional[Dict[str, Any]] = None, lists: Optional[Dict[str, Any]] = None, incident: Optional[Dict[str, Any]] = None):
+    def __init__(self, demisto: Optional[Dict[str, Any]] = None, inputs: Optional[Dict[str, Any]] = None, lists: Optional[Dict[str, Any]] = None, incident: Optional[Dict[str, Any]] = None, local: Any = None):
         self.__demisto = demisto
         self.__specials = {
             'inputs': inputs if isinstance(inputs, dict) else {},
             'lists': lists if isinstance(lists, dict) else {},
-            'incident': incident if isinstance(incident, dict) else {}
+            'incident': incident if isinstance(incident, dict) else {},
+            'local': local[0] if isinstance(local, list) and len(local) == 1 and isinstance(local[0], dict) else local
         }
 
     def get(self, key: Optional[str] = None) -> Any:
-        """ Get the context value for the key
+        """ Get the context value given the key
 
           :param key: The dt expressions (string within ${}).
           :return: The value.
         """
         if key is not None:
             dx = self.__demisto
-            for prefix in ['inputs', 'lists', 'incident']:
-                if key.startswith(prefix + '.'):
-                    key = key[len(prefix):]
-                    dx = self.__specials.get(prefix)
+            for prefix in ['inputs', 'lists', 'incident', 'local']:
+                if key.startswith(prefix) and key[len(prefix):len(prefix) + 1] in ('.', '(', '='):
+                    dx = self.__specials
                     break
-            if dx is not None:
+
+            if isinstance(dx, dict):
                 return demisto.dt(dx, key)
         return None
 
@@ -90,9 +114,12 @@ def exit_error(err_msg: str):
     raise RuntimeError(err_msg)
 
 
-def lower(value: [Any]) -> Any:
+def lower(value: [Any], recursive: bool = False) -> Any:
     if isinstance(value, list):
-        return [lower(v) for v in value]
+        if recursive:
+            return [lower(v) for v in value]
+        else:
+            return [v.lower() if isinstance(v, str) else v for v in value]
     elif isinstance(value, str):
         return value.lower()
     else:
@@ -110,374 +137,42 @@ def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool
     """
     if patalg == PATALG_BINARY:
         if caseless:
-            value = lower(value)
             pattern = pattern.lower()
-
-        if isinstance(value, list):
-            return pattern in value
-        elif isinstance(value, str):
-            return pattern == value
+            if isinstance(value, list):
+                return next(filter(lambda v: isinstance(v, str) and v.lower() == pattern, value), None) is not None
+            elif isinstance(value, str):
+                return pattern == value.lower()
+        else:
+            if isinstance(value, list):
+                return pattern in value
+            elif isinstance(value, str):
+                return pattern == value
         return False
 
     elif patalg == PATALG_WILDCARD:
         if caseless:
-            value = lower(value)
             pattern = pattern.lower()
-
-        if isinstance(value, list):
-            for v in value:
-                if isinstance(v, str) and fnmatch.fnmatchcase(v, pattern):
-                    return True
-        elif isinstance(value, str):
-            return fnmatch.fnmatchcase(value, pattern)
+            if isinstance(value, list):
+                return next(filter(lambda v: isinstance(v, str) and fnmatch.fnmatchcase(v.lower(), pattern), value), None) is not None
+            elif isinstance(value, str):
+                return fnmatch.fnmatchcase(value.lower(), pattern)
+        else:
+            if isinstance(value, list):
+                return next(filter(lambda v: isinstance(v, str) and fnmatch.fnmatchcase(v, pattern), value), None) is not None
+            elif isinstance(value, str):
+                return fnmatch.fnmatchcase(value, pattern)
         return False
 
     elif patalg == PATALG_REGEX:
         flags = re.IGNORECASE if caseless else 0
 
         if isinstance(value, list):
-            for v in value:
-                if isinstance(v, str) and re.fullmatch(pattern, v, flags) is not None:
-                    return True
+            return next(filter(lambda v: isinstance(v, str) and re.fullmatch(pattern, v, flags), value), None) is not None
         elif isinstance(value, str):
             return re.fullmatch(pattern, value, flags) is not None
         return False
     else:
-        exit_error('Unknown pattern algorithm: {}'.format(patalg))
-
-
-def match_value(lhs: Any, optype: str, rhs: Any) -> bool:
-    """ Matching by the conditional operator
-
-      :param lhs: The left hand side value
-      :param optype: The conditional operator
-      :param rhs: The right hand side value
-      :return: Return True if the lhs matches the rhs, otherwise False.
-    """
-    if optype == "is":
-        if not isinstance(rhs, str):
-            return False
-        if rhs == "empty":
-            return bool(lhs)
-        elif rhs == "null":
-            return lhs is None
-        elif rhs == "string":
-            return isinstance(lhs, str)
-        elif rhs == "integer":
-            return isinstance(lhs, int)
-        elif rhs == "integer string":
-            try:
-                return isinstance(int(lhs, 10), int)
-            except:
-                return False
-        elif rhs == "any integer":
-            try:
-                return isinstance(lhs, int) or isinstance(int(lhs, 10), int)
-            except:
-                return False
-        exit_error('Unknown operation filter: {}'.format(rhs))
-
-    elif optype == "isn't":
-        return not match_value(lhs, "is", rhs)
-
-    elif optype == "===":
-        return type(lhs) == type(rhs) and lhs == rhs
-
-    elif optype == "!==":
-        return type(lhs) != type(rhs) or lhs != rhs
-
-    elif optype in ("equals", "=="):
-        try:
-            if isinstance(lhs, int):
-                return lhs == int(rhs)
-            elif isinstance(lhs, float):
-                return lhs == float(rhs)
-            elif isinstance(lhs, str):
-                return lhs == rhs
-        except ValueError:
-            return False
-
-    elif optype in ("doesn't equal", "!="):
-        return not match_value(lhs, "equals", rhs)
-
-    elif optype in ("greater or equal", ">="):
-        return isinstance(lhs, (int, float)) and lhs >= float(rhs)
-
-    elif optype in ("greater than", ">"):
-        return isinstance(lhs, (int, float)) and lhs > float(rhs)
-
-    elif optype in ("less or equal", "<="):
-        return isinstance(lhs, (int, float)) and lhs <= float(rhs)
-
-    elif optype in ("less than", "<"):
-        return isinstance(lhs, (int, float)) and lhs < float(rhs)
-
-    elif optype == "in range":
-        if not isinstance(rhs, str):
-            return False
-
-        range = rhs.split(',')
-        if len(range) != 2:
-            exit_error('Invalid Range: {}'.format(rhs))
-        try:
-            lhs = float(lhs)
-        except ValueError:
-            return False
-        return float(range[0]) <= lhs and lhs <= float(range[1])
-
-    elif optype == "starts with":
-        return isinstance(rhs, str) and isinstance(lhs, str) and lhs.startswith(rhs)
-
-    elif optype == "starts with caseless":
-        return isinstance(rhs, str) and isinstance(lhs, str) and lhs.lower().startswith(rhs.lower())
-
-    elif optype == "doesn't start with":
-        return not match_value(lhs, 'starts with', rhs)
-
-    elif optype == "doesn't start with caseless":
-        return not match_value(lhs, 'starts with caseless', rhs)
-
-    elif optype == "ends with":
-        return isinstance(rhs, str) and isinstance(lhs, str) and lhs.endswith(rhs)
-
-    elif optype == "ends with caseless":
-        return isinstance(rhs, str) and isinstance(lhs, str) and lhs.lower().endswith(rhs.lower())
-
-    elif optype == "doesn't end with":
-        return not match_value(lhs, 'ends with', rhs)
-
-    elif optype == "doesn't end with caseless":
-        return not match_value(lhs, 'ends with caseless', rhs)
-
-    elif optype == "includes":
-        return isinstance(rhs, str) and isinstance(lhs, str) and rhs in lhs
-
-    elif optype == "includes caseless":
-        return isinstance(rhs, str) and isinstance(lhs, str) and rhs.lower() in lower(lhs)
-
-    elif optype == "doesn't include":
-        return not match_value(lhs, 'includes', rhs)
-
-    elif optype == "doesn't include caseless":
-        return not match_value(lhs, 'includes caseless', rhs)
-
-    elif optype == "finds":
-        try:
-            if isinstance(lhs, list):
-                return any(isinstance(v, str) and rhs in v for v in lhs)
-            elif isinstance(lhs, str):
-                return rhs in lhs
-        except:
-            return False
-
-    elif optype == "finds caseless":
-        try:
-            if isinstance(lhs, list):
-                return any(isinstance(v, str) and rhs.lower() in v for v in lower(lhs))
-            elif isinstance(lhs, str):
-                return rhs.lower() in lower(lhs)
-        except:
-            return False
-
-    elif optype == "doesn't find":
-        return not match_value(lhs, 'finds', rhs)
-
-    elif optype == "doesn't find caseless":
-        return not match_value(lhs, 'finds caseless', rhs)
-
-    elif optype == "matches":
-        return isinstance(lhs, str) and lhs == rhs
-
-    elif optype == "matches caseless":
-        return isinstance(rhs, str) and isinstance(lhs, str) and lhs.lower() == rhs.lower()
-
-    elif optype == "doesn't match":
-        return not match_value(lhs, 'matches', rhs)
-
-    elif optype == "doesn't match caseless":
-        return not match_value(lhs, 'matches caseless', rhs)
-
-    elif optype == "matches wildcard":
-        return isinstance(rhs, str) and isinstance(lhs, str) and fnmatch.fnmatchcase(lhs, rhs)
-
-    elif optype == "matches caseless wildcard":
-        return isinstance(rhs, str) and isinstance(lhs, str) and fnmatch.fnmatchcase(lhs.lower(), rhs.lower())
-
-    elif optype == "doesn't match wildcard":
-        return not match_value(lhs, 'matches wildcard', rhs)
-
-    elif optype == "doesn't match caseless wildcard":
-        return not match_value(lhs, 'matches caseless wildcard', rhs)
-
-    elif optype == "matches regex":
-        return isinstance(rhs, str) and isinstance(lhs, str) and re.fullmatch(rhs, lhs)
-
-    elif optype == "matches caseless regex":
-        return isinstance(rhs, str) and isinstance(lhs, str) and re.fullmatch(rhs, lhs, re.IGNORECASE)
-
-    elif optype == "doesn't match regex":
-        return not match_value(lhs, 'matches regex', rhs)
-
-    elif optype == "doesn't match caseless regex":
-        return not match_value(lhs, 'matches caseless regex', rhs)
-
-    elif optype == "in list":
-        return isinstance(rhs, str) and isinstance(lhs, str) and lhs in rhs.split(',')
-
-    elif optype == "in caseless list":
-        return isinstance(rhs, str) and isinstance(lhs, str) and lower(lhs) in rhs.lower().split(',')
-
-    elif optype == "not in list":
-        return not match_value(lhs, 'in list', rhs)
-
-    elif optype == "not in caseless list":
-        return not match_value(lhs, 'in caseless list', rhs)
-
-    elif optype == "contains":
-        return isinstance(rhs, str) and isinstance(lhs, (str, list)) and rhs in lhs
-
-    elif optype == "contains caseless":
-        return isinstance(rhs, str) and isinstance(lhs, (str, list)) and lower(rhs) in lower(lhs)
-
-    elif optype == "doesn't contain":
-        return not match_value(lhs, 'contain', rhs)
-
-    elif optype == "doesn't contain caseless":
-        return not match_value(lhs, 'contain caseless', rhs)
-
-    elif optype == "contains any match with wildcard":
-        return isinstance(rhs, str) and match_pattern(rhs, lhs, False, PATALG_WILDCARD)
-
-    elif optype == "contains any match with caseless wildcard":
-        return isinstance(rhs, str) and match_pattern(rhs, lhs, True, PATALG_WILDCARD)
-
-    elif optype == "doesn't contain any match with wildcard":
-        return not isinstance(rhs, str) or not match_pattern(rhs, lhs, False, PATALG_WILDCARD)
-
-    elif optype == "doesn't contain any match with caseless wildcard":
-        return not isinstance(rhs, str) or not match_pattern(rhs, lhs, True, PATALG_WILDCARD)
-
-    elif optype == "contains any match with regex":
-        return isinstance(rhs, str) and match_pattern(rhs, lhs, False, PATALG_REGEX)
-
-    elif optype == "contains any match with caseless regex":
-        return isinstance(rhs, str) and match_pattern(rhs, lhs, True, PATALG_REGEX)
-
-    elif optype == "doesn't contain any match with regex":
-        return not isinstance(rhs, str) or not match_pattern(rhs, lhs, False, PATALG_REGEX)
-
-    elif optype == "doesn't contain any match with caseless regex":
-        return not isinstance(rhs, str) or not match_pattern(rhs, lhs, True, PATALG_REGEX)
-
-    elif optype == "matches wildcard":
-        return isinstance(rhs, str) and match_pattern(rhs, lhs, False, PATALG_WILDCARD)
-
-    elif optype == "matches caseless wildcard":
-        return isinstance(rhs, str) and match_pattern(rhs, lhs, True, PATALG_WILDCARD)
-
-    elif optype == "doesn't match wildcard":
-        return not isinstance(rhs, str) or not match_pattern(rhs, lhs, False, PATALG_WILDCARD)
-
-    elif optype == "doesn't match caseless wildcard":
-        return not isinstance(rhs, str) or not match_pattern(rhs, lhs, True, PATALG_WILDCARD)
-
-    elif optype == "matches regex":
-        return isinstance(rhs, str) and match_pattern(rhs, lhs, False, PATALG_REGEX)
-
-    elif optype == "matches caseless regex":
-        return isinstance(rhs, str) and match_pattern(rhs, lhs, True, PATALG_REGEX)
-
-    elif optype == "doesn't match regex":
-        return not isinstance(rhs, str) or not match_pattern(rhs, lhs, False, PATALG_REGEX)
-
-    elif optype == "doesn't match caseless regex":
-        return not isinstance(rhs, str) or not match_pattern(rhs, lhs, True, PATALG_REGEX)
-
-    elif optype == "matches any string of":
-        if isinstance(rhs, list):
-            return any(isinstance(x, str) and x == lhs for x in rhs)
-        elif isinstance(rhs, str):
-            return any(match_value(lhs, "contains", x) for x in rhs.split(','))
-        else:
-            return False
-
-    elif optype == "matches any caseless string of":
-        if isinstance(rhs, list):
-            return any(isinstance(x, str) and lower(x) == lower(lhs) for x in rhs)
-        elif isinstance(rhs, str):
-            return any(match_value(lhs, "contains caseless", x) for x in rhs.split(','))
-        else:
-            return False
-
-    elif optype == "doesn't match any string of":
-        return not match_value(lhs, "matches any string of", rhs)
-
-    elif optype == "doesn't match any caseless string of":
-        return not match_value(lhs, "matches any caseless string of", rhs)
-
-    elif optype == "matches any line of":
-        if not isinstance(rhs, str):
-            return False
-        return any(match_value(lhs, "contains", x) for x in rhs.splitlines())
-
-    elif optype == "matches any caseless line of":
-        if not isinstance(rhs, str):
-            return False
-        return any(match_value(lhs, "contains caseless", x) for x in rhs.splitlines())
-
-    elif optype == "doesn't match any line of":
-        return not match_value(lhs, "matches any line of", rhs)
-
-    elif optype == "doesn't match any caseless line of":
-        return not match_value(lhs, "matches any caseless line of", rhs)
-
-    elif optype == "matches any wildcard of":
-        if isinstance(rhs, list):
-            return any(isinstance(x, str) and match_pattern(x, lhs, False, PATALG_WILDCARD) for x in rhs)
-        elif isinstance(rhs, str):
-            return any(match_pattern(x, lhs, False, PATALG_WILDCARD) for x in rhs.split(','))
-        else:
-            return False
-
-    elif optype == "matches any caseless wildcard of":
-        if isinstance(rhs, list):
-            return any(isinstance(x, str) and match_pattern(x, lhs, True, PATALG_WILDCARD) for x in rhs)
-        elif isinstance(rhs, str):
-            return any(match_pattern(x, lhs, True, PATALG_WILDCARD) for x in rhs.split(','))
-        else:
-            return False
-
-    elif optype == "doesn't match any wildcard of":
-        return not match_value(lhs, "matches any wildcard of", rhs)
-
-    elif optype == "doesn't match any caseless wildcard of":
-        return not match_value(lhs, "matches any caseless wildcard of", rhs)
-
-    elif optype == "matches any regex of":
-        if isinstance(rhs, list):
-            return any(isinstance(x, str) and match_pattern(x, lhs, False, PATALG_REGEX) for x in rhs)
-        elif isinstance(rhs, str):
-            return any(match_pattern(x, lhs, False, PATALG_REGEX) for x in rhs.split(','))
-        else:
-            return False
-
-    elif optype == "matches any caseless regex of":
-        if isinstance(rhs, list):
-            return any(isinstance(x, str) and match_pattern(x, lhs, True, PATALG_REGEX) for x in rhs)
-        elif isinstance(rhs, str):
-            return any(match_pattern(x, lhs, True, PATALG_REGEX) for x in rhs.split(','))
-        else:
-            return False
-
-    elif optype == "doesn't match any regex of":
-        return not match_value(lhs, "matches any regex of", rhs)
-
-    elif optype == "doesn't match any caseless regex of":
-        return not match_value(lhs, "matches any caseless regex of", rhs)
-
-    else:
-        raise RuntimeError('Unknown operation name: {}'.format(optype))
-    return False
+        exit_error(f"Unknown pattern algorithm: '{patalg}'")
 
 
 def extract_value(source: Any, extractor: Callable[[str, Optional[Dict[str, Any]]], Any], dx: Optional[ContextData]) -> Any:
@@ -500,7 +195,8 @@ def extract_value(source: Any, extractor: Callable[[str, Optional[Dict[str, Any]
                 si = ci = ci + len(endc)
                 endc = None
             else:
-                nextec = {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'"}.get(source[ci])
+                nextec = {'(': ')', '{': '}',
+                          '[': ']', '"': '"', "'": "'"}.get(source[ci])
                 if nextec:
                     ci = _extract(source, None, dx, ci + 1, nextec)
                 elif extractor and source[ci:ci + 2] == '${':
@@ -536,7 +232,9 @@ def extract_dt(dtstr: str, dx: Optional[ContextData]) -> Any:
     return dx.get(dtstr) if dx else dtstr
 
 
-def get_parent_child(root: dict, path: str) -> Tuple[Tuple[Optional[str], Any], Tuple[Optional[str], Any]]:
+def get_parent_child(root: dict, path: str) -> Union[
+    Tuple[Tuple[None, None], Tuple[None, None]], Tuple[Tuple[dict, None], Tuple[Any, str]], Tuple[
+        Tuple[Any, str], Tuple[Any, str]]]:
     """ Get first and second level node
 
       :param root: The root node.
@@ -552,25 +250,303 @@ def get_parent_child(root: dict, path: str) -> Tuple[Tuple[Optional[str], Any], 
         )
       )
     """
-    res = Ddict(root).search(path)
+    res = Ddict.search(root, path)
     if res is None:
         if '.' not in path:
-            return ((None, None), (None, None))
+            return (None, None), (None, None)
         else:
-            child = Ddict(root).get(path)
-            return ((root, None), (child, path))
+            child = Ddict.get(root, path)
+            return (root, None), (child, path)
 
     parent_name, parent_value, child_name = res
     if child_name:
-        child_value = Ddict(parent_value).get(child_name)
-        return ((parent_value, parent_name), (child_value, child_name))
+        child_value = Ddict.get(parent_value, child_name)
+        return (parent_value, parent_name), (child_value, child_name)
     else:
-        return ((root, None), (parent_value, parent_name))
+        return (root, None), (parent_value, parent_name)
 
 
 class ExtFilter:
     def __init__(self, dx: ContextData):
         self.__dx = dx
+
+    def match_value(self, lhs: Any, optype: str, rhs: Any) -> bool:
+        """ Matching by the conditional operator
+
+          :param self: This instance.
+          :param lhs: The left hand side value
+          :param optype: The conditional operator
+          :param rhs: The right hand side value
+          :return: Return True if the lhs matches the rhs, otherwise False.
+        """
+        if optype == "is":
+            if not isinstance(rhs, str):
+                return False
+            if rhs == "empty":
+                return not bool(lhs)
+            elif rhs == "null":
+                return lhs is None
+            elif rhs == "string":
+                return isinstance(lhs, str)
+            elif rhs == "integer":
+                return isinstance(lhs, int)
+            elif rhs == "integer string":
+                try:
+                    return isinstance(int(lhs, 10), int)
+                except:
+                    return False
+            elif rhs == "any integer":
+                try:
+                    return isinstance(lhs, int) or isinstance(int(lhs, 10), int)
+                except:
+                    return False
+            exit_error(f"Unknown operation filter: '{rhs}'")
+
+        elif optype == "isn't":
+            return not self.match_value(lhs, "is", rhs)
+
+        elif optype == "===":
+            rhs = self.parse_conds_json(rhs) if isinstance(rhs, str) else rhs
+            try:
+                return type(lhs) == type(rhs) and lhs == rhs
+            except:
+                return False
+
+        elif optype == "!==":
+            rhs = self.parse_conds_json(rhs) if isinstance(rhs, str) else rhs
+            try:
+                return type(lhs) != type(rhs) or lhs != rhs
+            except:
+                return False
+
+        elif optype in ("equals", "=="):
+            try:
+                if isinstance(lhs, int):
+                    return lhs == int(rhs)
+                elif isinstance(lhs, float):
+                    return lhs == float(rhs)
+                elif isinstance(lhs, str):
+                    return lhs == str(rhs)
+                else:
+                    return lhs == rhs
+            except ValueError:
+                pass
+            return False
+
+        elif optype in ("doesn't equal", "!="):
+            return not self.match_value(lhs, "equals", rhs)
+
+        elif optype in ("greater or equal", ">="):
+            try:
+                return float(lhs) >= float(rhs)
+            except:
+                pass
+            return False
+
+        elif optype in ("greater than", ">"):
+            try:
+                return float(lhs) > float(rhs)
+            except:
+                pass
+            return False
+
+        elif optype in ("less or equal", "<="):
+            try:
+                return float(lhs) <= float(rhs)
+            except:
+                pass
+            return False
+
+        elif optype in ("less than", "<"):
+            try:
+                return float(lhs) < float(rhs)
+            except:
+                pass
+            return False
+
+        elif optype == "in range":
+            if not isinstance(rhs, str):
+                return False
+
+            minmax = rhs.split(',')
+            if len(minmax) != 2:
+                exit_error(f'Invalid Range: {rhs}')
+
+            try:
+                lhs = float(lhs)
+            except ValueError:
+                return False
+            return float(minmax[0]) <= lhs and lhs <= float(minmax[1])
+
+        elif optype == "starts with":
+            return isinstance(rhs, str) and isinstance(lhs, str) and lhs.startswith(rhs)
+
+        elif optype == "starts with caseless":
+            return isinstance(rhs, str) and isinstance(lhs, str) and lhs.lower().startswith(rhs.lower())
+
+        elif optype == "doesn't start with":
+            return not self.match_value(lhs, 'starts with', rhs)
+
+        elif optype == "doesn't start with caseless":
+            return not self.match_value(lhs, 'starts with caseless', rhs)
+
+        elif optype == "ends with":
+            return isinstance(rhs, str) and isinstance(lhs, str) and lhs.endswith(rhs)
+
+        elif optype == "ends with caseless":
+            return isinstance(rhs, str) and isinstance(lhs, str) and lhs.lower().endswith(rhs.lower())
+
+        elif optype == "doesn't end with":
+            return not self.match_value(lhs, 'ends with', rhs)
+
+        elif optype == "doesn't end with caseless":
+            return not self.match_value(lhs, 'ends with caseless', rhs)
+
+        elif optype == "includes":
+            return isinstance(rhs, str) and isinstance(lhs, str) and rhs in lhs
+
+        elif optype == "includes caseless":
+            return isinstance(rhs, str) and isinstance(lhs, str) and rhs.lower() in lower(lhs)
+
+        elif optype == "doesn't include":
+            return not self.match_value(lhs, 'includes', rhs)
+
+        elif optype == "doesn't include caseless":
+            return not self.match_value(lhs, 'includes caseless', rhs)
+
+        elif optype == "matches":
+            return isinstance(rhs, str) and isinstance(lhs, str) and lhs == rhs
+
+        elif optype == "matches caseless":
+            return isinstance(rhs, str) and isinstance(lhs, str) and lhs.lower() == rhs.lower()
+
+        elif optype == "doesn't match":
+            return not self.match_value(lhs, 'matches', rhs)
+
+        elif optype == "doesn't match caseless":
+            return not self.match_value(lhs, 'matches caseless', rhs)
+
+        elif optype == "wildcard: matches":
+            return isinstance(rhs, str) and match_pattern(rhs, lhs, False, PATALG_WILDCARD)
+
+        elif optype == "wildcard: matches caseless":
+            return isinstance(rhs, str) and match_pattern(rhs, lhs, True, PATALG_WILDCARD)
+
+        elif optype == "wildcard: doesn't match":
+            return not isinstance(rhs, str) or not match_pattern(rhs, lhs, False, PATALG_WILDCARD)
+
+        elif optype == "wildcard: doesn't match caseless":
+            return not isinstance(rhs, str) or not match_pattern(rhs, lhs, True, PATALG_WILDCARD)
+
+        elif optype == "regex: matches":
+            return isinstance(rhs, str) and match_pattern(rhs, lhs, False, PATALG_REGEX)
+
+        elif optype == "regex: matches caseless":
+            return isinstance(rhs, str) and match_pattern(rhs, lhs, True, PATALG_REGEX)
+
+        elif optype == "regex: doesn't match":
+            return not isinstance(rhs, str) or not match_pattern(rhs, lhs, False, PATALG_REGEX)
+
+        elif optype == "regex: doesn't match caseless":
+            return not isinstance(rhs, str) or not match_pattern(rhs, lhs, True, PATALG_REGEX)
+
+        elif optype == "in list":
+            return isinstance(rhs, str) and isinstance(lhs, str) and lhs in rhs.split(',')
+
+        elif optype == "in caseless list":
+            return isinstance(rhs, str) and isinstance(lhs, str) and lower(lhs) in rhs.lower().split(',')
+
+        elif optype == "not in list":
+            return not self.match_value(lhs, "in list", rhs)
+
+        elif optype == "not in caseless list":
+            return not self.match_value(lhs, "in caseless list", rhs)
+
+        elif optype == "matches any line of":
+            return isinstance(rhs, str) and isinstance(lhs, str) and lhs in rhs.splitlines()
+
+        elif optype == "matches any caseless line of":
+            if not isinstance(rhs, str) or not isinstance(lhs, str):
+                return False
+
+            lhs = lhs.lower()
+            return next(filter(lambda x: isinstance(x, str) and x.lower() == lhs, rhs.splitlines()), None) is not None
+
+        elif optype == "doesn't match any line of":
+            return not self.match_value(lhs, "matches any line of", rhs)
+
+        elif optype == "doesn't match any caseless line of":
+            return not self.match_value(lhs, "matches any caseless line of", rhs)
+
+        elif optype == "matches any string of":
+            if not isinstance(lhs, str):
+                return False
+
+            rhs = self.parse_conds_json(rhs) if isinstance(rhs, str) else rhs
+            rhs = rhs if isinstance(rhs, list) else [rhs]
+            return lhs in rhs
+
+        elif optype == "matches any caseless string of":
+            if not isinstance(lhs, str):
+                return False
+
+            rhs = self.parse_conds_json(rhs) if isinstance(rhs, str) else rhs
+            rhs = rhs if isinstance(rhs, list) else [rhs]
+            return next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, True, PATALG_BINARY), rhs), None) is not None
+
+        elif optype == "doesn't match any string of":
+            return not self.match_value(lhs, "matches any string of", rhs)
+
+        elif optype == "doesn't match any caseless string of":
+            return not self.match_value(lhs, "matches any caseless string of", rhs)
+
+        elif optype == "wildcard: matches any string of":
+            if not isinstance(lhs, str):
+                return False
+
+            rhs = self.parse_conds_json(rhs) if isinstance(rhs, str) else rhs
+            rhs = rhs if isinstance(rhs, list) else [rhs]
+            return next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, False, PATALG_WILDCARD), rhs), None) is not None
+
+        elif optype == "wildcard: matches any caseless string of":
+            if not isinstance(lhs, str):
+                return False
+
+            rhs = self.parse_conds_json(rhs) if isinstance(rhs, str) else rhs
+            rhs = rhs if isinstance(rhs, list) else [rhs]
+            return next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, True, PATALG_WILDCARD), rhs), None) is not None
+
+        elif optype == "wildcard: doesn't match any string of":
+            return not self.match_value(lhs, "wildcard: matches any string of", rhs)
+
+        elif optype == "wildcard: doesn't match any caseless string of":
+            return not self.match_value(lhs, "wildcard: matches any caseless string of", rhs)
+
+        elif optype == "regex: matches any string of":
+            if not isinstance(lhs, str):
+                return False
+
+            rhs = self.parse_conds_json(rhs) if isinstance(rhs, str) else rhs
+            rhs = rhs if isinstance(rhs, list) else [rhs]
+            return next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, False, PATALG_REGEX), rhs), None) is not None
+
+        elif optype == "regex: matches any caseless string of":
+            if not isinstance(lhs, str):
+                return False
+
+            rhs = self.parse_conds_json(rhs) if isinstance(rhs, str) else rhs
+            rhs = rhs if isinstance(rhs, list) else [rhs]
+            return next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, True, PATALG_REGEX), rhs), None) is not None
+
+        elif optype == "regex: doesn't match any string of":
+            return not self.match_value(lhs, "regex: matches any string of", rhs)
+
+        elif optype == "regex: doesn't match any caseless string of":
+            return not self.match_value(lhs, "regex: matches any caseless string of", rhs)
+
+        else:
+            raise RuntimeError(f"Unknown operation name: '{optype}'")
+        return False
 
     def filter_by_expressions(self, root: Any, conds: Union[dict, list], path: Optional[str] = None) -> Optional[Value]:
         """ Filter the value by the conditions
@@ -611,28 +587,20 @@ class ExtFilter:
             if path:
                 if not isinstance(root, dict):
                     return None
-                (parent, parent_path), (child, child_name) = get_parent_child(root, path)
+                (parent, parent_path), (child,
+                                        child_name) = get_parent_child(root, path)
 
-            if isinstance(child, list):
-                child = [v.value for v in [self.filter_by_expressions(
-                    r, conds, None) for r in child] if v]
+            for x in conds.items():
+                coptype, cconds = x
+                child = self.filter_value(child, coptype, cconds)
+                if not child:
+                    return None
+                child = child.value
+
                 if parent:
-                    parent[child_name] = child
+                    Ddict.set(parent, child_name, child)
                 else:
                     root = child
-            else:
-                for x in conds.items():
-                    coptype, cconds = x
-                    child = self.filter_value(child, coptype, cconds)
-                    if not child:
-                        return None
-                    child = child.value
-
-                    if coptype in ("value is filtered by", "is filtered by", "keeps", "doesn't keep"):
-                        if parent:
-                            parent[child_name] = child
-                        else:
-                            root = child
 
             return Value(root)
 
@@ -737,6 +705,18 @@ class ExtFilter:
         else:
             exit_error(f'Invalid custom condition format: {conds}')
 
+    def filter_values(self, root: List[Any], optype: str, conds: Any, path: Optional[str] = None) -> Optional[Value]:
+        """ Filter values of a list by the conditions
+
+          :param self: This instance.
+          :param root: The values to filter.
+          :param optype: The conditional operator.
+          :param conds: The condition expression to filter the value.
+          :param path: The path to apply the conditions.
+          :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
+        """
+        return Value([v.value for v in [self.filter_value(r, optype, conds, path) for r in root] if v])
+
     def filter_value(self, root: Any, optype: str, conds: Any, path: Optional[str] = None) -> Optional[Value]:
         """ Filter the value by the conditions
 
@@ -747,10 +727,10 @@ class ExtFilter:
           :param path: The path to apply the conditions.
           :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
         """
-        if isinstance(root, list):
-            return Value([v.value for v in [self.filter_value(r, optype, conds, path) for r in root] if v])
-
         if optype == "is filtered by":
+            if isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
             if path:
                 conds = {
                     "matches conditions of": self.parse_conds_json(conds) if isinstance(conds, str) else conds
@@ -760,70 +740,280 @@ class ExtFilter:
                 return self.filter_value(root, "matches conditions of", conds)
 
         if optype == "value is filtered by":
-            conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
+            if isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
+            conds = self.parse_conds_json(
+                conds) if isinstance(conds, str) else conds
             if path:
                 conds = {
                     "value matches expressions of": conds
                 }
                 if isinstance(root, dict):
-                    return Value({k: v for k, f, v in [(k, self.filter_by_expressions(v, conds, path), v) for k, v in root.items()] if f and f.value})
+                    v = {k: v for k, f, v in [(k, self.filter_by_expressions(
+                        v, conds, path), v) for k, v in root.items()] if f and f.value}
+                    return Value(v) if v else None
                 else:
                     return self.filter_by_expressions(root, conds, path)
             else:
                 if isinstance(root, dict):
-                    return Value({k: v for k, f, v in [(k, self.filter_by_expressions(v, conds), v) for k, v in root.items()] if f and f.value})
+                    v = {k: v for k, f, v in [(k, self.filter_by_expressions(
+                        v, conds), v) for k, v in root.items()] if f and f.value}
+                    return Value(v) if v else None
                 else:
                     return self.filter_by_expressions(root, conds)
 
         elif optype in ("is", "isn't"):
+            if isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
             filstr = conds
             if isinstance(filstr, str) and filstr == "existing key":
                 if optype == "is":
-                    return Value(root) if path and Ddict(root).getValue(path) else None
+                    return Value(root) if path and Ddict.get_value(root, path) else None
                 else:  # isn't
-                    return Value(root) if not path or not Ddict(root).getValue(path) else None
+                    return Value(root) if not path or not Ddict.get_value(root, path) else None
 
         if path:
+            if isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
             conds = {
-                optype: self.parse_conds_json(conds) if isinstance(conds, str) else conds
+                optype: self.parse_conds_json(
+                    conds) if isinstance(conds, str) else conds
             }
             return self.filter_by_expressions(root, conds, path) if isinstance(root, dict) else None
 
-        elif optype == "keeps":
-            conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
-            if not isinstance(root, dict) or not isinstance(conds, list):
+        if optype == "keeps":
+            if isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
+            conds = self.parse_conds_json(
+                conds) if isinstance(conds, str) else conds
+            if not isinstance(root, dict) and not isinstance(conds, list):
                 return None
             return Value({k: v for k, v in root.items() if k in conds})
 
         elif optype == "doesn't keep":
-            conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
+            if isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
+            conds = self.parse_conds_json(
+                conds) if isinstance(conds, str) else conds
             if not isinstance(root, dict) or not isinstance(conds, list):
                 return None
             return Value({k: v for k, v in root.items() if k not in conds})
 
         elif optype == "matches expressions of":
-            conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
+            if isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
+            conds = self.parse_conds_json(
+                conds) if isinstance(conds, str) else conds
             return self.filter_by_expressions(root, conds)
 
         elif optype == "matches conditions of":
-            conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
+            if isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
+            conds = self.parse_conds_json(
+                conds) if isinstance(conds, str) else conds
             return self.filter_by_conditions(root, conds)
 
         elif optype == "value matches expressions of":
-            conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
+            if isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
+            conds = self.parse_conds_json(
+                conds) if isinstance(conds, str) else conds
             if isinstance(root, dict):
-                return Value({k: v.value for k, v in {k: self.filter_by_expressions(v, conds) for k, v in root.items()}.items() if v})
+                v = {k: v.value for k, v in {k: self.filter_by_expressions(
+                    v, conds) for k, v in root.items()}.items() if v}
+                return Value(v) if v else None
             else:
                 return self.filter_by_expressions(root, conds)
 
         elif optype == "value matches conditions of":
-            conds = self.parse_conds_json(conds) if isinstance(conds, str) else conds
+            if isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
+            conds = self.parse_conds_json(
+                conds) if isinstance(conds, str) else conds
             if isinstance(root, dict):
-                return Value({k: v.value for k, v in {k: self.filter_by_conditions(v, conds) for k, v in root.items()}.items() if v})
+                v = {k: v.value for k, v in {k: self.filter_by_conditions(
+                    v, conds) for k, v in root.items()}.items() if v}
+                return Value(v) if v else None
             else:
                 return self.filter_by_conditions(root, conds)
 
-        return Value(root) if match_value(root, optype, conds) else None
+        else:
+            lhs = root
+            rhs = conds
+
+            if optype == "finds":
+                ok = False
+                try:
+                    if isinstance(rhs, str):
+                        if isinstance(lhs, list):
+                            ok = any(isinstance(v, str)
+                                     and rhs in v for v in lhs)
+                        elif isinstance(lhs, str):
+                            ok = rhs in lhs
+                except:
+                    pass
+                return Value(lhs) if ok else None
+
+            elif optype == "finds caseless":
+                ok = False
+                try:
+                    if isinstance(rhs, str):
+                        if isinstance(lhs, list):
+                            ok = any(isinstance(v, str) and rhs.lower()
+                                     in v for v in lower(lhs))
+                        elif isinstance(lhs, str):
+                            ok = rhs.lower() in lower(lhs)
+                except:
+                    pass
+                return Value(lhs) if ok else None
+
+            elif optype == "doesn't find":
+                return Value(lhs) if not self.filter_value(lhs, "finds", rhs) else None
+
+            elif optype == "doesn't find caseless":
+                return Value(lhs) if not self.filter_value(lhs, "finds caseless", rhs) else None
+
+            elif optype == "contains":
+                lval = lhs if isinstance(lhs, list) else [lhs]
+                return Value(lhs) if isinstance(rhs, str) and rhs in lval else None
+
+            elif optype == "contains caseless":
+                lval = lhs if isinstance(lhs, list) else [lhs]
+                return Value(lhs) if isinstance(rhs, str) and rhs.lower() in lower(lval) else None
+
+            elif optype == "doesn't contain":
+                return Value(lhs) if not self.filter_value(lhs, "contains", rhs) else None
+
+            elif optype == "doesn't contain caseless":
+                return Value(lhs) if not self.filter_value(lhs, "contains caseless", rhs) else None
+
+            elif optype == "wildcard: contains":
+                lval = lhs if isinstance(lhs, list) else [lhs]
+                return Value(lhs) if isinstance(rhs, str) and match_pattern(rhs, lval, False, PATALG_WILDCARD) else None
+
+            elif optype == "wildcard: contains caseless":
+                lval = lhs if isinstance(lhs, list) else [lhs]
+                return Value(lhs) if isinstance(rhs, str) and match_pattern(rhs, lval, True, PATALG_WILDCARD) else None
+
+            elif optype == "wildcard: doesn't contain":
+                return Value(lhs) if not self.filter_value(lhs, "wildcard: contains", rhs) else None
+
+            elif optype == "wildcard: doesn't contain caseless":
+                return Value(lhs) if not self.filter_value(lhs, "wildcard: contains caseless", rhs) else None
+
+            elif optype == "regex: contains":
+                lval = lhs if isinstance(lhs, list) else [lhs]
+                return Value(lhs) if isinstance(rhs, str) and match_pattern(rhs, lval, False, PATALG_REGEX) else None
+
+            elif optype == "regex: contains caseless":
+                lval = lhs if isinstance(lhs, list) else [lhs]
+                return Value(lhs) if isinstance(rhs, str) and match_pattern(rhs, lval, True, PATALG_REGEX) else None
+
+            elif optype == "regex: doesn't contain":
+                return Value(lhs) if not self.filter_value(lhs, "regex: contains", rhs) else None
+
+            elif optype == "regex: doesn't contain caseless":
+                return Value(lhs) if not self.filter_value(lhs, "regex: contains caseless", rhs) else None
+
+            elif optype == "contains any line of":
+                if not isinstance(rhs, str):
+                    return None
+                return Value(lhs) if any(self.filter_value(lhs, "contains", x) for x in rhs.splitlines()) else None
+
+            elif optype == "contains any caseless line of":
+                if not isinstance(rhs, str):
+                    return None
+                return Value(lhs) if any(self.filter_value(lhs, "contains caseless", x) for x in rhs.splitlines()) else None
+
+            elif optype == "doesn't contain any line of":
+                return Value(lhs) if not self.filter_value(lhs, "contains any line of", rhs) else None
+
+            elif optype == "doesn't contain any caseless line of":
+                return Value(lhs) if not self.filter_value(lhs, "contains any caseless line of", rhs) else None
+
+            elif optype == "contains any string of":
+                rval = self.parse_conds_json(
+                    rhs) if isinstance(rhs, str) else rhs
+                rval = rval if isinstance(rval, list) else [rval]
+                lval = lhs if isinstance(lhs, list) else [lhs]
+                return Value(lhs) if next(filter(lambda r: isinstance(r, str) and r in lval, rval), None) else None
+
+            elif optype == "contains any caseless string of":
+                rval = self.parse_conds_json(
+                    rhs) if isinstance(rhs, str) else rhs
+                rval = rval if isinstance(rval, list) else [rval]
+                if next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, True, PATALG_BINARY), rval), None):
+                    return Value(lhs)
+                else:
+                    return None
+
+            elif optype == "doesn't contain any string of":
+                return Value(lhs) if not self.filter_value(lhs, "contains any string of", rhs) else None
+
+            elif optype == "doesn't contain any caseless string of":
+                return Value(lhs) if not self.filter_value(lhs, "contains any caseless string of", rhs) else None
+
+            elif optype == "wildcard: contains any string of":
+                rval = self.parse_conds_json(
+                    rhs) if isinstance(rhs, str) else rhs
+                rval = rval if isinstance(rval, list) else [rval]
+                if next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, False, PATALG_WILDCARD), rval), None):
+                    return Value(lhs)
+                else:
+                    return None
+
+            elif optype == "wildcard: contains any caseless string of":
+                rval = self.parse_conds_json(
+                    rhs) if isinstance(rhs, str) else rhs
+                rval = rval if isinstance(rval, list) else [rval]
+                if next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, True, PATALG_WILDCARD), rval), None):
+                    return Value(lhs)
+                else:
+                    return None
+
+            elif optype == "wildcard: doesn't contain any string of":
+                return Value(lhs) if not self.filter_value(lhs, "wildcard: contains any string of", rhs) else None
+
+            elif optype == "wildcard: doesn't contain any caseless string of":
+                return Value(lhs) if not self.filter_value(lhs, "wildcard: contains any caseless string of", rhs) else None
+
+            elif optype == "regex: contains any string of":
+                rval = self.parse_conds_json(
+                    rhs) if isinstance(rhs, str) else rhs
+                rval = rval if isinstance(rval, list) else [rval]
+                if next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, False, PATALG_REGEX), rval), None):
+                    return Value(lhs)
+                else:
+                    return None
+
+            elif optype == "regex: contains any caseless string of":
+                rval = self.parse_conds_json(
+                    rhs) if isinstance(rhs, str) else rhs
+                rval = rval if isinstance(rval, list) else [rval]
+                if next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, True, PATALG_REGEX), rval), None):
+                    return Value(lhs)
+                else:
+                    return None
+
+            elif optype == "regex: doesn't contain any string of":
+                return Value(lhs) if not self.filter_value(lhs, "regex: contains any string of", rhs) else None
+
+            elif optype == "regex: doesn't contain any caseless string of":
+                return Value(lhs) if not self.filter_value(lhs, "regex: contains any caseless string of", rhs) else None
+
+            if isinstance(lhs, list):
+                return Value([v for v in lhs if self.match_value(v, optype, rhs)])
+            else:
+                return Value(lhs) if self.match_value(lhs, optype, rhs) else None
 
     def extract_value(self, source: Any) -> Any:
         """ Extract value including dt expression
@@ -858,7 +1048,7 @@ if __name__ in ('__builtin__', 'builtins', '__main__'):
     elif not dx:
         dx = value if isinstance(value, dict) else None
     dx = ContextData(demisto=dx, inputs=args.get('ctx_inputs'), lists=args.get(
-        'ctx_lists'), incident=args.get('ctx_incident'))
+        'ctx_lists'), incident=args.get('ctx_incident'), local=value)
 
     # Extract value
     xfilter = ExtFilter(dx)

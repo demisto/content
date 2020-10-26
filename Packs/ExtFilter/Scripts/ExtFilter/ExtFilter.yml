@@ -1,7 +1,6 @@
 commonfields:
-  id: 257cf15c-c28a-4114-802f-1fff894c886c
-  version: 45
-vcShouldKeepItemLegacyProdMachine: false
+  id: ExtFilter
+  version: -1
 name: ExtFilter
 script: ''
 type: python
@@ -22,102 +21,106 @@ args:
   required: true
   auto: PREDEFINED
   predefined:
-  - is filtered by
-  - keeps
-  - doesn't keep
-  - is
-  - isn't
-  - equals
+  - '!='
+  - '!=='
+  - <=
+  - ==
+  - ===
+  - '>'
+  - '>='
+  - contains
+  - contains any caseless line of
+  - contains any caseless line of
+  - contains any line of
+  - contains any string of
+  - contains caseless
+  - doesn't contain
+  - doesn't contain any caseless line of
+  - doesn't contain any caseless line of
+  - doesn't contain any line of
+  - doesn't contain any string of
+  - doesn't contain caseless
+  - doesn't end with
+  - doesn't end with caseless
   - doesn't equal
-  - greater or equal
-  - greater than
-  - less or equal
-  - less than
-  - in range
-  - starts with
-  - starts with caseless
+  - doesn't find
+  - doesn't find caseless
+  - doesn't include
+  - doesn't include caseless
+  - doesn't keep
+  - doesn't match
+  - doesn't match any caseless line of
+  - doesn't match any caseless string of
+  - doesn't match any line of
+  - doesn't match any string of
+  - doesn't match caseless
   - doesn't start with
   - doesn't start with caseless
   - ends with
   - ends with caseless
-  - doesn't end with
-  - doesn't end with caseless
-  - includes
-  - includes caseless
-  - doesn't include
-  - doesn't include caseless
+  - equals
   - finds
   - finds caseless
-  - doesn't find
-  - doesn't find caseless
-  - matches
-  - matches caseless
-  - doesn't match
-  - doesn't match caseless
-  - matches wildcard
-  - matches caseless wildcard
-  - doesn't match wildcard
-  - doesn't match caseless wildcard
-  - matches regex
-  - matches caseless regex
-  - doesn't match regex
-  - doesn't match caseless regex
-  - in list
+  - greater or equal
+  - greater than
   - in caseless list
-  - not in list
-  - not in caseless list
-  - contains
-  - contains caseless
-  - doesn't contain
-  - doesn't contain caseless
-  - contains any match with wildcard
-  - contains any match with caseless wildcard
-  - doesn't contain any match with wildcard
-  - doesn't contain any match with caseless wildcard
-  - contains any match with regex
-  - contains any match with caseless regex
-  - doesn't contain any match with regex
-  - doesn't contain any match with caseless regex
-  - matches wildcard
-  - matches caseless wildcard
-  - doesn't match wildcard
-  - doesn't match caseless wildcard
-  - matches regex
-  - matches caseless regex
-  - doesn't match regex
-  - doesn't match caseless regex
-  - matches any string of
-  - matches any caseless string of
-  - doesn't match any string of
-  - doesn't match any caseless string of
-  - ""
-  - matches any line of
-  - ""
+  - in list
+  - in range
+  - includes
+  - includes caseless
+  - is
+  - is filtered by
+  - isn't
+  - keeps
+  - less or equal
+  - less than
+  - matches
   - matches any caseless line of
-  - ""
-  - doesn't match any line of
-  - ""
-  - doesn't match any caseless line of
-  - matches any wildcard of
-  - matches any caseless wildcard of
-  - doesn't match any wildcard of
-  - doesn't match any caseless wildcard of
-  - matches any regex of
-  - matches any caseless regex of
-  - doesn't match any regex of
-  - doesn't match any caseless regex of
-  - matches expressions of
+  - matches any caseless string of
+  - matches any line of
+  - matches any string of
+  - matches caseless
   - matches conditions of
-  - value matches expressions of
+  - matches expressions of
+  - not in caseless list
+  - not in list
+  - 'regex: contains'
+  - 'regex: contains any caseless line of'
+  - 'regex: contains any string of'
+  - 'regex: contains caseless'
+  - 'regex: doesn''t contain'
+  - 'regex: doesn''t contain any caseless line of'
+  - 'regex: doesn''t contain any string of'
+  - 'regex: doesn''t contain caseless'
+  - 'regex: doesn''t match'
+  - 'regex: doesn''t match any caseless string of'
+  - 'regex: doesn''t match any string of'
+  - 'regex: doesn''t match caseless'
+  - 'regex: matches'
+  - 'regex: matches any caseless string of'
+  - 'regex: matches any string of'
+  - 'regex: matches caseless'
+  - starts with
+  - starts with caseless
+  - value is filtered by
   - value matches conditions of
-  - ===
-  - '!=='
-  - ==
-  - '!='
-  - '>='
-  - '>'
-  - <=
-  - <
+  - value matches expressions of
+  - 'wildcard: contains'
+  - 'wildcard: contains any caseless line of'
+  - 'wildcard: contains any string of'
+  - 'wildcard: contains caseless'
+  - 'wildcard: doesn''t contain'
+  - 'wildcard: doesn''t contain any caseless line of'
+  - 'wildcard: doesn''t contain any string of'
+  - 'wildcard: doesn''t contain caseless'
+  - 'wildcard: doesn''t match'
+  - 'wildcard: doesn''t match any caseless string of'
+  - 'wildcard: doesn''t match any string of'
+  - 'wildcard: doesn''t match caseless'
+  - 'wildcard: matches'
+  - 'wildcard: matches any caseless string of'
+  - 'wildcard: matches any string of'
+  - 'wildcard: matches caseless'
   description: 'Filter Operation: value is filtered by,is filtered by,keeps,doesn''t
     keep,is,isn''t,equals,doesn''t equal,greater or equal,greater than,less or equal,less
     than,in range,starts with,starts with caseless,doesn''t start with,doesn''t start
@@ -159,7 +162,7 @@ args:
   description: '`incident` context,  Change to `From previous tasks` and input `incident`'
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.6.12176
 runas: DBotWeakRole
+fromversion: 5.0.0
