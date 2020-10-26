@@ -23,8 +23,8 @@ def main():
     if not packs_dir_names:
         print_error('Did not find a pack in the PR')
         sys.exit(1)
-    print(f'Copy changes from the contributor branch {repo}/{branch} in the following packs: ' +
-          '\n'.join(packs_dir_names))
+    print(f'Copy changes from the contributor branch {repo}/{branch} '
+          f'in the following packs: ' + '\n'.join(packs_dir_names))
 
     try:
         for pack_dir in packs_dir_names:
