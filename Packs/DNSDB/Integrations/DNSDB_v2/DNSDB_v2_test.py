@@ -497,6 +497,33 @@ class TestClient(object):
             records = records[1:]
         assert len(records) == 0
 
+    def test_flex(self, requests_mock):
+        c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
+        records = [
+            '{"rdata": "10 lists.farsightsecurity.com.", "rrtype": "MX", "raw_rdata": "000A056C69737473106661727369676874736563757269747903636F6D00"}',
+            '{"rdata": "10 support.farsightsecurity.com.", "rrtype": "MX", "raw_rdata": "000A07737570706F7274106661727369676874736563757269747903636F6D00"}',
+            '{"rdata": "x.support.farsightsecurity.com.", "rrtype": "CNAME", "raw_rdata": "017807737570706F7274106661727369676874736563757269747903636F6D00"}',
+        ]
+        method = 'regex'
+        key = 'rdata'
+        value = 'farsightsecurity'
+
+        requests_mock.get(
+            '{server}/dnsdb/v2/{method}/{key}/{value}?swclient={swclient}&version={version}'.format(
+                server=DNSDB.DEFAULT_DNSDB_SERVER,
+                method=method,
+                key=key,
+                value=value,
+                swclient=DNSDB.SWCLIENT,
+                version=DNSDB.VERSION,
+            ),
+            text=_saf_wrap(records))
+
+        for rrset in c.flex(method, key, value):
+            assert rrset == json.loads(records[0])
+            records = records[1:]
+        assert len(records) == 0
+
     def test_500(self, requests_mock):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         name = 'farsightsecurity.com'
@@ -673,6 +700,17 @@ class TestBuildResultContext(object):
             'TimeFirst': '2013-09-25T20:02:10Z',
             'TimeLast': '2015-04-01T09:51:39Z',
             'FromZoneFile': False,
+        })
+
+    def test_flex(self):
+        self._run_test({
+            "rdata": "10 lists.farsightsecurity.com",
+            "raw_rdata": "000A056C69737473106661727369676874736563757269747903636F6D00",
+            "rrtype": "MX",
+        }, {
+            "RData": "10 lists.farsightsecurity.com",
+            "RawRData": "000A056C69737473106661727369676874736563757269747903636F6D00",
+            "RRType": "MX",
         })
 
     def test_summarize(self):
