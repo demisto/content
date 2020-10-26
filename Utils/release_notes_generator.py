@@ -1,4 +1,3 @@
-from __future__ import print_function
 import re
 import os
 import sys
@@ -7,11 +6,12 @@ import glob
 import argparse
 from datetime import datetime
 from typing import Dict, Tuple
+import logging
 
 from distutils.version import LooseVersion
 import requests
-from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, get_dict_from_file
-
+from demisto_sdk.commands.common.tools import run_command, get_dict_from_file
+from Tests.scripts.utils.log_util import install_logging
 
 PACKS_DIR = 'Packs'
 DATE_FORMAT = '%d %B %Y'
@@ -47,13 +47,14 @@ def get_new_packs(git_sha1):
     try:
         diff_result = run_command(diff_cmd, exit_on_error=False)
     except RuntimeError:
-        print_error('Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
-                    'branch is not updated with origin master. Merge from origin master and, try again.\n'
-                    'If you\'re not on a fork, run "git merge origin/master".\n'
-                    'If you are on a fork, first set https://github.com/demisto/content to be '
-                    'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
-                    'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
-                    'these steps will merge your branch with content master as a base.')
+        logging.critical(
+            'Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
+            'branch is not updated with origin master. Merge from origin master and, try again.\n'
+            'If you\'re not on a fork, run "git merge origin/master".\n'
+            'If you are on a fork, first set https://github.com/demisto/content to be '
+            'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
+            'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
+            'these steps will merge your branch with content master as a base.')
         sys.exit(1)
 
     pack_paths = [os.path.dirname(file_path) for file_path in diff_result.split('\n')
@@ -79,12 +80,12 @@ def get_new_entity_record(entity_path: str) -> Tuple[str, str]:
             name = data.get('brandName')
 
     if name == entity_path:
-        print_error(f'missing name for {entity_path}')
+        logging.error(f'missing name for {entity_path}')
 
     # script entities has "comment" instead of "description"
     description = data.get('description', '') or data.get('comment', '')
     if not description:
-        print_warning(f'missing description for {entity_path}')
+        logging.warning(f'missing description for {entity_path}')
 
     return name, description
 
@@ -125,7 +126,7 @@ def construct_entities_block(entities_data: dict):
 
 
 def get_pack_entities(pack_path):
-    print(f'Processing "{pack_path}" files:')
+    logging.info(f'Processing "{pack_path}" files:')
     pack_entities = sum([
         glob.glob(f'{pack_path}/*/*.json'),
         glob.glob(f'{pack_path}/*/*.yml'),
@@ -136,7 +137,7 @@ def get_pack_entities(pack_path):
     for entity_path in pack_entities:
         # ignore test files
         if 'test' in entity_path.lower():
-            print(f'skipping test file: {entity_path}')
+            logging.info(f'skipping test file: {entity_path}')
             continue
 
         match = re.match(f'{pack_path}/([^/]*)/.*', entity_path)
@@ -151,7 +152,7 @@ def get_pack_entities(pack_path):
 
     release_notes = construct_entities_block(entities_data)
 
-    print('Finished processing pack')
+    logging.info('Finished processing pack')
     return release_notes
 
 
@@ -169,13 +170,14 @@ def get_all_modified_release_note_files(git_sha1):
     try:
         diff_result = run_command(diff_cmd, exit_on_error=False)
     except RuntimeError:
-        print_error('Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
-                    'branch is not updated with origin master. Merge from origin master and, try again.\n'
-                    'If you\'re not on a fork, run "git merge origin/master".\n'
-                    'If you are on a fork, first set https://github.com/demisto/content to be '
-                    'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
-                    'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
-                    'these steps will merge your branch with content master as a base.')
+        logging.critical(
+            'Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
+            'branch is not updated with origin master. Merge from origin master and, try again.\n'
+            'If you\'re not on a fork, run "git merge origin/master".\n'
+            'If you are on a fork, first set https://github.com/demisto/content to be '
+            'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
+            'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
+            'these steps will merge your branch with content master as a base.')
         sys.exit(1)
 
     release_notes_files = [file_path for file_path in diff_result.split('\n')
@@ -241,9 +243,9 @@ def get_release_notes_dict(release_notes_files):
         release_note = read_and_format_release_note(file_path)
         if release_note:
             release_notes_dict.setdefault(pack_name, {})[pack_version] = release_note
-            print('Adding release notes for pack {} {}...'.format(pack_name, pack_version))
+            logging.info('Adding release notes for pack {} {}...'.format(pack_name, pack_version))
         else:
-            print('Ignoring release notes for pack {} {}...'.format(pack_name, pack_version))
+            logging.info('Ignoring release notes for pack {} {}...'.format(pack_name, pack_version))
 
     return release_notes_dict, packs_metadata_dict
 
@@ -348,7 +350,7 @@ def get_release_notes_draft(github_token, asset_id):
     :return: draft text (or empty string on error).
     """
     if github_token is None:
-        print_warning('Unable to download draft without github token.')
+        logging.warning('Unable to download draft without github token.')
         return ''
 
     # Disable insecure warnings
@@ -359,11 +361,11 @@ def get_release_notes_draft(github_token, asset_id):
                            verify=False,  # guardrails-disable-line
                            headers={'Authorization': 'token {}'.format(github_token)})
     except requests.exceptions.ConnectionError as exc:
-        print_warning(f'Unable to get release draft, reason:\n{str(exc)}')
+        logging.warning(f'Unable to get release draft, reason:\n{str(exc)}')
         return ''
 
     if res.status_code != 200:
-        print_warning(f'Unable to get release draft ({res.status_code}), reason:\n{res.text}')
+        logging.warning(f'Unable to get release draft ({res.status_code}), reason:\n{res.text}')
         return ''
 
     drafts = [release for release in res.json() if release.get('draft', False)]
@@ -376,7 +378,7 @@ def get_release_notes_draft(github_token, asset_id):
 
             return draft_body
 
-        print_warning(f'Too many drafts to choose from ({len(drafts)}), skipping update.')
+        logging.warning(f'Too many drafts to choose from ({len(drafts)}), skipping update.')
 
     return ''
 
@@ -406,6 +408,7 @@ def create_content_descriptor(release_notes, version, asset_id, github_token):
 
 
 def main():
+    install_logging('Build Content Descriptor.log')
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('version', help='Release version')
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
