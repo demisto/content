@@ -152,7 +152,7 @@ def does_user_email_exist_in_xsoar(email_to_user_profile, workday_user):
 
 def get_profile_changed_fields(workday_user, demisto_user):
     if not demisto_user:
-        return False  # potential new hire
+        return []  # potential new hire
     profile_changed_fields = []
     for user_profile_key in workday_user.keys():
         workday_value = workday_user.get(user_profile_key)
