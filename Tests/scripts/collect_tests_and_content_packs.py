@@ -11,24 +11,22 @@ import os
 import random
 import re
 import sys
-import argparse
-import logging
-from Tests.scripts.utils.log_util import install_logging
-from distutils.version import LooseVersion
 from copy import deepcopy
 from distutils.version import LooseVersion
-from typing import Dict, Tuple, List
+from typing import Dict, List, Tuple, Optional, Union
 
-import coloredlogs
 import demisto_sdk.commands.common.tools as tools
-from demisto_sdk.commands.common.constants import YML_SCRIPT_REGEXES, YML_PLAYBOOKS_NO_TESTS_REGEXES, \
-    YML_INTEGRATION_REGEXES, API_MODULE_REGEXES, RUN_ALL_TESTS_FORMAT, PACKS_DIR, YML_TEST_PLAYBOOKS_REGEXES
+from demisto_sdk.commands.common.constants import (
+    API_MODULE_REGEXES, PACKS_DIR, RUN_ALL_TESTS_FORMAT,
+    YML_INTEGRATION_REGEXES, YML_PLAYBOOKS_NO_TESTS_REGEXES,
+    YML_SCRIPT_REGEXES, YML_TEST_PLAYBOOKS_REGEXES)
 
 import Tests.scripts.utils.collect_helpers as collect_helpers
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
 from Tests.scripts.utils.content_packs_util import should_test_content_pack
 from Tests.scripts.utils.get_modified_files_for_testing import \
     GetModifiedFilesForTesting
+from Tests.scripts.utils.log_util import install_logging
 
 
 class TestConf(object):
@@ -136,7 +134,7 @@ RANDOM_TESTS_NUM = 3
 _FAILED = False
 AMI_BUILDS = {}
 ID_SET = {}
-CONF = {}
+CONF: Union[TestConf, dict] = {}
 if os.path.isfile('./Tests/ami_builds.json'):
     with open('./Tests/ami_builds.json', 'r') as ami_builds_file:
         # get versions to check if tests are runnable on those envs
@@ -946,7 +944,7 @@ def get_tests_for_pack(pack_path):
     return pack_test_playbooks
 
 
-def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
+def get_content_pack_name_of_test(tests: set, id_set: Optional[Dict] = None) -> set:
     """Returns the content packs names in which given test playbooks are in.
 
     Args:
@@ -957,17 +955,17 @@ def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
         str. The content pack name in which the test playbook is in.
     """
     content_packs = set()
-
-    for test_playbook_object in id_set.get('TestPlaybooks', []):
-        test_playbook_name = list(test_playbook_object.keys())[0]
-        test_playbook_data = list(test_playbook_object.values())[0]
-        if test_playbook_name in tests:
-            pack_name = test_playbook_data.get('pack')
-            if pack_name:
-                content_packs.add(pack_name)
-                if len(tests) == len(content_packs):
-                    # we found all content packs for all tests we were looking for
-                    break
+    if id_set is not None:
+        for test_playbook_object in id_set.get('TestPlaybooks', []):
+            test_playbook_name = list(test_playbook_object.keys())[0]
+            test_playbook_data = list(test_playbook_object.values())[0]
+            if test_playbook_name in tests:
+                pack_name = test_playbook_data.get('pack')
+                if pack_name:
+                    content_packs.add(pack_name)
+                    if len(tests) == len(content_packs):
+                        # we found all content packs for all tests we were looking for
+                        break
 
     return content_packs
 
