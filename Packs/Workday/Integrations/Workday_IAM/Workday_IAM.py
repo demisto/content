@@ -100,7 +100,7 @@ def fetch_incidents(client, last_run, fetch_time, mapper_in, report_url):
 
                 demisto_user = get_demisto_user(employee_id_to_user_profile, workday_user)
                 user_profile_unchanged, changed_fields = is_user_profile_unchanged(demisto_user, workday_user)
-                found_potential_termination = detect_potential_termination(workday_user)
+                found_potential_termination = detect_potential_termination(demisto_user, workday_user)
                 does_email_exist = does_user_email_exist_in_xsoar(email_to_user_profile, workday_user)
 
                 if user_profile_unchanged or (not demisto_user and does_email_exist) \
@@ -168,10 +168,10 @@ def get_profile_changed_fields(workday_user, demisto_user):
     return profile_changed_fields
 
 
-def detect_potential_termination(workday_user):
+def detect_potential_termination(demisto_user, workday_user):
     # check if employee is active and his terminate day or last day of work arrived
     is_term_event = False
-    employment_status = str(workday_user.get(EMPLOYMENT_STATUS_EVENT_FIELD))
+    employment_status = str(demisto_user.get(EMPLOYMENT_STATUS_EVENT_FIELD))
 
     if employment_status.lower() == EMPLOYEE_ACTIVE_STATUS:
         last_day_of_work = workday_user.get(LAST_DAY_OF_WORK_EVENT_FIELD)
