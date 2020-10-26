@@ -2628,9 +2628,8 @@ class Common(object):
                 account_context['Type'] = self.type
 
             irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id']
-            account_details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
-            for detail in account_details:
-                demisto.debug(f"DDDD: I'm here 1 detail={detail}")
+            details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
+            for detail in details:
                 if self.__getattribute__(detail):
                     if detail == 'email_address':
                         account_context['Email'] = {
@@ -2639,7 +2638,6 @@ class Common(object):
                     else:
                         Detail = camelize_string(detail,'_')
                         account_context[Detail] = self.__getattribute__(detail)
-                        demisto.debug(f"DDDD: I'm here 3 detail={Detail}")
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 account_context['Malicious'] = {
@@ -2654,8 +2652,6 @@ class Common(object):
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
 
-            demisto.debug(f"DDDD: I'm here 2 account context={account_context}")
-            demisto.debug(f"DDDD: ret_value={ret_value}")
             return ret_value
 
 
@@ -2777,7 +2773,6 @@ class CommandResults:
         outputs = {}  # type: dict
         if self.readable_output:
             human_readable = self.readable_output
-            demisto.debug('DDDD: maybe')
         else:
             human_readable = None  # type: ignore[assignment]
         raw_response = None  # type: ignore[assignment]
@@ -2793,7 +2788,6 @@ class CommandResults:
 
                     outputs[key].append(value)
 
-        demisto.debug('DDDD: maybe maybe')
         if self.raw_response:
             raw_response = self.raw_response
 
@@ -2816,7 +2810,6 @@ class CommandResults:
             else:
                 outputs = self.outputs  # type: ignore[assignment]
 
-        demisto.debug('DDDD: maybe maybe maybe')
         content_format = EntryFormat.JSON
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
             content_format = EntryFormat.TEXT
