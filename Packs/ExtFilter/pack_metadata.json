@@ -1,6 +1,6 @@
 {
     "name": "ExtFilter",
-    "description": "This transformer enables to write advanced filters.",
+    "description": "This transformer enables you to make advanced filters with comlex conditions.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Masahiko Inoue",
