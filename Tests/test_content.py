@@ -23,7 +23,10 @@ import urllib3
 import requests
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
-from slack import WebClient as SlackClient
+try:
+    from slack import WebClient as SlackClient  # New slack
+except ModuleNotFoundError:
+    from slackclient import SlackClient  # Old slack
 
 from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_integration import Docker, test_integration, disable_all_integrations
