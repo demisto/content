@@ -48,7 +48,7 @@ def main():
     print_success(f'Successfully updated the base branch with the contrib pack {pack_dir_name}')
 
 
-def get_pack_dir(branch: str, pr_number: str, repo: str) -> list[str]:
+def get_pack_dir(branch: object, pr_number: object, repo: object):
     """
     Get a pack dir name from a contribution pull request changed files
     Args:
