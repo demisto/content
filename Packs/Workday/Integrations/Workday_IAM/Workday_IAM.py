@@ -106,6 +106,7 @@ def fetch_incidents(client, last_run, fetch_time, mapper_in, report_url):
 
                 entry['UserProfile'] = workday_user
                 event = {
+                    "name": f'{workday_user.get("Given Name")} {workday_user.get("Surname")}',
                     "rawJSON": json.dumps(entry),
                     "details": 'Profile changed. Changed fields: ' + str(profile_changed_fields)
                 }
