@@ -2012,11 +2012,8 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
 
     except Exception as e:
         if "Rate limit exceeded" in str(e):
-            # To prevent an infinite loop without erroring out
-            if non_created_incidents == incidents_from_previous_run:
-                raise
-            else:
-                demisto.debug("Cortex XDR - rate limit exceeded, saving the non created incidents for the next run.\n")
+            demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
+                         f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
 
         else:
             raise
