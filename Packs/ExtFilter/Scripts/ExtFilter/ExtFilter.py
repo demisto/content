@@ -48,7 +48,7 @@ class Ddict:
         return (res[0], res[1], '.'.join(res[2]))
 
     @staticmethod
-    def set(node: Dict[str, Any], path: [str], value: [Any]):
+    def set(node: Dict[str, Any], path: str, value: [Any]):
         comps = path.split('.')
         while comps:
             parent = node
@@ -64,7 +64,7 @@ class Ddict:
         parent[name] = value
 
     @staticmethod
-    def get_value(node: Dict[str, Any], path: [str]) -> Optional[Value]:
+    def get_value(node: Dict[str, Any], path: str) -> Optional[Value]:
         val = None
         comps = path.split('.')
         while comps:
@@ -76,7 +76,7 @@ class Ddict:
         return None if val is None else Value(val)
 
     @staticmethod
-    def get(node: Dict[str, Any], path: [str]) -> Any:
+    def get(node: Dict[str, Any], path: str) -> Any:
         val = Ddict.get_value(node, path)
         return val.value if val else None
 
@@ -172,6 +172,7 @@ def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool
         return False
     else:
         exit_error(f"Unknown pattern algorithm: '{patalg}'")
+    return False
 
 
 def extract_value(source: Any, extractor: Callable[[str, Optional[ContextData]], Any], dx: Optional[ContextData]) -> Any:
@@ -613,7 +614,7 @@ class ExtFilter:
                     elif lop is None and neg is None:
                         lop = x
                     else:
-                        exit_error(f'Invalid logical operators syntax')
+                        exit_error('Invalid logical operators syntax')
                 else:
                     val = None
                     if ok is None:
@@ -632,6 +633,7 @@ class ExtFilter:
             return Value(root) if ok is None or ok else None
         else:
             exit_error(f'Invalid condition format: {conds}')
+        return None
 
     def filter_by_conditions(self, root: Any, conds: Union[dict, list]) -> Optional[Value]:
         """ Filter the value by the conditions
@@ -684,7 +686,7 @@ class ExtFilter:
                     elif lop is None and neg is None:
                         lop = x
                     else:
-                        exit_error(f'Invalid logical operators syntax')
+                        exit_error('Invalid logical operators syntax')
                 else:
                     val = None
                     if ok is None:
@@ -703,6 +705,7 @@ class ExtFilter:
             return Value(root) if ok is None or ok else None
         else:
             exit_error(f'Invalid custom condition format: {conds}')
+        return None
 
     def filter_values(self, root: List[Any], optype: str, conds: Any, path: Optional[str] = None) -> Optional[Value]:
         """ Filter values of a list by the conditions
