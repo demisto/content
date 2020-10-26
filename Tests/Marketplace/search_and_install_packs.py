@@ -236,9 +236,12 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         }
 
         if is_nightly:
+            packs_install = []
             for pack in packs_to_install:
+                pack = [pack]
+                packs_install.append(pack)
                 request_data = {
-                    'packs': [pack],
+                    'packs': packs_install,
                     'ignoreWarnings': True
                 }
         try:
