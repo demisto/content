@@ -305,9 +305,6 @@ class Client(BaseClient):
                                  params=params,
                                  stream=True, resp_type='response')
 
-        if res.status_code == 404:
-            raise DemistoException('http 404')
-
         return _handle_saf(res.iter_lines(decode_unicode=True))
 
 
