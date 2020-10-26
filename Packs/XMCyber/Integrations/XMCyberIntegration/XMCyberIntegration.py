@@ -770,8 +770,6 @@ def main() -> None:
             # xmcyber-command-name: function_command
             "xmcyber-get-version": get_version_command,
             "xmcyber-is-version-supported": is_xm_version_supported_command,
-            "xmcyber-breachpoint-update": breachpoint_update_command,
-            "xmcyber-critical-asset-add": critical_asset_add_command,
             "xmcyber-affected-critical-assets-list": affected_critical_assets_list_command,
             "xmcyber-affected-entities-list": affected_entities_list_command,
             "xmcyber-entity-get": entity_get_command,
