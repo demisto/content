@@ -14,7 +14,7 @@ since 2010.
 This integration uses Farsight Security’s DNSDB solution to interactively
 lookup rich, historical DNS information – either as playbook tasks or through
 API calls in the War Room – to access rdata and rrset records.  It was
-integrated and tested with version 1 of the DNSDB API.
+integrated and tested with version 2 of the DNSDB API.
 
 ## Configure DNSDB v2 on Cortex XSOAR
 
