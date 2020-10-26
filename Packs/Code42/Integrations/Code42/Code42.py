@@ -8,6 +8,8 @@ import requests
 import py42.sdk
 import py42.settings
 from datetime import datetime
+from py42.services.detectionlists.departing_employee import DepartingEmployeeFilters
+from py42.services.detectionlists.high_risk_employee import HighRiskEmployeeFilters
 from py42.sdk.queries.fileevents.file_event_query import FileEventQuery
 from py42.sdk.queries.fileevents.filters import (
     MD5,
@@ -84,21 +86,6 @@ FILE_CONTEXT_FIELD_MAPPER = {
     "md5Checksum": "MD5",
     "sha256Checksum": "SHA256",
     "osHostName": "Hostname",
-}
-
-CODE42_FILE_CATEGORY_MAPPER = {
-    "SourceCode": "SOURCE_CODE",
-    "Audio": "AUDIO",
-    "Executable": "EXECUTABLE",
-    "Document": "DOCUMENT",
-    "Image": "IMAGE",
-    "PDF": "PDF",
-    "Presentation": "PRESENTATION",
-    "Script": "SCRIPT",
-    "Spreadsheet": "SPREADSHEET",
-    "Video": "VIDEO",
-    "VirtualDiskImage": "VIRTUAL_DISK_IMAGE",
-    "Archive": "ARCHIVE",
 }
 
 SECURITY_EVENT_HEADERS = [
@@ -198,7 +185,7 @@ class Code42Client(BaseClient):
     def get_all_departing_employees(self, results, filter_type):
         res = []
         results = int(results) if results else 50
-        filter_type = filter_type if filter_type else "OPEN"
+        filter_type = filter_type if filter_type else DepartingEmployeeFilters.OPEN
         pages = self._get_sdk().detectionlists.departing_employee.get_all(filter_type=filter_type)
         for page in pages:
             page_json = json.loads(page.text)
@@ -236,7 +223,7 @@ class Code42Client(BaseClient):
     def get_all_high_risk_employees(self, risk_tags, results, filter_type):
         risk_tags = argToList(risk_tags)
         results = int(results) if results else 50
-        filter_type = filter_type if filter_type else "OPEN"
+        filter_type = filter_type if filter_type else HighRiskEmployeeFilters.OPEN
         res = []
         pages = self._get_sdk().detectionlists.high_risk_employee.get_all(filter_type=filter_type)
         for page in pages:
@@ -538,8 +525,24 @@ def _create_exposure_filter(exposure_arg):
     return ExposureType.is_in(exposure_arg)
 
 
-def _get_file_category_value(key):
-    return CODE42_FILE_CATEGORY_MAPPER.get(key, "UNCATEGORIZED")
+def get_file_category_value(key):
+    # Meant to handle all possible cases
+    key = key.lower().replace("-", "").replace("_", "")
+    category_map = {
+        "sourcecode": FileCategory.SOURCE_CODE,
+        "audio": FileCategory.AUDIO,
+        "executable": FileCategory.EXECUTABLE,
+        "document": FileCategory.DOCUMENT,
+        "image": FileCategory.IMAGE,
+        "pdf": FileCategory.PDF,
+        "presentation": FileCategory.PRESENTATION,
+        "script": FileCategory.SCRIPT,
+        "spreadsheet": FileCategory.SPREADSHEET,
+        "video": FileCategory.VIDEO,
+        "virtualdiskimage": FileCategory.VIRTUAL_DISK_IMAGE,
+        "archive": FileCategory.ZIP,
+    }
+    return category_map.get(key, "UNCATEGORIZED")
 
 
 class ObservationToSecurityQueryMapper(object):
@@ -640,7 +643,7 @@ class ObservationToSecurityQueryMapper(object):
         observed_file_categories = self._observation_data.get("fileCategories")
         if observed_file_categories:
             categories = [
-                _get_file_category_value(c.get("category"))
+                get_file_category_value(c.get("category"))
                 for c in observed_file_categories
                 if c.get("isSignificant") and c.get("category")
             ]
@@ -801,7 +804,7 @@ def departingemployee_remove_command(client, args):
 @logger
 def departingemployee_get_all_command(client, args):
     results = args.get("results", 50)
-    filter_type = args.get("filtertype", "OPEN")
+    filter_type = args.get("filtertype", DepartingEmployeeFilters.OPEN)
     employees = client.get_all_departing_employees(results, filter_type)
     if not employees:
         return CommandResults(
@@ -905,7 +908,7 @@ def highriskemployee_remove_command(client, args):
 def highriskemployee_get_all_command(client, args):
     tags = args.get("risktags")
     results = args.get("results", 50)
-    filter_type = args.get("filtertype", "OPEN")
+    filter_type = args.get("filtertype", HighRiskEmployeeFilters.OPEN)
     employees = client.get_all_high_risk_employees(tags, results, filter_type)
     if not employees:
         return CommandResults(

@@ -11,8 +11,7 @@ configuration:
   name: private_key
   required: true
   type: 14
-description: Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration
-  to send and receive secure MIME data.
+description: Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration to send and receive secure MIME data.
 display: SMIME Messaging
 name: SMIME Messaging
 script:
@@ -43,8 +42,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Encrypts an email message with S/MIME protocol by using a public
-      RSA certificate.
+    description: Encrypts an email message with S/MIME protocol by using a public RSA certificate.
     execution: false
     name: smime-encrypt-email-body
     outputs:
@@ -88,15 +86,14 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Encrypts and signs an email message with S/MIME protocol by using a public
-      RSA certificate.
+    description: Encrypts and signs an email message with S/MIME protocol by using a public RSA certificate.
     execution: false
     name: smime-sign-and-encrypt
     outputs:
     - contextPath: SMIME.SignedAndEncrypted.Message
       description: The raw message to send.
       type: String
-  dockerimage: demisto/m2crypto:1.0.0.1850
+  dockerimage: demisto/m2crypto:1.0.0.10664
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -106,3 +103,4 @@ script:
   subtype: python3
 tests:
 - No tests - added unitest
+fromversion: 5.0.0

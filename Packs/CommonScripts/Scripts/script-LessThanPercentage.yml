@@ -2,15 +2,19 @@ commonfields:
   id: LessThanPercentage
   version: -1
 name: LessThanPercentage
-script: |-
+script: >-
   first = parseFloat(args.firstPercentage);
+
   if (!first) {
       throw 'firstPercentage is not valid: '+args.firstPercentage;
   }
+
   second = parseFloat(args.secondPercentage);
+
   if (!second) {
       throw 'firstPercentage is not valid: '+args.secondPercentage;
   }
+
   if (first < second) {
       return 'less';
   } else {
@@ -30,7 +34,7 @@ outputs:
 - contextPath: less
   description: if firstPercentage < secondPercentage
 - contextPath: more
-  description: if firstPercentage >= secondPercentage 
+  description: if firstPercentage >= secondPercentage
 args:
 - name: firstPercentage
   description: first percentage
@@ -40,3 +44,4 @@ args:
   description: second percentage
   required: true
 scripttarget: 0
+fromversion: 5.0.0

@@ -174,8 +174,8 @@ class PCAP():
         imf_data = {
             'EntryID': self.entry_id,
             'ID': imf_layer.get('Message-ID', -1),
-            'To': imf_layer.get('to'),
-            'From': imf_layer.get('from'),
+            'To': strip(imf_layer.get('to'), ['<', '>']),
+            'From': strip(imf_layer.get('from'), ['<', '>']),
             'Subject': imf_layer.get('subject'),
             'MimeVersion': imf_layer.get('mime-version')
         }
@@ -184,7 +184,12 @@ class PCAP():
     @logger
     def extract_smtp(self, packet):
         smtp_layer = packet.smtp
-        parameters = smtp_layer.req_parameter.split(':')
+
+        if smtp_layer.get_field('req_parameter') is None:
+            parameters = []
+        else:
+            parameters = smtp_layer.req_parameter.split(':')
+
         smtp_data = {'EntryID': self.entry_id,
                      'ID': packet.tcp.seq}
         if len(parameters) == 2:

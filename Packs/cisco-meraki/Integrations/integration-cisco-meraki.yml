@@ -22,13 +22,14 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: >
     /**
        * flatten nested object to top level fields
        * @param {Object | Array<Object>} ob - object to flatten
        * @returns {String} the flatten object
        * { "a": "bla", "b": { "c": "hello", "d": "there" } } => { "a": "bla", "b.c" = "hello", "b.d": "there" }
     */
+
     var flattenObject = function(ob) {
         var toReturn = {};
 
@@ -49,6 +50,7 @@ script:
         return toReturn;
     };
 
+
     /**
        * Converts a demisto table in JSON form to a Markdown table
        * @param {String} name - the name of the table
@@ -56,6 +58,7 @@ script:
        * @param {Array} headers - optinal, the output markdown table will show only this headers (by order)
        * @returns {String} Markdown representation of the original list
     */
+
     var tableToMd = function(name, table, headers) {
 
         if (!(table instanceof Array)){
@@ -94,6 +97,7 @@ script:
         return res;
     }
 
+
     var createTableEntry = function (name, contents, context, headers) {
         return {
             // type
@@ -107,9 +111,11 @@ script:
         };
     }
 
+
     var createTextEntry = function(text) {
         return text;
     }
+
 
     var createMapEntry = function(obj) {
 
@@ -126,10 +132,15 @@ script:
         };
     }
 
+
     var merakiUrlPrefix = 'https://api.meraki.com/api/v0/';
+
     var apiKey = params.apiKey;
+
     var insecure = params.insecure;
+
     var proxy = params.proxy;
+
 
     var sendRequest = function(url, method, body) {
 
@@ -185,11 +196,13 @@ script:
         }
     };
 
+
     /**
        * return a function that transform object from some structure to other
        * @param {Array} fields - array of {from: String, to: String} - to transform by
        * @returns {Function} array from the original string-list
     */
+
     var mapObjFunction = function(mapFields) {
         return function(obj) {
             var res = {};
@@ -200,7 +213,9 @@ script:
         }
     }
 
+
     // maps device api-object to context-object
+
     var mapDeviceFunction = mapObjFunction([
         { from: 'serial', to: 'Serial' },
         { from: 'name', to: 'Name' },
@@ -216,7 +231,9 @@ script:
         { from: 'publicIp', to: 'PublicIp' }
     ]);
 
+
     // maps firewall api-object to context-object
+
     var mapFirewallFunction = mapObjFunction([
         { from: 'comment', to: 'Comment' },
         { from: 'policy', to: 'Policy' },
@@ -225,7 +242,9 @@ script:
         { from: 'destCidr', to: 'DestCidr' }
     ]);
 
+
     // --------- organizations ------- //
+
     var fetchOrganizations = function() {
         // get result from http
         var organizations = sendRequest('organizations');
@@ -241,12 +260,14 @@ script:
         return createTableEntry("Organizations", organizations, context);
     };
 
+
     var getOrganizationLiceseState = function(organizationId, headers) {
         // get result from http
         var license = sendRequest('organizations/' + organizationId + '/licenseState');
 
         return createTableEntry("Organization License State", license, {}, headers);
     };
+
 
     var fetchOrganizationInventory = function(organizationId, headers) {
         // get result from http
@@ -261,7 +282,9 @@ script:
         return createTableEntry("Organization Inventory", devices, context, headers);
     };
 
+
     // --------- networks ------- //
+
 
     var fetchNetworks = function(organizationId, headers) {
          // get result from http
@@ -283,7 +306,9 @@ script:
         return createTableEntry("Networks", networks, context, headers);
     };
 
+
     // --------- devices ------- //
+
 
     var fetchDevices = function(networkId, headers) {
          // get result from http
@@ -297,6 +322,7 @@ script:
 
         return createTableEntry("Devices", devices, context, headers);
     };
+
 
     var fetchDeviceUplink = function(networkId, serial, headers) {
         // get result from http
@@ -312,6 +338,7 @@ script:
         }
         return createTableEntry("Device Uplink", uplinks, context, headers);
     };
+
 
     var fetchDeviceClients = function(serial, timespan, headers) {
         // get result from http
@@ -335,6 +362,7 @@ script:
         return createTableEntry("Clients", clients, context, headers);
     };
 
+
     var getDevice = function(networkId, serial, headers) {
          // get result from http
         var device = sendRequest('networks/' + networkId + '/devices/' + serial);
@@ -348,6 +376,7 @@ script:
         return [createTableEntry("Device " + serial, device, context, headers), createMapEntry(device)];
     };
 
+
     var removeDevice = function(networkId, serial) {
         var res = sendRequest('networks/' + networkId + '/devices/' + serial + '/remove', 'POST');
 
@@ -359,6 +388,7 @@ script:
         }
         return createTextEntry(textResult);
     };
+
 
     var updateDevice = function(networkId, serial, updateArgs) {
         //send update request
@@ -383,6 +413,7 @@ script:
         return createTableEntry("Successfully Updated Device " + serial, device, context);
     }
 
+
     var claimDevice = function(networkId, serial) {
         var url = 'networks/' + networkId + '/devices/claim';
         var body = { serial: serial };
@@ -396,6 +427,7 @@ script:
             resStr = 'Failed to claim device ' + serial + ' to network ' + networkId;
         }
     };
+
 
     var fetchSsids = function(networkId, headers) {
         // get result from http
@@ -423,6 +455,7 @@ script:
         return createTableEntry("SSIDs", ssids, context, headers);
     };
 
+
     var fetchFirewallRules = function(networkId, number, headers) {
         // get result from http
         var firewalls = sendRequest('networks/' + networkId + '/ssids/' + number + '/l3FirewallRules');
@@ -439,6 +472,7 @@ script:
         }
         return createTableEntry("Firewall Rules", firewalls, context, headers);
     };
+
 
     var updateFirewallRules = function(networkId, number, allowLanAccess, removeOthers, rule) {
         var url = 'networks/' + networkId + '/ssids/' + number + '/l3FirewallRules';
@@ -473,7 +507,9 @@ script:
     };
 
 
+
     // --------------------- main -------------------- //
+
     switch (command) {
         case 'test-module':
             fetchOrganizations();
@@ -596,8 +632,7 @@ script:
       description: Table's headers to be shown by order
     outputs:
     - contextPath: Devices
-      description: List of devices, each includes Serial, NetworkId, Model, ClaimedAt,
-        PublicIp & Mac
+      description: List of devices, each includes Serial, NetworkId, Model, ClaimedAt, PublicIp & Mac
     description: List of Inventories for an organization
   - name: meraki-fetch-networks
     arguments:
@@ -608,8 +643,7 @@ script:
       description: Table's headers to be shown by order
     outputs:
     - contextPath: Network
-      description: List of networks, each includes ID, Name, Type, OrganizationId,
-        Tags & TimeZone
+      description: List of networks, each includes ID, Name, Type, OrganizationId, Tags & TimeZone
     description: List the networks in an organization
   - name: meraki-fetch-devices
     arguments:
@@ -620,8 +654,7 @@ script:
       description: Table's headers to be shown by order
     outputs:
     - contextPath: Device
-      description: List of devices, each includes Serial, Name, Lat, Lng, Model, NetworkId,
-        Tags, MAC & Address
+      description: List of devices, each includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC & Address
     description: List the devices in a network
   - name: meraki-fetch-device-uplink
     arguments:
@@ -646,8 +679,7 @@ script:
       description: Table's headers to be shown by order
     outputs:
     - contextPath: SSID
-      description: List of SSIDs, each includes Number, NetworkId, Name, SplashPage,
-        BandSelection, Enabled, AuthMode & WalledGardenRanges
+      description: List of SSIDs, each includes Number, NetworkId, Name, SplashPage, BandSelection, Enabled, AuthMode & WalledGardenRanges
     description: List the SSIDs in a network
   - name: meraki-fetch-clients
     arguments:
@@ -656,14 +688,12 @@ script:
       description: Device serial#
     - name: timespan
       required: true
-      description: ' The timespan(in seconds) for which clients will be fetched. Must
-        be at most one month and in seconds (e.g. 1 day is 86400 seconds).'
+      description: ' The timespan(in seconds) for which clients will be fetched. Must be at most one month and in seconds (e.g. 1 day is 86400 seconds).'
     - name: headers
       description: Table's headers to be shown by order
     outputs:
     - contextPath: Client
-      description: List of clients, each includes ID, MAC, IP, Description, mDNSName,
-        Hostname, Usage & VLAN
+      description: List of clients, each includes ID, MAC, IP, Description, mDNSName, Hostname, Usage & VLAN
     description: List the clients of a device, up to a maximum of a month ago
   - name: meraki-fetch-firewall-rules
     arguments:
@@ -677,8 +707,7 @@ script:
       description: Table's headers to be shown by order
     outputs:
     - contextPath: Firewall
-      description: List of firewalls, each includes Number, NetworkId, Policy, Protocol,
-        DestPort, DestCidr & Comment
+      description: List of firewalls, each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr & Comment
     description: List of L3 firewall rules for an SSID
   - name: meraki-remove-device
     arguments:
@@ -701,8 +730,7 @@ script:
       description: Table's headers to be shown by order
     outputs:
     - contextPath: Device
-      description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId,
-        Tags, MAC & Address
+      description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC & Address
     description: Get a single device
   - name: meraki-update-device
     arguments:
@@ -724,8 +752,7 @@ script:
       description: New longitude of the device
     outputs:
     - contextPath: Device
-      description: Updated evice which includes Serial, Name, Lat, Lng, Model, NetworkId,
-        Tags, MAC & Address
+      description: Updated evice which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC & Address
     description: Update the attributes of a device
   - name: meraki-claim-device
     arguments:
@@ -751,16 +778,14 @@ script:
       predefined:
       - "true"
       - "false"
-      description: allow or deny wireless client access to local LAN, true allows
-        access and false denies access
+      description: allow or deny wireless client access to local LAN, true allows access and false denies access
     - name: policy
       required: true
       auto: PREDEFINED
       predefined:
       - allow
       - deny
-      description: ' Whether or not you want to allow or deny a protocol (value must
-        be ''allow'' or ''deny'')'
+      description: ' Whether or not you want to allow or deny a protocol (value must be ''allow'' or ''deny'')'
     - name: protocol
       required: true
       auto: PREDEFINED
@@ -772,12 +797,10 @@ script:
       description: The type of protocol (must be 'tcp','udp', 'icmp' or 'any')
     - name: destPort
       required: true
-      description: ' The destination port (can be ''any'' or an integer within the
-        range of 1-65535)'
+      description: ' The destination port (can be ''any'' or an integer within the range of 1-65535)'
     - name: destCidr
       required: true
-      description: The destination IP address or subnet in CIDR form, can also be
-        'any'
+      description: The destination IP address or subnet in CIDR form, can also be 'any'
     - name: comment
       description: A note about the rule
     - name: removeOthers
@@ -789,9 +812,9 @@ script:
       description: true to remove all others rule, false to only add rule
     outputs:
     - contextPath: Firewall
-      description: List of firewalls, each includes Number, NetworkId, Policy, Protocol,
-        DestPort, DestCidr & Comment
+      description: List of firewalls, each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr & Comment
     description: update rule to L3 firewall rules of an SSID
 hidden: false
 tests:
 - Cisco-Meraki-Test
+fromversion: 5.0.0

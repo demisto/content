@@ -1,0 +1,991 @@
+id: McAfee ESM Watchlists - Test
+version: -1
+name: McAfee ESM Watchlists - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fcb7be27-749d-4f9e-8e30-ca1f36a85cf4
+    type: start
+    task:
+      id: fcb7be27-749d-4f9e-8e30-ca1f36a85cf4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 1bfcc66c-ab91-4d27-8028-bfc6bb3b3ddb
+    type: regular
+    task:
+      id: 1bfcc66c-ab91-4d27-8028-bfc6bb3b3ddb
+      version: -1
+      name: esm-create-watchlist
+      description: Create a new watchlist.
+      script: esm-create-watchlist
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      name:
+        simple: test_watchlist
+      type:
+        simple: IPAddress
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: daf202e5-1a3d-4a03-8fb8-2a7ac4f6c087
+    type: regular
+    task:
+      id: daf202e5-1a3d-4a03-8fb8-2a7ac4f6c087
+      version: -1
+      name: esm-watchlist-add-entry
+      description: Create a new watchlist entry.
+      script: esm-watchlist-add-entry
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      values:
+        simple: 1.1.1.1
+      watchlist_id: {}
+      watchlist_name:
+        simple: ${McAfeeESM.Watchlist.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: a1fc3182-5cdc-47e9-8950-3a07b1732f0d
+    type: regular
+    task:
+      id: a1fc3182-5cdc-47e9-8950-3a07b1732f0d
+      version: -1
+      name: esm-watchlist-add-entry
+      description: Create a new watchlist entry.
+      script: esm-watchlist-add-entry
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      values:
+        simple: 2.2.2.2,3.3.3.3
+      watchlist_id:
+        simple: ${McAfeeESM.Watchlist.id}
+      watchlist_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: cdf32ef7-8c02-4c7d-8327-615e08500830
+    type: regular
+    task:
+      id: cdf32ef7-8c02-4c7d-8327-615e08500830
+      version: -1
+      name: esm-watchlist-list-entries
+      description: Get watchlist entries.
+      script: esm-watchlist-list-entries
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      limit:
+        simple: "3"
+      offset: {}
+      watchlist_id: {}
+      watchlist_name:
+        simple: test_watchlist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: d990c041-0a4e-4334-8eef-66ec52ad7e22
+    type: condition
+    task:
+      id: d990c041-0a4e-4334-8eef-66ec52ad7e22
+      version: -1
+      name: test add entry
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: McAfeeESM.Watchlist
+                accessor: data
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: McAfeeESM.Watchlist
+                accessor: data
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "1"
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: McAfeeESM.Watchlist
+                accessor: data
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "2"
+            iscontext: true
+          right:
+            value:
+              simple: 3.3.3.3
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 8e9eb4f8-0b27-4dc2-88ff-a60fc3a1f724
+    type: regular
+    task:
+      id: 8e9eb4f8-0b27-4dc2-88ff-a60fc3a1f724
+      version: -1
+      name: esm-delete-watchlist
+      description: Delete a watchlist.
+      script: esm-delete-watchlist
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ids: {}
+      names:
+        simple: test_watchlist
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 8006fe95-43da-4242-8ac7-3af50474f66e
+    type: regular
+    task:
+      id: 8006fe95-43da-4242-8ac7-3af50474f66e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 914fd5db-e54a-434e-8806-f5a9d2d19dc2
+    type: regular
+    task:
+      id: 914fd5db-e54a-434e-8806-f5a9d2d19dc2
+      version: -1
+      name: esm-watchlist-delete-entry
+      description: Delete watchlist entry.
+      script: esm-watchlist-delete-entry
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      values:
+        simple: 1.1.1.1
+      watchlist_id: {}
+      watchlist_name:
+        simple: ${McAfeeESM.Watchlist.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 21f71a1e-de08-4059-821c-e2ff459eb5de
+    type: regular
+    task:
+      id: 21f71a1e-de08-4059-821c-e2ff459eb5de
+      version: -1
+      name: delete data
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: McAfeeESM.Watchlist.[1]
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 4709d5ef-e803-4b18-82c0-f8ff2e44141c
+    type: regular
+    task:
+      id: 4709d5ef-e803-4b18-82c0-f8ff2e44141c
+      version: -1
+      name: esm-watchlist-list-entries
+      description: Get watchlist entries.
+      script: esm-watchlist-list-entries
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      limit: {}
+      offset: {}
+      watchlist_id:
+        simple: ${McAfeeESM.Watchlist.id}
+      watchlist_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 4fd1b303-7cf9-4f7f-82f5-0ba1ff48dd32
+    type: condition
+    task:
+      id: 4fd1b303-7cf9-4f7f-82f5-0ba1ff48dd32
+      version: -1
+      name: test delete entry
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: McAfeeESM.Watchlist
+                accessor: data
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: McAfeeESM.Watchlist
+                accessor: data
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "1"
+            iscontext: true
+          right:
+            value:
+              simple: 3.3.3.3
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: e11e9683-0701-4863-8d76-5b615dd19a7f
+    type: regular
+    task:
+      id: e11e9683-0701-4863-8d76-5b615dd19a7f
+      version: -1
+      name: esm-watchlist-delete-entry
+      description: Delete watchlist entry.
+      script: esm-watchlist-delete-entry
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      values:
+        simple: 2.2.2.2,3.3.3.3
+      watchlist_id:
+        simple: ${McAfeeESM.Watchlist.id}
+      watchlist_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: bc62049a-0e39-4089-8045-1c868102ebaf
+    type: regular
+    task:
+      id: bc62049a-0e39-4089-8045-1c868102ebaf
+      version: -1
+      name: delete data
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: McAfeeESM.Watchlist.[1]
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 6c48a244-f65d-4acf-8e4b-cf9a3f5c3bea
+    type: condition
+    task:
+      id: 6c48a244-f65d-4acf-8e4b-cf9a3f5c3bea
+      version: -1
+      name: test delete entry
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: McAfeeESM.Watchlist.data
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 791a924d-04e2-4f7f-8f6c-3ef3b5126f5d
+    type: regular
+    task:
+      id: 791a924d-04e2-4f7f-8f6c-3ef3b5126f5d
+      version: -1
+      name: esm-watchlist-list-entries
+      description: Get watchlist entries.
+      script: esm-watchlist-list-entries
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      limit: {}
+      offset: {}
+      watchlist_id: {}
+      watchlist_name:
+        simple: ${McAfeeESM.Watchlist.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 0dd43238-b328-4356-8302-af2290958607
+    type: regular
+    task:
+      id: 0dd43238-b328-4356-8302-af2290958607
+      version: -1
+      name: 'set name '
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      append: {}
+      key:
+        simple: watchlist_name
+      stringify: {}
+      value:
+        simple: ${McAfeeESM.Watchlist.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 867fb0ea-275d-4e94-871a-c635666880a8
+    type: regular
+    task:
+      id: 867fb0ea-275d-4e94-871a-c635666880a8
+      version: -1
+      name: esm-get-watchlists
+      description: Gets a list of watchlists names and ids.
+      script: esm-get-watchlists
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      dynamic: {}
+      hidden: {}
+      indexed_only: {}
+      write_only: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 1e7eef88-b647-4ec3-8f54-213afffa74bf
+    type: regular
+    task:
+      id: 1e7eef88-b647-4ec3-8f54-213afffa74bf
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: McAfeeESM.Watchlist
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: d9896a5e-26f5-427f-85d9-8d7912a24f91
+    type: condition
+    task:
+      id: d9896a5e-26f5-427f-85d9-8d7912a24f91
+      version: -1
+      name: test get watchlists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: McAfeeESM.Watchlist.name
+            iscontext: true
+          right:
+            value:
+              simple: watchlist_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: c76c6193-628b-413c-8159-7b087678c2c7
+    type: regular
+    task:
+      id: c76c6193-628b-413c-8159-7b087678c2c7
+      version: -1
+      name: esm-delete-watchlist
+      description: Delete a watchlist.
+      script: esm-delete-watchlist
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      ids: {}
+      names:
+        simple: ${watchlist_name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 68377ca3-4d8a-4be8-8073-7dba96877f3d
+    type: regular
+    task:
+      id: 68377ca3-4d8a-4be8-8073-7dba96877f3d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: McAfeeESM.Watchlist
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: e385ef9a-95d8-4279-8717-53148c1ac553
+    type: regular
+    task:
+      id: e385ef9a-95d8-4279-8717-53148c1ac553
+      version: -1
+      name: esm-get-watchlists
+      description: Gets a list of watchlists names and ids.
+      script: esm-get-watchlists
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      dynamic: {}
+      hidden: {}
+      indexed_only: {}
+      write_only: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: e03d18d4-7744-4916-8253-02854c93f2a6
+    type: condition
+    task:
+      id: e03d18d4-7744-4916-8253-02854c93f2a6
+      version: -1
+      name: test delete watchlist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: McAfeeESM.Watchlist.name
+            iscontext: true
+          right:
+            value:
+              simple: watchlist_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 4eb327c8-54dc-43e8-80e6-f52a7af76874
+    type: title
+    task:
+      id: 4eb327c8-54dc-43e8-80e6-f52a7af76874
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 7b00d07e-d49e-4ccc-8bc6-bd799df14283
+    type: regular
+    task:
+      id: 7b00d07e-d49e-4ccc-8bc6-bd799df14283
+      version: -1
+      name: print error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: error
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 3805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4180,
+        "width": 920,
+        "x": -90,
+        "y": -280
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

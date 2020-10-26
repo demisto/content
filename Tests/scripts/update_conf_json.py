@@ -6,14 +6,12 @@ from datetime import datetime
 from distutils.version import LooseVersion
 
 from demisto_sdk.commands.common.tools import find_type
-from demisto_sdk.commands.common.constants import TEST_PLAYBOOKS_DIR, INTEGRATIONS_DIR, CONF_PATH, PACKS_DIR, FileType
+from demisto_sdk.commands.common.constants import TEST_PLAYBOOKS_DIR, INTEGRATIONS_DIR, CONF_PATH, PACKS_DIR, \
+    FileType
 
+from Tests.scripts.utils.content_packs_util import should_test_content_pack
 
 INITIAL_FROM_VERSION = "4.5.0"
-SKIPPED_PACKS = [
-    'DeprecatedContent',
-    'NonSupported'
-]
 
 
 def get_integration_data(file_path):
@@ -78,10 +76,10 @@ def run():
     existing_test_playbooks = load_test_data_from_conf_json()
 
     for pack_name in os.listdir(PACKS_DIR):
-        if pack_name in SKIPPED_PACKS:
+        pack_path = os.path.join(PACKS_DIR, pack_name)
+        if not should_test_content_pack(pack_name):
             continue
 
-        pack_path = os.path.join(PACKS_DIR, pack_name)
         pack_integrations = []
         pack_test_playbooks = []
 

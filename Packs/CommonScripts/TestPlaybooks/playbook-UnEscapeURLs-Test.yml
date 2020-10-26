@@ -547,8 +547,7 @@ tasks:
       id: 256b6d94-90ba-4093-86fe-ce1ef0064c69
       version: -1
       name: Verify that the output URL is correct
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -850,3 +849,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

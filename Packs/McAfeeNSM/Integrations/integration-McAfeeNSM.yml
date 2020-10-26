@@ -28,12 +28,17 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var session_credentials = '';
+
     var insecure = params.insecure;
+
     // handle '/' at the end of the url
+
     var base_url = params.url.slice(0, params.url.length - params.url.match('/*$')[0].length) + '/sdkapi/';
+
     var proxy = params.proxy;
+
 
     function sendRequest(method, url_suffix, headers, body, params) {
         // add default headers
@@ -71,6 +76,7 @@ script:
         return JSON.parse(res.Body);
     }
 
+
     function validateTimeArgs(time_period, start_time, end_time) {
         if (time_period === 'CUSTOM') {
             if ((start_time === undefined) || (end_time === undefined)) {
@@ -79,6 +85,7 @@ script:
         }
         return true;
     }
+
 
     function attacks_to_entry(title, attacks) {
         return createEntry(attacks, {
@@ -95,6 +102,7 @@ script:
         undefined, pascalToSpace);
     }
 
+
     function IPS_policies_to_entry(title, ips_policies) {
         return createEntry(ips_policies, {
             contextPath : 'NSM.IPSPolicies(val.ID && val.ID === obj.ID)',
@@ -109,6 +117,7 @@ script:
         },
         undefined, pascalToSpace);
     }
+
 
     function IPS_policy_to_entry(title, ips_policy, policy_id) {
         ips_policy.ID = policy_id;
@@ -131,6 +140,7 @@ script:
         },
         undefined, pascalToSpace);
     }
+
 
     function alerts_to_entry(title, alerts) {
         return createEntry(alerts, {
@@ -160,6 +170,7 @@ script:
         },
         undefined, pascalToSpace);
     }
+
 
     function alert_to_entry(title, alert) {
         /// single alert object has different structure than the alerts of alerts_to_entry.
@@ -228,6 +239,7 @@ script:
         return entry;
     }
 
+
     function domains_to_entry(title, domains) {
         return createEntry(domains, {
             contextPath : 'NSM.Domains(val.ID && val.ID === obj.ID)',
@@ -239,6 +251,7 @@ script:
         },
         undefined, pascalToSpace);
     }
+
 
     function sensors_to_entry(title, sensors) {
         return createEntry(sensors, {
@@ -256,6 +269,7 @@ script:
         undefined, pascalToSpace);
     }
 
+
     function login() {
         var cmd_url = "session";
         var credentials = btoa(params.credentials.identifier + ':' + params.credentials.password);
@@ -266,6 +280,7 @@ script:
         session_credentials = btoa(res.session + ':' + res.userId);
         return res;
     }
+
 
     function get_attacks(attack_id) {
         var cmd_url, res;
@@ -287,6 +302,7 @@ script:
         }
     }
 
+
     function get_IPS_policies(domain_id) {
         var cmd_url = 'domain/' + domain_id + '/ipspolicies';
         var res = sendRequest('GET', cmd_url, {}, '');
@@ -294,12 +310,14 @@ script:
         return IPS_policies_to_entry(res.PolicyDescriptorDetailsList.length + ' IPS Policies', res.PolicyDescriptorDetailsList);
     }
 
+
     function get_IPS_policy_details(policy_id) {
         var cmd_url = 'ipspolicy/' + policy_id;
         var res = sendRequest('GET', cmd_url, {}, '');
 
         return IPS_policy_to_entry('IPS Policy ' + policy_id, res.PolicyDescriptor, policy_id);
     }
+
 
     function get_sensors(domain_id) {
         var cmd_url = 'sensors';
@@ -310,6 +328,7 @@ script:
 
         return sensors_to_entry('Sensors', res.SensorDescriptor);
     }
+
 
     function get_domains(domain_id) {
         var cmd_url = 'domain';
@@ -324,6 +343,7 @@ script:
             return domains_to_entry((res.length || '') + ' Domains', [res]);
         }
     }
+
 
     function all_alerts_url(state, time_period, start_time, end_time, search, filter) {
         var cmd_url = 'alerts';
@@ -352,12 +372,14 @@ script:
         return cmd_url + encodeToURLQuery(cmd_args);
     }
 
+
     function get_alerts(state, time_period, start_time, end_time, search, filter) {
         var cmd_url = all_alerts_url(state, time_period, start_time, end_time, search, filter);
         var res = sendRequest('GET', cmd_url, {}, '');
 
         return alerts_to_entry('Showing ' + res.retrievedAlertsCount + '/' + res.totalAlertsCount + ' Alerts', res.alertsList);
     }
+
 
     function update_alerts(state, time_period, start_time, end_time, search, filter, new_state, new_assignee) {
         var cmd_url = all_alerts_url(state, time_period, start_time, end_time, search, filter);
@@ -382,6 +404,7 @@ script:
         return get_alerts(state, time_period, start_time, end_time);
     }
 
+
     function get_alert_details(alert_id, sensor_id) {
         var cmd_url = 'alerts/' + alert_id;
         var query_params = {
@@ -391,12 +414,14 @@ script:
         return alert_to_entry('Alert ' + res.name, res);
     }
 
+
     function get_ntba_monitors() {
         var cmd_url = 'ntbamonitors';
         var res = sendRequest('GET', cmd_url, {}, '');
 
         return res;
     }
+
 
     function get_events(nba_id, hash, duration) {
         var cmd_url = nba_id + '/endpointintelligence/' + hash + '/events?duration=' + duration;
@@ -405,7 +430,9 @@ script:
         return res.eventList;
     }
 
+
     login();
+
     switch (command) {
         case 'nsm-get-sensors':
             return get_sensors(args.domainID);
@@ -485,11 +512,9 @@ script:
       - CUSTOM
       description: Time Period
     - name: start_time
-      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-        only
+      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only
     - name: end_time
-      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-        only
+      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time only
     - name: state
       auto: PREDEFINED
       predefined:
@@ -560,11 +585,9 @@ script:
       - CUSTOM
       description: Time Period
     - name: start_time
-      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-        only
+      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only
     - name: end_time
-      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-        only
+      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time only
     - name: new_state
       auto: PREDEFINED
       predefined:
@@ -737,3 +760,4 @@ script:
       type: string
     description: Get all available attack definitions in NSM
   runonce: false
+fromversion: 5.0.0

@@ -11,6 +11,17 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Both
+  required: false
+  type: 15
 - display: Server URL (copy URL from XDR - click ? to see more info.)
   name: url
   required: true
@@ -23,6 +34,37 @@ configuration:
   name: apikey
   required: true
   type: 4
+- display: HTTP Timeout
+  additionalinfo: Sets the timeout of the HTTP requests sent to Cortex XDR API (in seconds).
+  defaultvalue: 120
+  name: timeout
+  required: false
+  type: 0
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: 'true'
+  display: Fetch incident alerts and artifacts
+  hidden: false
+  name: extra_data
+  required: false
+  type: 8
+- additionalinfo: From XSOAR version 6.0.0. If selected, for every incident fetched from Cortex XDR to XSOAR
+    - the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected.
+    For example, if you change the onwer in Cortex XSOAR, the new owner will also be applied in Cortex XDR. However, if you now change the owner back in Cortex XDR,
+    it will not be reflected back to Cortex XSOAR. In addition, for this change to be reflected, the users must exist in both Cortex XSOAR and Cortex XDR.
+  display: Sync Incident Owners
+  hidden: false
+  name: sync_owners
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -31,13 +73,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
-  required: false
-  type: 0
 description: Cortex XDR is the world's first detection and response app that natively
-  integrates network, endpoint and cloud data to stop sophisticated attacks.
+  integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
 script:
@@ -50,22 +87,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returned incidents that were created on or after the specified
-        date/time, in the format 2019-12-31T23:59:00.
+      description: Returned incidents that were created on or after the specified date/time, in the format 2019-12-31T23:59:00.
       isArray: false
       name: gte_creation_time
       required: false
       secret: false
     - default: false
-      description: Filters returned incidents that were created on or before the specified
-        date/time, in the format 2019-12-31T23:59:00.
+      description: Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.
       isArray: false
       name: lte_modification_time
       required: false
       secret: false
     - default: false
-      description: Filters returned incidents that were modified on or after the specified
-        date/time, in the format 2019-12-31T23:59:00.
+      description: Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.
       isArray: false
       name: gte_modification_time
       required: false
@@ -77,23 +111,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters returned incidents that were created on or after the specified
-        date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+      description: Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
       isArray: false
       name: since_creation_time
       required: false
       secret: false
     - default: false
-      description: Filters returned incidents that were modified on or after the specified
-        date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+      description: Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
       isArray: false
       name: since_modification_time
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sorts returned incidents by the date/time that the incident was
-        last modified ("asc" - ascending, "desc" - descending).
+      description: Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending).
       isArray: false
       name: sort_by_modification_time
       predefined:
@@ -103,8 +134,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sorts returned incidents by the date/time that the incident was
-        created ("asc" - ascending, "desc" - descending).
+      description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
       isArray: false
       name: sort_by_creation_time
       predefined:
@@ -121,8 +151,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Maximum number of incidents to return per page. The default and
-        maximum is 100.
+      description: Maximum number of incidents to return per page. The default and maximum is 100.
       isArray: false
       name: limit
       required: false
@@ -138,8 +167,7 @@ script:
       description: Unique ID assigned to each returned incident.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
-      description: Incident severity assigned by the user. This does not affect the
-        calculated severity. Can be "low", "medium", "high"
+      description: Incident severity assigned by the user. This does not affect the calculated severity. Can be "low", "medium", "high"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_description
       description: Incident description provided by the user.
@@ -170,7 +198,7 @@ script:
       type: number
     - contextPath: PaloAltoNetworksXDR.Incident.severity
       description: |
-        Calculated severity of the incident
+        Calculated severity of the incident. Valid values are:
         "low","medium","high"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.low_severity_alert_count
@@ -178,7 +206,7 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.status
       description: |
-        Current status of the incident. Can be "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive", or "resolved_other".
+        Current status of the incident. Valid values are: "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive", or "resolved_other".
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
       description: Dynamic calculated description of the incident.
@@ -213,8 +241,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns additional data for the specified incident, for example,
-      related alerts, file artifacts, network artifacts, and so on.
+    description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
     execution: false
     name: xdr-get-incident-extra-data
     outputs:
@@ -232,11 +259,11 @@ script:
       type: Date
     - contextPath: PaloAltoNetworksXDR.Incident.status
       description: |-
-        Current status of the incident:
+        Current status of the incident. Valid values are:
         "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_other"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.severity
-      description: Calculated severity of the incident "low","medium","high"
+      description: 'Calculated severity of the incident. Valid values are: "low","medium","high"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
       description: Dynamic calculated description of the incident.
@@ -273,7 +300,7 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
       description: Incident severity assigned by the user. This does not affect the
-        calculated severity low medium high
+        calculated severity of low, medium, or high.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_description
       description: Incident description provided by the user.
@@ -282,7 +309,7 @@ script:
       description: A link to the incident view on XDR.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.starred
-      description: Incident starred
+      description: Incident starred.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.alert_id
       description: Unique ID for each alert.
@@ -294,14 +321,13 @@ script:
       description: Source of the alert. The product/vendor this alert came from.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.severity
-      description: Severity of the alert.,"low","medium","high"""
+      description: 'Severity of the alert.Valid values are: "low","medium","high"""'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.name
       description: Calculated name of the alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.category
-      description: Category of the alert, for example, Spyware Detected via Anti-Spyware
-        profile.
+      description: Category of the alert, for example, Spyware Detected via Anti-Spyware profile.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.description
       description: Textual description of the alert.
@@ -316,20 +342,20 @@ script:
       description: User name involved with the alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.event_type
-      description: Event type "Process Execution","Network Event","File Event","Registry
-        Event","Injection Event","Load Image Event","Windows Event Log"
+      description: 'Event type. Valid values are: "Process Execution","Network Event","File Event","Registry
+        Event","Injection Event","Load Image Event","Windows Event Log"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action
-      description: The action that triggered the alert. "REPORTED", "BLOCKED", "POST_DETECTED",
+      description: 'The action that triggered the alert. Valid values are: "REPORTED", "BLOCKED", "POST_DETECTED",
         "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1",
         "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8",
         "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15",
         "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4",
         "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22",
-        "DETECTED_23"
+        "DETECTED_23"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_pretty
-      description: The action that triggered the alert "Detected (Reported)" "Prevented
+      description: 'The action that triggered the alert. Valid values are: "Detected (Reported)" "Prevented
         (Blocked)" "Detected (Post Detected)" "Detected (Scanned)" "Detected (Download)"
         "Detected (Prompt Allow)" "Prevented (Prompt Block)" "Detected" "Prevented
         (Denied The Session)" "Prevented (Dropped The Session)" "Prevented (Dropped
@@ -344,94 +370,94 @@ script:
         Or Application)" "Prevented (Block)" "Detected (Allowed The Session)" "Detected
         (Raised An Alert)" "Detected (Syncookie Sent)" "Detected (Forward)" "Detected
         (Wildfire Upload Success)" "Detected (Wildfire Upload Failure)" "Detected
-        (Wildfire Upload Skip)" "Detected (Sinkhole)"
+        (Wildfire Upload Skip)" "Detected (Sinkhole)"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_image_name
-      description: Image name
+      description: Image name.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_command_line
-      description: Command line
+      description: Command line.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_status
-      description: Signature status "Signed" "Invalid Signature" "Unsigned" "Revoked"
-        "Signature Fail" "N/A" "Weak Hash"
+      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked"
+        "Signature Fail" "N/A" "Weak Hash".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_vendor
-      description: Singature vendor name
+      description: Singature vendor name.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_image_name
-      description: Image name
+      description: Image name.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_command_line
-      description: Command line
+      description: Command line.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_signature_status
-      description: Signature status "Signed" "Invalid Signature" "Unsigned" "Revoked"
-        "Signature Fail" "N/A" "Weak Hash"
+      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked"
+        "Signature Fail" "N/A" "Weak Hash"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_signature_vendor
-      description: Signature vendor
+      description: Signature vendor.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_causality_id
-      description: Causality id
+      description: Causality id.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_image_name
-      description: Image name
+      description: Image name.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_image_command_line
-      description: Command line
+      description: Command line.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_image_sha256
-      description: Image SHA256
+      description: Image SHA256.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_signature_status
-      description: Signature status "Signed" "Invalid Signature" "Unsigned" "Revoked"
-        "Signature Fail" "N/A" "Weak Hash"
+      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked"
+        "Signature Fail" "N/A" "Weak Hash"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_signature_vendor
-      description: Signature vendor name
+      description: Signature vendor name.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_file_path
-      description: File path
+      description: File path.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_file_md5
-      description: File MD5
+      description: File MD5.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_file_sha256
-      description: File SHA256
+      description: File SHA256.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_registry_data
-      description: Registry data
+      description: Registry data.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_registry_full_key
-      description: Registry full key
+      description: Registry full key.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_local_ip
-      description: Local IP
+      description: Local IP.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_local_port
-      description: Local port
+      description: Local port.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_remote_ip
-      description: Remote IP
+      description: Remote IP.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_remote_port
-      description: Remote port
+      description: Remote port.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_external_hostname
-      description: External hostname
+      description: External hostname.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.fw_app_id
-      description: Firewall app id
+      description: Firewall app id.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.is_whitelisted
-      description: Is whitelisted "Yes" "No"
+      description: 'Is the alert whitelisted. Valid values are: "Yes" "No"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.starred
-      description: Alert starred
+      description: Alert starred.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
-      description: Network artifact type "IP"
+      description: Network artifact type.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_port
       description: The remote port related to the artifact.
@@ -449,15 +475,15 @@ script:
       description: The domain related to the artifact.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
-      description: The artifact type. "META", "GID", "CID", "HASH", "IP", "DOMAIN",
-        "REGISTRY", "HOSTNAME"
+      description: 'The artifact type. Valid values are: "META", "GID", "CID", "HASH", "IP", "DOMAIN",
+        "REGISTRY", "HOSTNAME"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_country
-      description: The country related to the artifact
+      description: The country related to the artifact.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status
-      description: Digital signature status of the file. "SIGNATURE_UNAVAILABLE" "SIGNATURE_SIGNED"
-        "SIGNATURE_INVALID" "SIGNATURE_UNSIGNED" "SIGNATURE_WEAK_HASH"
+      description: 'Digital signature status of the file. Valid values are: "SIGNATURE_UNAVAILABLE" "SIGNATURE_SIGNED"
+        "SIGNATURE_INVALID" "SIGNATURE_UNSIGNED" "SIGNATURE_WEAK_HASH"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_process
       description: Whether the file artifact is related to a process execution.
@@ -466,27 +492,27 @@ script:
       description: Name of the file.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_wildfire_verdict
-      description: The file verdict, calculated by Wildfire. "BENIGN" "MALWARE" "GRAYWARE"
-        "PHISING" "UNKNOWN"
+      description: 'The file verdict, calculated by Wildfire. Valid values are: "BENIGN" "MALWARE" "GRAYWARE"
+        "PHISING" "UNKNOWN".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.alert_count
       description: Number of alerts related to the artifact.
       type: number
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_malicious
-      description: Whether the artifact is malicious, decided by the Wildfire verdic
+      description: Whether the artifact is malicious, as decided by the Wildfire verdict.
       type: boolean
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_manual
       description: Whether the artifact was created by the user (manually).
       type: boolean
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.type
-      description: The artifact type "META" "GID" "CID" "HASH" "IP" "DOMAIN" "REGISTRY"
-        "HOSTNAME"
+      description: 'The artifact type. Valid values are: "META" "GID" "CID" "HASH" "IP" "DOMAIN" "REGISTRY"
+        "HOSTNAME"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
-      description: SHA-256 hash of the file
+      description: SHA-256 hash of the file.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_vendor_name
-      description: File signature vendor name
+      description: File signature vendor name.
       type: String
     - contextPath: Account.Username
       description: The username in the relevant system.
@@ -496,8 +522,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: XDR incident ID. You can get the incident ID from the output of
-        the 'xdr-get-incidents' command or the 'xdr-get-incident-extra-details' command.
+      description: XDR incident ID. You can get the incident ID from the output of the 'xdr-get-incidents' command or the 'xdr-get-incident-extra-details' command.
       isArray: false
       name: incident_id
       required: true
@@ -514,7 +539,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email address of the user to assigned to the incident.
+      description: Email address of the user to assign to the incident.
       isArray: false
       name: assigned_user_mail
       required: false
@@ -527,8 +552,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED,
-        RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER).
+      description: 'Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED,
+        RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER.'
       isArray: false
       name: status
       predefined:
@@ -542,8 +567,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comment explaining why the incident was resolved. This should be
-        set when the incident is resolved.
+      description: Comment explaining why the incident was resolved. This should be set when the incident is resolved.
       isArray: false
       name: resolve_comment
       required: false
@@ -560,7 +584,7 @@ script:
     deprecated: false
     description: Updates one or more fields of a specified incident. Missing fields
       will be ignored. To remove the assignment for an incident, pass a null value
-      in assignee email argument.
+      in the assignee email argument.
     execution: false
     name: xdr-update-incident
   - arguments:
@@ -577,7 +601,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: String value for the source IP address
+      description: String value for the source IP address.
       isArray: false
       name: local_ip
       required: false
@@ -606,8 +630,8 @@ script:
       secret: false
     - default: false
       description: Integer value representing the epoch of the time the alert occurred
-        in milliseconds or String value of date format 2019-10-23T10:00:00. If not
-        set then the event time will be defined as now.
+        in milliseconds, or a string value in date format 2019-10-23T10:00:00. If not
+        set, the event time will be defined as now.
       isArray: false
       name: event_timestampt
       required: false
@@ -615,7 +639,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: |-
-        String value of alert severity:
+        String value of alert severity. Valid values are:
         Informational, Low, Medium, High, or Unknown
       isArray: false
       name: severity
@@ -628,13 +652,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: String defining the alert name
+      description: String defining the alert name.
       isArray: false
       name: alert_name
       required: true
       secret: false
     - default: false
-      description: String defining the alert description
+      description: String defining the alert description.
       isArray: false
       name: alert_description
       required: false
@@ -654,16 +678,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Upload alerts in CEF format from external alert sources. After you
-      map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in
-      related incidents and views. You can send 600 requests per minute. Each request
-      can contain a maximum of 60 alerts.
+    description: Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
     execution: false
     name: xdr-insert-cef-alerts
   - arguments:
     - default: false
-      description: The endpoint ID (string) to isolate. You can retrieve the string
-        from the xdr-get-endpoints command.
+      description: The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints command.
       isArray: false
       name: endpoint_id
       required: true
@@ -678,8 +698,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The endpoint ID (string) for which to reverse the isolation. You
-        can retrieve it from the xdr-get-endpoints command.
+      description: The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints command.
       isArray: false
       name: endpoint_id
       required: true
@@ -700,8 +719,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "A comma-separated list of distribution package names or installation\
-        \ package names. \nExample: dist_name1,dist_name2"
+      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
       isArray: true
       name: dist_name
       required: false
@@ -724,8 +742,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The endpoint platform. Can be "windows", "linux", "macos", or
-        "android". '
+      description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
       isArray: true
       name: platform
       predefined:
@@ -745,8 +762,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: '"Specifies whether the endpoint was isolated or unisolated. Can
-        be "isolated" or "unisolated".'
+      description: 'Specifies whether the endpoint was isolated or unisolated.'
       isArray: false
       name: isolate
       predefined:
@@ -815,16 +831,14 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Maximum number of endpoints to return per page. The default and
-        maximum is 30.
+      description: Maximum number of endpoints to return per page. The default and maximum is 30.
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether to sort endpoints by the first time or last time
-        they were seen. Can be "first_seen" or "last_seen".
+      description: Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen".
       isArray: false
       name: sort_by
       predefined:
@@ -835,8 +849,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: asc
-      description: The order by which to sort results. Can be "asc" (ascending) or
-        "desc" ( descending). Default set to asc.
+      description: The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc.
       isArray: false
       name: sort_order
       predefined:
@@ -846,7 +859,7 @@ script:
       secret: false
     deprecated: false
     description: Gets a list of endpoints, according to the passed filters. If there
-      are no filters it will return all endpoints. Filtering by multiple fields will
+      are no filters, all endpoints are returned. Filtering by multiple fields will
       be concatenated using AND condition (OR is not supported). Maximum result set
       size is 100. Offset is the zero-based number of endpoint from the start of the
       result set (start by counting from 0).
@@ -863,7 +876,7 @@ script:
       description: The endpoint type.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
-      description: The status of the endpoint'
+      description: The status of the endpoint.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.os_type
       description: The endpoint OS type.
@@ -923,8 +936,7 @@ script:
       description: Endpoint OS.
       type: String
   - deprecated: false
-    description: Gets a list of all the agent versions to use for creating a distribution
-      list.
+    description: Gets a list of all the agent versions to use for creating a distribution list.
     execution: false
     name: xdr-get-distribution-versions
     outputs:
@@ -970,8 +982,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: agent_version returned from xdr-get-distribution-versions. Not
-        required for Android platfom
+      description: agent_version returned from xdr-get-distribution-versions. Not required for Android platfom
       isArray: false
       name: agent_version
       required: true
@@ -983,10 +994,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates an installation package. This is an asynchronous call that
-      returns the distribution ID. This does not mean that the creation succeeded.
-      To confirm that the package has been created, check the status of the distribution
-      by running the Get Distribution Status API.
+    description: Creates an installation package. This is an asynchronous call that returns the distribution ID. This does not mean that the creation succeeded. To confirm that the package has been created, check the status of the distribution by running the Get Distribution Status API.
     execution: false
     name: xdr-create-distribution
     outputs:
@@ -1152,17 +1160,14 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Maximum number of audit logs to return per page. The default and
-        maximum is 30.
+      description: Maximum number of audit logs to return per page. The default and maximum is 30.
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies the field by which to sort the results. By default the
-        sort is defined as creation-time and DESC. Can be "type", "sub_type", "result",
-        or "timestamp".
+      description: Specifies the field by which to sort the results. By default the sort is defined as creation-time and DESC. Can be "type", "sub_type", "result", or "timestamp".
       isArray: false
       name: sort_by
       predefined:
@@ -1175,8 +1180,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: desc
-      description: 'The sort order. Can be "asc" (ascending) or "desc" (descending).
-        Default set to "desc". '
+      description: The sort order. Can be "asc" (ascending) or "desc" (descending). Default set to "desc".
       isArray: false
       name: sort_order
       predefined:
@@ -1186,7 +1190,7 @@ script:
       secret: false
     deprecated: false
     description: Gets management logs. You can filter by multiple fields, which will
-      be concatenated using AND condition (OR is not supported). Maximum result set
+      be concatenated using the AND condition (OR is not supported). Maximum result set
       size is 100. Offset is the zero-based number of management logs from the start
       of the result set (start by counting from 0).
     execution: false
@@ -1246,8 +1250,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The report type. Can be "Installation", "Policy", "Action", "Agent
-        Service", "Agent Modules", or "Agent Status".
+      description: The report type. Can be "Installation", "Policy", "Action", "Agent Service", "Agent Modules", or "Agent Status".
       isArray: true
       name: type
       predefined:
@@ -1301,8 +1304,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The result type. Can be "Success" or "Fail". If not passed, returns
-        all event reports.
+      description: The result type. Can be "Success" or "Fail". If not passed, returns all event reports.
       isArray: true
       name: result
       predefined:
@@ -1342,16 +1344,14 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: The maximum number of reports to return. Default and maximum is
-        30.
+      description: The maximum number of reports to return. Default and maximum is 30.
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The field by which to sort results. Can be "type", "category",
-        "trapsversion", "timestamp", or "domain").
+      description: The field by which to sort results. Can be "type", "category", "trapsversion", "timestamp", or "domain").
       isArray: false
       name: sort_by
       predefined:
@@ -1365,8 +1365,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: asc
-      description: 'The sort order. Can be "asc" (ascending) or "desc" (descending).
-        Default is "asc". '
+      description: The sort order. Can be "asc" (ascending) or "desc" (descending). Default is "asc".
       isArray: false
       name: sort_order
       predefined:
@@ -1376,7 +1375,7 @@ script:
       secret: false
     deprecated: false
     description: Gets agent event reports. You can filter by multiple fields, which
-      will be concatenated using AND condition (OR is not supported). Maximum result
+      will be concatenated using the AND condition (OR is not supported). Maximum result
       set size is 100. Offset is the zero-based number of reports from the start of
       the result set (start by counting from 0).
     execution: false
@@ -1420,8 +1419,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: String that represents a list of hashed files you want to blacklist.
-        Must be a valid SHA256 hash.
+      description: String that represents a list of hashed files you want to blacklist. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
@@ -1433,14 +1431,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Blacklists requested files which have not already been blacklisted
-      or whitelisted.
+    description: Blacklists requested files which have not already been blacklisted or whitelisted.
     execution: false
     name: xdr-blacklist-files
   - arguments:
     - default: false
-      description: String that represents a list of hashed files you want to whitelist.
-        Must be a valid SHA256 hash.
+      description: String that represents a list of hashed files you want to whitelist. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
@@ -1452,8 +1448,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Whitelists requested files which have not already been blacklisted
-      or whitelisted.
+    description: Whitelists requested files which have not already been blacklisted or whitelisted.
     execution: false
     name: xdr-whitelist-files
   - arguments:
@@ -1470,15 +1465,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: String that represents the file’s hash. Must be a valid SHA256
-        hash.
+      description: String that represents the file’s hash. Must be a valid SHA256 hash.
       isArray: false
       name: file_hash
       required: true
       secret: false
     deprecated: false
-    description: Quarantines a file on selected endpoints. You can select up to 1000
-      endpoints.
+    description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     execution: false
     name: xdr-quarantine-files
   - arguments:
@@ -1506,16 +1499,13 @@ script:
     name: xdr-get-quarantine-status
   - arguments:
     - default: false
-      description: String that represents the file in hash. Must be a valid SHA256
-        hash.
+      description: String that represents the file in hash. Must be a valid SHA256 hash.
       isArray: false
       name: file_hash
       required: true
       secret: false
     - default: false
-      description: String that represents the endpoint ID. If you do not enter a specific
-        endpoint ID, the request will run restore on all endpoints which relate to
-        the quarantined file you defined.
+      description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
       isArray: false
       name: endpoint_id
       required: false
@@ -1608,13 +1598,40 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Runs a scan on a selected endpoint. To scan all endpoints, run this
-      command with no filters.
+    description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with no filters.
     execution: true
     name: xdr-endpoint-scan
-  dockerimage: demisto/python3:3.8.5.10845
+  - deprecated: false
+    description: Get mapping fields from remote incident. Please note that this method
+      will not update the current incident, it's here for debugging purposes.
+    execution: false
+    name: get-mapping-fields
+  - arguments:
+    - default: false
+      description: The remote incident id
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: UTC timestamp in seconds. The incident is only updated if it was
+        modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get remote data from a remote incident. Please note that this method
+      will not update the current incident, it's here for debugging purposes.
+    execution: false
+    name: get-remote-data
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
@@ -1623,6 +1640,7 @@ script:
   type: python
 tests:
 - Test XDR Playbook
-fromversion: 4.1.0
+fromversion: 5.0.0
 defaultclassifier: Cortex XDR - IR
 defaultmapperin: Cortex XDR - IR-mapper
+defaultmapperout: Cortex XDR - IR-out-mapper

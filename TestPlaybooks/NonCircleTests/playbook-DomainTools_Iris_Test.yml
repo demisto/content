@@ -1,0 +1,852 @@
+id: DomainTools Iris - Test
+version: -1
+fromversion: 5.0.0
+name: DomainTools Iris - Test
+description: DomainTools Iris Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1209a22b-1c61-4986-8186-9b3833bd555a
+    type: start
+    task:
+      id: 1209a22b-1c61-4986-8186-9b3833bd555a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 74f3d295-1153-4905-8b05-a9f9242252d4
+    type: regular
+    task:
+      id: 74f3d295-1153-4905-8b05-a9f9242252d4
+      version: -1
+      name: Profile Domain
+      description: Get a complete profile of the domain provided.
+      script: DomainTools Iris|||domain
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      domain:
+        simple: ${inputs.domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: a6350fde-972d-4dfa-89e5-564730eb2ce7
+    type: regular
+    task:
+      id: a6350fde-972d-4dfa-89e5-564730eb2ce7
+      version: -1
+      name: Get Analytics Data for Domain
+      script: DomainTools Iris|||domaintoolsiris-analytics
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domain:
+        simple: ${inputs.domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 8e3df2c4-9332-434a-8e6a-0939d1a43eda
+    type: regular
+    task:
+      id: 8e3df2c4-9332-434a-8e6a-0939d1a43eda
+      version: -1
+      name: Get Threat Profile for Domain
+      script: DomainTools Iris|||domaintoolsiris-threat-profile
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domain:
+        simple: ${inputs.domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 4baa4207-6438-4ee7-8ee1-4bf990cbfbd2
+    type: title
+    task:
+      id: 4baa4207-6438-4ee7-8ee1-4bf990cbfbd2
+      version: -1
+      name: Done
+      description: End of playbook
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 1545122f-5da8-49f7-8014-fa0df9c1bc63
+    type: playbook
+    task:
+      id: 1545122f-5da8-49f7-8014-fa0df9c1bc63
+      version: -1
+      name: Indicator Pivoting - DomainTools Iris
+      description: Pivots are used to gather data that share a common attribute with
+        a domain. For instance, pivoting on an IP Address will give you back all domains
+        related to that IP address.
+      playbookName: Indicator Pivoting - DomainTools Iris
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      EmailAddress:
+        complex:
+          root: DomainTools
+          accessor: Domains.Identity.TechnicalContact.Email.value
+          transformers:
+          - operator: uniq
+      EmailAddressCount:
+        complex:
+          root: DomainTools
+          accessor: Domains.Identity.TechnicalContact.Email.count
+      IPAddress:
+        complex:
+          root: DomainTools
+          accessor: Domains.Hosting.IPAddresses.address.value
+          transformers:
+          - operator: uniq
+      IPAddressCount:
+        complex:
+          root: DomainTools
+          accessor: Domains.Hosting.IPAddresses.address.count
+      MailServerHostName:
+        complex:
+          root: NoData
+      MailServerHostNameCount:
+        simple: "501"
+      NameServerHostName:
+        complex:
+          root: NoData
+      NameServerHostNameCount:
+        simple: "501"
+      NameServerIPAddress:
+        complex:
+          root: NoData
+      NameServerIPAddressCount:
+        simple: "501"
+      PivotThreshold:
+        simple: "500"
+      SSLHash:
+        complex:
+          root: NoData
+      SSLHashCount:
+        simple: "501"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 5a7c211d-38f2-44ee-8634-8fd071ef230b
+    type: condition
+    task:
+      id: 5a7c211d-38f2-44ee-8634-8fd071ef230b
+      version: -1
+      name: Did Pivoted Domains get added to context?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: 8lock.co
+          right:
+            value:
+              complex:
+                root: DomainTools
+                accessor: PivotedDomains.Name
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: 8lock.io
+          right:
+            value:
+              complex:
+                root: DomainTools.PivotedDomains.Hosting.RedirectsTo
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 975,
+        "width": 1200,
+        "x": 160,
+        "y": -90
+      }
+    }
+  }
+inputs:
+- key: domain
+  value:
+    simple: demisto.com
+  required: true
+  description: Domain name to test.
+outputs:
+- contextPath: Domain.Name
+  description: Domain Name
+  type: String
+- contextPath: Domain.DNS
+  description: Domain DNS
+  type: String
+- contextPath: Domain.DomainStatus
+  description: Domain Status
+  type: Boolean
+- contextPath: Domain.CreationDate
+  description: Domain Creation Date
+  type: Date
+- contextPath: Domain.ExpirationDate
+  description: Domain Expiration Date
+  type: Date
+- contextPath: Domain.NameServers
+  description: Domain NameServers
+  type: String
+- contextPath: Domain.Registrant.Country
+  description: Domain Registrant Country
+  type: String
+- contextPath: Domain.Registrant.Email
+  description: Domain Registrant Email
+  type: String
+- contextPath: Domain.Registrant.Name
+  description: Domain Registrant Name
+  type: String
+- contextPath: Domain.Registrant.Phone
+  description: Domain Registrant Phone
+  type: String
+- contextPath: Domain.Malicious.Vendor
+  description: Vendor that saw domain as malicious
+  type: String
+- contextPath: Domain.Malicious.Description
+  description: Description of why domain was found to be malicious
+  type: String
+- contextPath: DomainTools.Domains.Name
+  description: DomainTools Domain Name
+  type: String
+- contextPath: DomainTools.Domains.LastEnriched
+  description: Last Time DomainTools Enriched Domain Data
+  type: Date
+- contextPath: DomainTools.Domains.Analytics.OverallRiskScore
+  description: DomainTools Overall Risk Score
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.ProximityRiskScore
+  description: DomainTools Proximity Risk Score
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.RiskScore
+  description: DomainTools Threat Profile Risk Score
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Threats
+  description: DomainTools Threat Profile Threats
+  type: String
+- contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Evidence
+  description: DomainTools Threat Profile Evidence
+  type: String
+- contextPath: DomainTools.Domains.Analytics.WebsiteResponseCode
+  description: Website Response Code
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.AlexaRank
+  description: Alexa Rank
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.Tags
+  description: DomainTools Tags
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantName
+  description: Registrant Name
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantOrg
+  description: Registrant Org
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Country.value
+  description: Registrant Contact Country value
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Country.count
+  description: Registrant Contact Country count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Email.value
+  description: Registrant Contact Email value
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Email.count
+  description: Registrant Contact Email count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Name.value
+  description: Registrant Contact Name value
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Name.count
+  description: Registrant Contact Name count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Phone.value
+  description: Registrant Contact Phone value
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Phone.count
+  description: Registrant Contact Phone count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.SOAEmail
+  description: SOA Record Email
+  type: String
+- contextPath: DomainTools.Domains.Identity.SSLCertificateEmail
+  description: SSL Certificate Email
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdminContact.Country.value
+  description: Admin Contact Country value
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdminContact.Country.count
+  description: Admin Contact Country count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.AdminContact.Email.value
+  description: Admin Contact Email value
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdminContact.Email.count
+  description: Admin Contact Email count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.AdminContact.Name.value
+  description: Admin Contact Name value
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdminContact.Name.count
+  description: Admin Contact Name count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.AdminContact.Phone.value
+  description: Admin Contact Phone value
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdminContact.Phone.count
+  description: Admin Contact Phone count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Country.value
+  description: Technical Contact Country value
+  type: String
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Country.count
+  description: Technical Contact Country count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Email.value
+  description: Technical Contact Email value
+  type: String
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Email.count
+  description: Technical Contact Email count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Name.value
+  description: Technical Contact Name value
+  type: String
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Name.count
+  description: Technical Contact Name count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone.value
+  description: Technical Contact Phone value
+  type: String
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone.count
+  description: Technical Contact Phone count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.BillingContact.Country.value
+  description: Billing Contact Country value
+  type: String
+- contextPath: DomainTools.Domains.Identity.BillingContact.Country.count
+  description: Billing Contact Country count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.BillingContact.Email.value
+  description: Billing Contact Email value
+  type: String
+- contextPath: DomainTools.Domains.Identity.BillingContact.Email.count
+  description: Billing Contact Email count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.BillingContact.Name.value
+  description: Billing Contact Name value
+  type: String
+- contextPath: DomainTools.Domains.Identity.BillingContact.Name.count
+  description: Billing Contact Name count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.BillingContact.Phone.value
+  description: Billing Contact Phone value
+  type: String
+- contextPath: DomainTools.Domains.Identity.BillingContact.Phone.count
+  description: Billing Contact Phone count
+  type: Number
+- contextPath: DomainTools.Domains.Identity.EmailDomains
+  description: Email Domains
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails.value
+  description: Additional Whois Emails value
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails.count
+  description: Additional Whois Emails count
+  type: Number
+- contextPath: DomainTools.Domains.Registration.DomainRegistrant
+  description: Domain Registrant
+  type: String
+- contextPath: DomainTools.Domains.Registration.RegistrarStatus
+  description: Registrar Status
+  type: String
+- contextPath: DomainTools.Domains.Registration.DomainStatus
+  description: Domain Active Status
+  type: Boolean
+- contextPath: DomainTools.Domains.Registration.CreateDate
+  description: Create Date
+  type: Date
+- contextPath: DomainTools.Domains.Registration.ExpirationDate
+  description: Expiration Date
+  type: Date
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.address.value
+  description: IP Addresses Info address value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.address.count
+  description: IP Addresses Info address count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.asn.value
+  description: IP Addresses Info asn value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.asn.count
+  description: IP Addresses Info asn count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.value
+  description: IP Addresses Info country_code value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.count
+  description: IP Addresses Info country_code count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.isp.value
+  description: IP Addresses Info isp value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.isp.count
+  description: IP Addresses Info isp count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.IPCountryCode
+  description: IP Country Code
+  type: String
+- contextPath: DomainTools.Domains.Hosting.MailServers.domain.value
+  description: Mail Servers Info domain value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.MailServers.domain.count
+  description: Mail Servers Info domain count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.MailServers.host.value
+  description: Mail Servers Info host value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.MailServers.host.count
+  description: Mail Servers Info host count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.MailServers.ip.value
+  description: Mail Servers Info ip value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.MailServers.ip.count
+  description: Mail Servers Info ip count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.SPFRecord
+  description: SPF Record Info
+  type: String
+- contextPath: DomainTools.Domains.Hosting.NameServers.domain.value
+  description: DomainTools Domains NameServers domain value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.NameServers.domain.count
+  description: DomainTools Domains NameServers domain count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.NameServers.host.value
+  description: DomainTools Domains NameServers host value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.NameServers.host.count
+  description: DomainTools Domains NameServers host count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.NameServers.ip.value
+  description: DomainTools Domains NameServers ip value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.NameServers.ip.count
+  description: DomainTools Domains NameServers ip count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.value
+  description: SSL Certificate Info hash value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.count
+  description: SSL Certificate Info hash count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.value
+  description: SSL Certificate Info organization value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.count
+  description: SSL Certificate Info organization count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject.value
+  description: SSL Certificate Info subject value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject.count
+  description: SSL Certificate Info subject count
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.RedirectsTo.value
+  description: Domains it Redirects To value
+  type: String
+- contextPath: DomainTools.Domains.Hosting.RedirectsTo.count
+  description: Domains it Redirects To count
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.GoogleAdsenseTrackingCode
+  description: Google Adsense Tracking Code
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.GoogleAnalyticTrackingCode
+  description: Google Analytics Tracking Code
+  type: Number
+- contextPath: DBotScore.Indicator
+  description: DBotScore Indicator
+  type: String
+- contextPath: DBotScore.Type
+  description: DBotScore Indicator Type
+  type: String
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: String
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Name
+  description: DomainTools Domain Name
+  type: String
+- contextPath: DomainTools.PivotedDomains.LastEnriched
+  description: Last Time DomainTools Enriched Domain Data
+  type: Date
+- contextPath: DomainTools.PivotedDomains.Analytics.OverallRiskScore
+  description: DomainTools Overall Risk Score
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Analytics.ProximityRiskScore
+  description: DomainTools Proximity Risk Score
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.RiskScore
+  description: DomainTools Threat Profile Risk Score
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.Threats
+  description: DomainTools Threat Profile Threats
+  type: String
+- contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.Evidence
+  description: DomainTools Threat Profile Evidence
+  type: String
+- contextPath: DomainTools.PivotedDomains.Analytics.WebsiteResponseCode
+  description: Website Response Code
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Analytics.AlexaRank
+  description: Alexa Rank
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Analytics.Tags
+  description: DomainTools Tags
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.RegistrantName
+  description: Registrant Name
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.RegistrantOrg
+  description: Registrant Org
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Country.value
+  description: Registrant Contact Country value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Country.count
+  description: Registrant Contact Country count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Email.value
+  description: Registrant Contact Email value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Email.count
+  description: Registrant Contact Email count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Name.value
+  description: Registrant Contact Name value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Name.count
+  description: Registrant Contact Name count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Phone.value
+  description: Registrant Contact Phone value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Phone.count
+  description: Registrant Contact Phone count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.SOAEmail
+  description: SOA Record Email
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.SSLCertificateEmail
+  description: SSL Certificate Email
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Country.value
+  description: Admin Contact Country value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Country.count
+  description: Admin Contact Country count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Email.value
+  description: Admin Contact Email value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Email.count
+  description: Admin Contact Email count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Name.value
+  description: Admin Contact Name value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Name.count
+  description: Admin Contact Name count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Phone.value
+  description: Admin Contact Phone value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Phone.count
+  description: Admin Contact Phone count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Country.value
+  description: Technical Contact Country value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Country.count
+  description: Technical Contact Country count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Email.value
+  description: Technical Contact Email value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Email.count
+  description: Technical Contact Email count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Name.value
+  description: Technical Contact Name value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Name.count
+  description: Technical Contact Name count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Phone.value
+  description: Technical Contact Phone value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Phone.count
+  description: Technical Contact Phone count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Country.value
+  description: Billing Contact Country value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Country.count
+  description: Billing Contact Country count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Email.value
+  description: Billing Contact Email value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Email.count
+  description: Billing Contact Email count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Name.value
+  description: Billing Contact Name value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Name.count
+  description: Billing Contact Name count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Phone.value
+  description: Billing Contact Phone value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Phone.count
+  description: Billing Contact Phone count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Identity.EmailDomains
+  description: Email Domains
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.AdditionalWhoisEmails.value
+  description: Additional Whois Emails value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Identity.AdditionalWhoisEmails.count
+  description: Additional Whois Emails count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Registration.DomainRegistrant
+  description: Domain Registrant
+  type: String
+- contextPath: DomainTools.PivotedDomains.Registration.RegistrarStatus
+  description: Registrar Status
+  type: String
+- contextPath: DomainTools.PivotedDomains.Registration.DomainStatus
+  description: Domain Active Status
+  type: Boolean
+- contextPath: DomainTools.PivotedDomains.Registration.CreateDate
+  description: Create Date
+  type: Date
+- contextPath: DomainTools.PivotedDomains.Registration.ExpirationDate
+  description: Expiration Date
+  type: Date
+- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.address.value
+  description: IP Addresses Info address value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.address.count
+  description: IP Addresses Info address count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.asn.value
+  description: IP Addresses Info asn value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.asn.count
+  description: IP Addresses Info asn count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.country_code.value
+  description: IP Addresses Info country_code value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.country_code.count
+  description: IP Addresses Info country_code count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.isp.value
+  description: IP Addresses Info isp value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.isp.count
+  description: IP Addresses Info isp count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.IPCountryCode
+  description: IP Country Code
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.MailServers.domain.value
+  description: Mail Servers Info domain value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.MailServers.domain.count
+  description: Mail Servers Info domain count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.MailServers.host.value
+  description: Mail Servers Info host value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.MailServers.host.count
+  description: Mail Servers Info host count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.MailServers.ip.value
+  description: Mail Servers Info ip value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.MailServers.ip.count
+  description: Mail Servers Info ip count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.SPFRecord
+  description: SPF Record Info
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.NameServers.domain.value
+  description: DomainTools Domains NameServers domain value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.NameServers.domain.count
+  description: DomainTools Domains NameServers domain count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.NameServers.host.value
+  description: DomainTools Domains NameServers host value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.NameServers.host.count
+  description: DomainTools Domains NameServers host count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.NameServers.ip.value
+  description: DomainTools Domains NameServers ip value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.NameServers.ip.count
+  description: DomainTools Domains NameServers ip count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.hash.value
+  description: SSL Certificate Info hash value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.hash.count
+  description: SSL Certificate Info hash count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.organization.value
+  description: SSL Certificate Info organization value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.organization.count
+  description: SSL Certificate Info organization count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.subject.value
+  description: SSL Certificate Info subject value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.subject.count
+  description: SSL Certificate Info subject count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Hosting.RedirectsTo.value
+  description: Domains it Redirects To value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.RedirectsTo.count
+  description: Domains it Redirects To count
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Analytics.GoogleAdsenseTrackingCode
+  description: Google Adsense Tracking Code
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
+  description: Google Analytics Tracking Code
+  type: Number

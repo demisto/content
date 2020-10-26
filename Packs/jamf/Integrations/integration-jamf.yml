@@ -29,8 +29,9 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     baseUrl = params.server.replace(/[\/]+$/, '') + '/JSSResource/';
+
     commandDictionary = {
         'jamf-get-computers': {
             url: 'computers',
@@ -88,6 +89,7 @@ script:
         },
     };
 
+
     function createContext(data, id) {
         var createContextSingle = function(obj) {
             var res = {};
@@ -118,6 +120,7 @@ script:
         return createContextSingle(data);
     }
 
+
     function mapObjFunction(mapFields, filter) {
         var transformSingleObj= function(obj) {
             var res = {};
@@ -146,6 +149,7 @@ script:
             return transformSingleObj(obj);
         };
     }
+
 
 
     var sendRequest = function(url, method, args) {
@@ -180,7 +184,9 @@ script:
         }
     }
 
+
     currentCommand = commandDictionary[command];
+
     if (currentCommand.defaultArgs) {
         keys = Object.keys(currentCommand.defaultArgs);
         for (var k in keys) {
@@ -189,16 +195,21 @@ script:
             }
         }
     }
+
     if (currentCommand.argsToURLEncode) {
         for (var k in currentCommand.argsToURLEncode) {
             args[currentCommand.argsToURLEncode[k]] = encodeURIComponent(args[currentCommand.argsToURLEncode[k]]);
         }
     }
+
     var result = sendRequest(replaceInTemplatesAndRemove(currentCommand.url, args), currentCommand.method, args);
+
     if (command === 'test-module') {
         return 'ok';
     }
+
     var entries = [];
+
     if (currentCommand.extended) {
         for (var j in currentCommand.translator) {
             var current = currentCommand.translator[j];
@@ -219,6 +230,7 @@ script:
     } else {
         return result;
     }
+
     return entries;
   type: javascript
   commands:
@@ -277,4 +289,5 @@ script:
       description: Computer room
 hidden: false
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

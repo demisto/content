@@ -1,12 +1,8 @@
 id: 'QRadar - Get offense correlations '
 version: -1
 name: QRadar - Get offense correlations
-fromversion: 3.5.0
-description: "DEPRECATED - Use the `QRadar - Get offense correlations v2` instead.\"\nRun on a\
-  \ QRadar offense to get more information\n\n* Get all correlations relevant to the\
-  \ offense\n* Get all logs relevant to the correlations (not done by default, set\
-  \ \"GetCorrelationLogs\" to \"True\")\n\nInputs:\n* GetCorrelationLogs (default:\
-  \ False)\n* MaxLogsCount (default: 20)"
+fromversion: 5.0.0
+description: Deprecated. DEPRECATED - Use the `QRadar - Get offense correlations v2` instead.\"\nRun on a QRadar offense to get more information\n\n* Get all correlations relevant to the offense\n* Get all logs relevant to the correlations (not done by default, set "GetCorrelationLogs\" to \"True\")\n\nInputs-\n* GetCorrelationLogs (default - False)\n* MaxLogsCount (default - 20)
 hidden: true
 starttaskid: '0'
 tasks:
@@ -194,9 +190,7 @@ tasks:
               simple: 'True'
           ignorecase: true
     view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 690\n  }\n}"
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 1054,\n      \"width\": 605,\n      \"x\": 50,\n      \"y\": 51\n\
-  \    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1054,\n      \"width\": 605,\n      \"x\": 50,\n      \"y\": 51\n    }\n  }\n}"
 inputs:
 - key: GetCorrelationLogs
   value:

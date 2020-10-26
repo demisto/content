@@ -2,9 +2,10 @@ commonfields:
   id: IsIPInSubnet
   version: -1
 name: IsIPInSubnet
-script: 'return isIPInSubnet(args.ip, args.subnet) ? ''yes'' : ''no'''
+script: >-
+  return isIPInSubnet(args.ip, args.subnet) ? 'yes' : 'no'
 type: javascript
-comment: Returns 'yes' if IP is in subent. Otherwise returns 'no'
+comment: Deprecated. Returns 'yes' if IP is in subent. Otherwise returns 'no'
 tags:
 - Condition
 enabled: true
@@ -23,3 +24,4 @@ outputs:
   description: if  IP is not in subnet
 scripttarget: 0
 deprecated: true
+fromversion: 5.0.0

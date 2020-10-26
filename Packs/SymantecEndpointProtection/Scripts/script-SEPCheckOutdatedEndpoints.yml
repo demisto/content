@@ -2,8 +2,9 @@ commonfields:
   id: SEPCheckOutdatedEndpoints
   version: -1
 name: SEPCheckOutdatedEndpoints
-script: |
+script: >
   import time
+
   def parseSepAvDef(s):
       import re
       VERSIONS_REGEX = r'([^ ]*) [^\d]*(\d*)'
@@ -21,11 +22,16 @@ script: |
           sys.exit()
 
   res = []
+
   reqAvDef = demisto.get(demisto.args(), 'requiredavdefversion')
+
   strReqDate, reqVer = parseSepAvDef(reqAvDef)
+
   reqDate = time.strptime(strReqDate,'%m/%d/%Y')
 
+
   resp = demisto.executeCommand('sep-client-content',{})
+
   if isError(resp[0]):
       demisto.results(resp)
   else:
@@ -54,8 +60,7 @@ subtype: python2
 tags:
 - sep
 - symantec
-comment: Check if any endpoints are using an AV definition that is not the latest
-  version.
+comment: Check if any endpoints are using an AV definition that is not the latest version.
 system: true
 args:
 - name: requiredavdefversion
@@ -68,4 +73,5 @@ dependson:
   - sep-client-content
 timeout: 0s
 tests:
-  - No test - postpone for later
+- No test - postpone for later
+fromversion: 5.0.0

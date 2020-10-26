@@ -42,8 +42,9 @@ configuration:
   type: 13
   required: false
 script:
-  script: |-
+  script: >-
     baseUrl = params.server.replace(/[\/]+$/, '') + ':' + params.port + '/';
+
     commandDictionary = {
         'test-module': {
             url: 'topology/nodes.json',
@@ -401,6 +402,7 @@ script:
         },
     };
 
+
     function createContext(data, id) {
         var createContextSingle = function(obj) {
             var res = {};
@@ -431,6 +433,7 @@ script:
         return createContextSingle(data);
     }
 
+
     function mapObjFunction(mapFields, filter) {
         var transformSingleObj= function(obj) {
             var res = {};
@@ -456,6 +459,7 @@ script:
             return transformSingleObj(obj);
         };
     }
+
 
 
     var sendRequest = function(url, method, args) {
@@ -490,6 +494,7 @@ script:
         }
     }
 
+
     var toArray = function(obj) {
         res = [];
         keys = Object.keys(obj);
@@ -498,6 +503,7 @@ script:
         }
         return res;
     }
+
 
     var createIncidentFromJob = function(incident) {
         var keys = Object.keys(incident);
@@ -511,6 +517,7 @@ script:
             "rawJSON": JSON.stringify(incident),
         }
     }
+
 
     if (command === 'fetch-incidents') {
         var lastRun = getLastRun();
@@ -529,8 +536,11 @@ script:
         return JSON.stringify(incidents);
     }
 
+
     var id = args.id;
+
     currentCommand = commandDictionary[command];
+
     if (currentCommand.defaultArgs) {
         keys = Object.keys(currentCommand.defaultArgs);
         for (var k in keys) {
@@ -539,11 +549,15 @@ script:
             }
         }
     }
+
     var result = sendRequest(replaceInTemplatesAndRemove(currentCommand.url, args), currentCommand.method, args);
+
     if (command === 'test-module') {
         return 'ok';
     }
+
     var entries = [];
+
     if (currentCommand.extended) {
         for (var j in currentCommand.translator) {
             var current = currentCommand.translator[j];
@@ -564,6 +578,7 @@ script:
     } else {
         return result;
     }
+
     return entries;
   type: javascript
   commands:
@@ -650,8 +665,7 @@ script:
       description: Edge through
     - contextPath: Verodin.Topolody.Zone.Devices.Edges.From
       description: Edge from
-    description: Lists Security Zones, Nodes within those Zones, and their connectivity
-      to other Zones
+    description: Lists Security Zones, Nodes within those Zones, and their connectivity to other Zones
   - name: verodin-manage-sims-actions
     arguments: []
     outputs:
@@ -923,8 +937,7 @@ script:
       description: Job action label
     - contextPath: Verodin.Jobs.Actions.Value
       description: Job action value
-    description: Gets summary of sim_action results from the specified job, including
-      aggregate of individual Action passes and fails
+    description: Gets summary of sim_action results from the specified job, including aggregate of individual Action passes and fails
   - name: verodin-job-cancel
     arguments:
     - name: id
@@ -934,4 +947,5 @@ script:
   isfetch: true
 hidden: false
 tests:
-  - no test
+- no test
+fromversion: 5.0.0

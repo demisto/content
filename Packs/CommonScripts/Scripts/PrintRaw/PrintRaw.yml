@@ -5,11 +5,7 @@ name: PrintRaw
 script: ''
 type: python
 tags: []
-comment: Prints a raw representation of a string or object, visualising things likes
-  tabs and newlines.  For instance, '\n' will be displayed instead of a newline character,
-  or a Windows CR will be displayed as '\r\n'.  This is useful for debugging issues
-  where things aren't behaving as expected, such as when parsing a string with a regular
-  expression.
+comment: Prints a raw representation of a string or object, visualising things likes tabs and newlines.  For instance, '\n' will be displayed instead of a newline character, or a Windows CR will be displayed as '\r\n'.  This is useful for debugging issues where things aren't behaving as expected, such as when parsing a string with a regular expression.
 enabled: true
 args:
 - name: value
@@ -22,3 +18,4 @@ dockerimage: demisto/python3:3.8.3.9324
 runas: DBotWeakRole
 tests:
 - No test - unit test
+fromversion: 5.0.0

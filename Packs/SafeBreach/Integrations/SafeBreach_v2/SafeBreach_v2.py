@@ -85,12 +85,14 @@ IP_REGEX = r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
 
 
 class Client:
-    def __init__(self, base_url, account_id, api_key, proxies, verify, tags: Optional[list] = None):
+    def __init__(self, base_url, account_id, api_key, proxies, verify, tags: Optional[list] = None,
+                 tlp_color: Optional[str] = None):
         self.base_url = base_url
         self.account_id = account_id
         self.api_key = api_key
         self.verify = verify
         self.tags = [] if tags is None else tags
+        self.tlp_color = tlp_color
         self.proxies = proxies
 
     def http_request(self, method, endpoint_url, url_suffix, body=None):
@@ -315,20 +317,21 @@ def extract_safebreach_error(response):
 ''' Commands '''
 
 
-def get_indicators_command(client: Client, insight_category: list, insight_data_type: list, args: dict) -> List[Dict]:
+def get_indicators_command(client: Client, insight_category: list, insight_data_type: list, tlp_color: Optional[str],
+                           args: dict) -> List[Dict]:
     """Create indicators.
 
             Arguments:
                 client {Client} -- Client derives from BaseClient.
                 insight_category {List[String]}  -- List of SafeBreach insight category - using as filter.
                 insight_data_type {List[String]}  -- List of data types - using as filter.
-
+                tlp_color {str}: Traffic Light Protocol color.
             Keyword Arguments:
 
             Returns:
                 List[Dict] -- List of insights from SafeBreach
             """
-    limit: int = int(args.get('limit') or demisto.params().get('indicatorLimit'))
+    limit: int = int(args.get('limit') or demisto.params().get('indicatorLimit', 1000))
     indicators: List[Dict] = []
     count: int = 0
     # These variable be filled directly from the integration configuration or as arguments.
@@ -375,6 +378,9 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
                     f"SafeBreachInsightId: {insight.get('ruleId')}",
                 ]
             }
+            if tlp_color:
+                mapping['trafficlightprotocol'] = tlp_color
+
             mapping['tags'] = list((set(mapping['tags'])).union(set(client.tags)))
             indicator = {
                 'value': str(item["value"]),
@@ -596,7 +602,6 @@ def insight_rerun_command(client: Client, args: dict):
             safebreach_insight_context_list.append(context_object)
             safebreach_test_context_list.append(test_context_dict)
         except Exception as e:
-            print(e)
             traceback.print_exc()
             return_error('Failed to rerun insight', e)
     safebreach_context = {
@@ -728,7 +733,7 @@ def get_test_status_command(client: Client, args: Dict):
             'Status': response['status'],
             'Start Time': response['startTime'],
             'End Time': response['endTime'],
-            'Total Simulation Number': response['blocked'] + response['notBlocked'] + response['internalFail']
+            'Total Simulation Number': response['blocked'] + response['notBlocked']
         }
         readable_output = tableToMarkdown(name='Test Status', t=t, headers=list(t.keys()), removeNull=True)
         safebreach_context = {
@@ -901,7 +906,7 @@ def rerun_simulation_command(client: Client, args: dict):
         return_error('Error in rerun_simulation', e)
 
 
-def safebreach_test_module(url: str, api_key: str) -> str:
+def safebreach_test_module(url: str, api_key: str, verify: bool) -> str:
     """A simple test module
        Arguments:
            url {String} -- SafeBreach Management URL.
@@ -912,6 +917,7 @@ def safebreach_test_module(url: str, api_key: str) -> str:
     response = requests.request(
         'GET',
         full_url,
+        verify=verify,
         headers={'Accept': 'application/json', 'x-apitoken': api_key}
     )
     if response.status_code == 201:
@@ -934,6 +940,7 @@ def main():
     insight_category_filter = params.get('insightCategory')
     insight_data_type_filter = params.get('insightDataType')
     tags = argToList(params.get('feedTags'))
+    tlp_color = params.get('tlp_color')
     verify_certificate = not params.get('insecure', False)
 
     proxies = handle_proxy()
@@ -955,19 +962,19 @@ def main():
             rerun_simulation_command(client, demisto.args())
         elif command == 'fetch-indicators':
             indicators = get_indicators_command(client, insight_category_filter, insight_data_type_filter,
-                                                demisto.args())
+                                                tlp_color, demisto.args())
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)  # type: ignore
             demisto.results('ok')
         elif command == 'safebreach-get-indicators':
             indicators = get_indicators_command(client, insight_category_filter, insight_data_type_filter,
-                                                demisto.args())
+                                                tlp_color, demisto.args())
             entry_result = camelize(indicators)
             hr = tableToMarkdown('Indicators:', entry_result)
             return_outputs(hr, {}, entry_result)
 
         elif command == 'test-module':
-            results = safebreach_test_module(url, api_key)
+            results = safebreach_test_module(url, api_key, verify_certificate)
             return_outputs(results)
         else:
             return_error(f'Command: {command} is not supported.')

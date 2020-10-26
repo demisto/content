@@ -48,13 +48,20 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
         headers=headers,
         verify=USE_SSL
     )
+
+    rate_limit_remaining = int(r.headers.get('X-Rate-Limit-Remaining', 99))
+    if rate_limit_remaining < 10:
+        return_warning('Your available rate limit remaining is {} and is about to be exhausted. '
+                       'The rate limit will reset at {}'.format(str(rate_limit_remaining),
+                                                                r.headers.get("X-Rate-Limit-Reset")))
     if r.status_code != 200:
         if r.status_code == 429:
             if retries <= 0:
                 # Error in API call to URLScan.io [429] - Too Many Requests
-                return_error('API rate limit reached. Use the retries and wait arguments when submitting multiple URls')
+                return_error('API rate limit reached [%d] - %s.\nUse the retries and wait arguments when submitting '
+                             'multiple URls' % (r.status_code, r.reason))
             else:
-                time.sleep(wait)
+                time.sleep(wait)  # pylint: disable=sleep-exists
                 return http_request(method, url_suffix, json, wait, retries - 1)
 
         response_json = r.json()
@@ -67,7 +74,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
             demisto.results(blacklisted_message)
             return response_json
 
-        return_error('Error in API call to URLScan.io [%d] - %s' % (r.status_code, r.reason))
+        return_error('Error in API call to URLScan.io [%d] - %s: %s' % (r.status_code, r.reason, error_description))
 
     return r.json()
 
@@ -151,7 +158,7 @@ def poll(target, step, args=(), kwargs=None, timeout=None, max_tries=None, check
         tries += 1
         if max_time is not None and time.time() >= max_time:
             demisto.results('The operation timed out. Please try again with a longer timeout period.')
-        time.sleep(step)
+        time.sleep(step)  # pylint: disable=sleep-exists
         step = step_function(step)
 
 

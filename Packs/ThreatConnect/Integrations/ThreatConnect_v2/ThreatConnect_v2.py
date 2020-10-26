@@ -112,11 +112,11 @@ def create_context(indicators, include_dbot_score=False):
             context_path = outputPaths.get(indicator_type)
             if context_path is not None:
                 context[context_path].append(mal)
-
-        elif int(rating) >= 1:
-            dbot_score = 2
+        # if both confidence and rating values are less than the threshold - DBOT score is unknown
+        elif confidence < confidence_threshold and rating < rating_threshold:
+            dbot_score = 0
         else:
-            dbot_score = 1
+            dbot_score = 2
 
         # if there is more than one indicator results - take the one with the highest score
         if include_dbot_score:

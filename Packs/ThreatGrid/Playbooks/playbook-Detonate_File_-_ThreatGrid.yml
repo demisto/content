@@ -1,13 +1,7 @@
 id: detonate_file_-_threatgrid
 version: -1
 name: Detonate File - ThreatGrid
-fromversion: 4.0.0
-description: Detonate one or more files using the ThreatGrid integration. This playbook
-  returns relevant reports to the War Room and file reputations to the context data.
-  The detonation supports the following file types - EXE, DLL, JAR, JS, PDF, DOC,
-  DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK,
-  URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE,
-  CHM
+description: Detonate one or more files using the ThreatGrid integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types - EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
 starttaskid: "0"
 tasks:
   "0":
@@ -18,9 +12,9 @@ tasks:
       id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
       version: -1
       name: ""
-      description: Start
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -34,6 +28,9 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 1378d2a9-9fcc-47d0-817f-9d9145740752
@@ -90,6 +87,9 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
@@ -98,10 +98,10 @@ tasks:
       id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
       version: -1
       name: Done
-      description: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -112,6 +112,9 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 80dc5945-a851-469d-8445-3930393aa5d0
@@ -143,6 +146,9 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: 754b0562-8ec3-4c58-8345-748d9cd51a72
@@ -176,6 +182,9 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
     taskid: 97fcf073-c63a-42d4-8e65-ba6d4814d859
@@ -221,6 +230,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -230,6 +240,9 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
     taskid: 93e193f6-a438-4349-861c-f0f99b4b3997
@@ -238,8 +251,7 @@ tasks:
       id: 93e193f6-a438-4349-861c-f0f99b4b3997
       version: -1
       name: Is there a file to detonate?
-      description: Checks whether there's a file to detonate - if not then the detonation
-        is skipped
+      description: Checks whether there's a file to detonate - if not then the detonation is skipped
       type: condition
       iscommand: false
       brand: ""
@@ -266,6 +278,9 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
     taskid: 5eb99a51-d296-41dd-8a6e-93fceabc767f
@@ -323,6 +338,9 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
     taskid: 701d7a32-0c81-4fd3-83c9-fbc7aa6efd30
@@ -361,6 +379,9 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
     taskid: 4fe8b8b6-097b-42e5-8d2a-7d7693101c90
@@ -441,6 +462,9 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -462,43 +486,52 @@ inputs:
       root: File
   required: false
   description: File object of the file to detonate.
+  playbookInputQuery:
 - key: FileName
   value:
     simple: file-detonated-via-demisto
   required: false
   description: Name of the file to detonate.
+  playbookInputQuery:
 - key: VM
   value: {}
   required: false
   description: The VM to use (string)
+  playbookInputQuery:
 - key: playbook
   value:
     simple: default
   required: false
   description: Name of the Threat Grid playbook to apply to this sample run
+  playbookInputQuery:
 - key: Private
-  value: {}
+  value:
+    simple: "True"
   required: false
-  description: The sample is marked private if this is present, and set to any value
-    other than false.
+  description: If the value is set to 'False', the sample will not be private. Any value other than 'False' will set the sample to private.
+  playbookInputQuery:
 - key: Source
   value: {}
   required: false
   description: a string used for identifying the source of the detonation (user defined)
+  playbookInputQuery:
 - key: Tags
   value: {}
   required: false
   description: A comma-separated list of tags applied to this sample.
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "15"
   required: false
   description: How much time to wait before a timeout occurs (minutes)
+  playbookInputQuery:
 outputs:
 - contextPath: File.Malicious
   description: The File malicious description
@@ -546,5 +579,6 @@ outputs:
   description: The sample state.
 - contextPath: Sample.ID
   description: The sample ID.
+fromversion: 5.0.0
 tests:
 - Detonate File - Generic Test

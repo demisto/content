@@ -2,8 +2,9 @@ commonfields:
   id: GetContextValue
   version: -1
 name: GetContextValue
-script: |+
+script: >+
   contextValue = demisto.get(demisto.context(), demisto.args()['key'])
+
 
   if contextValue:
       demisto.results(contextValue)
@@ -16,7 +17,7 @@ subtype: python2
 tags:
 - context
 - Condition
-comment: The script returns a value from context
+comment: Deprecated. The script returns a value from context
 system: true
 deprecated: true
 args:
@@ -27,3 +28,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

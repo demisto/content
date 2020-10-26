@@ -468,7 +468,7 @@ def test_function(client: MsGraphClient, args):
        Returns ok if successful.
        """
     response = client.ms_client.http_request(
-        method='GET', url_suffix='users', params={'$select': 'displayName'}, resp_type='response')
+        method='GET', url_suffix='security/alerts', params={'$top': 1}, resp_type='response')
     try:
         data = response.json() if response.text else {}
         if not response.ok:

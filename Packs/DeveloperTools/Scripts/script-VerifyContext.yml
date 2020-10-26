@@ -2,10 +2,13 @@ commonfields:
   id: VerifyContext
   version: -1
 name: VerifyContext
-script: |-
+script: >-
   var path = args.path;
+
   var fields = args.fields ? args.fields.split(",") : [];
+
   var expectedValue = args.expectedValue;
+
 
   var verifyFields = function(obj) {
       fields.forEach(function (field) {
@@ -16,18 +19,23 @@ script: |-
       });
   }
 
+
   var contextObject = dq(invContext, path);
+
   if (contextObject === undefined || contextObject === null) {
         throw 'Path ' + path + ' is not in context.';
   }
 
+
   var isArray = contextObject instanceof Array;
+
 
   if (isArray) {
       contextObject.forEach(verifyFields);
   } else {
       verifyFields(contextObject);
   }
+
 
   if (expectedValue) {
       var value;
@@ -44,13 +52,7 @@ type: javascript
 tags:
 - context
 - Utility
-comment: |-
-  Deprecated, use playbook filters instead.
-  Verifies path in context:
-  - Verifies path existence
-  - If matching object is an array: verify fields exists in each of the objects in the array
-  - If matching object is not an array: verify fields exists in matching object
-  - if 'expectedValue' is given: ensure that the given value is equal to the context path
+comment: Deprecated. use playbook filters instead. Verifies path in context - - Verifies path existence - If matching object is an array -  verify fields exists in each of the objects in the array - If matching object is not an array -  verify fields exists in matching object - if 'expectedValue' is given -  ensure that the given value is equal to the context path
 enabled: true
 args:
 - name: path
@@ -60,9 +62,9 @@ args:
 - name: fields
   description: Comma separated values to verify that are in context (e.g. 'one,two,three')
 - name: expectedValue
-  description: 'Primitive or JSON expected value of the path context (e.g. ''SomeString'',
-    ''{"a": 1, "b": ["hello", "world" ]}'
+  description: 'Primitive or JSON expected value of the path context (e.g. ''SomeString'', ''{"a": 1, "b": ["hello", "world" ]}'
 scripttarget: 0
 deprecated: true
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

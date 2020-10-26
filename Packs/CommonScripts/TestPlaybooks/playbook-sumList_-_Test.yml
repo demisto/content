@@ -231,8 +231,7 @@ tasks:
       id: 0c15cd5f-d6bc-4158-857e-91d1a4d9c182
       version: -1
       name: Sanity check - int
-      description: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis
-        is an example for number transformer.\n "
+      description: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis is an example for number transformer.\n "
       type: condition
       iscommand: false
       brand: ""
@@ -522,3 +521,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

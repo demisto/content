@@ -113,8 +113,7 @@ tasks:
       id: 3746b34b-20b0-49d2-82b3-c9f626c90102
       version: -1
       name: Convert to pdf
-      description: 'Convert a file from one format to another. Use''s Libre Office
-        convert-to function. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
+      description: 'Convert a file from one format to another. Use''s Libre Office convert-to function. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
       scriptName: ConvertFile
       type: regular
       iscommand: false
@@ -374,8 +373,7 @@ tasks:
       id: b563389c-7804-4739-8b28-3bd42735d97d
       version: -1
       name: Convert to HTML
-      description: 'Convert a file from one format to another. Use''s Libre Office
-        convert-to function. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
+      description: 'Convert a file from one format to another. Use''s Libre Office convert-to function. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
       scriptName: ConvertFile
       type: regular
       iscommand: false
@@ -623,3 +621,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

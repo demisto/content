@@ -4,7 +4,7 @@ name: Detonate URL - ANYRUN
 description: |-
   Detonates one or more URLs using the ANYRUN sandbox integration.
   Returns relevant reports to the War Room and url reputations to the context data.
-fromversion: 4.0.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -303,8 +303,7 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook
-    (in minutes)
+  description: The duration after which to stop pooling and to resume the playbook (in minutes)
 outputs:
 - contextPath: ANYRUN.Task.AnalysisDate
   description: Date and time the analysis was executed.
@@ -487,4 +486,4 @@ outputs:
   description: Task analysis status.
   type: String
 tests:
- -  Detonate URL - ANYRUN - Test
+- Detonate URL - ANYRUN - Test

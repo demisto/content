@@ -131,8 +131,7 @@ tasks:
       id: b6ec06ad-ace2-45ec-8cf8-102810f05f03
       version: -1
       name: Verify Query Output
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -183,3 +182,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -244,6 +244,7 @@ def main():
         "observation_operator_mode"
     )
     feed_tags = argToList(params.get("feedTags"))
+    tlp_color = params.get('tlp_color', '')
 
     initial_interval = params.get("initial_interval")
     fetch_full_feed = params.get("fetch_full_feed") or False
@@ -264,6 +265,7 @@ def main():
             password=password,
             tags=feed_tags,
             limit_per_request=limit_per_request,
+            tlp_color=tlp_color
         )
         client.initialise()
         commands = {

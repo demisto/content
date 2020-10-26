@@ -4,11 +4,10 @@ commonfields:
 name: IsInternalHostName
 script: ''
 type: python
-fromversion: 4.5.0
+fromversion: 5.0.0
 tags:
 - Utility
-comment: Checks if the supplied hostnames match either the organization's internal
-  naming convention or the domain suffix. 
+comment: Checks if the supplied hostnames match either the organization's internal naming convention or the domain suffix.
 enabled: true
 args:
 - name: hostName
@@ -21,13 +20,10 @@ args:
   description: A comma-separated list of hostnames to check.
   isArray: true
 - name: internalRegex
-  description: The regex pattern for the organization's hostname for example \w\w\w\d$|\w\w\w$.
-    for hosts that look like pcx1 or pcx.
+  description: The regex pattern for the organization's hostname for example \w\w\w\d$|\w\w\w$. for hosts that look like pcx1 or pcx.
 - name: domainName
   required: true
-  description: 'The domain name for the organization. For a single domain use this format: "bla.com".
-    For multiple domains use this format: (bla.com|blabla.com),
-    where the pipe and the brackets are the OR condition for regex.'
+  description: 'The domain name for the organization. For a single domain use this format: "bla.com". For multiple domains use this format: (bla.com|blabla.com), where the pipe and the brackets are the OR condition for regex.'
 outputs:
 - contextPath: Endpoint.Hostname
   description: The hostname.

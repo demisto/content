@@ -16,7 +16,7 @@ if [[ $2 == "true" ]]; then
 fi
 
 # if remote does not exists already add it, if exists re-add it.
-git remote set-url $USER git@github.com:$USER/content.git
+git remote add $USER git@github.com:$USER/content.git
 # Check if branch exists locally
 LOCAL_BRANCH_EXISTS=$(git show-branch --list "${USER}/${BRANCH}")
 if [[ -z ${LOCAL_BRANCH_EXISTS} ]]; then

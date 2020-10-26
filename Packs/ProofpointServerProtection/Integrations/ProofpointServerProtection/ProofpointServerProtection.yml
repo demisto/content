@@ -282,4 +282,5 @@ script:
   subtype: python2
 beta: true
 tests:
-  - no test
+- no test
+fromversion: 5.0.0

@@ -11,7 +11,7 @@ description: Extracts text from images.
 display: Image OCR
 name: Image OCR
 defaultEnabled: true
-fromversion: 4.0.0
+fromversion: 5.0.0
 script:
   commands:
   - deprecated: false

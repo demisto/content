@@ -266,3 +266,55 @@ def test_create_managed_url(mocker):
     results = MimecastV2.create_managed_url()
     assert 'Managed URL https://www.test.com created successfully!' in results.get('HumanReadable')
     assert expected_context == results.get('EntryContext')
+
+
+def test_add_users_under_group_in_context_dict__dict(mocker):
+    """
+    Given
+    - Users list
+    - Group id
+    _ Integration context with `group` key with a single group in it
+    When
+    - adding users under group in context dict as part of `mimecast-get-group-members` command
+    Then
+    Returns a valid outputs
+    """
+    context = {'Mimecast': {'Group': {'ID': 'groupID', 'Users': []}}}
+    users_list = [
+        {'Domain': u'demistodev.com', 'Name': u'', 'EmailAddress': u'testing@demistodev.com', 'InternalUser': True,
+         'Type': u'created_manually', 'IsRemoved': False}]
+    expected = [{'ID': 'groupID', 'Users': [
+        {'Domain': u'demistodev.com', 'Name': u'', 'EmailAddress': u'testing@demistodev.com', 'InternalUser': True,
+         'Type': u'created_manually', 'IsRemoved': False}]}]
+    mocker.patch.object(demisto, 'context', return_value=context)
+    result = MimecastV2.add_users_under_group_in_context_dict(users_list, 'groupID')
+    assert result == expected
+
+
+def test_add_users_under_group_in_context_dict__list(mocker):
+    """
+    Given
+    - Users list
+    - Group id
+    _ Integration context with `group` key with list of groups in it
+    When
+    - adding users under group in context dict as part of `mimecast-get-group-members` command
+    Then
+    Returns a valid outpus
+    """
+    context = {'Mimecast': {'Group': [{
+        'ID': 'groupID',
+        'Users': []},
+        {'ID': 'groupID2',
+         'Users': []}]}
+
+    }
+    users_list = [
+        {'Domain': u'demistodev.com', 'Name': u'', 'EmailAddress': u'testing@demistodev.com', 'InternalUser': True,
+         'Type': u'created_manually', 'IsRemoved': False}]
+    expected = [{'ID': 'groupID', 'Users': [
+        {'Domain': u'demistodev.com', 'Name': u'', 'EmailAddress': u'testing@demistodev.com', 'InternalUser': True,
+         'Type': u'created_manually', 'IsRemoved': False}]}, {'ID': 'groupID2', 'Users': []}]
+    mocker.patch.object(demisto, 'context', return_value=context)
+    result = MimecastV2.add_users_under_group_in_context_dict(users_list, 'groupID')
+    assert result == expected

@@ -2,10 +2,13 @@ commonfields:
   id: PublishEntriesToContext
   version: -1
 name: PublishEntriesToContext
-script: |-
+script: >-
   var ids = argToList(args.ids);
+
   var out = args.out ? args.out : 'entries';
+
   var data = [];
+
 
   for (var i=0; i<ids.length; i++) {
       var entryRes = executeCommand('getEntry', {id: ids[i]});
@@ -15,6 +18,7 @@ script: |-
           }
       }
   }
+
   if (data.length > 0) {
       var ec = {};
       ec[out] = data;
@@ -26,6 +30,7 @@ script: |-
           EntryContext: ec
       };
   }
+
   return 'No entries found';
 type: javascript
 tags:
@@ -36,8 +41,7 @@ args:
 - name: ids
   required: true
   default: true
-  description: The entry IDs we want to publish. Accepts comma separated IDs or a
-    list of strings.
+  description: The entry IDs we want to publish. Accepts comma separated IDs or a list of strings.
 - name: out
   description: The name of the context key. Default is "entries".
 outputs:
@@ -46,3 +50,4 @@ outputs:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

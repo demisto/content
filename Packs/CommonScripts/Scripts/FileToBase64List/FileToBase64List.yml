@@ -41,4 +41,4 @@ runas: DBotWeakRole
 runonce: true
 tests:
 - No Test
-fromversion: 4.1.0
+fromversion: 5.0.0

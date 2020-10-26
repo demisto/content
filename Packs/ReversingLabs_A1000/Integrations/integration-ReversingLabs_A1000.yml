@@ -33,19 +33,28 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: >
     import requests
+
     from requests.auth import HTTPBasicAuth
+
     import re
+
     import os
+
     import shutil
+
     from zipfile import ZipFile
 
+
     BASE_URL = demisto.getParam('base')
+
     if BASE_URL[-1] == '/':
         BASE_URL = BASE_URL[0:-1]
     HEADERS = {'Authorization': 'Token ' + demisto.getParam('token')}
+
     EXTENDED = demisto.getParam('extended')
+
 
     if not demisto.getParam('proxy'):
         del os.environ['HTTP_PROXY']
@@ -473,3 +482,4 @@ script:
       description: The sample hash we want unpacked samples for
     description: Download samples obtained through the unpacking process
   runonce: false
+fromversion: 5.0.0
