@@ -57,9 +57,9 @@ script:
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
 defaultmapperin: IAM Sync User - Workday
 defaultclassifier: Workday Classifier
-ismappable: true
 tests:
 - No tests
 fromversion: 5.0.0
