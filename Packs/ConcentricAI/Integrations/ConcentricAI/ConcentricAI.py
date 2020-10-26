@@ -587,20 +587,20 @@ def main() -> None:
             demisto.incidents(incidents)
 
         # this will fetch all file information
-        elif demisto.command() == 'ConcentricAI-get file details':
+        elif demisto.command() == 'ConcentricAI-get-file-details':
             path = demisto.getArg('path')
             name = demisto.getArg('file-name')
             result = fetch_file_information(loginClient, queryClient, path, name)
             return_results(result)
 
         # this will fetch all information about users-overview.
-        elif demisto.command() == "ConcentricAI-get users overview":
+        elif demisto.command() == "ConcentricAI-get-users-overview":
             max_users = demisto.getArg('max_users')
             result = get_users_overview(loginClient, queryClient, max_users)
             return_results(result)
 
         # this will fetch all user-details
-        elif demisto.command() == "ConcentricAI-get use -details":
+        elif demisto.command() == "ConcentricAI-get-user-details":
             user = demisto.getArg('user')
             result = get_user_details(loginClient, queryClient, user)
             return_results(result)
