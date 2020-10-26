@@ -1,7 +1,6 @@
 import fnmatch
 import json
 import re
-import sys
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import demistomock as demisto  # noqa: F401
@@ -49,7 +48,7 @@ class Ddict:
         return (res[0], res[1], '.'.join(res[2]))
 
     @staticmethod
-    def set(node: [Dict[str, Any]], path: [str], value: [Any]):
+    def set(node: Dict[str, Any], path: [str], value: [Any]):
         comps = path.split('.')
         while comps:
             parent = node
@@ -65,7 +64,7 @@ class Ddict:
         parent[name] = value
 
     @staticmethod
-    def get_value(node: [Dict[str, Any]], path: [str]) -> Optional[Value]:
+    def get_value(node: Dict[str, Any], path: [str]) -> Optional[Value]:
         val = None
         comps = path.split('.')
         while comps:
@@ -77,7 +76,7 @@ class Ddict:
         return None if val is None else Value(val)
 
     @staticmethod
-    def get(node: [Dict[str, Any]], path: [str]) -> Any:
+    def get(node: Dict[str, Any], path: [str]) -> Any:
         val = Ddict.get_value(node, path)
         return val.value if val else None
 
@@ -114,7 +113,7 @@ def exit_error(err_msg: str):
     raise RuntimeError(err_msg)
 
 
-def lower(value: [Any], recursive: bool = False) -> Any:
+def lower(value: Any, recursive: bool = False) -> Any:
     if isinstance(value, list):
         if recursive:
             return [lower(v) for v in value]
@@ -175,7 +174,7 @@ def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool
         exit_error(f"Unknown pattern algorithm: '{patalg}'")
 
 
-def extract_value(source: Any, extractor: Callable[[str, Optional[Dict[str, Any]]], Any], dx: Optional[ContextData]) -> Any:
+def extract_value(source: Any, extractor: Callable[[str, Optional[ContextData]], Any], dx: Optional[ContextData]) -> Any:
     """ Extract value including dt expression
 
       :param source: The value to be extracted that may include dt expressions.
@@ -183,7 +182,7 @@ def extract_value(source: Any, extractor: Callable[[str, Optional[Dict[str, Any]
       :param dx: The demisto context.
       :return: The value extracted.
     """
-    def _extract(source: str, extractor: Optional[Callable[[str, Optional[Dict[str, Any]]], Any]], dx: Optional[Dict[str, Any]], si: int, endc: Optional[str]) -> [str, int]:
+    def _extract(source: str, extractor: Optional[Callable[[str, Optional[ContextData]], Any]], dx: Optional[ContextData], si: int, endc: Optional[str]) -> Union[str, int]:
         val = ''
         ci = si
         while ci < len(source):
@@ -293,12 +292,12 @@ class ExtFilter:
             elif rhs == "integer string":
                 try:
                     return isinstance(int(lhs, 10), int)
-                except:
+                except (ValueError, TypeError):
                     return False
             elif rhs == "any integer":
                 try:
                     return isinstance(lhs, int) or isinstance(int(lhs, 10), int)
-                except:
+                except (ValueError, TypeError):
                     return False
             exit_error(f"Unknown operation filter: '{rhs}'")
 
@@ -309,14 +308,14 @@ class ExtFilter:
             rhs = self.parse_conds_json(rhs) if isinstance(rhs, str) else rhs
             try:
                 return type(lhs) == type(rhs) and lhs == rhs
-            except:
+            except (ValueError, TypeError):
                 return False
 
         elif optype == "!==":
             rhs = self.parse_conds_json(rhs) if isinstance(rhs, str) else rhs
             try:
                 return type(lhs) != type(rhs) or lhs != rhs
-            except:
+            except (ValueError, TypeError):
                 return False
 
         elif optype in ("equals", "=="):
@@ -329,7 +328,7 @@ class ExtFilter:
                     return lhs == str(rhs)
                 else:
                     return lhs == rhs
-            except ValueError:
+            except (ValueError, TypeError):
                 pass
             return False
 
@@ -339,28 +338,28 @@ class ExtFilter:
         elif optype in ("greater or equal", ">="):
             try:
                 return float(lhs) >= float(rhs)
-            except:
+            except (ValueError, TypeError):
                 pass
             return False
 
         elif optype in ("greater than", ">"):
             try:
                 return float(lhs) > float(rhs)
-            except:
+            except (ValueError, TypeError):
                 pass
             return False
 
         elif optype in ("less or equal", "<="):
             try:
                 return float(lhs) <= float(rhs)
-            except:
+            except (ValueError, TypeError):
                 pass
             return False
 
         elif optype in ("less than", "<"):
             try:
                 return float(lhs) < float(rhs)
-            except:
+            except (ValueError, TypeError):
                 pass
             return False
 
@@ -374,7 +373,7 @@ class ExtFilter:
 
             try:
                 lhs = float(lhs)
-            except ValueError:
+            except (ValueError, TypeError):
                 return False
             return float(minmax[0]) <= lhs and lhs <= float(minmax[1])
 
@@ -634,7 +633,7 @@ class ExtFilter:
         else:
             exit_error(f'Invalid condition format: {conds}')
 
-    def filter_by_conditions(self, root: Value, conds: Union[dict, list]) -> Optional[Value]:
+    def filter_by_conditions(self, root: Any, conds: Union[dict, list]) -> Optional[Value]:
         """ Filter the value by the conditions
 
           *** NOTE ***
@@ -859,7 +858,7 @@ class ExtFilter:
                                      and rhs in v for v in lhs)
                         elif isinstance(lhs, str):
                             ok = rhs in lhs
-                except:
+                except (ValueError, TypeError):
                     pass
                 return Value(lhs) if ok else None
 
@@ -872,7 +871,7 @@ class ExtFilter:
                                      in v for v in lower(lhs))
                         elif isinstance(lhs, str):
                             ok = rhs.lower() in lower(lhs)
-                except:
+                except (ValueError, TypeError):
                     pass
                 return Value(lhs) if ok else None
 

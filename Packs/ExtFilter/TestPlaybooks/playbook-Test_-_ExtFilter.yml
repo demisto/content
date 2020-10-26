@@ -237,7 +237,7 @@ tasks:
         complex:
           root: Input
           transformers:
-          - operator: 257cf15c-c28a-4114-802f-1fff894c886c
+          - operator: ExtFilter
             args:
               ctx_demisto:
                 value:

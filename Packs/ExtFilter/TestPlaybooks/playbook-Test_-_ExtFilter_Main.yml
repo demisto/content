@@ -17990,7 +17990,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "192.168.1.3",
+                            "IP": "3.3.3.3",
                             "Score": 40
                           }
                         }
@@ -18040,7 +18040,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "192.168.1.3",
+                            "IP": "3.3.3.3",
                             "Score": 40
                           }
                         }
@@ -18106,7 +18106,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "192.168.1.3",
+                            "IP": "3.3.3.3",
                             "Score": 40,
                             "File": {
                               "Risk": [
@@ -18174,7 +18174,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "192.168.1.3",
+                            "IP": "3.3.3.3",
                             "Score": 40,
                             "File": {
                               "Risk": [
@@ -18330,7 +18330,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "192.168.1.3",
+                            "IP": "3.3.3.3",
                             "Score": 40
                           }
                         }
@@ -18379,7 +18379,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "192.168.1.3",
+                            "IP": "3.3.3.3",
                             "Score": 40
                           }
                         }
@@ -18411,7 +18411,7 @@ tasks:
     task:
       id: 5f19302d-3931-4e99-857e-f7cab33adcb1
       version: -1
-      name: === (1)
+      name: "=== (1)"
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18450,7 +18450,7 @@ tasks:
                 value:
                   simple: "10"
       ExtFilterOperation:
-        simple: ===
+        simple: "==="
       ExtFilterPath: {}
       Input:
         complex:
@@ -18496,7 +18496,7 @@ tasks:
     task:
       id: 1e542e16-45d9-4877-8679-a6a503570c99
       version: -1
-      name: === (2)
+      name: "=== (2)"
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18535,7 +18535,7 @@ tasks:
                 value:
                   simple: '"10"'
       ExtFilterOperation:
-        simple: ===
+        simple: "==="
       ExtFilterPath: {}
       Input:
         complex:
