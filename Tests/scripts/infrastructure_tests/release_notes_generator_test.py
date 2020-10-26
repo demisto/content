@@ -294,6 +294,16 @@ class TestGenerateReleaseNotesSummary:
 
 class TestMergeVersionBlocks:
     def test_spaced_content_entity_and_old_format(self):
+        """
+        Given
+        - Two release notes files, one with content entity instance wrapped with **, content entity type contains
+        spaces.
+        When
+        - We need to merge the two release notes files into one file.
+        Then
+        - Ensure that the content entity instance is wrapped with **.
+        - Ensure that the content entity type contains a whitespace.
+        """
         release_notes_paths = [
             os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_2.md'),
