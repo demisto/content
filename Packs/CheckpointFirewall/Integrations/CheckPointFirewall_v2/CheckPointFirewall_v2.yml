@@ -2106,6 +2106,21 @@ script:
     - contextPath: CheckPoint.Packages.target-uid
       description: target UID.
       type: String
+    - contextPath: CheckPoint.Packages.revision.domain.domain-type
+      description: domain type.
+      type: String
+    - contextPath: CheckPoint.Packages.revision.domain.name
+      description: domain name.
+      type: String
+    - contextPath: CheckPoint.Packages.revision.domain.uid
+      description: domain UID.
+      type: String
+    - contextPath: CheckPoint.Packages.revision.type
+      description: revision type.
+      type: String
+    - contextPath: CheckPoint.Packages.revision.uid
+      description: revision UID.
+      type: String
     description: Get checkpoint-packages details
   dockerimage: demisto/python3:3.8.5.11789
   feed: false
