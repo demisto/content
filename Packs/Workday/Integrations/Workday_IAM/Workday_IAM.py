@@ -42,7 +42,6 @@ def convert_incident_fields_to_cli_names(data):
 
 def get_time_elapsed(fetch_time, last_run):
     now = datetime.now()
-    demisto.debug("Workday Last Run: " + str(last_run))
     if 'time' in last_run:
         # Get Last run and parse to date format. Workday report will be pulled from last run time to current time
         last_run_time = last_run['time']
@@ -133,6 +132,7 @@ def get_all_user_profiles():
     email_to_user_profile = {}
     query_result = demisto.searchIndicators(query='type:\"User Profile\"').get('iocs', [])
     for user_profile in query_result:
+        user_profile = user_profile.get('CustomFields', {})
         employee_id = user_profile.get('employeeid')
         email = user_profile.get('email')
         employee_id_to_user_profile[employee_id] = user_profile
@@ -161,7 +161,7 @@ def get_profile_changed_fields(workday_user, demisto_user):
     profile_changed_fields = []
     for user_profile_key in workday_user.keys():
         workday_value = workday_user.get(user_profile_key)
-        demisto_value = demisto_user.get('CustomFields', {}).get(user_profile_key)
+        demisto_value = demisto_user.get(user_profile_key)
         if workday_value and demisto_value and workday_value != demisto_value:
             profile_changed_fields.append(user_profile_key)
 
@@ -169,6 +169,8 @@ def get_profile_changed_fields(workday_user, demisto_user):
 
 
 def detect_potential_termination(demisto_user, workday_user):
+    if not demisto_user or not workday_user:
+        return False
     # check if employee is active and his terminate day or last day of work arrived
     is_term_event = False
     employment_status = str(demisto_user.get(EMPLOYMENT_STATUS_EVENT_FIELD))
