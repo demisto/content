@@ -4,7 +4,9 @@ import yaml
 import json
 from datetime import datetime
 from distutils.version import LooseVersion
+import logging
 
+from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.common.constants import TEST_PLAYBOOKS_DIR, INTEGRATIONS_DIR, CONF_PATH, PACKS_DIR, \
     FileType
@@ -88,7 +90,7 @@ def run():
         if not os.path.isdir(test_playbook_dir_path) or not os.listdir(test_playbook_dir_path):
             continue
 
-        print(f'Going over {pack_name}')
+        logging.info(f'Going over {pack_name}')
         if os.path.exists(integration_dir_path):
             for file_or_dir in os.listdir(integration_dir_path):
                 if os.path.isdir(os.path.join(integration_dir_path, file_or_dir)):
@@ -116,12 +118,13 @@ def run():
             new_conf_json_objects.extend(calc_conf_json_object(pack_integrations, pack_test_playbooks))
 
     add_to_conf_json(new_conf_json_objects)
-    print(f'Added {len(new_conf_json_objects)} tests to the conf.json')
-    print(f'Added the following objects to the conf.json:\n{json.dumps(new_conf_json_objects, indent=4)}')
+    logging.info(f'Added {len(new_conf_json_objects)} tests to the conf.json')
+    logging.info(f'Added the following objects to the conf.json:\n{json.dumps(new_conf_json_objects, indent=4)}')
 
 
 if __name__ == '__main__':
+    install_logging('Update Tests step.log')
     start_time = datetime.now()
     run()
     total_time = datetime.now() - start_time
-    print(f'Total time {total_time}')
+    logging.debug(f'Total time {total_time}')
