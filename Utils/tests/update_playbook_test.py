@@ -1,10 +1,12 @@
+import pytest
+
 from Utils.update_playbook import update_playbook
 
 
+@pytest.mark.skip(reason="Not a test")
 def test_hello():
     update_playbook("../../TestData/Phishing_Investigation_-_Generic.yml", None)
 
-    tested = False
     with open("../../TestData/playbook-Phishing_Investigation_-_Generic.yml", "r") as f:
         expected_yml = f.read().encode('utf-8').splitlines()
 

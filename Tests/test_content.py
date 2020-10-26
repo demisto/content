@@ -23,7 +23,7 @@ import urllib3
 import requests
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
-from slackclient import SlackClient
+from slack import WebClient as SlackClient
 
 from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_integration import Docker, test_integration, disable_all_integrations
@@ -74,11 +74,11 @@ def options_handler():
                                                   'tests to run')
 
     options = parser.parse_args()
-    tests_settings = TestsSettings(options)
+    tests_settings = SettingsTester(options)
     return tests_settings
 
 
-class TestsSettings:
+class SettingsTester:
     def __init__(self, options):
         self.api_key = options.apiKey
         self.server = options.server
@@ -147,7 +147,7 @@ class ParallelPrintsManager:
         self.threads_print_jobs[thread_index] = []
 
 
-class TestsDataKeeper:
+class DataKeeperTester:
 
     def __init__(self):
         self.succeeded_playbooks = []
@@ -1046,7 +1046,7 @@ def manage_tests(tests_settings):
     This function manages the execution of Demisto's tests.
 
     Args:
-        tests_settings (TestsSettings): An object containing all the relevant data regarding how the tests should be ran
+        tests_settings (SettingsTester): An object containing all the relevant data regarding how the tests should be ran
 
     """
     tests_settings.serverNumericVersion = get_server_numeric_version(tests_settings.serverVersion,
@@ -1055,7 +1055,7 @@ def manage_tests(tests_settings):
     is_nightly = tests_settings.nightly
     number_of_instances = len(instances_ips)
     prints_manager = ParallelPrintsManager(number_of_instances)
-    tests_data_keeper = TestsDataKeeper()
+    tests_data_keeper = DataKeeperTester()
 
     if tests_settings.server:
         # If the user supplied a server - all tests will be done on that server.

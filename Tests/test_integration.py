@@ -7,6 +7,8 @@ from pprint import pformat
 import uuid
 import ast
 import urllib.parse
+
+import pytest
 import urllib3
 import requests.exceptions
 from demisto_client.demisto_api.rest import ApiException
@@ -818,6 +820,7 @@ def configure_proxy_unsecure(integration_params):
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return playbook status
+@pytest.mark.skip(reason="Not a test")
 def test_integration(client, server_url, integrations, playbook_id, prints_manager, options=None, is_mock_run=False,
                      thread_index=0):
     options = options if options is not None else {}
