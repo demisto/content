@@ -139,9 +139,9 @@ def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
                       json=incidents["incidents"])
     res_incidents, fetch_start_time, new_last_fetch_id = \
         alerts_to_incidents_and_fetch_start_from(incidents["incidents"], 1602771392519, {"last_fetch": 1603365903,
-                                                 "last_fetch_id": "5f919e55b0703c2f5a23d9d7"})
-    assert fetch_start_time == 1603378041000
+                                                 "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
+    assert fetch_start_time == 1603385903000
     assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d7"
-    assert res_incidents == [{'name': 'block0', 'occurred': '2020-10-22T14:47:21Z',
-                              'rawJSON': '{"_id": "5f919e55b0703c2f5a23d9d8", "timestamp": 1603378041000, '
-                              '"title": "block0"}'}]
+    assert res_incidents == [{'name': 'block1', 'occurred': '2020-10-22T16:58:23Z',
+                              'rawJSON': '{"_id": "5f919e55b0703c2f5a23d9d7", "timestamp": 1603385903000, '
+                              '"title": "block1"}'}]
