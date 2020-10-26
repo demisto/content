@@ -428,9 +428,11 @@ references:
         requires:
           - Create Instances
     - Install Packs in Demisto 6_0:
+        context: bucket_upload_env
         requires:
           - Create Instances
     - Install Packs in Demisto Marketplace - Master:
+        context: bucket_upload_env
         requires:
           - Create Instances
     - Upload Packs:
