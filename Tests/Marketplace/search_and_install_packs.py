@@ -243,21 +243,17 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                                                                                 body=request_data,
                                                                                 accept='application/json',
                                                                                 _request_timeout=request_timeout)
+            result_object = ast.literal_eval(response_data)
 
             if 200 <= status_code < 300:
                 table = prettytable.PrettyTable()
                 table.field_names = ['Pack ID', 'Pack Version']
-                print(f'type of response_data: {type(response_data)}')
-                for pack_data in response_data:
-                    print(f'type of pack_data: {pack_data}')
-                    print(pack_data)
+                for pack_data in result_object:
                     table.add_row([pack_data.get('id'), pack_data.get('currentVersion')])
-                    print('after adding row')
-                message = f'Successfully installed {len(response_data)} packs!\n{table}'
+                message = f'Successfully installed {len(result_object)} packs!\n{table}'
                 prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
                                              include_timestamp=True)
             else:
-                result_object = ast.literal_eval(response_data)
                 message = result_object.get('message', '')
                 err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
                 prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
