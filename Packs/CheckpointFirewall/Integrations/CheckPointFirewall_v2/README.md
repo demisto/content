@@ -2723,9 +2723,14 @@ Get checkpoint-packages details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Packages.name | String | Package name. | 
-| CheckPoint.Packages.target-name | String | target name. | 
-| CheckPoint.Packages.target-uid | String | target UID. | 
+| CheckPoint.Packages.name | String | Package name. |
+| CheckPoint.Packages.target-name | String | target name. |
+| CheckPoint.Packages.target-uid | String | target UID. |
+| CheckPoint.Packages.revision.domain.domain-type | String | domain type. |
+| CheckPoint.Packages.revision.domain.name | String | domain name. |
+| CheckPoint.Packages.revision.domain.uid | String | domain UID. |
+| CheckPoint.Packages.revision.type | String | revision type. |
+| CheckPoint.Packages.revision.uid | String | revision UID. |
 
 
 #### Command Example
@@ -2740,6 +2745,15 @@ Get checkpoint-packages details.
             "name": "Standard",
             "target-name": "Host1",
             "target-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+            "revision": {
+                "domain": {
+                    "name": "test",
+                    "domain-type": "domain",
+                    "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                },
+                "type": "session",
+                "uid", "41e821a0-3720-11e3-aa6e-0800200c9fde"
+            }
         }
     }
 }
@@ -2748,8 +2762,8 @@ Get checkpoint-packages details.
 #### Human Readable Output
 
 >### CheckPoint data for objects:
->|target-name|name|target-uid|
->|---|---|---|
->| Host1 | Standard | 41e821a0-3720-11e3-aa6e-0800200c9fde |
+>|target-name|name|target-uid|revision
+>|---|---|---|---|
+>| Host1 | Standard | 41e821a0-3720-11e3-aa6e-0800200c9fde | "domain": {<br/>"name": "test",<br/>"domain-type": "domain",<br/>"uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/>},<br/>"type": "session",<br/>"uid", "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/> |
 
 
