@@ -182,6 +182,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
     """
 
     if private_install:
+        print('### im here in PRIVATE_INSTALL')
         license_path = '/home/runner/work/content-private/content-private/content-test-conf/demisto.lic'
         header_params = {
             'Content-Type': 'multipart/form-data'
@@ -236,6 +237,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         }
 
         if is_nightly:
+            print('im here - is_nightly')
             packs_install = []
             for pack in packs_to_install:
                 pack = [pack]
@@ -244,6 +246,8 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                     'packs': packs_install,
                     'ignoreWarnings': True
                 }
+                print('This is the request - \n')
+                print(request_data)
         try:
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
@@ -252,8 +256,10 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                                                                                 accept='application/json',
                                                                                 _request_timeout=request_timeout)
             results = ast.literal_eval(response_data)
+            print(results)
             # If the pack already installed, and the current version is the right one, ignore it.
             if is_nightly:
+                print('IN HERE')
                 for pack in packs_to_install:
                     if pack not in results:
                         if 200 <= status_code < 300:
@@ -351,6 +357,8 @@ def install_all_content_packs(client, host, prints_manager, thread_index=0):
         if pack_id not in IGNORED_FILES:
             add_pack_to_installation_request(pack_id, all_packs)
     # for pack in all_packs:
+    print('This is all_packs param')
+    print(all_packs)
     install_packs(client, host, prints_manager, thread_index, all_packs, is_nightly=True)
 
 
