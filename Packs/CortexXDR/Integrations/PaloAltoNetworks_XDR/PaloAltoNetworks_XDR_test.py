@@ -1017,7 +1017,7 @@ def test_get_update_args_close_incident():
     from PaloAltoNetworks_XDR import get_update_args
     delta = {'closeReason': 'Other', "closeNotes": "Not Relevant"}
     update_args = get_update_args(delta, 2)
-    assert update_args.get('status') == 'resloved_other'
+    assert update_args.get('status') == 'resolved_other'
     assert update_args.get('resolve_comment') == 'Not Relevant'
 
 
@@ -1040,3 +1040,241 @@ def test_get_update_args_owner_sync(mocker):
     update_args = get_update_args(delta, 1)
 
     assert update_args.get('assigned_user_mail') == 'moo@demisto.com'
+
+
+def test_sort_by_key__only_main_key():
+    """
+    Given:
+        -  a list of dicts to sort where main key is entered for all elements
+        -  the main key to sort by
+        -  the fallback key to sort by
+    When
+        - running sort_by_key
+    Then
+        - resulting list is sorted by main key only.
+    """
+    from PaloAltoNetworks_XDR import sort_by_key
+    list_to_sort = [
+        {
+            "name": "element2",
+            "main_key": 2,
+            "fallback_key": 4
+        },
+        {
+            "name": "element1",
+            "main_key": 1,
+            "fallback_key": 3
+        },
+
+        {
+            "name": "element4",
+            "main_key": 4,
+            "fallback_key": 2
+        },
+        {
+            "name": "element3",
+            "main_key": 3,
+            "fallback_key": 1
+        }
+    ]
+
+    expected_result = [
+        {
+            "name": "element1",
+            "main_key": 1,
+            "fallback_key": 3
+        },
+        {
+            "name": "element2",
+            "main_key": 2,
+            "fallback_key": 4
+        },
+        {
+            "name": "element3",
+            "main_key": 3,
+            "fallback_key": 1
+        },
+        {
+            "name": "element4",
+            "main_key": 4,
+            "fallback_key": 2
+        }
+    ]
+
+    assert expected_result == sort_by_key(list_to_sort, "main_key", "fallback_key")
+
+
+def test_sort_by_key__main_key_and_fallback_key():
+    """
+    Given:
+        -  a list of dicts to sort where some elements have main key and some don't but they have fallback key
+        -  the main key to sort by
+        -  the fallback key to sort by
+    When
+        - running sort_by_key
+    Then
+        - resulting list is sorted by main key on elements with the main key and
+          then sorted by fallback key for elements who dont have it
+    """
+    from PaloAltoNetworks_XDR import sort_by_key
+    list_to_sort = [
+        {
+            "name": "element2",
+            "fallback_key": 4
+        },
+        {
+            "name": "element1",
+            "main_key": 1,
+            "fallback_key": 3
+        },
+
+        {
+            "name": "element4",
+            "main_key": None,
+            "fallback_key": 2
+        },
+        {
+            "name": "element3",
+            "main_key": 3,
+            "fallback_key": 1
+        }
+    ]
+
+    expected_result = [
+        {
+            "name": "element1",
+            "main_key": 1,
+            "fallback_key": 3
+        },
+        {
+            "name": "element3",
+            "main_key": 3,
+            "fallback_key": 1
+        },
+        {
+            "name": "element4",
+            "main_key": None,
+            "fallback_key": 2
+        },
+        {
+            "name": "element2",
+            "fallback_key": 4
+        },
+    ]
+
+    assert expected_result == sort_by_key(list_to_sort, "main_key", "fallback_key")
+
+
+def test_sort_by_key__only_fallback_key():
+    """
+    Given:
+        -  a list of dicts to sort where main key is not entered for all elements and fallback key is.
+        -  the main key to sort by
+        -  the fallback key to sort by
+    When
+        - running sort_by_key
+    Then
+        - resulting list is sorted by fallback key only.
+    """
+    from PaloAltoNetworks_XDR import sort_by_key
+    list_to_sort = [
+        {
+            "name": "element2",
+            "fallback_key": 4
+        },
+        {
+            "name": "element1",
+            "fallback_key": 3
+        },
+        {
+            "name": "element4",
+            "fallback_key": 2
+        },
+        {
+            "name": "element3",
+            "fallback_key": 1
+        }
+    ]
+
+    expected_result = [
+        {
+            "name": "element3",
+            "fallback_key": 1
+        },
+        {
+            "name": "element4",
+            "fallback_key": 2
+        },
+        {
+            "name": "element1",
+            "fallback_key": 3
+        },
+        {
+            "name": "element2",
+            "fallback_key": 4
+        },
+    ]
+
+    assert expected_result == sort_by_key(list_to_sort, "main_key", "fallback_key")
+
+
+def test_sort_by_key__main_key_and_fallback_key_and_additional():
+    """
+    Given:
+        -  a list of dicts to sort where main key is entered for some elements, fallback for others
+           and some dont have either
+        -  the main key to sort by
+        -  the fallback key to sort by
+    When
+        - running sort_by_key
+    Then
+        - resulting list is sorted by main key for elements with main key,
+          then by fallback key for those with fallback key and then the rest of the elements that dont have either key.
+    """
+    from PaloAltoNetworks_XDR import sort_by_key
+    list_to_sort = [
+        {
+            "name": "element2",
+            "fallback_key": 4
+        },
+        {
+            "name": "element1",
+            "main_key": 1,
+            "fallback_key": 3
+        },
+
+        {
+            "name": "element4",
+            "main_key": None,
+            "fallback_key": None
+        },
+        {
+            "name": "element3",
+            "main_key": 3,
+            "fallback_key": 1
+        }
+    ]
+
+    expected_result = [
+        {
+            "name": "element1",
+            "main_key": 1,
+            "fallback_key": 3
+        },
+        {
+            "name": "element3",
+            "main_key": 3,
+            "fallback_key": 1
+        },
+        {
+            "name": "element2",
+            "fallback_key": 4
+        },
+        {
+            "name": "element4",
+            "main_key": None,
+            "fallback_key": None
+        },
+    ]
+
+    assert expected_result == sort_by_key(list_to_sort, "main_key", "fallback_key")

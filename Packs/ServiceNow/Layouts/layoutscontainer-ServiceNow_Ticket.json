@@ -584,7 +584,7 @@
       "minW": 1,
       "moved": false,
       "name": "ServiceNow Ticket Status",
-      "query": "SErviceNowIncidentStatus",
+      "query": "ServiceNowIncidentStatus",
       "queryType": "script",
       "static": false,
       "type": "dynamic",
@@ -732,7 +732,7 @@
   ]
  },
  "group": "incident",
- "id": "20c9bb24-7037-4597-8c32-578ffbe61c01",
+ "id": "ServiceNow Ticket",
  "name": "ServiceNow Ticket",
  "system": false,
  "version": -1,

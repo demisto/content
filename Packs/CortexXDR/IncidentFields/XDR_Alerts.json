@@ -140,6 +140,30 @@
 			"selectValues": null,
 			"type": "shortText",
 			"width": 150
+		},
+		{
+			"displayName": "MITRE ATTACK TACTIC",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "mitretacticidandname",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "MITRE ATTACK TECHNIQUE",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "mitretechniqueidandname",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
 		}
 	],
 	"content": true,
