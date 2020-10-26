@@ -92,7 +92,7 @@ def get_failing_unit_tests_file_data():
     return failing_ut_list
 
 
-def get_entities_fields(entity_title, report_file_name='', job_name=""):
+def get_entities_fields(entity_title, report_file_name=''):
     if 'lint' in report_file_name:  # lint case
         failed_entities = get_failing_unit_tests_file_data()
     else:
@@ -125,7 +125,7 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
 
 
 def get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE, job_name="", test_type=None):
-    steps_fields = get_entities_fields(entity_title="Failed Steps", job_name=job_name)
+    steps_fields = get_entities_fields(entity_title="Failed Steps")
     color = 'good' if not steps_fields else 'danger'
     title = f'{build_title} - Success' if not steps_fields else f'{build_title} - Failure'
 
@@ -281,7 +281,8 @@ def main():
                        options.slack,
                        options.test_type,
                        env_results_file_name=options.env_results_file_name)
-    elif options.bucket_upload:
+    elif options.bucket_upload and options.test_type == BUCKET_UPLOAD_TYPE:
+        # We need to check the test type too because otherwise nightly unit-tests will run too
         job_name = options.job_name
         slack_notifier(options.url, options.slack, options.test_type, job_name=job_name)
     elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, BUCKET_UPLOAD_TYPE,
