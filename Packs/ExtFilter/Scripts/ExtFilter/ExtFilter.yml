@@ -28,12 +28,15 @@ args:
   - ===
   - '>'
   - '>='
+  - 'base64: decode'
+  - 'base64: encode'
   - contains
   - contains any caseless line of
   - contains any caseless line of
   - contains any line of
   - contains any string of
   - contains caseless
+  - digest
   - doesn't contain
   - doesn't contain any caseless line of
   - doesn't contain any caseless line of
@@ -71,6 +74,10 @@ args:
   - is
   - is filtered by
   - isn't
+  - 'json: decode'
+  - 'json: decode array'
+  - 'json: encode'
+  - 'json: encode array'
   - keeps
   - less or equal
   - less than
@@ -121,6 +128,7 @@ args:
   - 'wildcard: matches any caseless string of'
   - 'wildcard: matches any string of'
   - 'wildcard: matches caseless'
+  - ""
   description: 'Filter Operation: value is filtered by,is filtered by,keeps,doesn''t
     keep,is,isn''t,equals,doesn''t equal,greater or equal,greater than,less or equal,less
     than,in range,starts with,starts with caseless,doesn''t start with,doesn''t start

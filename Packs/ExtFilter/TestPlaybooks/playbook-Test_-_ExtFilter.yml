@@ -1,5 +1,5 @@
 id: Test - ExtFilter
-version: -1
+version: 26
 vcShouldKeepItemLegacyProdMachine: false
 name: Test - ExtFilter
 description: Run ExtFilter for a test
@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 30bb5032-ed6a-4aa6-83a9-ff34827691b0
+    taskid: cb6104e6-1258-4022-8a1a-a33cd1077cf8
     type: start
     task:
-      id: 30bb5032-ed6a-4aa6-83a9-ff34827691b0
+      id: cb6104e6-1258-4022-8a1a-a33cd1077cf8
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 309d9416-9c44-46d6-8ad2-bcb525674b7c
+    taskid: 12eec8d6-abd2-4777-8426-0784d045d4ed
     type: regular
     task:
-      id: 309d9416-9c44-46d6-8ad2-bcb525674b7c
+      id: 12eec8d6-abd2-4777-8426-0784d045d4ed
       version: -1
       name: Set Input Source
       description: Set a value in context under the key you entered.
@@ -73,10 +73,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 89fa767d-7b9c-485a-8fd9-bd86aa1bef60
+    taskid: 37cef208-f453-4f2f-88b5-0316c024995f
     type: title
     task:
-      id: 89fa767d-7b9c-485a-8fd9-bd86aa1bef60
+      id: 37cef208-f453-4f2f-88b5-0316c024995f
       version: -1
       name: Done
       type: title
@@ -97,10 +97,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: c28c4773-9b9e-4b26-8d6a-0ddeec5bb00e
+    taskid: c0e418c3-48f9-4846-8150-631b00d077e6
     type: regular
     task:
-      id: c28c4773-9b9e-4b26-8d6a-0ddeec5bb00e
+      id: c0e418c3-48f9-4846-8150-631b00d077e6
       version: -1
       name: Set ExpectedEncodedOutput
       description: Set a value in context under the key you entered.
@@ -122,7 +122,19 @@ tasks:
           root: inputs.ExpectedOutput
           transformers:
           - operator: ParseJSON
-          - operator: f2df9430-0fc7-4a1f-8564-11cffe56e636
+          - operator: ExtFilter
+            args:
+              ctx_demisto: {}
+              ctx_incident: {}
+              ctx_inputs: {}
+              ctx_lists: {}
+              filter:
+                value:
+                  simple: '{}'
+              operation:
+                value:
+                  simple: 'json: encode array'
+              path: {}
     separatecontext: false
     view: |-
       {
@@ -138,10 +150,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 7fc5be90-4147-4bf1-84a8-082cfa3db9b2
+    taskid: 439bfe27-9cd4-4f04-8b4d-e92364bcabce
     type: regular
     task:
-      id: 7fc5be90-4147-4bf1-84a8-082cfa3db9b2
+      id: 439bfe27-9cd4-4f04-8b4d-e92364bcabce
       version: -1
       name: Set ExtFilterFilter
       description: Set a value in context under the key you entered.
@@ -176,10 +188,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 7ad2edd4-13af-4001-8aea-1f9e616810a0
+    taskid: 64a11423-235e-4336-8115-249b87f32f46
     type: regular
     task:
-      id: 7ad2edd4-13af-4001-8aea-1f9e616810a0
+      id: 64a11423-235e-4336-8115-249b87f32f46
       version: -1
       name: Parse ExtFilterFilter
       description: Set a value in context under the key you entered.
@@ -213,10 +225,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 6fba8f66-8dc5-46cd-8790-e88bcede2aa0
+    taskid: 6b24851c-5283-4177-8f0b-9598123440a5
     type: regular
     task:
-      id: 6fba8f66-8dc5-46cd-8790-e88bcede2aa0
+      id: 6b24851c-5283-4177-8f0b-9598123440a5
       version: -1
       name: Run ExtFilter
       description: Set a value in context under the key you entered.
@@ -267,7 +279,19 @@ tasks:
                 value:
                   simple: inputs.ExtFilterPath
                 iscontext: true
-          - operator: f2df9430-0fc7-4a1f-8564-11cffe56e636
+          - operator: ExtFilter
+            args:
+              ctx_demisto: {}
+              ctx_incident: {}
+              ctx_inputs: {}
+              ctx_lists: {}
+              filter:
+                value:
+                  simple: '{}'
+              operation:
+                value:
+                  simple: 'json: encode array'
+              path: {}
     separatecontext: false
     view: |-
       {
@@ -283,10 +307,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: efc27a25-f873-4004-8bfa-ff43521f0cd7
+    taskid: c035996e-3218-47b6-8b23-d50bcbf5f808
     type: condition
     task:
-      id: efc27a25-f873-4004-8bfa-ff43521f0cd7
+      id: c035996e-3218-47b6-8b23-d50bcbf5f808
       version: -1
       name: Verify Result
       description: Prints text to war room (Markdown supported)
@@ -325,10 +349,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 42746408-d562-45d5-8dcb-c907c835a0c3
+    taskid: 9f28a7ad-a51f-4787-8506-9179f58ae0c4
     type: regular
     task:
-      id: 42746408-d562-45d5-8dcb-c907c835a0c3
+      id: 9f28a7ad-a51f-4787-8506-9179f58ae0c4
       version: -1
       name: Set Output
       description: Set a value in context under the key you entered.
@@ -362,10 +386,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: ac1c4605-37de-4970-8a17-2af379a1354b
+    taskid: aa1fb9c5-6432-4c7d-8d49-b219662d937f
     type: regular
     task:
-      id: ac1c4605-37de-4970-8a17-2af379a1354b
+      id: aa1fb9c5-6432-4c7d-8d49-b219662d937f
       version: -1
       name: Set Expected Output
       description: Set a value in context under the key you entered.
@@ -399,10 +423,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: e1a512d9-091d-4341-86fb-d25a7a86b1fe
+    taskid: 8527fdf4-2c5e-4eee-8275-b34bf85213b4
     type: condition
     task:
-      id: e1a512d9-091d-4341-86fb-d25a7a86b1fe
+      id: 8527fdf4-2c5e-4eee-8275-b34bf85213b4
       version: -1
       name: Is ExpectedOutput null?
       description: Set a value in context under the key you entered.
@@ -441,10 +465,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 3987bdc6-ca1c-4a49-8869-eb3482266b22
+    taskid: 286d4a78-5c4e-4a12-8060-4e2008750294
     type: regular
     task:
-      id: 3987bdc6-ca1c-4a49-8869-eb3482266b22
+      id: 286d4a78-5c4e-4a12-8060-4e2008750294
       version: -1
       name: Set null for ExpectedEncodedOutput
       description: Set a value in context under the key you entered.
@@ -480,10 +504,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: ee7d5540-65ad-48af-800e-d3f8b35b3324
+    taskid: eb869264-7268-43ce-85d0-deb5ac50fc0e
     type: condition
     task:
-      id: ee7d5540-65ad-48af-800e-d3f8b35b3324
+      id: eb869264-7268-43ce-85d0-deb5ac50fc0e
       version: -1
       name: Is EncodedOutput null?
       description: Set a value in context under the key you entered.
@@ -522,10 +546,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: cf61fe77-358e-4d21-8e28-da1250fac947
+    taskid: 1b418fdc-0291-4a24-87e6-0bec05422e27
     type: regular
     task:
-      id: cf61fe77-358e-4d21-8e28-da1250fac947
+      id: 1b418fdc-0291-4a24-87e6-0bec05422e27
       version: -1
       name: Set null for EncodedOutput
       description: Set a value in context under the key you entered.
@@ -598,4 +622,3 @@ inputs:
   description: Expected Output
   playbookInputQuery: null
 outputs: []
-fromversion: 5.0.0

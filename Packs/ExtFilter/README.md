@@ -306,6 +306,14 @@ Available operators
 * `matches conditions of`
 * `value matches expressions of`
 * `value matches conditions of`
+* `json: encode array`
+* `json: decode array`
+* `json: encode`
+* `json: decode`
+* `base64: encode`
+* `base64: decode`
+* `digest`
+
 
 ----
 ### Operator: `is filtered by`
@@ -7088,6 +7096,333 @@ See `Filter Syntax` for the details of `<conditions>`.
         }
       }
     }
+
+
+</details>
+
+
+----
+### Operator: `json: encode array`
+<details><summary>
+Returns an string in JSON which is encoded the entire value.
+</summary><p>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+| indent | int | The number of spaces per indent (Default: None) |
+
+#### Example 1
+##### Input
+    [
+      10,
+      20
+    ]
+
+##### Filter
+> **Operator**: json: encode array
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    "[10,20]"
+
+
+#### Example 2
+##### Input
+    [
+      10,
+      20
+    ]
+
+##### Filter
+> **Operator**: json: encode array
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "indent": 4
+    }
+
+##### Output
+    [
+        "1.1.1.1",
+        "2.2.2.2"
+    ]
+
+
+</details>
+
+
+----
+### Operator: `json: decode array`
+<details><summary>
+Returns a JSON decoded-value from the entire value.
+</summary><p>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+(parameter is currently not required)
+
+#### Example 1
+##### Input
+    "[10,20]"
+
+##### Filter
+> **Operator**: json: decode array
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    [
+      10,
+      20
+    ]
+
+
+</details>
+
+
+----
+### Operator: `json: encode`
+<details><summary>
+Encodes each element and returns a set of JSON-encoded string.
+</summary><p>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+| indent | int | The number of spaces per indent (Default: None) |
+
+#### Example 1
+##### Input
+    [
+      {
+        "xxx": 10
+      },
+      20
+    ]
+
+##### Filter
+> **Operator**: json: encode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    [
+      {"xxx":10},
+      20
+    ]
+
+
+#### Example 2
+##### Input
+    [
+      {
+        "xxx": 10
+      },
+      20
+    ]
+
+##### Filter
+> **Operator**: json: encode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "indent": 4
+    }
+
+##### Output
+    [
+      {
+          "xxx": 10
+      },
+      20
+    ]
+
+
+</details>
+
+
+----
+### Operator: `json: decode`
+<details><summary>
+Returns a set of JSON decoded-values from the each element.
+</summary><p>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+(parameter is currently not required)
+
+#### Example 1
+##### Input
+    [
+      {"xxx":10},
+      {"yyy":20}
+    ]
+
+##### Filter
+> **Operator**: json: decode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    [
+      {
+        "xxx": 10
+      },
+      {
+        "yyy": 20
+      }
+    ]
+
+
+</details>
+
+
+----
+### Operator: `base64: encode`
+<details><summary>
+Encodes each element and returns a set of BASE64-encoded string.
+</summary><p>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+(parameter is currently not required)
+
+#### Example 1
+##### Input
+    [
+      "xxx",
+      "yyy"
+    ]
+
+##### Filter
+> **Operator**: base64: encode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    [
+      "eHh4",
+      "eXl5"
+    ]
+
+
+</details>
+
+
+----
+### Operator: `base64: decode`
+<details><summary>
+Returns a set of BASE64 decoded-values from the each element.
+</summary><p>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+(parameter is currently not required)
+
+#### Example 1
+##### Input
+    [
+      "eHh4",
+      "eXl5"
+    ]
+
+##### Filter
+> **Operator**: base64: encode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    [
+      "xxx",
+      "yyy"
+    ]
+
+
+</details>
+
+
+----
+### Operator: `digest`
+<details><summary>
+Create a set of secure hash value for each element.
+</summary><p>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+| algorithm | string | Secure hash algorithm (Default: sha256). See python hashlib for algorithm names. |
+
+#### Example 1
+##### Input
+    [
+      "xxx",
+      "yyy"
+    ]
+
+##### Filter
+> **Operator**: base64: encode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    [
+      "cd2eb0837c9b4c962c22d2ff8b5441b7b45805887f051d39bf133b583baf6860",
+      "f2afd1cacb5441a5e65a7a460a5f9898b7b98b08aa6323a2e53c8b9a9686cd86"
+    ]
 
 
 </details>
