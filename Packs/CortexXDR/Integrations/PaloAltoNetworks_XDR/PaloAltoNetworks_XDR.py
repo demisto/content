@@ -1999,43 +1999,36 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
 
-    try:
-        for raw_incident in raw_incidents:
-            incident_id = raw_incident.get('incident_id')
+    for raw_incident in raw_incidents:
+        incident_id = raw_incident.get('incident_id')
 
-            incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
-                                                                     "alerts_limit": 1000})[2].get('incident')
+        incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
+                                                                 "alerts_limit": 1000})[2].get('incident')
 
-            sort_all_list_incident_fields(incident_data)
+        sort_all_list_incident_fields(incident_data)
 
-            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
-            incident_data['mirror_instance'] = demisto.integrationInstance()
-            incident_data['last_mirrored_in'] = int(datetime.now().timestamp()*1000)
+        incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
+        incident_data['mirror_instance'] = demisto.integrationInstance()
+        incident_data['last_mirrored_in'] = int(datetime.now().timestamp()*1000)
 
-            description = raw_incident.get('description')
-            occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
-            incident = {
-                'name': f'#{incident_id} - {description}',
-                'occurred': occurred,
-                'rawJSON': json.dumps(incident_data),
-            }
+        description = raw_incident.get('description')
+        occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
+        incident = {
+            'name': f'#{incident_id} - {description}',
+            'occurred': occurred,
+            'rawJSON': json.dumps(incident_data),
+        }
 
-            if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
-                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
+        if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
+            incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
 
-            # Update last run and add incident if the incident is newer than last fetch
-            if raw_incident['creation_time'] > last_fetch:
-                last_fetch = raw_incident['creation_time']
+        # Update last run and add incident if the incident is newer than last fetch
+        if raw_incident['creation_time'] > last_fetch:
+            last_fetch = raw_incident['creation_time']
 
-            incidents.append(incident)
+        incidents.append(incident)
 
-    except Exception as e:
-        if "Rate limit error" in str(e):
-            return_error("API rate limit")
-        else:
-            raise e
-    finally:
-        next_run = {'time': last_fetch + 1}
+    next_run = {'time': last_fetch + 1}
 
     return next_run, incidents
 
