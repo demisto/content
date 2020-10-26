@@ -763,7 +763,7 @@ script:
     - contextPath: Proofpoint.Report.URL.Platform.Version
       description: The version of the platform.
       type: String
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
   longRunning: false
