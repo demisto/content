@@ -18,7 +18,7 @@ else:
     fetched = str(fetched)
     html = "<div style='line-height: 36px;color: #404142;text-align: center;font-size: 20px;line-height: 36px;'>" + "<br>" + fetched + "/" + total + "</div>" + "<div class='editable-field-wrapper' style='text-align:center;padding-top: 10px;'>" + \
         "Fetched Events / Total" "<br>" + "<div class='editable-field-wrapper' style='text-align:center;'>" + \
-        "Displayed event details are based on the fetched events only." + "</div>""</div>"
+        "Events details on this page are based on the fetched events." + "</div>""</div>"
 
 demisto.results({
     'ContentsFormat': 'html',
