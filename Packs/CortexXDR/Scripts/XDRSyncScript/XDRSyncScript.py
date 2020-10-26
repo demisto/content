@@ -148,16 +148,18 @@ def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident
     return incident_in_demisto_was_modified, xdr_update_args
 
 
-def compare_incident_in_xdr_vs_previous_xdr_in_context(incident_in_xdr, xdr_incident_in_context, fields_mapping):
-    modified_in_xdr = int(incident_in_xdr.get("modification_time"))
-    modified_in_xdr_in_context = int(xdr_incident_in_context.get("modification_time"))
-    incident_in_xdr_was_modified = False
+def compare_incident_in_xdr_vs_previous_xdr_in_context(incident_id, xdr_incident_in_context, fields_mapping):
+    # check if incident in xdr was modified
 
+    incident_in_xdr_was_modified = False
     demisto_update_args = {}
-    if modified_in_xdr > modified_in_xdr_in_context:
+
+    latest_incident_in_xdr_result, latest_incident_in_xdr, _ = get_latest_incident_from_xdr(incident_id, return_only_updated=True)
+
+    if latest_incident_in_xdr:
         for field_in_xdr in XDR_INCIDENT_FIELDS:
             if field_in_xdr in fields_mapping:
-                current_value = incident_in_xdr.get(field_in_xdr)
+                current_value = latest_incident_in_xdr.get(field_in_xdr)
                 previous_value = xdr_incident_in_context.get(field_in_xdr)
 
                 if not current_value and not previous_value:
@@ -172,7 +174,7 @@ def compare_incident_in_xdr_vs_previous_xdr_in_context(incident_in_xdr, xdr_inci
                     else:
                         demisto_update_args[field_name_in_demisto] = current_value
 
-    return incident_in_xdr_was_modified, demisto_update_args
+    return incident_in_xdr_was_modified, demisto_update_args, latest_incident_in_xdr_result, latest_incident_in_xdr
 
 
 def args_to_str(demisto_args, latest_incident_in_xdr):
@@ -191,17 +193,11 @@ def args_to_str(demisto_args, latest_incident_in_xdr):
     return args_to_str
 
 
-def create_incident_from_saved_data():
-    demisto_incident = json.dumps(demisto.incident(), indent=4)
-    return_error(demisto_incident)
-    # raw_json = demisto_incident.get('rawJSON')
-
-
-def get_latest_incident_from_xdr(incident_id):
+def get_latest_incident_from_xdr(incident_id, return_only_updated=False):
     # get the latest incident from xdr
     latest_incident_in_xdr_result = demisto.executeCommand("xdr-get-incident-extra-data",
                                                            {"incident_id": incident_id,
-                                                            "return_only_updated_incident": 'True'})
+                                                            "return_only_updated_incident": return_only_updated})
 
     if not latest_incident_in_xdr_result:
         return {}, {}, {}
@@ -227,18 +223,34 @@ def get_latest_incident_from_xdr(incident_id):
     return latest_incident_in_xdr_result, latest_incident_in_xdr, latest_incident_in_xdr_markdown
 
 
+def create_incident_from_saved_data(field_mapping):
+    incident_in_context = {}
+    demisto_incident = demisto.incident()
+    return_error(json.dumps(demisto_incident, indent=4))
+    custom_fields = demisto_incident.get('CustomFields', {})
+
+    for field in XDR_INCIDENT_FIELDS:
+        field_in_xdr = field_mapping.get(field)
+        if field_in_xdr:
+            incident_in_context[field] = custom_fields.get(field_in_xdr)
+
+    return_error(json.dumps(incident_in_context, indent=4))
+    # raw_json = demisto_incident.get('rawJSON')
+
+
 def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run, first_run, xdr_alerts_field,
                       xdr_file_artifacts_field, xdr_network_artifacts_field, incident_in_demisto, playbook_to_run,
                       verbose=True):
 
-    latest_incident_in_xdr_result, latest_incident_in_xdr, latest_incident_in_xdr_markdown = \
-        get_latest_incident_from_xdr(incident_id)
-
-    return_error('Script- here')
-    if first_run:
-        xdr_incident_from_previous_run = latest_incident_in_xdr
+    # latest_incident_in_xdr_result, latest_incident_in_xdr, latest_incident_in_xdr_markdown = \
+    #     get_latest_incident_from_xdr(incident_id)
+    #
+    # # return_error(json.dumps(latest_incident_in_xdr_result, indent=4))
+    # return_error(json.dumps(latest_incident_in_xdr, indent=4))
     # if first_run:
-    #     xdr_incident_from_previous_run = create_incident_from_saved_data()
+    #     xdr_incident_from_previous_run = latest_incident_in_xdr
+    if first_run:
+        xdr_incident_from_previous_run = create_incident_from_saved_data(fields_mapping)
 
     else:
         if xdr_incident_from_previous_run:
@@ -285,10 +297,8 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
 
         return latest_incident_in_xdr
 
-    incident_in_xdr_was_modified, demisto_update_args = compare_incident_in_xdr_vs_previous_xdr_in_context(
-        latest_incident_in_xdr,
-        xdr_incident_from_previous_run,
-        fields_mapping)
+    incident_in_xdr_was_modified, demisto_update_args, latest_incident_in_xdr_result, latest_incident_in_xdr = \
+        compare_incident_in_xdr_vs_previous_xdr_in_context(incident_id, xdr_incident_from_previous_run, fields_mapping)
 
     if incident_in_xdr_was_modified:
         demisto.debug("the incident in xdr was modified, updating the incident in demisto")
@@ -302,6 +312,7 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
         demisto_update_args[xdr_network_artifacts_field] = replace_in_keys(
             xdr_incident.get('network_artifacts').get('data', []), '_', '')
 
+        demisto_update_args['lastmirroredintime']
         res = demisto.executeCommand("setIncident", demisto_update_args)
         if is_error(res):
             raise ValueError(get_error(res))

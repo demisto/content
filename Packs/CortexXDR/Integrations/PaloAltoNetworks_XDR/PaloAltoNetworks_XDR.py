@@ -972,29 +972,26 @@ def get_incident_extra_data_command(client, args):
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
 
     if return_only_updated_incident:
-        # demisto_incident = json.dumps(demisto.incident(), indent=4)
-        demisto_incident = demisto.incident()
-        labels = demisto_incident.get('labels')
-        # return_error(demisto_incident.get('labels'))
-        for label in labels:
-            if label.get('type') == 'lastMirroredIn':
-                last_mirrored_time = label.get('value')
-        last_modified_incidents = get_integration_context().get('modified_incidents', {})
 
+        demisto_incident = demisto.incident()
+        last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
+        last_mirrored_in_time_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
+
+        last_modified_incidents = get_integration_context().get('modified_incidents', {})
         demisto.debug(f"integration context: {last_modified_incidents}\n")  # type:ignore
 
         if incident_id in last_modified_incidents:  # search the incident in the dict of modified incidents
-
             current_incident_modified_time = int(str(last_modified_incidents[incident_id]))
 
             demisto.debug(f"XDR incident {incident_id}\n"  # type:ignore
                           f"modified time: {current_incident_modified_time}\n"
-                          f"last mirrored time: {last_mirrored_time}")
+                          f"last mirrored in time: {last_mirrored_in_time_timestamp}")
 
-            return_error("after time comparison")
-            # if arg_to_timestamp(current_incident_modified_time, 'last_modified') > \
-            #         arg_to_timestamp(remote_args.last_update, 'last_update'):   # need to update this incident
+            if current_incident_modified_time > last_mirrored_in_time_timestamp:   # need to update this incident
+                pass
 
+            else:  # the incident was not modified
+                return {}
         else:  # the incident was not modified
             return {}
 
@@ -1853,9 +1850,7 @@ def get_remote_data_command(client, args):
     incident_data = {}
     try:
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
-                                                                 "alerts_limit": 1000},
-                                                        return_only_updated_incident=True)
-
+                                                                 "alerts_limit": 1000})
         if incident_data:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
 
