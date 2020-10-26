@@ -99,7 +99,7 @@ script:
       description: Id of task to close in playbook. Requires an incident_id as the
         investigation id.
     outputs:
-    - contextPath: request_id
+    - contextPath: xMatters.Workflow.request_id
       description: Request ID from xMatters
       type: string
     description: sends the event to xMatters
@@ -136,7 +136,7 @@ script:
     - name: property_value
       description: An event property value to filter the events
     outputs:
-    - contextPath: Events
+    - contextPath: xMatters.GetEvents.Events
       description: Events from xMatters.
     description: Get events from xMatters.
   - name: xm-get-event
@@ -145,7 +145,7 @@ script:
       required: true
       description: Unique identifier of the event
     outputs:
-    - contextPath: Event
+    - contextPath: xMatters.GetEvent.Event
       description: Event from xMatters.
     description: Get a single event from xMatters.
   dockerimage: demisto/python3:3.8.6.12176

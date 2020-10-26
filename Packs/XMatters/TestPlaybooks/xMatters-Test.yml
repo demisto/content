@@ -1,16 +1,16 @@
 id: xMatters-Test
-version: 6
-fromversion: 5.0.0
+version: 8
 vcShouldKeepItemLegacyProdMachine: false
 name: xMatters-Test
+description: Nightly build test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 12e7b83e-c653-4393-85bb-4b4eac6105dd
+    taskid: d7da110a-51df-46d6-8f4c-2f32d5d35af1
     type: start
     task:
-      id: 12e7b83e-c653-4393-85bb-4b4eac6105dd
+      id: d7da110a-51df-46d6-8f4c-2f32d5d35af1
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 0f5948b0-6d96-4f26-82ef-4ea0796367be
+    taskid: 947d522e-42c7-407f-842f-102070d08455
     type: regular
     task:
-      id: 0f5948b0-6d96-4f26-82ef-4ea0796367be
+      id: 947d522e-42c7-407f-842f-102070d08455
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -64,10 +64,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: f62cf0b0-e53c-48ba-89b5-71fc403895cb
+    taskid: 94e7dfec-ebe0-4aa7-8b9b-256589573a04
     type: regular
     task:
-      id: f62cf0b0-e53c-48ba-89b5-71fc403895cb
+      id: 94e7dfec-ebe0-4aa7-8b9b-256589573a04
       version: -1
       name: xm-trigger-workflow
       script: '|||xm-trigger-workflow'
@@ -101,10 +101,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 1bd372ff-a484-4340-82c3-1b434e2d2be9
+    taskid: 7707e813-95bd-44dc-864d-ba5b25485a7e
     type: condition
     task:
-      id: 1bd372ff-a484-4340-82c3-1b434e2d2be9
+      id: 7707e813-95bd-44dc-864d-ba5b25485a7e
       version: -1
       name: Verify Outputs
       type: condition
@@ -136,10 +136,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 41e3efa1-61f8-47b3-81e7-450b0195f7d0
+    taskid: 68f78036-307c-4a95-86cc-4e8c862671f2
     type: regular
     task:
-      id: 41e3efa1-61f8-47b3-81e7-450b0195f7d0
+      id: 68f78036-307c-4a95-86cc-4e8c862671f2
       version: -1
       name: xm-get-events
       script: '|||xm-get-events'
@@ -174,10 +174,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 27a2cca5-4ecb-4728-84ab-77b75ec7659c
+    taskid: 21bdbc5c-9f13-4057-886b-2d195661a21a
     type: condition
     task:
-      id: 27a2cca5-4ecb-4728-84ab-77b75ec7659c
+      id: 21bdbc5c-9f13-4057-886b-2d195661a21a
       version: -1
       name: Verify Outputs
       type: condition
@@ -209,10 +209,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: f205bda0-1cea-431c-827c-15c45aa4dc5f
+    taskid: c628d893-acec-49a8-8487-8e02fae86c15
     type: regular
     task:
-      id: f205bda0-1cea-431c-827c-15c45aa4dc5f
+      id: c628d893-acec-49a8-8487-8e02fae86c15
       version: -1
       name: xm-get-event
       script: '|||xm-get-event'
@@ -240,10 +240,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 260a2566-005f-4b50-8798-4ab9b1f13210
+    taskid: 3f668135-aa93-4ccf-81ef-3499d552c7a1
     type: condition
     task:
-      id: 260a2566-005f-4b50-8798-4ab9b1f13210
+      id: 3f668135-aa93-4ccf-81ef-3499d552c7a1
       version: -1
       name: Verify Outputs
       type: condition
@@ -275,10 +275,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 95ffb6e9-32b8-48ff-809c-df645517d13d
+    taskid: 07273a65-353c-42ec-82a8-29511f978fc4
     type: title
     task:
-      id: 95ffb6e9-32b8-48ff-809c-df645517d13d
+      id: 07273a65-353c-42ec-82a8-29511f978fc4
       version: -1
       name: Test Done
       type: title

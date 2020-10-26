@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-# from CommonServerUserPython import *
 import requests
 import json
 import dateparser
@@ -68,19 +67,19 @@ class Client(BaseClient):
         request_params: Dict[str, Any] = {
         }
 
-        if (recipients):
+        if recipients:
             request_params['recipients'] = recipients
 
-        if (subject):
+        if subject:
             request_params['subject'] = subject
 
-        if (body):
+        if body:
             request_params['body'] = body
 
-        if (incident_id):
+        if incident_id:
             request_params['incident_id'] = incident_id
 
-        if (close_task_id):
+        if close_task_id:
             request_params['close_task_id'] = close_task_id
 
         res = self._http_request(
@@ -453,6 +452,13 @@ def event_reduce(e):
 def xm_trigger_workflow_command(client: Client, recipients: str,
                                 subject: str, body: str, incident_id: str,
                                 close_task_id: str) -> CommandResults:
+    out = client.xm_trigger_workflow(
+        recipients=recipients,
+        subject=subject,
+        body=body,
+        incident_id=incident_id,
+        close_task_id=close_task_id
+    )
     """
     This function runs when the xm-trigger-workflow command is run.
 
@@ -478,17 +484,10 @@ def xm_trigger_workflow_command(client: Client, recipients: str,
 
     :rtype: ``CommandResults``
     """
-    out = client.xm_trigger_workflow(
-        recipients=recipients,
-        subject=subject,
-        body=body,
-        incident_id=incident_id,
-        close_task_id=close_task_id
-    )
 
     outputs = {}
 
-    outputs['request_id'] = out['requestId']
+    outputs['xMatters.Workflow.request_id'] = out['requestId']
 
     return CommandResults(
         readable_output="Successfully sent a message to xMatters.",
@@ -553,7 +552,7 @@ def xm_get_events_command(client: Client, request_id: Optional[str] = None, stat
         property_value=property_value
     )
 
-    reduced_out = {"Events": [event_reduce(event) for event in out]}
+    reduced_out = {"xMatters.GetEvents.Events": [event_reduce(event) for event in out]}
 
     return CommandResults(
         readable_output="Retrieved Events from xMatters.",
@@ -579,12 +578,12 @@ def xm_get_event_command(client: Client, event_id: str) -> CommandResults:
     """
     out = client.search_alert(event_id=event_id)
 
-    reduced_out = {"Event": event_reduce(out)}
+    reduced_out = {"xMatters.GetEvent.Event": event_reduce(out)}
 
     return CommandResults(
         readable_output="Retrieved Event from xMatters.",
         outputs=reduced_out,
-        outputs_prefix='xMatters.GetEvents',
+        outputs_prefix='xMatters.GetEvent',
         outputs_key_field='event_id'
     )
 
