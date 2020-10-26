@@ -38,7 +38,7 @@ Command, argument, and output desctiptions were taken from the Google documentat
 
    4. Select the project and click 'OPEN':
 
-      <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-enable-2.png" alt="enable-2" style="zoom: 40%;" />
+      <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-enable-2.png" alt="enable-2" />
 
 3. Create a service account with correct restricted permissions:
 
