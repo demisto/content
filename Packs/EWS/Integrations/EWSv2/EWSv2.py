@@ -11,6 +11,7 @@ from cStringIO import StringIO
 import logging
 import warnings
 import subprocess
+import requests
 import email
 from requests.exceptions import ConnectionError
 from collections import deque
@@ -90,7 +91,6 @@ ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceive
                          'toRecipients', 'textBody', ]
 
 # Load integratoin params from demisto
-USE_PROXY = demisto.params().get('proxy', False)
 NON_SECURE = demisto.params().get('insecure', True)
 AUTH_METHOD_STR = demisto.params().get('authType', '')
 AUTH_METHOD_STR = AUTH_METHOD_STR.lower() if AUTH_METHOD_STR else ''
@@ -400,8 +400,6 @@ def prepare_context(credentials):
                 access_type=ACCESS_TYPE, credentials=credentials,
             )
             EWS_SERVER = account.protocol.service_endpoint
-            if not USE_PROXY:
-                os.environ['NO_PROXY'] = EWS_SERVER
             SERVER_BUILD = account.protocol.version.build
             demisto.setIntegrationContext(create_context_dict(account))
         except AutoDiscoverFailed:
@@ -416,17 +414,8 @@ def prepare_context(credentials):
 def prepare():
     if NON_SECURE:
         BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
-
-    if not USE_PROXY:
-        def remove_from_dict(d, key):
-            if key in d:
-                del d[key]
-
-        remove_from_dict(os.environ, 'HTTP_PROXY')
-        remove_from_dict(os.environ, 'http_proxy')
-        remove_from_dict(os.environ, 'HTTPS_PROXY')
-        remove_from_dict(os.environ, 'https_proxy')
-        os.environ['NO_PROXY'] = EWS_SERVER or ""
+    else:
+        BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
 
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     AUTO_DISCOVERY = not EWS_SERVER
