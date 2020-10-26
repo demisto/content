@@ -698,7 +698,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
 
         time.sleep(10)
 
-    return incidents['data'][0], inc_id
+    return incidents.data[0], inc_id
 
 
 # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
