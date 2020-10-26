@@ -2702,3 +2702,54 @@ Retrieve data about objects.
 >|---|---|---|
 >| All_Internet | f90e0a2b-f166-427a-b47f-a107b6fe43b9 | address-range |
 
+
+### checkpoint-package-list
+***
+Get checkpoint-packages details.
+
+
+#### Base Command
+
+`checkpoint-package-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | Object unique identifier or name. | Required | 
+| session_id | Execute command with a specific session ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.Packages.name | String | Package name. | 
+| CheckPoint.Packages.target-name | String | target name. | 
+| CheckPoint.Packages.target-uid | String | target UID. | 
+
+
+#### Command Example
+```!checkpoint-package-list identifier=Standard session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+
+#### Context Example
+```
+{
+    "CheckPoint": {
+        "Packages": {
+            "name": "Standard",
+            "target-name": "Host1",
+            "target-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CheckPoint data for objects:
+>|target-name|name|target-uid|
+>|---|---|---|
+>| Host1 | Standard | 41e821a0-3720-11e3-aa6e-0800200c9fde |
+
+
