@@ -380,33 +380,6 @@
         "index": 3,
         "sectionItemType": "field",
         "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "assetdnsname",
-        "height": 22,
-        "id": "398989f0-06e3-11eb-a829-138a1bd44ae8",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "assetipaddress",
-        "height": 22,
-        "id": "41128e10-06e3-11eb-a829-138a1bd44ae8",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "assetdescription",
-        "height": 22,
-        "id": "578726b0-06e3-11eb-a829-138a1bd44ae8",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
        }
       ],
       "maxH": null,
@@ -429,28 +402,10 @@
       "items": [
        {
         "endCol": 2,
-        "fieldId": "offenseid",
-        "height": 22,
-        "id": "c2998660-0cb4-11eb-9647-db2151019621",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "idoffense",
         "height": 22,
         "id": "89017d20-1189-11eb-85a5-f55901c2b8ed",
         "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "offensestatus",
-        "height": 22,
-        "id": "c8dd1230-0cb4-11eb-9647-db2151019621",
-        "index": 1,
         "sectionItemType": "field",
         "startCol": 0
        },
@@ -465,28 +420,10 @@
        },
        {
         "endCol": 2,
-        "fieldId": "offensetype",
-        "height": 22,
-        "id": "cd321470-0cb4-11eb-9647-db2151019621",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "typeoffense",
         "height": 22,
         "id": "791aca50-118a-11eb-85a5-f55901c2b8ed",
         "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "offensedescription",
-        "height": 22,
-        "id": "d18d0a20-0cb4-11eb-9647-db2151019621",
-        "index": 3,
         "sectionItemType": "field",
         "startCol": 0
        },
@@ -501,28 +438,10 @@
        },
        {
         "endCol": 2,
-        "fieldId": "offensedomain",
-        "height": 22,
-        "id": "d5c4c060-0cb4-11eb-9647-db2151019621",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "domainoffense",
         "height": 22,
         "id": "157186a0-118b-11eb-85a5-f55901c2b8ed",
         "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "offenselistofrules",
-        "height": 22,
-        "id": "d9e2d420-0cb4-11eb-9647-db2151019621",
-        "index": 5,
         "sectionItemType": "field",
         "startCol": 0
        },
@@ -595,50 +514,10 @@
        },
        {
         "endCol": 2,
-        "fieldId": "numberofflowsoffense",
+        "fieldId": "linktooffense",
         "height": 22,
-        "id": "61a6ff40-118c-11eb-85a5-f55901c2b8ed",
+        "id": "8d302340-178a-11eb-b628-e799505f430d",
         "index": 12,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "offenselowlevelcategories",
-        "height": 22,
-        "id": "de521520-0cb4-11eb-9647-db2151019621",
-        "index": 12,
-        "listId": "ovd3iztlms-405ceb10-0cb4-11eb-9647-db2151019621",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "offenseassignedto",
-        "height": 22,
-        "id": "ea12cf80-0cb4-11eb-9647-db2151019621",
-        "index": 12,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "offensefollowup",
-        "height": 22,
-        "id": "100578a0-0cb5-11eb-9647-db2151019621",
-        "index": 12,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "offensenumberofflows",
-        "height": 22,
-        "id": "6fcb0690-0f32-11eb-9da4-43fb289f333e",
-        "index": 12,
-        "listId": "ovd3iztlms-405ceb10-0cb4-11eb-9647-db2151019621",
         "sectionItemType": "field",
         "startCol": 0
        }
@@ -708,91 +587,6 @@
         "index": 2,
         "sectionItemType": "field",
         "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "eventshighlevelcategory",
-        "height": 53,
-        "id": "3cf85160-0cb6-11eb-9647-db2151019621",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "highlevelcategoriesevents",
-        "height": 53,
-        "id": "67e05c70-118d-11eb-85a5-f55901c2b8ed",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "eventname",
-        "height": 53,
-        "id": "4b776870-0cb6-11eb-9647-db2151019621",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "descriptionevent",
-        "height": 53,
-        "id": "0dbdc1a0-118e-11eb-85a5-f55901c2b8ed",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "eventdescription",
-        "height": 53,
-        "id": "52073f80-0cb6-11eb-9647-db2151019621",
-        "index": 3,
-        "listId": "ovd3iztlms-1d035170-0cb6-11eb-9647-db2151019621",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "eventusername",
-        "height": 53,
-        "id": "8716ed60-0cb6-11eb-9647-db2151019621",
-        "index": 3,
-        "listId": "ovd3iztlms-1d035170-0cb6-11eb-9647-db2151019621",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "usernameevent",
-        "height": 53,
-        "id": "5095b9b0-118e-11eb-85a5-f55901c2b8ed",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "usernamesevent",
-        "height": 53,
-        "id": "7a6f2bd0-13b0-11eb-a881-c15bd78e854e",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "usernames",
-        "height": 53,
-        "id": "ccf39000-13b3-11eb-a881-c15bd78e854e",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
        }
       ],
       "maxH": null,
@@ -824,37 +618,10 @@
        },
        {
         "endCol": 2,
-        "fieldId": "offenseclosingreason",
-        "height": 22,
-        "id": "a4f653c0-0cb6-11eb-9647-db2151019621",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "closetime",
         "height": 22,
         "id": "19ca1910-1190-11eb-85a5-f55901c2b8ed",
         "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "offenseclosingtime",
-        "height": 22,
-        "id": "a8a8fb80-0cb6-11eb-9647-db2151019621",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "offenseclosinguser",
-        "height": 22,
-        "id": "aae33410-0cb6-11eb-9647-db2151019621",
-        "index": 2,
         "sectionItemType": "field",
         "startCol": 0
        },
@@ -900,33 +667,6 @@
         "height": 22,
         "id": "1d4133e0-118f-11eb-85a5-f55901c2b8ed",
         "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "offenseseverity",
-        "height": 22,
-        "id": "f64fcc90-0e66-11eb-bcbf-9bb21b22f55d",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "offenserelevance",
-        "height": 22,
-        "id": "faf6bf60-0e66-11eb-bcbf-9bb21b22f55d",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "offensecredibility",
-        "height": 22,
-        "id": "0463ecd0-0e67-11eb-bcbf-9bb21b22f55d",
-        "index": 2,
         "sectionItemType": "field",
         "startCol": 0
        },
@@ -1179,24 +919,6 @@
         "height": 53,
         "id": "cfa28ac0-13b0-11eb-a881-c15bd78e854e",
         "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "logsourcetypeevent",
-        "height": 53,
-        "id": "5dbe6c50-13ae-11eb-a881-c15bd78e854e",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "logsourcenameevent",
-        "height": 53,
-        "id": "5ed8dd00-13ae-11eb-a881-c15bd78e854e",
-        "index": 1,
         "sectionItemType": "field",
         "startCol": 0
        },

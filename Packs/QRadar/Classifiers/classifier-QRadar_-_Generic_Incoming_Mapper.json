@@ -1060,6 +1060,10 @@
      "complex": null,
      "simple": "last_updated_time"
     },
+    "Link To Offense": {
+     "complex": null,
+     "simple": "LinkToOffense"
+    },
     "List Of Rules - Event": {
      "complex": {
       "accessor": "rulename_creeventlist",
