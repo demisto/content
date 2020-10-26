@@ -23,21 +23,20 @@ def main():
     if not packs_dir_names:
         print_error('Did not find a pack in the PR')
         sys.exit(1)
-    print(f'Copy the changes from the contributor branch {repo}/{branch} in the packs: {packs_dir_names}')
+    print(f'Copy changes from the contributor branch {repo}/{branch} in the following packs: ' +
+          '\n'.join(packs_dir_names))
 
-    string_dir_names = ''
     try:
         for pack_dir in packs_dir_names:
-            pack_path = f'Packs/{pack_dir}'
-            if os.path.isdir(pack_path):
+            if os.path.isdir(f'Packs/{pack_dir}'):
                 # Remove existing pack
-                shutil.rmtree(pack_path)
-            string_dir_names += f' {pack_path}'
+                shutil.rmtree(f'Packs/{pack_dir}')
+        string_dir_names = f'Packs/{" Packs/".join(packs_dir_names)}'
 
         commands = [
             f'git remote add {repo} git@github.com:{repo}/content.git',
             f'git fetch {repo} {branch}',
-            f'git checkout {repo}/{branch}{string_dir_names}'
+            f'git checkout {repo}/{branch} {string_dir_names}'
         ]
 
         for command in commands:
@@ -47,12 +46,12 @@ def main():
         print_error(f'Failed to deploy contributed pack to base branch: {e}')
         sys.exit(1)
 
-    print_success(f'Successfully updated the base branch with the contrib packs: {packs_dir_names}')
+    print_success(f'Successfully updated the base branch with the contrib packs:  + {" ".join(packs_dir_names)}')
 
 
 def get_pack_dir(branch: str, pr_number: str, repo: str) -> List[str]:
     """
-    Get a packs dir names from a contribution pull request changed files
+    Get packs dir names from a contribution pull request changed files
     Args:
         branch: The contrib branch
         pr_number: The contrib PR

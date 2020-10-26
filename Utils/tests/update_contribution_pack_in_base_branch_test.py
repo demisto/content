@@ -69,7 +69,7 @@ github_response_3 = [
     },
     {
         "sha": "2",
-        "filename": "Packs/Slack1/pack_metadata.json",
+        "filename": "Packs/AnotherPackName/pack_metadata.json",
         "status": "modified",
         "additions": 2,
         "deletions": 2,
@@ -115,17 +115,17 @@ def test_get_pack_dir(requests_mock):
 
 def test_get_multiple_packs_dirs(requests_mock):
     """
-       Scenario: Get a pack dir name from pull request files
+       Scenario: Get a list of pack dir names from pull request files
 
        Given
        - A pull request
-       - A file in the pull request is in a pack
+       - Files in the pull request are in a pack
 
        When
-       - Getting the pack dir name from a pull request
+       - Getting the pack dir names from a pull request
 
        Then
-       - Ensure the pack dir name is returned correctly
+       - Ensure pack dir names are returned correctly
     """
     branch = 'contrib_branch'
     pr_number = '1'
@@ -140,7 +140,7 @@ def test_get_multiple_packs_dirs(requests_mock):
 
     pack_dir = get_pack_dir(branch, pr_number, repo)
 
-    assert pack_dir == ['Slack', 'Slack1']
+    assert pack_dir == ['Slack', 'AnotherPackName']
 
 
 def test_get_pack_dir_no_pack(requests_mock):
