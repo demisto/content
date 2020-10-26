@@ -1278,7 +1278,6 @@ def private_test_pack_zip():
             if any(test_clean in d for d in test_pbs):
                 for test_pb in test_pbs:
                     if test_clean in test_pb:
-                        print(f"Here's the conf.json segment: {test_pb}")
                         tests_file_paths.add("/home/runner/work/content-private/content-private/content/"+test_pb[test_clean].get("file_path"))
     #  Adding contents of DeveloperPack
     developer_pack_items = glob.glob("/home/runner/work/content-private/content-private/content/Packs"
@@ -1286,14 +1285,11 @@ def private_test_pack_zip():
     for dev_pack_item in developer_pack_items:
         tests_file_paths.add(dev_pack_item)
 
-    print(f"Here's the file paths: {tests_file_paths}")
     with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
         for test_path, test in test_files(content_path):
             if test_path not in tests_file_paths:
                 continue
-            else:
-                print(f"found something. installing {test_path}")
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
@@ -1305,11 +1301,10 @@ def private_test_pack_zip():
                 else:
                     test_target = f'test_pack/TestPlaybooks/{test}'
                 zip_file.writestr(test_target, test_file.read())
-                print("Finished writing test pack.")
     shutil.copy("/home/runner/work/content-private/content-private/content/test_pack.zip",
                 f'/home/runner/work/content-private/content'
                 f'-private/content/artifacts/packs/test_pack.zip')
-    print("Finished copying test pack")
+    print("Finished creating test pack.")
 
 
 def test_pack_zip(build: Build):
