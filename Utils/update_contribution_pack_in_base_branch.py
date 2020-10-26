@@ -46,7 +46,7 @@ def main():
         print_error(f'Failed to deploy contributed pack to base branch: {e}')
         sys.exit(1)
 
-    print_success(f'Successfully updated the base branch with the contrib packs:  + {" ".join(packs_dir_names)}')
+    print_success(f'Successfully updated the base branch with the contrib packs: {" - ".join(packs_dir_names)}')
 
 
 def get_pack_dir(branch: str, pr_number: str, repo: str) -> List[str]:
