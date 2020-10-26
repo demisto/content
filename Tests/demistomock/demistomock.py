@@ -995,3 +995,13 @@ def getLicenseID():
 
     """
     return ''
+
+
+def mapObject(obj, mapper, mapper_type):
+    """Mapping an object using chosen mapper
+
+    Returns:
+      dict: the obj after mapping
+
+    """
+    return {}
