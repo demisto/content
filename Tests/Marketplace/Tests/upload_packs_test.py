@@ -425,7 +425,7 @@ class TestPrivatePacks:
         from Tests.Marketplace import upload_packs
 
         mocker.patch('glob.glob', return_value=[])
-        mocker.patch("Tests.Marketplace.upload_packs.print_warning")
+        mocker.patch("Tests.Marketplace.upload_packs.logging.warning")
 
         private_packs = upload_packs.get_private_packs('path')
 
@@ -435,7 +435,7 @@ class TestPrivatePacks:
         from Tests.Marketplace import upload_packs
 
         mocker.patch('glob.glob', side_effect=InterruptedError)
-        mocker.patch("Tests.Marketplace.upload_packs.print_warning")
+        mocker.patch("Tests.Marketplace.upload_packs.logging.warning")
 
         private_packs = upload_packs.get_private_packs('path')
 
@@ -538,7 +538,7 @@ class TestCleanPacks:
         mocker.patch("Tests.Marketplace.upload_packs.os.listdir", return_value=[public_pack])
         mocker.patch("Tests.Marketplace.upload_packs.os.scandir", return_value=dirs)
         mocker.patch('Tests.Marketplace.upload_packs.shutil.rmtree')
-        mocker.patch("Tests.Marketplace.upload_packs.print_warning")
+        mocker.patch("Tests.Marketplace.upload_packs.logging.warning")
 
         private_packs = [{'id': private_pack, 'price': 120}]
 
