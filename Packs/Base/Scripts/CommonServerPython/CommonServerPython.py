@@ -2760,16 +2760,10 @@ def return_results(results):
         demisto.results(None)
         return
 
-    if isinstance(results, list):
-        if not results:
-            # demisto.results([]) is invalid
-            demisto.results({})
-            return
-
-        elif isinstance(results[0], CommandResults):  # other cases should be handled by default case
-            for result in results:
-                demisto.results(result)
-            return
+    if results and isinstance(results, list) and isinstance(results[0], CommandResults):
+        for result in results:
+            demisto.results(result)
+        return
 
     if isinstance(results, CommandResults):
         demisto.results(results.to_context())
