@@ -1,11 +1,14 @@
 import os
 import json
 import argparse
+import logging
+
 from Tests.Marketplace.upload_packs import PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER
 from Tests.Marketplace.marketplace_services import GCPConfig
 from demisto_sdk.commands.find_dependencies.find_dependencies import VerboseFile, PackDependencies,\
     parse_for_pack_metadata
-from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS
+
+from Tests.scripts.utils.log_util import install_logging
 
 
 def option_handler():
@@ -26,6 +29,7 @@ def main():
     packs dependencies. The logic of pack dependency is identical to sdk find-dependencies command.
 
     """
+    install_logging('Calculate Packs Dependencies.log')
     option = option_handler()
     output_path = option.output_path
     id_set_path = option.id_set_path
@@ -36,13 +40,13 @@ def main():
 
     pack_dependencies_result = {}
 
-    print("Starting dependencies calculation")
+    logging.info("Starting dependencies calculation")
     # starting iteration over pack folders
     for pack in os.scandir(PACKS_FULL_PATH):
         if not pack.is_dir() or pack.name in IGNORED_FILES:
-            print_warning(f"Skipping dependency calculation of {pack.name} pack.")
+            logging.warning(f"Skipping dependency calculation of {pack.name} pack.")
             continue  # skipping ignored packs
-        print(f"Calculating {pack.name} pack dependencies.")
+        logging.info(f"Calculating {pack.name} pack dependencies.")
 
         try:
             dependency_graph = PackDependencies.build_dependency_graph(pack_id=pack.name,
@@ -51,8 +55,8 @@ def main():
                                                                        )
             first_level_dependencies, all_level_dependencies = parse_for_pack_metadata(dependency_graph, pack.name)
 
-        except Exception as e:
-            print_error(f"Failed calculating {pack.name} pack dependencies. Additional info:\n{e}")
+        except Exception:
+            logging.exception(f"Failed calculating {pack.name} pack dependencies")
             continue
 
         pack_dependencies_result[pack.name] = {
@@ -63,14 +67,14 @@ def main():
             "fullPath": pack.path
         }
 
-    print(f"Number of created pack dependencies entries: {len(pack_dependencies_result.keys())}")
+    logging.info(f"Number of created pack dependencies entries: {len(pack_dependencies_result.keys())}")
     # finished iteration over pack folders
-    print_color("Finished dependencies calculation", LOG_COLORS.GREEN)
+    logging.success("Finished dependencies calculation")
 
     with open(output_path, 'w') as pack_dependencies_file:
         json.dump(pack_dependencies_result, pack_dependencies_file, indent=4)
 
-    print_color(f"Created packs dependencies file at: {output_path}", LOG_COLORS.GREEN)
+    logging.success(f"Created packs dependencies file at: {output_path}")
 
 
 if __name__ == "__main__":
