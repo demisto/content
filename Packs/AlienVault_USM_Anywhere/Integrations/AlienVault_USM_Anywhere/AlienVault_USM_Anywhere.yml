@@ -99,15 +99,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'If the value of the time_frame argument is "Custom", specify the start time for the time range,
-        for example: 2017-06-01T12:48:16Z.'
+      description: 'If the value of the time_frame argument is "Custom", specify the start time for the time range, for example: 2017-06-01T12:48:16Z.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'If the value of the time_frame argument is "Custom", specify the end time for the time range,
-        for example: 2017-06-01T12:48:16Z.'
+      description: 'If the value of the time_frame argument is "Custom", specify the end time for the time range, for example: 2017-06-01T12:48:16Z.'
       isArray: false
       name: end_time
       required: false
@@ -193,10 +191,12 @@ script:
     - contextPath: AlienVault.Alarm.RuleAttackTechnique
       description: The rule attack technique.
       type: String
+    - contextPath: AlienVault.Alarm.Status
+      description: The alarm status.
+      type: String
   - arguments:
     - default: true
-      description: The alarm ID. Can be obtained by running the `alienvault-search-alarms`
-        command.
+      description: The alarm ID. Can be obtained by running the `alienvault-search-alarms` command.
       isArray: false
       name: alarm_id
       required: true
@@ -260,6 +260,9 @@ script:
     - contextPath: AlienVault.Alarm.RuleAttackTechnique
       description: The rule attack technique.
       type: String
+    - contextPath: AlienVault.Alarm.Status
+      description: The alarm status.
+      type: String
   - arguments:
     - default: false
       defaultValue: '100'
@@ -303,15 +306,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'If the value of the time_frame argument is "Custom", specify the start time for the time range,
-        for example: 2017-06-01T12:48:16Z.'
+      description: 'If the value of the time_frame argument is "Custom", specify the start time for the time range, for example: 2017-06-01T12:48:16Z.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'If the value of the time_frame argument is "Custom", specify the end time for the time range,
-        for example: 2017-06-01T12:48:16Z.'
+      description: 'If the value of the time_frame argument is "Custom", specify the end time for the time range, for example: 2017-06-01T12:48:16Z.'
       isArray: false
       name: end_time
       required: false
@@ -362,8 +363,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The ID of the alarm for which to get events. Can be obtained by running the `alienvault-search-alarms`
-        command.
+      description: The ID of the alarm for which to get events. Can be obtained by running the `alienvault-search-alarms` command.
       isArray: false
       name: alarm_id
       required: true
@@ -412,7 +412,7 @@ script:
     - contextPath: AlienVault.Event.Subcategory
       description: The event subcategory.
       type: String
-  dockerimage: demisto/python3:3.7.3.286
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -420,3 +420,4 @@ script:
   script: '-'
   type: python
   subtype: python3
+fromversion: 5.0.0

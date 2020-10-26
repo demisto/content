@@ -2,21 +2,28 @@ commonfields:
   id: QrFullSearch
   version: -1
 name: QrFullSearch
-script: |
+script: >
   from time import sleep
+
   res = []
+
   search_done = False
+
   error = False
 
+
   timeout = 600
+
   if 'timeout' in demisto.args():
       timeout = int(demisto.args()['timeout'])
   interval = 10
+
 
   if 'interval' in demisto.args():
       interval = int(demisto.args()['interval'])
 
   search_args = {}
+
   if 'fields' in demisto.args():
       search_args['fields'] = demisto.args()['fields']
   if 'range' in demisto.args():
@@ -24,7 +31,9 @@ script: |
 
 
   #########submit query, retrive  search_id########
+
   query_res = demisto.executeCommand("qr-searches", demisto.args())
+
 
   if isError(query_res[0]):
       res.append(query_res)
@@ -91,3 +100,4 @@ dependson:
   - qr-searches
   - qr-get-search
   - QrGetSearchResults
+fromversion: 5.0.0

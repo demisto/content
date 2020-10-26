@@ -1,5 +1,6 @@
 id: McAfeeESMTest
 version: -1
+fromversion: 5.0.0
 name: McAfeeESMTest
 starttaskid: "0"
 tasks:

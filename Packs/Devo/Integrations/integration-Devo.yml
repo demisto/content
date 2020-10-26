@@ -34,20 +34,32 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     ''' IMPORTS '''
+
     import re
+
     import requests
+
     import json
+
     import time
+
     import hmac
+
     import hashlib
+
     from datetime import datetime
+
     from collections import Counter
+
     import socket, struct
 
+
     # disable insecure warnings
+
     requests.packages.urllib3.disable_warnings()
+
 
     if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
@@ -56,9 +68,13 @@ script:
         del os.environ['https_proxy']
 
     ''' GLOBAL VARS '''
+
     API_KEY = demisto.params()['api_key']
+
     API_SECRET = demisto.params()['api_secret']
+
     VERIFY_SSL = not demisto.params().get('unsecure', False)
+
 
 
     def get_server_url():
@@ -69,7 +85,9 @@ script:
 
     SERVER_URL = get_server_url() + '/search'
 
+
     ''' HELPER FUNCTIONS '''
+
     def get_api_sign(timestamp, body):
         message = API_KEY
         if body:
@@ -115,6 +133,7 @@ script:
 
 
     ''' FUNCTIONS '''
+
     def query_command():
         query = demisto.args().get('query')
         query_id = demisto.args().get('queryId')
@@ -201,6 +220,7 @@ script:
 
 
     ''' EXECUTION CODE '''
+
     try:
         if demisto.command() == 'test-module':
             path = 'system/ping'
@@ -225,13 +245,11 @@ script:
       required: true
       description: 'The start date as a UTC timestamp in the following format: 2012-03-01T10:00:00Z'
     - name: to
-      description: 'The end date as a UTC timestamp in the following format: 2012-03-01T10:00:00Z,
-        set to the current time by default.'
+      description: 'The end date as a UTC timestamp in the following format: 2012-03-01T10:00:00Z, set to the current time by default.'
     - name: skip
       description: Skip the first X elements of the query.
     - name: limit
-      description: Limit the results of the query. The query will stop after returning
-        the first X elements of the query or reaching its end.
+      description: Limit the results of the query. The query will stop after returning the first X elements of the query or reaching its end.
       defaultValue: "30"
     - name: writeToContext
       description: Whether to write results to context or not
@@ -242,4 +260,5 @@ script:
     description: Perform a query.
   runonce: false
 tests:
-  - No tests
+- No tests
+fromversion: 5.0.0

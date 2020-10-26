@@ -93,7 +93,8 @@ class Server:
     @property
     def client(self):
         if self.__client is None:
-            self.__client = demisto_client.configure(self.host, verify_ssl=False, username=self.user_name, password=self.password)
+            self.__client = demisto_client.configure(self.host, verify_ssl=False, username=self.user_name,
+                                                     password=self.password)
         return self.__client
 
     def add_server_configuration(self, config_dict, error_msg, restart=False):
@@ -120,6 +121,7 @@ class Build:
     run_environment = Running.CIRCLECI_RUN
     env_results_path = './env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'
+
     #  END CHANGE ON LOCAL RUN  #
 
     def __init__(self, options):
@@ -133,7 +135,7 @@ class Build:
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
         self.servers = [Server(server_url, self.username, self.password) for server_url in self.servers]
-
+        self.is_private = options.is_private
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
         self.skipped_integrations_conf = conf['skipped_integrations']
@@ -160,6 +162,7 @@ def options_handler():
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
+    parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
 
@@ -779,7 +782,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
     return testing_status
 
 
-def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number, is_nightly):
+def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number, is_nightly, is_private):
     """Sets custom marketplace GCP bucket based on branch name and build number
 
     Args:
@@ -798,16 +801,25 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
     prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
 
     # make request to update server configs
+    # disable-secrets-detection-start
     server_configuration = {
         'content.pack.verify': 'false',
         'marketplace.initial.sync.delay': '0',
         'content.pack.ignore.missing.warnings.contentpack': 'true'
     }
-    if not is_nightly:
+    if is_private:
+        server_configuration['marketplace.bootstrap.bypass.url'] = 'https://storage.googleapis.com/marketplace-ci-build'
+        server_configuration['marketplace.gcp.path'] = 'content/builds/{}/{}/content/packs'.format(branch_name,
+                                                                                                   ci_build_number)
+        server_configuration['jobs.marketplacepacks.schedule'] = '1m'
+        server_configuration[
+            'marketplace.premium.gateway.service.url'] = 'https://xsoar-premium-content-team-gateway.demisto.works'
+    elif not is_nightly:
         server_configuration['marketplace.bootstrap.bypass.url'] = \
             'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
                 branch_name, ci_build_number)
     error_msg = "Failed to set GCP bucket server config - with status code "
+    # disable-secrets-detection-end
     return update_server_configuration(client, server_configuration, error_msg)
 
 
@@ -928,12 +940,13 @@ def restart_server_legacy(server):
         print(exc.output)
 
 
-def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
+def get_tests(server_numeric_version, prints_manager, tests):
     if Build.run_environment == Running.CIRCLECI_RUN:
-        filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
+        filtered_tests, filter_configured, run_all_tests = extract_filtered_tests()
         if run_all_tests:
             # skip test button testing
-            skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(RUN_ALL_TESTS_FORMAT)
+            skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(
+                RUN_ALL_TESTS_FORMAT)
             prints_manager.add_print_job(skipped_instance_test_message, print_warning, 0)
             tests_for_iteration = []
         elif filter_configured and filtered_tests:
@@ -964,7 +977,8 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
 
 
 def get_changed_integrations(build, prints_manager):
-    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(build)
+    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(
+        build) if not build.is_private else ([], [])
     new_integrations_names, modified_integrations_names = [], []
 
     if new_integrations_files:
@@ -1026,7 +1040,8 @@ def install_packs(build, prints_manager, pack_ids=None):
     installed_content_packs_successfully = True
     for server in build.servers:
         try:
-            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, prints_manager)
+            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, prints_manager,
+                                                                      build.is_private)
             if not flag:
                 raise Exception('Failed to search and install packs.')
         except Exception as exc:
@@ -1037,7 +1052,8 @@ def install_packs(build, prints_manager, pack_ids=None):
     return installed_content_packs_successfully
 
 
-def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations, prints_manager):
+def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations,
+                               prints_manager):
     all_module_instances = []
     brand_new_integrations = []
     testing_client = build.servers[0].client
@@ -1066,17 +1082,18 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         integrations_to_configure = modified_integrations[:]
         integrations_to_configure.extend(unchanged_integrations)
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        new_ints_params_set = set_integration_params(new_integrations, build.secret_conf['integrations'], instance_names_conf,
+        new_ints_params_set = set_integration_params(new_integrations, build.secret_conf['integrations'],
+                                                     instance_names_conf,
                                                      placeholders_map)
-        ints_to_configure_params_set = set_integration_params(integrations_to_configure, build.secret_conf['integrations'],
+        ints_to_configure_params_set = set_integration_params(integrations_to_configure,
+                                                              build.secret_conf['integrations'],
                                                               instance_names_conf, placeholders_map)
         if not new_ints_params_set:
             prints_manager.add_print_job(
                 'failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)), print_error, 0)
         if not ints_to_configure_params_set:
             prints_manager.add_print_job(
-                'failed setting parameters for integrations "{}"'.format('\n'.join(integrations_to_configure)),
-                print_error, 0)
+                'failed setting parameters for integrations\n "{}"'.format(integrations_to_configure), print_error, 0)
         if not (new_ints_params_set and ints_to_configure_params_set):
             continue
         prints_manager.execute_thread_prints(0)
@@ -1257,18 +1274,20 @@ def main():
     prints_manager = ParallelPrintsManager(1)
 
     configure_servers_and_restart(build, prints_manager)
+    installed_content_packs_successfully = False
 
     if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
         if build.is_nightly:
             install_nightly_pack(build, prints_manager)
             installed_content_packs_successfully = True
         else:
-            pack_ids = get_non_added_packs_ids(build)
-            installed_content_packs_successfully = install_packs(build, prints_manager, pack_ids=pack_ids)
+            if not build.is_private:
+                pack_ids = get_non_added_packs_ids(build)
+                installed_content_packs_successfully = install_packs(build, prints_manager, pack_ids=pack_ids)
     else:
         installed_content_packs_successfully = True
 
-    tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly)
+    tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests)
     new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
     all_module_instances, brand_new_integrations = \
         configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
@@ -1278,10 +1297,12 @@ def main():
         update_content_till_v6(build)
     elif not build.is_nightly:
         set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
-        installed_content_packs_successfully = install_packs(build, prints_manager) and installed_content_packs_successfully
+        installed_content_packs_successfully = install_packs(build,
+                                                             prints_manager) and installed_content_packs_successfully
 
     all_module_instances.extend(brand_new_integrations)
-    successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, prints_manager, pre_update=False)
+    successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, prints_manager,
+                                                                pre_update=False)
     disable_instances(build, all_module_instances, prints_manager)
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,

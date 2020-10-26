@@ -1,5 +1,4 @@
-comment: Generates 1000 random emails and batches them into a large string. Returns
-  the time it takes to execute `extractIndicators` on the big batch of indicators.
+comment: Generates 1000 random emails and batches them into a large string. Returns the time it takes to execute `extractIndicators` on the big batch of indicators.
 commonfields:
   id: FormattingPerformance
   version: -1
@@ -7,15 +6,19 @@ enabled: true
 name: FormattingPerformance
 outputs:
 - contextPath: Formatting.Time
-  description: The time in seconds it took to execute formatting scripts on a string
-    with 1000 indicators in it.
+  description: The time in seconds it took to execute formatting scripts on a string with 1000 indicators in it.
   type: Number
-script: |-
+script: >-
   '''IMPORTS'''
+
   import time
+
   import random
+
   from faker import Faker
+
   from faker.providers import internet
+
 
   try:
       '''SETUP'''
@@ -65,3 +68,4 @@ subtype: python3
 dockerimage: demisto/faker3:1.0.0.247
 runas: DBotWeakRole
 runonce: false
+fromversion: 5.0.0

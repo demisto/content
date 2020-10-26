@@ -2,7 +2,7 @@ id: email_address_enrichment_-_generic
 version: -1
 name: Email Address Enrichment - Generic
 description: Deprecated. Use "Email Address Enrichment - Generic v2.1" playbook instead. Get email address reputation using one or more integrations
-fromversion: 3.6.0
+fromversion: 5.0.0
 starttaskid: "0"
 hidden: true
 tasks:
@@ -357,8 +357,7 @@ tasks:
       id: ab84c271-880d-4dc8-8feb-e73c2d4004e0
       version: -1
       name: Check Email addresses DomainSquatting Reputation
-      description: Check if an email address's domain is trying to squat other domain
-        using Levenshtein distance algorithm
+      description: Check if an email address's domain is trying to squat other domain using Levenshtein distance algorithm
       scriptName: EmailDomainSquattingReputation
       type: regular
       iscommand: false
@@ -618,4 +617,4 @@ outputs:
   description: The DBot score
   type: number
 tests:
-  - No test - deprecated. use V2.1 instead.
+- No test - deprecated. use V2.1 instead.

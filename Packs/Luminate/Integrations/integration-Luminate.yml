@@ -44,22 +44,35 @@ configuration:
   type: 13
   required: false
 script:
-  script: |
+  script: >
     ''' IMPORTS '''
+
     from luminateapi.luminate_python import LuminateV2Client
+
     import json
+
     import ast
+
     import dateparser
+
     import datetime
+
     import time
 
+
     ''' CONSTS '''
+
     DEFAULT_FETCH_SIZE = 10
+
     VERIFY_CERTIFICATE = True
+
     MAX_ALERTS_FETCH = 500
 
+
     ''' FUNCTIONS '''
+
     ''' HELPER FUNCTIONS '''
+
     def human_readable_string_to_epoch(data):
         return int(dateparser.parse(data).strftime('%s')) * 1000
 
@@ -226,7 +239,9 @@ script:
         return incidents
 
     ''' EXECUTION CODE '''
+
     LOG('command is {}'.format(demisto.command()))
+
 
     try:
         luminate_client = LuminateV2Client(demisto.params()['luminate_api_url'],
@@ -303,27 +318,16 @@ script:
   - name: lum-get-http-access-logs
     arguments:
     - name: size
-      description: The maximum number of results to return. This is limited to 1000,
-        and defaults to 1000
+      description: The maximum number of results to return. This is limited to 1000, and defaults to 1000
     - name: free_text
-      description: 'This field accepts querys in a "Elasticsearch - Query String Syntax"
-        - this is explained fully in the following link: https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-query-string-query.html#query-string-syntax'
+      description: 'This field accepts querys in a "Elasticsearch - Query String Syntax" - this is explained fully in the following link: https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-query-string-query.html#query-string-syntax'
     - name: from_date
       required: true
-      description: 'Generic parsing of relative dates like: ''1 min ago'', ''2 weeks
-        ago'', ''3 months, 1 week and 1 day ago'', ''in 2 days'', ''tomorrow''. Generic
-        parsing of dates with time zones abbreviations or UTC offsets like: ''August
-        14, 2015 EST'', ''July 4, 2013 PST'', ''21 July 2013 10:15 pm +0500'' even
-        Epoch in seconds and milliseconds'
+      description: 'Generic parsing of relative dates like: ''1 min ago'', ''2 weeks ago'', ''3 months, 1 week and 1 day ago'', ''in 2 days'', ''tomorrow''. Generic parsing of dates with time zones abbreviations or UTC offsets like: ''August 14, 2015 EST'', ''July 4, 2013 PST'', ''21 July 2013 10:15 pm +0500'' even Epoch in seconds and milliseconds'
     - name: to_date
-      description: 'Generic parsing of relative dates like: ''1 min ago'', ''2 weeks
-        ago'', ''3 months, 1 week and 1 day ago'', ''in 2 days'', ''tomorrow''. Generic
-        parsing of dates with time zones abbreviations or UTC offsets like: ''August
-        14, 2015 EST'', ''July 4, 2013 PST'', ''21 July 2013 10:15 pm +0500'' even
-        Epoch in seconds and milliseconds'
+      description: 'Generic parsing of relative dates like: ''1 min ago'', ''2 weeks ago'', ''3 months, 1 week and 1 day ago'', ''in 2 days'', ''tomorrow''. Generic parsing of dates with time zones abbreviations or UTC offsets like: ''August 14, 2015 EST'', ''July 4, 2013 PST'', ''21 July 2013 10:15 pm +0500'' even Epoch in seconds and milliseconds'
     - name: search_after
-      description: Using search_after you may page through results.  You will need
-        to provide the search_after values of the last log line in the previous result.
+      description: Using search_after you may page through results.  You will need to provide the search_after values of the last log line in the previous result.
     outputs:
     - contextPath: Luminate.AccessLogs
       description: HTTP Access logs
@@ -331,27 +335,16 @@ script:
   - name: lum-get-ssh-access-logs
     arguments:
     - name: size
-      description: The maximum number of results to return. This is limited to 1000,
-        and defaults to 1000
+      description: The maximum number of results to return. This is limited to 1000, and defaults to 1000
     - name: free_text
-      description: 'This field accepts querys in a "Elasticsearch - Query String Syntax"
-        - this is explained fully in the following link: https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-query-string-query.html#query-string-syntax'
+      description: 'This field accepts querys in a "Elasticsearch - Query String Syntax" - this is explained fully in the following link: https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-query-string-query.html#query-string-syntax'
     - name: from_date
       required: true
-      description: 'Generic parsing of relative dates like: ''1 min ago'', ''2 weeks
-        ago'', ''3 months, 1 week and 1 day ago'', ''in 2 days'', ''tomorrow''. Generic
-        parsing of dates with time zones abbreviations or UTC offsets like: ''August
-        14, 2015 EST'', ''July 4, 2013 PST'', ''21 July 2013 10:15 pm +0500'' even
-        Epoch in seconds and milliseconds'
+      description: 'Generic parsing of relative dates like: ''1 min ago'', ''2 weeks ago'', ''3 months, 1 week and 1 day ago'', ''in 2 days'', ''tomorrow''. Generic parsing of dates with time zones abbreviations or UTC offsets like: ''August 14, 2015 EST'', ''July 4, 2013 PST'', ''21 July 2013 10:15 pm +0500'' even Epoch in seconds and milliseconds'
     - name: to_date
-      description: 'Generic parsing of relative dates like: ''1 min ago'', ''2 weeks
-        ago'', ''3 months, 1 week and 1 day ago'', ''in 2 days'', ''tomorrow''. Generic
-        parsing of dates with time zones abbreviations or UTC offsets like: ''August
-        14, 2015 EST'', ''July 4, 2013 PST'', ''21 July 2013 10:15 pm +0500'' even
-        Epoch in seconds and milliseconds'
+      description: 'Generic parsing of relative dates like: ''1 min ago'', ''2 weeks ago'', ''3 months, 1 week and 1 day ago'', ''in 2 days'', ''tomorrow''. Generic parsing of dates with time zones abbreviations or UTC offsets like: ''August 14, 2015 EST'', ''July 4, 2013 PST'', ''21 July 2013 10:15 pm +0500'' even Epoch in seconds and milliseconds'
     - name: search_after
-      description: Using search_after you may page through results.  You will need
-        to provide the search_after values of the last log line in the previous result.
+      description: Using search_after you may page through results.  You will need to provide the search_after values of the last log line in the previous result.
     outputs:
     - contextPath: Luminate.SshAccessLogs
       description: SSH Access logs
@@ -359,6 +352,6 @@ script:
   dockerimage: luminate/demisto-luminate-api:afae47df4f343c092e0d3c1083e83c8a8f4beeea
   isfetch: true
   runonce: false
-fromversion: 0.0.0
+fromversion: 5.0.0
 tests:
-  - Luminate-TestPlaybook
+- Luminate-TestPlaybook

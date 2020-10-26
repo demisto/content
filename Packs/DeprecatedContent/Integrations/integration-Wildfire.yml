@@ -2,7 +2,7 @@ commonfields:
   id: WildFire
   version: -1
 name: WildFire
-fromversion: 4.0.0
+fromversion: 5.0.0
 display: Palo Alto Networks WildFire (Deprecated)
 deprecated: true
 category: Forensics & Malware Analysis
@@ -36,8 +36,9 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     //DICTIONARIES//
+
     var URL_DICT = {
         verdict: '/get/verdict',
         verdicts: '/get/verdicts',
@@ -47,6 +48,7 @@ script:
         remoteFile: '/submit/url',
         getSample: '/get/sample'
     };
+
 
     var ERROR_DICT = {
         401 : 'Unauthorized, API key invalid',
@@ -63,6 +65,7 @@ script:
         513 : 'File upload failed'
     };
 
+
     var VERDICTS_DICT = {
         '0': 'benign',
         '1': 'malware',
@@ -73,6 +76,7 @@ script:
         '-102': 'unknown, cannot find sample record in the database',
         '-103': 'invalid hash value'
     };
+
 
     var VERDICTS_TO_DBOTSCORE = {
         '0': 1,
@@ -85,16 +89,25 @@ script:
         '-103': 0
     };
 
+
     //GLOBALS//
+
     var URL = params.server.replace(/[\/]+$/, '');
+
     var DEFAULT_HEADERS = {'Content-Type': ['application/x-www-form-urlencoded']};
+
     var TOKEN = params.token;
 
+
     var MD5_REGEX = /\b[a-fA-F\d]{32}\b/m;
+
     var SHA1_REGEX = /\b[a-fA-F\d]{40}\b/m;
+
     var SHA256_REGEX = /\b[a-fA-F\d]{64}\b/m;
 
+
     //HELPERS//
+
     function sendRequest(url, body, headers) {
         url.replace(/[\/]+$/, '');
         var res = http(
@@ -121,6 +134,7 @@ script:
     }
 
 
+
     function sendMultipartRequest(url, headers, file, body) {
         var res = httpMultipart(
           url,
@@ -145,6 +159,7 @@ script:
     }
 
 
+
     function prettifyUploadBody(body) {
         var prettyUploadBody = {
             'MD5': body.md5,
@@ -164,6 +179,7 @@ script:
     }
 
 
+
     function prettifyVerdict(verdictData) {
         var prettyVerdict = {};
         if (verdictData.md5) {
@@ -177,6 +193,7 @@ script:
 
         return prettyVerdict;
     }
+
 
 
     function createDBotScoreFromVerdict(prettyVerdict) {
@@ -196,6 +213,7 @@ script:
     }
 
 
+
     function prettifyVerdicts(verdictsData) {
         var prettyVerdictsArr = [];
         for (var i = 0; i < verdictsData.length; i++) {
@@ -213,6 +231,7 @@ script:
         }
         return prettyVerdictsArr;
     }
+
 
 
     function createDBotScoreFromVerdicts(prettyVerdicts) {
@@ -236,6 +255,7 @@ script:
     }
 
 
+
     function createUploadEntry(body, title, result) {
         var md = tableToMarkdown(title, body);
         return {
@@ -249,6 +269,7 @@ script:
             }
         };
     }
+
 
 
     function createEntry(body, title, result, verbose, report, ec) {
@@ -269,6 +290,7 @@ script:
     }
 
 
+
     function hashArgsHandler(sha256, md5) {
         // sha256, md5 arguments are used in wildfire-report, wildfire-verdict commands
         var inputs = sha256? argToList(sha256) : argToList(md5);
@@ -281,6 +303,7 @@ script:
         }
         return inputs;
     }
+
 
     function fileArgsHandler(file, sha256, md5) {
         var inputs;
@@ -311,7 +334,9 @@ script:
     }
 
 
+
     //COMMANDS//
+
     function uploadFile(upload) {
         uri = URL + URL_DICT.upload;
         var body = {
@@ -326,6 +351,7 @@ script:
         };
         return returnObj;
     }
+
 
 
     function getVerdicts(EntryID) {
@@ -353,6 +379,7 @@ script:
             EntryContext: ec
         };
     }
+
 
 
     function getVerdict(hash) {
@@ -384,6 +411,7 @@ script:
     }
 
 
+
     function uploadFileRemote(upload) {
         var uri = URL + URL_DICT.remoteFile;
 
@@ -403,6 +431,7 @@ script:
     }
 
 
+
     function uploadUrl(upload) {
        var uri = URL + URL_DICT.uploadUrl;
 
@@ -420,6 +449,7 @@ script:
         };
         return returnObj;
     }
+
 
 
     function getSample(hash) {
@@ -453,6 +483,7 @@ script:
 
 
 
+
     function getReport(hash) {
         var reportUrl = URL + URL_DICT.report;
 
@@ -482,6 +513,7 @@ script:
         };
         return returnObj;
     }
+
 
 
     function createReport(reportResponse, format, verbose) {
@@ -634,6 +666,7 @@ script:
     }
 
 
+
     function doReports(inputs) {
         var entries = [];
         for (i=0; i < inputs.length; i++) {
@@ -653,6 +686,7 @@ script:
         }
         return entries;
     }
+
 
 
     function detonate(type, upload, format, delay, timeout, verbose) {
@@ -679,6 +713,7 @@ script:
         }
         throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
     }
+
 
     try {
         switch (command) {
@@ -1036,8 +1071,7 @@ script:
     arguments:
     - name: EntryID
       required: true
-      description: EntryID of the text file that contains multiple hashes. Limit is
-        500 hashes.
+      description: EntryID of the text file that contains multiple hashes. Limit is 500 hashes.
       isArray: true
     outputs:
     - contextPath: WildFire.Verdicts.MD5

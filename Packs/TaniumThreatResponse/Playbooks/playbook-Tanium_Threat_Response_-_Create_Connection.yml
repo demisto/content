@@ -1,6 +1,6 @@
 id: Tanium Threat Response - Create Connection
 version: -1
-fromversion: ""
+fromversion: "5.0.0"
 contentitemfields:
   propagationLabels:
   - all
@@ -173,4 +173,4 @@ inputs:
   description: ""
 outputs: []
 tests:
-  - No test
+- No test

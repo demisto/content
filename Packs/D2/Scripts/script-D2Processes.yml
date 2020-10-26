@@ -2,7 +2,7 @@ commonfields:
   id: D2Processes
   version: -1
 name: D2Processes
-script: |-
+script: >-
   function processesUnix() {
     var output = execute('ps ax');
     if (output.Success) {
@@ -11,10 +11,12 @@ script: |-
       throw output.Error;
     }
   }
+
   function processesWindows() {
     var ps = wmi_query('select ProcessId, CommandLine, ThreadCount, WorkingSetSize, Description From Win32_Process');
     pack(ps, 'table');
   }
+
   try {
     if (env.OS === 'windows') {
       processesWindows();
@@ -33,3 +35,4 @@ system: true
 scripttarget: 1
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

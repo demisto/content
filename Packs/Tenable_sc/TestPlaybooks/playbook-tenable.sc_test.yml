@@ -694,8 +694,7 @@ tasks:
       id: e32002da-0b30-48c1-86a6-7c8c8b35109b
       version: -1
       name: Get scan vulnerability
-      description: 'Get details about a given vulnerability from a given Tenable.sc
-        scan '
+      description: 'Get details about a given vulnerability from a given Tenable.sc scan '
       script: Tenable.sc|||tenable-sc-get-vulnerability
       type: regular
       iscommand: true
@@ -1501,3 +1500,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

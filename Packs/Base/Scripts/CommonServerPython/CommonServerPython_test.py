@@ -15,7 +15,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers
 
 try:
     from StringIO import StringIO
@@ -133,9 +133,9 @@ def test_tbl_to_md_multiline():
     expected_table = '''### tableToMarkdown test with multiline
 |header_1|header_2|header_3|
 |---|---|---|
-| a1 | b1.1<br>b1.2 | c1\|1 |
-| a2 | b2.1<br>b2.2 | c2\|1 |
-| a3 | b3.1<br>b3.2 | c3\|1 |
+| a1 | b1.1<br>b1.2 | c1\\|1 |
+| a2 | b2.1<br>b2.2 | c2\\|1 |
+| a3 | b3.1<br>b3.2 | c3\\|1 |
 '''
     assert table == expected_table
 
@@ -827,6 +827,7 @@ def test_get_demisto_version(mocker, clear_version_cache):
     assert is_demisto_version_ge('5.0.0')
     assert is_demisto_version_ge('4.5.0')
     assert not is_demisto_version_ge('5.5.0')
+    assert get_demisto_version_as_str() == '5.0.0-50000'
 
 
 def test_is_demisto_version_ge_4_5(mocker, clear_version_cache):
@@ -1587,6 +1588,45 @@ class TestBaseClient:
         with raises(DemistoException, match='- {}\n.*{}'.format(reason, json_response["error"])):
             self.client._http_request('get', 'event', resp_type='text')
 
+    def test_exception_response_json_parsing_when_ok_code_is_invalid(self, requests_mock):
+        from CommonServerPython import DemistoException
+        reason = 'Bad Request'
+        json_response = {'error': 'additional text'}
+        requests_mock.get('http://example.com/api/v2/event',
+                          status_code=400,
+                          reason=reason,
+                          json=json_response)
+        try:
+            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+        except DemistoException as e:
+            assert e.res.get('error') == 'additional text'
+
+    def test_exception_response_text_parsing_when_ok_code_is_invalid(self, requests_mock):
+        from CommonServerPython import DemistoException
+        reason = 'Bad Request'
+        text_response = '{"error": "additional text"}'
+        requests_mock.get('http://example.com/api/v2/event',
+                          status_code=400,
+                          reason=reason,
+                          text=text_response)
+        try:
+            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+        except DemistoException as e:
+            assert e.res.get('error') == 'additional text'
+
+    def test_exception_response_parsing_fails_when_ok_code_is_invalid(self, requests_mock):
+        from CommonServerPython import DemistoException
+        reason = 'Bad Request'
+        text_response = 'Bad Request'
+        requests_mock.get('http://example.com/api/v2/event',
+                          status_code=400,
+                          reason=reason,
+                          text=text_response)
+        try:
+            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+        except DemistoException as e:
+            assert isinstance(e.res, dict) and not e.res
+
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
         from CommonServerPython import BaseClient
@@ -2104,7 +2144,8 @@ INDICATOR_VALUE_AND_TYPE = [
     ('2001:db8:0000:0000:0000:0000:0000:0000', 'IPv6'),
     ('112.126.94.107', 'IP'),
     ('a', None),
-    ('*castaneda-thornton.com', 'DomainGlob')
+    ('*castaneda-thornton.com', 'DomainGlob'),
+    ('53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b', 'File')
 ]
 
 
@@ -2331,8 +2372,6 @@ def test_merge_lists():
                          [
                              ({'version': '5.5.0'}, False),
                              ({'version': '6.0.0'}, True),
-                             ({'version': '5.5.0', 'buildNumber': MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT}, True),
-                             ({'version': '5.5.0', 'buildNumber': str(int(MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT) - 1)}, False)
                          ]
                          )
 def test_is_versioned_context_available(mocker, version, expected):
@@ -2471,6 +2510,31 @@ def test_set_latest_integration_context(mocker):
     assert int_context_args_2 == (int_context['context'], True, int_context['version'] + 1)
 
 
+def test_set_latest_integration_context_es(mocker):
+    import CommonServerPython
+
+    # Set
+    mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
+    mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
+    es_inv_context_version_first = {'version': 5, 'sequenceNumber': 807, 'primaryTerm': 1}
+    es_inv_context_version_second = {'version': 7, 'sequenceNumber': 831, 'primaryTerm': 1}
+    mocker.patch.object(CommonServerPython, 'update_integration_context',
+                        side_effect=[({}, es_inv_context_version_first),
+                                     ({}, es_inv_context_version_second)])
+    mocker.patch.object(CommonServerPython, 'set_integration_context', side_effect=[ValueError, {}])
+
+    # Arrange
+    CommonServerPython.set_to_integration_context_with_retries({})
+    int_context_calls = CommonServerPython.set_integration_context.call_count
+    int_context_args_1 = CommonServerPython.set_integration_context.call_args_list[0][0]
+    int_context_args_2 = CommonServerPython.set_integration_context.call_args_list[1][0]
+
+    # Assert
+    assert int_context_calls == 2
+    assert int_context_args_1[1:] == (True, es_inv_context_version_first)
+    assert int_context_args_2[1:] == (True, es_inv_context_version_second)
+
+
 def test_set_latest_integration_context_fail(mocker):
     import CommonServerPython
 
@@ -2498,183 +2562,22 @@ def test_set_latest_integration_context_fail(mocker):
     assert int_context_calls == CommonServerPython.CONTEXT_UPDATE_RETRY_TIMES
 
 
-def test_handle_outgoing_error_in_mirror__should_update(mocker):
-    """
-    Given:
-        -  an integration context with and outgoing mirror error that was not printed
-    When
-        - running handle_outgoing_error_in_mirror
-    Then
-        - the result is the expected out error entry
-        - 'out_mirror_error' in the incident data is set to True
-    """
-    from CommonServerPython import handle_outgoing_error_in_mirror
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"out_mirror_error": "Some Error",
-                                                                        "out_error_printed": False})
-    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
-    incident_data = {}
-    out_entry = handle_outgoing_error_in_mirror(incident_data)
-    expected_out_entry = {
-        'Type': 1,
-        'Contents': "",
-        'HumanReadable': "An error occurred while mirroring outgoing data: Some Error",
-        'ReadableContentsFormat': 'text',
-        'ContentsFormat': 'text',
-    }
-    assert out_entry == expected_out_entry
-    assert incident_data.get('out_mirror_error') == 'Some Error'
-
-
-def test_handle_outgoing_error_in_mirror__should_not_update(mocker):
-    """
-    Given:
-        -  an integration context with and outgoing mirror error that was printed
-    When
-        - running handle_outgoing_error_in_mirror
-    Then
-        - the result is an empty dict
-        - 'out_mirror_error' in the incident data is set to True
-    """
-    from CommonServerPython import handle_outgoing_error_in_mirror
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"out_mirror_error": "Some Error",
-                                                                        "out_error_printed": True})
-    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
-    incident_data = {}
-    out_entry = handle_outgoing_error_in_mirror(incident_data)
-    assert out_entry == {}
-    assert incident_data.get('out_mirror_error') == 'Some Error'
-
-
-def test_handle_incoming_error_in_mirror__should_update_in_only(mocker):
-    """
-    Given:
-        -  an integration context with and outgoing mirror error that was printed and no in error
-        -  A new incoming mirror error message
-    When
-        - running handle_incoming_error_in_mirror
-    Then
-        - the result is the expected in error entry without an out error entry
-        - 'out_mirror_error' and 'in_mirror_error' in the incident data are set to True
-    """
-    from CommonServerPython import handle_incoming_error_in_mirror
-    integrartion_context = {
-        "out_mirror_error": "Some Error",
-        "out_error_printed": True,
-    }
-
-    expected_in_error_entry = {
-        'Type': 1,
-        'Contents': "",
-        'HumanReadable': "An error occurred while mirroring incoming data: My in error",
-        'ReadableContentsFormat': 'text',
-        'ContentsFormat': 'text',
-    }
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
-    incident_data = {}
-    response = handle_incoming_error_in_mirror(incident_data, "My in error")
-    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
-    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
-    assert len(response.entries) == 1
-    assert response.entries[0] == expected_in_error_entry
-
-
-def test_handle_incoming_error_in_mirror__should_update_in_and_out(mocker):
-    """
-   Given:
-       -  an integration context with and outgoing mirror error that was not printed and no in error
-       -  A new incoming mirror error message
-   When
-       - running handle_incoming_error_in_mirror
-   Then
-       - the result has the expected in error entry and out error entry
-       - 'out_mirror_error' and 'in_mirror_error' in the incident data are set to True
-   """
-    from CommonServerPython import handle_incoming_error_in_mirror
-    integrartion_context = {
-        "out_mirror_error": "Some Error",
-        "out_error_printed": False,
-    }
-    expected_in_error_entry = {
-        'Type': 1,
-        'Contents': "",
-        'HumanReadable': "An error occurred while mirroring incoming data: My in error",
-        'ReadableContentsFormat': 'text',
-        'ContentsFormat': 'text',
-    }
-    expected_out_entry = {
-        'Type': 1,
-        'Contents': "",
-        'HumanReadable': "An error occurred while mirroring outgoing data: Some Error",
-        'ReadableContentsFormat': 'text',
-        'ContentsFormat': 'text',
-    }
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
-    incident_data = {}
-    response = handle_incoming_error_in_mirror(incident_data, "My in error")
-    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
-    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
-    assert len(response.entries) == 2
-    assert expected_in_error_entry in response.entries
-    assert expected_out_entry in response.entries
-
-
-def test_handle_incoming_error_in_mirror__should_update_out_only(mocker):
-    """
-   Given:
-       -  an integration context with and outgoing mirror error that was not printed and incoming error that was printed
-   When
-       - running handle_incoming_error_in_mirror
-   Then
-       - the result has the expected out error entry and no in error entry
-       - 'out_mirror_error' and 'in_mirror_error' in the incident data are set to True
-   """
-    from CommonServerPython import handle_incoming_error_in_mirror
-    integrartion_context = {
-        "out_mirror_error": "Some Error",
-        "out_error_printed": False,
-        "in_mirror_error": "My in error",
-        "in_error_printed": True
-    }
-    expected_out_entry = {
-        'Type': 1,
-        'Contents': "",
-        'HumanReadable': "An error occurred while mirroring outgoing data: Some Error",
-        'ReadableContentsFormat': 'text',
-        'ContentsFormat': 'text',
-    }
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
-    incident_data = {}
-    response = handle_incoming_error_in_mirror(incident_data, "My in error")
-    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
-    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
-    assert len(response.entries) == 1
-    assert expected_out_entry in response.entries
-
-
-def test_handle_incoming_error_in_mirror__should_not_update(mocker):
-    """
-   Given:
-       -  an integration context with and outgoing mirror error that was printed and incoming error that was printed
-   When
-       - running handle_incoming_error_in_mirror
-   Then
-       - the result has no entries
-       - 'out_mirror_error' and 'in_mirror_error' in the incident data are set to True
-   """
-    from CommonServerPython import handle_incoming_error_in_mirror
-    integrartion_context = {
-        "out_mirror_error": "Some Error",
-        "out_error_printed": True,
-        "in_mirror_error": "My in error",
-        "in_error_printed": True
-    }
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
-    incident_data = {}
-    response = handle_incoming_error_in_mirror(incident_data, "My in error")
-    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
-    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
-    assert len(response.entries) == 0
+def test_get_x_content_info_headers(mocker):
+    test_license = 'TEST_LICENSE_ID'
+    test_brand = 'TEST_BRAND'
+    mocker.patch.object(
+        demisto,
+        'getLicenseID',
+        return_value=test_license
+    )
+    mocker.patch.object(
+        demisto,
+        'callingContext',
+        new_callable=mocker.PropertyMock(return_value={'context': {
+            'IntegrationBrand': test_brand,
+            'IntegrationInstance': 'TEST_INSTANCE',
+        }})
+    )
+    headers = get_x_content_info_headers()
+    assert headers['X-Content-LicenseID'] == test_license
+    assert headers['X-Content-Name'] == test_brand

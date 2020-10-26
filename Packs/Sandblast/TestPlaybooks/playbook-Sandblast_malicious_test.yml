@@ -33,10 +33,7 @@ tasks:
       id: 1008e4d4-41f5-480a-8069-bd3cc22506a7
       version: -1
       name: sandblast-upload
-      description: Use the Upload API to have a client application request that Check
-        Point Threat Prevention modules scan and analyze a file. When you upload a
-        file to the service, the file is encrypted. It is un-encrypted during analysis,
-        and then deleted
+      description: Use the Upload API to have a client application request that Check Point Threat Prevention modules scan and analyze a file. When you upload a file to the service, the file is encrypted. It is un-encrypted during analysis, and then deleted
       script: '|||sandblast-upload'
       type: regular
       iscommand: true
@@ -74,9 +71,7 @@ tasks:
       id: 8d41e3a8-fdfc-4226-88f6-84105601df22
       version: -1
       name: sandblast-query
-      description: Use the Query API to have a client application look for either
-        the analysis report of a specific file on the Check Point Threat Prevention
-        service databases or the status of a file, uploaded for analysis
+      description: Use the Query API to have a client application look for either the analysis report of a specific file on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis
       script: Check Point Sandblast|||sandblast-query
       type: regular
       iscommand: true
@@ -113,8 +108,7 @@ tasks:
       id: f30d2083-6cae-4a8b-8a0f-ad5ccbf733f5
       version: -1
       name: Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -142,8 +136,7 @@ tasks:
       id: 42626316-95fa-4483-8d15-cbe2a12faea4
       version: -1
       name: Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -282,3 +275,4 @@ inputs:
   required: false
   description: ""
 outputs: []
+fromversion: 5.0.0

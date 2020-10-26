@@ -11,7 +11,7 @@ Use the JSON feed integration to fetch indicators from a JSON feed. This integra
     | Parameter | Description |
     | --- | --- |
     | Name | A meaningful name for the integration instance. |
-    | Fetch indicators | Wether to fetch indicators, if checked. |
+    | Fetch indicators | Whether to fetch indicators, if checked. |
     | Indicator Reputation | The reputation applied to indicators from this integration instance. The default value is "Bad". |
     | Source Reliability | The reliability of the source providing the intelligence data. The default value is "C - Fairly reliable" |
     | Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp |
@@ -24,7 +24,7 @@ Use the JSON feed integration to fetch indicators from a JSON feed. This integra
     | Username + Password | The credentials used to access feeds that require basic authentication. These fields also support the use of API key headers. To use API key headers, specify the header name and value in the following format: `_header:<header_name>` in the **Username** field and the header value in the **Password** field. | 
     | JMESPath Extractor | The JMESPath expression for extracting the indicators from. You can check the expression in the [JMESPath site](http://jmespath.org/) to verify this expression will return the following array of objects. |
     | JSON Indicator Attribute | The JSON attribute whose value is the indicator. The default is "indicator". |
-    | Bypass exclusion list | Wether the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. |
+    | Bypass exclusion list | Whether the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. |
 
 4. Click __Test__ to validate the URLs and connection.
 

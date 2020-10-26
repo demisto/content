@@ -2,7 +2,7 @@ commonfields:
   id: PanoramaCommit
   version: -1
 name: PanoramaCommit
-script: |-
+script: >-
   var reqArgs = {
           type: 'commit',
           cmd: '<commit></commit>'
@@ -23,3 +23,4 @@ dependson:
 timeout: 0s
 tests:
 - palo_alto_firewall_test_pb
+fromversion: 5.0.0

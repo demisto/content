@@ -37,8 +37,7 @@ tasks:
       id: ee87721d-2353-4386-86d1-a0fb3d90bc00
       version: -1
       name: Get alarm by id
-      description: Retrieve alarms in a given time period, optionally filtered by
-        the alarm status or entity
+      description: Retrieve alarms in a given time period, optionally filtered by the alarm status or entity
       script: '|||lr-get-alarm-by-id'
       type: regular
       iscommand: true
@@ -579,8 +578,7 @@ tasks:
       id: b3bb6635-b892-40eb-8b71-d9a722ca906b
       version: -1
       name: Get hosts by entity
-      description: Retrieve a list of hosts for a given entity, or an empty list if
-        none is found.
+      description: Retrieve a list of hosts for a given entity, or an empty list if none is found.
       script: '|||lr-get-hosts-by-entity-id'
       type: regular
       iscommand: true
@@ -698,5 +696,6 @@ inputs:
     simple: "1150"
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+fromversion: 5.0.0

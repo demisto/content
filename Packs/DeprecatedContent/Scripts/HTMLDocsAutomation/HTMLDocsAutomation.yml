@@ -17,8 +17,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Setting to work with Demisto instructions. Number the steps by 'x.'
-    (i.e. '1.')
+  description: Setting to work with Demisto instructions. Number the steps by 'x.' (i.e. '1.')
   isArray: false
   name: setupOnIntegration
   required: false
@@ -54,8 +53,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'Entry ID for file containing command examples. Each Command should
-    be in a separate line. For example: !fidelis-list-alerts time_frame="Last 7 Days"'
+  description: 'Entry ID for file containing command examples. Each Command should be in a separate line. For example: !fidelis-list-alerts time_frame="Last 7 Days"'
   isArray: false
   name: commands
   required: false
@@ -85,4 +83,5 @@ subtype: python3
 runonce: false
 deprecated: true
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

@@ -2,8 +2,9 @@ commonfields:
   id: PanoramaDynamicAddressGroup
   version: -1
 name: PanoramaDynamicAddressGroup
-script: |-
+script: >-
   var req =
+
   '<uid-message>\
        <version>1.0</version>\
        <type>update</type>\
@@ -17,6 +18,7 @@ script: |-
            </'+args.type+'>\
        </payload>\
   </uid-message>';
+
 
   return {Type: 3,
         FileID: saveFile(req),
@@ -48,3 +50,4 @@ scripttarget: 0
 deprecated: true
 tests:
 - palo_alto_firewall_test_pb
+fromversion: 5.0.0

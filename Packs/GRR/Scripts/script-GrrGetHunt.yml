@@ -2,7 +2,7 @@ commonfields:
   id: GrrGetHunt
   version: -1
 name: GrrGetHunt
-script: |2
+script: >2
 
   demisto.results(demisto.executeCommand("grr_get_hunt", demisto.args()))
 type: python
@@ -21,3 +21,4 @@ timeout: 0s
 dependson:
   must:
   - grr_get_hunt
+fromversion: 5.0.0

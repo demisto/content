@@ -211,7 +211,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '2'
+              simple: '1'
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1310\n  }\n}"
     note: false
     timertriggers: []
@@ -429,7 +429,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '0'
+              simple: '1'
     view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 770\n  }\n}"
     note: false
     timertriggers: []
@@ -701,7 +701,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '2'
+              simple: '1'
     view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 2990\n  }\n}"
     note: false
     timertriggers: []
@@ -937,10 +937,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 4835,\n      \"width\": 850,\n      \"x\": -20,\n      \"y\":\
-  \ -230\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 4835,\n      \"width\": 850,\n      \"x\": -20,\n      \"y\": -230\n    }\n  }\n}"
 inputs: []
 outputs: []
-fromversion: 1.0.0
+fromversion: 5.0.0
 description: ''

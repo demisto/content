@@ -2,8 +2,9 @@ commonfields:
   id: ParseEmailHeader
   version: -1
 name: ParseEmailHeaders
-script: |-
+script: >-
   import json
+
 
 
   def main():
@@ -88,3 +89,4 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 deprecated: true
+fromversion: 5.0.0

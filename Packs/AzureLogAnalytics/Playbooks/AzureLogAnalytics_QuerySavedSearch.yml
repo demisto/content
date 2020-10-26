@@ -2,7 +2,7 @@ id: Azure Log Analytics - Query From Saved Search
 version: -1
 name: Azure Log Analytics - Query From Saved Search
 description: Executes a query from a saved search in Azure Log Analytics.
-fromversion: 4.5.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -142,14 +142,12 @@ inputs:
   value: {}
   required: true
   description: The ID of the saved search to run.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: timespan
   value: {}
   required: false
-  description: The timespan over which to query data. This is an ISO8601 time period
-    value. This timespan is applied in addition to timespans that are specified in the query
-    expression.
-  playbookInputQuery: null
+  description: The timespan over which to query data. This is an ISO8601 time period value. This timespan is applied in addition to timespans that are specified in the query expression.
+  playbookInputQuery:
 outputs:
 - contextPath: AzureLogAnalytics.Query.Query
   description: The executed query.

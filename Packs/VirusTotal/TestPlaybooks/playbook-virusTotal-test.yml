@@ -1549,8 +1549,7 @@ tasks:
       id: 6673cf1b-e726-4db3-8811-fd90ed2769f2
       version: -1
       name: Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -1592,8 +1591,7 @@ tasks:
       id: f4a30eb7-63cf-42d3-8e02-a81faadbf8e2
       version: -1
       name: Exists2
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -3006,3 +3004,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

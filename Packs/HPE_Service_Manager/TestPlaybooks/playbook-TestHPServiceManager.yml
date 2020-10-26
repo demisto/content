@@ -110,8 +110,7 @@ tasks:
       id: 5aca81bb-4da2-4985-80c5-2e35c4c7ffcc
       version: -1
       name: VerifyContext HPSM.Ticket
-      description: Verify that get-incident-by-id exports and converts ticket in Demisto
-        general format
+      description: Verify that get-incident-by-id exports and converts ticket in Demisto general format
       script: VerifyContext
       type: regular
       iscommand: false
@@ -290,8 +289,7 @@ tasks:
       id: a16b7448-9d05-4f55-8c38-713bdd6c0246
       version: -1
       name: VerifyContext Ticket
-      description: Verify that get-incident-by-id exports and converts ticket in Demisto
-        general format
+      description: Verify that get-incident-by-id exports and converts ticket in Demisto general format
       script: VerifyContext
       type: regular
       iscommand: false
@@ -552,3 +550,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -2,8 +2,9 @@ commonfields:
   id: EmailReputation
   version: -1
 name: EmailReputation
-script: |-
+script: >-
   results = demisto.executeCommand('email', {'email': demisto.get(demisto.args(),'email')})
+
 
   for item in results:
       if isError(item):
@@ -23,3 +24,4 @@ args:
   description: Email address to look up
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

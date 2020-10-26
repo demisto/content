@@ -138,8 +138,7 @@ tasks:
       id: 0e9b6296-cb3d-4959-8335-36461e1ea79e
       version: -1
       name: azure-sc-list-jit
-      description: Lists all policies for protecting resources using Just-in-Time
-        access control.
+      description: Lists all policies for protecting resources using Just-in-Time access control.
       script: '|||azure-sc-list-jit'
       type: regular
       iscommand: true
@@ -172,8 +171,7 @@ tasks:
       id: 19021d00-c31b-47e1-8a30-4da8a27c2912
       version: -1
       name: azure-sc-list-location
-      description: The location of the responsible ASC of the specific subscription.
-        For each subscription there is only one responsible location.
+      description: The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
       script: '|||azure-sc-list-location'
       type: regular
       iscommand: true
@@ -341,3 +339,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

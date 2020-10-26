@@ -65,8 +65,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Suspends a single user. This operation can only be performed on users with
-      an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
+    description: Suspends a single user. This operation can only be performed on users with an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
     execution: false
     name: okta-suspend-user
   - arguments:
@@ -77,8 +76,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a single user to ACTIVE status. This operation can only be performed
-      on users that have a SUSPENDED status.
+    description: Returns a single user to ACTIVE status. This operation can only be performed on users that have a SUSPENDED status.
     execution: false
     name: okta-unsuspend-user
   - arguments:
@@ -137,8 +135,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Un-enrolls an existing factor for the specified user. This enables
-      the user to enroll a new factor.
+    description: Un-enrolls an existing factor for the specified user. This enables the user to enroll a new factor.
     execution: false
     name: okta-reset-factor
   - arguments:
@@ -287,8 +284,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Term by which to search. Can be a first name, last name,
-        or email address.
+      description: Term by which to search. Can be a first name, last name, or email address.
       isArray: false
       name: term
       required: true
@@ -370,8 +366,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Fetches information for a single user. You must enter one or more
-      parameters for the command to run.
+    description: Fetches information for a single user. You must enter one or more parameters for the command to run.
     execution: false
     name: okta-get-user
     outputs:
@@ -530,8 +525,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: User's default location, for purposes of localizing items such as
-        currency, date-time format, numerical representations, etc.
+      description: User's default location, for purposes of localizing items such as currency, date-time format, numerical representations, etc.
       isArray: false
       name: locale
       required: false
@@ -543,8 +537,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The user type, which is used to identify the organization-to-user relationship such as
-        "Employee" or "Contractor".
+      description: The user type, which is used to identify the organization-to-user relationship such as "Employee" or "Contractor".
       isArray: false
       name: userType
       required: false
@@ -629,8 +622,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: IDs of groups that the user will be immediately added to at time of
-        creation (does Not include default group).
+      description: IDs of groups that the user will be immediately added to at time of creation (does Not include default group).
       isArray: false
       name: groupIds
       required: false
@@ -646,10 +638,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a new user with an option of setting a password, recovery question,
-      and answer. The new user will immediately be able to log in after activation with
-      the assigned password. This flow is common when developing a custom user registration
-      experience.
+    description: Creates a new user with an option of setting a password, recovery question, and answer. The new user will immediately be able to log in after activation with the assigned password. This flow is common when developing a custom user registration experience.
     execution: true
     name: okta-create-user
     outputs:
@@ -811,8 +800,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: User's default location for purposes of localizing items such as
-        currency, date-time format, numerical representations, etc.
+      description: User's default location for purposes of localizing items such as currency, date-time format, numerical representations, etc.
       isArray: false
       name: locale
       required: false
@@ -824,8 +812,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The user type, which is used to identify the organization-to-user relationship such as
-        "Employee" or "Contractor".
+      description: The user type, which is used to identify the organization-to-user relationship such as "Employee" or "Contractor".
       isArray: false
       name: userType
       required: false
@@ -909,8 +896,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates a user with a given login. All fields are optional. Fields which
-      are not set, will not be overwritten.
+    description: Updates a user with a given login. All fields are optional. Fields which are not set, will not be overwritten.
     execution: true
     name: okta-update-user
   - arguments:
@@ -986,15 +972,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Useful for performing structured queries where constraints on\
-        \ group attribute values can be explicitly targeted. \nThe following expressions\
-        \ are supported(among others) for groups with the filter query parameter:\
-        \ \ntype eq \"OKTA_GROUP\" - Groups that have a\_type\_of\_OKTA_GROUP; lastUpdated\
-        \ lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before\
-        \ a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\"\
-        \ - Groups with memberships last updated at a specific timestamp; id eq \"\
-        00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about\
-        \ filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+      description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \ntype eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
       isArray: false
       name: filter
       required: false
@@ -1007,8 +985,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists groups in your organization. A subset of groups can be returned
-      that match a supported filter expression or query.
+    description: Lists groups in your organization. A subset of groups can be returned that match a supported filter expression or query.
     execution: false
     name: okta-list-groups
     outputs:
@@ -1028,7 +1005,7 @@ script:
       description: Timestamp for when the group's membership was last updated.
       type: Date
     - contextPath: Okta.Group.Type
-      description: The group type, which determines how a group's profile and membership are managed. Can be "OKTA_GROUP", "APP_GROUP", or "BUILT_IN". 
+      description: The group type, which determines how a group's profile and membership are managed. Can be "OKTA_GROUP", "APP_GROUP", or "BUILT_IN".
       type: String
     - contextPath: Okta.Group.Name
       description: Name of the group.
@@ -1038,15 +1015,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Filters the lower time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'Filters the upper time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
       isArray: false
       name: until
       required: false
@@ -1083,13 +1058,10 @@ script:
       description: ID of the actor.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
-      description: A raw string representation of the user agent, formatted according
-        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
-        OS fields can be derived from this field.
+      description: A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The operating system on which the client runs. For example, Microsoft
-        Windows 10.
+      description: The operating system on which the client runs. For example, Microsoft Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
       description: 'Identifies the browser type, if relevant. For example, Chrome.'
@@ -1098,23 +1070,19 @@ script:
       description: 'Type of device that client operated from. For example, Computer.'
       type: String
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests, the ID of the OAuth client making the request.
-        For SSWS token requests, the ID of the agent making the request.
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
       type: String
     - contextPath: Okta.Logs.Events.client.ipAddress
       description: IP address from which the client made its request.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
-      description: The city encompassing the area containing the geo-location coordinates,
-        if available. For example, Seattle, San Francisco.
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.state
-      description: Full name of the state or province encompassing the area containing
-        the geo-location coordinates. For example Montana, Incheon.
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example Montana, Incheon.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geo-location
-        coordinates. For example, France, Uganda.
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
       type: String
     - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event.
@@ -1135,19 +1103,16 @@ script:
       description: 'The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".'
       type: String
     - contextPath: Okta.Logs.Events.securityContext.asNumber
-      description: Autonomous system number associated with the autonomous system
-        that the event request was sourced to.
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to.
       type: Number
     - contextPath: Okta.Logs.Events.securityContext.asOrg
-      description: Organization associated with the autonomous system that the event
-        request was sourced to.
+      description: Organization associated with the autonomous system that the event request was sourced to.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to send the event's request.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.domain
-      description: The domain name associated with the IP address of the inbound event
-        request.
+      description: The domain name associated with the IP address of the inbound event request.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event's request is from a known proxy.
@@ -1156,16 +1121,13 @@ script:
       description: IP address.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
-      description: The city encompassing the area containing the geo-location coordinates,
-        if available. For example, Seattle, San Francisco.
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
-      description: Full name of the state or province encompassing the area containing
-        the geo-location coordinates. For example, Montana, Incheon.
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geo-location
-        coordinates. For example, France, Uganda.
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source.
@@ -1184,39 +1146,25 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "Useful for performing structured queries where constraints on\
-        \ LogEvent attribute values can be explicitly targeted.  \nThe following expressions\
-        \ are supported for events with the filter query parameter: eventType eq \"\
-        \ :eventType\" \n-Events that have a specific action; eventType target.id\
-        \ eq \":id\" \n- Events published with a specific target id; actor.id eq \"\
-        :id\"\n- Events published with a specific actor ID. For more information about\
-        \ filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+      description: "Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  \nThe following expressions are supported for events with the filter query parameter: eventType eq \" :eventType\" \n-Events that have a specific action; eventType target.id eq \":id\" \n- Events published with a specific target id; actor.id eq \":id\"\n- Events published with a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
       isArray: false
       name: filter
       required: false
       secret: false
     - default: false
-      description: "The query parameter can be used to perform keyword matching against\
-        \ a LogEvents object’s attribute values. To satisfy the constraint,\
-        \ all supplied keywords must be matched exactly. Note that matching is case-insensitive.\
-        \  The following are some examples of common keyword filtering: \nEvents that\
-        \ mention a specific city: query=San Francisco; \nEvents that mention a specific\
-        \ url: query=interestingURI.com; \nEvents that mention a specific person:\
-        \ query=firstName lastName."
+      description: "The query parameter can be used to perform keyword matching against a LogEvents object’s attribute values. To satisfy the constraint, all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The following are some examples of common keyword filtering: \nEvents that mention a specific city: query=San Francisco; \nEvents that mention a specific url: query=interestingURI.com; \nEvents that mention a specific person: query=firstName lastName."
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: 'Filters the lower time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
+      description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'Filters the upper  time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
+      description: 'Filters the upper  time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
       isArray: false
       name: until
       required: false
@@ -1254,13 +1202,10 @@ script:
       description: ID of the actor.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
-      description: A raw string representation of user agent, formatted according
-        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
-        OS fields can be derived from this field.
+      description: A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The operating system on which the client runs. For example, Microsoft
-        Windows 10.
+      description: The operating system on which the client runs. For example, Microsoft Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
       description: Identifies the type of web browser, if relevant. For example, Chrome.
@@ -1269,23 +1214,19 @@ script:
       description: 'Type of device from which the client operated. For example, Computer.'
       type: String
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests, the ID of the OAuth client making the request.
-        For SSWS token requests, the ID of the agent making the request.
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
       type: String
     - contextPath: Okta.Logs.Events.client.ipAddress
       description: IP address from which the client made its request.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
-      description: The city encompassing the area containing the geo-location coordinates,
-        if available. For example, Seattle, San Francisco.
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.state
-      description: Full name of the state or province encompassing the area containing
-        the geo-location coordinates. For example, Montana, Incheon.
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geo-location
-        coordinates. For example, France, Uganda.
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
       type: String
     - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event.
@@ -1306,19 +1247,16 @@ script:
       description: 'The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".'
       type: String
     - contextPath: Okta.Logs.Events.securityContext.asNumber
-      description: Autonomous system number associated with the autonomous system
-        that the event request was sourced to.
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to.
       type: Number
     - contextPath: Okta.Logs.Events.securityContext.asOrg
-      description: Organization associated with the autonomous system that the event
-        request was sourced to.
+      description: Organization associated with the autonomous system that the event request was sourced to.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to send the event's request.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.domain
-      description: The domain name associated with the IP address of the inbound event
-        request.
+      description: The domain name associated with the IP address of the inbound event request.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event's request is from a known proxy.
@@ -1327,16 +1265,13 @@ script:
       description: IP address.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
-      description: The city encompassing the area containing the geo-location coordinates,
-        if available. For example, Seattle, San Francisco.
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
-      description: Full name of the state or province encompassing the area containing
-        the geo-location coordinates. For example, Montana, Incheon.
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geo-location
-        coordinates. For example, France, Uganda.
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source.
@@ -1355,15 +1290,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Filters the lower time bound of the log event in the Internet Date\Time
-        format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      description: Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: Filters the upper time bound of the log event in the Internet Date\Time
-        format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      description: Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
       isArray: false
       name: until
       required: false
@@ -1401,13 +1334,10 @@ script:
       description: ID of the actor.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
-      description: A raw string representation of user agent, formatted according
-        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
-        OS fields can be derived from this field.
+      description: A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The operating system on which the client runs. For example, Microsoft
-        Windows 10.
+      description: The operating system on which the client runs. For example, Microsoft Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
       description: Identifies the type of web browser, if relevant. For example, Chrome.
@@ -1416,23 +1346,19 @@ script:
       description: 'Type of device from which the client operated. For example, Computer.'
       type: String
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests, the ID of the OAuth client making the request.
-        For SSWS token requests, the ID of the agent making the request.
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
       type: String
     - contextPath: Okta.Logs.Events.client.ipAddress
       description: IP address from which the client made its request.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
-      description: The city encompassing the area containing the geo-location coordinates,
-        if available. For example, Seattle, San Francisco.
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.state
-      description: Full name of the state or province encompassing in the area containing
-        the geo-location coordinates. For example, Montana, Incheon.
+      description: Full name of the state or province encompassing in the area containing the geo-location coordinates. For example, Montana, Incheon.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geo-location
-        coordinates. For example, France, Uganda.
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
       type: String
     - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event.
@@ -1453,19 +1379,16 @@ script:
       description: 'The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".'
       type: String
     - contextPath: Okta.Logs.Events.securityContext.asNumber
-      description: Autonomous system number associated with the autonomous system
-        that the event request was sourced to.
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to.
       type: Number
     - contextPath: Okta.Logs.Events.securityContext.asOrg
-      description: Organization associated with the autonomous system that the event
-        request was sourced to.
+      description: Organization associated with the autonomous system that the event request was sourced to.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to send the event's request.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.domain
-      description: The domain name associated with the IP address of the inbound event
-        request.
+      description: The domain name associated with the IP address of the inbound event request.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event's request is from a known proxy.
@@ -1474,16 +1397,13 @@ script:
       description: IP address.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
-      description: The city encompassing the area containing the geo-location coordinates,
-        if available. For example, Seattle, San Francisco.
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
-      description: Full name of the state or province encompassing the area containing
-        the geo-location coordinates. For example, Montana, Incheon.
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geo-location
-        coordinates. For example, France, Uganda.
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source.
@@ -1502,15 +1422,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Filters the lower time bound of the log event in the Internet Date\Time
-        format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      description: Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: Filters the upper time bound of the log event in the Internet Date\Time
-        format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      description: Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
       isArray: false
       name: until
       required: false
@@ -1548,13 +1466,10 @@ script:
       description: ID of the actor.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
-      description: A raw string representation of the user agent, formatted according
-        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
-        OS fields can be derived from this field.
+      description: A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The OS on which the client runs. For example, Microsoft
-        Windows 10.
+      description: The OS on which the client runs. For example, Microsoft Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
       description: Identifies the type of web browser, if relevant. For example, Chrome.
@@ -1563,23 +1478,19 @@ script:
       description: 'Type of device from which the client operated. For example, Computer.'
       type: String
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests, the ID of the OAuth client making the request.
-        For SSWS token requests, the ID of the agent making the request.
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
       type: String
     - contextPath: Okta.Logs.Events.client.ipAddress
       description: IP address from which the client made its request.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
-      description: The city encompassing the area containing the geo-location coordinates,
-        if available. For example, Seattle, San Francisco.
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.state
-      description: Full name of the state or province encompassing the area containing
-        the geo-location coordinates. For example, Montana, Incheon.
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geo-location
-        coordinates. For example, France, Uganda.
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
       type: String
     - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event.
@@ -1600,19 +1511,16 @@ script:
       description: 'The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".'
       type: String
     - contextPath: Okta.Logs.Events.securityContext.asNumber
-      description: Autonomous system number associated with the autonomous system
-        that the event request was sourced to.
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to.
       type: Number
     - contextPath: Okta.Logs.Events.securityContext.asOrg
-      description: Organization associated with the autonomous system that the event
-        request was sourced to.
+      description: Organization associated with the autonomous system that the event request was sourced to.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to send the event's request.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.domain
-      description: The domain name associated with the IP address of the inbound event
-        request.
+      description: The domain name associated with the IP address of the inbound event request.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event's request is from a known proxy.
@@ -1621,16 +1529,13 @@ script:
       description: IP address.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
-      description: The city encompassing the area containing the geo-location coordinates,
-        if available. For example, Seattle, San Francisco.
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
-      description: Full name of the state or province encompassing the area containing
-        the geo-location coordinates. For example, Montana, Incheon.
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geo-location
-        coordinates. For example, France, Uganda.
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source.
@@ -1649,15 +1554,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Filters the lower time bound of the log event in the Internet Date\Time
-        format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      description: Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: Filters the upper time bound of the log event in the Internet Date\Time
-        format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      description: Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
       isArray: false
       name: until
       required: false
@@ -1695,13 +1598,10 @@ script:
       description: ID of the actor.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
-      description: A raw string representation of user agent, formatted according
-        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
-        OS fields can be derived from this field.
+      description: A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The operating system on which the client runs. For example, Microsoft
-        Windows 10.
+      description: The operating system on which the client runs. For example, Microsoft Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
       description: Identifies the type of web browser, if relevant. For example, Chrome.
@@ -1710,23 +1610,19 @@ script:
       description: 'Type of device from which the client operated. For example, Computer.'
       type: String
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests, the ID of the OAuth client making the request.
-        For SSWS token requests, the ID of the agent making the request.
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
       type: String
     - contextPath: Okta.Logs.Events.client.ipAddress
       description: IP address from which the client made its request.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
-      description: The city encompassing the area containing the geo-location coordinates,
-        if available. For example, Seattle, San Francisco.
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.state
-      description: Full name of the state or province encompassing the area containing
-        the geo-location coordinates. For example, Montana, Incheon.
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geo-location
-        coordinates. For example, France, Uganda.
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
       type: String
     - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event.
@@ -1747,19 +1643,16 @@ script:
       description: 'The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".'
       type: String
     - contextPath: Okta.Logs.Events.securityContext.asNumber
-      description: Autonomous system number associated with the autonomous system
-        that the event request was sourced to.
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to.
       type: Number
     - contextPath: Okta.Logs.Events.securityContext.asOrg
-      description: Organization associated with the autonomous system that the event
-        request was sourced to.
+      description: Organization associated with the autonomous system that the event request was sourced to.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to send the event's request.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.domain
-      description: The domain name associated with the IP address of the inbound event
-        request.
+      description: The domain name associated with the IP address of the inbound event request.
       type: String
     - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event's request is from a known proxy.
@@ -1768,16 +1661,13 @@ script:
       description: IP address.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
-      description: The city encompassing the area containing the geo-location coordinates,
-        if available. For example, Seattle, San Francisco.
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
-      description: Full name of the state or province encompassing the area containing
-        the geo-location coordinates. For example, Montana, Incheon.
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geo-location
-        coordinates. For example, France, Uganda.
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
       type: String
     - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source.
@@ -1961,3 +1851,4 @@ script:
   type: python
 tests:
 - OktaV2-Test
+fromversion: 5.0.0

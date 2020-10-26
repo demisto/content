@@ -1,6 +1,6 @@
 id: QRadar Indicator Hunting
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: QRadar Indicator Hunting
 description: Deprecated. Use the "QRadar Indicator Hunting V2" playbook instead.
 starttaskid: '0'
@@ -84,11 +84,7 @@ tasks:
             args:
               dt:
                 value:
-                  simple: '.=function(val){var fields = Array.isArray(val.DomainURLFields)
-                    ? val.DomainURLFields : [val.DomainURLFields]; var domainurls
-                    = Array.isArray(val.DomainURL) ? val.DomainURL : [val.DomainURL];
-                    return fields.map(field => domainurls.map(domainurl => "\"" +
-                    field + "\" ILIKE " + "''%" + domainurl + "%''").join('' OR ''))}(val)'
+                  simple: '.=function(val){var fields = Array.isArray(val.DomainURLFields) ? val.DomainURLFields : [val.DomainURLFields]; var domainurls = Array.isArray(val.DomainURL) ? val.DomainURL : [val.DomainURL]; return fields.map(field => domainurls.map(domainurl => "\"" + field + "\" ILIKE " + "''%" + domainurl + "%''").join('' OR ''))}(val)'
           - operator: join
             args:
               separator:
@@ -977,11 +973,7 @@ tasks:
             args:
               dt:
                 value:
-                  simple: '.=function(val){var fields = Array.isArray(val.SHA1Fields)
-                    ? val.SHA1Fields : [val.SHA1Fields]; var sha1s = Array.isArray(val.File.SHA1)
-                    ? val.File.SHA1 : [val.File.SHA1]; return fields.map(field =>
-                    sha1s.map(sha1 => "\"" + field + "\"  = " + "''" + sha1 + "''").join(''
-                    OR ''))}(val)'
+                  simple: '.=function(val){var fields = Array.isArray(val.SHA1Fields) ? val.SHA1Fields : [val.SHA1Fields]; var sha1s = Array.isArray(val.File.SHA1) ? val.File.SHA1 : [val.File.SHA1]; return fields.map(field => sha1s.map(sha1 => "\"" + field + "\"  = " + "''" + sha1 + "''").join('' OR ''))}(val)'
           - operator: join
             args:
               separator:
@@ -1204,10 +1196,7 @@ tasks:
             args:
               dt:
                 value:
-                  simple: '.=function(val){var fields = Array.isArray(val.MD5Fields)
-                    ? val.MD5Fields : [val.MD5Fields]; var md5s = Array.isArray(val.File.MD5)
-                    ? val.File.MD5 : [val.File.MD5]; return fields.map(field => md5s.map(md5
-                    => "\"" + field + "\"  = " + "''" + md5 + "''").join('' OR ''))}(val)'
+                  simple: '.=function(val){var fields = Array.isArray(val.MD5Fields) ? val.MD5Fields : [val.MD5Fields]; var md5s = Array.isArray(val.File.MD5) ? val.File.MD5 : [val.File.MD5]; return fields.map(field => md5s.map(md5 => "\"" + field + "\"  = " + "''" + md5 + "''").join('' OR ''))}(val)'
           - operator: join
             args:
               separator:
@@ -1518,11 +1507,7 @@ tasks:
             args:
               dt:
                 value:
-                  simple: '.=function(val){var fields = Array.isArray(val.SHA256Fields)
-                    ? val.SHA256Fields : [val.SHA256Fields]; var sha256s = Array.isArray(val.File.SHA256)
-                    ? val.File.SHA256 : [val.File.SHA256]; return fields.map(field
-                    => sha256s.map(sha256 => "\"" + field + "\" = " + "''" + sha256
-                    + "''").join('' OR ''))}(val)'
+                  simple: '.=function(val){var fields = Array.isArray(val.SHA256Fields) ? val.SHA256Fields : [val.SHA256Fields]; var sha256s = Array.isArray(val.File.SHA256) ? val.File.SHA256 : [val.File.SHA256]; return fields.map(field => sha256s.map(sha256 => "\"" + field + "\" = " + "''" + sha256 + "''").join('' OR ''))}(val)'
           - operator: join
             args:
               separator:
@@ -1846,10 +1831,7 @@ tasks:
             args:
               dt:
                 value:
-                  simple: '.=function(val){var fields = Array.isArray(val.IPFields)
-                    ? val.IPFields : [val.IPFields]; var ips = Array.isArray(val.IP)
-                    ? val.IP : [val.IP]; return fields.map(field => ips.map(ip =>
-                    "\"" + field + "\" = " + "''" + ip + "''").join('' OR ''))}(val)'
+                  simple: '.=function(val){var fields = Array.isArray(val.IPFields) ? val.IPFields : [val.IPFields]; var ips = Array.isArray(val.IP) ? val.IP : [val.IP]; return fields.map(field => ips.map(ip => "\"" + field + "\" = " + "''" + ip + "''").join('' OR ''))}(val)'
           - operator: join
             args:
               separator:
@@ -3386,8 +3368,7 @@ inputs:
 - key: QradarMD5Field
   value: {}
   required: false
-  description: MD5 field to search in QRadar. If none are specified, the search will
-    use a payload contains filter.
+  description: MD5 field to search in QRadar. If none are specified, the search will use a payload contains filter.
 - key: SHA1
   value: {}
   required: false
@@ -3395,8 +3376,7 @@ inputs:
 - key: QradarSHA1Field
   value: {}
   required: false
-  description: SHA1 field to search in QRadar. If none are specified, the search will
-    use a payload contains filter.
+  description: SHA1 field to search in QRadar. If none are specified, the search will use a payload contains filter.
 - key: SHA256
   value: {}
   required: false
@@ -3404,8 +3384,7 @@ inputs:
 - key: QradarSHA256Field
   value: {}
   required: false
-  description: SHA256 field to search in QRadar. If none are specified, the search
-    will use a payload contains filter.
+  description: SHA256 field to search in QRadar. If none are specified, the search will use a payload contains filter.
 - key: IPAddress
   value: {}
   required: false
@@ -3415,8 +3394,7 @@ inputs:
   value:
     simple: sourceip,destinationip
   required: false
-  description: IP field to search in QRadar. If none are specified, the search will
-    use sourceip or destinationip (combined).
+  description: IP field to search in QRadar. If none are specified, the search will use sourceip or destinationip (combined).
 - key: URLDomain
   value: {}
   required: false
@@ -3425,14 +3403,12 @@ inputs:
 - key: URLDomainField
   value: {}
   required: false
-  description: 'URL/Domain field to search in QRadar. If none are specified, the search
-    will use a payload contains filter. '
+  description: 'URL/Domain field to search in QRadar. If none are specified, the search will use a payload contains filter. '
 - key: SelectFields
   value:
     simple: '*'
   required: true
-  description: The fields to be used in the select. Use comma delimited field names
-    as they appear in AQL. * is an acceptable value.
+  description: The fields to be used in the select. Use comma delimited field names as they appear in AQL. * is an acceptable value.
 - key: TimeFrame
   value:
     simple: LAST 7 DAYS
@@ -3447,8 +3423,7 @@ inputs:
   value:
     simple: sourceip,destinationip,username
   required: true
-  description: The fields to be used for the hunting outputs. These fields are added
-    to the selected field's input.
+  description: The fields to be used for the hunting outputs. These fields are added to the selected field's input.
 outputs:
 - contextPath: QRadar.Search.Result
   description: Qradar's search results.
@@ -3460,8 +3435,7 @@ outputs:
   description: Users detected based on the username field in your search.
   type: string
 - contextPath: QRadar.DetectedHosts
-  description: 'Hosts detected based on hosts in your assets table. Note that the data accuracy
-    depends on how the Asset mapping is configured in QRadar.'
+  description: 'Hosts detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar.'
   type: string
 
 tests:

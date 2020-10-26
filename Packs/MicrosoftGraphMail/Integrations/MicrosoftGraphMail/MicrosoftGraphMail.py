@@ -644,10 +644,17 @@ class MsGraphClient:
         :rtype: ``list`` and ``list``
         """
         target_modified_time = add_second_to_str_date(last_fetch)  # workaround to Graph API bug
-        suffix_endpoint = (f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
-                           f"?$filter=lastModifiedDateTime ge {target_modified_time}"
-                           f"&$orderby=lastModifiedDateTime &$top={self._emails_fetch_limit}&select=*")
-        fetched_emails = self.ms_client.http_request('GET', suffix_endpoint).get('value', [])[:self._emails_fetch_limit]
+        suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
+        params = {
+            "$filter": f"receivedDateTime gt {target_modified_time}",
+            "$orderby": "receivedDateTime asc",
+            "$select": "*",
+            "$top": self._emails_fetch_limit
+        }
+
+        fetched_emails = self.ms_client.http_request(
+            'GET', suffix_endpoint, params=params
+        ).get('value', [])[:self._emails_fetch_limit]
 
         if exclude_ids:  # removing emails in order to prevent duplicate incidents
             fetched_emails = [email for email in fetched_emails if email.get('id') not in exclude_ids]
@@ -1107,9 +1114,9 @@ def list_mails_command(client: MsGraphClient, args):
 
         # human_readable builder
         human_readable = tableToMarkdown(
-            f'### Total of {len(mail_context)} mails received',
+            f'Total of {len(mail_context)} mails received',
             mail_context,
-            headers=['Subject', 'From', 'SendTime']
+            headers=['Subject', 'From', 'SendTime', 'ID']
         )
     else:
         human_readable = '### No mails were found'

@@ -2,10 +2,13 @@ commonfields:
   id: ContextSearchForString
   version: -1
 name: ContextSearchForString
-script: |+
+script: >+
   var path = args.path;
+
   var str = args.str;
+
   var flat={};
+
 
   function searchString(obj) {
       flattenFields(obj,undefined,flat);
@@ -18,15 +21,19 @@ script: |+
       return false;
   }
 
+
   if (!path) {
       return searchString(invContext);
   }
 
+
   var contextObject = dq(invContext, path);
+
 
   if (!contextObject) {
       throw 'Path ' + path + ' is not in the context.';
   }
+
 
   return searchString(contextObject);
 
@@ -49,3 +56,4 @@ outputs:
   description: if given string does not exist in context
 scripttarget: 0
 
+fromversion: 5.0.0

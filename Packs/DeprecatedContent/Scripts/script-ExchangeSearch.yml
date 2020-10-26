@@ -2,16 +2,25 @@ commonfields:
   id: ExchangeSearch
   version: -1
 name: ExchangeSearch
-script: |-
+script: >-
   # defaults
+
   mailboxs=[]
+
   sender=''
+
   attachmentname=''
+
   subject=''
+
   query =''
+
   resultText = ''
+
   found = {}
+
   parts = []
+
 
   if demisto.args().has_key('mailbox'):
       mailboxes = argToList(demisto.args()['mailbox'])
@@ -112,3 +121,4 @@ dependson:
   - ews-search-mailbox
 timeout: 86.4µs
 deprecated: true
+fromversion: 5.0.0

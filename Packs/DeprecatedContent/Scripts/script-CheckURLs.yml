@@ -2,14 +2,21 @@ commonfields:
   id: CheckURLs
   version: -1
 name: CheckURLs
-script: |-
+script: >-
   import re
+
   strURLRegex = r'(?i)(?:(?:https?|ftp):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])'
+
   res = []
+
   urls = []
+
   badUrls = []
+
   filtered = ['http://schemas.microsoft.com/office/2004/12/omml', 'http://www.w3.org/TR/REC-html40']
+
   data = demisto.args()['data'] if demisto.get(demisto.args(), 'data') else demisto.incidents()[0]['details']
+
   if isinstance(data, list):
       urls = data[:]
   else:
@@ -57,18 +64,17 @@ tags:
 - threat-intel
 - xfe
 - virustotal
-comment: Deprecated. Check the URLs in the incident, or raw text provided as argument, for malicious
-  URLs
+comment: Deprecated. Check the URLs in the incident, or raw text provided as argument, for malicious URLs
 system: true
 deprecated: true
 args:
 - name: data
   default: true
-  description: Raw text from which to extract URLs using the appropriate regular expression.
-    If omitted, will scan Incident Details instead.
+  description: Raw text from which to extract URLs using the appropriate regular expression. If omitted, will scan Incident Details instead.
 scripttarget: 0
 dependson:
   should:
   - url
   - pt-malware
 timeout: 0s
+fromversion: 5.0.0

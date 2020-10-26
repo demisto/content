@@ -182,8 +182,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Download PCAPs related to the specified observations. Supports
-        rate throttling.
+      description: Download PCAPs related to the specified observations. Supports rate throttling.
       id: dc7d1141-3bfb-4373-882a-f535a946cc1a
       iscommand: false
       name: PWObservationPcapDownload
@@ -227,9 +226,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Searches for events. Events are resources that describe a threat
-        and contains a collection of observations. Deprecated - use the protectwise-search-events
-        command.
+      description: Searches for events. Events are resources that describe a threat and contains a collection of observations. Deprecated - use the protectwise-search-events command.
       id: 6a02e167-1478-4e23-8251-d2888c05d7a4
       iscommand: true
       name: protectwise-search-events
@@ -300,8 +297,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Searches for observations in ProtectWise. Deprecated - use the
-        protectwise-search-observations command.
+      description: Searches for observations in ProtectWise. Deprecated - use the protectwise-search-observations command.
       id: 052b4d67-8d16-4fda-868e-4605ec58486b
       iscommand: true
       name: protectwise-search-observations
@@ -331,3 +327,4 @@ view: |-
       }
     }
   }
+fromversion: 5.0.0

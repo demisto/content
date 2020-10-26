@@ -26,3 +26,4 @@ This will return all item names where field `type` equals `IP` - ['192.1,0.82', 
 | field | The attribute in the collection items to check equality against `equalTo`. |
 | equalTo | The value to filter all items by in the collection. |
 | getField | The field to extract from each item (Optional). |
+| stringify | Whether the argument should be saved as a string (Optional). |

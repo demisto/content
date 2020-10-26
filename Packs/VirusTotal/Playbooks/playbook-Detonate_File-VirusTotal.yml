@@ -440,6 +440,6 @@ outputs:
 - contextPath: VirusTotal.Status
   description: The status of the queried file. Could be "Queued" or "Ready".
   type: String
-fromversion: 4.0.0
+fromversion: 5.0.0
 tests:
-  - vt-detonate test
+- vt-detonate test

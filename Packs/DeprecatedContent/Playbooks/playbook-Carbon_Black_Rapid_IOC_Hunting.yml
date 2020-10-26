@@ -1,5 +1,5 @@
 id: Carbon Black Rapid IOC Hunting
-fromversion: 2.5.0
+fromversion: 5.0.0
 system: true
 version: -1
 name: Carbon Black Rapid IOC Hunting
@@ -76,8 +76,7 @@ tasks:
       id: c687c04f-ba90-4572-800a-923193bacc32
       version: -1
       name: Is Carbon Black enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -136,8 +135,7 @@ tasks:
       id: a4a842fc-727c-4a64-883d-873968708ded
       version: -1
       name: Do we have files to hunt?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -180,4 +178,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
- - no test
+- no test

@@ -34,7 +34,7 @@ BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
 
 def http_request(method, url_suffix, json=None, wait=0, retries=0):
     if method == 'GET':
-        headers = {}  # type: Dict[str, str]
+        headers = {}  # type: ignore
     elif method == 'POST':
         headers = {
             'API-Key': APIKEY,
@@ -61,7 +61,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
                 return_error('API rate limit reached [%d] - %s.\nUse the retries and wait arguments when submitting '
                              'multiple URls' % (r.status_code, r.reason))
             else:
-                time.sleep(wait)
+                time.sleep(wait)  # pylint: disable=sleep-exists
                 return http_request(method, url_suffix, json, wait, retries - 1)
 
         response_json = r.json()
@@ -82,19 +82,6 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
 # Allows nested keys to be accesible
 def makehash():
     return collections.defaultdict(makehash)
-
-
-def is_valid_ip(s):
-    a = s.split('.')
-    if len(a) != 4:
-        return False
-    for x in a:
-        if not x.isdigit():
-            return False
-        i = int(x)
-        if i < 0 or i > 255:
-            return False
-    return True
 
 
 def get_result_page():
@@ -133,8 +120,9 @@ def is_truthy(val):
     return bool(val)
 
 
-def poll(target, step, args=(), kwargs=None, timeout=None, max_tries=None, check_success=is_truthy,
-         step_function=step_constant, ignore_exceptions=(), poll_forever=False, collect_values=None, *a, **k):
+def poll(target, step, args=(), kwargs=None, timeout=None,
+         check_success=is_truthy, step_function=step_constant,
+         ignore_exceptions=(), collect_values=None, **k):
 
     kwargs = kwargs or dict()
     values = collect_values or Queue()
@@ -158,7 +146,7 @@ def poll(target, step, args=(), kwargs=None, timeout=None, max_tries=None, check
         tries += 1
         if max_time is not None and time.time() >= max_time:
             demisto.results('The operation timed out. Please try again with a longer timeout period.')
-        time.sleep(step)
+        time.sleep(step)  # pylint: disable=sleep-exists
         step = step_function(step)
 
 
@@ -407,16 +395,16 @@ def urlscan_search_command():
     LIMIT = int(demisto.args().get('limit'))
     HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date']
     raw_query = demisto.args().get('searchParameter', '')
-    if is_valid_ip(raw_query):
+    if is_ip_valid(raw_query, accept_v6_ips=True):
         search_type = 'ip'
-
-    # Parsing query to see if it's a url
-    parsed = urlparse(raw_query)
-    # Checks to see if Netloc is present. If it's not a url, Netloc will not exist
-    if parsed[1] == '' and len(raw_query) == 64:
-        search_type = 'hash'
     else:
-        search_type = 'page.url'
+        # Parsing query to see if it's a url
+        parsed = urlparse(raw_query)
+        # Checks to see if Netloc is present. If it's not a url, Netloc will not exist
+        if parsed[1] == '' and len(raw_query) == 64:
+            search_type = 'hash'
+        else:
+            search_type = 'page.url'
 
     # Making the query string safe for Elastic Search
     query = quote(raw_query, safe='')

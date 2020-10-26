@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 from typing import List, Dict, Set, Optional
 import json
@@ -32,7 +31,9 @@ mitre_field_mapping = {
     "mitreplatforms": {"name": "x_mitre_platforms", "type": "dict"},
     "mitresystemrequirements": {"name": "x_mitre_system_requirements", "type": "list"},
     "mitreversion": {"name": "x_mitre_version", "type": "str"},
-    "mitretype": {"name": "type", "type": "str"}
+    "mitretype": {"name": "type", "type": "str"},
+    "mitrecreated": {"name": "created", "type": "str"},
+    "mitremodified": {"name": "modified", "type": "str"}
 }
 
 # Disable insecure warnings

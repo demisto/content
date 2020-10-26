@@ -2,9 +2,10 @@ commonfields:
   id: AwsCreateVolumeSnapshot
   version: -1
 name: AwsCreateVolumeSnapshot
-script: |2
+script: >2
 
   resp = demisto.executeCommand("create-volume-snapshot", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -34,3 +35,4 @@ deprecated: true
 dependson:
   must:
   - create-volume-snapshot
+fromversion: 5.0.0

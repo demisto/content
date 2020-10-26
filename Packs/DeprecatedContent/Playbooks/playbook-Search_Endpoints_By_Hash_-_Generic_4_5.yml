@@ -1,7 +1,7 @@
 id: search_endpoints_by_hash_-_generic
 version: -1
 name: Search Endpoints By Hash - Generic
-fromversion: 4.5.0
+fromversion: 5.0.0
 system: true
 description: Deprecated. Use the Search Endpoints By Hash - Generic V2 playbook instead. Hunt using available tools
 starttaskid: "0"
@@ -291,8 +291,7 @@ tasks:
       - "12"
     scriptarguments:
       Hash:
-        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f];
-          }).reduce(function(a, b){ return a.concat(b); }, [])}
+        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f]; }).reduce(function(a, b){ return a.concat(b); }, [])}
     separatecontext: true
     loop:
       iscommand: false
@@ -418,4 +417,4 @@ outputs:
   description: The endpoint
   type: unknown
 tests:
-  - No test - tests exist for sub playbooks
+- No test - tests exist for sub playbooks

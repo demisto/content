@@ -33,12 +33,17 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var username = params.credentials.identifier;
+
     var password = params.credentials.password;
+
     var server = params.server + ':' + params.port;
+
     var insecure = params.insecure;
+
     var proxy = params.proxy;
+
 
     var getCSRFToken = function(url) {
         var res = http(
@@ -63,6 +68,7 @@ script:
         return 'Failed to get CSRF token, Please verify credentials and check GRR logs.';
     }
 
+
     var sendRequest = function(method, url, queryName, body) {
         var csrfToken = getCSRFToken(url);
         var res = http(
@@ -83,6 +89,7 @@ script:
         }
         return res.Body;
     }
+
 
     var parseJSON = function(raw){
         var output = null;
@@ -138,6 +145,7 @@ script:
 
         return output;
     }
+
     var getHunts = function(method, url, queryName, body, jsonPath, title) {
         var raw = JSON.parse(sendRequest(method, url, queryName, body).slice(5));
         var output = parseJSON(jsonPath ? dq(raw,jsonPath) : raw);
@@ -171,6 +179,7 @@ script:
           };
     };
 
+
     var getHunt = function(method, url, queryName, body, jsonPath, title) {
         var raw = JSON.parse(sendRequest(method, url, queryName, body).slice(5));
         var output = parseJSON(jsonPath ? dq(raw,jsonPath) : raw);
@@ -203,6 +212,7 @@ script:
               EntryContext: context
           };
     };
+
 
     var getFlows = function(method, url, queryName, body, jsonPath, title) {
         var raw = JSON.parse(sendRequest(method, url, queryName, body).slice(5));
@@ -240,6 +250,7 @@ script:
               EntryContext: context
           };
     };
+
 
     var getClients = function(method, url, queryName, body, jsonPath, title) {
         var raw = JSON.parse(sendRequest(method, url, queryName, body).slice(5));
@@ -279,9 +290,11 @@ script:
           };
     };
 
+
     var sendRequestAndParse = function(method, url, queryName, body) {
         return JSON.parse(sendRequest(method, url, queryName, body).slice(5));
     };
+
 
     switch (command) {
         case 'test-module':
@@ -410,15 +423,9 @@ script:
     - name: count
       description: Max number of items to fetch
     - name: created_by
-      description: 'Only return hunts created by a given user. If approved_by or/and
-        description_contains are also supplied, then logical AND is applied to all
-        the criterias. NOTE: this filter can only be used in conjunction with ''active_within''
-        filter (to prevent queries of death)'
+      description: 'Only return hunts created by a given user. If approved_by or/and description_contains are also supplied, then logical AND is applied to all the criterias. NOTE: this filter can only be used in conjunction with ''active_within'' filter (to prevent queries of death)'
     - name: description_contains
-      description: 'Only return hunts where description contains given substring (matching
-        is case-insensitive).If created_by or/and approved_by are also supplied, then
-        logical AND is applied to all the criterias. NOTE: this filter can only be
-        used in conjunction with ''active_within'' filter (to prevent queries of death)'
+      description: 'Only return hunts where description contains given substring (matching is case-insensitive).If created_by or/and approved_by are also supplied, then logical AND is applied to all the criterias. NOTE: this filter can only be used in conjunction with ''active_within'' filter (to prevent queries of death)'
     - name: active_within
       description: Only return hunts that were active within given time duration
     - name: headers
@@ -570,15 +577,9 @@ script:
     - name: count
       description: Max number of items to fetch
     - name: created_by
-      description: 'Only return hunts created by a given user. If approved_by or/and
-        description_contains are also supplied, then logical AND is applied to all
-        the criterias. NOTE: this filter can only be used in conjunction with ''active_within''
-        filter (to prevent queries of death)'
+      description: 'Only return hunts created by a given user. If approved_by or/and description_contains are also supplied, then logical AND is applied to all the criterias. NOTE: this filter can only be used in conjunction with ''active_within'' filter (to prevent queries of death)'
     - name: description_contains
-      description: 'Only return hunts where description contains given substring (matching
-        is case-insensitive).If created_by or/and approved_by are also supplied, then
-        logical AND is applied to all the criterias. NOTE: this filter can only be
-        used in conjunction with ''active_within'' filter (to prevent queries of death)'
+      description: 'Only return hunts where description contains given substring (matching is case-insensitive).If created_by or/and approved_by are also supplied, then logical AND is applied to all the criterias. NOTE: this filter can only be used in conjunction with ''active_within'' filter (to prevent queries of death)'
     - name: active_within
       description: Only return hunts that were active within given time duration
     description: Renders list of available hunts
@@ -597,3 +598,4 @@ script:
       description: Hunt arguments
     description: Handles hunt creation request
 system: true
+fromversion: 5.0.0

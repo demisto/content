@@ -63,10 +63,7 @@ tasks:
       id: 85ff5a56-96be-4c80-8a9a-2b4a497d502e
       version: -1
       name: create user with activation
-      description: Creates a new user with an option of setting password, recovery
-        question and answer.The new user will immediately be able to login after activation
-        with the assigned password. This flow is common when developing a custom user
-        registration experience.
+      description: Creates a new user with an option of setting password, recovery question and answer.The new user will immediately be able to login after activation with the assigned password. This flow is common when developing a custom user registration experience.
       script: Okta v2|||okta-create-user
       type: regular
       iscommand: true
@@ -314,8 +311,7 @@ tasks:
       id: e3bab74f-2bf9-4c9d-8411-38c7c7746813
       version: -1
       name: update user
-      description: Update user with a given login, all fields are optional, fields
-        which are not set will not be overriden.
+      description: Update user with a given login, all fields are optional, fields which are not set will not be overriden.
       script: Okta v2|||okta-update-user
       type: regular
       iscommand: true
@@ -380,9 +376,7 @@ tasks:
       id: e8fd5c45-94f5-418e-83bf-fb7e7c13d9d1
       version: -1
       name: suspend user
-      description: Suspends a user. This operation can only be performed on users
-        with an ACTIVE status. The user has a status of SUSPENDED when the process
-        is completed
+      description: Suspends a user. This operation can only be performed on users with an ACTIVE status. The user has a status of SUSPENDED when the process is completed
       script: Okta v2|||okta-suspend-user
       type: regular
       iscommand: true
@@ -408,8 +402,7 @@ tasks:
       id: b798e503-ebcb-4222-8a0a-d9c352e75205
       version: -1
       name: unsuspend user
-      description: Returns a user to ACTIVE status. This operation can only be performed
-        on users that have a SUSPENDED status.
+      description: Returns a user to ACTIVE status. This operation can only be performed on users that have a SUSPENDED status.
       script: Okta v2|||okta-unsuspend-user
       type: regular
       iscommand: true
@@ -503,8 +496,7 @@ tasks:
       id: 53fe83db-1e9d-401e-8355-abdd91cdff8f
       version: -1
       name: get-user
-      description: Fetches information for a specific user. You must enter one or
-        more parameters for the command to run
+      description: Fetches information for a specific user. You must enter one or more parameters for the command to run
       script: Okta v2|||okta-get-user
       type: regular
       iscommand: true
@@ -889,8 +881,7 @@ tasks:
       id: ebe12f07-4cac-48f7-8dcf-91e8dcf67a32
       version: -1
       name: list groups with query =de
-      description: Lists groups in your organization. A subset of groups can be returned
-        that match a supported filter expression or query.
+      description: Lists groups in your organization. A subset of groups can be returned that match a supported filter expression or query.
       script: Okta v2|||okta-list-groups
       type: regular
       iscommand: true
@@ -1150,10 +1141,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 3155,\n      \"width\": 1782.5,\n      \"x\": 50,\n      \"y\"\
-  : 50\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3155,\n      \"width\": 1782.5,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
 inputs: []
 outputs: []
-fromversion: 4.1.0
+fromversion: 5.0.0
 description: ''
