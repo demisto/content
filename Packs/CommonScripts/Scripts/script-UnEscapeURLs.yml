@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: UnEscapeURLs
 script: |-
-  function format_url(input, remove_ascii=true) {
+  function format_url(input, remove_zwsp=true) {
       // Check if it is a Microsoft ATP Safe Link
       var atp_link_re = /(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/.*\?url=/;
       if (atp_link_re.test(input)) {
@@ -46,9 +46,9 @@ script: |-
       if (v === 0) {
           var url = input.replace(/\[\.\]/g, '.')
 
-          // remove ascii
-          if (remove_ascii === true){
-              url = url.replace(/[^\x00-\x7F]/g, "");
+          // remove zero width space characters
+          if (remove_zwsp === true){
+              url = url.replace( /[\u200B\u200D\u200C\uFEFF\uFF10]/g, "");
           }
 
           if (input.startsWith('https') || input.startsWith('hxxps')) {
@@ -110,10 +110,10 @@ script: |-
       var formatted_urls = [];
       url_list.forEach(function(the_url, index) {
 
-          // Check if the URL has non ascii charcters -
-          // if so output the url both with and without the ascii.
-          has_more_than_ascii = /[^\x00-\x7F]/g.test(the_url);
-          if (has_more_than_ascii === true){
+          // Check if the URL has zero width space characters (ZWSP) -
+          // if so output the url both with and without the ZWSPs.
+          has_zwps = /[\u200B\u200D\u200C\uFEFF\uFF10]/g.test(the_url);
+          if (has_zwps === true){
               formatted_urls.push(format_url(the_url.trim(), false));
           }
           formatted_urls.push(format_url(the_url.trim()));
