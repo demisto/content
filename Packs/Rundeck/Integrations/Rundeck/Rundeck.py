@@ -456,18 +456,29 @@ class Client(BaseClient):
 def filter_results(results: Union[list, dict], fields_to_remove: list, remove_signs) -> Union[list, dict]:
     new_results = []
     if isinstance(results, dict):
+        demisto.info('got results as dictionary')
         new_record = {}
+        demisto.info('start looping over results')
         for key, value in results.items():
             if key not in fields_to_remove:
+                demisto.debug(f'add this key: "{key}" to filtered results')
                 if isinstance(value, dict):
+                    demisto.debug(f'found {value} is a dict, calling this function again')
                     value = filter_results(value, fields_to_remove, remove_signs)
+                demisto.info('searching not allowed signs to remove')
                 for sign in remove_signs:
                     if sign in key:
+                        demisto.debug(f'found "{sign}" in the next key: "{key}". remove it.')
                         new_record[key.replace(sign, '')] = value
+                        demisto.debug('finish remove it')
                     else:
+                        demisto.debug(f'not allowed signs were not found. add the next key to filter results: {key}')
                         new_record[key] = value
+                demisto.info('finish remove not allowed signs in results keys')
+        demisto.info('finish looping over results')
         return new_record
     else:
+        demisto.info('got results as list')
         for record in results:
             new_record = {}
             for key, value in record.items():
@@ -493,24 +504,35 @@ def attribute_pairs_to_dict(attrs_str: Optional[str], delim_char: str = ","):
     """
     if not attrs_str:
         return attrs_str
+    demisto.info('start convert string of multiple inputs to a dictionary')
     attrs = {}
     regex = re.compile(r"(.*)=(.*)")
+
+    demisto.info('start looping over the found keys and values')
+    demisto.debug(f'start looping over the next found keys and values: {regex}')
+
     for f in attrs_str.split(delim_char):
         match = regex.match(f)
         if match is None:
             raise ValueError(f"Could not parse field: {f}")
-
+        demisto.debug(f'add this key: {match.group(1)} and this value: {match.group(2)} to attrs')
         attrs.update({match.group(1): match.group(2)})
+        demisto.debug(f'finish adding this key: {match.group(1)} and this value: {match.group(2)} to attrs')
 
     return attrs
 
 
 def convert_str_to_int(val_to_convert: Optional[str], param_name: str) -> Optional[int]:
+    demisto.info(f'start converting {val_to_convert} to integer')
     if val_to_convert:
         try:
             return int(val_to_convert)
         except ValueError:
             raise DemistoException(f'\'{param_name}\' most be a number.')
+        except Exception:
+            demisto.error(f'failed to convert {val_to_convert} to integer')
+            raise
+    demisto.info(f'finish converting {val_to_convert} to integer')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -553,7 +575,10 @@ def execute_job_command(client: Client, args: dict):
     job_id: str = args.get('job_id')
 
     converted_options: dict = attribute_pairs_to_dict(options)
+    demisto.info('sending execute job request')
     result = client.execute_job(job_id, arg_string, log_level, as_user, node_filter, run_at_time, converted_options)
+    demisto.info('finish sending execute job request')
+
     if not isinstance(result, dict):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
@@ -576,7 +601,9 @@ def project_list_command(client: Client):
     :param client: Demisto client
     :return: CommandResults object
     """
+    demisto.info('sending get project list request')
     result: list = client.get_project_list()
+    demisto.info('finish get project list request')
     if not isinstance(result, list):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
@@ -608,9 +635,11 @@ def jobs_list_command(client: Client, args: dict):
     group_path_exact: str = args.get('group_path_exact', '')
     scheduled_filter: str = args.get('scheduled_filter', '')  # ￿￿￿￿￿ TODO: set it as list option 'true' or 'false'
     server_node_uuid_filter: str = args.get('server_node_uuid_filter', '')
-
+    demisto.info('sending get jobs list request')
     result = client.get_jobs_list(id_list, group_path, job_filter, job_exec_filter, group_path_exact, scheduled_filter,
                                   server_node_uuid_filter)
+    demisto.info('finish sending get jobs list request')
+
     if not isinstance(result, list):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
@@ -634,7 +663,9 @@ def webhooks_list_command(client: Client, args: dict):
     :return: CommandResults object
     """
     project_name: str = args.get('project_name', '')
+    demisto.info('sending get webhooks list request')
     result = client.get_webhooks_list(project_name)
+    demisto.info('finish sending get webhooks list request')
 
     if not isinstance(result, list):
         raise DemistoException(f"Got unexpected output from api: {result}")
@@ -681,7 +712,7 @@ def job_execution_query_command(client: Client, args: dict):
     offset: Optional[int] = convert_str_to_int(args.get('offset'), 'offset')
     project_name: str = args.get('project_name', '')
     exclude_group_path: str = args.get('exclude_group_path', '')
-
+    demisto.info('sending job execution query request')
     result = client.job_execution_query(status_filter, aborted_by_filter, user_filter, recent_filter, older_filter,
                                         begin, end, adhoc, job_id_list_filter, exclude_job_id_list_filter,
                                         job_list_filter, exclude_job_list_filter,
@@ -689,13 +720,16 @@ def job_execution_query_command(client: Client, args: dict):
                                         exclude_group_path_exact, job_filter, exclude_job_filter,
                                         job_exact_filter, exclude_job_exact_filter, execution_type_filter,
                                         max_paging, offset, project_name)
+    demisto.info('finish sending job execution query request')
 
     if isinstance(result, dict):
         result = result.get('executions')
         if not result:
             return "No results were found"
-
+    demisto.info('start filter results from the api')
     filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
+    demisto.info('finish filter results from the api')
+
     if isinstance(result, list):
         headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
     elif isinstance(result, dict):
@@ -720,7 +754,9 @@ def job_execution_output_command(client: Client, args: dict):
     :return: CommandRusult object
     """
     execution_id: Optional[int] = convert_str_to_int(args.get('execution_id'), 'execution_id')
+    demisto.info('sending job execution output request')
     result = client.job_execution_output(execution_id)
+    demisto.info('finish sending job execution output request')
 
     if isinstance(result, dict):
         headers = [key.replace("_", " ") for key in [*result.keys()]]
@@ -744,11 +780,18 @@ def job_execution_abort_command(client: Client, args: dict):
     :return: CommandRusult object
     """
     execution_id: Optional[int] = convert_str_to_int(args.get('execution_id'), 'execution_id')
+
+    demisto.info('sending job execution abort request')
     result = client.job_execution_abort(execution_id)
+    demisto.info('finish sending job execution abort request')
+
     if not isinstance(result, dict):
         raise DemistoException(f'Got unexpected response: {result}')
 
+    demisto.info('start filter results from the api')
     filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
+    demisto.info('finish filter results from the api')
+
     headers = [key.replace("_", " ") for key in [*filtered_results.keys()]]
     readable_output = tableToMarkdown('Job Execution Abort:', filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
@@ -767,11 +810,16 @@ def adhoc_run_command(client: Client, args: dict):
     as_user: str = args.get('as_user')
     node_filter: str = args.get('node_filter', '')
 
+    demisto.info('sending adhoc run request')
     result = client.adhoc_run(project_name, exec_command, node_thread_count, node_keepgoing, as_user, node_filter)
+    demisto.info('finish sending adhoc run request')
+
     # if not isinstance(result, dict):
         # raise DemistoException(f'Got unexpected response: {result}')
-
+    demisto.info('start filter results from the api')
     filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
+    demisto.info('finish filter results from the api')
+
     headers = [key.replace("_", " ") for key in [*filtered_results.keys()]]
     readable_output = tableToMarkdown('Adhoc Run:', filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
@@ -793,13 +841,17 @@ def adhoc_script_run_command(client: Client, args: dict):
     file_extension: str = args.get('file_extension', '')
     node_filter: str = args.get('node_filter', '')
     entry_id: str = args.get('entry_id', '')
-
+    demisto.info('sending adhoc script run request')
     result = client.adhoc_script_run(project_name, arg_string, node_thread_count, node_keepgoing, as_user, node_filter
                                      , script_interpreter, interpreter_args_quoted, file_extension, entry_id)
+    demisto.info('finish sending adhoc script run request')
+
     # if not isinstance(result, dict):
     # raise DemistoException(f'Got unexpected response: {result}')
-
+    demisto.info('start filter results from the api')
     filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
+    demisto.info('finish filter results from the api')
+
     headers = [key.replace("_", " ") for key in [*filtered_results.keys()]]
     readable_output = tableToMarkdown('Adhoc Run Script:', filtered_results, headers=headers,
                                       headerTransform=pascalToSpace)
@@ -815,20 +867,23 @@ def adhoc_script_run_from_url_command(client: Client, args: dict):
     project_name: str = args.get('project_name', '')
     script_url: str = args.get('script_url', '')
     node_thread_count: str = args.get('node_thread_count', '')
-    node_keepgoing: str = args.get('node_keepgoing', '')  # TODO: add list option true\false
+    node_keepgoing: str = args.get('node_keepgoing', '')
     as_user: str = args.get('as_user')
     script_interpreter: str = args.get('script_interpreter', '')
-    interpreter_args_quoted: str = args.get('interpreter_args_quoted', '')  # TODO: add list option true\false
+    interpreter_args_quoted: str = args.get('interpreter_args_quoted', '')
     file_extension: str = args.get('file_extension', '')
     node_filter: str = args.get('node_filter', '')
     arg_string: str = args.get('arg_string', '')
-
+    demisto.log('sending adhoc script run from url request')
     result = client.adhoc_script_run_from_url(project_name, script_url, node_thread_count, node_keepgoing, as_user,
                                               node_filter, script_interpreter, interpreter_args_quoted, file_extension,
                                               arg_string)
+    demisto.log('finish sending adhoc script run from url request')
     # if not isinstance(result, dict):
     # raise DemistoException(f'Got unexpected response: {result}')
+    demisto.log('start filter results from the api')
     filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
+    demisto.log('finish filter results from the api')
 
     headers = [key.replace("_", " ") for key in [*filtered_results.keys()]]
     readable_output = tableToMarkdown('Adhoc Run Script From Url:', filtered_results, headers=headers, headerTransform=pascalToSpace)
@@ -847,13 +902,17 @@ def webhook_event_send_command(client: Client, args: dict):
     options_as_dict: dict = attribute_pairs_to_dict(options)
 
     try:
+        demisto.info('start convert "options" argument to str')
         if options_as_dict:
             options_as_str = json.dumps(options_as_dict)
         else:
             options_as_str = options_as_dict
+            demisto.info('finish convert "options" argument to str')
     except Exception as e:
         raise DemistoException(f'There was a problem converting "free_json" to json. The reason is: {e}')
+    demisto.info('sending webhook event send request')
     result = client.webhook_event_send(auth_token, options_as_str, free_json)
+    demisto.info('finish sending webhook event send request')
 
     headers = [key.replace("_", " ") for key in [*result.keys()]]
     readable_output = tableToMarkdown('Webhook event send:', result, headers=headers,
@@ -901,19 +960,10 @@ def main() -> None:
     # get the service API url
     base_url: str = urljoin(demisto.params()['url'], f'/api/{VERSION}')
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
 
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
-
-    # INTEGRATION DEVELOPER TIP
-    # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
-    # etc. to print information in the XSOAR server log. You can set the log
-    # level on the server configuration
-    # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
     args: Dict = demisto.args()
     demisto.debug(f'Command being called is {demisto.command()}')

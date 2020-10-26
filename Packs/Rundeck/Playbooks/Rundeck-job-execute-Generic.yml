@@ -165,7 +165,7 @@ view: |-
 inputs:
 - key: job_id
   value:
-    simple: 20339db3-9303-4b7f-a92d-7aae8dfa99e6
+    simple: {}
   required: true
   description: Id of the job you want to execute.
   playbookInputQuery: null
