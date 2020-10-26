@@ -16,7 +16,11 @@ def test_extract_server_numeric_version(name, default_ver, output):
     When
     - Extracting the server version.
     Then
-    - Ensure the version is extracted as expected.
-    - Ensure the server version contains two dots.
+    - Ensure that the server version extracted from 5.5 AMI signature - `Demisto-Circle-CI-Content-PreGA-5.5-80316`
+    is 5.5.0.
+    - Ensure that the server version extracted from 6.0 AMI signature - `Demisto-Circle-CI-Content-GA_6_0-86106`
+    is 6.0.0.
+    - Ensure that the server version extracted from master AMI signature - `Demisto-Circle-CI-Content-PreGA-5.5-80316`
+    is 99.99.98.
     """
     assert extract_server_numeric_version(name, default_ver) == output
