@@ -3,30 +3,25 @@
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 Overview can be found at: https://confluence.paloaltonetworks.com/display/DemistoContent/Configure+Test+Filter
 """
-import argparse
-import glob
-import json
-import logging
 import os
-import random
-import re
 import sys
-from copy import deepcopy
-from distutils.version import LooseVersion
-from typing import Dict, List, Tuple, Optional, Union
+import json
+import glob
+import random
+import argparse
+import logging
 
-import demisto_sdk.commands.common.tools as tools
-from demisto_sdk.commands.common.constants import (
-    API_MODULE_REGEXES, PACKS_DIR, RUN_ALL_TESTS_FORMAT,
-    YML_INTEGRATION_REGEXES, YML_PLAYBOOKS_NO_TESTS_REGEXES,
-    YML_SCRIPT_REGEXES, YML_TEST_PLAYBOOKS_REGEXES)
-
-import Tests.scripts.utils.collect_helpers as collect_helpers
-from Tests.Marketplace.marketplace_services import IGNORED_FILES
-from Tests.scripts.utils.content_packs_util import should_test_content_pack
-from Tests.scripts.utils.get_modified_files_for_testing import \
-    GetModifiedFilesForTesting
+from Tests.scripts.utils import collect_helpers
+from Tests.scripts.utils.get_modified_files_for_testing import GetModifiedFilesForTesting
 from Tests.scripts.utils.log_util import install_logging
+from distutils.version import LooseVersion
+from copy import deepcopy
+from typing import Dict, Tuple, Union, Optional
+from Tests.Marketplace.marketplace_services import IGNORED_FILES
+import demisto_sdk.commands.common.tools as tools
+from demisto_sdk.commands.common.constants import *  # noqa: E402
+
+from Tests.scripts.utils.content_packs_util import should_test_content_pack
 
 
 class TestConf(object):
