@@ -319,6 +319,7 @@ def test_eml_utf_text_with_bom(mocker):
     Then
     - Ensure eml email file is properly parsed
     '''
+
     def executeCommand(name, args=None):
         if name == 'getFilePath':
             return [
@@ -559,7 +560,8 @@ def test_unknown_file_type(mocker):
 
 def test_no_content_type_file(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('no_content_type.eml', info="ascii text"))
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('no_content_type.eml', info="ascii text"))
     mocker.patch.object(demisto, 'results')
     main()
     results = demisto.results.call_args[0]
@@ -587,7 +589,8 @@ def test_get_msg_mail_format():
 
 def test_no_content_file(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('no_content.eml', info="ascii text"))
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('no_content.eml', info="ascii text"))
     mocker.patch.object(demisto, 'results')
     try:
         main()
@@ -789,7 +792,8 @@ def test_eml_contains_htm_attachment_empty_file(mocker):
           containing the empty file. The last contains the htm file.
     """
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('eml_contains_emptytxt_htm_file.eml'))
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('eml_contains_emptytxt_htm_file.eml'))
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -815,3 +819,26 @@ def test_double_dots_removed(mocker):
     mocker.patch.object(pef, 'get_utf_string')
     main()
     assert 'http://schemas.microsoft.com/office/2004/12/omml' in pef.get_utf_string.mock_calls[0][1][0]
+
+
+def test_only_parts_of_object_email_saved(mocker):
+    """
+
+    Fixes: https://github.com/demisto/etc/issues/29476
+    Given:
+        an eml file with a line break (`\n`) in the payload that has failed due to wring type.
+    Then:
+        filter only parts that are of type email.message.Message.
+
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('new-line-in-parts.eml'))
+    mocker.patch.object(demisto, 'results')
+
+    main()
+
+    results = demisto.results.call_args[0]
+
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['logo5.png', 'logo2.png']
