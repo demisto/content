@@ -2716,7 +2716,7 @@ Get checkpoint-packages details.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | identifier | Object unique identifier or name. | Required | 
-| session_id | Execute command with a specific session ID. | Required | 
+| session_id | Execute command with a specific session ID. | Optional | 
 
 
 #### Context Output
