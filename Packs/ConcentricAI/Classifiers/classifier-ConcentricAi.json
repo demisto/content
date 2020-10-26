@@ -1,4 +1,5 @@
 {
+    "defaultIncidentType": "ConcentricAI Security Event",
     "description": "Incoming classifier of incidents into demisto",
     "feed": false,
     "id": "ConcentricAi",
@@ -6,6 +7,7 @@
         "high": "ConcentricAI Security Event"
     },
     "name": "ConcentricAi",
+    "nameRaw": "ConcentricAi",
     "transformer": {
         "complex": {
             "accessor": "",

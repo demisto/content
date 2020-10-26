@@ -14,14 +14,11 @@ http = urllib3.PoolManager()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 '''Globals'''
-AUTH_URL: str
-QUERY_URL: str
 CLIENT_ID: str
 CLIENT_SECRET: str
 DOMAIN: str
 AUTHORIZATION: str
 AUTH_HEADERS: dict
-CLIENT_HEADERS: dict
 VERIFY_CERT: bool
 PROXY: bool
 TENANT_ID: str
@@ -79,13 +76,11 @@ def initialise_scrolls_and_rules():
 
 def initialize_global_values():
 
-    global MAX_INCIDENTS_TO_FETCH, AUTH_URL, COOKIE, AUTH_HEADERS, QUERY_HEADERS, QUERY_URL,\
+    global MAX_INCIDENTS_TO_FETCH, COOKIE, AUTH_HEADERS, QUERY_HEADERS,\
         CLIENT_ID, CLIENT_SECRET, AUTH_HEADERS, DOMAIN, AUTHORIZATION
 
     CLIENT_ID = demisto.getParam('client_id')
     CLIENT_SECRET = demisto.getParam('client_secret')
-    AUTH_URL = demisto.getParam('url')
-    QUERY_URL = urljoin(demisto.getParam('url'), "/graphql-demisto")
     DOMAIN = demisto.getParam('domain')
     AUTHORIZATION = "Basic " + encoding(CLIENT_ID, CLIENT_SECRET)
     AUTH_HEADERS = get_headers_for_login()
@@ -180,11 +175,11 @@ class QueryClient(BaseClient):
                 raise Exception('Failed to pull file-information', e)
         return res
 
-    def get_users_overview(self, loginClient: LoginClient):
+    def get_users_overview(self, loginClient: LoginClient, max_users: str):
         payload = {
             "query": "{\n  allContents: allContents(pagination: {currentPage: 1, pageSize: 1000} , aggregate: "
-            "{fields: [ \"permitted_int_users\", \"permitted_ext_users\", \"permitted_grp_users\", \"permitted_orphans\"]})"
-            " {\n    allContents {\n  pagination\n   }\n    aggregations\n  }\n}\n"
+            "{fields: [ \"permitted_int_users\", \"permitted_ext_users\", \"permitted_grp_users\", \"permitted_orphans\"]"
+            " ,firstN:" + max_users + "}) {\n    allContents {\n  pagination\n   }\n    aggregations\n  }\n}\n"
         }
         try:
             res = callAPI(self, payload, loginClient)
@@ -493,9 +488,9 @@ def fetch_file_information(loginClient: LoginClient, queryClient: QueryClient, p
     )
 
 
-def get_users_overview(loginClient: LoginClient, queryClient: QueryClient):
+def get_users_overview(loginClient: LoginClient, queryClient: QueryClient, max_users: int):
 
-    res = queryClient.get_users_overview(loginClient)
+    res = queryClient.get_users_overview(loginClient, str(max_users))
     answers = res['data']['allContents']['aggregations']
     result = filter_user_information(answers)
     readable_output = tableToMarkdown('Users Overview', result)
@@ -592,19 +587,20 @@ def main() -> None:
             demisto.incidents(incidents)
 
         # this will fetch all file information
-        elif demisto.command() == 'ConcentricAI-get-file-details':
+        elif demisto.command() == 'ConcentricAI-get file details':
             path = demisto.getArg('path')
             name = demisto.getArg('file-name')
             result = fetch_file_information(loginClient, queryClient, path, name)
             return_results(result)
 
         # this will fetch all information about users-overview.
-        elif demisto.command() == "ConcentricAI-get-users-overview":
-            result = get_users_overview(loginClient, queryClient)
+        elif demisto.command() == "ConcentricAI-get users overview":
+            max_users = demisto.getArg('max_users')
+            result = get_users_overview(loginClient, queryClient, max_users)
             return_results(result)
 
         # this will fetch all user-details
-        elif demisto.command() == "ConcentricAI-get-user-details":
+        elif demisto.command() == "ConcentricAI-get use -details":
             user = demisto.getArg('user')
             result = get_user_details(loginClient, queryClient, user)
             return_results(result)

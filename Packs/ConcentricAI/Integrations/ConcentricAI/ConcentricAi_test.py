@@ -105,7 +105,8 @@ def test_get_users_overview(requests_mock):
     loginClient, queryClient = setup()
     mock_response = util_load_json('test_data/mock_user_overview.json')
     requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
-    result = get_users_overview(loginClient, queryClient)
+    max_users = '10'
+    result = get_users_overview(loginClient, queryClient, max_users)
     assert result.outputs_prefix == 'ConcentricAI.UserInfo'
     assert result.outputs_key_field == 'info'
 

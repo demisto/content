@@ -84,7 +84,7 @@ script:
     deprecated: false
     description: Get's file information
     execution: false
-    name: ConcentricAI-get-file-details
+    name: ConcentricAI-get file details
     outputs:
     - contextPath: ConcentricAI.FileInfo.risk_names
       description: Risk names.
@@ -95,10 +95,18 @@ script:
     - contextPath: ConcentricAI.FileInfo.pii
       description: PII present in file or not
       type: String
-  - deprecated: false
+  - arguments:
+    - default: true
+      defaultValue: '50'
+      description: Maximum no. of users fetched per category.
+      isArray: false
+      name: max_users
+      required: false
+      secret: false
+    deprecated: false
     description: Get overview of Users involved
     execution: false
-    name: ConcentricAI-get-users-overview
+    name: ConcentricAI-get users overview
   - arguments:
     - default: false
       description: Enter user name
@@ -109,7 +117,7 @@ script:
     deprecated: false
     description: Get's user details
     execution: false
-    name: ConcentricAI-get-user-details
+    name: ConcentricAI-get user details
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
