@@ -640,8 +640,12 @@ class Pack(object):
             bool: whether the operation succeeded.
         """
         task_status = True
-
         try:
+            for directory in Pack.EXCLUDE_DIRECTORIES:
+                if delete_test_playbooks and os.path.isdir(f'{self._pack_path}/{directory}'):
+                    shutil.rmtree(f'{self._pack_path}/{directory}')
+                    print(f"Deleted {directory} directory from {self._pack_name} pack")
+
             for root, dirs, files in os.walk(self._pack_path, topdown=True):
                 for pack_file in files:
                     full_file_path = os.path.join(root, pack_file)
@@ -651,13 +655,6 @@ class Pack(object):
                             or pack_file in self._remove_files_list:
                         os.remove(full_file_path)
                         print(f"Deleted pack {pack_file} file for {self._pack_name} pack")
-                        continue
-
-                    current_directory = root.split(os.path.sep)[-1]
-
-                    if current_directory in Pack.EXCLUDE_DIRECTORIES and os.path.isdir(root) and delete_test_playbooks:
-                        shutil.rmtree(root)
-                        print(f"Deleted pack {current_directory} directory for {self._pack_name} pack")
                         continue
 
         except Exception as e:
