@@ -728,16 +728,15 @@ def get_last_upload_commit_hash(index_folder_path):
 
     inner_index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
     if not os.path.exists(inner_index_json_path):
-        print_error(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
+        logging.critical(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
         sys.exit(1)
     else:
         inner_index_json_file = load_json(inner_index_json_path)
         if 'commit' in inner_index_json_file:
             last_upload_commit_hash = inner_index_json_file['commit']
-            print_color(f"Retrieved the last commit that was uploaded to production: {last_upload_commit_hash}",
-                        LOG_COLORS.GREEN)
+            logging.info(f"Retrieved the last commit that was uploaded to production: {last_upload_commit_hash}")
         else:
-            print_error(f"No commit field in {GCPConfig.INDEX_NAME}.json, content: {str(inner_index_json_file)}")
+            logging.critical(f"No commit field in {GCPConfig.INDEX_NAME}.json, content: {str(inner_index_json_file)}")
             sys.exit(1)
 
     return last_upload_commit_hash
