@@ -307,7 +307,6 @@ Available operators
 * `value matches expressions of`
 * `value matches conditions of`
 * `json: encode array`
-* `json: decode array`
 * `json: encode`
 * `json: decode`
 * `base64: encode`
@@ -7156,42 +7155,6 @@ Returns an string in JSON which is encoded the entire value.
     [
         "1.1.1.1",
         "2.2.2.2"
-    ]
-
-
-</details>
-
-
-----
-### Operator: `json: decode array`
-<details><summary>
-Returns a JSON decoded-value from the entire value.
-</summary><p>
-
-> **Filter Format**: `dict[str,Any]`
-
-| *Parameter* | *Data Type* | *Description* |
-| - | - | - |
-(parameter is currently not required)
-
-#### Example 1
-##### Input
-    "[10,20]"
-
-##### Filter
-> **Operator**: json: decode array
-
-> **Path**: 
-
-> **Filter**:
-
-    {
-    }
-
-##### Output
-    [
-      10,
-      20
     ]
 
 

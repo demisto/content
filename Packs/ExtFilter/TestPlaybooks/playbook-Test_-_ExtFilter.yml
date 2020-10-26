@@ -1,6 +1,5 @@
 id: Test - ExtFilter
-version: 26
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Test - ExtFilter
 description: Run ExtFilter for a test
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -82,6 +82,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -600,25 +601,26 @@ inputs:
   value: {}
   required: true
   description: Input Source
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ExtFilterPath
   value: {}
   required: false
   description: path for ExtFilter
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ExtFilterOperation
   value: {}
   required: true
   description: operation for ExtFilter
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ExtFilterFilter
   value: {}
   required: true
   description: filter for ExtFilter
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ExpectedOutput
   value: {}
   required: true
   description: Expected Output
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+fromversion: 5.0.0
