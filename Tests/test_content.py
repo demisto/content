@@ -602,10 +602,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     return test_skipped_integration, integrations, is_nightly_integration
 
 
-def extract_filtered_tests(is_nightly):
-    if is_nightly:
-        # TODO: verify this response
-        return [], False, True
+def extract_filtered_tests():
     with open(FILTER_CONF, 'r') as filter_file:
         filtered_tests = filter_file.readlines()
         filtered_tests = [line.strip('\n') for line in filtered_tests]
@@ -759,12 +756,24 @@ def get_server_numeric_version(ami_env, is_local_run=False):
         return default_version
 
     instances_ami_name = list(instances_ami_names)[0]
-    extracted_version = re.findall(r'Demisto-(?:Circle-CI|MarketPlace)-Content-[\w-]+-([\d.]+)-[\d]{5}',
+
+    return extract_server_numeric_version(instances_ami_name, default_version)
+
+
+def extract_server_numeric_version(instances_ami_name, default_version):
+    # regex doesn't catch Server Master execution
+    extracted_version = re.findall(r'Demisto-(?:Circle-CI|Marketplace)-Content-[A-Za-z]*[-_](\d[._]\d)-[\d]{5}',
                                    instances_ami_name)
+    extracted_version = [match.replace('_', '.') for match in extracted_version]
+
     if extracted_version:
         server_numeric_version = extracted_version[0]
     else:
-        server_numeric_version = default_version
+        if 'Master' in instances_ami_name:
+            print_color('Server version: Master', LOG_COLORS.GREEN)
+            return default_version
+        else:
+            server_numeric_version = default_version
 
     # make sure version is three-part version
     if server_numeric_version.count('.') == 1:
@@ -825,7 +834,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests(tests_settings.nightly)
+    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests()
     if is_filter_configured and not run_all_tests:
         is_nightly = True
 
