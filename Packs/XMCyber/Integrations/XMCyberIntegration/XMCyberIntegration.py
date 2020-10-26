@@ -704,6 +704,7 @@ def entity_get_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     if len(ips) == 0 and len(hostnames):
         raise ValueError('No input specified')
     entities = []
+    xm_data_list: List[Dict[str, Any]] = []
     for ip in ips:
         entities.extend(xm.search_entities(ip))
     for hostname in hostnames:
@@ -713,7 +714,7 @@ def entity_get_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     else:
         readable_output = f'**No entity matched the input {ips} {hostnames}'
     for entity in entities:
-        xm_data_list = entity_obj_to_data(xm, entity)
+        xm_data_list.append(entity_obj_to_data(xm, entity))
         name = entity['name']
         readable_output += f'\n- {name}'
     return CommandResults(
