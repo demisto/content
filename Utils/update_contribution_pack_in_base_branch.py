@@ -30,12 +30,12 @@ def main():
             if os.path.isdir(f'Packs/{pack_dir}'):
                 # Remove existing pack
                 shutil.rmtree(f'Packs/{pack_dir}')
-            str_dir_names += f'Packs/{pack_dir}'
+            str_dir_names += f' Packs/{pack_dir}'
 
         commands = [
             f'git remote add {repo} git@github.com:{repo}/content.git',
             f'git fetch {repo} {branch}',
-            f'git checkout {repo}/{branch} {str_dir_names}'
+            f'git checkout {repo}/{branch}{str_dir_names}'
         ]
 
         for command in commands:
