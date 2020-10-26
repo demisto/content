@@ -10,4 +10,13 @@ DEFAULT_VERSION = '99.99.98'
     ('Demisto-Marketplace-Content-Master-88597', DEFAULT_VERSION, DEFAULT_VERSION)
 ])
 def test_extract_server_numeric_version(name, default_ver, output):
+    """
+    Given
+    - An ami instance name, a server default version.
+    When
+    - Extracting the server version.
+    Then
+    - Ensure the version is extracted as expected.
+    - Ensure the server version contains two dots.
+    """
     assert extract_server_numeric_version(name, default_ver) == output
