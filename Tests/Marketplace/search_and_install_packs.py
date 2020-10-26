@@ -202,14 +202,15 @@ def install_testing_license(client, host, prints_manager, thread_index):
 def install_packs_from_artifacts(client, host, prints_manager, thread_index, packs_to_install):
     local_packs = glob.glob(
         "/home/runner/work/content-private/content-private/content/artifacts/packs/*.zip")
-    packs_install_msg = f'Installing the following packs: {packs_to_install}'
-    prints_manager.add_print_job(packs_install_msg, print_color, thread_index, LOG_COLORS.GREEN,
-                                 include_timestamp=True)
     with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
         pack_ids = packs_stream.readlines()
         pack_ids_to_install = [pack_id.rstrip('\n') for pack_id in pack_ids]
     for local_pack in local_packs:
         if any(pack_id in local_pack for pack_id in pack_ids_to_install):
+            packs_install_msg = f'Installing the following pack: {local_pack}'
+            prints_manager.add_print_job(packs_install_msg, print_color, thread_index,
+                                         LOG_COLORS.GREEN,
+                                         include_timestamp=True)
             upload_zipped_packs(client=client, host=host, prints_manager=prints_manager,
                                 thread_index=thread_index, pack_path=local_pack)
 
@@ -226,13 +227,14 @@ def install_packs_private(client, host, prints_manager, thread_index, packs_to_i
     """
     install_testing_license(client, host, prints_manager, thread_index)
     install_packs_from_artifacts(client, host, prints_manager, thread_index, packs_to_install)
-    #  Sometimes DeveloperTools is not included in the install from bucket. This ensures it is
-    #  always installed
-    msg = f'Installing DeveloperTools pack'
-    prints_manager.add_print_job(msg, print_color, thread_index, LOG_COLORS.GREEN)
-    developertools_pack = [{"id": "DeveloperTools", "version": "1.0.1"}]
-
-    install_packs(client, host, prints_manager, thread_index, packs_to_install=developertools_pack)
+    # #  Sometimes DeveloperTools is not included in the install from bucket. This ensures it is
+    # #  always installed
+    # msg = f'Installing DeveloperTools pack'
+    # prints_manager.add_print_job(msg, print_color, thread_index, LOG_COLORS.GREEN)
+    # developertools_pack = [{"id": "DeveloperTools", "version": "1.0.1"}]
+    #
+    # install_packs(client, host, prints_manager, thread_index, packs_to_install=developertools_pack)
+    install_packs(client, host, prints_manager, thread_index, packs_to_install)
 
 
 def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999):
