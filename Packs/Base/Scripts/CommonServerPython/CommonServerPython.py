@@ -961,6 +961,18 @@ def stringEscape(st):
     """
     return st.replace('\r', '\\r').replace('\n', '\\n').replace('\t', '\\t')
 
+def stringUnEscape(st):
+    """
+       Unescape newline chars in the given string.
+
+       :type st: ``str``
+       :param st: The string to be modified (required).
+
+       :return: A modified string.
+       :rtype: ``str``
+    """
+    return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
+
 
 class IntegrationLogger(object):
     """
@@ -1028,7 +1040,13 @@ class IntegrationLogger(object):
             Add strings which will be replaced when logging.
             Meant for avoiding passwords and so forth in the log.
         '''
-        to_add = [stringEscape(self.encode(a)) for a in args if a]
+        to_add = []
+        for a in args:
+            if a:
+                to_add.append(a)
+                a = self.encode(a)
+                to_add.append(stringEscape(a))
+                to_add.append(stringUnEscape(a))
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
