@@ -128,7 +128,8 @@ references:
 
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
-        sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+        sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS/
+        mkdir -p $CIRCLE_ARTIFACTS/logs
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/lastest_server_build_scripts/*
         if [ ! -e "venv" ]; then
