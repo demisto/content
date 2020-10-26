@@ -59,6 +59,11 @@ def get_time_elapsed(fetch_time, last_run):
     return time_elapsed_in_minutes, last_run_time
 
 
+def is_user_profile_unchanged(demisto_user, workday_user):
+    profile_changed_fields = get_profile_changed_fields(workday_user, demisto_user)
+    return (demisto_user and len(profile_changed_fields) == 0), profile_changed_fields
+
+
 def fetch_incidents(client, last_run, fetch_time, mapper_in, report_url):
     """
     This function will execute each interval (default is 1 minute).
@@ -94,21 +99,21 @@ def fetch_incidents(client, last_run, fetch_time, mapper_in, report_url):
                 workday_user = convert_incident_fields_to_cli_names(workday_user)
 
                 demisto_user = get_demisto_user(employee_id_to_user_profile, workday_user)
-                profile_changed_fields = get_profile_changed_fields(workday_user, demisto_user)
-                terminate_date_arrived = check_if_user_should_be_terminated(workday_user)
+                user_profile_unchanged, changed_fields = is_user_profile_unchanged(demisto_user, workday_user)
+                found_potential_termination = detect_potential_termination(workday_user)
                 does_email_exist = does_user_email_exist_in_xsoar(email_to_user_profile, workday_user)
 
-                if ((demisto_user and len(profile_changed_fields) == 0) or (not demisto_user and does_email_exist))\
-                        and not terminate_date_arrived:
+                if user_profile_unchanged or (not demisto_user and does_email_exist) \
+                        and not found_potential_termination:
                     # either no change in user profile or user profile doesn't exist but the email is already used
                     # in both cases, don't create the incident
                     continue
 
                 entry['UserProfile'] = workday_user
                 event = {
-                    "name": f'{workday_user.get("Given Name")} {workday_user.get("Surname")}',
+                    "name": f'{workday_user.get("givenname")} {workday_user.get("surname")}',
                     "rawJSON": json.dumps(entry),
-                    "details": 'Profile changed. Changed fields: ' + str(profile_changed_fields)
+                    "details": 'Profile changed. Changed fields: ' + str(changed_fields)
                 }
                 events.append(event)
             last_run_time = datetime.now().strftime(WORKDAY_DATE_TIME_FORMAT)
@@ -123,7 +128,7 @@ def fetch_incidents(client, last_run, fetch_time, mapper_in, report_url):
     return last_run, events
 
 
-def get_all_user_profiles(batch_size=1000):
+def get_all_user_profiles():
     employee_id_to_user_profile = {}
     email_to_user_profile = {}
     query_result = demisto.searchIndicators(query='type:\"User Profile\"').get('iocs', [])
@@ -163,8 +168,8 @@ def get_profile_changed_fields(workday_user, demisto_user):
     return profile_changed_fields
 
 
-def check_if_user_should_be_terminated(workday_user):
-    # check if employee is active and his terminate fay or last day of work arrived
+def detect_potential_termination(workday_user):
+    # check if employee is active and his terminate day or last day of work arrived
     is_term_event = False
     employment_status = str(workday_user.get(EMPLOYMENT_STATUS_EVENT_FIELD))
 
