@@ -41,7 +41,8 @@ CRITICAL_ASSET_LABEL = 'Demisto Critical Asset'
 DEFAULT_TIME_ID = 'timeAgo_days_7'
 PREVIOUS_DEFAULT_TIME_ID = 'timeAgo_days_7'
 XM_CYBER_INCIDENT_TYPE = 'XM Cyber Risk Score'
-TOP_ENTITIES = 5
+XM_CYBER_INCIDENT_TYPE_TECHNIQUE = 'XM Cyber Technique'
+TOP_ENTITIES = 3
 PAGE_SIZE = 50
 MAX_PAGES = 10
 
@@ -129,6 +130,7 @@ class SEVERITY:
 class XM:
 
     is_fetch_incidents = False
+    date_created = None # For tests
 
     def __init__(self, client: Client):
         self.client = client
@@ -233,7 +235,7 @@ class XM:
         return self.client.get_base_url()
 
     def get_entity_report_url(self, entityId, timeId=DEFAULT_TIME_ID):
-        return f"{self.get_base_url()}/#/scenarioHub/entityReport/{entityId}?timeId={timeId}"
+        return f"{self.get_base_url()}/systemReport/entity?entityId={entityId}&timeId={timeId}"
 
     def get_dashboard_url(self):
         return f"{self.get_base_url()}/#/dashboard"
@@ -248,18 +250,25 @@ class XM:
         if event_type == EVENT_NAME.TopTechnique:
             return self.get_technique_url(data["technique"])
 
-        if event_Type == EVENT_NAME.RiskScore:
+        if event_type == EVENT_NAME.RiskScore:
             return self.get_dashboard_url()
 
         return ''
 
+    def get_incident_type(self, event_type):
+        if event_type == EVENT_NAME.TopTechnique:
+            return XM_CYBER_INCIDENT_TYPE_TECHNIQUE
+        return XM_CYBER_INCIDENT_TYPE
+
     def create_xm_event(self, name, data, date = None):
+        if self.date_created is not None:
+            date = self.date_created
         if date is None:
             date = datetime.now()
 
         data["name"] = f'{EVENT_NAME.EventPrefix}{name}'
         data["create_time"] = timestamp_to_datestring(date.timestamp() * 1000) # CommonServerPython.timestamp_to_datestring(date)
-        data["type"] = XM_CYBER_INCIDENT_TYPE # TODO - add to PR
+        data["type"] = self.get_incident_type(name)
         data["severity"] = SEVERITY.Informational
         data["linkToReport"] = self.get_link_for_report(name, data)
 
@@ -274,8 +283,10 @@ class XM:
     def _create_events_from_top_dashboard(self, events_array, top_list, event_name):
         for top in top_list:
             trend = top["trend"]
-            if trend is not None and trend != '' and int(trend) >= 0: # < 0:
-                events_array.append(self.create_xm_event(event_name, top))
+            if trend is None or trend == '':
+                trend = 0
+            #if trend is not None and trend != '' and int(trend) >= 0: # < 0:
+            events_array.append(self.create_xm_event(event_name, top))
 
     def _create_events_from_top_techniques(self, events_array, current_techniques, previous_techniques):
         for current_tech in current_techniques:
@@ -312,8 +323,6 @@ class XM:
         return events
 
 ''' HELPER FUNCTIONS '''
-
-
 class LogLevel(enum.Enum):
     Debug = 0,
     Info = 1,
@@ -350,8 +359,6 @@ def create_client():
 
 def dates_diff_seconds(date1, date2):
     return (date1 - date2).total_seconds()
-
-
 
 
 def path_to_compromising_technique(path: Any):
@@ -401,7 +408,6 @@ def entity_score(entity: Any):
     return score, reputation
 
 ''' COMMAND FUNCTIONS '''
-
 
 def breachpoint_update_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     ips = argToList(args.get('ip'))
@@ -505,17 +511,6 @@ def affected_entities_list_command(xm: XM, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def risk_score_trend_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    timeId = 'timeAgo_days_7'
-    resolution = 1
-    risk_score = xm.risk_score(timeId, resolution)
-
-    return CommandResults(
-        outputs_prefix='XMCyber.RiskScore',
-        outputs_key_field='score',
-        outputs=risk_score
-    )
-
 def _fetch_incidents_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
     events = []
     should_run = True
@@ -541,6 +536,7 @@ def _fetch_incidents_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
     writeLog(f'Found {len(events)} events')
     return events
 
+
 def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     writeLog('Running fetch incidents 2')
     events = _fetch_incidents_internal(xm, args)
@@ -553,6 +549,7 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 'occurred': event['create_time'],
                 'rawJson': json.dumps(event),
                 'type': event['type'],
+                'rawType': event['type'],
                 # 'severity': event["severity"]
             }
             incidents.append(incident)
@@ -574,36 +571,38 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
         outputs=events
     )
 
+# def test_module_command(xm: XM):
+#     pass
 
-def test_module_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    """Tests API connectivity and authentication'
+# def test_module_command_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
+#     """Tests API connectivity and authentication'
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
+#     Returning 'ok' indicates that the integration works like it is supposed to.
+#     Connection to the service is successful.
+#     Raises exceptions if something goes wrong.
 
-    :type client: ``Client``
+#     :type client: ``Client``
 
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-    try:
-        version = xm.get_version()
-        system_version = version['system']
-        s_version = system_version.split('.')
-        major = int(s_version[0])
-        minor = int(s_version[1])
-        if major < 1 or (major == 1 and minor < 37):
-            raise Exception(f'Instance version not compatible. {system_version} (found) < 1.37 (required).')
+#     :return: 'ok' if test passed, anything else will fail the test.
+#     :rtype: ``str``
+#     """
+#     try:
+#         version = xm.get_version()
+#         system_version = version['system']
+#         s_version = system_version.split('.')
+#         major = int(s_version[0])
+#         minor = int(s_version[1])
+#         if major < 1 or (major == 1 and minor < 37):
+#             raise Exception(f'Instance version not compatible. {system_version} (found) < 1.37 (required).')
 
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
-            raise Exception('Authorization Error: make sure API Key is correctly set')
-        else:
-            raise e
-    except Exception as e:
-        raise Exception(f'Verification Error: could not load XM Cyber version.\n{e}')
-    return 'ok'
+#     except DemistoException as e:
+#         if 'Forbidden' in str(e):
+#             raise Exception('Authorization Error: make sure API Key is correctly set')
+#         else:
+#             raise e
+#     except Exception as e:
+#         raise Exception(f'Verification Error: could not load XM Cyber version.\n{e}')
+#     return 'ok'
 
 
 def get_version_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
@@ -796,7 +795,7 @@ def main() -> None:
         #         2) args dict
         #         return value - CommandResults
         commandsDict = {
-            "test-module": test_module_command,  # This is the call made when pressing the integration Test button.
+            # "test-module": test_module_command_internal,  # This is the call made when pressing the integration Test button.
             "xmcyber-f-incidents": fetch_incidents_command, # for debugging of fetch incidents
             # XM Cyber Command list
             # xmcyber-command-name: function_command
