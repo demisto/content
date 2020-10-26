@@ -21,8 +21,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: EmailRepIO Provides email address reputation and reports.
-display: EmailRepIO
+description: EmailRep.io Provides email address reputation and reports.
+display: EmailRep.io
 name: EmailRepIO
 script:
   commands:

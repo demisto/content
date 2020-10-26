@@ -250,7 +250,7 @@ def test_email(requests_mock):
     # Assert SUSPICIOUS dbot score
     assert response.indicators[0].email_address == TEST_EMAIL_ADDRESS
     assert response.indicators[0].dbot_score.indicator == TEST_EMAIL_ADDRESS
-    assert response.indicators[0].dbot_score.indicator_type == DBotScoreType.EMAIL_ADDRESS
+    assert response.indicators[0].dbot_score.indicator_type == DBotScoreType.ACCOUNT
     assert response.indicators[0].dbot_score.integration_name == INTEGRATION_NAME
     assert response.indicators[0].dbot_score.score == Common.DBotScore.SUSPICIOUS
 

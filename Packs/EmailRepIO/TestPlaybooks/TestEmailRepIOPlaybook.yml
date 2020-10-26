@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e91c7b4a-60c8-440b-8063-f1980e6996e9
+    taskid: 1c92afc5-1c96-4580-83c2-17293ee7a669
     type: start
     task:
-      id: e91c7b4a-60c8-440b-8063-f1980e6996e9
+      id: 1c92afc5-1c96-4580-83c2-17293ee7a669
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 8f7756eb-46aa-41af-85fb-3810e2925308
+    taskid: 575ef9a2-5fc3-48bd-8f7f-5550231189e3
     type: regular
     task:
-      id: 8f7756eb-46aa-41af-85fb-3810e2925308
+      id: 575ef9a2-5fc3-48bd-8f7f-5550231189e3
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -68,10 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 2d1e6132-3f92-462f-8887-555be4c4682b
+    taskid: e5760376-657a-4a4e-844d-2923c461a86e
     type: regular
     task:
-      id: 2d1e6132-3f92-462f-8887-555be4c4682b
+      id: e5760376-657a-4a4e-844d-2923c461a86e
       version: -1
       name: emailrepio-email-reputation-get
       script: '|||emailrepio-email-reputation-get'
@@ -99,10 +99,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 9061ac3f-ca48-4c47-8144-0d8c3c622b90
+    taskid: adc55366-9c08-4415-8c2f-be80d4f38d70
     type: condition
     task:
-      id: 9061ac3f-ca48-4c47-8144-0d8c3c622b90
+      id: adc55366-9c08-4415-8c2f-be80d4f38d70
       version: -1
       name: Verify Outputs
       type: condition
@@ -110,7 +110,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -267,10 +267,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 71034df6-cf9b-427a-85d0-4da53d6395e9
+    taskid: 69734a1a-c0b3-4ec3-89c6-bc65ff7c0dae
     type: regular
     task:
-      id: 71034df6-cf9b-427a-85d0-4da53d6395e9
+      id: 69734a1a-c0b3-4ec3-89c6-bc65ff7c0dae
       version: -1
       name: email
       script: '|||email'
@@ -288,7 +288,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 800
+          "y": 970
         }
       }
     note: false
@@ -298,10 +298,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: a62087d5-5135-4ec7-8b9e-003d6829794b
+    taskid: 867eb202-cb80-45e4-8876-72284c99c245
     type: condition
     task:
-      id: a62087d5-5135-4ec7-8b9e-003d6829794b
+      id: 867eb202-cb80-45e4-8876-72284c99c245
       version: -1
       name: Verify Outputs
       type: condition
@@ -309,7 +309,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -334,7 +334,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: email_address
+              simple: account
       - - operator: isEqualString
           left:
             value:
@@ -485,7 +485,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1000
+          "y": 1150
         }
       }
     note: false
@@ -495,10 +495,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 7f201e96-74b2-4ed9-8847-7b4189315886
+    taskid: b9f57270-3fe5-493b-8ccc-573f6965c489
     type: regular
     task:
-      id: 7f201e96-74b2-4ed9-8847-7b4189315886
+      id: b9f57270-3fe5-493b-8ccc-573f6965c489
       version: -1
       name: emailrepio-email-address-report
       script: '|||emailrepio-email-address-report'
@@ -521,7 +521,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1200
+          "y": 1500
         }
       }
     note: false
@@ -531,10 +531,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 893fbe97-01c7-4c58-8d36-f161183d76ab
+    taskid: 296cfc58-75f2-47ad-8f0f-b9bb43f93de0
     type: title
     task:
-      id: 893fbe97-01c7-4c58-8d36-f161183d76ab
+      id: 296cfc58-75f2-47ad-8f0f-b9bb43f93de0
       version: -1
       name: Test Done
       type: title
@@ -545,7 +545,79 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1400
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d700a492-f49e-4261-8a75-726be5568da5
+    type: regular
+    task:
+      id: d700a492-f49e-4261-8a75-726be5568da5
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 5e7c5b22-0da9-4f58-83f2-d194f1910a7f
+    type: regular
+    task:
+      id: 5e7c5b22-0da9-4f58-83f2-d194f1910a7f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1330
         }
       }
     note: false
@@ -558,7 +630,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1415,
+        "height": 1685,
         "width": 380,
         "x": 50,
         "y": 50

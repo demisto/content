@@ -161,7 +161,7 @@ class DBotScoreType(object):
     DBotScoreType.DOMAIN
     DBotScoreType.URL
     DBotScoreType.CVE
-    DBotScoreType.EMAIL_ADDRESS
+    DBotScoreType.ACCOUNT
     :return: None
     :rtype: ``None``
     """
@@ -170,7 +170,7 @@ class DBotScoreType(object):
     DOMAIN = 'domain'
     URL = 'url'
     CVE = 'cve'
-    EMAIL_ADDRESS = 'email_address'
+    ACCOUNT = 'account'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -186,7 +186,7 @@ class DBotScoreType(object):
             DBotScoreType.DOMAIN,
             DBotScoreType.URL,
             DBotScoreType.CVE,
-            DBotScoreType.EMAIL_ADDRESS
+            DBotScoreType.ACCOUNT
         )
 
 
@@ -2581,21 +2581,38 @@ class Common(object):
 
             return ret_value
 
-    class Email(Indicator):
+    class Account(Indicator):
         """
-        :type email_address: ``str``
-        :param email_address: The email address
+        Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards#account
 
         :type dbot_score: ``DBotScore``
-        :param dbot_score: If email has reputation then create DBotScore object
+        :param dbot_score: If account has reputation then create DBotScore object
 
         :return: None
         :rtype: ``None``
         """
-        CONTEXT_PATH = 'Email(val.Address && val.Address == obj.Address)'
+        CONTEXT_PATH = 'Account(val.id && val.id == obj.id)'
 
-        def __init__(self, email_address, dbot_score):
+        def __init__(self, id, type=None, username=None, display_name=None, groups=None,
+                     domain=None, email_address=None, telephone_number=None, office=None, job_title=None,
+                     department=None, country=None, state=None, city=None, street=None, is_enabled=None,
+                     dbot_score=None):
+            self.id = id
+            self.type = type
+            self.username = username
+            self.display_name = display_name
+            self.groups = groups
+            self.domain = domain
             self.email_address = email_address
+            self.telephone_number = telephone_number
+            self.office = office
+            self.job_title = job_title
+            self.department = department
+            self.country = country
+            self.state = state
+            self.city = city
+            self.street = street
+            self.is_enabled = is_enabled
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2603,24 +2620,48 @@ class Common(object):
             self.dbot_score = dbot_score
 
         def to_context(self):
-            email_context = {
-                'Address': self.email_address
+            account_context = {
+                'Id': self.id
             }
 
+            if self.type:
+                account_context['Type'] = self.type
+
+            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id']
+            account_details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
+            for detail in account_details:
+                demisto.debug(f"DDDD: I'm here 1 detail={detail}")
+                if self.__getattribute__(detail):
+                    if detail == 'email_address':
+                        account_context['Email'] = {
+                            'Address' : self.email_address
+                        }
+                    else:
+                        Detail = camelize_string(detail,'_')
+                        account_context[Detail] = self.__getattribute__(detail)
+                        demisto.debug(f"DDDD: I'm here 3 detail={Detail}")
+
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
-                email_context['Malicious'] = {
+                account_context['Malicious'] = {
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
 
             ret_value = {
-                Common.Email.CONTEXT_PATH: email_context
+                Common.Account.CONTEXT_PATH: account_context
             }
 
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
 
+            demisto.debug(f"DDDD: I'm here 2 account context={account_context}")
+            demisto.debug(f"DDDD: ret_value={ret_value}")
             return ret_value
+
+
+def camelize_string(src_str, delim='_'):
+    components = src_str.split(delim)
+    return ''.join(map(lambda x: x.title(), components))
 
 
 class IndicatorsTimeline:
@@ -2736,6 +2777,7 @@ class CommandResults:
         outputs = {}  # type: dict
         if self.readable_output:
             human_readable = self.readable_output
+            demisto.debug('DDDD: maybe')
         else:
             human_readable = None  # type: ignore[assignment]
         raw_response = None  # type: ignore[assignment]
@@ -2751,6 +2793,7 @@ class CommandResults:
 
                     outputs[key].append(value)
 
+        demisto.debug('DDDD: maybe maybe')
         if self.raw_response:
             raw_response = self.raw_response
 
@@ -2773,6 +2816,7 @@ class CommandResults:
             else:
                 outputs = self.outputs  # type: ignore[assignment]
 
+        demisto.debug('DDDD: maybe maybe maybe')
         content_format = EntryFormat.JSON
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
             content_format = EntryFormat.TEXT

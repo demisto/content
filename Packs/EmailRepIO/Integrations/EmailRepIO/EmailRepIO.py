@@ -104,13 +104,14 @@ def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     dbot_score = Common.DBotScore(
         indicator=email,
-        indicator_type=DBotScoreType.EMAIL_ADDRESS,
+        indicator_type=DBotScoreType.ACCOUNT,
         integration_name=INTEGRATION_NAME,
         score=score,
         malicious_description=description
     )
 
-    email_context = Common.Email(
+    account_context = Common.Account(
+        id=email,
         email_address=email,
         dbot_score=dbot_score
     )
@@ -119,10 +120,10 @@ def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_NAME}.EmailScore',
-        outputs_key_field='email',
+        outputs_prefix=f'{INTEGRATION_NAME}.Email',
+        outputs_key_field='id',
         outputs=email_data,
-        indicators=[email_context]
+        indicators=[account_context]
     )
 
 
