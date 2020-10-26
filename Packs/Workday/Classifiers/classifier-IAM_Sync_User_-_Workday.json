@@ -54,7 +54,7 @@
     },
     "Employee Type": {
      "complex": null,
-     "simple": "Employmee_Type"
+     "simple": "Employee_Type"
     },
     "Employment Status": {
      "complex": null,
