@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7aaefdb3-41b2-4c42-8cd1-54f706951e5f
+    taskid: 7b004c73-1ada-49e1-82d8-709d7b05c06e
     type: start
     task:
-      id: 7aaefdb3-41b2-4c42-8cd1-54f706951e5f
+      id: 7b004c73-1ada-49e1-82d8-709d7b05c06e
       version: -1
       name: ""
       iscommand: false
@@ -16,7 +16,6 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -25,76 +24,94 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 5a505f28-e3be-4c95-81c6-ae394b129f80
+    taskid: 220873c2-c1d1-4e85-8f71-3ae4944303bb
     type: regular
     task:
-      id: 5a505f28-e3be-4c95-81c6-ae394b129f80
+      id: 220873c2-c1d1-4e85-8f71-3ae4944303bb
       version: -1
-      name: Check URL
-      script: PhishTank|||url
+      name: Check URL Command
+      description: Checks the reputation of the supplied URLs.
+      script: PhishTank V2|||url
       type: regular
       iscommand: true
-      brand: PhishTank
+      brand: PhishTank V2
     nexttasks:
       '#none#':
       - "2"
       - "3"
     scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
       url:
-        simple: ${badURL}
-    reputationcalc: 0
+        complex:
+          root: ${badURL}
+      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 895
+          "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 0a2da204-3f8f-4eab-83df-f878268723f5
-    type: regular
+    taskid: 71bdc909-4c90-4047-8507-77252880ffe6
+    type: condition
     task:
-      id: 0a2da204-3f8f-4eab-83df-f878268723f5
+      id: 71bdc909-4c90-4047-8507-77252880ffe6
       version: -1
       name: Verify URL Data
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "4"
     scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Data
-      path:
-        simple: URL
-    reputationcalc: 0
+      left:
+        simple: ${URL.Data}
+      right:
+        simple: ${badURL}
+    results:
+    - AreValuesEqual
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 5cc2b958-d69e-43b2-89f6-55ceb23ef902
-    type: regular
+    taskid: aaab9be4-bd43-4541-8b24-a0ce8e724079
+    type: condition
     task:
-      id: 5cc2b958-d69e-43b2-89f6-55ceb23ef902
+      id: aaab9be4-bd43-4541-8b24-a0ce8e724079
       version: -1
       name: Verify DBotScore
       description: |-
@@ -103,54 +120,90 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "4"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Indicator,Score,Type,Vendor
-      path:
-        simple: DBotScore
-    reputationcalc: 0
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Type}
+            iscontext: true
+          right:
+            value:
+              simple: url
+      - - operator: in
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+        - operator: in
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: in
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1070
+          "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: ff7a088b-0315-4569-85e8-ec5556bd0b1f
+    taskid: 7de9f275-9b7e-4593-8f89-267e9a4ec080
     type: title
     task:
-      id: ff7a088b-0315-4569-85e8-ec5556bd0b1f
+      id: 7de9f275-9b7e-4593-8f89-267e9a4ec080
       version: -1
       name: Success
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1245
+          "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: be16d6b0-c31f-48c8-8802-a4d71351a0e9
+    taskid: e63333f6-00f6-4415-87b8-76d1de30e0cf
     type: regular
     task:
-      id: be16d6b0-c31f-48c8-8802-a4d71351a0e9
+      id: e63333f6-00f6-4415-87b8-76d1de30e0cf
       version: -1
       name: Download phishtank CSV
       scriptName: http
@@ -175,7 +228,6 @@ tasks:
       url:
         simple: http://data.phishtank.com/data/online-valid.csv
       username: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -184,12 +236,17 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 2460c597-5995-4288-887d-60873622416e
+    taskid: fb9e1494-9ea9-4188-8763-56e977f771df
     type: regular
     task:
-      id: 2460c597-5995-4288-887d-60873622416e
+      id: fb9e1494-9ea9-4188-8763-56e977f771df
       version: -1
       name: Load file to context
       scriptName: ReadFile
@@ -204,7 +261,6 @@ tasks:
         simple: ${File.EntryID}
       maxFileSize:
         simple: "2000"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -213,12 +269,17 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: e8f9b718-59b5-431e-8e37-66b1025b321e
+    taskid: a0887324-df52-4be7-84bc-0c2480ded1ca
     type: regular
     task:
-      id: e8f9b718-59b5-431e-8e37-66b1025b321e
+      id: a0887324-df52-4be7-84bc-0c2480ded1ca
       version: -1
       name: Set badURL
       scriptName: Set
@@ -227,14 +288,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "10"
     scriptarguments:
       append: {}
       key:
         simple: badURL
+      stringify: {}
       value:
         simple: ${FileData=val.split('\n')[1].split(',')[1]}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -243,12 +304,17 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 60b545ed-5c7c-4bc2-8131-00da26d2b52c
+    taskid: 7891cc13-1712-40ee-8c7c-0378280c356a
     type: regular
     task:
-      id: 60b545ed-5c7c-4bc2-8131-00da26d2b52c
+      id: 7891cc13-1712-40ee-8c7c-0378280c356a
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -262,7 +328,6 @@ tasks:
       all:
         simple: "yes"
       key: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -271,12 +336,63 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 8d1f8ca8-5ef1-4b7e-8353-8e3a7a1a7ddc
+    type: regular
+    task:
+      id: 8d1f8ca8-5ef1-4b7e-8353-8e3a7a1a7ddc
+      version: -1
+      name: Set badURL without last slash
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: badURL
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: ${badURL}
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: \/$
+              replaceWith: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
+        "height": 1435,
         "width": 810,
         "x": 50,
         "y": 50
