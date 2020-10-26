@@ -255,7 +255,7 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                 raw_indicators.append(indicator)
     else:
         raw_indicators = get_xindapi(tc, indicator_value, indicator_type, owners)
-        if raw_indicators and loopowners is True:
+        if raw_indicators:
             owners = get_indicator_owner(indicator_value)
             if 'owner' in owners.get('data', {}):
                 for owner in owners['data']['owner']:
