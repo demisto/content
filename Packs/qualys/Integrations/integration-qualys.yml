@@ -433,7 +433,7 @@ script:
         'vmScanAction': { ContextPath: undefined,
                         ContentPath: ['SIMPLE_RETURN.RESPONSE','.ITEM_LIST.ITEM'],
                          entityType: ''},
-        'vmScanFetch': { ContextPath: 'Qualys.VM',
+        'vmScanFetch': { ContextPath: 'Qualys.VM(val.qid==obj.qid)',
                           entityType: 'vm'},
         'scapScanList': { ContextPath: 'Qualys.Scan(val.ID == obj.ID)',
                         ContentPath: ['SCAN_LIST_OUTPUT.RESPONSE','.SCAN_LIST.SCAN'],
