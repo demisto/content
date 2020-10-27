@@ -83,55 +83,6 @@ script:
     - contextPath: PaloAltoIoTIntegrationBase.VulnerabilitySyslogs
       description: List of vulnerability syslogs in CEF format
   - arguments:
-    - auto: PREDEFINED
-      default: true
-      description: Represents API or command for which the status is returned
-      name: input_type
-      predefined:
-      - Devices
-      - Vulnerabilities
-      - Alerts
-      - device-cef-conversion
-      - alert-cef-conversion
-      - vulnerability-cef-conversion
-      required: true
-    - auto: PREDEFINED
-      description: playbook name
-      name: playook_name
-      predefined:
-      - PanwIoTSIEMIntegration
-      - PanwIoTISEIntegration
-      required: true
-    description: Sends return status back to Palo Alto IoT Cloud
-    name: report-status-to-iot-cloud
-    outputs:
-    - contextPath: PaloAltoIoTIntegrationBase.DeviceInventoryStatus
-      description: Write status to context
-    - contextPath: PaloAltoIoTIntegrationBase.AlertStatus
-      description: Write status to context
-    - contextPath: PaloAltoIoTIntegrationBase.VulnerabilityStatus
-      description: Write status to context
-    - contextPath: PaloAltoIoTIntegrationBase.Errors
-      description: Write status to context
-  - arguments: []
-    description: 'Gets full device inventory '
-    name: get-bulk-device-inventory
-    outputs:
-    - contextPath: PaloAltoIoTIntegrationBase.Devices
-      description: list of device maps
-  - arguments: []
-    description: Gets complete list of generated alerts
-    name: get-bulk-alerts
-    outputs:
-    - contextPath: PaloAltoIoTIntegrationBase.Alerts
-      description: list of alert maps
-  - arguments: []
-    description: Gets complete list of generated vulnerabilities
-    name: get-bulk-vulnerabilities
-    outputs:
-    - contextPath: PaloAltoIoTIntegrationBase.Vulnerabilities
-      description: list of vulnerability maps
-  - arguments:
     - description: a list of devices
       isArray: true
       name: devices
@@ -155,6 +106,78 @@ script:
     - contextPath: PaloAltoIoTIntegrationBase.UpsertDevices
       description: Return an object contains two list. The first list is inserted
         devices, the second is updated devices
+  - arguments:
+    - auto: PREDEFINED
+      description: status reported back to PANW IOT cloud
+      name: status
+      predefined:
+      - error
+      - success
+      - disabled
+      required: true
+    - description: status message to be sent to PANW IOT cloud
+      name: message
+    - auto: PREDEFINED
+      description: Name of the PANW IOT third party integration
+      name: integration-name
+      predefined:
+      - siem
+      - ise
+      - servicenow
+      required: true
+    - description: name of playbook
+      name: playbook-name
+      required: true
+    - auto: PREDEFINED
+      description: type of resource requested from PANW IOT cloud
+      name: type
+      predefined:
+      - device
+      - alert
+      - vulnerability
+      required: true
+    description: sends a status message back to PANW IOT cloud
+    name: send-status-to-panw-iot-cloud
+  - arguments:
+    - defaultValue: "1000"
+      description: page size - upper limit is 1000
+      name: page_size
+      required: true
+    - defaultValue: "0"
+      description: offset for data
+      name: offset
+      required: true
+    - auto: PREDEFINED
+      description: type of asset
+      name: type
+      predefined:
+      - Devices
+      - Alerts
+      - Vulnerabilities
+      required: true
+    description: Gets a list of device maps with specified page size and offset.
+    name: get-asset-inventory-with-paging-and-offset
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.Assets
+      description: List of maps
+  - arguments:
+    - auto: PREDEFINED
+      description: asset type
+      name: asset_type
+      predefined:
+      - Devices
+      - Alerts
+      - Vulnerabilities
+      required: true
+    - description: zb_ticketid for alerts and vulnerabilities, mac address for device
+      name: asset_id
+      required: true
+    description: Given a id (alert-id, vulnerability-id or mac-address) returns the
+      asset details
+    name: get-single-asset-details
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.SingleAsset
+      description: stores the asset here
   dockerimage: demisto/python3:3.8.6.12176
   longRunning: true
   runonce: false
