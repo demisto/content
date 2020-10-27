@@ -4,8 +4,6 @@ from CommonServerPython import *  # noqa: F401
 import traceback
 
 SUBJECT = 'Active Directory Account Created'
-EMAIL_NOTIFICATION_LIST_NAME = 'ad-create-user-email-notification-list'
-
 DEFAULT_OUTGOING_MAPPER = "User Profile - Active Directory (Outgoing)"
 MAPPING_TYPE = "'User Profile'"
 
@@ -50,11 +48,8 @@ def main():
 
 def send_email(name, sAMAccountName, email, password):
     try:
-        email_notification_list_response = demisto.executeCommand("getList", {'listName': EMAIL_NOTIFICATION_LIST_NAME})
-        if isError(email_notification_list_response[0]):
+        if not email:
             return
-
-        to = email_notification_list_response[0]['Contents']
         subject = SUBJECT + ': ' + sAMAccountName
         email_body = 'Hello,\n\n' \
                      'The following account has been created in Active Directory:\n\n' \
@@ -64,7 +59,7 @@ def send_email(name, sAMAccountName, email, password):
                      'Password: ' + password + '\n\n' \
                      'Regards,\nIAM Team'
 
-        demisto.executeCommand("send-mail", {"to": to, "subject": subject, "body": email_body})
+        demisto.executeCommand("send-mail", {"to": email, "subject": subject, "body": email_body})
     except Exception as e:
         # Absorb the exception. We can just log error if send email failed.
         demisto.error(f'Failed to send email. Exception: {e}.\n' + traceback.format_exc())
