@@ -83,8 +83,7 @@ def fetch_samples() -> None:
     """
     integration_context = get_integration_context()
     sample_events = json.loads(integration_context.get('sample_events', '[]'))
-    incidents = [{'rawJSON': json.dumps(event)} for event in sample_events]
-    demisto.incidents(incidents)
+    demisto.incidents(sample_events)
 
 
 def main() -> None:
