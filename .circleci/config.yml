@@ -411,16 +411,21 @@ references:
         context: sdk_nightly_env
 
   bucket_upload_jobs: &bucket_upload_jobs
-    - Create Instances:
+    - Setup Environment:
         context: bucket_upload_env
     - Run Unit Testing And Lint:
         context: bucket_upload_env
         requires:
-          - Create Instances
+          - Setup Environment
     - Run Validations:
         context: bucket_upload_env
         requires:
-          - Create Instances
+          - Setup Environment
+    - Create Instances:
+        context: bucket_upload_env
+        requires:
+          - Run Unit Testing And Lint
+          - Run Validations
     - Install Packs in Demisto 6_0:
         context: bucket_upload_env
         requires:
@@ -432,8 +437,6 @@ references:
     - Upload Packs:
         context: bucket_upload_env
         requires:
-          - Run Unit Testing And Lint
-          - Run Validations
           - Install Packs in Demisto 6_0
           - Install Packs in Demisto Marketplace - Master
 
@@ -991,8 +994,10 @@ jobs:
                   PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
                   ID_SET=$CIRCLE_ARTIFACTS/id_set.json
                   GCS_PATH=$(mktemp)
+                  CIRCLE_BUILD_NUM=${CIRCLE_BUILD_NUM:-00000}
+                  CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
                   echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist' -bb 'marketplace-ci-build' -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -c $CIRCLE_BRANCH
                   rm $GCS_PATH 
       - run:
           name: Slack Notifier
@@ -1328,8 +1333,8 @@ workflows:
   bucket_upload:
     triggers:
       - schedule:
-          # should trigger every day at 10 PM UTC (1 AM Israel Time)
-          cron: "0 22 * * *"
+          # should trigger every day at 9 PM UTC (00:00 AM Israel Time)
+          cron: "0 21 * * *"
           filters:
             branches:
               only:
