@@ -213,7 +213,7 @@ def get_user_command(client, args, mapper_in):
     return user_profile
 
 
-def enable_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled):
+def enable_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
     if not is_command_enabled:
         return None
 
@@ -221,7 +221,7 @@ def enable_user_command(client, args, mapper_out, is_command_enabled, is_create_
     try:
         okta_user = client.get_user(user_profile.get_attribute('email'))
         if not okta_user:
-            if args.get('create-if-not-exists').lower() == 'true':
+            if create_if_not_exists:
                 user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
             else:
                 _, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -307,7 +307,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
     return user_profile
 
 
-def update_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled):
+def update_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
     if not is_command_enabled:
         return None
 
@@ -329,7 +329,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
                 details=updated_user
             )
         else:
-            if args.get('create-if-not-exists').lower() == 'true':
+            if create_if_not_exists:
                 user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
             else:
                 _, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -358,6 +358,7 @@ def main():
     is_create_enabled = params.get("create-user-enabled")
     is_enable_disable_enabled = params.get("enable-disable-user-enabled")
     is_update_enabled = demisto.params().get("update-user-enabled")
+    create_if_not_exists = demisto.params().get("create-if-not-exists")
 
     LOG(f'Command being called is {command}')
 
@@ -376,13 +377,15 @@ def main():
             user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
 
         elif command == 'iam-update-user':
-            user_profile = update_user_command(client, args, mapper_out, is_update_enabled, is_create_enabled)
+            user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
+                                               is_create_enabled, create_if_not_exists)
 
         elif command == 'iam-disable-user':
             user_profile = disable_user_command(client, args, is_enable_disable_enabled)
 
         elif command == 'iam-enable-user':
-            user_profile = enable_user_command(client, args, mapper_out, is_enable_disable_enabled, is_create_enabled)
+            user_profile = enable_user_command(client, args, mapper_out, is_enable_disable_enabled,
+                                               is_create_enabled, create_if_not_exists)
 
         elif command == 'test-module':
             test_module(client)

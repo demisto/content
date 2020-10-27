@@ -34,6 +34,11 @@ configuration:
   name: enable-disable-user-enabled
   required: false
   type: 8
+- defaultvalue: 'true'
+  display: Automatically create user if not found in update and enable commands
+  name: create-if-not-exists
+  required: false
+  type: 8
 - defaultvalue: User Profile - Okta (Incoming)
   display: Incoming Mapper
   name: mapper-in
@@ -44,7 +49,8 @@ configuration:
   name: mapper-out
   required: true
   type: 0
-description: Integrate with Okta's Identity Access Management service to execute CRUD operations to employee lifecycle processes.
+description: Integrate with Okta's Identity Access Management service to execute CRUD
+  operations to employee lifecycle processes.
 display: Okta IAM
 name: Okta IAM
 script:
@@ -68,7 +74,8 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise error information.
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -98,19 +105,9 @@ script:
       name: user-profile
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: If true the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'.
-      isArray: false
-      name: create-if-not-exists
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     deprecated: false
-    description: Updates an existing user with the data passed in the user-profile argument.
+    description: Updates an existing user with the data passed in the user-profile
+      argument.
     execution: true
     name: iam-update-user
     outputs:
@@ -121,7 +118,8 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise error information.
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -163,7 +161,8 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise error information.
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -193,17 +192,6 @@ script:
       name: user-profile
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: If true the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'.
-      isArray: false
-      name: create-if-not-exists
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     deprecated: false
     description: Enables a deprovisioned user.
     execution: true
@@ -216,7 +204,8 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise error information.
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -258,7 +247,8 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise error information.
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
