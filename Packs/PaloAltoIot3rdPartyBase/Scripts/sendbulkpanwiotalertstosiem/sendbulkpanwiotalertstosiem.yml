@@ -1,0 +1,16 @@
+comment: gets all available alerts from the IoT cloud and sends it to the SIEM server
+commonfields:
+  id: 29449912-60a1-4237-887e-570b3eb385f6
+  version: -1
+dockerimage: demisto/python3:3.7.3.286
+enabled: true
+name: send_bulk_panw_iot_alerts_to_siem
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+timeout: 362.88ms
+type: python

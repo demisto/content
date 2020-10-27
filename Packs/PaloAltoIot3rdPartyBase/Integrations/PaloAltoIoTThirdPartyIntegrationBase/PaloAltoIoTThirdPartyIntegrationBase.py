@@ -23,16 +23,19 @@ DEFAULT_PAGE_SIZE = 1000
 api_type_map = {
     "Devices": {
         "url": "pub/v4.0/device/list",
+        "single_asset_url": "pub/v4.0/device",
         "output_path": "PaloAltoIoTIntegrationBase.Devices",
         "status_path": "PaloAltoIoTIntegrationBase.DeviceInventoryStatus"
     },
     "Alerts": {
         "url": "pub/v4.0/alert/list",
+        "single_asset_url": "pub/v4.0/alert",
         "output_path": "PaloAltoIoTIntegrationBase.Alerts",
         "status_path": "PaloAltoIoTIntegrationBase.AlertStatus"
     },
     "Vulnerabilities": {
         "url": "pub/v4.0/vulnerability/list",
+        "single_asset_url": "pub/v4.0/vulnerability",
         "output_path": "PaloAltoIoTIntegrationBase.Vulnerabilities",
         "status_path": "PaloAltoIoTIntegrationBase.VulnerabilityStatus"
     }
@@ -244,6 +247,7 @@ def run_get_request(api_type, api_url, stime=None, offset=0):
     if stime == None:
         stime = '-1'
     url = BASE_URL + api_url
+    millis = int(round(time.time() * 1000)) - 15*60*1000
     params = (
         ('customerid', CUSTOMER_ID),
         ('key_id', KEY_ID),
@@ -253,7 +257,14 @@ def run_get_request(api_type, api_url, stime=None, offset=0):
         ('pagelength', str(DEFAULT_PAGE_SIZE)),
     )
     if api_type == "Devices":
-        params += (('detail', 'true'),)
+        params += (
+            ('detail', 'true'),
+        )
+        # bulk update here
+        if stime != '-1':
+            params += (
+                ('last_poll_time', millis),
+            )
     elif api_type == "Vulnerabilities":
         params += (('groupby', 'device'),)
 
@@ -473,54 +484,208 @@ def run_api_command(api_type, delay=-1):
     return_message = "Total %s pulled from IoT cloud %d" % (api_type, len(asset_list))
     write_status_context_data(status_path, return_message, status, len(asset_list))
 
+    data = {
+        "asset_list": asset_list,
+        "count": len(asset_list),
+        "status": return_message
+    }
+
     return CommandResults(
         readable_output=return_message,
         outputs_prefix=output_path,
-        outputs=asset_list
+        outputs=data
     )
 
 
-def send_return_status():
-    arg = demisto.args().get('input_type')
-    playook_name = demisto.args().get('playook_name')
+def send_status_to_iot_cloud():
+    status = demisto.args().get('status')
+    message = demisto.args().get('message')
+    integration_name = demisto.args().get('integration-name')
+    playbook_name = demisto.args().get('playbook-name')
+    asset_type = demisto.args().get('type')
 
-    if arg in api_type_map:
-        path = api_type_map[arg]['status_path']
-        integration_context = demisto.getIntegrationContext()
-        if path in integration_context:
-            context_data = integration_context[path]
-            count = context_data['count']
-            if count == 0:
-                message = "Nothing to send to SIEM server, %d %s received from IoT Cloud" % (count, arg)
+    curr_time = int(round(time.time() * 1000))
 
-            elif count >= 1:
-                message = "Succesfully sent %d %s to SIEM server" % (count, arg)
-            else:
-                message = context_data['message']
-            data = {"playbook_name": playook_name, "message": message,
-                    "status": context_data['status'], "type": arg, "timestamp": context_data['timestamp']}
-        else:
-            count = 0
-            message = "Nothing to send to SIEM server, %d %s received from IoT Cloud" % (count, arg)
-            data = {"playbook_name": playook_name, "message": message,
-                    "status": "Success", "type": arg, "timestamp": str(datetime.now())}
+    if message is None:
+        count = 55
+        message = "Successfully sent %d to %s" % (count, integration_name)
 
-        # handle key errors for context_data
-        # find a way to get the playbook name and determine the integration type (SIEM, ISE, etc)
-        # Once we are here that means this task is called right at the end so everything went well.
-        # we already have hte number of assets pulled, need to the integration/playbook to determine the specific action/stat
+    data = {
+        "playbook_name": playbook_name,
+        "integration_name": integration_name,
+        "message": message,
+        "status": status,
+        "type": asset_type,
+        "timestamp": curr_time
+    }
+    out_data = json.dumps(data)
 
-    else:
-        # if the input type is not Devices,Alerts or Vulnerabilities that means something definitely went wrong
-        # Simply use the input type to determine what went wrong and report to cloud
-        message = "%s Failed" % arg
-        data = {"playbook_name": playook_name, "message": message,
-                "status": "Failure", "type": arg, "timestamp":  str(datetime.now())}
-        path = "PaloAltoIoTIntegrationBase.Errors"
+    headers = {
+        'X-Access-Key': ACCESS_KEY,
+        'X-Key-Id': KEY_ID,
+        'Content-Type': 'application/json',
+    }
+    params = (
+        ('customerid', CUSTOMER_ID),
+    )
+    url = BASE_URL + "pub/v4.0/xsoar/status"
+    response = requests.post(url, headers=headers,
+                             params=params, data=out_data, verify=False)
+    data["iot_cloud_response"] = response.text
+    return CommandResults(
+        readable_output=data
+    )
 
+
+'''
+def get_single_device_details(args):
+    device_id = demisto.args().get('mac')
+    params = (
+        ('customerid', CUSTOMER_ID),
+        ('key_id', KEY_ID),
+        ('access_key', ACCESS_KEY),
+        ('deviceid', device_id),
+    )
+    url = BASE_URL + "pub/v4.0/device"
+    response = requests.get(url,params=params, verify=False)
+    data = json.loads(response.text)
+    if response.status_code != 200:
+        data = []
+    # handle errors here later,
     return CommandResults(
         readable_output=data,
-        outputs_prefix=path,
+        outputs_prefix="PaloAltoIoTIntegrationBase.SingleDevices",
+        outputs=data
+    )
+
+def get_single_vulnerability_details(args):
+    vulnerability_id = demisto.args().get('vulnerability_id')
+    params = (
+        ('customerid', CUSTOMER_ID),
+        ('key_id', KEY_ID),
+        ('access_key', ACCESS_KEY),
+        ('zb_ticketid', vulnerability_id),
+        ('groupby', 'device'),
+    )
+    url = BASE_URL + "pub/v4.0/vulnerability"
+    response = requests.get(url,params=params, verify=False)
+    data = json.loads(response.text)
+    if 'items' in data and len(data['items']):
+        data = data['items']
+    else:
+        data = []
+    # handle errors here later,
+    return CommandResults(
+        readable_output=data,
+        outputs_prefix="PaloAltoIoTIntegrationBase.SingleVulnerability",
+        outputs=data
+    )
+
+def get_single_alert_details(args):
+    alert_id = demisto.args().get('alert_id')
+    params = (
+        ('customerid', CUSTOMER_ID),
+        ('key_id', KEY_ID),
+        ('access_key', ACCESS_KEY),
+        ('zb_ticketid', alert_id),
+    )
+    url = BASE_URL + "pub/v4.0/alert"
+    response = requests.get(url,params=params, verify=False)
+    data = json.loads(response.text)
+    if 'items' in data and len(data['items']):
+        data = data['items']
+    else:
+        data = []
+    # handle errors here later,
+    return CommandResults(
+        readable_output=data,
+        outputs_prefix="PaloAltoIoTIntegrationBase.SingleAlert",
+        outputs=data
+    )
+'''
+
+
+def get_single_asset(args):
+    asset_type = demisto.args().get('asset_type')
+    asset_id = demisto.args().get('asset_id')
+    params = (
+        ('customerid', CUSTOMER_ID),
+        ('key_id', KEY_ID),
+        ('access_key', ACCESS_KEY),
+    )
+    if asset_type == 'Devices':
+        params += (
+            ('detail', 'true'),
+            ('deviceid', str(asset_id)),
+        )
+    if asset_type == 'Alerts':
+        params += (
+            ('zb_ticketid', str(asset_id)),
+        )
+    if asset_type == 'Vulnerabilities':
+        params += (
+            ('groupby', 'device'),
+            ('zb_ticketid', str(asset_id)),
+        )
+    data = []
+    url = BASE_URL + api_type_map[asset_type]['single_asset_url']
+    response = requests.get(url, params=params, verify=False)
+    if response.status_code < 300:
+        try:
+            data = json.loads(response.text)
+            if asset_type == 'Alerts' or asset_type == 'Vulnerabilities':
+                data = data['items']
+        except Exception as ex:
+            return_error("Failed to parse https response %s" % str(ex))
+    else:
+        return_error("Failed to get asset from IoT server %s" % response.text)
+
+    op = "Total %d %s pulled from PANW IoT Cloud" % (len(data), asset_type)
+
+    return CommandResults(
+        readable_output=op,
+        outputs_prefix="PaloAltoIoTIntegrationBase.SingleAsset",
+        outputs=data
+    )
+
+
+def get_asset_lists(args):
+    params = (
+        ('customerid', CUSTOMER_ID),
+        ('key_id', KEY_ID),
+        ('access_key', ACCESS_KEY),
+        ('pagelength', str(demisto.args().get('page_size'))),
+        ('offset', str(demisto.args().get('offset'))),
+    )
+    asset_type = demisto.args().get('type')
+    if asset_type == 'Devices':
+        params += (
+            ('detail', 'true'),
+        )
+    elif asset_type == "Vulnerabilities":
+        params += (('groupby', 'device'),)
+
+    data = []
+    url = BASE_URL + api_type_map[asset_type]['url']
+    response = requests.get(url, params=params, verify=False)
+
+    if response.status_code < 300:
+        try:
+            data = json.loads(response.text)
+            if asset_type == 'Devices' and data['total'] != 0:
+                data = data['devices']
+            elif asset_type == 'Alerts' or asset_type == 'Vulnerabilities':
+                data = data['items']
+        except Exception as ex:
+            return_error("Failed to parse https response %s" % str(ex))
+    else:
+        return_error("Failed to connect to IoT server %s" % response.text)
+
+    op = "Total %d %s pulled from PANW IoT Cloud" % (len(data), asset_type)
+
+    return CommandResults(
+        readable_output=op,
+        outputs_prefix="PaloAltoIoTIntegrationBase.Assets",
         outputs=data
     )
 
@@ -538,17 +703,8 @@ def main() -> None:
                 return_results('ok')
             else:
                 return_results(response.status_code)
-        elif demisto.command() == 'get-bulk-device-inventory':
-            results = run_api_command("Devices", -1)
-            return_results(results)
-        elif demisto.command() == 'get-bulk-vulnerabilities':
-            results = run_api_command("Vulnerabilities", -1)
-            return_results(results)
-        elif demisto.command() == 'get-bulk-alerts':
-            results = run_api_command("Alerts", -1)
-            return_results(results)
         elif demisto.command() == 'get-incremental-device-inventory':
-            results = run_api_command("Devices", 5)
+            results = run_api_command("Devices", 15)
             return_results(results)
         elif demisto.command() == 'get-incremental-alerts':
             results = run_api_command("Alerts", 15)
@@ -565,14 +721,20 @@ def main() -> None:
         elif demisto.command() == 'convert-vulnerabilities-to-cef':
             results = convert_vulnerability_map_to_cef()
             return_results(results)
-        elif demisto.command() == 'report-status-to-iot-cloud':
-            results = send_return_status()
+        elif demisto.command() == 'send-status-to-panw-iot-cloud':
+            results = send_status_to_iot_cloud()
             return_results(results)
         elif demisto.command() == 'get-servicenow-device-query':
             results = get_servicenow_device_query(demisto.args())
             return_results(results)
         elif demisto.command() == 'get-servicenow-upsert-devices':
             results = get_servicenow_upsert_devices(demisto.args())
+            return_results(results)
+        elif demisto.command() == 'get-asset-inventory-with-paging-and-offset':
+            results = get_asset_lists(demisto.args())
+            return_results(results)
+        elif demisto.command() == 'get-single-asset-details':
+            results = get_single_asset(demisto.args())
             return_results(results)
 
     # Log exceptions and return errors
