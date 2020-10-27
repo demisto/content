@@ -55,7 +55,7 @@ tasks:
       id: bc0e9e42-51cc-40de-824f-5b2f60cbe94d
       iscommand: false
       name: send_bulk_panw_iot_devices_to_siem
-      script: 1d54dfc5-aa61-417c-8cac-c507705437c0
+      script: send_bulk_panw_iot_devices_to_siem
       type: regular
       version: -1
     taskid: bc0e9e42-51cc-40de-824f-5b2f60cbe94d
@@ -90,7 +90,7 @@ tasks:
       id: ffdf43ce-055f-40b3-8adf-ce81e96d5496
       iscommand: false
       name: send_bulk_panw_iot_alerts_to_siem
-      script: 29449912-60a1-4237-887e-570b3eb385f6
+      script: send_bulk_panw_iot_alerts_to_siem
       type: regular
       version: -1
     taskid: ffdf43ce-055f-40b3-8adf-ce81e96d5496
@@ -124,8 +124,8 @@ tasks:
         it to the SIEM server
       id: f1e43a35-4107-4313-8b31-bffa21c83a67
       iscommand: false
-      name: send_bulk_panw_iot_vulnerability_to_siem
-      script: ee3d1eb2-8ee9-44f5-88d0-cf52697e4447
+      name: send_bulk_panw_iot_vulnerabilities_to_siem
+      script: send_bulk_panw_iot_vulnerabilities_to_siem
       type: regular
       version: -1
     taskid: f1e43a35-4107-4313-8b31-bffa21c83a67
