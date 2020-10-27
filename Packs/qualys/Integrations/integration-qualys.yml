@@ -2419,17 +2419,17 @@ script:
       - extended
       description: 'The verbosity of the scan results details. One verbosity mode may be specified: brief (the default) or extended. The brief output includes this information: IP address, DNS hostname, NetBIOS hostname, QID and scan test results if applicable. The extended output includes the brief output plus this extended information: protocol, port, an SSL flag (“yes” is returned when SSL was used for the detection, “no” is returned when SSL was not used), and FQDN if applicable.'
     outputs:
-      - contextPath: Qualys.VM.ip
+      - contextPath: Qualys.VM.Ip
         description: Scanned device IP
-      - contextPath: Qualys.VM.dns
+      - contextPath: Qualys.VM.Dns
         description: Scanned device DNS
-      - contextPath: Qualys.VM.netbios
+      - contextPath: Qualys.VM.Netbios
         description: Scanned device Netbios
-      - contextPath: Qualys.VM.qid
+      - contextPath: Qualys.VM.QID
         description: Qualys ID for vulnerabilities
-      - contextPath: Qualys.VM.instance
+      - contextPath: Qualys.VM.Instance
         description: Scanned device Instance
-      - contextPath: Qualys.VM.result
+      - contextPath: Qualys.VM.Result
         description: Scan Result
     description: fetch vm scan deatails
   - name: qualys-pc-scan-fetch
