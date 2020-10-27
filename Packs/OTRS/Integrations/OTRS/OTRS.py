@@ -222,14 +222,14 @@ def get_ticket_command():
 
 def get_ticket(ticket_id):
     args = {'ticket_id': ticket_id, 'articles': True, 'attachments': True, 'dynamic_fields': True}
-    response = execute_otrs_method('ticket_get_by_id', args)
+    response = execute_otrs_method(client.ticket_get_by_id, args)
     raw_ticket = response.to_dct()['Ticket']
     return raw_ticket
 
 
 def get_ticket_by_number(ticket_number):
     args = {'ticket_number': ticket_number, 'articles': True, 'attachments': True, 'dynamic_fields': True}
-    response = execute_otrs_method('ticket_get_by_number', args)
+    response = execute_otrs_method(client.ticket_get_by_number, args)
     raw_ticket = response.to_dct().get('Ticket')
     return raw_ticket
 
@@ -299,7 +299,7 @@ def search_ticket(states=None, created_before=None, created_after=None, title=No
             'Queues': queue,
             'Priorities': priority,
             'Types': ticket_type}
-    return execute_otrs_method('ticket_search', args)
+    return execute_otrs_method(client.ticket_search, args)
 
 
 def create_ticket_command():
@@ -378,7 +378,7 @@ def create_ticket_command():
 
 def create_ticket(new_ticket, article, df, attachments):
     args = {'ticket': new_ticket, 'article': article, 'dynamic_fields': df, 'attachments': attachments}
-    return execute_otrs_method('ticket_create', args)
+    return execute_otrs_method(client.ticket_create, args)
 
 
 def update_ticket_command():
@@ -507,7 +507,7 @@ def update_ticket(ticket_id, title=None, queue=None, state=None, priority=None,
             'dynamic_fields': df,
             'attachments': attachments,
             'kwargs': kwargs}
-    return execute_otrs_method('ticket_update', args)
+    return execute_otrs_method(client.ticket_update, args)
 
 
 def fetch_incidents():
@@ -558,8 +558,7 @@ def update_session():
     client.session_id_store.write(sessionID)
 
 
-def execute_otrs_method(method_name, args):
-    method = getattr(client, method_name)
+def execute_otrs_method(method, args):
     try:
         response = method(**args)
     except Exception:
@@ -568,46 +567,51 @@ def execute_otrs_method(method_name, args):
     return response
 
 
-''' EXECUTION CODE '''
-handle_proxy(demisto.params().get('proxy'))
+def main():
+    global client
+    handle_proxy(demisto.params().get('proxy'))
 
-cache = demisto.getIntegrationContext()
-client = Client(SERVER, USERNAME, PASSWORD, https_verify=USE_SSL)
+    cache = demisto.getIntegrationContext()
+    client = Client(SERVER, USERNAME, PASSWORD, https_verify=USE_SSL)
 
-# OTRS creates new session for each request, to avoid that behavior -
-# save the sessionId in integration context to use it multiple times
-if cache.get('SessionID'):
-    client.session_id_store.write(cache['SessionID'])
-else:
-    update_session()
+    # OTRS creates new session for each request, to avoid that behavior -
+    # save the sessionId in integration context to use it multiple times
+    if cache.get('SessionID'):
+        client.session_id_store.write(cache['SessionID'])
+    else:
+        update_session()
 
 
-LOG('command is %s' % (demisto.command(), ))
+    LOG('command is %s' % (demisto.command(), ))
 
-try:
-    if demisto.command() == 'test-module':
-        # Testing connectivity and credentials
-        demisto.results('ok')
+    try:
+        if demisto.command() == 'test-module':
+            # Testing connectivity and credentials
+            demisto.results('ok')
 
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
 
-    elif demisto.command() == 'otrs-get-ticket':
-        get_ticket_command()
+        elif demisto.command() == 'otrs-get-ticket':
+            get_ticket_command()
 
-    elif demisto.command() == 'otrs-search-ticket':
-        search_ticket_command()
+        elif demisto.command() == 'otrs-search-ticket':
+            search_ticket_command()
 
-    elif demisto.command() == 'otrs-create-ticket':
-        create_ticket_command()
+        elif demisto.command() == 'otrs-create-ticket':
+            create_ticket_command()
 
-    elif demisto.command() == 'otrs-update-ticket':
-        update_ticket_command()
+        elif demisto.command() == 'otrs-update-ticket':
+            update_ticket_command()
 
-    elif demisto.command() == 'otrs-close-ticket':
-        close_ticket_command()
+        elif demisto.command() == 'otrs-close-ticket':
+            close_ticket_command()
 
-except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    return_error(str(e))
+    except Exception as e:
+        LOG(str(e))
+        LOG.print_log()
+        return_error(str(e))
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
