@@ -75,7 +75,6 @@ args:
   - is filtered by
   - isn't
   - 'json: decode'
-  - 'json: decode array'
   - 'json: encode'
   - 'json: encode array'
   - keeps
