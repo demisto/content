@@ -826,7 +826,8 @@ class Pack(object):
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
             if private_content:
-                print(f"Copying {zip_pack_path} to /home/runner/work/content-private/content-private/content/artifacts/packs/{self._pack_name}.zip")
+                print(f"Copying {zip_pack_path} to /home/runner/work/content-private/content-private/"
+                      f"content/artifacts/packs/{self._pack_name}.zip")
                 shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content'
                                            f'-private/content/artifacts/packs/{self._pack_name}.zip')
 

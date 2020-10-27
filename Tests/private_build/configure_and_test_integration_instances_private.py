@@ -65,7 +65,8 @@ def private_test_pack_zip():
             if any(test_clean in d for d in test_pbs):
                 for test_pb in test_pbs:
                     if test_clean in test_pb:
-                        tests_file_paths.add("/home/runner/work/content-private/content-private/content/"+test_pb[test_clean].get("file_path"))
+                        tests_file_paths.add("/home/runner/work/content-private/content-private/"
+                                             "content/" + test_pb[test_clean].get("file_path"))
     #  Adding contents of DeveloperPack
     developer_pack_items = glob.glob("/home/runner/work/content-private/content-private/content/Packs"
                                      "/DeveloperTools/*/*.yml")
@@ -89,8 +90,8 @@ def private_test_pack_zip():
                     test_target = f'test_pack/TestPlaybooks/{test}'
                 zip_file.writestr(test_target, test_file.read())
     shutil.copy("/home/runner/work/content-private/content-private/content/test_pack.zip",
-                f'/home/runner/work/content-private/content'
-                f'-private/content/artifacts/packs/test_pack.zip')
+                '/home/runner/work/content-private/content'
+                '-private/content/artifacts/packs/test_pack.zip')
     print("Finished creating test pack.")
 
 

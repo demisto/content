@@ -112,12 +112,12 @@ def run_test(tests_settings, demisto_user, demisto_pass,
 
 
 def run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_tests_conf,
-                      nightly_integrations, skipped_integrations_conf, skipped_integration,
-                      run_all_tests, is_filter_configured, filtered_tests, skipped_tests, secret_params,
-                      failed_playbooks, playbook_skipped_integration,
-                      succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                      server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
-                      prints_manager, thread_index=0):
+                              nightly_integrations, skipped_integrations_conf, skipped_integration,
+                              run_all_tests, is_filter_configured, filtered_tests, skipped_tests,
+                              secret_params, failed_playbooks, playbook_skipped_integration,
+                              succeed_playbooks, slack, circle_ci, build_number, server, build_name,
+                              server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
+                              prints_manager, thread_index=0):
     playbook_id = t['playbookID']
     integrations_conf = t.get('integrations', [])
     instance_names_conf = t.get('instance_names', [])
