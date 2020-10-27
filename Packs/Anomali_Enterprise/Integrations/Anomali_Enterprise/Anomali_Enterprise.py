@@ -17,10 +17,13 @@ class Client(BaseClient):
     """
 
     def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool):
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy)
+        headers = {
+            'Content-Type': 'application/json',
+            'ae-authorization': f'{username}:{password}'
+        }
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
         self._username = username
         self._password = password
-        self._headers = {'Content-Type': 'application/json'}
 
     def start_search_job_request(self, from_: str, to_: str, indicators: List[str]) -> dict:
         """Initiate a search job.
@@ -43,8 +46,6 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        # ae-authorization is needed only for get results
-        self._headers.update({'ae-authorization': f'{self._username}:{self._password}'})
         params = {'jobid': job_id}
         return self._http_request(method='GET', url_suffix='/api/v1/mars/forensic', headers=self._headers,
                                   params=params)
