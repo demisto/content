@@ -237,7 +237,7 @@ class Client(BaseClient):
         return self.parse_whois(cybertotal_result, domain)
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> CommandResults:
     """ip command: Returns IP reputation for a list of IPs
 
     :type client: ``Client``
@@ -267,7 +267,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
 
     threshold = int(args.get('threshold', default_threshold))
 
-    command_results: List[CommandResults] = []
+    ip_standard_list: List[Common.IP] = []
+    ip_data_list: List[Dict[str, Any]] = []
     ip_message_list: List[Dict[str, Any]] = []
 
     for ip in ips:
@@ -303,30 +304,23 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
             dbot_score=dbot_score
         )
 
-        readable_output = tableToMarkdown(f'IP: {ip}', ip_data)
+        ip_standard_list.append(ip_standard_context)
+        ip_data_list.append(ip_data)
 
-        command_results.append(
-            CommandResults(
-                readable_output=readable_output,
-                outputs_prefix='CyberTotal.IP',
-                outputs_key_field='task_id',
-                outputs=ip_data,
-                indicators=[ip_standard_context]
-            )
-        )
-
+    readable_output = tableToMarkdown('IP List', ip_data_list)
     if len(ip_message_list) > 0:
-        readable_output = tableToMarkdown('IP search in progress , please try again later', ip_message_list)
-        command_results.append(
-            CommandResults(
-                readable_output=readable_output,
-            )
-        )
+        readable_output += tableToMarkdown('IP search in progress , please try again later', ip_message_list)
 
-    return command_results
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='CyberTotal.IP',
+        outputs_key_field='task_id',
+        outputs=ip_data_list,
+        indicators=ip_standard_list
+    )
 
 
-def url_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def url_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> CommandResults:
     """url command: Returns URL reputation for a list of URLs
 
     :type client: ``Client``
@@ -356,8 +350,9 @@ def url_reputation_command(client: Client, args: Dict[str, Any], default_thresho
 
     threshold = int(args.get('threshold', default_threshold))
 
+    url_standard_list: List[Common.URL] = []
+    url_data_list: List[Dict[str, Any]] = []
     url_message_list: List[Dict[str, Any]] = []
-    command_results: List[CommandResults] = []
 
     for url in urls:
         url_raw_response = client.get_url_reputation(url)
@@ -392,30 +387,23 @@ def url_reputation_command(client: Client, args: Dict[str, Any], default_thresho
             dbot_score=dbot_score
         )
 
-        readable_output = tableToMarkdown(f'URL {url}', url_standard_context)
+        url_standard_list.append(url_standard_context)
+        url_data_list.append(url_raw_response)
 
-        command_results.append(
-            CommandResults(
-                readable_output=readable_output,
-                outputs_prefix='CyberTotal.URL',
-                outputs_key_field='task_id',
-                outputs=url_raw_response,
-                indicators=[url_standard_context]
-            )
-        )
-
+    readable_output = tableToMarkdown('URL List', url_data_list)
     if len(url_message_list) > 0:
-        readable_output = tableToMarkdown('URL search in progress , please try again later', url_message_list)
-        command_results.append(
-            CommandResults(
-                readable_output=readable_output
-            )
-        )
+        readable_output += tableToMarkdown('URL search in progress , please try again later', url_message_list)
 
-    return command_results
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='CyberTotal.URL',
+        outputs_key_field='task_id',
+        outputs=url_data_list,
+        indicators=url_standard_list
+    )
 
 
-def file_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def file_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> CommandResults:
     """file command: Returns File reputation for a list of Files
 
     :type client: ``Client``
@@ -445,8 +433,9 @@ def file_reputation_command(client: Client, args: Dict[str, Any], default_thresh
 
     threshold = int(args.get('threshold', default_threshold))
 
+    hash_standard_list: List[Common.File] = []
+    hash_data_list: List[Dict[str, Any]] = []
     hash_message_list: List[Dict[str, Any]] = []
-    command_results: List[CommandResults] = []
 
     for _hash in hashs:
         hash_reputation_response = client.get_file_reputation(_hash)
@@ -484,30 +473,23 @@ def file_reputation_command(client: Client, args: Dict[str, Any], default_thresh
             dbot_score=dbot_score
         )
 
-        readable_output = tableToMarkdown(f'File {_hash}', hash_standard_context)
+        hash_standard_list.append(hash_standard_context)
+        hash_data_list.append(hash_reputation_response)
 
-        command_results.append(
-            CommandResults(
-                readable_output=readable_output,
-                outputs_prefix='CyberTotal.File',
-                outputs_key_field='task_id',
-                outputs=hash_reputation_response,
-                indicators=[hash_standard_context]
-            )
-        )
-
+    readable_output = tableToMarkdown('File List', hash_data_list)
     if len(hash_message_list) > 0:
-        readable_output = tableToMarkdown('File search in progress , please try again later', hash_message_list)
-        command_results.append(
-            CommandResults(
-                readable_output=readable_output
-            )
-        )
+        readable_output += tableToMarkdown('File search in progress , please try again later', hash_message_list)
 
-    return command_results
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='CyberTotal.File',
+        outputs_key_field='task_id',
+        outputs=hash_data_list,
+        indicators=hash_standard_list
+    )
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> CommandResults:
     """domain command: Returns Domain reputation for a list of Domains
 
     :type client: ``Client``
@@ -538,8 +520,9 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
     threshold = int(args.get('threshold', default_threshold))
 
     # Context standard for Domain class
+    domain_standard_list: List[Common.Domain] = []
+    domain_data_list: List[Dict[str, Any]] = []
     domain_message_list: List[Dict[str, Any]] = []
-    command_results: List[CommandResults] = []
 
     for domain in domains:
         domain_data = client.get_domain_reputation(domain)
@@ -573,27 +556,20 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
             dbot_score=dbot_score
         )
 
-        readable_output = tableToMarkdown(f'Domain {domain}', domain_data)
+        domain_standard_list.append(domain_standard_context)
+        domain_data_list.append(domain_data)
 
-        command_results.append(
-            CommandResults(
-                readable_output=readable_output,
-                outputs_prefix='CyberTotal.Domain',
-                outputs_key_field='task_id',
-                outputs=domain_data,
-                indicators=[domain_standard_context]
-            )
-        )
-
+    readable_output = tableToMarkdown('Domain List', domain_data_list)
     if len(domain_message_list) > 0:
-        readable_output = tableToMarkdown('Domain search in progress , please try again later', domain_message_list)
-        command_results.append(
-            CommandResults(
-                readable_output=readable_output
-            )
-        )
+        readable_output += tableToMarkdown('Domain search in progress , please try again later', domain_message_list)
 
-    return command_results
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='CyberTotal.Domain',
+        outputs_key_field='task_id',
+        outputs=domain_data_list,
+        indicators=domain_standard_list
+    )
 
 
 def ip_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults:
