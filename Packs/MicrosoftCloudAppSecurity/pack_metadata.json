@@ -1,5 +1,5 @@
 {
-    "name": "MicrosoftCloudAppSecurity",
+    "name": "Microsoft Cloud App Security",
     "description": "Microsoft Cloud App Security Integration, a Cloud Access Security Broker that supports various deployment modes",
     "support": "xsoar",
     "currentVersion": "1.0.6",
