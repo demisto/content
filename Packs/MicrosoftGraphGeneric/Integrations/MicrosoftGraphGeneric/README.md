@@ -12,6 +12,8 @@ Note: In this documentation, we will use the [Application resource type](https:/
     For example, according to the [Create application API documentation](https://docs.microsoft.com/en-us/graph/api/application-post-applications?view=graph-rest-1.0&tabs=http#permissions) in order to create applications we need the *Application.ReadWrite.All* application permission.
 3. Grant admin consent for the chosen permissions.
 
+**Note**: The integration stores in cache the API access token based on the permissions it is first run with, so if the permissions are modified, it is recommended to create a new instance of the integration.
+
 ## Configure Microsoft Graph Generic on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
