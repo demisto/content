@@ -733,19 +733,23 @@ def hostname_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
 def entity_get_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     hostnames = argToList(args.get('hostname'))
     ips = argToList(args.get('ip'))
+    entity_ids = argToList(args.get('entityId'))
     if len(ips) == 0 and len(hostnames):
         raise ValueError('No input specified')
     entities = []
+    xm_data_list: List[Dict[str, Any]] = []
     for ip in ips:
         entities.extend(xm.search_entities(ip))
     for hostname in hostnames:
         entities.extend(xm.search_entities(hostname))
+    for entity_id in entity_ids:
+        entities.extend(xm.search_entities(entity_id))
     if len(entities) > 0:
         readable_output = f'**Matched the following entities**'
     else:
-        readable_output = f'**No entity matched the input {ips} {hostnames}'
+        readable_output = f'**No entity matched the input {ips} (IP) {hostnames} (Hostname) {entity_ids} (Entity ID)'
     for entity in entities:
-        xm_data_list = entity_obj_to_data(xm, entity)
+        xm_data_list.append(entity_obj_to_data(xm, entity))
         name = entity['name']
         readable_output += f'\n- {name}'
     return CommandResults(
@@ -801,8 +805,6 @@ def main() -> None:
             # xmcyber-command-name: function_command
             "xmcyber-get-version": get_version_command,
             "xmcyber-is-version-supported": is_xm_version_supported_command,
-            "xmcyber-breachpoint-update": breachpoint_update_command,
-            "xmcyber-critical-asset-add": critical_asset_add_command,
             "xmcyber-affected-critical-assets-list": affected_critical_assets_list_command,
             "xmcyber-affected-entities-list": affected_entities_list_command,
             "xmcyber-entity-get": entity_get_command,
