@@ -194,131 +194,139 @@ def get_user_command(client, args, mapper_in):
 
 
 def enable_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
-    if not is_command_enabled:
-        return None
-
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-    try:
-        okta_user = client.get_user(user_profile.get_attribute('email'))
-        if not okta_user:
-            if create_if_not_exists:
-                user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
+    if not is_command_enabled:
+        user_profile.set_result(action=IAMActions.ENABLE_USER,
+                                skip=True,
+                                skip_reason='Command is disabled.')
+    else:
+        try:
+            okta_user = client.get_user(user_profile.get_attribute('email'))
+            if not okta_user:
+                if create_if_not_exists:
+                    user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
+                else:
+                    _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                    user_profile.set_result(action=IAMActions.ENABLE_USER,
+                                            skip=True,
+                                            skip_reason=error_message)
             else:
-                _, error_message = IAMErrors.USER_DOES_NOT_EXIST
-                user_profile.set_result(action=IAMActions.ENABLE_USER,
-                                        skip=True,
-                                        skip_reason=error_message)
-        else:
-            client.activate_user(okta_user.get('id'))
-            user_profile.set_result(
-                action=IAMActions.ENABLE_USER,
-                success=True,
-                active=True,
-                iden=okta_user.get('id'),
-                email=okta_user.get('profile', {}).get('email'),
-                username=okta_user.get('profile', {}).get('login'),
-                details=okta_user
-            )
+                client.activate_user(okta_user.get('id'))
+                user_profile.set_result(
+                    action=IAMActions.ENABLE_USER,
+                    success=True,
+                    active=True,
+                    iden=okta_user.get('id'),
+                    email=okta_user.get('profile', {}).get('email'),
+                    username=okta_user.get('profile', {}).get('login'),
+                    details=okta_user
+                )
 
-    except DemistoException as e:
-        handle_exception(user_profile, e, IAMActions.ENABLE_USER)
+        except DemistoException as e:
+            handle_exception(user_profile, e, IAMActions.ENABLE_USER)
 
     return user_profile
 
 
 def disable_user_command(client, args, is_command_enabled):
-    if not is_command_enabled:
-        return None
-
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-    try:
-        okta_user = client.get_user(user_profile.get_attribute('email'))
-        if not okta_user:
-            _, error_message = IAMErrors.USER_DOES_NOT_EXIST
-            user_profile.set_result(action=IAMActions.DISABLE_USER,
-                                    skip=True,
-                                    skip_reason=error_message)
-        else:
-            client.deactivate_user(okta_user.get('id'))
-            user_profile.set_result(
-                action=IAMActions.DISABLE_USER,
-                success=True,
-                active=False,
-                iden=okta_user.get('id'),
-                email=okta_user.get('profile', {}).get('email'),
-                username=okta_user.get('profile', {}).get('login'),
-                details=okta_user
-            )
+    if not is_command_enabled:
+        user_profile.set_result(action=IAMActions.DISABLE_USER,
+                                skip=True,
+                                skip_reason='Command is disabled.')
+    else:
+        try:
+            okta_user = client.get_user(user_profile.get_attribute('email'))
+            if not okta_user:
+                _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                user_profile.set_result(action=IAMActions.DISABLE_USER,
+                                        skip=True,
+                                        skip_reason=error_message)
+            else:
+                client.deactivate_user(okta_user.get('id'))
+                user_profile.set_result(
+                    action=IAMActions.DISABLE_USER,
+                    success=True,
+                    active=False,
+                    iden=okta_user.get('id'),
+                    email=okta_user.get('profile', {}).get('email'),
+                    username=okta_user.get('profile', {}).get('login'),
+                    details=okta_user
+                )
 
-    except DemistoException as e:
-        handle_exception(user_profile, e, IAMActions.DISABLE_USER)
+        except DemistoException as e:
+            handle_exception(user_profile, e, IAMActions.DISABLE_USER)
 
     return user_profile
 
 
 def create_user_command(client, args, mapper_out, is_command_enabled):
-    if not is_command_enabled:
-        return None
-
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-    try:
-        okta_user = client.get_user(user_profile.get_attribute('email'))
-        if okta_user:
-            _, error_message = IAMErrors.USER_ALREADY_EXISTS
-            user_profile.set_result(action=IAMActions.CREATE_USER,
-                                    skip=True,
-                                    skip_reason=error_message)
-        else:
-            okta_profile = user_profile.map_object(mapper_out)
-            created_user = client.create_user(okta_profile)
-            user_profile.set_result(
-                action=IAMActions.CREATE_USER,
-                success=True,
-                active=False if created_user.get('status') == DEPROVISIONED_STATUS else True,
-                iden=created_user.get('id'),
-                email=created_user.get('profile', {}).get('email'),
-                username=created_user.get('profile', {}).get('login'),
-                details=created_user
-            )
+    if not is_command_enabled:
+        user_profile.set_result(action=IAMActions.CREATE_USER,
+                                skip=True,
+                                skip_reason='Command is disabled.')
+    else:
+        try:
+            okta_user = client.get_user(user_profile.get_attribute('email'))
+            if okta_user:
+                _, error_message = IAMErrors.USER_ALREADY_EXISTS
+                user_profile.set_result(action=IAMActions.CREATE_USER,
+                                        skip=True,
+                                        skip_reason=error_message)
+            else:
+                okta_profile = user_profile.map_object(mapper_out)
+                created_user = client.create_user(okta_profile)
+                user_profile.set_result(
+                    action=IAMActions.CREATE_USER,
+                    success=True,
+                    active=False if created_user.get('status') == DEPROVISIONED_STATUS else True,
+                    iden=created_user.get('id'),
+                    email=created_user.get('profile', {}).get('email'),
+                    username=created_user.get('profile', {}).get('login'),
+                    details=created_user
+                )
 
-    except DemistoException as e:
-        handle_exception(user_profile, e, IAMActions.CREATE_USER)
+        except DemistoException as e:
+            handle_exception(user_profile, e, IAMActions.CREATE_USER)
 
     return user_profile
 
 
 def update_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
-    if not is_command_enabled:
-        return None
-
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-    try:
-        okta_user = client.get_user(user_profile.get_attribute('email'))
-        if okta_user:
-            user_id = okta_user.get('id')
-            okta_profile = user_profile.map_object(mapper_out)
-            full_okta_profile = merge(okta_profile, okta_user)
-            updated_user = client.update_user(user_id, full_okta_profile)
-            user_profile.set_result(
-                action=IAMActions.UPDATE_USER,
-                success=True,
-                active=False if updated_user.get('status') == DEPROVISIONED_STATUS else True,
-                iden=updated_user.get('id'),
-                email=updated_user.get('profile', {}).get('email'),
-                username=updated_user.get('profile', {}).get('login'),
-                details=updated_user
-            )
-        else:
-            if create_if_not_exists:
-                user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
+    if not is_command_enabled:
+        user_profile.set_result(action=IAMActions.UPDATE_USER,
+                                skip=True,
+                                skip_reason='Command is disabled.')
+    else:
+        try:
+            okta_user = client.get_user(user_profile.get_attribute('email'))
+            if okta_user:
+                user_id = okta_user.get('id')
+                okta_profile = user_profile.map_object(mapper_out)
+                full_okta_profile = merge(okta_profile, okta_user)
+                updated_user = client.update_user(user_id, full_okta_profile)
+                user_profile.set_result(
+                    action=IAMActions.UPDATE_USER,
+                    success=True,
+                    active=False if updated_user.get('status') == DEPROVISIONED_STATUS else True,
+                    iden=updated_user.get('id'),
+                    email=updated_user.get('profile', {}).get('email'),
+                    username=updated_user.get('profile', {}).get('login'),
+                    details=updated_user
+                )
             else:
-                _, error_message = IAMErrors.USER_DOES_NOT_EXIST
-                user_profile.set_result(action=IAMActions.UPDATE_USER,
-                                        skip=True,
-                                        skip_reason=error_message)
+                if create_if_not_exists:
+                    user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
+                else:
+                    _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                    user_profile.set_result(action=IAMActions.UPDATE_USER,
+                                            skip=True,
+                                            skip_reason=error_message)
 
-    except DemistoException as e:
-        handle_exception(user_profile, e, IAMActions.UPDATE_USER)
+        except DemistoException as e:
+            handle_exception(user_profile, e, IAMActions.UPDATE_USER)
 
     return user_profile
 
