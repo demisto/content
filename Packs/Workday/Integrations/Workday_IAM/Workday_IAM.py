@@ -89,7 +89,7 @@ def fetch_incidents(client, mapper_in, report_url):
             }
             events.append(event)
     except Exception as e:
-        demisto.error(f'Failed to fetch events. Reason: ' + str(e))
+        demisto.error('Failed to fetch events. Reason: ' + str(e))
         raise e
 
     return events
