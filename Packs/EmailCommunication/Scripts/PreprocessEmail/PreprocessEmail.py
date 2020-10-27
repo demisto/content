@@ -188,7 +188,6 @@ def update_latest_message_field(incident_id, item_id):
     except:
         demisto.debug(f'SetIncident Failed.'
                       f'"emaillatestmessage" field was not updated with {item_id} value for incident: {incident_id}')
-        pass
 
 
 def main():
