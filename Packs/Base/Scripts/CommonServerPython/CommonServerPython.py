@@ -4616,7 +4616,7 @@ class IAMVendorActionResult:
     :rtype: ``None``
     """
 
-    def __init__(self, success=False, active=None, iden=None, username=None, email=None, error_code=None,
+    def __init__(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
                  error_message=None, details=None, skip=False, skip_reason=None, action=None):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
@@ -4742,7 +4742,7 @@ class IAMUserProfile:
 
         return return_entry
 
-    def set_result(self, success=False, active=None, iden=None, username=None, email=None, error_code=None,
+    def set_result(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
                    error_message=None, details=None, skip=False, skip_reason=None, action=None):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
