@@ -2760,7 +2760,7 @@ def return_results(results):
         demisto.results(None)
         return
 
-    if results and isinstance(results, list) and isinstance(results[0], CommandResults):
+    if results and isinstance(results, list) and len(results) > 0 and isinstance(results[0], CommandResults):
         for result in results:
             demisto.results(result)
         return
