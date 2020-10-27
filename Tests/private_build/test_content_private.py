@@ -1,12 +1,7 @@
 from __future__ import print_function
-import os
-import re
 import sys
-import json
 import time
 import argparse
-import threading
-import subprocess
 import traceback
 from time import sleep
 import datetime
@@ -21,7 +16,7 @@ from demisto_sdk.commands.common.constants import PB_Status
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
     LOG_COLORS, str2bool
 
-from Tests.test_content import TestsSettings, ParallelPrintsManager, TestsDataKeeper, \
+from Tests.test_content import SettingsTester, ParallelPrintsManager, DataKeeperTester, \
     print_test_summary, update_test_msg, turn_off_telemetry, \
     create_result_files, get_all_tests, get_instances_ips_and_names, get_server_numeric_version, \
     initialize_queue_and_executed_tests_set, get_test_records_of_given_test_names, \
@@ -55,7 +50,7 @@ def options_handler():
                                                   'tests to run')
 
     options = parser.parse_args()
-    tests_settings = TestsSettings(options)
+    tests_settings = SettingsTester(options)
     return tests_settings
 
 
@@ -315,7 +310,7 @@ def manage_tests(tests_settings):
     instances_ips = get_instances_ips_and_names(tests_settings)
     number_of_instances = len(instances_ips)
     prints_manager = ParallelPrintsManager(number_of_instances)
-    tests_data_keeper = TestsDataKeeper()
+    tests_data_keeper = DataKeeperTester()
 
     for ami_instance_name, ami_instance_ip in instances_ips:
         if ami_instance_name == tests_settings.serverVersion:
