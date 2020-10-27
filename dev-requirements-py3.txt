@@ -20,6 +20,3 @@ circleci==1.2.2
 pylint==2.6.0
 coloredlogs==14.0
 pandas==1.1.0
-pyarrow==1.0.0
-prettytable==1.0.1
-slackclient==2.9.3

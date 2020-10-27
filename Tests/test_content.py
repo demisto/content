@@ -24,6 +24,11 @@ import requests
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
 try:
+    """
+    Those dual-imports are required as Slack updated their sdk and it breaks BC.
+    `from slack import...` is for new slack and local runs.
+    `from slackclient import...` is for old slack and running in CircleCI (old slack in docker image)
+    """
     from slack import WebClient as SlackClient  # New slack
 except ModuleNotFoundError:
     from slackclient import SlackClient  # Old slack
