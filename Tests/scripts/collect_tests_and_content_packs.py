@@ -537,11 +537,11 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
                 missing_ids = missing_ids - {_id}
                 tests.add(test)
 
-            # else:
-            #     message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
-            #     logging.error(message)
-            #     global _FAILED
-            #     _FAILED = True
+            else:
+                message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
+                logging.error(message)
+                global _FAILED
+                _FAILED = True
 
     return missing_ids
 
