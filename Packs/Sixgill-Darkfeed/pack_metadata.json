@@ -11,7 +11,7 @@
         "Data Enrichment & Threat Intelligence",
         "Forensics & Malware Analysis"
     ],
-    "tags": ["threat intelligence", "Dark Web", "Malware"],
+    "tags": ["Threat Intelligence", "Dark Web", "Malware"],
     "useCases": [
         "Threat Intelligence Management",
         "Incident response",
