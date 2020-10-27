@@ -382,14 +382,19 @@ def main():
             user_profile = enable_user_command(client, args, mapper_out, is_enable_disable_enabled,
                                                is_create_enabled, create_if_not_exists)
 
-        elif command == 'test-module':
-            test_module(client)
-
         if user_profile:
             return_results(user_profile)
 
-    # Log exceptions
     except Exception:
+        # We don't want to return an error entry CRUD commands execution
+        return_results(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+
+    try:
+        if command == 'test-module':
+            test_module(client)
+
+    except Exception:
+        # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
 
 
