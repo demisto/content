@@ -1,0 +1,1 @@
+!cb-eedr-process-search process_name="vmtoolsd.exe"
