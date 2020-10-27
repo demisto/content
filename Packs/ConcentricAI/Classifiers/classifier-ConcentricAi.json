@@ -7,7 +7,6 @@
         "high": "ConcentricAI Security Event"
     },
     "name": "ConcentricAi",
-    "nameRaw": "ConcentricAi",
     "transformer": {
         "complex": {
             "accessor": "",
