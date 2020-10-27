@@ -155,7 +155,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage45: demisto/teams:1.0.0.7832
 tests:
 - Test_EDL
 fromversion: 5.5.0
