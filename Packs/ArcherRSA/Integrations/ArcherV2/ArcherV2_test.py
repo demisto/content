@@ -172,20 +172,19 @@ def test_get_level_by_app_id(requests_mock):
 @pytest.mark.parametrize('requested_object, is_successful',
                          [(GET_RESPONSE_NOT_SUCCESSFUL_JSON, False),
                           (GET_RESPONSE_SUCCESSFUL_JSON, True)])
-def test_login(requests_mock, requested_object, is_successful):
+def test_update_session(mocker, requests_mock, requested_object, is_successful):
     requests_mock.post(BASE_URL + 'api/core/security/login', json=requested_object)
-    requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
-    requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
+    mocker.patch.object(demisto, 'results')
     client = Client(BASE_URL, '', '', '', '')
     if is_successful:
-        levels = client.get_level_by_app_id('1')
-        assert levels == GET_LEVELS_BY_APP
+        client.update_session()
+        assert demisto.results.call_count == 0
     else:
         with pytest.raises(SystemExit) as e:
             # in case login wasn't successful, return_error will exit with a reason (for example, LoginNotValid)
             # return_error reached
-            client.get_level_by_app_id('1')
-        assert e.value.code == 0
+            client.update_session()
+        assert e
 
 
 def test_generate_field_contents():
