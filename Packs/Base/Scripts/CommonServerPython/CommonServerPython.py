@@ -2642,7 +2642,7 @@ class CommandResults:
     :param outputs: the data to be returned and will be set to context
 
     :type indicators: ``list``
-    :param indicators: DEPRECATED: Please use indicator instead.
+    :param indicators: DEPRECATED: use 'indicator' instead.
 
     :type indicator: ``Common.Indicator``
     :param indicator: single indicator like Common.IP, Common.URL, Common.File, etc.
@@ -2669,7 +2669,7 @@ class CommandResults:
             raw_response = outputs
 
         if indicators and indicator:
-            raise ValueError('indicator cannot be used when indicators is not empty')
+            raise ValueError('indicators is DEPRECATED, use only indicator')
         self.indicators = indicators  # type: Optional[List[Common.Indicator]]
         self.indicator = indicator  # type: Optional[Common.Indicator]
 
