@@ -40,16 +40,19 @@ configuration:
   type: 8
 - defaultvalue: IAM Sync User - Workday
   display: Mapper (incoming)
-  hidden: false
   name: mapper_in
   required: false
   type: 0
+- defaultvalue: 'true'
+  display: Sync user profiles on first run
+  name: first_run
+  required: false
+  type: 8
 description: Use the Workday IAM Integration as part of the IAM premium pack.
 display: Workday IAM
 name: Workday IAM
 script:
   dockerimage: demisto/python3:3.8.6.12176
-  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -58,8 +61,8 @@ script:
   subtype: python3
   type: python
   ismappable: true
-defaultmapperin: IAM Sync User - Workday
-defaultclassifier: Workday Classifier
 tests:
 - No tests
+defaultmapperin: IAM Sync User - Workday
+defaultclassifier: Workday Classifier
 fromversion: 5.0.0

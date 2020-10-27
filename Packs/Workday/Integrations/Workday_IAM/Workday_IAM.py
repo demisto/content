@@ -287,7 +287,7 @@ def main():
             report_url = params.get('report_url')
 
             last_run = demisto.getLastRun()
-            if not last_run.get('synced_users'):
+            if not last_run.get('synced_users') and params.get('first_run'):
                 last_run = workday_first_run_command(client, mapper_in, report_url)
 
             elif not events:
