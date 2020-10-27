@@ -104,14 +104,14 @@ script:
         description: The attack technique which compromised the entity
         type: String
 
-  - name: xmcyber-is-version-supported
+  - name: xmcyber-version-supported
     description: Check if current XM version supports Demisto integration
     outputs:
       - contextPath: XMCyber.IsVersion.valid
         description: Flag that indicates if the version is valid
         type: Boolean
     
-  - name: xmcyber-get-version
+  - name: xmcyber-version-get
     description: Get current xm version
     outputs:
       - contextPath: XMCyber.Version.system

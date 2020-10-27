@@ -199,10 +199,6 @@ def test_is_version_supported(requests_mock):
     assert_response(invalid_response, 'XMCyber.IsVersion', 'valid', {'valid': False})
 
 
-def test_base_url(requests_mock):
-    assert_response(get_base_url(get_xm_mock(), {}), 'XMCyber', 'url', TEST_URL)
-
-
 def _get_risk_score_incidents(create_time):
     return [{
         'trend': 21,

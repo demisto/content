@@ -716,7 +716,7 @@ def test_module_command_internal(xm: XM, args: Dict[str, Any]) -> CommandResults
 
     except DemistoException as e:
         if 'Forbidden' in str(e):
-            raise Exception('Authorization Error: make sure API Key is correctly set')
+            raise Exception('Authorization Error: make sure API Key is correct and has Security Analyst role')
         else:
             raise e
     except Exception as e:
@@ -759,7 +759,7 @@ def main() -> None:
             "xmcyber-f-incidents": fetch_incidents_command,  # for debugging of fetch incidents
             # XM Cyber Command list
             # xmcyber-command-name: function_command
-            "xmcyber-get-version": get_version_command,
+            "xmcyber-version-get": get_version_command,
             "xmcyber-is-version-supported": is_xm_version_supported_command,
             "xmcyber-affected-critical-assets-list": affected_critical_assets_list_command,
             "xmcyber-affected-entities-list": affected_entities_list_command,
