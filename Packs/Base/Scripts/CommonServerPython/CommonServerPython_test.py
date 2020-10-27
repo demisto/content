@@ -1505,7 +1505,7 @@ class TestCommandResults:
                 indicator=ip,
                 indicators=[ip]
             )
-        assert e.value.args[0] == 'indicator cannot be used when indicators is not empty'
+        assert e.value.args[0] == 'indicators is DEPRECATED, use only indicator'
 
 
 class TestBaseClient:
