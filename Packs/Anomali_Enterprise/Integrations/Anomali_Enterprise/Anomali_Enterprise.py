@@ -261,8 +261,8 @@ def main() -> None:
     """
     params = demisto.params()
     server_url = params.get('url')
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy') is True
 
