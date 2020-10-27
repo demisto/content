@@ -1,13 +1,9 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 3bc592b2-2f54-4254-805a-5fc19dc11b18
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Playbook to check WebEx webpage is reachable and not creating any errors
-id: bc601842-704f-4d36-86dd-630b2e59c56d
+id: Check WebEx Feed
 inputs: []
 name: Check WebEx Feed
 outputs: []
@@ -29,6 +25,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 256a92c3-20bd-4a10-89af-4f8b09c9a2a6
     timertriggers: []
     type: start
@@ -195,6 +192,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 711e1fc9-d860-4eb6-8c5b-b6b7c23c3b83
     timertriggers: []
     type: title
@@ -471,3 +469,6 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

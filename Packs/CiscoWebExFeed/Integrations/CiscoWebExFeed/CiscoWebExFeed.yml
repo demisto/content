@@ -91,6 +91,11 @@ configuration:
   name: feed
   type: 8
   required: false
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
 description: The WebEx IP Address and Domain web site provided by Cisco to document
   IPs and Domains used by WebEx. The WebEx Feed integration fetches indicators from
   the web page, with which you can create a list (whitelist, blacklist, EDL, etc.)
@@ -114,12 +119,13 @@ script:
       - Both
     description: Gets indicators from the feed.
     name: webex-get-indicators
-  dockerimage: demisto/btfl-soup:1.0.1.12410
+  dockerimage: demisto/btfl-soup:1.0.1.12768
   feed: true
   runonce: false
   script: ''
   subtype: python3
   type: python
+  dockerimage45: demisto/btfl-soup:1.0.1.12410
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
