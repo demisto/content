@@ -1,7 +1,7 @@
 
 
 URL_RES_JSON = {
-    'results': [{'confidence': 50, 'display_text': 'http://www.shivartatoo.com/nuklyuql',
+    'results': [{'confidence': 50, 'display_text': 'http://www.malware.com',
                  'files': [{'confidence': 50, 'display_text': '934a72f37d861097c85dc3c2e16bca3c',
                             'key': '934a72f37d861097c85dc3c2e16bca3c', 'last_seen': '2020-10-07T20:26:30.000Z',
                             'relationship': 'contactsC2At', 'relationship_created_on': '2020-10-07T20:04:51.000Z',
@@ -28,7 +28,7 @@ URL_RES_JSON = {
                             'sha256': 'bc75daf4592c8aace308f72a6393927e2ae174784cbdaba1b6b641b60aa2c84d',
                             'href': '/rest/fundamental/v0/b96a5814-bf98-4ad9-9980-7632f5c6a20f'}],
                  'index_timestamp': '2020-10-26T09:29:54.600Z',
-                 'key': 'http://www.shivartatoo.com/nuklyuql',
+                 'key': 'http://www.malware.com',
                  'last_modified': '2020-10-18T15:25:00.000Z',
                  'last_published': '2020-10-05T23:51:53.000Z', 'last_seen': '2020-10-06T00:59:33.000Z',
                  'last_seen_as': ['MALWARE_C2'], 'malware_family': ['JavaScript Downloader'],
@@ -48,7 +48,7 @@ URL_RES_JSON = {
 
 IP_RES_JSON = {
     'results':
-        [{'confidence': 100, 'display_text': '185.25.50.93',
+        [{'confidence': 100, 'display_text': '0.0.0.0',
           'files': [{'display_text': 'bf0fea133818387cca7eaef5a52c0aed', 'key': 'bf0fea133818387cca7eaef5a52c0aed',
                      'relationship': 'contactsC2At', 'relationship_created_on': '2018-06-06T13:13:37.000Z',
                      'relationship_last_published': '2018-06-06T13:13:37.000Z', 'type': 'file',
@@ -62,7 +62,7 @@ IP_RES_JSON = {
                      'sha256': '6fcf4592f9261d5734fb3b8534f6839ab65f68fd9ff14a9005225135e743226c',
                      'href': '/rest/fundamental/v0/ff8cbab2-d81d-4839-9045-d566282ef4b9'}],
           'index_timestamp': '2020-10-22T08:00:43.518Z',
-          'key': '185.25.50.93',
+          'key': '0.0.0.0',
           'last_modified': '2020-10-08T20:55:58.000Z',
           'last_published': '2018-01-04T15:22:25.000Z',
           'last_seen_as': ['MALWARE_DOWNLOAD', 'MALWARE_C2'],

@@ -1,6 +1,6 @@
 import pytest
 import requests_mock
-from iDefense import Client, url_command, ip_command, _calculate_dbot_score
+from iDefense_v2 import Client, url_command, ip_command, _calculate_dbot_score
 from CommonServerPython import DemistoException
 from test_data.response_constants import URL_RES_JSON, IP_RES_JSON
 
@@ -9,12 +9,12 @@ API_URL = "https://test.com"
 
 MOCK_IP = [
     (
-        'https://test.com/rest/threatindicator/v0/ip?key.values=185.25.50.93',
+        'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0',
         200,
         IP_RES_JSON,
         {
-            'IP': [{'Address': '185.25.50.93'}],
-            'DBOTSCORE': [{'Indicator': '185.25.50.93', 'Type': 'ip', 'Vendor': 'iDefense', 'Score': 2}]
+            'IP': [{'Address': '0.0.0.0'}],
+            'DBOTSCORE': [{'Indicator': '0.0.0.0', 'Type': 'ip', 'Vendor': 'iDefense', 'Score': 2}]
         }
     )
 ]
@@ -43,7 +43,7 @@ def test_ip_command(url, status_code, json_data, expected_output):
 
     """
 
-    ip_to_check = {'ip': '185.25.50.93'}
+    ip_to_check = {'ip': '0.0.0.0'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False)
@@ -109,7 +109,7 @@ def test_wrong_connection():
               - raise error if there is no access because of wrong api token
 
        """
-    from iDefense import test_module
+    from iDefense_v2 import test_module
     with requests_mock.Mocker() as m:
         mock_address = 'https://test.com/rest/threatindicator/v0/'
         m.get(mock_address, status_code=401, json={})
@@ -132,7 +132,7 @@ def test_connection():
               - ok if there is access
 
        """
-    from iDefense import test_module
+    from iDefense_v2 import test_module
     with requests_mock.Mocker() as m:
         mock_address = 'https://test.com/rest/threatindicator/v0/'
         m.get(mock_address, status_code=200, json={})
@@ -142,12 +142,13 @@ def test_connection():
 
 MOCK_URL = [
     (
-        'https://test.com/rest/threatindicator/v0/url?key.values=http%3A%2F%2Fwww.shivartatoo.com%2Fnuklyuql',
+        'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com',
         200,
         URL_RES_JSON,
         {
-            'URL': [{'Data': 'http://www.shivartatoo.com/nuklyuql'}],
-            'DBOTSCORE': [{'Indicator': 'http://www.shivartatoo.com/nuklyuql', 'Type': 'url', 'Vendor': 'iDefense', 'Score': 2}]
+            'URL': [{'Data': 'http://www.malware.com'}],
+            'DBOTSCORE': [{'Indicator': 'http://www.malware.com', 'Type': 'url', 'Vendor': 'iDefense',
+                           'Score': 2}]
         }
     )
 ]
@@ -155,7 +156,7 @@ MOCK_URL = [
 
 @pytest.mark.parametrize('url, status_code, json_data, expected_output', MOCK_URL)
 def test_url_command(url, status_code, json_data, expected_output):
-    url_to_check = {'url': 'http://www.shivartatoo.com/nuklyuql'}
+    url_to_check = {'url': 'http://www.malware.com'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False)
