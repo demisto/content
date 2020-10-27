@@ -17,8 +17,6 @@ MIN_MAJOR_VERSION = 1
 MIN_MINOR_VERSION = 38
 FULL_INCIDENTS_SECONDS = 86  # 400
 
-BREACHPOINT_LABEL = 'Demisto Breachpoint'
-CRITICAL_ASSET_LABEL = 'Demisto Critical Asset'
 DEFAULT_TIME_ID = 'timeAgo_days_7'
 PREVIOUS_DEFAULT_TIME_ID = 'timeAgo_days_7'
 XM_CYBER_INCIDENT_TYPE = 'XM Cyber Risk Score'
@@ -419,43 +417,6 @@ def entity_score(entity: Any):
 ''' COMMAND FUNCTIONS '''
 
 
-def breachpoint_update_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    ips = argToList(args.get('ip'))
-    if len(ips) == 0:
-        raise ValueError('IP(s) not specified')
-    # MATAN TODO
-    # entities = xm.search_entities(ips)
-    # xm.label_entities(entities, BREACHPOINT_LABEL)
-    # labeled_entities = xm.get_entities_by_label(BREACHPOINT_LABEL)
-    labeled_entities: List = []
-    readable_output = 'The {0} has been updated, there are {1} labeled entities'.format(
-        BREACHPOINT_LABEL, len(labeled_entities))
-    return CommandResults(
-        outputs_prefix='XMCyber.Entity',
-        outputs_key_field='entityId',
-        outputs=labeled_entities,
-        readable_output=readable_output
-    )
-
-
-def critical_asset_add_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    ips = argToList(args.get('ip'))
-    if len(ips) == 0:
-        raise ValueError('IP(s) not specified')
-    # MATAN TODO
-    # entities = xm.search_entities(ips)
-    # xm.label_entities(entities, CRITICAL_ASSET_LABEL)
-    # labeled_entities = xm.get_entities_by_label(CRITICAL_ASSET_LABEL)
-    labeled_entities: List = []
-    readable_output = f'The {CRITICAL_ASSET_LABEL} has been updated, there are {len(labeled_entities)} labeled entities'
-    return CommandResults(
-        outputs_prefix='XMCyber.Entity',
-        outputs_key_field='entityId',
-        outputs=labeled_entities,
-        readable_output=readable_output
-    )
-
-
 def affected_critical_assets_list_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     time_id = args.get('time_id')
     if not time_id:
@@ -732,14 +693,6 @@ def entity_get_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_base_url(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    return CommandResults(
-        readable_output=xm.get_base_url(),
-        outputs_prefix='XMCyber',
-        outputs_key_field='url',
-        outputs=xm.get_base_url()
-    )
-
 def test_module_command_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
 #     """Tests API connectivity and authentication'
 
@@ -811,7 +764,6 @@ def main() -> None:
             "xmcyber-affected-critical-assets-list": affected_critical_assets_list_command,
             "xmcyber-affected-entities-list": affected_entities_list_command,
             "xmcyber-entity-get": entity_get_command,
-            "xmcyber-get-base-url": get_base_url,
             # Common commands
             "ip": ip_command,
             "hostname": hostname_command

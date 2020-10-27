@@ -320,13 +320,6 @@ script:
         description: The number of processors that the host is using.
         type: Number
 
-  - name: xmcyber-get-base-url
-    description: Get current xm version
-    outputs:
-      - contextPath: XMCyber.Version.system
-        description: 'Get current base url'
-        type: String
-
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: true
   longRunning: false
