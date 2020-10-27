@@ -246,6 +246,7 @@ VERDICTS_TO_DBOTSCORE = {
 
 ERROR_DICT = {
     '404': 'Invalid URL.',
+    '408': 'Invalid URL.',
     '409': 'Invalid message or missing parameters.',
     '500': 'Internal error.',
     '503': 'Rate limit exceeded.'
