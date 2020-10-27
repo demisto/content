@@ -1434,7 +1434,7 @@ def checkpoint_list_packages_command(client: Client, limit: int, offset: int) ->
     )
     return command_results
 
-  
+
 def checkpoint_list_package_command(client: Client, identifier: str) -> CommandResults:
     """
     Show existing package object using object name or uid.
@@ -1466,8 +1466,8 @@ def checkpoint_list_package_command(client: Client, identifier: str) -> CommandR
         raw_response=result
     )
     return command_results
-  
-  
+
+
 def checkpoint_list_gateways_command(client: Client, limit: int, offset: int) -> CommandResults:
     """
     Retrieve all policy gateways.
@@ -1929,7 +1929,7 @@ def main():
 
         elif command == 'checkpoint-verify-policy':
             return_results(checkpoint_verify_policy_command(client, **demisto.args()))
-            
+
         elif command == 'checkpoint-package-list':
             return_results(checkpoint_list_package_command(client, **demisto.args()))
         if not is_sid_provided:
