@@ -3154,7 +3154,6 @@
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
         "ThreatConnect v2 - Test": "Issue 26782",
-        "Pwned v2 test": "Issue 26601",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
@@ -3175,11 +3174,13 @@
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "Indeni_test": "Non-certified partner pack, this should be skipped for now",
         "playbook-feodoteackerhash_test": "Issue 29304",
-        "urlscan_malicious_Test": "Issue 20111",
         "TCPUtils-Test": "Issue 29677",
         "OpenCTI Feed Test": "Issue 29592",
         "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
-        "Polygon-Test": "Issue 29060"
+        "Polygon-Test": "Issue 29060",
+        "AttackIQ - Test": "Issue 29774",
+        "CyberTotal_TestPlaybook": "Issue 29776",
+        "AWS-securityhub Test": "Issue 29796"
     },
     "skipped_integrations": {
         
