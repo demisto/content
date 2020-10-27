@@ -3178,7 +3178,10 @@
         "TCPUtils-Test": "Issue 29677",
         "OpenCTI Feed Test": "Issue 29592",
         "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
-        "Polygon-Test": "Issue 29060"
+        "Polygon-Test": "Issue 29060",
+        "AttackIQ - Test": "Issue 29774",
+        "CyberTotal_TestPlaybook": "Issue 29776",
+        "AWS-securityhub Test": "Issue 29796"
     },
     "skipped_integrations": {
         

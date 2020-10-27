@@ -196,6 +196,10 @@ class QRadarClient:
         self.lock = Lock()
 
     @property
+    def server(self):
+        return self._server
+
+    @property
     def offenses_per_fetch(self):
         return self._offenses_per_fetch
 
@@ -1127,6 +1131,7 @@ def enrich_offense_result(
     * Rule id -> name
     * IP id -> value
     * IP value -> Asset
+    * Add offense link
     """
     domain_ids = set()
     rule_ids = set()
@@ -1136,6 +1141,8 @@ def enrich_offense_result(
             include_deleted=True, include_reserved=True
         )
         for offense in response:
+            offense["LinkToOffense"] = f"{client.server}/console/do/sem/offensesummary?" \
+                                       f"appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}"
             enrich_offense_timestamps_and_closing_reason(
                 client, offense, type_dict, closing_reason_dict
             )
