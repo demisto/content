@@ -287,7 +287,10 @@ references:
       name: Infrastructure testing
       when: always
       command: |
-        python3 -m pytest Tests Utils -v
+        python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
+        python3 -m pytest ./Tests/Marketplace/Tests/ -v
+        python3 -m pytest ./Tests/scripts/utils/tests -v
+        python3 -m pytest Utils -v
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
           ./Tests/scripts/sdk_pylint_check.sh

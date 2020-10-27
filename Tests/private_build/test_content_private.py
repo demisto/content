@@ -11,7 +11,7 @@ import urllib3
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
 
-from Tests.test_integration import Docker, test_integration, disable_all_integrations
+from Tests.test_integration import Docker, check_integration, disable_all_integrations
 from demisto_sdk.commands.common.constants import PB_Status
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
     LOG_COLORS, str2bool
@@ -58,8 +58,8 @@ def run_test_logic(tests_settings, c, failed_playbooks,
                    integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, demisto_user, demisto_pass, build_name,
                    prints_manager, thread_index=0):
-    status, inc_id = test_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager,
-                                      test_options, thread_index=thread_index)
+    status, inc_id = check_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager,
+                                       test_options, thread_index=thread_index)
     if status == PB_Status.COMPLETED:
         prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color,
                                      thread_index,

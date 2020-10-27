@@ -823,8 +823,8 @@ def configure_proxy_unsecure(integration_params):
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return playbook status
-def test_integration(client, server_url, demisto_user, demisto_pass, integrations, playbook_id,
-                     prints_manager, options=None, is_mock_run=False, thread_index=0):
+def check_integration(client, server_url, demisto_user, demisto_pass, integrations, playbook_id,
+                      prints_manager, options=None, is_mock_run=False, thread_index=0):
     options = options if options is not None else {}
     # create integrations instances
     module_instances = []
