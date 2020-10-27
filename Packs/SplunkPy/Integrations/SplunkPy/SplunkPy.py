@@ -196,9 +196,14 @@ def notable_to_incident(event):
     if demisto.get(event, 'rule_description'):
         incident["details"] = event["rule_description"]
     if demisto.get(event, "_time"):
+        demisto.debug("########## EVENT TIME FROM SPLUNK")
         incident["occurred"] = event["_time"]
     else:
+        demisto.debug("################# EVENT TIME PRESET")
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
+
+    demisto.debug(f"################## EVENT {incident['name']} TIME {incident['occured']}")
+
     event = replace_keys(event) if REPLACE_FLAG else event
     incident["rawJSON"] = json.dumps(event)
     labels = []
@@ -482,6 +487,9 @@ def fetch_incidents(service):
 
     earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
     latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
+
+    demisto.debug(f"################# FETCH LAST RUN {last_run}")
+    demisto.debug(f"################# FETCH NOW      {now}")
 
     kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
