@@ -242,6 +242,7 @@
         {
             "integrations": "Bambenek Consulting Feed",
             "playbookID": "BambenekConsultingFeed_Test",
+            "memory_threshold": 250,
             "fromversion": "5.5.0"
         },
         {
@@ -1425,7 +1426,7 @@
             "nightly": true
         },
         {
-            "integrations": "PhishTank",
+            "integrations": "PhishTank V2",
             "playbookID": "PhishTank Testing"
         },
         {
@@ -3087,7 +3088,6 @@
             "fromversion": "5.5.0"
         },
         {
-
             "integrations": "Talos Feed",
             "playbookID": "FeedTalosTestPlaybook",
             "fromversion": "5.5.0"
@@ -3096,7 +3096,6 @@
             "playbookID": "Field polling test",
             "timeout": 600,
             "fromversion": "5.0.0"
-
         },
         {
             "integrations": "Analyst1",
@@ -3178,7 +3177,13 @@
         "SMB test": "Issue 26454",
         "TestCofenseFeed": "Issue 29198",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
-        "Indeni_test": "Non-certified partner pack, this should be skipped for now"
+        "Indeni_test": "Non-certified partner pack, this should be skipped for now",
+        "playbook-feodoteackerhash_test": "Issue 29304",
+        "urlscan_malicious_Test": "Issue 20111",
+        "TCPUtils-Test": "Issue 29677",
+        "OpenCTI Feed Test": "Issue 29592",
+        "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
+        "Polygon-Test": "Issue 29060"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -3269,7 +3274,6 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "Ivanti Heat": "Issue 26259",
-        "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
         "Hatching Triage": "Community contribution",
@@ -3304,7 +3308,8 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "Palo Alto Minemeld": "Issue #26878"
+        "Palo Alto Minemeld": "Issue #26878",
+        "AttackIQFireDrill": "License issues #29774"
     },
     "nightly_integrations": [
         "Lastline v2",
