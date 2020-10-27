@@ -100,7 +100,8 @@ def exchangelib_cleanup():
                 protocol.thread_pool.terminate()
                 del protocol.__dict__["thread_pool"]
             else:
-                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+                demisto.info(
+                    'Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
         except Exception as ex:
             demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
 
@@ -132,6 +133,21 @@ def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_t
         for attachment in attachments:
             m.attach(attachment)
         m.send_and_save()
+    return m
+
+
+def send_email_reply_to_mailbox(account, item_id, to, body, subject=None, bcc=None, cc=None, html_body=None,
+                                attachments=[]):
+    item_to_reply_to = account.inbox.get(id=item_id)
+    subject = subject or item_to_reply_to.subject
+    message_body = HTMLBody(html_body) if html_body else body
+    m = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
+                                      bcc_recipients=bcc)
+    m = m.save(account.drafts)
+    for attachment in attachments:
+        m.attach(attachment)
+    m.send()
+
     return m
 
 
@@ -232,6 +248,74 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     }
 
 
+def reply_email(to, item_id, body="", subject=None, bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
+                attachNames="", from_mailbox=None, manualAttachObj=None):
+    account = get_account(from_mailbox or ACCOUNT_EMAIL)
+    bcc = bcc.split(",") if bcc else None
+    cc = cc.split(",") if cc else None
+    to = to.split(",") if to else None
+    manualAttachObj = manualAttachObj if manualAttachObj is not None else []
+    subject = subject[:252] + '...' if len(subject) > 255 else subject
+
+    file_entries_for_attachments = []  # type: list
+    attachments_names = []  # type: list
+
+    if attachIDs:
+        file_entries_for_attachments = attachIDs if isinstance(attachIDs, list) else attachIDs.split(",")
+        if attachNames:
+            attachments_names = attachNames if isinstance(attachNames, list) else attachNames.split(",")
+        else:
+            for att_id in file_entries_for_attachments:
+                att_name = demisto.getFilePath(att_id)['name']
+                if isinstance(att_name, list):
+                    att_name = att_name[0]
+                attachments_names.append(att_name)
+        if len(file_entries_for_attachments) != len(attachments_names):
+            raise Exception("attachIDs and attachNames lists should be the same length")
+
+    attachments = collect_manual_attachments(manualAttachObj)
+
+    if attachCIDs:
+        file_entries_for_attachments_inline = attachCIDs if isinstance(attachCIDs, list) else attachCIDs.split(",")
+        for att_id_inline in file_entries_for_attachments_inline:
+            try:
+                file_info = demisto.getFilePath(att_id_inline)
+            except Exception as ex:
+                demisto.info("EWS error from getFilePath: {}".format(ex))
+                raise Exception("entry %s does not contain a file" % att_id_inline)
+            att_name_inline = file_info["name"]
+            with open(file_info["path"], 'rb') as f:
+                attachments.append(FileAttachment(content=f.read(), name=att_name_inline, is_inline=True,
+                                                  content_id=att_name_inline))
+
+    for i in range(0, len(file_entries_for_attachments)):
+        entry_id = file_entries_for_attachments[i]
+        attachment_name = attachments_names[i]
+        try:
+            res = demisto.getFilePath(entry_id)
+        except Exception as ex:
+            raise Exception("entry {} does not contain a file: {}".format(entry_id, str(ex)))
+        file_path = res["path"]
+        with open(file_path, 'rb') as f:
+            attachments.append(FileAttachment(content=f.read(), name=attachment_name))
+
+    send_email_reply_to_mailbox(account, item_id, to,body, subject, bcc, cc, htmlBody, attachments)
+    result_object = {
+        'from': account.primary_smtp_address,
+        'to': to,
+        'subject': subject.encode('utf-8'),
+        'attachments': attachments_names
+    }
+
+    return {
+        'Type': entryTypes['note'],
+        'Contents': result_object,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Sent email', result_object),
+    }
+
+
 def prepare():
     if NON_SECURE:
         BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
@@ -299,6 +383,8 @@ def main():
             test_module()
         elif demisto.command() == 'send-mail':
             demisto.results(send_email(**args))
+        elif demisto.command() == 'reply-mail':
+            demisto.results(reply_email(**args))
     except Exception as e:
         import time
 
