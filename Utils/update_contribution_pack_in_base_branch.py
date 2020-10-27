@@ -51,7 +51,7 @@ def main():
 
 def get_pack_dir(branch: str, pr_number: str, repo: str) -> List[str]:
     """
-    Get packs dir names from a contribution pull request changed files
+    Get packs dir names from a contribution pull request changed files.
     Args:
         branch: The contrib branch
         pr_number: The contrib PR
