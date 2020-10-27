@@ -20,7 +20,7 @@ FETCH_PRIORITY = demisto.params().get('fetch_priority')
 FETCH_TIME_DEFAULT = '3 days'
 FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
 FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
-otrs_client = None
+otrs_client = None  # type: Client
 
 
 ''' HELPER FUNCTIONS '''
