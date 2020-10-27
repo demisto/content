@@ -924,10 +924,12 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
         'lastUpdate': 0
     }
 
+    mocker.patch.object(demisto, 'results')
     mocker.patch('PaloAltoNetworks_XDR.get_incident_extra_data_command', side_effect=Exception("Rate limit exceeded"))
-    with pytest.raises(SystemExit) as e:
+    with pytest.raises(SystemExit):
         _ = get_remote_data_command(client, args)
-        assert "API rate limit" == str(e)
+
+    assert demisto.results.call_args[0][0].get('Contents') == "API rate limit"
 
 
 def test_get_remote_data_command_should_not_update(requests_mock):
