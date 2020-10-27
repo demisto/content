@@ -745,13 +745,14 @@ def create_user_iam(default_base_dn, args, mapper_out):
                                     error_message=str(e),
                                     action=IAMActions.CREATE_USER,
                                     )
-        return (iam_user_profile)
+        return iam_user_profile
 
 
 def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out):
     """Update an AD user by User Profile.
     :param default_base_dn: The location in the DIT where the search will start
     :param args: Demisto args.
+    :param create_if_not_exists: Created the user if it does not exists.
     :param mapper_out: Mapping User Profiles to AD users.
     :return: Updated User
     """
@@ -772,12 +773,11 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out):
         new_ou = ad_user.get("ou")
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
 
-        if not user_exists and create_if_not_exists == "true":
-            create_user_iam(default_base_dn, args, mapper_out)
+        if not user_exists and create_if_not_exists:
+            return create_user_iam(default_base_dn, args, mapper_out)
 
         elif user_exists:
             dn = user_dn(sam_account_name, default_base_dn)
-
             # fields that can't be modified
             # notice that we are changing the ou and that effects the dn and cn
             for field in FIELDS_THAT_CANT_BE_MODIFIED:
@@ -1072,6 +1072,7 @@ def enable_user_iam(default_base_dn, disabled_users_group_cn, args, create_if_no
     :param default_base_dn: The location in the DIT where the search will start
     :param disabled_users_group_cn: The disabled group cn, the user will be removed from this group when enabled
     :param args: Demisto args.
+    :param create_if_not_exists: Created the user if it does not exists.
     :param mapper_out: Mapping User Profiles to AD users.
     :return: The enabled user
     """
@@ -1088,9 +1089,8 @@ def enable_user_iam(default_base_dn, disabled_users_group_cn, args, create_if_no
 
     user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
 
-    if not user_exists and create_if_not_exists == "true":
-        create_user_iam(default_base_dn, iam_user_profile, mapper_out)
-        return
+    if not user_exists and create_if_not_exists:
+        return create_user_iam(default_base_dn, iam_user_profile, mapper_out)
 
     dn = user_dn(sam_account_name, default_base_dn)
 
