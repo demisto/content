@@ -481,6 +481,7 @@ def fetch_incidents(service):
         current_time_for_fetch = current_time_in_splunk
 
     if len(last_run) == 0:
+        demisto.debug("#################### FIRST FETCH!!!!!")
         fetch_time_in_minutes = parse_time_to_minutes()
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
