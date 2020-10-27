@@ -675,31 +675,30 @@ def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     # so the null check here as XSOAR will always check it before your code is called.
     # Although it's not mandatory to check, you are welcome to do so.
 
-    name = args.get('name', None)
-    if not name:
+    if name := args.get('name'):
+        # Call the Client function and get the raw response
+        result = client.say_hello(name)
+
+        # Create the human readable output.
+        # It will  be in markdown format - https://www.markdownguide.org/basic-syntax/
+        # More complex output can be formatted using ``tableToMarkDown()`` defined
+        # in ``CommonServerPython.py``
+        readable_output = f'## {result}'
+
+        # More information about Context:
+        # https://xsoar.pan.dev/docs/integrations/context-and-outputs
+        # We return a ``CommandResults`` object, and we want to pass a custom
+        # markdown here, so the argument ``readable_output`` is explicit. If not
+        # passed, ``CommandResults``` will do a ``tableToMarkdown()`` do the data
+        # to generate the readable output.
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='hello',
+            outputs_key_field='',
+            outputs=result
+        )
+    else:  # no name
         raise ValueError('name not specified')
-
-    # Call the Client function and get the raw response
-    result = client.say_hello(name)
-
-    # Create the human readable output.
-    # It will  be in markdown format - https://www.markdownguide.org/basic-syntax/
-    # More complex output can be formatted using ``tableToMarkDown()`` defined
-    # in ``CommonServerPython.py``
-    readable_output = f'## {result}'
-
-    # More information about Context:
-    # https://xsoar.pan.dev/docs/integrations/context-and-outputs
-    # We return a ``CommandResults`` object, and we want to pass a custom
-    # markdown here, so the argument ``readable_output`` is explicit. If not
-    # passed, ``CommandResults``` will do a ``tableToMarkdown()`` do the data
-    # to generate the readable output.
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='hello',
-        outputs_key_field='',
-        outputs=result
-    )
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
