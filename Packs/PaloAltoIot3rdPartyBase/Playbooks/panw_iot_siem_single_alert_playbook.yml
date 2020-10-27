@@ -21,12 +21,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ff1b9a9c-2efb-4c76-82b6-e31279d89e1b
+      id: fd1f6b24-500b-452e-8eb7-d0abdeaec5e5
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: ff1b9a9c-2efb-4c76-82b6-e31279d89e1b
+    taskid: fd1f6b24-500b-452e-8eb7-d0abdeaec5e5
     timertriggers: []
     type: start
     view: |-
@@ -56,13 +56,13 @@ tasks:
       brand: ""
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'
-      id: ea86a7bf-f167-46a7-89a7-83f15fa21a3b
+      id: b2712577-bdf6-48d0-8b20-56c5e4e2a418
       iscommand: false
       name: Is  SIEM enabled?
       script: IsIntegrationAvailable
       type: condition
       version: -1
-    taskid: ea86a7bf-f167-46a7-89a7-83f15fa21a3b
+    taskid: b2712577-bdf6-48d0-8b20-56c5e4e2a418
     timertriggers: []
     type: condition
     view: |-
@@ -99,13 +99,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: fbe8886c-8e9e-4a32-8c65-cc2000e6401b
+      id: 9554afe1-43ca-4929-8be2-583ed413f4f4
       iscommand: true
       name: send-status-to-panw-iot-cloud
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: fbe8886c-8e9e-4a32-8c65-cc2000e6401b
+    taskid: 9554afe1-43ca-4929-8be2-583ed413f4f4
     timertriggers: []
     type: regular
     view: |-
@@ -137,13 +137,13 @@ tasks:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: Given a id (alert-id, vulnerability-id or mac-address) returns
         the asset details
-      id: 7d5e0ac3-461f-49e4-8152-9b9206fb00b2
+      id: 2ed5cff0-7c31-4545-8733-b1f824769ad4
       iscommand: true
       name: get-single-alert-details
       script: Palo Alto IoT Third-Party-Integration Base|||get-single-asset-details
       type: regular
       version: -1
-    taskid: 7d5e0ac3-461f-49e4-8152-9b9206fb00b2
+    taskid: 2ed5cff0-7c31-4545-8733-b1f824769ad4
     timertriggers: []
     type: regular
     view: |-
@@ -159,7 +159,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - "14"
     note: false
     quietmode: 0
     scriptarguments:
@@ -172,13 +172,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: Converts alert detail maps to CEF syslogs
-      id: 6a0a02d2-e4dd-40e5-8dfd-3789aa2f5e35
+      id: 6a946d97-ea24-4a67-8db1-fa6ed33b82e5
       iscommand: true
       name: convert-alerts-to-cef
       script: Palo Alto IoT Third-Party-Integration Base|||convert-alerts-to-cef
       type: regular
       version: -1
-    taskid: 6a0a02d2-e4dd-40e5-8dfd-3789aa2f5e35
+    taskid: 6a946d97-ea24-4a67-8db1-fa6ed33b82e5
     timertriggers: []
     type: regular
     view: |-
@@ -212,20 +212,20 @@ tasks:
     task:
       brand: Syslog Sender
       description: Sends a message to Syslog.
-      id: 3cc0ce42-64fd-448f-8fe0-90978b6827da
+      id: a5d7853b-c30e-49c8-80ef-5e99371a0a98
       iscommand: true
       name: syslog-send
       script: Syslog Sender|||syslog-send
       type: regular
       version: -1
-    taskid: 3cc0ce42-64fd-448f-8fe0-90978b6827da
+    taskid: a5d7853b-c30e-49c8-80ef-5e99371a0a98
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 460,
+          "y": 1230
         }
       }
   "8":
@@ -249,13 +249,13 @@ tasks:
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
-      id: 4d440d99-321d-41df-8e86-fdd2dbe840bf
+      id: 2f48ffc9-8af6-41f6-8482-0bbedc823c4e
       iscommand: false
       name: isError
       script: isError
       type: condition
       version: -1
-    taskid: 4d440d99-321d-41df-8e86-fdd2dbe840bf
+    taskid: 2f48ffc9-8af6-41f6-8482-0bbedc823c4e
     timertriggers: []
     type: condition
     view: |-
@@ -292,13 +292,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 979010a0-db52-4b3a-88ec-20417b880f65
+      id: b4b5f1c3-6897-4919-88c1-c792aa034cd2
       iscommand: true
       name: send-status-to-panw-iot-cloud
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 979010a0-db52-4b3a-88ec-20417b880f65
+    taskid: b4b5f1c3-6897-4919-88c1-c792aa034cd2
     timertriggers: []
     type: regular
     view: |-
@@ -327,13 +327,13 @@ tasks:
       brand: ""
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
-      id: 404aa72a-f4ad-42d2-8290-af30532f7563
+      id: 56bf7ebd-ca5b-40b2-8663-7e690f760693
       iscommand: false
       name: Exists
       script: Exists
       type: condition
       version: -1
-    taskid: 404aa72a-f4ad-42d2-8290-af30532f7563
+    taskid: 56bf7ebd-ca5b-40b2-8663-7e690f760693
     timertriggers: []
     type: condition
     view: |-
@@ -370,13 +370,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 83a92550-4887-4233-8675-f6d27202326a
+      id: 031e4d12-5294-4986-8883-f165654d95f1
       iscommand: true
       name: send-status-to-panw-iot-cloud
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 83a92550-4887-4233-8675-f6d27202326a
+    taskid: 031e4d12-5294-4986-8883-f165654d95f1
     timertriggers: []
     type: regular
     view: |-
@@ -413,20 +413,20 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: d625355e-319c-4802-8ec4-400d30c38e58
+      id: 2f5deefe-e825-4329-80c0-15dfcd3e91ff
       iscommand: true
       name: send-status-to-panw-iot-cloud
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: d625355e-319c-4802-8ec4-400d30c38e58
+    taskid: 2f5deefe-e825-4329-80c0-15dfcd3e91ff
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1295
+          "x": 460,
+          "y": 1430
         }
       }
   "13":
@@ -448,20 +448,99 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 87dbe8e7-cd31-4dae-853e-c1a412224542
+      id: 1f546892-a938-461a-8a11-7fb8bca1d336
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 87dbe8e7-cd31-4dae-853e-c1a412224542
+    taskid: 1f546892-a938-461a-8a11-7fb8bca1d336
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1475
+          "y": 1675
+        }
+      }
+  "14":
+    continueonerror: true
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "15"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${PaloAltoIoTIntegrationBase.AlertSyslogs}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 99824bf5-bbc8-4d0d-8d1c-6c50518f6ad2
+      iscommand: false
+      name: Exists
+      script: Exists
+      type: condition
+      version: -1
+    taskid: 99824bf5-bbc8-4d0d-8d1c-6c50518f6ad2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1040
+        }
+      }
+  "15":
+    continueonerror: true
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integration-name:
+        simple: siem
+      message:
+        simple: No Alert found with given ID  (${incident.zb_ticketid}).
+      playbook-name:
+        simple: panw_iot_siem_single_alert_playbook
+      status:
+        simple: success
+      type:
+        simple: alert
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: sends a status message back to PANW IOT cloud
+      id: 34cd8b8c-169a-43f1-8df5-298e6cdf0a65
+      iscommand: true
+      name: send-status-to-panw-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
+      type: regular
+      version: -1
+    taskid: 34cd8b8c-169a-43f1-8df5-298e6cdf0a65
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1075,
+          "y": 1120
         }
       }
 version: -1
@@ -470,8 +549,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1520,
-        "width": 1360,
+        "height": 1720,
+        "width": 1405,
         "x": 50,
         "y": 50
       }
