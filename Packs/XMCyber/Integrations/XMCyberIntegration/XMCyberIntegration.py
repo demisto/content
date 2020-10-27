@@ -13,23 +13,6 @@ import enum
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-### DELETE
-def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
-    """
-      Parses timestamp (milliseconds) to a date string in the provided date format (by default: ISO 8601 format)
-      Examples: (1541494441222, 1541495441000, etc.)
-      :type timestamp: ``int`` or ``str``
-      :param timestamp: The timestamp to be parsed (required)
-      :type date_format: ``str``
-      :param date_format: The date format the timestamp should be parsed to. (optional)
-      :return: The parsed timestamp in the date_format
-      :rtype: ``str``
-    """
-    return datetime.utcfromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
-''' CONSTANTS '''
-### DELETE
-
-
 
 # Minimum supported version is:  1.38
 MIN_MAJOR_VERSION = 1
@@ -42,6 +25,7 @@ DEFAULT_TIME_ID = 'timeAgo_days_7'
 PREVIOUS_DEFAULT_TIME_ID = 'timeAgo_days_7'
 XM_CYBER_INCIDENT_TYPE = 'XM Cyber Risk Score'
 XM_CYBER_INCIDENT_TYPE_TECHNIQUE = 'XM Cyber Technique'
+XM_CYBER_INCIDENT_TYPE_ENTITY = 'XM Cyber Entity'
 TOP_ENTITIES = 3
 PAGE_SIZE = 50
 MAX_PAGES = 10
@@ -120,11 +104,11 @@ class EVENT_NAME:
 
 
 class SEVERITY:
-    Informational = 'informational'
-    Low = 'Low'
-    Medium = 'Medium'
-    High = 'High'
-    Critical = 'Critical'
+    Unknown = 0
+    Low = 1
+    Medium = 2
+    High = 3
+    Critical = 4
 
 
 class XM:
@@ -224,6 +208,11 @@ class XM:
             'timeId': time_id
         }, page_size, max_pages)
 
+    def get_technique_remediation(self, technique, time_id=DEFAULT_TIME_ID):
+        return self.client.get(f"{URLS.Techniques}/{technique}/remediation", {
+            'timeId': time_id
+        })
+
     def get_entity_report(self, entity_id: str, time_id: str):
         return self.client.get(URLS.System_Report, {
             'entityId': entity_id,
@@ -231,17 +220,20 @@ class XM:
         })
 
     def get_base_url(self):
-        writeLog(f"Base url is: {self.client.get_base_url()}")
         return self.client.get_base_url()
 
+    def _get_base_url_without_api(self):
+        best_url = self.get_base_url()
+        return best_url.replace('/api', '')
+
     def get_entity_report_url(self, entityId, timeId=DEFAULT_TIME_ID):
-        return f"{self.get_base_url()}/systemReport/entity?entityId={entityId}&timeId={timeId}"
+        return f"{self._get_base_url_without_api()}/systemReport/entity?entityId={entityId}&timeId={timeId}"
 
     def get_dashboard_url(self):
-        return f"{self.get_base_url()}/#/dashboard"
+        return f"{self._get_base_url_without_api()}/#/dashboard"
 
     def get_technique_url(self, technique, timeId=DEFAULT_TIME_ID):
-        return f"{self.get_base_url()}/#/scenarioHub/systemReport/attackTechniques/{technique}?timeId={timeId}"
+        return f"{self._get_base_url_without_api()}/#/scenarioHub/systemReport/attackTechniques/{technique}?timeId={timeId}"
 
     def get_link_for_report(self, event_type, data):
         if event_type == EVENT_NAME.AssetAtRisk or event_type == EVENT_NAME.ChokePoint:
@@ -258,6 +250,8 @@ class XM:
     def get_incident_type(self, event_type):
         if event_type == EVENT_NAME.TopTechnique:
             return XM_CYBER_INCIDENT_TYPE_TECHNIQUE
+        if event_type == EVENT_NAME.AssetAtRisk or event_type == EVENT_NAME.ChokePoint:
+            return XM_CYBER_INCIDENT_TYPE_ENTITY
         return XM_CYBER_INCIDENT_TYPE
 
     def create_xm_event(self, name, data, date = None):
@@ -267,9 +261,9 @@ class XM:
             date = datetime.now()
 
         data["name"] = f'{EVENT_NAME.EventPrefix}{name}'
-        data["create_time"] = timestamp_to_datestring(date.timestamp() * 1000) # CommonServerPython.timestamp_to_datestring(date)
+        data["create_time"] = timestamp_to_datestring(date.timestamp() * 1000)
         data["type"] = self.get_incident_type(name)
-        data["severity"] = SEVERITY.Informational
+        data["severity"] = SEVERITY.Low
         data["linkToReport"] = self.get_link_for_report(name, data)
 
         return data
@@ -288,6 +282,23 @@ class XM:
             #if trend is not None and trend != '' and int(trend) >= 0: # < 0:
             events_array.append(self.create_xm_event(event_name, top))
 
+    def _get_technique_best_practices_and_remediation(self, technique):
+        advices = []
+        for best_practice in technique["bestPractice"]:
+            advices.append({
+                'type': 'Best Practice',
+                'text': best_practice
+            })
+
+        remediationArr = self.get_technique_remediation(technique["technique"])
+        for remediation in remediationArr:
+            advices.append({
+                'type': 'Remediation',
+                'text': remediation["displayName"]
+            })
+
+        return advices
+
     def _create_events_from_top_techniques(self, events_array, current_techniques, previous_techniques):
         for current_tech in current_techniques:
             previous_tech = None
@@ -297,6 +308,7 @@ class XM:
                     break
 
             if previous_tech is None or current_tech["criticalAssets"] == previous_tech["criticalAssets"]: # should be >
+                current_tech["advices"] = self._get_technique_best_practices_and_remediation(current_tech)
                 events_array.append(self.create_xm_event(EVENT_NAME.TopTechnique, current_tech))
 
     def get_fetch_incidents_events(self):
@@ -334,6 +346,10 @@ def writeLog(msg, logLevel=LogLevel.Info):
         demisto.debug(msg)
     elif logLevel == LogLevel.Info or logLevel == LogLevel.Error:
         demisto.info(f'NNNNNN2 {msg}')
+
+
+def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
+    return datetime.utcfromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
 
 
 def create_client():
@@ -518,17 +534,11 @@ def _fetch_incidents_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
     if xm.is_fetch_incidents:
         last_run = demisto.getLastRun()
         if len(last_run) > 0:
-            last_run = demisto.getLastRun()
             now = datetime.now()
-            writeLog(f'last run is: {str(last_run)}')
-            writeLog(f'last run start time is: {str(last_run["start_time"])}')
             start_time = datetime.fromisoformat(last_run["start_time"])
             diff = dates_diff_seconds(now, start_time)
-            writeLog(f'Diff from previous run: {str(diff)}')
             if diff < FULL_INCIDENTS_SECONDS:
                 should_run = False
-        else:
-            writeLog(f'Last run is null')
 
     if should_run:
         events = xm.get_fetch_incidents_events()
@@ -538,7 +548,6 @@ def _fetch_incidents_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
 
 
 def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    writeLog('Running fetch incidents 2')
     events = _fetch_incidents_internal(xm, args)
 
     if xm.is_fetch_incidents:
@@ -550,7 +559,7 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 'rawJson': json.dumps(event),
                 'type': event['type'],
                 'rawType': event['type'],
-                # 'severity': event["severity"]
+                'severity': event["severity"]
             }
             incidents.append(incident)
 
