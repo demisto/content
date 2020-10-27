@@ -1,6 +1,6 @@
 category: Identity and Access Management
 commonfields:
-  id: Workday IAM
+  id: Workday IAM_copy
   version: -1
 configuration:
 - display: Username
@@ -11,13 +11,7 @@ configuration:
   name: report_url
   required: true
   type: 0
-- additionalinfo: Import schedule to get events
-  display: Fetch Events Frequency In minutes
-  name: fetch_events_time_minutes
-  required: false
-  type: 0
-- additionalinfo: Maximum number of events to fetch at a time
-  defaultvalue: '50'
+- defaultvalue: '50'
   display: Fetch Limit (Recommended less than 200)
   name: max_fetch
   required: false
@@ -49,8 +43,8 @@ configuration:
   required: false
   type: 8
 description: Use the Workday IAM Integration as part of the IAM premium pack.
-display: Workday IAM
-name: Workday IAM
+display: Workday IAM_copy
+name: Workday IAM_copy
 script:
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: true
@@ -60,7 +54,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  ismappable: true
 tests:
 - No tests
 defaultmapperin: IAM Sync User - Workday
