@@ -581,7 +581,6 @@ def main():
     else:
         update_session()
 
-
     LOG('command is %s' % (demisto.command(), ))
 
     try:
