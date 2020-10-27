@@ -1349,7 +1349,7 @@ def search_ip_command(ip):
             outputs=autofocus_ip_output,
             readable_output=md,
             raw_response=raw_res,
-            indicators=[ip]
+            indicator=ip
         ))
 
     return command_results
@@ -1412,7 +1412,7 @@ def search_domain_command(args):
             outputs=autofocus_domain_output,
             readable_output=md,
             raw_response=raw_res,
-            indicators=[domain]
+            indicator=domain
         ))
 
     return command_results
@@ -1466,7 +1466,7 @@ def search_url_command(url):
 
             readable_output=md,
             raw_response=raw_res,
-            indicators=[url]
+            indicator=url
         ))
 
     return command_results
@@ -1518,7 +1518,7 @@ def search_file_command(file):
 
             readable_output=md,
             raw_response=raw_res,
-            indicators=[file]
+            indicator=file
         ))
 
     return command_results
