@@ -355,10 +355,8 @@ def get_user_id_from_email(email, users):
     raise Exception('no user found with email ' + email)
 
 
-def remove_user_command(rest_client, args):
+def get_tenant_ids(rest_client, args):
     external_tenant_id = args.get('tenant_id')
-    incident_id = int(args['incident_id'])
-    user_to_remove = args['username']
     user_tenant_mappings = rest_client.get_tenant_mappings()
 
     if external_tenant_id is None:
@@ -366,7 +364,12 @@ def remove_user_command(rest_client, args):
             user_tenant_mappings)
     else:
         respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
-                                                                          external_tenant_id)
+                                                                      external_tenant_id)
+    return respond_tenant_id, external_tenant_id
+
+
+def validate_user(rest_client, args):
+    user_to_remove = args['username']
 
     try:
         users = rest_client.get_all_users()
@@ -384,6 +387,14 @@ def remove_user_command(rest_client, args):
         demisto.error('no user found with email ' + user_to_remove)
         raise Exception('no user found with email ' + user_to_remove)
 
+    return user_to_remove
+
+
+def remove_user_command(rest_client, args):
+    incident_id = int(args['incident_id'])
+    respond_tenant_id, external_tenant_id = get_tenant_ids(rest_client, args)
+    user_to_remove = validate_user(rest_client, args)
+
     try:
         res = rest_client.construct_and_send_remove_user_from_incident_mutation(respond_tenant_id,
                                                                                 user_to_remove,
@@ -397,32 +408,8 @@ def remove_user_command(rest_client, args):
 
 def assign_user_command(rest_client, args):
     incident_id = int(args['incident_id'])
-    user_to_add = args['username']
-    external_tenant_id = args.get('tenant_id')
-    user_tenant_mappings = rest_client.get_tenant_mappings()
-
-    if external_tenant_id is None:
-        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
-            user_tenant_mappings)
-    else:
-        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
-                                                                          external_tenant_id)
-
-    try:
-        users = rest_client.get_all_users()
-    except Exception as err:
-        demisto.error('error adding user to incident: ' + str(err))
-        raise Exception('error adding user to incident: ' + str(err))
-
-    valid_user = False
-    for user in users:
-        if user.get('email') == user_to_add:
-            valid_user = True
-            break
-
-    if valid_user is False:
-        demisto.error('no user found with email ' + user_to_add)
-        raise Exception('no user found with email ' + user_to_add)
+    respond_tenant_id, external_tenant_id = get_tenant_ids(rest_client, args)
+    user_to_add = validate_user(rest_client, args)
 
     try:
         res = rest_client.construct_and_send_add_user_to_incident_mutation(respond_tenant_id,
@@ -443,16 +430,8 @@ def close_incident_command(rest_client, args):
     :return: ??
     """
     respond_user = rest_client.get_current_user()
-    user_tenant_mappings = rest_client.get_tenant_mappings()
     incident_id = int(args['incident_id'])
-    external_tenant_id = args.get('tenant_id')
-
-    if external_tenant_id is None:
-        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
-            user_tenant_mappings)
-    else:
-        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
-                                                                          external_tenant_id)
+    respond_tenant_id, external_tenant_id = get_tenant_ids(rest_client, args)
 
     feedback_status = args['incident_feedback']
     feedback_selected_options = args.get('feedback_selected_options')
@@ -491,15 +470,7 @@ def close_incident_command(rest_client, args):
 
 
 def get_incident_command(rest_client, args):
-    external_tenant_id = args.get('tenant_id')
-    user_tenant_mappings = rest_client.get_tenant_mappings()
-
-    if external_tenant_id is None:
-        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
-            user_tenant_mappings)
-    else:
-        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
-                                                                          external_tenant_id)
+    respond_tenant_id, external_tenant_id = get_tenant_ids(rest_client, args)
 
     incident_id = int(args['incident_id'])
 
@@ -507,6 +478,25 @@ def get_incident_command(rest_client, args):
         rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
     return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
 
+def update_remote_system_command(rest_client, args):
+    demisto.debug('in update remote system command')
+    remote_args = UpdateRemoteSystemArgs(args)
+    try:
+        if remote_args.delta:
+            changed_fields = list(remote_args.delta.keys())
+            demisto.debug(f'Got the following delta keys {str(changed_fields)} to '
+                          f' update Respond incident {remote_args.remote_incident_id}')
+            demisto.debug(remote_args.data)
+            if changed_fields['title']:
+                # todo construct_and_send_update_incident_title
+            elif changed_fields['feedback']:
+                # best thing to do here is probably fit the args into the feedback mold already in close_incident_commmand
+
+    except Exception as e:
+        demisto.debug(f"Error in XDR outgoing mirror for incident {remote_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+
+        return remote_args.remote_incident_id
 
 def fetch_incidents(rest_client, last_run=dict()):
     """
@@ -609,6 +599,9 @@ def main():
 
         elif demisto.command() == 'respond-get-incident':
             return_outputs(get_incident_command(rest_client, demisto.args()))
+
+        elif demisto.command() == 'update-remote-system':
+            return_results(update_remote_system_command(rest_client, demisto.args()))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':
