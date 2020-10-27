@@ -12,7 +12,6 @@ import enum
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 # Minimum supported version is:  1.38
 MIN_MAJOR_VERSION = 1
 MIN_MINOR_VERSION = 38
@@ -343,10 +342,6 @@ def writeLog(msg, logLevel=LogLevel.Info):
         demisto.debug(msg)
     elif logLevel == LogLevel.Info or logLevel == LogLevel.Error:
         demisto.info(f'NNNNNN2 {msg}')
-
-
-#  def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
-#      return datetime.utcfromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
 
 
 def create_client():
