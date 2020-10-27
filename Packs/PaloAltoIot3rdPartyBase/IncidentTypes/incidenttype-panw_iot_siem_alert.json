@@ -11,7 +11,7 @@
  "id": "panw_iot_siem_alert",
  "locked": false,
  "name": "panw_iot_siem_alert",
- "playbookId": "panw_iot_siem_alert",
+ "playbookId": "panw_iot_siem_single_alert_playbook",
  "preProcessingScript": "",
  "readonly": false,
  "reputationCalc": 0,
