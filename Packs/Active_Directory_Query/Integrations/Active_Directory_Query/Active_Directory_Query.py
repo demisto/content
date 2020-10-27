@@ -716,26 +716,27 @@ def create_user_iam(default_base_dn, args, mapper_out):
             raise DemistoException("User must have SAMAccountName")
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
         if user_exists:
-            return "User already exists"
-
-        user_dn = generate_dn_and_remove_from_user_profile(ad_user)
-
-        object_classes = ["top", "person", "organizationalPerson", "user"]
-
-        success = conn.add(user_dn, object_classes, ad_user)
-        if success:
-            iam_user_profile.set_result(success=True,
-                                        email=ad_user.get('email'),
-                                        username=ad_user.get('name'),
-                                        details=ad_user,
-                                        action=IAMActions.CREATE_USER,
-                                        active=True)
+            iam_user_profile.set_result(action=IAMActions.CREATE_USER)
 
         else:
-            iam_user_profile.set_result(success=False,
-                                        error_message="Failed to create user",
-                                        action=IAMActions.CREATE_USER
-                                        )
+            user_dn = generate_dn_and_remove_from_user_profile(ad_user)
+
+            object_classes = ["top", "person", "organizationalPerson", "user"]
+
+            success = conn.add(user_dn, object_classes, ad_user)
+            if success:
+                iam_user_profile.set_result(success=True,
+                                            email=ad_user.get('email'),
+                                            username=ad_user.get('name'),
+                                            details=ad_user,
+                                            action=IAMActions.CREATE_USER,
+                                            active=True)
+
+            else:
+                iam_user_profile.set_result(success=False,
+                                            error_message="Failed to create user",
+                                            action=IAMActions.CREATE_USER
+                                            )
 
         return iam_user_profile
 
@@ -1148,9 +1149,7 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
 
     user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
     if not user_exists:
-        iam_user_profile.set_result(success=True,
-                                    action=IAMActions.DISABLE_USER,
-                                    )
+        iam_user_profile.set_result(action=IAMActions.DISABLE_USER)
         return iam_user_profile
 
     dn = user_dn(sam_account_name, default_base_dn)
