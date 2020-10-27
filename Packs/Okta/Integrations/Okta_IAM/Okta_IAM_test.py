@@ -3,14 +3,6 @@ from requests import Response, Session
 from Okta_IAM import Client, get_user_command  # , create_user_command, update_user_command, enable_user_command
 from CommonServerPython import IAMErrors, IAMUserProfile
 
-''' ARGUMENTS '''
-
-USER_ARGS = {
-    'user-profile': {
-        'email': 'testdemisto2@paloaltonetworks.com'
-    }
-}
-
 
 ''' OUTPUTS '''
 
@@ -34,12 +26,7 @@ GET_USER_REQUEST__BAD_RESPONSE._content = b'{"errorCode": "mock_error_code", ' \
 
 
 def mock_client():
-    client = Client(
-        base_url='https://test.com',
-        verify=False,
-        token='test',
-        proxy=False
-    )
+    client = Client(base_url='https://test.com')
     return client
 
 
@@ -60,7 +47,7 @@ def test_get_user_command__existing_user(mocker):
         - Ensure the resulted User Profile object holds the correct user details
     """
     client = mock_client()
-    args = USER_ARGS
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     mocker.patch.object(demisto, 'command', return_value='get-user')
     mocker.patch.object(client, 'get_user', return_value=GET_USER_OUTPUT__EXISTING_USER)
@@ -89,9 +76,9 @@ def test_get_user_command__non_existing_user(mocker):
         - Ensure the resulted User Profile object holds information about an unsuccessful result.
     """
     client = mock_client()
-    args = USER_ARGS
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
-    mocker.patch.object(demisto, 'command', return_value='get-user')
+    mocker.patch.object(demisto, 'command', return_value='iam-get-user')
     mocker.patch.object(client, 'get_user', return_value=None)
 
     user_profile = get_user_command(client, args, 'mocked_mapper_in')
@@ -115,7 +102,7 @@ def test_get_user_command__bad_response(mocker):
         - Ensure the resulted User Profile object holds information about the bad response.
     """
     client = mock_client()
-    args = USER_ARGS
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     mocker.patch.object(demisto, 'command', return_value='get-user')
     mocker.patch.object(Session, 'request', return_value=GET_USER_REQUEST__BAD_RESPONSE)

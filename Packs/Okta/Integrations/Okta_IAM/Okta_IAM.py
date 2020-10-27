@@ -27,27 +27,7 @@ ERROR_CODES_TO_SKIP = [
 class Client(BaseClient):
     """
     Okta IAM Client class that implements logic to authenticate with Okta.
-
-    Attributes:
-        base_url (str): Okta API's base URL.
-        verify (bool): XSOAR insecure parameter.
-        headers (dict): Okta API request headers.
-        proxy (bool): Whether to run the integration using the system proxy.
     """
-
-    def __init__(self, base_url: str, verify: bool, token: str, proxy: bool):
-        self.base_url = base_url
-        self.verify = verify
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': f'SSWS {token}'
-        }
-        super().__init__(base_url=base_url,
-                         verify=verify,
-                         proxy=proxy,
-                         headers=headers,
-                         ok_codes=(200,))
 
     def test(self):
         uri = 'users/me'
@@ -360,14 +340,21 @@ def main():
     is_update_enabled = demisto.params().get("update-user-enabled")
     create_if_not_exists = demisto.params().get("create-if-not-exists")
 
-    LOG(f'Command being called is {command}')
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': f'SSWS {token}'
+    }
 
     client = Client(
         base_url=base_url,
         verify=verify_certificate,
-        token=token,
-        proxy=proxy
+        proxy=proxy,
+        headers=headers,
+        ok_codes=(200,)
     )
+
+    demisto.debug(f'Command being called is {command}')
 
     try:
         if command == 'iam-get-user':
