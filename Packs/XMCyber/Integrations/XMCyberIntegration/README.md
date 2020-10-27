@@ -1,5 +1,5 @@
-Simulates attack vectors to critical assets
-This integration was integrated and tested with version xx of XMCyber
+XMCyber continuously finds attack vectors to critical assets. This integration fetches events (incidents) on changes in the overall risk score, risk to assets, or impacting attack techniques. Additionally incidents are enriched with incoming attack vectors to the incident's endpoints, and critical assets at risk form the incident.
+This integration was integrated and tested with version 1.38 of XMCyber
 ## Configure XMCyber on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

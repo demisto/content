@@ -4,7 +4,7 @@ commonfields:
 name: XMCyber
 display: XM Cyber
 category: Data Enrichment & Threat Intelligence
-description: Simulates attack vectors to critical assets
+description: XMCyber continuously finds attack vectors to critical assets. This integration fetches events (incidents) on changes in the overall risk score, risk to assets, or impacting attack techniques. Additionally incidents are enriched with incoming attack vectors to the incident's endpoints, and critical assets at risk form the incident.
 fromversion: 5.0.0
 tests:
 - No tests
