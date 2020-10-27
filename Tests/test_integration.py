@@ -1,21 +1,24 @@
 from __future__ import print_function
-import copy
-import time
-import re
-from subprocess import Popen, PIPE
-from pprint import pformat
-import uuid
-import ast
-import urllib.parse
-import urllib3
-import requests.exceptions
-from demisto_client.demisto_api.rest import ApiException
-import demisto_client
-import json
-from Tests.tools import update_server_configuration
 
-from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS
+import ast
+import copy
+import json
+import re
+import time
+import urllib.parse
+import uuid
+from pprint import pformat
+from subprocess import PIPE, Popen
+
+import demisto_client
+import requests.exceptions
+import urllib3
+from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.commands.common.constants import PB_Status
+from demisto_sdk.commands.common.tools import (LOG_COLORS, print_color,
+                                               print_error, print_warning)
+
+from Tests.tools import update_server_configuration
 
 # Disable insecure warnings
 urllib3.disable_warnings()
