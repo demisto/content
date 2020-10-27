@@ -423,7 +423,7 @@ references:
           - Setup Environment
     - Create Instances:
         context: bucket_upload_env
-        requirs:
+        requires:
           - Run Unit Testing And Lint
           - Run Validations
     - Install Packs in Demisto 6_0:
