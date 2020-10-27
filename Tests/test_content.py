@@ -386,9 +386,10 @@ def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy
     return succeed
 
 
-def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks, integrations,
-             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url,
-             build_name, start_message, prints_manager, thread_index=0):
+def mock_run(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass, proxy,
+             failed_playbooks, integrations,playbook_id, succeed_playbooks, test_message, test_options,
+             slack, circle_ci, build_number, server_url, build_name, start_message, prints_manager,
+             thread_index=0):
     rerecord = False
 
     if proxy.has_mock_file(playbook_id):
@@ -396,7 +397,7 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
         prints_manager.add_print_job(start_mock_message, print, thread_index, include_timestamp=True)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
-        status, _ = check_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+        status, _ = check_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager, test_options,
                                       is_mock_run=True, thread_index=thread_index)
         # use results
         proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
@@ -460,9 +461,10 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
                                      include_timestamp=True)
 
         return
-    mock_run(conf_json_test_details, tests_queue, tests_settings, client, proxy, failed_playbooks, integrations,
-             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-             server_url, build_name, start_message, prints_manager, thread_index=thread_index)
+    mock_run(conf_json_test_details, tests_queue, tests_settings, client, demisto_user, demisto_pass,
+             proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
+             test_options, slack, circle_ci, build_number, server_url, build_name, start_message,
+             prints_manager, thread_index=thread_index)
 
 
 def http_request(url, params_dict=None):
