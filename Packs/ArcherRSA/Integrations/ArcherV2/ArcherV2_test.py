@@ -181,11 +181,11 @@ def test_login(requests_mock, requested_object, is_successful):
         levels = client.get_level_by_app_id('1')
         assert levels == GET_LEVELS_BY_APP
     else:
-        # in case login wasn't successful, return_error will exit with a reason (for example, LoginNotValid)
         with pytest.raises(SystemExit) as e:
+            # in case login wasn't successful, return_error will exit with a reason (for example, LoginNotValid)
             # return_error reached
             client.get_level_by_app_id('1')
-        assert e
+        assert e.value.code == 0
 
 
 def test_generate_field_contents():
