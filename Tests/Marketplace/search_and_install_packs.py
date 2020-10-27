@@ -191,10 +191,11 @@ def install_packs_nightly(client, prints_manager, thread_index, packs_to_install
                                                                                 body=request_data,
                                                                                 accept='application/json',
                                                                                 _request_timeout=request_timeout)
-            # results = ast.literal_eval(response_data)
+            results = ast.literal_eval(response_data)
             # If the pack already installed, and the current version is the right one, ignore it.
             if 200 <= status_code < 300:
                 message = f'The pack {pack} successfully installed!\n'
+                message += f'The packs currently installed: {results}'
                 prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
                                              include_timestamp=True)
             else:
