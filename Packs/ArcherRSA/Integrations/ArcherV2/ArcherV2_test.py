@@ -1,3 +1,4 @@
+import pytest
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value
 import demistomock as demisto
 
@@ -30,11 +31,13 @@ FIELD_DEFINITION_RES = [
     {"IsSuccessful": True, "RequestedObject": {"Id": 2, "Type": 1, "Name": "Device Name", "IsRequired": True,
                                                "RelatedValuesListId": 8}}]
 
-GET_LEVELS_BY_APP = [{'level': 123, 'mapping':
-                     {'1': {'Type': 7, 'Name': 'External Links', 'FieldId': "1",
-                            'IsRequired': False, 'RelatedValuesListId': None},
-                      '2': {'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
-                            'IsRequired': True, 'RelatedValuesListId': 8}}}]
+GET_LEVELS_BY_APP = [
+    {'level': 123, 'mapping': {'1': {
+        'Type': 7, 'Name': 'External Links', 'FieldId': "1", 'IsRequired': False, 'RelatedValuesListId': None},
+        '2': {
+            'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
+            'IsRequired': True, 'RelatedValuesListId': 8}
+    }}]
 
 GET_FIElD_DEFINITION_RES = {"RequestedObject":
                             {"RelatedValuesListId": 62},
@@ -132,6 +135,24 @@ SEARCH_RECORDS_RES = \
     '    </soap:Body>' + \
     '</soap:Envelope>'
 
+GET_RESPONSE_NOT_SUCCESSFUL_JSON = {"IsSuccessful": False, "RequestedObject": None,
+                                    "ValidationMessages": [{"Reason": "Validation", "Severity": 3,
+                                                            "MessageKey": "ValidationMessageTemplates"
+                                                                          ":LoginNotValid",
+                                                            "Description": "",
+                                                            "Location": -1,
+                                                            "ErroredValue": None,
+                                                            "Validator": "ArcherApi."
+                                                                         "Controllers.Security"
+                                                                         "Controller, ArcherApi, "
+                                                                         "Version=6.5.200.1045, "
+                                                                         "Culture=neutral, "
+                                                                         "PublicKeyToken=null",
+                                                            "XmlData": None,
+                                                            "ResourcedMessage": None}]}
+
+GET_RESPONSE_SUCCESSFUL_JSON = {"IsSuccessful": True, "RequestedObject": {'SessionToken': 'session-id'}}
+
 
 def test_extract_from_xml():
     field_id = extract_from_xml(XML_FOR_TEST, 'Envelope.Body.GetValueListForField.fieldId')
@@ -139,15 +160,31 @@ def test_extract_from_xml():
 
 
 def test_get_level_by_app_id(requests_mock):
-    requests_mock.post(BASE_URL + 'api/core/security/login',
-                       json={'RequestedObject': {'SessionToken': 'session-id'}})
-
+    requests_mock.post(BASE_URL + 'api/core/security/login', json={'RequestedObject': {'SessionToken': 'session-id',
+                                                                                       }, 'IsSuccessful': True})
     requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
     requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
     client = Client(BASE_URL, '', '', '', '')
-
     levels = client.get_level_by_app_id('1')
     assert levels == GET_LEVELS_BY_APP
+
+
+@pytest.mark.parametrize('requested_object, is_successful',
+                         [(GET_RESPONSE_NOT_SUCCESSFUL_JSON, False),
+                          (GET_RESPONSE_SUCCESSFUL_JSON, True)])
+def test_update_session(mocker, requests_mock, requested_object, is_successful):
+    requests_mock.post(BASE_URL + 'api/core/security/login', json=requested_object)
+    mocker.patch.object(demisto, 'results')
+    client = Client(BASE_URL, '', '', '', '')
+    if is_successful:
+        client.update_session()
+        assert demisto.results.call_count == 0
+    else:
+        with pytest.raises(SystemExit) as e:
+            # in case login wasn't successful, return_error will exit with a reason (for example, LoginNotValid)
+            # return_error reached
+            client.update_session()
+        assert e
 
 
 def test_generate_field_contents():
