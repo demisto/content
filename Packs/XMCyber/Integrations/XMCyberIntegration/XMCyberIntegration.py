@@ -740,6 +740,36 @@ def get_base_url(xm: XM, args: Dict[str, Any]) -> CommandResults:
         outputs=xm.get_base_url()
     )
 
+def test_module_command_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
+#     """Tests API connectivity and authentication'
+
+#     Returning 'ok' indicates that the integration works like it is supposed to.
+#     Connection to the service is successful.
+#     Raises exceptions if something goes wrong.
+
+#     :type client: ``Client``
+
+#     :return: 'ok' if test passed, anything else will fail the test.
+#     :rtype: ``str``
+#     """
+    try:
+        version = xm.get_version()
+        system_version = version['system']
+        s_version = system_version.split('.')
+        major = int(s_version[0])
+        minor = int(s_version[1])
+        if major < 1 or (major == 1 and minor < 37):
+            raise Exception(f'Instance version not compatible. {system_version} (found) < 1.37 (required).')
+
+    except DemistoException as e:
+        if 'Forbidden' in str(e):
+            raise Exception('Authorization Error: make sure API Key is correctly set')
+        else:
+            raise e
+    except Exception as e:
+        raise Exception(f'Verification Error: could not load XM Cyber version.\n{e}')
+    return 'ok'
+
 
 ''' MAIN FUNCTION '''
 
@@ -772,6 +802,7 @@ def main() -> None:
         #         2) args dict
         #         return value - CommandResults
         commandsDict = {
+            "test-module": test_module_command_internal,  # This is the call made when pressing the integration Test button.
             "xmcyber-f-incidents": fetch_incidents_command,  # for debugging of fetch incidents
             # XM Cyber Command list
             # xmcyber-command-name: function_command
