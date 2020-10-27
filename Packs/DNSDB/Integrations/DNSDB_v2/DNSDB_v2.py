@@ -38,6 +38,7 @@ RATE_SUBCONTEXT_NAME = 'Rate'
 
 # CONSTANTS
 DEFAULT_DNSDB_SERVER = 'https://api.dnsdb.info'
+TIMEOUT = 60
 SWCLIENT = "demisto-integration"
 VERSION = "v2.0"
 PATH_PREFIX = 'dnsdb/v2'
@@ -303,7 +304,9 @@ class Client(BaseClient):
 
         res = self._http_request('GET', path,
                                  params=params,
-                                 stream=True, resp_type='response')
+                                 stream=True,
+                                 resp_type='response',
+                                 timeout=TIMEOUT)
 
         return _handle_saf(res.iter_lines(decode_unicode=True))
 
