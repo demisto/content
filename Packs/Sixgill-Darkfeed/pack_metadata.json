@@ -14,7 +14,7 @@
     "tags": ["Threat Intelligence", "Dark Web", "Malware"],
     "useCases": [
         "Threat Intelligence Management",
-        "Incident response",
+        "Incident Response",
         "Malware",
         "Hunting"
     ],
