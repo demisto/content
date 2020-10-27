@@ -29,7 +29,7 @@ except ModuleNotFoundError:
     from slackclient import SlackClient  # Old slack
 
 from Tests.mock_server import MITMProxy, AMIConnection
-from Tests.test_integration import Docker, test_integration, disable_all_integrations
+from Tests.test_integration import Docker, check_integration, disable_all_integrations
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
 from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
@@ -329,8 +329,8 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, faile
                            thread_index,
                            tests_settings.conf_path) as lock:
         if lock:
-            status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
-                                              is_mock_run, thread_index=thread_index)
+            status, inc_id = check_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+                                               is_mock_run, thread_index=thread_index)
             # c.api_client.pool.close()
             if status == PB_Status.COMPLETED:
                 prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
@@ -391,8 +391,8 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
         prints_manager.add_print_job(start_mock_message, print, thread_index, include_timestamp=True)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
-        status, _ = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
-                                     is_mock_run=True, thread_index=thread_index)
+        status, _ = check_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+                                      is_mock_run=True, thread_index=thread_index)
         # use results
         proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
         if status == PB_Status.COMPLETED:
