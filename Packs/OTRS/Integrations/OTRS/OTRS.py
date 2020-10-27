@@ -20,6 +20,7 @@ FETCH_PRIORITY = demisto.params().get('fetch_priority')
 FETCH_TIME_DEFAULT = '3 days'
 FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
 FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
+otrs_client = None
 
 
 ''' HELPER FUNCTIONS '''
@@ -222,14 +223,14 @@ def get_ticket_command():
 
 def get_ticket(ticket_id):
     args = {'ticket_id': ticket_id, 'articles': True, 'attachments': True, 'dynamic_fields': True}
-    response = execute_otrs_method(client.ticket_get_by_id, args)
+    response = execute_otrs_method(otrs_client.ticket_get_by_id, args)
     raw_ticket = response.to_dct()['Ticket']
     return raw_ticket
 
 
 def get_ticket_by_number(ticket_number):
     args = {'ticket_number': ticket_number, 'articles': True, 'attachments': True, 'dynamic_fields': True}
-    response = execute_otrs_method(client.ticket_get_by_number, args)
+    response = execute_otrs_method(otrs_client.ticket_get_by_number, args)
     raw_ticket = response.to_dct().get('Ticket')
     return raw_ticket
 
@@ -299,7 +300,7 @@ def search_ticket(states=None, created_before=None, created_after=None, title=No
             'Queues': queue,
             'Priorities': priority,
             'Types': ticket_type}
-    return execute_otrs_method(client.ticket_search, args)
+    return execute_otrs_method(otrs_client.ticket_search, args)
 
 
 def create_ticket_command():
@@ -378,7 +379,7 @@ def create_ticket_command():
 
 def create_ticket(new_ticket, article, df, attachments):
     args = {'ticket': new_ticket, 'article': article, 'dynamic_fields': df, 'attachments': attachments}
-    return execute_otrs_method(client.ticket_create, args)
+    return execute_otrs_method(otrs_client.ticket_create, args)
 
 
 def update_ticket_command():
@@ -507,7 +508,7 @@ def update_ticket(ticket_id, title=None, queue=None, state=None, priority=None,
             'dynamic_fields': df,
             'attachments': attachments,
             'kwargs': kwargs}
-    return execute_otrs_method(client.ticket_update, args)
+    return execute_otrs_method(otrs_client.ticket_update, args)
 
 
 def fetch_incidents():
@@ -552,10 +553,10 @@ def fetch_incidents():
 
 
 def update_session():
-    client.session_create()
-    sessionID = client.session_id_store.value
+    otrs_client.session_create()
+    sessionID = otrs_client.session_id_store.value
     demisto.setIntegrationContext({'SessionID': sessionID})
-    client.session_id_store.write(sessionID)
+    otrs_client.session_id_store.write(sessionID)
 
 
 def execute_otrs_method(method, args):
@@ -568,16 +569,16 @@ def execute_otrs_method(method, args):
 
 
 def main():
-    global client
+    global otrs_client
     handle_proxy(demisto.params().get('proxy'))
 
     cache = demisto.getIntegrationContext()
-    client = Client(SERVER, USERNAME, PASSWORD, https_verify=USE_SSL)
+    otrs_client = Client(SERVER, USERNAME, PASSWORD, https_verify=USE_SSL)
 
     # OTRS creates new session for each request, to avoid that behavior -
     # save the sessionId in integration context to use it multiple times
     if cache.get('SessionID'):
-        client.session_id_store.write(cache['SessionID'])
+        otrs_client.session_id_store.write(cache['SessionID'])
     else:
         update_session()
 
