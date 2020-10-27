@@ -224,10 +224,14 @@ def report_to_indicators(report_entries, mapper_in):
 
 
 def user_profile_to_indicator(user_profile):
+    raw_json = user_profile.copy()
+    raw_json['value'] = user_profile.get('email')
+    raw_json['type'] = 'User Profile'
     indicator = {
         'value': user_profile.get('email'),
         'type': 'User Profile',
-        'rawJSON': user_profile
+        'rawJSON': raw_json,
+        'fields': user_profile
     }
     return indicator
 
