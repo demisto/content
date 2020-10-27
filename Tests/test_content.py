@@ -387,7 +387,7 @@ def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy
 
 
 def mock_run(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass, proxy,
-             failed_playbooks, integrations,playbook_id, succeed_playbooks, test_message, test_options,
+             failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
              slack, circle_ci, build_number, server_url, build_name, start_message, prints_manager,
              thread_index=0):
     rerecord = False
@@ -397,7 +397,8 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, demisto_use
         prints_manager.add_print_job(start_mock_message, print, thread_index, include_timestamp=True)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
-        status, _ = check_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager, test_options,
+        status, _ = check_integration(c, server_url, demisto_user, demisto_pass, integrations,
+                                      playbook_id, prints_manager, test_options,
                                       is_mock_run=True, thread_index=thread_index)
         # use results
         proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
