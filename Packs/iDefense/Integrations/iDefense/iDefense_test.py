@@ -5,13 +5,11 @@ from CommonServerPython import DemistoException
 from test_data.response_constants import URL_RES_JSON, IP_RES_JSON
 
 
-API_URL = "https://api.intelgraph.idefense.com"
-
-API_TOKEN = '{idef1}udCEKL15x1Qp57SWpRWvaDyyVLJGeQgUcWTuckp4G5wq0tSlYH1pD9RKTzZQyRX6'
+API_URL = "https://test.com"
 
 MOCK_IP = [
     (
-        'https://api.intelgraph.idefense.com/rest/threatindicator/v0/ip?key.values=185.25.50.93',
+        'https://test.com/rest/threatindicator/v0/ip?key.values=185.25.50.93',
         200,
         IP_RES_JSON,
         {
@@ -23,7 +21,7 @@ MOCK_IP = [
 
 MOCK_WRONG_IP = [
     (
-        'https://api.intelgraph.idefense.com/rest/threatindicator/v0/ip?key.values=1.1.1.1',
+        'https://test.com/rest/threatindicator/v0/ip?key.values=1.1.1.1',
         200,
         {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False},
         "No results were found for ip 1.1.1.1"
@@ -48,7 +46,7 @@ def test_ip_command(url, status_code, json_data, expected_output):
     ip_to_check = {'ip': '185.25.50.93'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
-        client = Client(API_URL, API_TOKEN, True, False)
+        client = Client(API_URL, 'api_token', True, False)
         results = ip_command(client, ip_to_check)
         output = results.to_context().get('EntryContext', {})
         DBOT_KEY = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
@@ -73,7 +71,7 @@ def test_ip_not_found(url, status_code, json_data, expected_output):
     ip_to_check = {'ip': '1.1.1.1'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
-        client = Client(API_URL, API_TOKEN, True, False)
+        client = Client(API_URL, 'api_token', True, False)
         results = ip_command(client, ip_to_check)
         output = results.to_context().get('HumanReadable')
         assert "No results were found for ip 1.1.1.1" in output
@@ -92,7 +90,7 @@ def test_wrong_ip():
 
     """
     ip_to_check = {'ip': '1'}
-    client = Client(API_URL, API_TOKEN, True, False)
+    client = Client(API_URL, 'api_token', True, False)
     try:
         ip_command(client, ip_to_check)
     except DemistoException as err:
@@ -113,7 +111,7 @@ def test_wrong_connection():
        """
     from iDefense import test_module
     with requests_mock.Mocker() as m:
-        mock_address = 'https://api.intelgraph.idefense.com/rest/threatindicator/v0/'
+        mock_address = 'https://test.com/rest/threatindicator/v0/'
         m.get(mock_address, status_code=401, json={})
         client = Client(API_URL, 'wrong_token', True, False)
         try:
@@ -136,15 +134,15 @@ def test_connection():
        """
     from iDefense import test_module
     with requests_mock.Mocker() as m:
-        mock_address = 'https://api.intelgraph.idefense.com/rest/threatindicator/v0/'
+        mock_address = 'https://test.com/rest/threatindicator/v0/'
         m.get(mock_address, status_code=200, json={})
-        client = Client(API_URL, API_TOKEN, True, False)
+        client = Client(API_URL, 'api_token', True, False)
         assert test_module(client) in "ok"
 
 
 MOCK_URL = [
     (
-        'https://api.intelgraph.idefense.com/rest/threatindicator/v0/url?key.values=http%3A%2F%2Fwww.shivartatoo.com%2Fnuklyuql',
+        'https://test.com/rest/threatindicator/v0/url?key.values=http%3A%2F%2Fwww.shivartatoo.com%2Fnuklyuql',
         200,
         URL_RES_JSON,
         {
@@ -160,7 +158,7 @@ def test_url_command(url, status_code, json_data, expected_output):
     url_to_check = {'url': 'http://www.shivartatoo.com/nuklyuql'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
-        client = Client(API_URL, API_TOKEN, True, False)
+        client = Client(API_URL, 'api_token', True, False)
         results = url_command(client, url_to_check)
         output = results.to_context().get('EntryContext', {})
         DBOT_KEY = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && ' \

@@ -122,7 +122,7 @@ def test_module(client: Client) -> str:
         raise DemistoException(f"Error in API call - check the input parameters. Error: {e}")
 
 
-def ip_command(client: Client, args) -> CommandResults:
+def ip_command(client: Client, args: dict) -> CommandResults:
     """
 
     Args:
@@ -151,7 +151,7 @@ def ip_command(client: Client, args) -> CommandResults:
         )
 
 
-def url_command(client: Client, args) -> CommandResults:
+def url_command(client: Client, args: dict) -> CommandResults:
     url = args.get('url')
     if not validate_args('URL', url):
         raise DemistoException(f'Invalid parameter was given, argument value is {url}')
@@ -171,7 +171,7 @@ def url_command(client: Client, args) -> CommandResults:
         )
 
 
-def domain_command(client: Client, args) -> CommandResults:
+def domain_command(client: Client, args: dict) -> CommandResults:
     domain = args.get('domain')
     data = {'key.values': domain}
     res = client.http_request('/domain', param=data)
@@ -186,7 +186,7 @@ def domain_command(client: Client, args) -> CommandResults:
         )
 
 
-def uuid_command(client: Client, args) -> CommandResults:
+def uuid_command(client: Client, args: dict) -> CommandResults:
     uuid = args.get('uuid')
     try:
         res = client.http_request(f'/{uuid}', param={})
