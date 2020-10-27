@@ -60,46 +60,9 @@ def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_m
 def test_get_incident_command(requests_mock):
     from RespondAnalyst import get_incident_command, RestClient
 
-    full_incidents_response = {'data': {'fullIncidents': [
-        {
-            "assetClass": "Critical",
-            "attackStage": "LateralMovement",
-            "dateCreated": "1591374021992",
-            "eventCount": 24,
-            "feedback": {
-                "closedAt": "1593468999299",
-                "closedBy": "qa-user@respond-software.com",
-                "newStatus": "NonActionable",
-                "optionalText": "blah blah blah",
-                "timeGiven": "1593469076049",
-                "userId": "qa-user@respond-software.com"
-            },
-            "firstEventTime": "1576933531016",
-            "id": "6",
-            "internalSystems": [
-                {
-                    "hostname": "enterprise.com"
-                }
-            ],
-            "internalSystemsCount": 1,
-            "lastEventTime": "1591345217664",
-            "priority": "Critical",
-            "probabilityBucket": "VeryHigh",
-            "status": "Closed",
-            "tags": [
-                {
-                    "label": "Multiple Network IPS Signatures Triggered by Same Internal Asset"
-                }
-            ],
-            "title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network IPS Activity",
-            "userIds": [
-                "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"
-            ]
-        }
-    ]}}
-
     full_incidents_response = load_test_data(
         'test_data/full_incidents_response_single_full_incident.json')
+
 
     expected_result = load_test_data('test_data/get_incident_response.json')
 
