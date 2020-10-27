@@ -143,7 +143,7 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: aws-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.10854
+  dockerimage: demisto/jmespath:1.0.0.12410
   feed: true
   isfetch: false
   longRunning: false
@@ -153,5 +153,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
-defaultclassifier: AWS Feed
-defaultmapperin: AWS Feed-mapper
+defaultclassifier: AWS Feed Classifier
+defaultmapperin: AWS Feed Mapper

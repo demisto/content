@@ -958,7 +958,7 @@ def createIndicators(indicators_batch):
     return ""
 
 
-def searchIndicators(fromdate='', query='', size=100, page=0, todate='', value=''):
+def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value=''):
     """Searches for indicators according to given query
 
     Args:
@@ -995,3 +995,13 @@ def getLicenseID():
 
     """
     return ''
+
+
+def mapObject(obj, mapper, mapper_type):
+    """Mapping an object using chosen mapper
+
+    Returns:
+      dict: the obj after mapping
+
+    """
+    return {}
