@@ -12,49 +12,24 @@ from time import sleep
 import datetime
 from distutils.version import LooseVersion
 
-import pytz
-
-from google.cloud import storage
-from google.api_core.exceptions import PreconditionFailed
-from queue import Queue
-from contextlib import contextmanager
-
 import urllib3
-import requests
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
-from slackclient import SlackClient
 
 from Tests.test_integration import Docker, test_integration, disable_all_integrations
-from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
+from demisto_sdk.commands.common.constants import PB_Status
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
     LOG_COLORS, str2bool
 
-from Tests.test_content import TestsSettings, PrintJob, ParallelPrintsManager, TestsDataKeeper, \
-    print_test_summary, update_test_msg, turn_off_telemetry, reset_containers, run_test_logic, \
+from Tests.test_content import TestsSettings, ParallelPrintsManager, TestsDataKeeper, \
+    print_test_summary, update_test_msg, turn_off_telemetry, \
     create_result_files, get_all_tests, get_instances_ips_and_names, get_server_numeric_version, \
     initialize_queue_and_executed_tests_set, get_test_records_of_given_test_names, \
-    extract_filtered_tests, load_conf_files, set_integration_params, collect_integrations
+    extract_filtered_tests, load_conf_files, set_integration_params, collect_integrations, notify_failed_test,\
+    SERVER_URL
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
-SERVER_URL = "https://{}"
-INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
-
-FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using " \
-                            "the instance_name argument in conf.json. The options are:\n{}"
-
-SERVICE_RESTART_TIMEOUT = 300
-SERVICE_RESTART_POLLING_INTERVAL = 5
-LOCKS_PATH = 'content-locks'
-BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
-CIRCLE_BUILD_NUM = os.environ.get('CIRCLE_BUILD_NUM')
-WORKFLOW_ID = os.environ.get('CIRCLE_WORKFLOW_ID')
-CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
-SLACK_MEM_CHANNEL_ID = 'CM55V7J8K'
-PROXY_LOG_FILE_NAME = 'proxy_metrics.csv'
-ENV_RESULTS_PATH = './env_results.json'
 
 
 def options_handler():
@@ -82,6 +57,39 @@ def options_handler():
     options = parser.parse_args()
     tests_settings = TestsSettings(options)
     return tests_settings
+
+
+def run_test_logic(tests_settings, c, failed_playbooks,
+                   integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
+                   circle_ci, build_number, server_url, demisto_user, demisto_pass, build_name,
+                   prints_manager, thread_index=0):
+    status, inc_id = test_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager,
+                                      test_options, thread_index=thread_index)
+    if status == PB_Status.COMPLETED:
+        prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color,
+                                     thread_index,
+                                     message_color=LOG_COLORS.GREEN)
+        succeed_playbooks.append(playbook_id)
+
+    elif status == PB_Status.NOT_SUPPORTED_VERSION:
+        not_supported_version_message = 'PASS: {} skipped - not supported version'.format(
+            test_message)
+        prints_manager.add_print_job(not_supported_version_message, print, thread_index)
+        succeed_playbooks.append(playbook_id)
+
+    else:
+        error_message = 'Failed: {} failed'.format(test_message)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
+        playbook_id_with_mock = playbook_id
+        playbook_id_with_mock += " (Mock Disabled)"
+        failed_playbooks.append(playbook_id_with_mock)
+        if not tests_settings.is_local_run:
+            notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url,
+                               build_name)
+
+    succeed = status in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION)
+
+    return succeed
 
 
 def run_test(tests_settings, demisto_user, demisto_pass,
