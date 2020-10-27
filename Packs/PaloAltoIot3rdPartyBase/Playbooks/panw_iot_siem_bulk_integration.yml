@@ -1,6 +1,6 @@
 description: This playbook gets all available assets ( alerts, vulnerabilities and
   devices) and send then to configured PANW third-party integration SIEM server
-id: 4f1d9912-b65e-46a3-8cec-7daea5b57fdf
+id: panw_iot_siem_bulk_integration
 inputs: []
 name: panw_iot_siem_bulk_integration
 outputs: []
@@ -22,6 +22,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 5750b996-2fea-4c7f-84f0-54f319725d63
     timertriggers: []
     type: start
@@ -262,3 +263,6 @@ view: |-
       }
     }
   }
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

@@ -1,12 +1,11 @@
 comment: gets all available vulnerabilities from the IoT cloud and sends it to the
   SIEM server
 commonfields:
-  id: ee3d1eb2-8ee9-44f5-88d0-cf52697e4447
+  id: send_bulk_panw_iot_vulnerabilities_to_siem
   version: -1
-dockerimage: demisto/python3:3.7.3.286
+dockerimage: demisto/python3:3.8.6.12176
 enabled: true
 name: send_bulk_panw_iot_vulnerabilities_to_siem
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -15,3 +14,6 @@ subtype: python3
 tags: []
 timeout: 362.88ms
 type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
