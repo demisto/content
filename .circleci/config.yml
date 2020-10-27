@@ -411,16 +411,21 @@ references:
         context: sdk_nightly_env
 
   bucket_upload_jobs: &bucket_upload_jobs
-    - Create Instances:
+    - Setup Environment:
         context: bucket_upload_env
     - Run Unit Testing And Lint:
         context: bucket_upload_env
         requires:
-          - Create Instances
+          - Setup Environment
     - Run Validations:
         context: bucket_upload_env
         requires:
-          - Create Instances
+          - Setup Environment
+    - Create Instances:
+        context: bucket_upload_env
+        requirs:
+          - Run Unit Testing And Lint
+          - Run Validations
     - Install Packs in Demisto 6_0:
         context: bucket_upload_env
         requires:
@@ -432,8 +437,6 @@ references:
     - Upload Packs:
         context: bucket_upload_env
         requires:
-          - Run Unit Testing And Lint
-          - Run Validations
           - Install Packs in Demisto 6_0
           - Install Packs in Demisto Marketplace - Master
 
