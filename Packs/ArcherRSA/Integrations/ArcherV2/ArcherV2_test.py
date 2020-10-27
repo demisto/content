@@ -135,23 +135,48 @@ SEARCH_RECORDS_RES = \
     '    </soap:Body>' + \
     '</soap:Envelope>'
 
+GET_RESPONSE_NOT_SUCCESSFUL_JSON = {"IsSuccessful": False, "RequestedObject": None,
+                                    "ValidationMessages": [{"Reason": "Validation", "Severity": 3,
+                                                            "MessageKey": "ValidationMessageTemplates"
+                                                                          ":LoginNotValid",
+                                                            "Description": "",
+                                                            "Location": -1,
+                                                            "ErroredValue": None,
+                                                            "Validator": "ArcherApi."
+                                                                         "Controllers.Security"
+                                                                         "Controller, ArcherApi, "
+                                                                         "Version=6.5.200.1045, "
+                                                                         "Culture=neutral, "
+                                                                         "PublicKeyToken=null",
+                                                            "XmlData": None,
+                                                            "ResourcedMessage": None}]}
+
+GET_RESPONSE_SUCCESSFUL_JSON = {"IsSuccessful": True, "RequestedObject": {'SessionToken': 'session-id'}}
+
 
 def test_extract_from_xml():
     field_id = extract_from_xml(XML_FOR_TEST, 'Envelope.Body.GetValueListForField.fieldId')
     assert field_id == '6969'
 
 
-@pytest.mark.parametrize('requested_object', ['', 'RequestedObject', ])
-def test_get_level_by_app_id(requests_mock, requested_object):
-    requests_mock.post(BASE_URL + 'api/core/security/login',
-                       json={requested_object: {'SessionToken': 'session-id'}})
+@pytest.mark.parametrize('requested_object, is_successful',
+                         [(GET_RESPONSE_NOT_SUCCESSFUL_JSON, False),
+                          (GET_RESPONSE_SUCCESSFUL_JSON, True)])
+def test_get_level_by_app_id(requests_mock, requested_object, is_successful):
+    requests_mock.post(BASE_URL + 'api/core/security/login', json=requested_object)
 
     requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
     requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
     client = Client(BASE_URL, '', '', '', '')
-
-    levels = client.get_level_by_app_id('1')
-    assert levels == GET_LEVELS_BY_APP
+    if is_successful:
+        levels = client.get_level_by_app_id('1')
+        assert levels == GET_LEVELS_BY_APP
+    else:
+        with pytest.raises(SystemExit) as e:
+            # return_error reached
+            client.get_level_by_app_id('1')
+        if not e:
+            assert False
 
 
 def test_generate_field_contents():

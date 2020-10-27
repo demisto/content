@@ -232,7 +232,9 @@ class Client(BaseClient):
         }
 
         res = self._http_request('POST', '/api/core/security/login', json_data=body)
-
+        is_successful_response = res.get('IsSuccessful')
+        if not is_successful_response:
+            return_error(res.get('ValidationMessages'))
         session = res.get('RequestedObject', {}).get('SessionToken')
         REQUEST_HEADERS['Authorization'] = f'Archer session-id={session}'
 
