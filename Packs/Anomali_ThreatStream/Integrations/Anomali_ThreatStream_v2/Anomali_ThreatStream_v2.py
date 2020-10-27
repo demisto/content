@@ -892,6 +892,8 @@ def get_indicators(**kwargs):
         By default the limit of indicators result is set to 20.
     """
     limit = int(kwargs.get('limit', 20))
+    offset = 0
+
     if 'query' in kwargs:
         params = build_params(q=kwargs['query'], limit=limit)
     else:
@@ -900,15 +902,13 @@ def get_indicators(**kwargs):
     iocs_list = http_request("GET", "v2/intelligence/", params=params).get('objects', None)
 
     if limit > 1000:
-        limit -= 1000
-        offset = 1000
         while limit > 0:
+            limit -= 1000
+            offset += 1000
             kwargs['limit'] = limit
             kwargs['offset'] = offset
             params = build_params(**kwargs)
             iocs_list.append(http_request("GET", "v2/intelligence/", params=params).get('objects', None))
-
-            offset += 1000
 
     if not iocs_list:
         demisto.results('No indicators found from ThreatStream')
