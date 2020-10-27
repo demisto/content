@@ -716,7 +716,9 @@ def create_user_iam(default_base_dn, args, mapper_out):
             raise DemistoException("User must have SAMAccountName")
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
         if user_exists:
-            iam_user_profile.set_result(action=IAMActions.CREATE_USER)
+            iam_user_profile.set_result(success=True, action=IAMActions.CREATE_USER,
+                                        skip=True, skip_reason="User already exists")            iam_user_profile.set_result(success=True, action=IAMActions.CREATE_USER,
+                                        skip=True, skip_reason="User already exists")
 
         else:
             user_dn = generate_dn_and_remove_from_user_profile(ad_user)
@@ -782,6 +784,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out):
             # notice that we are changing the ou and that effects the dn and cn
             for field in FIELDS_THAT_CANT_BE_MODIFIED:
                 if ad_user.get(field):
+                    ad_user.pop(field)
                     ad_user.pop(field)
 
             fail_to_modify = []
@@ -1149,7 +1152,8 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
 
     user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
     if not user_exists:
-        iam_user_profile.set_result(action=IAMActions.DISABLE_USER)
+        iam_user_profile.set_result(success=True, action=IAMActions.DISABLE_USER,
+                                    skip=True, skip_reason="User doesn't exists")
         return iam_user_profile
 
     dn = user_dn(sam_account_name, default_base_dn)
