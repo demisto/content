@@ -1,12 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List
 from datetime import datetime
 
 import json
 import urllib3
-import dateparser
 import traceback
 import enum
 
@@ -17,7 +16,7 @@ urllib3.disable_warnings()
 # Minimum supported version is:  1.38
 MIN_MAJOR_VERSION = 1
 MIN_MINOR_VERSION = 38
-FULL_INCIDENTS_SECONDS = 86 # 400
+FULL_INCIDENTS_SECONDS = 86  # 400
 
 BREACHPOINT_LABEL = 'Demisto Breachpoint'
 CRITICAL_ASSET_LABEL = 'Demisto Critical Asset'
@@ -80,6 +79,7 @@ class Client(BaseClient):
     def get_base_url(self):
         return self._base_url
 
+
 class URLS:
     Version = '/version'
     Entities = '/systemReport/entities'
@@ -114,7 +114,7 @@ class SEVERITY:
 class XM:
 
     is_fetch_incidents = False
-    date_created = None # For tests
+    date_created = None  # For tests
 
     def __init__(self, client: Client):
         self.client = client
@@ -190,7 +190,7 @@ class XM:
             'timeId': time_id,
             'sort': 'attackComplexity'
         }, page_size, max_pages)
-    
+
     def get_affected_entities(self, entity_id: str, time_id=DEFAULT_TIME_ID, page_size=PAGE_SIZE, max_pages=MAX_PAGES):
         return self.client.get_paginated(URLS.Entities_At_Risk, {
             'entityId': entity_id,
@@ -203,7 +203,7 @@ class XM:
             'search': f'/{search_string}/i'
         })
 
-    def get_techniques(self, time_id=DEFAULT_TIME_ID, page_size = None, max_pages = None):
+    def get_techniques(self, time_id=DEFAULT_TIME_ID, page_size=None, max_pages=None):
         return self.client.get_paginated(URLS.Techniques, {
             'timeId': time_id
         }, page_size, max_pages)
@@ -254,7 +254,7 @@ class XM:
             return XM_CYBER_INCIDENT_TYPE_ENTITY
         return XM_CYBER_INCIDENT_TYPE
 
-    def create_xm_event(self, name, data, date = None):
+    def create_xm_event(self, name, data, date=None):
         if self.date_created is not None:
             date = self.date_created
         if date is None:
@@ -271,7 +271,7 @@ class XM:
     def _create_event_for_risk_score(self, events):
         risk_score = self.risk_score()
         trend = risk_score["trend"]
-        if trend is not None and trend != '' and trend > 0: # < 0:
+        if trend is not None and trend != '' and trend > 0:  # < 0:
             events.append(self.create_xm_event(EVENT_NAME.RiskScore, risk_score))
 
     def _create_events_from_top_dashboard(self, events_array, top_list, event_name):
@@ -279,7 +279,7 @@ class XM:
             trend = top["trend"]
             if trend is None or trend == '':
                 trend = 0
-            #if trend is not None and trend != '' and int(trend) >= 0: # < 0:
+            # if trend is not None and trend != '' and int(trend) >= 0: # < 0:
             events_array.append(self.create_xm_event(event_name, top))
 
     def _get_technique_best_practices_and_remediation(self, technique):
@@ -301,12 +301,12 @@ class XM:
                     previous_tech = previous_tech_iteratee
                     break
 
-            if previous_tech is None or current_tech["criticalAssets"] == previous_tech["criticalAssets"]: # should be >
+            if previous_tech is None or current_tech["criticalAssets"] == previous_tech["criticalAssets"]:  # should be >
                 current_tech["advices"] = self._get_technique_best_practices_and_remediation(current_tech)
                 events_array.append(self.create_xm_event(EVENT_NAME.TopTechnique, current_tech))
 
     def get_fetch_incidents_events(self):
-        events = []
+        events: List = []
 
         writeLog("risk score")
         # risk score
@@ -328,7 +328,10 @@ class XM:
 
         return events
 
+
 ''' HELPER FUNCTIONS '''
+
+
 class LogLevel(enum.Enum):
     Debug = 0,
     Info = 1,
@@ -342,8 +345,8 @@ def writeLog(msg, logLevel=LogLevel.Info):
         demisto.info(f'NNNNNN2 {msg}')
 
 
-def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
-    return datetime.utcfromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
+#  def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
+#      return datetime.utcfromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
 
 
 def create_client():
@@ -383,9 +386,9 @@ def entity_obj_to_data(xm: XM, entity: Any):
     techniques = []
     for technique in entity['attackedByTechniques']:
         techniques.append({
-             'name': technique['displayName'], 
-             'count': technique['count']
-             })
+            'name': technique['displayName'],
+            'count': technique['count']
+        })
     entity_id = entity['entityId']
     instance_url = xm.get_base_url()[0:-4]
     entity_report = urljoin(instance_url, f'{URLS.Entity_Report}/{entity_id}?timeId={DEFAULT_TIME_ID}')
@@ -417,15 +420,19 @@ def entity_score(entity: Any):
         score = Common.DBotScore.NONE
     return score, reputation
 
+
 ''' COMMAND FUNCTIONS '''
+
 
 def breachpoint_update_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
-    entities = xm.search_entities(ips)
-    xm.label_entities(entities, BREACHPOINT_LABEL)
-    labeled_entities = xm.get_entities_by_label(BREACHPOINT_LABEL)
+    # MATAN TODO
+    # entities = xm.search_entities(ips)
+    # xm.label_entities(entities, BREACHPOINT_LABEL)
+    # labeled_entities = xm.get_entities_by_label(BREACHPOINT_LABEL)
+    labeled_entities: List = []
     readable_output = 'The {0} has been updated, there are {1} labeled entities'.format(
         BREACHPOINT_LABEL, len(labeled_entities))
     return CommandResults(
@@ -440,9 +447,11 @@ def critical_asset_add_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
-    entities = xm.search_entities(ips)
-    xm.label_entities(entities, CRITICAL_ASSET_LABEL)
-    labeled_entities = xm.get_entities_by_label(CRITICAL_ASSET_LABEL)
+    # MATAN TODO
+    # entities = xm.search_entities(ips)
+    # xm.label_entities(entities, CRITICAL_ASSET_LABEL)
+    # labeled_entities = xm.get_entities_by_label(CRITICAL_ASSET_LABEL)
+    labeled_entities: List = []
     readable_output = f'The {CRITICAL_ASSET_LABEL} has been updated, there are {len(labeled_entities)} labeled entities'
     return CommandResults(
         outputs_prefix='XMCyber.Entity',
@@ -502,8 +511,8 @@ def affected_entities_list_command(xm: XM, args: Dict[str, Any]) -> CommandResul
         affected_entities_list = []
         for entity in affected_entities:
             affected_entities_list.append({
-                #'entityId': entity['entityId'],
-                #'entityType': entity['entityData']['entityTypeDisplayName'],
+                # 'entityId': entity['entityId'],
+                # 'entityType': entity['entityData']['entityTypeDisplayName'],
                 'name': entity['name'],
                 'technique': entity['methodsArray'][0]['methodName']
             })
@@ -521,7 +530,7 @@ def affected_entities_list_command(xm: XM, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def _fetch_incidents_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
+def _fetch_incidents_internal(xm: XM, args: Dict[str, Any]) -> List:
     events = []
     should_run = True
 
@@ -563,49 +572,13 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 'start_time': datetime.now().isoformat()
             })
 
-        writeLog(f'Finish set last run')
         demisto.incidents(incidents)
-        writeLog(f'Incidents writtern to incidents')
-        return None
 
     return CommandResults(
         outputs_prefix='XMCyber',
         outputs_key_field='create_time',
         outputs=events
     )
-
-# def test_module_command(xm: XM):
-#     pass
-
-# def test_module_command_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
-#     """Tests API connectivity and authentication'
-
-#     Returning 'ok' indicates that the integration works like it is supposed to.
-#     Connection to the service is successful.
-#     Raises exceptions if something goes wrong.
-
-#     :type client: ``Client``
-
-#     :return: 'ok' if test passed, anything else will fail the test.
-#     :rtype: ``str``
-#     """
-#     try:
-#         version = xm.get_version()
-#         system_version = version['system']
-#         s_version = system_version.split('.')
-#         major = int(s_version[0])
-#         minor = int(s_version[1])
-#         if major < 1 or (major == 1 and minor < 37):
-#             raise Exception(f'Instance version not compatible. {system_version} (found) < 1.37 (required).')
-
-#     except DemistoException as e:
-#         if 'Forbidden' in str(e):
-#             raise Exception('Authorization Error: make sure API Key is correctly set')
-#         else:
-#             raise e
-#     except Exception as e:
-#         raise Exception(f'Verification Error: could not load XM Cyber version.\n{e}')
-#     return 'ok'
 
 
 def get_version_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
@@ -634,7 +607,7 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
-    
+
     # Context standard for IP class
     ip_standard_list: List[Common.IP] = []
     xm_data_list: List[Dict[str, Any]] = []
@@ -654,7 +627,7 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 indicator_type=DBotScoreType.IP,
                 integration_name='XMCyber',
                 score=Common.DBotScore.NONE,
-                malicious_description=f'No entity found with this IP'
+                malicious_description='No entity found with this IP'
             )
             ip_standard_context = Common.IP(
                 ip=ip,
@@ -693,7 +666,7 @@ def hostname_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     hostnames = argToList(args.get('hostname'))
     if len(hostnames) == 0:
         raise ValueError('Endpoint(s) not specified')
-    
+
     # Context standard for IP class
     endpoint_standard_list: List[Common.Endpoint] = []
     xm_data_list: List[Dict[str, Any]] = []
@@ -713,17 +686,18 @@ def hostname_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 domain = entity['customProperties']['domainWorkgroup']['data']
                 OS = entity['os']['type']
                 os_version = entity['os']['name']
-                endpoint_standard_context = Common.Endpoint(ID, 
-                                                hostname=hostname,
-                                                ip_address=ip,
-                                                domain=domain,
-                                                os=OS,
-                                                os_version=os_version)
+                endpoint_standard_context = Common.Endpoint(ID,
+                                                            hostname=hostname,
+                                                            ip_address=ip,
+                                                            domain=domain,
+                                                            os=OS,
+                                                            os_version=os_version
+                                                            )
             except (TypeError, AttributeError, KeyError):
                 endpoint_standard_context = Common.Endpoint(ID, hostname=hostname)
             endpoint_standard_list.append(endpoint_standard_context)
             xm_data_list.append(entity_obj_to_data(xm, entity))
-    
+
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='XMCyber',
@@ -748,7 +722,7 @@ def entity_get_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     for entity_id in entity_ids:
         entities.extend(xm.search_entities(entity_id))
     if len(entities) > 0:
-        readable_output = f'**Matched the following entities**'
+        readable_output = '**Matched the following entities**'
     else:
         readable_output = f'**No entity matched the input {ips} (IP) {hostnames} (Hostname) {entity_ids} (Entity ID)'
     for entity in entities:
@@ -770,6 +744,7 @@ def get_base_url(xm: XM, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='url',
         outputs=xm.get_base_url()
     )
+
 
 ''' MAIN FUNCTION '''
 
@@ -802,8 +777,7 @@ def main() -> None:
         #         2) args dict
         #         return value - CommandResults
         commandsDict = {
-            # "test-module": test_module_command_internal,  # This is the call made when pressing the integration Test button.
-            "xmcyber-f-incidents": fetch_incidents_command, # for debugging of fetch incidents
+            "xmcyber-f-incidents": fetch_incidents_command,  # for debugging of fetch incidents
             # XM Cyber Command list
             # xmcyber-command-name: function_command
             "xmcyber-get-version": get_version_command,
