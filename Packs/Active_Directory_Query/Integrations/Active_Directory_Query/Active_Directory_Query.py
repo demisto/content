@@ -747,7 +747,7 @@ def create_user_iam(default_base_dn, args, mapper_out):
         return (iam_user_profile)
 
 
-def update_user_iam(default_base_dn, args, mapper_out):
+def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out):
     """Update an AD user by User Profile.
     :param default_base_dn: The location in the DIT where the search will start
     :param args: Demisto args.
@@ -771,7 +771,7 @@ def update_user_iam(default_base_dn, args, mapper_out):
         new_ou = ad_user.get("ou")
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
 
-        if not user_exists and args.get('create-if-not-exists') == "true":
+        if not user_exists and create_if_not_exists == "true":
             create_user_iam(default_base_dn, args, mapper_out)
 
         elif user_exists:
@@ -1066,7 +1066,7 @@ def disable_user(default_base_dn):
     demisto.results(demisto_entry)
 
 
-def enable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out):
+def enable_user_iam(default_base_dn, disabled_users_group_cn, args, create_if_not_exists, mapper_out):
     """Enables an AD user by User Profile.
     :param default_base_dn: The location in the DIT where the search will start
     :param disabled_users_group_cn: The disabled group cn, the user will be removed from this group when enabled
@@ -1087,7 +1087,7 @@ def enable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out):
 
     user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
 
-    if not user_exists and args.get('create-if-not-exists') == "true":
+    if not user_exists and create_if_not_exists == "true":
         create_user_iam(default_base_dn, iam_user_profile, mapper_out)
         return
 
@@ -1344,6 +1344,7 @@ def main():
     PORT = params.get('port')
 
     disabled_users_group_cn = params.get('group-cn')
+    create_if_not_exists = params.get('create-if-not-exists')
     mapper_in = params.get('mapper-in', DEFAULT_INCOMING_MAPPER)
     mapper_out = params.get('mapper-out', DEFAULT_OUTGOING_MAPPER)
 
@@ -1480,11 +1481,11 @@ def main():
             return return_results(user_profile)
 
         if demisto.command() == 'iam-update-user':
-            user_profile = update_user_iam(DEFAULT_BASE_DN, args, mapper_out)
+            user_profile = update_user_iam(DEFAULT_BASE_DN, args, create_if_not_exists, mapper_out)
             return return_results(user_profile)
 
         if demisto.command() == 'iam-enable-user':
-            user_profile = enable_user_iam(DEFAULT_BASE_DN, disabled_users_group_cn, args, mapper_out)
+            user_profile = enable_user_iam(DEFAULT_BASE_DN, disabled_users_group_cn, args, create_if_not_exists, mapper_out)
             return return_results(user_profile)
 
         if demisto.command() == 'iam-disable-user':

@@ -559,17 +559,6 @@ script:
         required: true
         secret: false
         description: A User Profile indicator that contains user information, such as name, email address, etc.
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'true'
-        isArray: false
-        name: create-if-not-exists
-        predefined:
-          - 'true'
-          - 'false'
-        required: false
-        secret: false
-        description: "If true the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. "
     deprecated: false
     execution: false
     description: 'Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.'
@@ -618,17 +607,6 @@ script:
         required: true
         secret: false
         description: "A User Profile indicator that contains user information, such as name, email address, etc."
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'true'
-        isArray: false
-        name: create-if-not-exists
-        predefined:
-          - 'true'
-          - 'false'
-        required: false
-        secret: false
-        description: "If true the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'."
     deprecated: false
     description: Enables a user.
     execution: false
