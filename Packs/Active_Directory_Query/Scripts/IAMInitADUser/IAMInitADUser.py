@@ -13,7 +13,7 @@ def main():
         args = demisto.args()
         pwd_generation_script = args.get("pwdGenerationScript")
         user_profile = args.get("userProfile")
-        email = args.get("email")
+        to_email = args.get("email")
         mapper_in = args.get("mapperIn", DEFAULT_OUTGOING_MAPPER)
 
         if not user_profile:
@@ -22,10 +22,12 @@ def main():
 
         # Generate a random password
         outputs = demisto.executeCommand(pwd_generation_script, {})
-        password = demisto.get(outputs[0], 'Contents')
+        password_dict = demisto.get(outputs[0], 'Contents')
+        password = password_dict.get("NEW_PASSWORD")
 
         user = demisto.mapObject(json.loads(user_profile), mapper_in, MAPPING_TYPE)
-        username = user.get("samaccountname")
+        user_email = user.get("email")
+        username = user_email.split("@")[0]
         display_name = user.get("displayname")
 
         # setting a new password
@@ -38,7 +40,7 @@ def main():
         demisto.executeCommand("ad-set-new-password", ad_create_user_arguments)
         demisto.executeCommand("ad-enable-account", ad_create_user_arguments)
         demisto.executeCommand("ad-update-user", ad_create_user_arguments)
-        send_email(display_name, username, email, password)
+        send_email(display_name, username, user_email, password, to_email)
         return return_results("User was enabled and a password was set")
 
     except Exception as e:
@@ -46,20 +48,21 @@ def main():
         return_error(str(e))
 
 
-def send_email(name, sAMAccountName, email, password):
+def send_email(name, sAMAccountName, user_email, password, to_email):
     try:
-        if not email:
+        if not to_email:
             return
-        subject = SUBJECT + ': ' + sAMAccountName
+
+        subject = f'{SUBJECT}: {sAMAccountName}'
         email_body = 'Hello,\n\n' \
                      'The following account has been created in Active Directory:\n\n' \
                      'Name: ' + name + '\n' \
                      'sAMAccountName: ' + sAMAccountName + '\n' \
-                     'Email: ' + email + '\n' \
+                     'Email: ' + user_email + '\n' \
                      'Password: ' + password + '\n\n' \
                      'Regards,\nIAM Team'
 
-        demisto.executeCommand("send-mail", {"to": email, "subject": subject, "body": email_body})
+        demisto.executeCommand("send-mail", {"to": to_email, "subject": subject, "body": email_body})
     except Exception as e:
         # Absorb the exception. We can just log error if send email failed.
         demisto.error(f'Failed to send email. Exception: {e}.\n' + traceback.format_exc())
