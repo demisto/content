@@ -982,7 +982,7 @@ jobs:
       - when:
           condition:
             equal:
-              - master
+              - upload-packs-build-flow
               - << pipeline.git.branch >>
           steps:
             - run:
