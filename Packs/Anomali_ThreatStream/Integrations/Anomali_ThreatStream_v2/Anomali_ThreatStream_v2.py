@@ -902,9 +902,10 @@ def get_indicators(**kwargs):
     iocs_list = http_request("GET", "v2/intelligence/", params=params).get('objects', None)
 
     if limit > 1000:
-        while limit > 0:
-            limit -= 1000
+        while limit > 1000:
             offset += 1000
+            limit -= 1000
+
             kwargs['limit'] = limit
             kwargs['offset'] = offset
             params = build_params(**kwargs)
