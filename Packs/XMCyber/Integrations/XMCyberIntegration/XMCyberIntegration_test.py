@@ -124,7 +124,7 @@ def test_hostname(requests_mock):
 
     assert_response(response, 'XMCyber', 'entityId', [{
         'entityId': '3110337924893579985',
-        'name': 'CorporateDC',
+        'displayName': 'CorporateDC',
         'affectedEntities': 29,
         'averageComplexity': 2,
         'criticalAssetsAtRisk': 14,
@@ -158,7 +158,7 @@ def test_ip(requests_mock):
     assert response.outputs_key_field == 'entityId'
     assert response.outputs == [{
         'entityId': '3110337924893579985',
-        'name': 'CorporateDC',
+        'displayName': 'CorporateDC',
         'affectedEntities': 29,
         'averageComplexity': 2,
         'criticalAssetsAtRisk': 14,
@@ -178,7 +178,7 @@ def test_get_version(requests_mock):
     mock_url = f'{TEST_URL}{URLS.Version}'
     xm = mock_request_and_get_xm_mock('test_data/version.json', requests_mock, mock_url)
 
-    assert_response(get_version_command(xm, {}), 'XMCyber.Version', 'system', {
+    assert_response(get_version_command(xm, {}), 'XMCyber.Version', 'entityId', {
         'updater': "1.4.134.11846",
         'system': "1.38.0.12821",
         'north': "1.0.3359+6496",
@@ -192,11 +192,11 @@ def test_is_version_supported(requests_mock):
 
     valid_xm = mock_request_and_get_xm_mock('test_data/version.json', requests_mock, mock_url)
     valid_response = is_xm_version_supported_command(valid_xm, {})
-    assert_response(valid_response, 'XMCyber.IsVersion', 'valid', {'valid': True})
+    assert_response(valid_response, 'XMCyber.IsVersion', 'entityId', {'valid': True})
 
     invalid_xm = mock_request_and_get_xm_mock('test_data/invalid_version.json', requests_mock, mock_url)
     invalid_response = is_xm_version_supported_command(invalid_xm, {})
-    assert_response(invalid_response, 'XMCyber.IsVersion', 'valid', {'valid': False})
+    assert_response(invalid_response, 'XMCyber.IsVersion', 'entityId', {'valid': False})
 
 
 def _get_risk_score_incidents(create_time):
@@ -838,4 +838,4 @@ def test_fetch_incident(requests_mock):
     desired_response = _get_risk_score_incidents(create_time) + _get_entities_incidents(create_time) + \
         _get_top_techniques_incidents(create_time)
 
-    assert_response(fetch_incidents_command(xm, {}), 'XMCyber', 'create_time', desired_response)
+    assert_response(fetch_incidents_command(xm, {}), 'XMCyber', 'entityId', desired_response)

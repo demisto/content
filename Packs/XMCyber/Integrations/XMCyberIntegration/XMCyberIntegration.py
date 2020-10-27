@@ -387,7 +387,7 @@ def entity_obj_to_data(xm: XM, entity: Any):
     entity_report = urljoin(instance_url, f'{URLS.Entity_Report}/{entity_id}?timeId={DEFAULT_TIME_ID}')
     return {
         'entityId': entity['entityId'],
-        'name': entity['name'],
+        'displayName': entity['name'],
         'affectedEntities': entity['affectedUniqueEntities']['count']['value'],
         'averageComplexity': entity['attackComplexity']['avg']['value'],
         'averageComplexityLevel': entity['affectedUniqueAssets']['count']['level'],
@@ -412,6 +412,21 @@ def entity_score(entity: Any):
         reputation = 'N/A'
         score = Common.DBotScore.NONE
     return score, reputation
+
+
+def pretty_print_entity(entity: Any):
+    entityId = entity['entityId']
+    displayName = entity['displayName']
+    entityType = entity['entityType']
+    entityReport = entity['entityReport']
+    pretty = '\n'
+    pretty += '\n| Property | Value |'
+    pretty += '\n| -- | -- |'
+    pretty += f'\n| Entity Id | {entityId} |'
+    pretty += f'\n| Display Name | {displayName} |'
+    pretty += f'\n| Entity Type  | {entityType}  |'
+    pretty += f'\n| Entity Report | [{displayName}]({entityReport}) |'
+    return pretty
 
 
 ''' COMMAND FUNCTIONS '''
@@ -441,7 +456,12 @@ def affected_critical_assets_list_command(xm: XM, args: Dict[str, Any]) -> Comma
             'entityId': entity_id,
             'criticalAssetsAtRiskList': affected_assets_list
         })
-        readable_output += f'found {len(affected_assets)} affected critical assets from {entity_id}\n'
+        pretty = '\n'
+        pretty += '\n| Asset Display Name | Average Complexity | Minimum Complexity'
+        pretty += '\n| -- | -- | -- |'
+        for i in range(0, min(len(affected_assets_list), 5)):
+            pretty += '\n| {name} | {average} | {minimum}  |'.format(**affected_assets_list[i])
+        readable_output += f'found {len(affected_assets)} affected critical assets from {entity_id}. Top 5:\n{pretty}\n'
     return CommandResults(
         outputs_prefix='XMCyber',
         outputs_key_field='entityId',
@@ -476,7 +496,12 @@ def affected_entities_list_command(xm: XM, args: Dict[str, Any]) -> CommandResul
             'entityId': entity_id,
             'entitiesAtRiskList': affected_entities_list
         })
-        readable_output += f'found {len(affected_entities)} affected entities from {entity_id}\n'
+        pretty = '\n'
+        pretty += '\n| Display Name | Technique'
+        pretty += '\n| -- | -- |'
+        for i in range(0, min(len(affected_entities_list), 5)):
+            pretty += '\n| {name} | {technique} |'.format(**affected_entities_list[i])
+        readable_output += f'found {len(affected_entities)} affected entities from {entity_id}. Top 5:\n{pretty}\n'
     return CommandResults(
         outputs_prefix='XMCyber',
         outputs_key_field='entityId',
@@ -532,7 +557,7 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         outputs_prefix='XMCyber',
-        outputs_key_field='create_time',
+        outputs_key_field='entityId',
         outputs=events
     )
 
@@ -540,7 +565,7 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
 def get_version_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix='XMCyber.Version',
-        outputs_key_field='system',
+        outputs_key_field='entityId',
         outputs=xm.get_version()
     )
 
@@ -554,7 +579,7 @@ def is_xm_version_supported_command(xm: XM, args: Dict[str, Any]) -> CommandResu
     result = {'valid': major >= (MIN_MAJOR_VERSION + 1) or minor >= MIN_MINOR_VERSION}
     return CommandResults(
         outputs_prefix='XMCyber.IsVersion',
-        outputs_key_field="valid",
+        outputs_key_field="entityId",
         outputs=result
     )
 
@@ -591,8 +616,6 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
             )
             ip_standard_list.append(ip_standard_context)
         for entity in entity_ids:
-            name = entity['name']
-            readable_output += f'\n- {name}'
             score, reputation = entity_score(entity)
             dbot_score = Common.DBotScore(
                 indicator=ip,
@@ -601,7 +624,9 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 score=score,
                 malicious_description=f'XM Cyber affected assets {reputation}'
             )
-            xm_data_list.append(entity_obj_to_data(xm, entity))
+            entity_data = entity_obj_to_data(xm, entity)
+            readable_output += pretty_print_entity(entity_data)
+            xm_data_list.append(entity_data)
             ip_standard_context = Common.IP(
                 ip=ip,
                 dbot_score=dbot_score
@@ -634,8 +659,6 @@ def hostname_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
         else:
             readable_output = f'**No entity matches hostname {hostname}'
         for entity in res:
-            name = entity['name']
-            readable_output += f'\n- {name}'
             ID = entity['entityId']
             try:
                 ip = entity['ipv4Str']
@@ -652,7 +675,9 @@ def hostname_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
             except (TypeError, AttributeError, KeyError):
                 endpoint_standard_context = Common.Endpoint(ID, hostname=hostname)
             endpoint_standard_list.append(endpoint_standard_context)
-            xm_data_list.append(entity_obj_to_data(xm, entity))
+            entity_data = entity_obj_to_data(xm, entity)
+            readable_output += pretty_print_entity(entity_data)
+            xm_data_list.append(entity_data)
 
     return CommandResults(
         readable_output=readable_output,
@@ -682,9 +707,8 @@ def entity_get_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     else:
         readable_output = f'**No entity matched the input {ips} (IP) {hostnames} (Hostname) {entity_ids} (Entity ID)'
     for entity in entities:
-        xm_data_list.append(entity_obj_to_data(xm, entity))
-        name = entity['name']
-        readable_output += f'\n- {name}'
+        entity_obj = entity_obj_to_data(xm, entity)
+        readable_output += pretty_print_entity(entity_obj)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='XMCyber',
@@ -760,7 +784,7 @@ def main() -> None:
             # XM Cyber Command list
             # xmcyber-command-name: function_command
             "xmcyber-version-get": get_version_command,
-            "xmcyber-is-version-supported": is_xm_version_supported_command,
+            "xmcyber-version-supported": is_xm_version_supported_command,
             "xmcyber-affected-critical-assets-list": affected_critical_assets_list_command,
             "xmcyber-affected-entities-list": affected_entities_list_command,
             "xmcyber-entity-get": entity_get_command,
