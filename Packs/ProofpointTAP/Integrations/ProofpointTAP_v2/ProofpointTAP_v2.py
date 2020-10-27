@@ -51,8 +51,8 @@ def get_fetch_times(last_fetch):
         last_fetch = datetime.strptime(last_fetch, time_format)
     elif isinstance(last_fetch, datetime):
         times.append(last_fetch.strftime(time_format))
-    while now - last_fetch > timedelta(minutes=59):
-        last_fetch += timedelta(minutes=58)
+    while now - last_fetch > timedelta(minutes=59) and now - last_fetch > timedelta(minutes=60):
+        last_fetch += timedelta(minutes=59)
         times.append(last_fetch.strftime(time_format))
     times.append(now.strftime(time_format))
     return times
