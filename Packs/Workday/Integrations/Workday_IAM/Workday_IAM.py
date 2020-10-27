@@ -59,7 +59,7 @@ def get_time_elapsed(fetch_time, last_run):
 
 
 def is_user_profile_unchanged(demisto_user, workday_user):
-    profile_changed_fields = get_profile_changed_fields(workday_user, demisto_user)
+    profile_changed_fields = get_profile_changed_fields(demisto_user, workday_user)
     return (demisto_user and len(profile_changed_fields) == 0), profile_changed_fields
 
 
@@ -155,15 +155,14 @@ def does_user_email_exist_in_xsoar(email_to_user_profile, workday_user):
     return False
 
 
-def get_profile_changed_fields(workday_user, demisto_user):
+def get_profile_changed_fields(demisto_user, workday_user):
     if not demisto_user:
         return []  # potential new hire
     profile_changed_fields = []
-    for user_profile_key in workday_user.keys():
-        workday_value = workday_user.get(user_profile_key)
-        demisto_value = demisto_user.get(user_profile_key)
-        if workday_value and demisto_value and workday_value != demisto_value:
-            profile_changed_fields.append(user_profile_key)
+
+    for field, workday_value in workday_user.items():
+        if (workday_value and not demisto_user.get(field)) or workday_value != demisto_user.get(field):
+            profile_changed_fields.append(field)
 
     return profile_changed_fields
 
