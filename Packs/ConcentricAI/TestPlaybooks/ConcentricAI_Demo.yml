@@ -1,6 +1,5 @@
 id: ConcentricAI Demo Playbook
-version: 15
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: ConcentricAI Demo Playbook
 description: This playbook will show how to handle a risk incident and fetch all appropriate
   file details with respect to it along with user details for the owner of the File.
@@ -16,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -111,13 +111,13 @@ inputs:
     simple: ${incident.filename}
   required: true
   description: File Name to check
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Path Name
   value:
     simple: ${incident.filepath}
   required: true
   description: The path of the file.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: User Name
   value:
     complex:
@@ -134,6 +134,6 @@ inputs:
               simple: "1"
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 fromversion: 6.0.0
