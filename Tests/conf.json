@@ -672,10 +672,10 @@
             "toversion": "4.5.9"
         },
         {
-            "integrations": "QRadar",
+            "integrations": "QRadar_v2",
             "playbookID": "test playbook - QRadarCorrelations",
             "timeout": 1000,
-            "fromversion": "5.0.0"
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Awake Security",
@@ -2620,10 +2620,10 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "QRadar",
+            "integrations": "QRadar_v2",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 600,
-            "fromversion": "5.0.0"
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "SetAndHandleEmpty test",
@@ -3185,7 +3185,6 @@
     "skipped_integrations": {
         
         "_comment1": "~~~ NO INSTANCE ~~~",
-        "QRadar": "bla",
         "ZeroFox": "Issue 29284",
         "Recorded Future v2": "Issue 29090",
         "Symantec Management Center": "Issue 23960",
