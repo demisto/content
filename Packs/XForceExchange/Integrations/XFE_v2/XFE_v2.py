@@ -74,6 +74,8 @@ def calculate_score(score: int, threshold: int) -> int:
     Returns:
         int - Demisto's score for the indicator
     """
+    if not score:
+        score = 0
 
     if score > threshold:
         return 3
@@ -212,25 +214,32 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
             markdown += f'Domain: {domain} not found\n'
             continue
         outputs = {'Name': report['url']}
-        dbot_score = {
-            'Indicator': report['url'],
-            'Type': 'domain',
-            'Vendor': 'XFE',
-            'Score': calculate_score(report['score'], threshold)
-        }
+        if report.get('score', 0):
+            dbot_score = {
+                'Indicator': report['url'],
+                'Type': 'domain',
+                'Vendor': 'XFE',
+                'Score': calculate_score(report.get('score', 0), threshold)
+            }
 
-        if dbot_score['Score'] == 3:
-            outputs['Malicious'] = {'Vendor': 'XFE'}
+            if dbot_score['Score'] == 3:
+                outputs['Malicious'] = {'Vendor': 'XFE'}
 
-        context[outputPaths['domain']].append(outputs)
-        context[DBOT_SCORE_KEY].append(dbot_score)
+            context[outputPaths['domain']].append(outputs)
+            context[DBOT_SCORE_KEY].append(dbot_score)
 
-        table = {
-            'Score': report['score'],
-            'Categories': '\n'.join(report['cats'].keys())
-        }
-        markdown += tableToMarkdown(f'X-Force Domain Reputation for: {report["url"]}\n'
-                                    f'{XFORCE_URL}/url/{report["url"]}', table, removeNull=True)
+            table = {
+                'Score': report['score'],
+                'Categories': '\n'.join(report['cats'].keys())
+            }
+
+            markdown += tableToMarkdown(f'X-Force Domain Reputation for: {report["url"]}\n'
+                                        f'{XFORCE_URL}/url/{report["url"]}', table, removeNull=True)
+
+        else:
+            markdown += f'### X-Force Domain Reputation for: {report["url"]}.\n{XFORCE_URL}/url/{report["url"]}\n' \
+                        f'No information found.'
+
         reports.append(report)
 
     return markdown, context, reports
