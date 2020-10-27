@@ -284,16 +284,10 @@ class XM:
 
     def _get_technique_best_practices_and_remediation(self, technique):
         advices = []
-        for best_practice in technique["bestPractice"]:
-            advices.append({
-                'type': 'Best Practice',
-                'text': best_practice
-            })
-
         remediationArr = self.get_technique_remediation(technique["technique"])
         for remediation in remediationArr:
             advices.append({
-                'type': 'Remediation',
+                'type': remediation["adviceTypeDisplayName"],
                 'text': remediation["displayName"]
             })
 

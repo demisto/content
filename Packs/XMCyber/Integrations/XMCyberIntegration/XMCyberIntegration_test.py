@@ -201,18 +201,28 @@ def test_base_url(requests_mock):
 
 def test_fetch_incident(requests_mock):
 
-    risk_score_mock_url = f'{TEST_URL}{URLS.Risk_Score}?timeId={DEFAULT_TIME_ID}&resolution=1'
-    top_assets_at_risk_url = f'{TEST_URL}{URLS.Top_Assets_At_Risk}?timeId={DEFAULT_TIME_ID}&amountOfResults={TOP_ENTITIES}'
-    choke_point_url = f'{TEST_URL}{URLS.Top_Choke_Points}?timeId={DEFAULT_TIME_ID}&amountOfResults={TOP_ENTITIES}'
-    top_technique_url = f'{TEST_URL}{URLS.Techniques}?timeId={DEFAULT_TIME_ID}&page=1&pageSize={TOP_ENTITIES}'
-    top_technique_previous_url = f'{TEST_URL}{URLS.Techniques}?timeId={PREVIOUS_DEFAULT_TIME_ID}&page=1&pageSize={TOP_ENTITIES}'
+    time_id_param = f"?timeId={DEFAULT_TIME_ID}"
+    page_parm = f"&page=1&pageSize={TOP_ENTITIES}"
+    amount_of_result_param = f"&amountOfResults={TOP_ENTITIES}"
+
+    risk_score_mock_url = f'{TEST_URL}{URLS.Risk_Score}{time_id_param}&resolution=1'
+    top_assets_at_risk_url = f'{TEST_URL}{URLS.Top_Assets_At_Risk}{time_id_param}{amount_of_result_param}'
+    choke_point_url = f'{TEST_URL}{URLS.Top_Choke_Points}{time_id_param}{amount_of_result_param}'
+    top_technique_url = f'{TEST_URL}{URLS.Techniques}{time_id_param}{page_parm}'
+    top_technique_previous_url = f'{TEST_URL}{URLS.Techniques}?timeId={PREVIOUS_DEFAULT_TIME_ID}{page_parm}'
+    domain_credentials_remediation_url = f"{TEST_URL}{URLS.Techniques}/Exploit::DomainCredentials/remediation{time_id_param}"
+    taint_shared_content_remediation_url = f"{TEST_URL}{URLS.Techniques}/taintSharedContent/remediation{time_id_param}"
+    exploit_ms_remediation_url = f"{TEST_URL}{URLS.Techniques}/Exploit::Ms17010/remediation{time_id_param}"
 
     xm = mock_requests_and_get_xm_mock(requests_mock, [
         { 'json_path': 'test_data/risk_score.json', 'url_to_mock': risk_score_mock_url },
         { 'json_path': 'test_data/top_assets.json', 'url_to_mock': top_assets_at_risk_url },
         { 'json_path': 'test_data/choke_point.json', 'url_to_mock': choke_point_url },
         { 'json_path': 'test_data/top_technique.json', 'url_to_mock': top_technique_url },
-        { 'json_path': 'test_data/top_technique_previous.json', 'url_to_mock': top_technique_previous_url }
+        { 'json_path': 'test_data/top_technique_previous.json', 'url_to_mock': top_technique_previous_url },
+        { 'json_path': 'test_data/domain_cred_remediation.json', 'url_to_mock': domain_credentials_remediation_url },
+        { 'json_path': 'test_data/taint_shared_content_remediation.json', 'url_to_mock': taint_shared_content_remediation_url },
+        { 'json_path': 'test_data/taint_shared_content_remediation.json', 'url_to_mock': exploit_ms_remediation_url },
     ])
 
     xm.date_created = datetime.now()
@@ -225,9 +235,9 @@ def test_fetch_incident(requests_mock):
             'current_score': 41, 
             'name': 'XM Risk score', 
             'create_time': create_time,
-            'type': 'XM Cyber Risk Score', 
-            'severity': 'informational', 
-            'linkToReport': 'https://test.com/api/#/dashboard'
+            'type': XM_CYBER_INCIDENT_TYPE,
+            'severity': SEVERITY.Low, 
+            'linkToReport': 'https://test.com/#/dashboard'
         },
         {
             "entityId": "azureUser-5d49400b-bc26-4d36-8cff-640d1eeb6465",
@@ -269,10 +279,10 @@ def test_fetch_incident(requests_mock):
             "level": "low",
             "trend": None,
             "name": "XM Asset at risk",
-            "severity": 'informational',
+            'severity': SEVERITY.Low, 
             'create_time': create_time,
-            'linkToReport': 'https://test.com/api/systemReport/entity?entityId=azureUser-5d49400b-bc26-4d36-8cff-640d1eeb6465&timeId=timeAgo_days_7',
-            'type': 'XM Cyber Risk Score'
+            'linkToReport': 'https://test.com/systemReport/entity?entityId=azureUser-5d49400b-bc26-4d36-8cff-640d1eeb6465&timeId=timeAgo_days_7',
+            'type': XM_CYBER_INCIDENT_TYPE_ENTITY
         },
         {
             "entityId": "azureVirtualMachine-4be55d60-136f-4410-9b0b-26f192e941ad",
@@ -339,10 +349,10 @@ def test_fetch_incident(requests_mock):
             "level": "low",
             "trend": None,
             "name": "XM Asset at risk",
-            "severity": 'informational',
+            "severity": SEVERITY.Low,
             'create_time': create_time,
-            'linkToReport': 'https://test.com/api/systemReport/entity?entityId=azureVirtualMachine-4be55d60-136f-4410-9b0b-26f192e941ad&timeId=timeAgo_days_7',
-            'type': 'XM Cyber Risk Score'
+            'linkToReport': 'https://test.com/systemReport/entity?entityId=azureVirtualMachine-4be55d60-136f-4410-9b0b-26f192e941ad&timeId=timeAgo_days_7',
+            'type': XM_CYBER_INCIDENT_TYPE_ENTITY
         },
         {
             "entityId": "azureVirtualMachine-9f9a1625-aa36-428c-b6bd-e9c7c476510a",
@@ -409,10 +419,10 @@ def test_fetch_incident(requests_mock):
             "level": "low",
             "trend": None,
             "name": "XM Asset at risk",
-            "severity": 'informational',
+            "severity": SEVERITY.Low,
             'create_time': create_time,
-            'linkToReport': 'https://test.com/api/systemReport/entity?entityId=azureVirtualMachine-9f9a1625-aa36-428c-b6bd-e9c7c476510a&timeId=timeAgo_days_7',
-            'type': 'XM Cyber Risk Score'
+            'linkToReport': 'https://test.com/systemReport/entity?entityId=azureVirtualMachine-9f9a1625-aa36-428c-b6bd-e9c7c476510a&timeId=timeAgo_days_7',
+            'type': XM_CYBER_INCIDENT_TYPE_ENTITY
         },
         {
             "entityId": "15553084234424912589",
@@ -454,10 +464,10 @@ def test_fetch_incident(requests_mock):
             "level": "low",
             "trend": 20,
             "name": "XM Choke point",
-            "severity": 'informational',
+            "severity": SEVERITY.Low,
             'create_time': create_time,
-            'linkToReport': 'https://test.com/api/systemReport/entity?entityId=15553084234424912589&timeId=timeAgo_days_7',
-            'type': 'XM Cyber Risk Score'
+            'linkToReport': 'https://test.com/systemReport/entity?entityId=15553084234424912589&timeId=timeAgo_days_7',
+            'type': XM_CYBER_INCIDENT_TYPE_ENTITY
         },
         {
             "entityId": "872743867762485580",
@@ -499,10 +509,10 @@ def test_fetch_incident(requests_mock):
             "level": "low",
             "trend": 33,
             "name": "XM Choke point",
-            "severity": 'informational',
+            "severity": SEVERITY.Low,
             'create_time': create_time,
-            'linkToReport': 'https://test.com/api/systemReport/entity?entityId=872743867762485580&timeId=timeAgo_days_7',
-            'type': 'XM Cyber Risk Score'
+            'linkToReport': 'https://test.com/systemReport/entity?entityId=872743867762485580&timeId=timeAgo_days_7',
+            'type':XM_CYBER_INCIDENT_TYPE_ENTITY
         },
         {
             "entityId": "file-163b4ecf80b8429583007386c77cae39",
@@ -540,10 +550,10 @@ def test_fetch_incident(requests_mock):
             "level": "low",
             "trend": 33,
             "name": "XM Choke point",
-            "severity": 'informational',
+            "severity": SEVERITY.Low,
             'create_time': create_time,
-            'linkToReport': 'https://test.com/api/systemReport/entity?entityId=file-163b4ecf80b8429583007386c77cae39&timeId=timeAgo_days_7',
-            'type': 'XM Cyber Risk Score'
+            'linkToReport': 'https://test.com/systemReport/entity?entityId=file-163b4ecf80b8429583007386c77cae39&timeId=timeAgo_days_7',
+            'type': XM_CYBER_INCIDENT_TYPE_ENTITY
         },
         {
             "description": "Using credentials for privileged domain accounts (passwords, tokens or kerberos tickets), an attacker can move laterally within the network.\nAn authenticated administrator account can create a scheduled task, a new service, use WMI or RDP to execute code remotely.\n",
@@ -609,10 +619,56 @@ def test_fetch_incident(requests_mock):
             "chokePoints": 116,
             "ratio": 0.0007349167094395969,
             "name": "XM Top technique",
-            "severity": 'informational',
+            "severity": SEVERITY.Low,
             'create_time': create_time,
-            'linkToReport': 'https://test.com/api/#/scenarioHub/systemReport/attackTechniques/Exploit::DomainCredentials?timeId=timeAgo_days_7',
-            'type': 'XM Cyber Technique'
+            'linkToReport': 'https://test.com/#/scenarioHub/systemReport/attackTechniques/Exploit::DomainCredentials?timeId=timeAgo_days_7',
+            'type': XM_CYBER_INCIDENT_TYPE_TECHNIQUE,
+            'advices': [{
+                'text': 'Use application whitelisting software (e.g AppLocker) to restrict password dumping tools',
+                'type': 'Remediation'
+            }, {
+                'text': 'Prevent the credential from being stored in the machine memory. This usually happens due to '
+                        'interactive logins, whether its from the keyboard/mouse connected to the machine, RDP, or '
+                        'service account. Using Event Viewer Security logs and '
+                        'looking for 4624 and 4648 events can help identify the exact reason.',
+                'type': 'Remediation'
+            }, {
+                'text': 'Implement a multi-factor authentication solution',
+                'type': 'Remediation'
+            }, {
+                'text': 'Block incoming connections to ports 445, 139, 135 and 3389',
+                'type': 'Remediation'
+            }, {
+                'text': 'Remove the following users from the local Administrators and Remote Desktop Users groups',
+                'type': 'Remediation'
+            }, {
+                'text': 'Enable Protected Process Light for LSA',
+                'type': 'Remediation'
+            }, {
+                'text': 'Implement Credential Guard to protect the LSA secrets',
+                'type': 'Remediation'
+            }, {
+                'text': 'Implement a password management/password vault solution',
+                'type': 'Best Practice'
+            },
+               {'text': "Use RDP's restrictedAdmin feature when connecting from "
+                        'trusted machines to untrusted machines. Avoid using it on untrusted machines',
+                'type': 'Best Practice'
+            }, {
+                'text': 'Enforce max password age and password complexity policy',
+                'type': 'Best Practice'
+            }, {'text': 'Avoid using privileged domain accounts to execute services on domain devices',
+                'type': 'Best Practice'
+            }, {
+                'text': 'Add privileged domain accounts to the Protected Users group',
+                'type': 'Best Practice'
+            }, {
+                'text': 'Use Microsoft Protected Process Light to protect critical processes',
+                'type': 'Best Practice'
+            }, {
+                'text': 'Use Microsoft Windows Defender Credential Guard when possible',
+                'type': 'Best Practice'
+            }]
         },
         {
             "description": "Content stored on network drives or in other shared locations may be tainted by adding malicious programs, scripts, or exploit code to otherwise valid files. Once a user opens the shared tainted content, the malicious portion can be executed to run the adversary's code on a remote system. Adversaries may use tainted shared content to move laterally.",
@@ -650,10 +706,44 @@ def test_fetch_incident(requests_mock):
             "chokePoints": 35,
             "ratio": 0.0017784651072878406,
             "name": "XM Top technique",
-            "severity": 'informational',
+            "severity": SEVERITY.Low,
             'create_time': create_time,
-            'linkToReport': 'https://test.com/api/#/scenarioHub/systemReport/attackTechniques/taintSharedContent?timeId=timeAgo_days_7',
-            'type': 'XM Cyber Technique'
+            'linkToReport': 'https://test.com/#/scenarioHub/systemReport/attackTechniques/taintSharedContent?timeId=timeAgo_days_7',
+            'type': XM_CYBER_INCIDENT_TYPE_TECHNIQUE,
+            'advices': [{
+                'text': 'Remove write permissions for the following users to the specified shared folder',
+                'type': 'Remediation'
+            }, {
+                'text': 'Use application whitelisting software (e.g AppLocker) to restrict password dumping tools',
+                'type': 'Remediation'
+            }, {
+                'text': 'Prevent the credential from being stored in the machine memory. This usually happens due to '
+                        'interactive logins, whether its from the keyboard/mouse connected to the machine, RDP, or '
+                        'service account. Using Event Viewer Security logs and '
+                        'looking for 4624 and 4648 events can help identify the exact reason.',
+                'type': 'Remediation'
+            }, {
+                'text': 'Enable Protected Process Light for LSA',
+                'type': 'Remediation'
+            }, {
+                'text': 'Implement Credential Guard to protect the LSA secrets',
+                'type': 'Remediation'
+            }, {
+                'text': 'Block LLMNR (UDP port 5355) and NetBIOS (UDP port 137) traffic using endpoint security software on the '
+                     'following computers:',
+                'type': 'Remediation'
+            }, {
+                'text': 'Disable LLMNR (using local computer policy settings or by group policy) and NetBIOS (by changing each '
+                     'interface settings) on the the following computers:',
+                'type': 'Remediation'
+            }, {
+                'text': 'Protect shared folders by minimizing users who have write access.',
+                'type': 'Best Practice'
+            }, {
+                'text': 'Use utilities that detect or mitigate common features '
+                        'used in exploitation, such as the Microsoft Enhanced Mitigation Experience Toolkit (EMET).',
+                'type': 'Best Practice'
+            }],
         },
         {
             "description": "EternalBlue is a SMB Server vulnerability allowing remote code execution on a target server by sending a specially crafted SMB packet.\nThe vulnerability became public as a part of the \"Equation Group\" tools leak and used in the notorious WannaCry attack of May 2017.\n",
@@ -688,10 +778,44 @@ def test_fetch_incident(requests_mock):
             "chokePoints": 74,
             "ratio": 0.0007863072815711517,
             "name": "XM Top technique",
-            "severity": 'informational',
+            "severity": SEVERITY.Low,
             'create_time': create_time,
-            'linkToReport': 'https://test.com/api/#/scenarioHub/systemReport/attackTechniques/Exploit::Ms17010?timeId=timeAgo_days_7',
-            'type': 'XM Cyber Technique'
+            'linkToReport': 'https://test.com/#/scenarioHub/systemReport/attackTechniques/Exploit::Ms17010?timeId=timeAgo_days_7',
+            'type': XM_CYBER_INCIDENT_TYPE_TECHNIQUE,
+            'advices': [{
+                'text': 'Remove write permissions for the following users to the specified shared folder',
+                'type': 'Remediation'
+            }, {
+                'text': 'Use application whitelisting software (e.g AppLocker) to restrict password dumping tools',
+                'type': 'Remediation'
+            }, {
+                'text': 'Prevent the credential from being stored in the machine memory. This usually happens due to '
+                        'interactive logins, whether its from the keyboard/mouse connected to the machine, RDP, or '
+                        'service account. Using Event Viewer Security logs and '
+                        'looking for 4624 and 4648 events can help identify the exact reason.',
+                'type': 'Remediation'
+            }, {
+                'text': 'Enable Protected Process Light for LSA',
+                'type': 'Remediation'
+            }, {
+                'text': 'Implement Credential Guard to protect the LSA secrets',
+                'type': 'Remediation'
+            }, {
+                'text': 'Block LLMNR (UDP port 5355) and NetBIOS (UDP port 137) traffic using endpoint security software on the '
+                        'following computers:',
+                'type': 'Remediation'
+            }, {
+                'text': 'Disable LLMNR (using local computer policy settings or by group policy) and NetBIOS (by changing each '
+                        'interface settings) on the the following computers:',
+                'type': 'Remediation'
+            }, {
+                'text': 'Protect shared folders by minimizing users who have write access.',
+                'type': 'Best Practice'
+            }, {
+                'text': 'Use utilities that detect or mitigate common features '
+                        'used in exploitation, such as the Microsoft Enhanced Mitigation Experience Toolkit (EMET).',
+                'type': 'Best Practice'
+            }]
         }
     ]
 
