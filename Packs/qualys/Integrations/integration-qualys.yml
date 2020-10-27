@@ -433,7 +433,8 @@ script:
         'vmScanAction': { ContextPath: undefined,
                         ContentPath: ['SIMPLE_RETURN.RESPONSE','.ITEM_LIST.ITEM'],
                          entityType: ''},
-        'vmScanFetch': '',
+        'vmScanFetch': { ContextPath: 'Qualys.VM',
+                          entityType: 'vm'},
         'scapScanList': { ContextPath: 'Qualys.Scan(val.ID == obj.ID)',
                         ContentPath: ['SCAN_LIST_OUTPUT.RESPONSE','.SCAN_LIST.SCAN'],
                         entityType: 'scan' },
@@ -876,12 +877,18 @@ script:
     function handleFetchScan(httpRes, method) {
         nonXMLCheckErrors(httpRes);
         rawResponse = JSON.parse(httpRes.Body);
-
+        if(rawResponse.length === 0){
+            return "There were no vulnerabilities detected";
+        }
+        var contextData = contextDict[method];
+        entry_context = {};
+        entry_context[contextData.ContextPath] = rawResponse;
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
             Contents: rawResponse,
             ReadableContentsFormat: formats.markdown,
+            EntryContext: entry_context,
             HumanReadable: tableToMarkdown(titleDict[method], rawResponse),
         };
 
@@ -2411,6 +2418,19 @@ script:
       - brief
       - extended
       description: 'The verbosity of the scan results details. One verbosity mode may be specified: brief (the default) or extended. The brief output includes this information: IP address, DNS hostname, NetBIOS hostname, QID and scan test results if applicable. The extended output includes the brief output plus this extended information: protocol, port, an SSL flag (“yes” is returned when SSL was used for the detection, “no” is returned when SSL was not used), and FQDN if applicable.'
+    outputs:
+      - contextPath: Qualys.VM.Ip
+        description: Scanned device IP
+      - contextPath: Qualys.VM.Dns
+        description: Scanned device DNS
+      - contextPath: Qualys.VM.Netbios
+        description: Scanned device Netbios
+      - contextPath: Qualys.VM.QID
+        description: Qualys ID for vulnerabilities
+      - contextPath: Qualys.VM.Instance
+        description: Scanned device Instance
+      - contextPath: Qualys.VM.Result
+        description: Scan Result
     description: fetch vm scan deatails
   - name: qualys-pc-scan-fetch
     arguments:
