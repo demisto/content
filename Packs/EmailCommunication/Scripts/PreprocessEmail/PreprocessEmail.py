@@ -4,9 +4,26 @@ import json
 import re
 
 ERROR_TEMPLATE = 'ERROR: PreprocessEmail - {function_name}: {reason}'
+QUOTE_MARKERS = ['<div class="gmail_quote">',
+                 '<hr tabindex="-1" style="display:inline-block; width:98%"><div id="divRplyFwdMsg"']
 
 
 def create_email_html(email_html, entry_id_list):
+    """Modify the email's html body to use entry IDs instead of CIDs and remove the original message body if exists.
+    Args:
+        email_html (str): The attachments of the email.
+        entry_id_list (list): The files entry ids list.
+    Returns:
+        str. Email Html.
+    """
+
+    # Removing the conversation's history
+    for marker in QUOTE_MARKERS:
+        index = email_html.find(marker)
+        if index != -1:
+            email_html = f'{email_html[:index]}</body></html>'
+
+    # Replacing the images' sources from
     for entry_id in entry_id_list:
         email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")', f'src=entry/download/{entry_id[1]}',
                             email_html)
@@ -150,15 +167,28 @@ def get_incident_related_files(incident_id):
     to context of the email reply related incident.
 
     Args:
-        email_related_incident (int): ID of the incident to attach the files to.
-        labels (Dict): Incidnet's labels to fetch the relevant data from.
-
+        incident_id (str): The ID of the incident whose context we'd like to get.
     """
     try:
         res = demisto.executeCommand("getContext", {'id': incident_id})
         return res[0]['Contents'].get('context', {}).get('File', [])
     except Exception:
         return []
+
+
+def update_latest_message_field(incident_id, item_id):
+    """Update the 'emaillatestmessage' field on the email related incident with the ID of the latest email reply.
+
+    Args:
+        incident_id (int): The ID of the incident whose field we'd like to set.
+        item_id (str): The email reply ID.
+    """
+    try:
+        demisto.executeCommand('setIncident', {'id': incident_id, 'customFields': {'emaillatestmessage': item_id}})
+    except:
+        demisto.debug(f'SetIncident Failed.'
+                      f'"emaillatestmessage" field was not updated with {item_id} value for incident: {incident_id}')
+        pass
 
 
 def main():
@@ -170,13 +200,16 @@ def main():
     email_subject = custom_fields.get('emailsubject')
     email_html = custom_fields.get('emailhtml')
     attachments = incident.get('attachment', [])
+    email_latest_message = custom_fields.get('emaillatestmessage')
 
     try:
         email_related_incident = int(email_subject.split('#')[1].split()[0])
+        update_latest_message_field(email_related_incident, email_latest_message)
         query = f"id:{email_related_incident}"
         incident_details = get_incident_by_query(query)
         check_incident_status(incident_details, str(email_related_incident))
         get_attachments_using_instance(email_related_incident, incident.get('labels'))
+
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(5)
         files = get_incident_related_files(str(email_related_incident))
