@@ -244,7 +244,7 @@ script:
         if(query) {
             url += '?q=' + encodeURIComponent(query);
         }
-        if (test) {
+        if (test_module) {
             url += '?limit=1'
         }
         var token = login();
@@ -312,7 +312,7 @@ script:
 
     switch (command) {
         case 'test-module':
-            fetchIncidents(test_module=true);
+            fetchIncidents(query=null, test_module=true);
             return 'ok';
         case 'fetch-incidents':
             return fetchIncidentsToDemisto();
