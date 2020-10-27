@@ -5,7 +5,7 @@ FAIL_STATUS_MSG = "Command send-mail in module EWS Mail Sender requires argument
 
 
 def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-               entry_id_list, additional_header):
+               entry_id_list, email_latest_message):
     """Send email reply.
     Args:
         incident_id: The incident ID.
@@ -16,14 +16,14 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
         email_cc: The email cc.
         reply_html_body: The email html body.
         entry_id_list: The files entry ids list.
-        additional_header: The additional header.
+        email_latest_message: The latest message ID in the email thread to reply to.
     """
     email_reply = send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
-                                    reply_html_body, entry_id_list, additional_header)
+                                    reply_html_body, entry_id_list, email_latest_message)
 
     status = email_reply[0].get('Contents', '')
     if status != FAIL_STATUS_MSG and status:
-        msg = 'Mail sent successfully. To: {}'.format(email_to)
+        msg = f'Mail sent successfully. To: {email_to}'
         if email_cc:
             msg += f' Cc: {email_cc}'
     else:
@@ -33,18 +33,18 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
 
 
 def send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-                      entry_id_list, additional_header):
+                      entry_id_list, email_latest_message):
     mail_content = {
         "to": email_to,
+        "item_id": email_latest_message,
         "subject": f"#{incident_id} {email_subject}",
         "cc": email_cc,
         "htmlBody": reply_html_body,
         "body": reply_body,
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
-        "additionalHeader": additional_header
     }
-    email_reply = demisto.executeCommand("send-mail", mail_content)
+    email_reply = demisto.executeCommand("reply-mail", mail_content)
     return email_reply
 
 
@@ -177,29 +177,27 @@ def get_email_recipients(email_to, email_from, service_mail):
 
 def main():
     args = demisto.args()
-    incident = demisto.incidents()[0]
+    incident = demisto.incident()
     incident_id = incident.get('id')
     custom_fields = incident.get('CustomFields')
     email_subject = custom_fields.get('emailsubject')
     email_cc = custom_fields.get('emailcc', '')
     add_cc = custom_fields.get('addcctoemail', '')
-    message_id = custom_fields.get('emailmessageid')
     service_mail = args.get('service_mail', '')
     email_from = custom_fields.get('emailfrom')
     email_to = custom_fields.get('emailto')
+    email_latest_message = custom_fields.get('emaillatestmessage')
     email_to_str = get_email_recipients(email_to, email_from, service_mail)
     files = args.get('files', {})
     attachments = args.get('attachment', {})
     notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})
-    additional_header = [f'In-Reply-To={message_id}']
 
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, reply_html_body = get_reply_body(notes, incident_id)
         entry_id_list = get_entry_id_list(incident_id, attachments, files)
         result = send_reply(incident_id, email_subject, email_to_str, reply_body, service_mail, final_email_cc,
-                            reply_html_body,
-                            entry_id_list, additional_header)
+                            reply_html_body, entry_id_list, email_latest_message)
         demisto.results(result)
     except Exception as error:
         return_error(str(error), error)
