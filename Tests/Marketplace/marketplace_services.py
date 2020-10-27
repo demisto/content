@@ -696,7 +696,6 @@ class Pack(object):
             return task_status
 
     def encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
-        # TODO Handle this better.
         try:
             shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
             os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
@@ -708,7 +707,8 @@ class Pack(object):
                            f'{encryption_key}"'
             subprocess.call(full_command, shell=True)
             os.chdir(current_working_dir)
-        except Exception:
+        except subprocess.CalledProcessError as error:
+            print(f"Error while trying to encrypt pack. {error}")
             pass
 
     def zip_pack(self, extract_destination_path="", pack_name="", encryption_key=""):
@@ -729,8 +729,8 @@ class Pack(object):
                         relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
-            # if encryption_key:
-            #     self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
+            if encryption_key:
+                self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
             task_status = True
             print_color(f"Finished zipping {self._pack_name} pack.", LOG_COLORS.GREEN)
         except Exception as e:
