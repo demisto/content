@@ -7,8 +7,8 @@ from IncidentsCheck_Widget_PlaybookNames import main, random
     ([{'Contents': 'AutoFocusPolling,Account Enrichment - Generic v2.1'}],
      ('[{"data": [1], "name": "AutoFocusPolling", "color": "#3e8"}, {"data": [1], '
       '"name": "Account Enrichment - Generic v2.1", "color": "#3e8"}]')),
-    ([{'Contents': ''}], '{"data": [0], "name": "N\\\\A", "color": "#00CD33"}'),
-    ([{}], '{"data": [0], "name": "N\\\\A", "color": "#00CD33"}'),
+    ([{'Contents': ''}], '[{"data": [0], "name": "N\\\\A", "color": "#00CD33"}]'),
+    ([{}], '[{"data": [0], "name": "N\\\\A", "color": "#00CD33"}]'),
 ])
 def test_script(mocker, list_, expected):
     mocker.patch.object(random, 'randint', return_value=1000)
