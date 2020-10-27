@@ -55,6 +55,7 @@ EXPECTED_RESULT_3 = """
 </div><div><div><img src=entry/download/38@120 alt="image_2.png" width="225" height="224"><br></div></div></div><br>
 </body></html>"""
 
+
 @pytest.mark.parametrize(
     "email_html,entry_id_list,expected",
     [(EMAIL_HTML, [('image_1.png', '37@119')], EXPECTED_RESULT_1),

@@ -185,7 +185,7 @@ def update_latest_message_field(incident_id, item_id):
     """
     try:
         demisto.executeCommand('setIncident', {'id': incident_id, 'customFields': {'emaillatestmessage': item_id}})
-    except:
+    except Exception:
         demisto.debug(f'SetIncident Failed.'
                       f'"emaillatestmessage" field was not updated with {item_id} value for incident: {incident_id}')
 
