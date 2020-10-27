@@ -15,15 +15,15 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: start
+      description: Start
     nexttasks:
       '#none#':
-      - "1"
+      - "10"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 787.5,
           "y": 50
         }
       }
@@ -54,8 +54,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 195
+          "x": 70,
+          "y": 1040
         }
       }
     note: false
@@ -65,10 +65,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 246cddc4-e2eb-4d31-85f3-5556b70db42a
+    taskid: 2f0ad3cc-4c58-4167-8399-0725cd47f483
     type: regular
     task:
-      id: 246cddc4-e2eb-4d31-85f3-5556b70db42a
+      id: 2f0ad3cc-4c58-4167-8399-0725cd47f483
       version: -1
       name: Lookup IPs
       description: Return data on Entity by IP from XM Cyber
@@ -81,13 +81,13 @@ tasks:
       - "9"
     scriptarguments:
       ip:
-        simple: ${IP}
+        simple: ${incident.xmcyberipaddress}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 545
+          "x": 500,
+          "y": 1515
         }
       }
     note: false
@@ -120,8 +120,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 1135,
+          "y": 2030
         }
       }
     note: false
@@ -154,8 +154,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 1135,
+          "y": 2205
         }
       }
     note: false
@@ -165,66 +165,26 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 8a4427d1-7d07-47d6-8a06-7e463c36eb01
+    taskid: 099fdb2a-14b5-418b-8d3a-a0e6accedf61
     type: regular
     task:
-      id: 8a4427d1-7d07-47d6-8a06-7e463c36eb01
+      id: 099fdb2a-14b5-418b-8d3a-a0e6accedf61
       version: -1
-      name: XMCyber-map
+      name: map data to fields
       description: Maps the XM Cyber context to fields
-      scriptName: XMCyber-map
+      scriptName: xmcyber-map
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "23"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: 1dd37104-5c3d-4e4f-8b06-f18d3222cac7
-    type: regular
-    task:
-      id: 1dd37104-5c3d-4e4f-8b06-f18d3222cac7
-      version: -1
-      name: AssignAnalystToIncident
-      description: |-
-        Assign analyst to incident.
-        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
-        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
-        machine-learning: DBot will calculated and decide who is the best analyst for the job.
-        top-user: The user that is most commonly owns this type of incident
-        less-busy-user: The less busy analyst will be picked to be the incident owner.
-        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
-        current: The user that executed the command
-      scriptName: AssignAnalystToIncident
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      assignBy: {}
-      email: {}
-      onCall: {}
-      roles: {}
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
+          "x": 1135,
+          "y": 2380
         }
       }
     note: false
@@ -234,10 +194,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 9d9b33a2-f735-4976-819b-1957b724fd70
+    taskid: 5854104f-defd-4d6e-8181-7a7a383a9cda
     type: condition
     task:
-      id: 9d9b33a2-f735-4976-819b-1957b724fd70
+      id: 5854104f-defd-4d6e-8181-7a7a383a9cda
       version: -1
       name: Exists IP
       description: Check if a given value exists in the context. Will return 'no'
@@ -247,10 +207,10 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "8"
+      "no":
+      - "21"
       "yes":
-      - "2"
+      - "18"
     scriptarguments:
       value:
         simple: ${IP}
@@ -258,50 +218,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 370
+          "x": 70,
+          "y": 1215
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: a762c9b2-95c6-459a-8fe0-398d9721ce0b
-    type: regular
-    task:
-      id: a762c9b2-95c6-459a-8fe0-398d9721ce0b
-      version: -1
-      name: Manually remediate  the incident
-      description: "Review the incident to determine if the account activity is malicious.\n\nIf
-        malicious, consider the following:\n* Quarantine the account/ endpoint \n*
-        Revoke the account password\n* Query the account/ IPs logs in the SIEM\n*
-        Block the external IPs in the firewall/ proxy\n* Check the account's privileges
-        and change if needed"
-      type: regular
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    fieldMapping:
+    - incidentfield: XM Cyber IP Address
+      output:
+        simple: ${IP}
     skipunavailable: false
     quietmode: 0
   "9":
     id: "9"
-    taskid: ab5265d9-5bcf-4a88-8a1a-7c2838799696
+    taskid: 37dbe985-51fb-4d5d-8264-2b870159f4d8
     type: condition
     task:
-      id: ab5265d9-5bcf-4a88-8a1a-7c2838799696
+      id: 37dbe985-51fb-4d5d-8264-2b870159f4d8
       version: -1
       name: Exists Entity
       description: Check if a given value exists in the context. Will return 'no'
@@ -311,10 +246,10 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "8"
+      "no":
+      - "22"
       "yes":
-      - "3"
+      - "14"
     scriptarguments:
       value:
         simple: ${XMCyber.entityId}
@@ -322,8 +257,447 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 910,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: c13a30b9-3c41-4316-899b-1d721eada0dc
+    type: regular
+    task:
+      id: c13a30b9-3c41-4316-899b-1d721eada0dc
+      version: -1
+      name: Verify XM Cyber Instance
+      description: Check if current XM version supports Demisto integration
+      script: XMCyber|||xmcyber-is-version-supported
+      type: regular
+      iscommand: true
+      brand: XMCyber
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 787.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 2b596ee4-0781-42c5-85f1-65b4727b1808
+    type: condition
+    task:
+      id: 2b596ee4-0781-42c5-85f1-65b4727b1808
+      version: -1
+      name: Is XM Cyber Instance Valid
+      description: Check if a given value is true. Will return 'no' otherwise
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "20"
+      "yes":
+      - "24"
+    scriptarguments:
+      value:
+        simple: ${XMCyber.IsVersion.valid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 787.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 8a75cb84-04dc-4928-87e9-67abcaf5e585
+    type: title
+    task:
+      id: 8a75cb84-04dc-4928-87e9-67abcaf5e585
+      version: -1
+      name: Extract IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: Locate all IP addresses in context
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: ef722e9d-b343-4eca-81b3-16e25f5d1c97
+    type: title
+    task:
+      id: ef722e9d-b343-4eca-81b3-16e25f5d1c97
+      version: -1
+      name: XM Entity Found
+      type: title
+      iscommand: false
+      brand: ""
+      description: XM Entity Found to match indicators in the incident
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: d15771a1-ff69-48fc-88e7-08ea3f195cc9
+    type: title
+    task:
+      id: d15771a1-ff69-48fc-88e7-08ea3f195cc9
+      version: -1
+      name: Hostname Case
+      type: title
+      iscommand: false
+      brand: ""
+      description: Hostname Case
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 2476f642-3c91-4683-85cb-ad27c2164ff9
+    type: condition
+    task:
+      id: 2476f642-3c91-4683-85cb-ad27c2164ff9
+      version: -1
+      name: EntityId or Hostname or IP based?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      Entity ID:
+      - "25"
+      Hostname:
+      - "15"
+      IP:
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: Hostname
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${incident.xmcyberhostname}
+            iscontext: true
+    - label: IP
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${incident.xmcyberipaddress}
+            iscontext: true
+    - label: Entity ID
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${incident.xmcyberentityid}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1002.5,
           "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 77b18831-d652-49c9-8992-f8e92a467794
+    type: title
+    task:
+      id: 77b18831-d652-49c9-8992-f8e92a467794
+      version: -1
+      name: IP Case
+      type: title
+      iscommand: false
+      brand: ""
+      description: IP Address Case
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: fa7e367f-9b36-4540-860d-4a70a2848ec6
+    type: regular
+    task:
+      id: fa7e367f-9b36-4540-860d-4a70a2848ec6
+      version: -1
+      name: Lookup Hostname
+      description: Return data on Entity by hostname from XM Cyber
+      script: XMCyber|||hostname
+      type: regular
+      iscommand: true
+      brand: XMCyber
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      hostname:
+        simple: ${incident.xmcyberhostname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 5c9429c8-42ab-4417-8ad1-b93f8c7f6348
+    type: title
+    task:
+      id: 5c9429c8-42ab-4417-8ad1-b93f8c7f6348
+      version: -1
+      name: XM Cyber Instance Invalid
+      description: "Review the incident to determine if the account activity is malicious.\n\nIf
+        malicious, consider the following:\n* Quarantine the account/ endpoint \n*
+        Revoke the account password\n* Query the account/ IPs logs in the SIEM\n*
+        Block the external IPs in the firewall/ proxy\n* Check the account's privileges
+        and change if needed"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 572.5,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: e82702b7-6274-45d6-8af2-65a2455c8d11
+    type: title
+    task:
+      id: e82702b7-6274-45d6-8af2-65a2455c8d11
+      version: -1
+      name: No IP or Hostname to Enrich
+      type: title
+      iscommand: false
+      brand: ""
+      description: No IP or Hostname found in incident or its context
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: d623449a-ea9f-4910-8e2d-1a1af38e907a
+    type: title
+    task:
+      id: d623449a-ea9f-4910-8e2d-1a1af38e907a
+      version: -1
+      name: No Entity Matches Found
+      type: title
+      iscommand: false
+      brand: ""
+      description: No entity matches the indicators in the incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: d1643013-b73a-44f3-8682-0b52498131a5
+    type: title
+    task:
+      id: d1643013-b73a-44f3-8682-0b52498131a5
+      version: -1
+      name: Enriched
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: f912892e-b924-4aac-86db-de34b8f44193
+    type: regular
+    task:
+      id: f912892e-b924-4aac-86db-de34b8f44193
+      version: -1
+      name: Map Fields and Context
+      description: Maps the XM Cyber context to fields
+      scriptName: xmcyber-map
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1002.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 82c202a6-5ce8-429b-88ab-d8dba4677e7a
+    type: regular
+    task:
+      id: 82c202a6-5ce8-429b-88ab-d8dba4677e7a
+      version: -1
+      name: Get Entity
+      description: Return data on Entity by IP or Hostname from XM Cyber
+      script: XMCyber|||xmcyber-entity-get
+      type: regular
+      iscommand: true
+      brand: XMCyber
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      entityId:
+        simple: ${XMCyber.entityId}
+      hostname: {}
+      ip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 1390
         }
       }
     note: false
@@ -336,14 +710,32 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
-        "width": 810,
+        "height": 2570,
+        "width": 1660,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
-outputs: []
+inputs:
+- key: Hostname
+  value:
+    simple: ${Endpoint.Hostname}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: IpAddress
+  value:
+    simple: ${IP.Address}
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs:
+- contextPath: entityId
+  description: XMCyber Entity ID
+  type: string
+- contextPath: isAsset
+  description: Is Entity a Critical Asset
+  type: boolean
 tests:
  -  No tests
