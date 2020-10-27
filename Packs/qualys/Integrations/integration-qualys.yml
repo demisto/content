@@ -2425,7 +2425,7 @@ script:
         description: Scanned device DNS
       - contextPath: Qualys.VM.netbios
         description: Scanned device Netbios
-      - contextPath: Qualys.VM.qID
+      - contextPath: Qualys.VM.qid
         description: Qualys ID for vulnerabilities
       - contextPath: Qualys.VM.instance
         description: Scanned device Instance
