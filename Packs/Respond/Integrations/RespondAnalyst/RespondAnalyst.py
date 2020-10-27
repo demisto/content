@@ -5,8 +5,6 @@ from CommonServerPython import *  # noqa: F401
 
 import json
 
-from gql import gql, Client
-from gql.transport.requests import RequestsHTTPTransport
 from datetime import datetime, timedelta
 
 # Disable insecure warnings
@@ -72,161 +70,150 @@ class RestClient(BaseClient):
             retries=3
         )
 
-
-class GraphQLClient(object):
-    def __init__(self, tenant_id=None, verify=VERIFY_CERT, auth=(USERNAME, PASSWORD), fetch_schema_from_transport=True):
-        sample_transport = RequestsHTTPTransport(
-            url=BASE_URL + '/graphql?tenantId=' + tenant_id,
-            use_json=True,
-            auth=auth,
-            verify=verify,
-            retries=3
+    # sadly the linting process will fail if the format below is not used. Hard to read
+    def construct_and_send_full_incidents_query(self, tenant_id, incident_ids):
+        query = {"query": "query { fullIncidents(ids: " + str(incident_ids) + ") { "
+                                                                              "id "
+                                                                              "dateCreated "
+                                                                              "eventCount "
+                                                                              "firstEventTime "
+                                                                              "lastEventTime "
+                                                                              "title "
+                                                                              "attackStage "
+                                                                              "assetClass "
+                                                                              "probabilityBucket "
+                                                                              "status "
+                                                                              "priority "
+                                                                              "internalSystems{ "
+                                                                              "hostname "
+                                                                              "} "
+                                                                              "internalSystemsCount "
+                                                                              "feedback { "
+                                                                              "newStatus "
+                                                                              "status "
+                                                                              "newSelectedOptions{ "
+                                                                              "id "
+                                                                              "key "
+                                                                              "value "
+                                                                              "} "
+                                                                              "timeGiven "
+                                                                              "optionalText "
+                                                                              "userId "
+                                                                              "closedAt "
+                                                                              "closedBy "
+                                                                              "} "
+                                                                              "userIds "
+                                                                              "tags { "
+                                                                              "label "
+                                                                              "} "
+                                                                              "} }"
+                 }
+        res = self._http_request(
+            method='POST',
+            url_suffix='/graphql?tenantId=' + tenant_id,
+            retries=3,
+            json_data=query
         )
-        self.client = Client(
-            transport=sample_transport,
-            fetch_schema_from_transport=fetch_schema_from_transport,
-        )
+        return res.get('data').get('fullIncidents')
 
-    def update_tenant_id(self, tenant_id):
-        self.client.transport.url = BASE_URL + '/graphql?tenantId=' + tenant_id
-
-    def execute_query(self, query, variable_values=None):
-        gql_query = gql(query)
-        response = self.client.execute(gql_query, variable_values=variable_values)
-        return response
-
-    def construct_and_send_get_incident_ids_query(self, from_time_str):
+    def construct_and_send_get_incident_ids_query(self, tenant_id, from_time_str):
         if from_time_str == '':
-            return self.execute_query('''
-            query {
-                incidents(
-                  statusFilters: [
-                    { incidentStatus: Open },
-                    { incidentStatus: Closed },
-                  ]
-                ){ id }
-            }
-            ''')
+            query = {"query": "query { incidents( statusFilters: [ { incidentStatus: Open } { "
+                              "incidentStatus: Closed } ] ){ id } }"}
         else:
-            return self.execute_query('''
-                query {
-                    incidents(
-                        createdAfter:"''' + from_time_str + '''"
-                    ){ id }
-                }
-            ''')
+            query = {"query": "query { incidents( createdAfter:\"" + from_time_str + "\" ){ id } }"}
+        res = self._http_request(
+            method='POST',
+            url_suffix='/graphql?tenantId=' + tenant_id,
+            retries=3,
+            json_data=query
+        )
+        return res.get('data').get('incidents')
 
-    def construct_and_send_full_incidents_query(self, incident_ids):
-        return self.execute_query('''
-        query {
-          fullIncidents(ids: ''' + str(incident_ids) + ''') {
-            id
-            dateCreated
-            eventCount
-            firstEventTime
-            lastEventTime
-            title
-            attackStage
-            assetClass
-            probabilityBucket
-            status
-            priority
-            internalSystems{
-                hostname
-            }
-            internalSystemsCount
-            feedback {
-              newStatus
-              status
-              newSelectedOptions{
-                id
-                key
-                value
-              }
-              timeGiven
-              optionalText
-              userId
-              closedAt
-              closedBy
-            }
-            userIds
-            tags {
-              label
-            }
-          }
-        }
-        ''')
-
-    def construct_and_send_close_incident_mutation(self, feedback_status, feedback_selected_options,
+    def construct_and_send_close_incident_mutation(self, tenant_id, feedback_status,
+                                                   feedback_selected_options,
                                                    feedback_optional_text, incident_id, user):
         if feedback_selected_options is None:
             feedback_selected_options = []
 
-        query = '''
-            mutation closeIncident(
-              $incidentId: ID!,
-              $user: User!,
-              $feedbackStatus: FeedbackStatus!,
-              $newFeedbackSelectedOptions: [FeedbackSelectionInput!],
-              $feedbackOptionalText: String,
-            ){
-              closeIncident(
-                incidentId: $incidentId,
-                user: $user,
-                feedbackStatus: $feedbackStatus,
-                newFeedbackSelectedOptions: $newFeedbackSelectedOptions,
-                feedbackOptionalText: $feedbackOptionalText
-              )
-                {
-                    id
-                    status
-                    feedback {
-                      userId
-                      newStatus
-                      timeGiven
-                      newSelectedOptions{
-                        id
-                        key
-                        value
-                      }
-                      optionalText
-                    }
+        # sadly the linting process will fail if the format below is not used. Hard to read
+        data = {"query": "mutation closeIncident( "
+                         "$incidentId: ID! "
+                         "$user: User! "
+                         "$feedbackStatus: FeedbackStatus! "
+                         "$newFeedbackSelectedOptions: [FeedbackSelectionInput!] "
+                         "$feedbackOptionalText: String ){ "
+                         "closeIncident( "
+                         "incidentId: $incidentId "
+                         "user: $user "
+                         "feedbackStatus: $feedbackStatus "
+                         "newFeedbackSelectedOptions: $newFeedbackSelectedOptions "
+                         "feedbackOptionalText: $feedbackOptionalText "
+                         ") { "
+                         "id "
+                         "status "
+                         "feedback { "
+                         "userId "
+                         "newStatus "
+                         "timeGiven "
+                         "newSelectedOptions{ "
+                         "id "
+                         "key "
+                         "value "
+                         "} "
+                         "optionalText "
+                         "} "
+                         "} "
+                         "}",
+                "variables": {"incidentId": incident_id, "user": user,
+                              "feedbackStatus": feedback_status,
+                              "newFeedbackSelectedOptions": feedback_selected_options,
+                              "feedbackOptionalText": feedback_optional_text}
                 }
-              }'''
-        variables = {
-            'incidentId': incident_id,
-            'user': user,
-            'feedbackStatus': feedback_status,
-            'newFeedbackSelectedOptions': feedback_selected_options,
-            'feedbackOptionalText': feedback_optional_text,
-        }
-        return self.execute_query(query, variables)
+        res = self._http_request(
+            method='POST',
+            url_suffix='/graphql?tenantId=' + tenant_id,
+            retries=3,
+            json_data=data
+        )
+        return res.get('data').get('closeIncident')
 
-    def construct_and_send_add_user_to_incident_mutation(self, user_id, incident_id):
-        query = '''mutation addUserToIncident($id: ID!, $userId: String!) {
-                      addUserToIncident(incidentId: $id, userId: $userId) {
-                        id
-                        userIds
-                      }
-                    }'''
-        variables = {
-            'id': incident_id,
-            'userId': user_id
-        }
-        return self.execute_query(query, variables)
+    def construct_and_send_add_user_to_incident_mutation(self, tenant_id, user_id, incident_id):
+        data = {"query": "mutation addUserToIncident($id: ID! $userId: String!) { "
+                         "addUserToIncident(incidentId: $id userId: $userId) { "
+                         "id "
+                         "userIds "
+                         "} "
+                         "}",
+                "variables": {"id": incident_id, "userId": user_id}
+                }
 
-    def construct_and_send_remove_user_from_incident_mutation(self, user_id, incident_id):
-        query = '''mutation removeUserFromIncident($id: ID!, $userId: String!) {
-                      removeUserFromIncident(incidentId: $id, userId: $userId) {
-                        id
-                        userIds
-                      }
-                    }'''
-        variables = {
-            'id': incident_id,
-            'userId': user_id
-        }
-        return self.execute_query(query, variables)
+        res = self._http_request(
+            method='POST',
+            url_suffix='/graphql?tenantId=' + tenant_id,
+            retries=3,
+            json_data=data
+        )
+        return res.get('data').get('addUserToIncident')
+
+    def construct_and_send_remove_user_from_incident_mutation(self, tenant_id, user_id,
+                                                              incident_id):
+        data = {"query": "mutation removeUserFromIncident($id: ID! $userId: String!) { "
+                         "removeUserFromIncident(incidentId: $id userId: $userId) { "
+                         "id "
+                         "userIds "
+                         "} "
+                         "}",
+                "variables": {"id": incident_id, "userId": user_id}
+                }
+
+        res = self._http_request(
+            method='POST',
+            url_suffix='/graphql?tenantId=' + tenant_id,
+            retries=3,
+            json_data=data
+        )
+        return res.get('data').get('removeUserFromIncident')
 
 
 def test_module(client):
@@ -238,22 +225,24 @@ def test_module(client):
     """
     response = client.construct_and_send_get_incident_ids_query(
         convert_datetime_to_epoch_millis(datetime.now() - timedelta(hours=1)))
-    id_list = list(map(extract_id, response.get('incidents')))
-    client.construct_and_send_full_incidents_query(id_list).get('fullIncidents')
+    id_list = list(map(extract_id, response))
+    client.construct_and_send_full_incidents_query(id_list)
     return 'ok'
 
 
-def fetch_incidents_for_tenant(graphql_client, respond_tenant_id, external_tenant_id, from_time):
-    graphql_client.update_tenant_id(respond_tenant_id)
-
+def fetch_incidents_for_tenant(rest_client, respond_tenant_id, external_tenant_id, from_time):
     # first time fetch is handled in query
     try:
-        response = graphql_client.construct_and_send_get_incident_ids_query(from_time)
-        id_list = list(map(extract_id, response.get('incidents')))
-        raw_incidents = graphql_client.construct_and_send_full_incidents_query(id_list).get('fullIncidents')
+        response = rest_client.construct_and_send_get_incident_ids_query(respond_tenant_id,
+                                                                         from_time)
+        id_list = list(map(extract_id, response))
+        raw_incidents = rest_client.construct_and_send_full_incidents_query(respond_tenant_id,
+                                                                            id_list)
     except Exception as err:
         # log error but continue getting incidents for other tenants
-        demisto.error('Exception thrown retrieving incidents for tenant ' + external_tenant_id + ': \n ' + str(err))
+        demisto.error(
+            'Exception thrown retrieving incidents for tenant ' + external_tenant_id + ': \n ' + str(
+                err))
         return []
     return raw_incidents
 
@@ -273,10 +262,13 @@ def format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id):
 
     standardized_incident = {
         'incidentId': raw_incident.get('id'),
-        'timeGenerated': timestamp_to_datestring(raw_incident.get('dateCreated'), TIME_FORMAT + 'Z'),
+        'timeGenerated': timestamp_to_datestring(raw_incident.get('dateCreated'),
+                                                 TIME_FORMAT + 'Z'),
         'eventCount': raw_incident.get('eventCount'),
-        'firstEventTime': timestamp_to_datestring(raw_incident.get('firstEventTime'), TIME_FORMAT + 'Z'),
-        'lastEventTime': timestamp_to_datestring(raw_incident.get('lastEventTime'), TIME_FORMAT + 'Z'),
+        'firstEventTime': timestamp_to_datestring(raw_incident.get('firstEventTime'),
+                                                  TIME_FORMAT + 'Z'),
+        'lastEventTime': timestamp_to_datestring(raw_incident.get('lastEventTime'),
+                                                 TIME_FORMAT + 'Z'),
         'URL': BASE_URL + '/secure/incidents/' + raw_incident.get(
             'id') + '?tenantId=' + respond_tenant_id,
         'closeURL': BASE_URL + '/secure/incidents/feedback/' + raw_incident.get(
@@ -322,10 +314,12 @@ def get_respond_tenant_from_mapping_with_external(tenant_mappings, external_tena
     for curr_respond_tid, curr_external_tid in tenant_mappings.items():
         if external_tenant_id == curr_external_tid:
             return curr_respond_tid
-    demisto.error('no respond tenant matches external tenant: ' + external_tenant_id + 'or user does not have '
-                                                                                       'permission to access tenant')
-    raise Exception('no respond tenant matches external tenant: ' + external_tenant_id + 'or user does not have '
-                                                                                         'permission to access tenant')
+    demisto.error(
+        'no respond tenant matches external tenant: ' + external_tenant_id + 'or user does not have '
+                                                                             'permission to access tenant')
+    raise Exception(
+        'no respond tenant matches external tenant: ' + external_tenant_id + 'or user does not have '
+                                                                             'permission to access tenant')
 
 
 def get_tenant_map_if_single_tenant(user_tenant_mappings):
@@ -335,8 +329,10 @@ def get_tenant_map_if_single_tenant(user_tenant_mappings):
     :return: respond_tenant_id, external_tenant_id
     """
     if len(user_tenant_mappings) > 1:
-        demisto.error('multi-tenant users must specify a tenant id in params, but no tenant id was found')
-        raise Exception('multi-tenant users must specify a tenant id in params, but no tenant id was found')
+        demisto.error(
+            'multi-tenant users must specify a tenant id in params, but no tenant id was found')
+        raise Exception(
+            'multi-tenant users must specify a tenant id in params, but no tenant id was found')
     if len(user_tenant_mappings) == 0:
         demisto.error('no tenants found for user')
         raise Exception('no tenants found for user')
@@ -359,19 +355,18 @@ def get_user_id_from_email(email, users):
     raise Exception('no user found with email ' + email)
 
 
-def remove_user_command(rest_client, args, gql_client=None):
+def remove_user_command(rest_client, args):
     external_tenant_id = args.get('tenant_id')
     incident_id = int(args['incident_id'])
     user_to_remove = args['username']
     user_tenant_mappings = rest_client.get_tenant_mappings()
 
     if external_tenant_id is None:
-        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(user_tenant_mappings)
+        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
+            user_tenant_mappings)
     else:
-        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings, external_tenant_id)
-
-    if gql_client is None:
-        gql_client = GraphQLClient(tenant_id=respond_tenant_id)
+        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
+                                                                          external_tenant_id)
 
     try:
         users = rest_client.get_all_users()
@@ -390,8 +385,9 @@ def remove_user_command(rest_client, args, gql_client=None):
         raise Exception('no user found with email ' + user_to_remove)
 
     try:
-        res = gql_client.construct_and_send_remove_user_from_incident_mutation(user_to_remove, incident_id).get(
-            'removeUserFromIncident')
+        res = rest_client.construct_and_send_remove_user_from_incident_mutation(respond_tenant_id,
+                                                                                user_to_remove,
+                                                                                incident_id)
         return 'user with email: ' + user_to_remove + ' removed from incident with id ' + res[
             'id'] + ' on tenant ' + str(external_tenant_id)
     except Exception as err:
@@ -399,19 +395,18 @@ def remove_user_command(rest_client, args, gql_client=None):
         raise Exception('error removing user from incident: ' + str(err))
 
 
-def assign_user_command(rest_client, args, gql_client=None):
+def assign_user_command(rest_client, args):
     incident_id = int(args['incident_id'])
     user_to_add = args['username']
     external_tenant_id = args.get('tenant_id')
     user_tenant_mappings = rest_client.get_tenant_mappings()
 
     if external_tenant_id is None:
-        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(user_tenant_mappings)
+        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
+            user_tenant_mappings)
     else:
-        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings, external_tenant_id)
-
-    if gql_client is None:
-        gql_client = GraphQLClient(tenant_id=respond_tenant_id)
+        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
+                                                                          external_tenant_id)
 
     try:
         users = rest_client.get_all_users()
@@ -430,21 +425,21 @@ def assign_user_command(rest_client, args, gql_client=None):
         raise Exception('no user found with email ' + user_to_add)
 
     try:
-        res = gql_client.construct_and_send_add_user_to_incident_mutation(user_to_add, incident_id).get(
-            'addUserToIncident')
-        return 'user with email: ' + user_to_add + ' added to incident with id ' + res['id'] + ' on tenant ' + str(
-            external_tenant_id)
+        res = rest_client.construct_and_send_add_user_to_incident_mutation(respond_tenant_id,
+                                                                           user_to_add,
+                                                                           incident_id)
+        return 'user with email: ' + user_to_add + ' added to incident with id ' + res.get('id') + \
+               ' on tenant ' + str(external_tenant_id)
     except Exception as err:
         demisto.error('error adding user to incident: ' + str(err))
         raise Exception('error adding user to incident: ' + str(err))
 
 
-def close_incident_command(rest_client, args, gql_client=None):
+def close_incident_command(rest_client, args):
     """
     :param rest_client: REST client
     :param args: parameters include: user_to_add:email, user_to_remove:email,
     feedback_status:string, feedback_selected_options:[{id, key, value}], feedback_optional_text:string
-    :param gql_client: GraphQL Client
     :return: ??
     """
     respond_user = rest_client.get_current_user()
@@ -453,20 +448,20 @@ def close_incident_command(rest_client, args, gql_client=None):
     external_tenant_id = args.get('tenant_id')
 
     if external_tenant_id is None:
-        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(user_tenant_mappings)
+        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
+            user_tenant_mappings)
     else:
-        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings, external_tenant_id)
-
-    if gql_client is None:
-        gql_client = GraphQLClient(tenant_id=respond_tenant_id)
+        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
+                                                                          external_tenant_id)
 
     feedback_status = args['incident_feedback']
     feedback_selected_options = args.get('feedback_selected_options')
     feedback_optional_text = args.get('incident_comments')
     try:
-        incident = gql_client.construct_and_send_full_incidents_query([incident_id]).get('fullIncidents')[0]
+        incident = \
+            rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
         if feedback_status is None:
-            if incident['status'] == 'Open':
+            if incident.get('status') == 'Open':
                 demisto.error('cannot close an incident without providing feedback status')
                 raise Exception('cannot close an incident without providing feedback status')
             feedback_status = incident.get('feedback').get('newStatus')
@@ -482,40 +477,42 @@ def close_incident_command(rest_client, args, gql_client=None):
             'firstname': respond_user['firstname'],
             'lastname': respond_user['lastname']
         }
-        res = gql_client.construct_and_send_close_incident_mutation(feedback_status, feedback_selected_options,
-                                                                    feedback_optional_text, incident_id,
-                                                                    respond_graphql_formatted_user)
+        res = rest_client.construct_and_send_close_incident_mutation(respond_tenant_id,
+                                                                     feedback_status,
+                                                                     feedback_selected_options,
+                                                                     feedback_optional_text,
+                                                                     incident_id,
+                                                                     respond_graphql_formatted_user)
         return ('incident closed and/or feedback updated for incident with id ' + str(incident_id)
-                + ' on tenant ' + external_tenant_id + ':\n' + str(res.get('closeIncident')))
+                + ' on tenant ' + external_tenant_id + ':\n' + str(res))
     except Exception as err:
         demisto.error('error closing incident and/or updating feedback: ' + str(err))
         raise Exception('error closing incident and/or updating feedback: ' + str(err))
 
 
-def get_incident_command(rest_client, args, gql_client=None):
+def get_incident_command(rest_client, args):
     external_tenant_id = args.get('tenant_id')
     user_tenant_mappings = rest_client.get_tenant_mappings()
 
     if external_tenant_id is None:
-        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(user_tenant_mappings)
+        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
+            user_tenant_mappings)
     else:
-        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings, external_tenant_id)
+        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
+                                                                          external_tenant_id)
 
     incident_id = int(args['incident_id'])
 
-    if gql_client is None:
-        gql_client = GraphQLClient(tenant_id=respond_tenant_id)
-
-    raw_incident = gql_client.construct_and_send_full_incidents_query([incident_id])['fullIncidents'][0]
+    raw_incident = \
+        rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
     return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
 
 
-def fetch_incidents(rest_client, last_run=dict(), graphql_client=None):
+def fetch_incidents(rest_client, last_run=dict()):
     """
     This function will execute each interval (default is 1 minute).
 
     Args:
-        graphql_client (GraphQLClient): GraphQL client
         rest_client (Client): Demisto BaseClient
         last_run (dict): Information about the last successful execution of fetch incidents
         If last_run is None then fetch all open incidents
@@ -534,12 +531,6 @@ def fetch_incidents(rest_client, last_run=dict(), graphql_client=None):
         demisto.error('no tenants found for user')
         raise Exception('no tenants found for user')
 
-    # create graphql client with first tenant and update tenant ids
-    # we fetch the graphql schema when the client is setup and we need a valid url to point to
-    # our tenant ids are part of the url. fortunately the graphql schema does not change across tenants
-    if graphql_client is None:
-        graphql_client = GraphQLClient(tenant_id=list(tenant_mappings.keys())[0])
-
     incidents = []
     next_run = last_run
 
@@ -549,27 +540,26 @@ def fetch_incidents(rest_client, last_run=dict(), graphql_client=None):
         if last_run.get(external_tenant_id):
             latest_time = last_run.get(external_tenant_id).get('time')
             # latest_time+1 (ms) to prevent duplicates
-            from_time = datetime.utcfromtimestamp((int(latest_time) + 1) / 1000).strftime('%Y-%m-%d %H:%M:%S.%f')
+            from_time = datetime.utcfromtimestamp((int(latest_time) + 1) / 1000).strftime(
+                '%Y-%m-%d %H:%M:%S.%f')
         else:
             latest_time = None
             from_time = ''
         # convert to utc datetime for incidents filter
-        raw_incidents = fetch_incidents_for_tenant(graphql_client, respond_tenant_id, external_tenant_id, from_time)
+        raw_incidents = fetch_incidents_for_tenant(rest_client, respond_tenant_id,
+                                                   external_tenant_id, from_time)
 
-        # create to array of XSOAR incidents sort incidents by dateCreated. If an error occurs midway through we will
-        # recollect after last successful incident todo but what if an incident is just bad? how can we know to skip
-        #  it? I could store a list of ids that failed last time and rerun them once, if they fail then dont try
-        #  again or something
         raw_incidents.sort(key=lambda x: x.get('dateCreated'))
         for raw_incident in raw_incidents:
             try:
-                incidents.append(format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id))
+                incidents.append(
+                    format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id))
                 if latest_time is None or raw_incident['dateCreated'] > latest_time:
                     latest_time = raw_incident['dateCreated']
             except Exception as err:
-                # todo should we break or continue - do we want to try and get this incident again or not
-                demisto.error('Exception thrown collecting specific incident for tenant: ' + external_tenant_id + str(
-                    err) + '\n incident: ' + str(raw_incident))
+                demisto.error(
+                    'Exception thrown collecting specific incident for tenant: ' + external_tenant_id + str(
+                        err) + '\n incident: ' + str(raw_incident))
                 break
         # store
         if external_tenant_id in next_run:
@@ -589,7 +579,7 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    # big_monolith_base_url = demisto.params().get('big_monolith_base_url')
+
     rest_client = RestClient(
         base_url=BASE_URL,
         verify=VERIFY_CERT,
