@@ -1201,7 +1201,6 @@ workflows:
           - << pipeline.parameters.force_pack_upload >>
           - << pipeline.parameters.bucket_upload >>
           - << pipeline.parameters.demisto_sdk_nightly >>
-          - << pipeline.parameters.nightly >>
     jobs:
       - Setup Environment
       - Create Instances:
@@ -1280,26 +1279,6 @@ workflows:
           context: instances_test_env
           requires:
             - Create Instances
-
-  nightly_trigger:
-    # will initiate when using the trigger script.
-    when: << pipeline.parameters.nightly>>
-    jobs:
-      - Setup Environment:
-          context: nightly_env
-      - Create Instances:
-          context: nightly_env
-      - Run Unit Testing And Lint:
-          context: nightly_env
-          requires:
-            - Setup Environment
-      - Run Validations:
-          requires:
-            - Setup Environment
-      - Server Master:
-          requires:
-            - Create Instances
-          context: nightly_env
 
   nightly:
     triggers:
