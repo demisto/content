@@ -46,9 +46,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.10.0"
+      CONTENT_VERSION: "20.10.1"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "8a93f9ad1328fc1f2e4ed75aec24d10159d68312" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "52bf3a89b48721112f6899cf766fa7bf5ccc2c1b" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
