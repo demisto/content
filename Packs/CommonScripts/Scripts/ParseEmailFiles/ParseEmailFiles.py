@@ -3250,11 +3250,18 @@ def extract_address(s):
         return s
 
 
-def extract_address_eml(eml, s):
-    addresses = getaddresses(eml.get_all(s, []))
+def extract_address_eml(eml, entry):
+    gel_all_values_from_email_by_entry = eml.get_all(entry, [])
+    addresses = getaddresses(gel_all_values_from_email_by_entry)
     if addresses:
         res = [item[1] for item in addresses]
-        return ', '.join(res)
+        res = ', '.join(res)
+        if '@' not in res:
+            # in case address is an invalid email address
+            gel_all_values_from_email_by_entry_str = str(gel_all_values_from_email_by_entry)
+            regex = "\<(.*?)\>"
+            res = re.search(regex, gel_all_values_from_email_by_entry_str).group(1)
+        return res
     else:
         return ''
 
