@@ -19,7 +19,7 @@ from Tests.configure_and_test_integration_instances import Build, configure_serv
 
 
 PRIVATE_CONTENT_PATH = '/home/runner/work/content-private/content-private/content/'
-PRIVATE_CONTENT_TEST_ZIP = PRIVATE_CONTENT_PATH + '/test_pack.zip'
+PRIVATE_CONTENT_TEST_ZIP = PRIVATE_CONTENT_PATH + 'test_pack.zip'
 FILTER_FILE_PATH = "./Tests/filter_file.txt"
 
 
