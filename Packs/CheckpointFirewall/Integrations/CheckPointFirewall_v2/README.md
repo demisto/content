@@ -2754,14 +2754,14 @@ Get checkpoint-packages details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Packages.name | String | Package name. |
-| CheckPoint.Packages.target-name | String | target name. |
-| CheckPoint.Packages.target-uid | String | target UID. |
-| CheckPoint.Packages.revision.domain.domain-type | String | domain type. |
-| CheckPoint.Packages.revision.domain.name | String | domain name. |
-| CheckPoint.Packages.revision.domain.uid | String | domain UID. |
-| CheckPoint.Packages.revision.type | String | revision type. |
-| CheckPoint.Packages.revision.uid | String | revision UID. |
+| CheckPoint.Packages.name | String | The name of the package. |
+| CheckPoint.Packages.target-name | String | The name of the targe. |
+| CheckPoint.Packages.target-uid | String | The UID of the target. |
+| CheckPoint.Packages.revision.domain.domain-type | String | The type of the domain. |
+| CheckPoint.Packages.revision.domain.name | String | The name of the domain. |
+| CheckPoint.Packages.revision.domain.uid | String | The UID of the domain. |
+| CheckPoint.Packages.revision.type | String | The type of the revision. |
+| CheckPoint.Packages.revision.uid | String | The UID of the revision. |
 
 
 #### Command Example
