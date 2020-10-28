@@ -853,14 +853,14 @@ class Pack(object):
                         f"path {build_version_pack_path}.")
             return False, True
 
-        existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=build_version_pack_path)]
+        prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, self.latest_version)
+        existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=prod_version_pack_path)]
         if existing_prod_version_files and not override_pack:
             print_warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
             print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return task_status, True
 
-        prod_full_file_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, self.latest_version,
-                                           f'{self._pack_name}.zip')
+        prod_full_file_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
         build_full_file_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
         build_file_blob = build_bucket.blob(build_full_file_path)
         copied_blob = build_bucket.copy_blob(
