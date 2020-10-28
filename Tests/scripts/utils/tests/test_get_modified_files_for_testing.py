@@ -187,7 +187,7 @@ class TestGetModifiedFilesForTesting:
         assert is_indicator_json is False
 
     def test_common_yml_file(self, mocker):
-        diff_line = f"M    scripts/script-CommonIntegration.yml"
+        diff_line = "M    scripts/script-CommonIntegration.yml"
         mock_get_dict_from_yaml(mocker, {"category": "cat"}, "yml")
         (
             modified_files_list,
@@ -209,7 +209,7 @@ class TestGetModifiedFilesForTesting:
         assert is_indicator_json is False
 
     def test_common_py_file(self, mocker):
-        diff_line = f"M    Packs/Base/Scripts/CommonServerPython/CommonServerPython.py"
+        diff_line = "M    Packs/Base/Scripts/CommonServerPython/CommonServerPython.py"
         mocker.patch(
             "Tests.scripts.utils.get_modified_files_for_testing.glob.glob",
             return_value=[
