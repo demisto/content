@@ -42,7 +42,7 @@ tasks:
       version: -1
       name: ConcentricAI - get file details
       description: Get's file information
-      script: '|||ConcentricAI-get-file-details'
+      script: '|||concentricai-get-file-details'
       type: regular
       iscommand: true
       brand: ""
@@ -73,7 +73,7 @@ tasks:
       version: -1
       name: ConcentricAI - get user details
       description: Get's user details
-      script: '|||ConcentricAI-get-user-details'
+      script: '|||concentricai-get-user-details'
       type: regular
       iscommand: true
       brand: ""

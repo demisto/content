@@ -84,7 +84,7 @@ script:
     deprecated: false
     description: Get's file information
     execution: false
-    name: ConcentricAI-get-file-details
+    name: concentricai-get-file-details
     outputs:
     - contextPath: ConcentricAI.FileInfo.risk_names
       description: Risk names.
@@ -106,7 +106,7 @@ script:
     deprecated: false
     description: Get overview of Users involved
     execution: false
-    name: ConcentricAI-get-users-overview
+    name: concentricai-get-users-overview
   - arguments:
     - default: false
       description: Enter user name
@@ -117,7 +117,7 @@ script:
     deprecated: false
     description: Get's user details
     execution: false
-    name: ConcentricAI-get-user-details
+    name: concentricai-get-user-details
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
