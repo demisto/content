@@ -124,19 +124,27 @@ def get_search_job_result(client: Client, args: Dict) -> CommandResults:
         CommandResults.
     """
     job_id = str(args.get('job_id'))
-
+    limit = int(args.get('limit', '20'))
+    verbose = args.get('verbose', 'true') == 'true'
     response = client.get_search_job_result_request(job_id)
     if 'error' in response:
         raise Exception(f"{str(response.get('error'))}. Job ID might have expired.")
 
-    response.update({'job_id': job_id})
+    outputs = response
+    outputs.update({'job_id': job_id})
     if not response.get('complete'):
         human_readable = f'job ID: {job_id} is still in progress.'
-        response.update({'status': 'in progress'})
+        outputs.update({'status': 'in progress'})
     else:
         if response.get('totalMatches'):
-            human_readable = tableToMarkdown(name="Forensic search results:", t=response.get('streamResults'),
+            headers = ['status', 'job_id', 'category', 'totalFiles', 'scannedEvents']
+            human_readable = tableToMarkdown(name="Forensic search metadata:", t=response, headers=headers,
                                              removeNull=True)
+            if verbose:
+                human_readable += tableToMarkdown(name="Forensic search results:",
+                                                  t=response.get('streamResults', [])[:limit], removeNull=True)
+            if 'streamResults' in outputs:
+                outputs['streamResults'] = outputs.get('streamResults', [])[:limit]  # limit the outputs to the context
         else:
             human_readable = f'No matches found for the given job ID: {job_id}.'
             response.update({'status': 'completed'})
@@ -223,7 +231,7 @@ def domain_command(client: Client, args: dict) -> List[CommandResults]:
             outputs_key_field='domain',
             outputs=output,
             readable_output=tableToMarkdown(name="Domains DGA:", t=output, removeNull=True),
-            indicators=[domain],
+            indicator=domain,
             raw_response=response
         )
         command_results_list.append(command_results)

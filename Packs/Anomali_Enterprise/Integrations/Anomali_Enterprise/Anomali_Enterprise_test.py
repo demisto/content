@@ -183,6 +183,49 @@ def test_get_search_job_result_command_with_matches(mocker):
     assert output.get('AnomaliEnterprise.ForensicSearch(val.job_id == obj.job_id)', []) == expected_result
 
 
+def test_get_search_job_result_command_with_matches_and_limit(mocker):
+    """
+    Given:
+        - a job_id
+
+    When:
+        - mocking the server response for getting the results of a job with matches, running get_search_job_result
+        - limit the stream results
+
+    Then:
+        - validating that the context was limited
+
+    """
+    client = Client(server_url='test', username='test', password='1234', verify=True, proxy=False)
+    return_data = {
+        'status': 'completed', 'category': 'forensic_api_result', 'totalFiles': 1,
+        'streamResults': [
+            {
+            'count': '1', 'indicator': '', 'itype': '', 'severity': '',
+            'event_time': '2020-10-14T09:10:00.000+0000', 'age': '', 'event.dest': '8.8.8.8',
+            'confidence': '', 'event.src': '8.8.8.8'
+            },
+            {
+                'count': '1', 'indicator': '', 'itype': '', 'severity': '',
+                'event_time': '2020-11-14T09:10:00.000+0000', 'age': '', 'event.dest': '8.8.8.8',
+                'confidence': '', 'event.src': '8.8.8.8'
+            },
+            {
+                'count': '1', 'indicator': '', 'itype': '', 'severity': '',
+                'event_time': '2020-12-14T09:10:00.000+0000', 'age': '', 'event.dest': '8.8.8.8',
+                'confidence': '', 'event.src': '8.8.8.8'
+            }
+        ],
+        'scannedEvents': 269918, 'result_file_name': 'org0_1234_job1234_result.tar.gz',
+        'complete': True, 'processedFiles': 1, 'totalMatches': 3
+    }
+    mocker.patch.object(client, 'get_search_job_result_request', return_value=return_data)
+    command_results = get_search_job_result(client, args={'job_id': '111', 'limit': '2'})
+    output = command_results.to_context().get('EntryContext', {})
+
+    assert len(output.get('AnomaliEnterprise.ForensicSearch(val.job_id == obj.job_id)', {}).get('streamResults')) == 2
+
+
 def test_get_search_job_result_command_without_matches(mocker):
     """
     Given:

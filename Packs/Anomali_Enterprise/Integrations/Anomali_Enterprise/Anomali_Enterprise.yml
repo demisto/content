@@ -63,6 +63,24 @@ script:
       name: job_id
       required: true
       secret: false
+    - default: false
+      defaultValue: '20'
+      description: Limit the stream results to return. Default is 20.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Print the stream results to the war room.
+      predefined:
+        - 'false'
+        - 'true'
+      isArray: false
+      name: verbose
+      required: false
+      secret: false
     deprecated: false
     description: Retreive the forensic search results.
     execution: false
