@@ -168,7 +168,7 @@ def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, p
         lock.release()
 
 
-def install_nightly_packs(client, prints_manager, thread_index, packs_to_install, request_timeout=999999):
+def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999):
     global SUCCESS_FLAG
     request_data = {
         'packs': packs_to_install,
@@ -280,7 +280,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                                     thread_index=thread_index, pack_path=local_pack)
     else:
         if is_nightly:
-            install_nightly_packs(client, prints_manager, thread_index, packs_to_install)
+            install_nightly_packs(client, host, prints_manager, thread_index, packs_to_install)
 
         else:
             request_data = {
