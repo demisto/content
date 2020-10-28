@@ -1338,11 +1338,11 @@ def changed_files_to_string(changed_files):
 def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
-        all_tests = set(CONF.get_test_playbook_ids())
+        # all_tests = set(CONF.get_test_playbook_ids())
         # adding "Run all tests" which is required in test_content.extract_filtered_tests() for the nightly
-        all_tests.add(RUN_ALL_TESTS_FORMAT)
         packs_to_install = set(filter(should_test_content_pack, os.listdir(PACKS_DIR)))
-        tests = remove_ignored_tests(all_tests, packs_to_install)
+        tests = filter_tests(set(CONF.get_test_playbook_ids()), packs_to_install, id_set=deepcopy(ID_SET))
+        tests.add(RUN_ALL_TESTS_FORMAT)
     else:
         branches = tools.run_command("git branch")
         branch_name_reg = re.search(r"\* (.*)", branches)
