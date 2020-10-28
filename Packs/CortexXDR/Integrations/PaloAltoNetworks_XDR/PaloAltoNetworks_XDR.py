@@ -1956,7 +1956,7 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 
-def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: int = 10):
+def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
@@ -1990,7 +1990,7 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
 
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
                                                                      None)
-            incident_data['mirror_instance'] = demisto.integrationInstance()
+            incident_data['mirror_instance'] = integration_instance
 
             description = raw_incident.get('description')
             occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
@@ -2079,7 +2079,9 @@ def main():
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(client, first_fetch_time, demisto.getLastRun(), max_fetch)
+            integration_instance = demisto.integrationInstance()
+            next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance, demisto.getLastRun(),
+                                                  max_fetch)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 

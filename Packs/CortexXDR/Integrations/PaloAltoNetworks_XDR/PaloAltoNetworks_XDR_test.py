@@ -46,13 +46,12 @@ def test_fetch_incidents(requests_mock, mocker):
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
-    mocker.patch.object(demisto, 'integrationInstance', return_value='MyInstance')
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
-    next_run, incidents = fetch_incidents(client, '3 month', {})
+    next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance')
     sort_all_list_incident_fields(modified_raw_incident)
 
     assert len(incidents) == 2
@@ -98,13 +97,12 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     mocker.patch('PaloAltoNetworks_XDR.get_incident_extra_data_command', side_effect=return_extra_data_result)
 
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
-    mocker.patch.object(demisto, 'integrationInstance', return_value='MyInstance')
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
-    next_run, incidents = fetch_incidents(client, '3 month', {})
+    next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance')
     sort_all_list_incident_fields(modified_raw_incident)
 
     assert len(incidents) == 1  # because the second one raised a rate limit error
