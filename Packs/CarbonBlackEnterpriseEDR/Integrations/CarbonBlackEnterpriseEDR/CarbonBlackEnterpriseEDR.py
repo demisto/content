@@ -15,9 +15,9 @@ class Client(BaseClient):
     def __init__(self, base_url: str, use_ssl: bool, use_proxy: bool, token=None, cb_org_key=None):
         self.token = token
         self.cb_org_key = cb_org_key
-        super().__init__(base_url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json',
-                                                                             'Content-Type': 'application/json',
-                                                                             'X-Auth-Token': self.token})
+        super().__init__(base_url, verify=use_ssl, proxy=use_proxy, headers={
+            'Content-Type': 'application/json',
+            'X-Auth-Token': self.token})
 
     def test_module_request(self):
         url_suffix = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/_search'
@@ -362,7 +362,6 @@ class Client(BaseClient):
             start=0
 
         )
-        demisto.log(str(body))
         return self._http_request('POST', suffix_url, json_data=body)
 
     def get_search_process_request(self, job_id) -> dict:
@@ -377,14 +376,16 @@ class Client(BaseClient):
                              "'filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc'")
         if not event_type and not query:
             raise ValueError("To perform an event search, please provide either event_type or query.")
-        suffix_url = f'/api/investigate/v2/orgs/{self.cb_org_key}/events/{process_guid}/_search/'
+        suffix_url = f'api/investigate/v2/orgs/{self.cb_org_key}/events/{process_guid}/_search'
         body = assign_params(
             criteria=assign_params(event_type=argToList(event_type)),
             query=query,
             rows=limit,
             start=0
         )
-        return self._http_request('POST', suffix_url, json_data=body)
+
+        response = self._http_request('POST', suffix_url, json_data=body)
+        return response
 
 
 def test_module(client):
@@ -1213,10 +1214,10 @@ def event_by_process_search_command(client: Client, args: Dict) -> CommandResult
         limit = int(limit)
     except ValueError:
         raise ValueError("Please provide a number as limit.")
-
     result = client.create_search_event_by_process_request(
         process_guid=process_guid, event_type=event_type,
         query=query, limit=limit)
+
     return CommandResults(outputs_prefix='CarbonBlackEEDR.SearchEvent',
                           outputs=result.get('results'), outputs_key_field='event_guid',
                           raw_response=result)
@@ -1232,10 +1233,12 @@ def process_search_get_command(client: Client, args: Dict) -> List[CommandResult
         raw_result = client.get_search_process_request(job_id=job)
         status = 'Completed' if raw_result.get('contacted') == raw_result.get('completed') else 'In Progress'
         output = {'status': status, 'job_id': job, 'results': raw_result.get('results')}
-
+        title = f"{status} Search Results:"
+        human_readable = tableToMarkdown(name=title, t=output.get('results'), removeNull=True)
         job_result_list.append(CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess',
                                               outputs=output, outputs_key_field='job_id',
-                                              raw_response=raw_result))
+                                              raw_response=raw_result,
+                                              readable_output=human_readable))
     return job_result_list
 
 
