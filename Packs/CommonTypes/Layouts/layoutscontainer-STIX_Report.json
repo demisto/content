@@ -1,7 +1,7 @@
 {
   "group": "indicator",
-  "name": "STIX Report111",
-  "id": "STIX Report111",
+  "name": "STIX Report",
+  "id": "STIX Report",
   "indicatorsDetails": {
     "tabs": [
       {
