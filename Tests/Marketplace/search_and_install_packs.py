@@ -233,34 +233,50 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         message = 'Installing the following packs in server {}:\n{}'.format(host, packs_to_install_str)
         prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
         prints_manager.execute_thread_prints(thread_index)
-
         # make the pack installation request
-        try:
-            response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                path='/contentpacks/marketplace/install',
-                                                                                method='POST',
-                                                                                body=request_data,
-                                                                                accept='application/json',
-                                                                                _request_timeout=request_timeout)
+        while SUCCESS_FLAG:
+            try:
+                response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                                    path='/contentpacks/marketplace/install',
+                                                                                    method='POST',
+                                                                                    body=request_data,
+                                                                                    accept='application/json',
+                                                                                    _request_timeout=request_timeout)
 
-            if 200 <= status_code < 300:
-                message = 'Packs were successfully installed!\n'
-                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
-                                             include_timestamp=True)
-            else:
-                result_object = ast.literal_eval(response_data)
-                message = result_object.get('message', '')
-                err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
+                if 200 <= status_code < 300:
+                    message = 'Packs were successfully installed!\n'
+                    prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                                 include_timestamp=True)
+                else:
+                    result_object = ast.literal_eval(response_data)
+                    message = result_object.get('message', '')
+                    err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
+                    prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+                    raise Exception(err_msg)
+            except Exception as e:
+                err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
                 prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-                raise Exception(err_msg)
-        except Exception as e:
-            err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
-            prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
 
-            global SUCCESS_FLAG
-            SUCCESS_FLAG = False
-        finally:
-            prints_manager.execute_thread_prints(thread_index)
+                global SUCCESS_FLAG
+                SUCCESS_FLAG = False
+
+                message = str(e).split('\n')[4].split(':', 1)[1]
+                response = json.loads(message)
+                error = response.get('error')
+                pack_id = error.split()[-2]
+                print(pack_id)
+                packs = [pack for pack in packs_to_install if not (pack['id'] == pack_id)]
+                print(packs)
+                request_data = {
+                    'packs': packs,
+                    'ignoreWarnings': True
+                }
+
+                if not SUCCESS_FLAG:
+                    break
+
+            finally:
+                prints_manager.execute_thread_prints(thread_index)
 
 
 def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install,
