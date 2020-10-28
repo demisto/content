@@ -8,7 +8,7 @@ tags:
 - transformer
 - entirelist
 - general
-comment: Extended filter function for transformer
+comment: Advanced Filter. It enables you to make filters with complex conditions.
 enabled: true
 args:
 - name: value
@@ -32,13 +32,11 @@ args:
   - 'base64: encode'
   - contains
   - contains any caseless line of
-  - contains any caseless line of
   - contains any line of
   - contains any string of
   - contains caseless
   - digest
   - doesn't contain
-  - doesn't contain any caseless line of
   - doesn't contain any caseless line of
   - doesn't contain any line of
   - doesn't contain any string of
@@ -72,7 +70,8 @@ args:
   - includes
   - includes caseless
   - is
-  - is filtered by
+  - is filtered with
+  - is transformed with
   - isn't
   - 'json: decode'
   - 'json: encode'
@@ -108,7 +107,7 @@ args:
   - 'regex: matches caseless'
   - starts with
   - starts with caseless
-  - value is filtered by
+  - value is filtered with
   - value matches conditions of
   - value matches expressions of
   - 'wildcard: contains'
@@ -127,7 +126,6 @@ args:
   - 'wildcard: matches any caseless string of'
   - 'wildcard: matches any string of'
   - 'wildcard: matches caseless'
-  - ""
   description: 'Filter Operation: value is filtered by,is filtered by,keeps,doesn''t
     keep,is,isn''t,equals,doesn''t equal,greater or equal,greater than,less or equal,less
     than,in range,starts with,starts with caseless,doesn''t start with,doesn''t start
@@ -157,16 +155,17 @@ args:
   required: true
   description: Filter Value
 - name: ctx_demisto
-  description: '`demisto` context: You must input . (single dot) on `From previous
-    tasks` when you use it.'
+  description: '`demisto` context: Input . (single dot) on `From previous tasks` to
+    enable to extract the context data.'
 - name: ctx_inputs
-  description: '`inputs` context: You must input ''inputs'' (no quotation) on `From
-    previous tasks` when you use it.'
+  description: '`inputs` context: Input ''inputs'' (no quotation) on `From previous
+    tasks` to enable ${inputs.} expression in DT.'
 - name: ctx_lists
   description: '`list` context: You must input ''list'' (no quotation) on `From previous
-    tasks` when you use it.'
+    tasks` to enable ${list.} expression in DT.'
 - name: ctx_incident
-  description: '`incident` context,  Change to `From previous tasks` and input `incident`'
+  description: '`demisto` context: Input ''incident'' (no quotation) on `From previous
+    tasks` to enable ${incident.} expression in DT.'
 scripttarget: 0
 subtype: python3
 runonce: false

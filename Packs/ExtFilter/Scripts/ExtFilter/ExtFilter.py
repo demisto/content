@@ -127,6 +127,21 @@ def lower(value: Any, recursive: bool = False) -> Any:
         return value
 
 
+def marshal(value: Any) -> Any:
+    if isinstance(value, list):
+        values = []
+        for v in value:
+            if isinstance(v, list):
+                values.extend(v)
+            else:
+                values.append(v)
+        return values
+    elif isinstance(value, dict):
+        return {k: marshal(v) for k, v in value.items()}
+    else:
+        return value
+
+
 def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool:
     """ Pattern matching
 
@@ -273,7 +288,7 @@ class ExtFilter:
         self.__dx = dx
 
     def match_value(self, lhs: Any, optype: str, rhs: Any) -> bool:
-        """ Matching by the conditional operator
+        """ Matching with the conditional operator
 
           :param self: This instance.
           :param lhs: The left hand side value
@@ -550,8 +565,8 @@ class ExtFilter:
             raise RuntimeError(f"Unknown operation name: '{optype}'")
         return False
 
-    def filter_by_expressions(self, root: Any, conds: Union[dict, list], path: Optional[str] = None) -> Optional[Value]:
-        """ Filter the value by the conditions
+    def filter_with_expressions(self, root: Any, conds: Union[dict, list], path: Optional[str] = None, inlist: bool = False) -> Optional[Value]:
+        """ Filter the value with the conditions
 
           *** NOTE ***
           condition: root == 1 or ( root > 10 and root < 20 )
@@ -580,6 +595,7 @@ class ExtFilter:
           :param root: The value to filter.
           :param conds: The expressions to filter the value.
           :param path: The path to apply the conditions.
+          :param inlist: True if `root` is an element in a list, False otherwise.
           :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
         """
         if isinstance(conds, dict):
@@ -594,7 +610,8 @@ class ExtFilter:
 
             for x in conds.items():
                 coptype, cconds = x
-                child = self.filter_value(child, coptype, cconds)
+                child = self.filter_value(
+                    child, coptype, cconds, None, inlist and parent is None)
                 if not child:
                     return None
                 child = child.value
@@ -620,13 +637,16 @@ class ExtFilter:
                 else:
                     val = None
                     if ok is None:
-                        val = self.filter_by_expressions(root, x, path)
+                        val = self.filter_with_expressions(
+                            root, x, path, inlist)
                         ok = bool(val) ^ (neg or False)
                     elif lop is None or lop == 'and':
-                        val = self.filter_by_expressions(root, x, path)
+                        val = self.filter_with_expressions(
+                            root, x, path, inlist)
                         ok = ok and (bool(val) ^ (neg or False))
                     elif lop == 'or':
-                        val = self.filter_by_expressions(root, x, path)
+                        val = self.filter_with_expressions(
+                            root, x, path, inlist)
                         ok = ok or (bool(val) ^ (neg or False))
                     else:
                         exit_error(f'Invalid logical operator: {lop}')
@@ -638,28 +658,28 @@ class ExtFilter:
         return None
 
     def filter_by_conditions(self, root: Any, conds: Union[dict, list]) -> Optional[Value]:
-        """ Filter the value by the conditions
+        """ Filter the value with the conditions
 
           *** NOTE ***
           expression for 'conds':
           [
             {
-              "path1": <expression> for filter_by_expressions(),
-              "path2": <expression> for filter_by_expressions()
+              "path1": <expression> for filter_with_expressions(),
+              "path2": <expression> for filter_with_expressions()
               :
             }
             'or',
             [
               'not',
               {
-                "path3": <expression> for filter_by_expressions(),
-                "path4": <expression> for filter_by_expressions()
+                "path3": <expression> for filter_with_expressions(),
+                "path4": <expression> for filter_with_expressions()
                 :
               },
               'or',
               {
-                "path5": <expression> for filter_by_expressions(),
-                "path6": <expression> for filter_by_expressions()
+                "path5": <expression> for filter_with_expressions(),
+                "path6": <expression> for filter_with_expressions()
                 :
               }
             }
@@ -673,7 +693,7 @@ class ExtFilter:
         if isinstance(conds, dict):
             # AND conditions
             for x in conds.items():
-                root = self.filter_by_expressions(root, x[1], x[0])
+                root = self.filter_with_expressions(root, x[1], x[0])
                 if not root:
                     return None
                 root = root.value
@@ -710,7 +730,7 @@ class ExtFilter:
         return None
 
     def filter_values(self, root: List[Any], optype: str, conds: Any, path: Optional[str] = None) -> Optional[Value]:
-        """ Filter values of a list by the conditions
+        """ Filter values of a list with the conditions
 
           :param self: This instance.
           :param root: The values to filter.
@@ -719,51 +739,66 @@ class ExtFilter:
           :param path: The path to apply the conditions.
           :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
         """
-        return Value([v.value for v in [self.filter_value(r, optype, conds, path) for r in root] if v])
+        return Value([v.value for v in [self.filter_value(r, optype, conds, path, True) for r in root] if v])
 
-    def filter_value(self, root: Any, optype: str, conds: Any, path: Optional[str] = None) -> Optional[Value]:
-        """ Filter the value by the conditions
+    def filter_value(self, root: Any, optype: str, conds: Any, path: Optional[str] = None, inlist: bool = False) -> Optional[Value]:
+        """ Filter the value with the conditions
 
           :param self: This instance.
           :param root: The value to filter.
           :param optype: The conditional operator.
           :param conds: The condition expression to filter the value.
           :param path: The path to apply the conditions.
+          :param inlist: True if `root` is an element in a list, False otherwise.
           :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
         """
-        if optype == "is filtered by":
-            if isinstance(root, list):
+        if optype == "is transformed with":
+            conds = self.parse_conds_json(conds)
+            conds = conds if isinstance(conds, list) else [conds]
+
+            for operation in conds:
+                if not isinstance(operation, dict):
+                    exit_error(f'Invalid condition format: {operation}')
+
+                for k, v in operation.items():
+                    value = self.filter_value(root, k, v, path, inlist)
+                    root = None if value is None else value.value
+
+            return Value(root)
+
+        elif optype == "is filtered with":
+            if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
             if path:
                 conds = {"matches conditions of": self.parse_conds_json(conds)}
-                return self.filter_by_expressions(root, conds, path) if isinstance(root, dict) else None
+                return self.filter_with_expressions(root, conds, path, inlist) if isinstance(root, dict) else None
             else:
                 return self.filter_value(root, "matches conditions of", conds)
 
-        if optype == "value is filtered by":
-            if isinstance(root, list):
+        elif optype == "value is filtered with":
+            if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
             conds = self.parse_conds_json(conds)
             if path:
                 conds = {"value matches expressions of": conds}
                 if isinstance(root, dict):
-                    v = {k: v for k, f, v in [(k, self.filter_by_expressions(
-                        v, conds, path), v) for k, v in root.items()] if f and f.value}
+                    v = {k: v for k, f, v in [(k, self.filter_with_expressions(
+                        v, conds, path, False), v) for k, v in root.items()] if f and f.value}
                     return Value(v) if v else None
                 else:
-                    return self.filter_by_expressions(root, conds, path)
+                    return self.filter_with_expressions(root, conds, path, inlist)
             else:
                 if isinstance(root, dict):
-                    v = {k: v for k, f, v in [(k, self.filter_by_expressions(
-                        v, conds), v) for k, v in root.items()] if f and f.value}
+                    v = {k: v for k, f, v in [(k, self.filter_with_expressions(
+                        v, conds, None, False), v) for k, v in root.items()] if f and f.value}
                     return Value(v) if v else None
                 else:
-                    return self.filter_by_expressions(root, conds)
+                    return self.filter_with_expressions(root, conds, None, inlist)
 
         elif optype in ("is", "isn't"):
-            if isinstance(root, list):
+            if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
             filstr = conds
@@ -774,14 +809,14 @@ class ExtFilter:
                     return Value(root) if not path or not Ddict.get_value(root, path) else None
 
         if path:
-            if isinstance(root, list):
+            if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
             conds = {optype: self.parse_conds_json(conds)}
-            return self.filter_by_expressions(root, conds, path) if isinstance(root, dict) else None
+            return self.filter_with_expressions(root, conds, path, inlist) if isinstance(root, dict) else None
 
         if optype == "keeps":
-            if isinstance(root, list):
+            if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
             conds = self.parse_conds_json(conds)
@@ -790,7 +825,7 @@ class ExtFilter:
             return Value({k: v for k, v in root.items() if k in conds})
 
         elif optype == "doesn't keep":
-            if isinstance(root, list):
+            if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
             conds = self.parse_conds_json(conds)
@@ -799,33 +834,33 @@ class ExtFilter:
             return Value({k: v for k, v in root.items() if k not in conds})
 
         elif optype == "matches expressions of":
-            if isinstance(root, list):
+            if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
             conds = self.parse_conds_json(conds)
-            return self.filter_by_expressions(root, conds)
+            return self.filter_with_expressions(root, conds, path, inlist)
 
         elif optype == "matches conditions of":
-            if isinstance(root, list):
+            if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
             conds = self.parse_conds_json(conds)
             return self.filter_by_conditions(root, conds)
 
         elif optype == "value matches expressions of":
-            if isinstance(root, list):
+            if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
             conds = self.parse_conds_json(conds)
             if isinstance(root, dict):
-                v = {k: v.value for k, v in {k: self.filter_by_expressions(
-                    v, conds) for k, v in root.items()}.items() if v}
+                v = {k: v.value for k, v in {k: self.filter_with_expressions(
+                    v, conds, None, False) for k, v in root.items()}.items() if v}
                 return Value(v) if v else None
             else:
-                return self.filter_by_expressions(root, conds)
+                return self.filter_with_expressions(root, conds, None, inlist)
 
         elif optype == "value matches conditions of":
-            if isinstance(root, list):
+            if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
             conds = self.parse_conds_json(conds)
@@ -868,7 +903,7 @@ class ExtFilter:
             return Value(lhs) if ok else None
 
         elif optype == "doesn't find":
-            return Value(lhs) if not self.filter_value(lhs, "finds", rhs) else None
+            return Value(lhs) if not self.filter_value(lhs, "finds", rhs, path) else None
 
         elif optype == "doesn't find caseless":
             return Value(lhs) if not self.filter_value(lhs, "finds caseless", rhs) else None
@@ -1003,7 +1038,7 @@ class ExtFilter:
         """
         Filter for individual values
         """
-        if isinstance(lhs, list):
+        if not inlist and isinstance(lhs, list):
             return self.filter_values(lhs, optype, rhs)
 
         """
@@ -1069,13 +1104,14 @@ if __name__ in ('__builtin__', 'builtins', '__main__'):
         dx = json.loads(dx)
     elif not dx:
         dx = value if isinstance(value, dict) else None
-    dx = ContextData(demisto=dx, inputs=args.get('ctx_inputs'), lists=args.get(
-        'ctx_lists'), incident=args.get('ctx_incident'), local=value)
+    dx = ContextData(demisto=dx, inputs=args.get('ctx_inputs'),
+                     lists=args.get('ctx_lists'), incident=args.get('ctx_incident'), local=value)
 
     # Extract value
     xfilter = ExtFilter(dx)
     conds = xfilter.extract_value(conds)
     value = xfilter.filter_value(value, optype, conds, path)
     value = value.value if value else None
+    value = marshal(value)
 
     demisto.results(value)
