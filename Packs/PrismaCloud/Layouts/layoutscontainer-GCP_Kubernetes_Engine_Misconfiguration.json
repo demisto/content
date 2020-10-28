@@ -1,9 +1,6 @@
 {
-    "close": null,
     "description": "",
-    "details": null,
     "detailsV2": {
-        "TypeName": "",
         "tabs": [
             {
                 "hidden": false,
@@ -684,22 +681,10 @@
             }
         ]
     },
-    "edit": null,
-    "fromServerVersion": "",
     "group": "incident",
     "id": "GCP Kubernetes Engine Misconfiguration",
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "itemVersion": "1.2.3",
-    "locked": false,
-    "mobile": null,
     "name": "GCP Kubernetes Engine Misconfiguration",
-    "packID": "",
-    "propagationLabels": [],
-    "quickView": null,
-    "sortValues": null,
     "system": false,
-    "toServerVersion": "",
     "fromVersion": "6.0.0",
     "version": -1
 }
