@@ -111,7 +111,7 @@ script:
       description: Whether the email is deliverable.
     - contextPath: EmailRepIO.Email.details.accept_all
       type: Boolean
-      description: Whether the mail server has a default accept all policy. Some mail        servers return inconsistent responses, so the default may be an accept all policy.
+      description: Whether the mail server has a default accept all policy. Some mail servers return inconsistent responses, so the default may be an accept all policy.
     - contextPath: EmailRepIO.Email.details.valid_mx
       type: Boolean
       description: Whether the email has a mail exchanger (MX) record.
