@@ -46,6 +46,7 @@ MARKET_PLACE_CONFIGURATION = {
     'marketplace.initial.sync.delay': '0',
     'content.pack.ignore.missing.warnings.contentpack': 'true'
 }
+ID_SET_PATH = './Tests/id_set.json'
 
 
 class Running(IntEnum):
@@ -113,6 +114,11 @@ class Server:
                                       key_file_path=Build.key_file_path, user='ec2-user')
 
 
+def get_id_set():
+    if os.path.isfile(ID_SET_PATH):
+        return get_json_file(ID_SET_PATH)
+
+
 class Build:
     # START CHANGE ON LOCAL RUN #
     content_path = '{}/project'.format(os.getenv('HOME'))
@@ -139,6 +145,7 @@ class Build:
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
         self.skipped_integrations_conf = conf['skipped_integrations']
+        self.id_set = get_id_set()
 
     @staticmethod
     def get_servers(ami_env):

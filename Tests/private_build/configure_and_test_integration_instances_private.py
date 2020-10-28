@@ -20,15 +20,20 @@ from Tests.configure_and_test_integration_instances import Build, configure_serv
     test_pack_metadata, options_handler
 
 
+PRIVATE_CONTENT_PATH = '/home/runner/work/content-private/content-private/content'
+
+
 def create_install_private_testing_pack(build, prints_manager):
     """
-
-    :param build:
-    :param prints_manager:
-    :return:
+    Creates and installs the test pack used in the private build. This pack contains the test
+    playbooks and test scripts that will be used for the tests.
+    :param build: Build object containing the build settings.
+    :param prints_manager: PrintsManager object used for reporting status. Will be deprecated.
+    :return: No object is returned. nightly_install_packs will wait for the process to finish.
     """
     threads_print_manager = ParallelPrintsManager(len(build.servers))
-    private_test_pack_zip()
+
+    private_test_pack_zip(build.id_set)
     pack_path = '/home/runner/work/content-private/content-private/content/test_pack.zip'
     nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs,
                           pack_path=pack_path)
@@ -41,11 +46,12 @@ def create_install_private_testing_pack(build, prints_manager):
 
 def install_packs_private(build, prints_manager, pack_ids=None):
     """
+    Wrapper for the search and install packs function.
 
-    :param build:
-    :param prints_manager:
-    :param pack_ids:
-    :return:
+    :param build: Build object containing the build settings.
+    :param prints_manager: PrintsManager object used for reporting status. Will be deprecated.
+    :param pack_ids: Optional, list of packs to install. List contains pack id and version requested.
+    :return: Boolean indicating if the installation was successful.
     """
     pack_ids = get_pack_ids_to_install() if pack_ids is None else pack_ids
     installed_content_packs_successfully = True
@@ -62,14 +68,10 @@ def install_packs_private(build, prints_manager, pack_ids=None):
     return installed_content_packs_successfully
 
 
-def private_test_pack_zip():
-    content_path = '/home/runner/work/content-private/content-private/content'
-    target = '/home/runner/work/content-private/content-private/content/test_pack.zip'
+def private_test_pack_zip(id_set=None):
+    target = PRIVATE_CONTENT_PATH + '/test_pack.zip'
     tests_file_paths = set()
-    if os.path.isfile('./Tests/id_set.json'):
-        with open('./Tests/id_set.json', 'r') as conf_file:
-            id_set = json.load(conf_file)
-            test_pbs = id_set.get('TestPlaybooks', [])
+    test_pbs = id_set.get('TestPlaybooks', [])
     #  Adding test playbooks
     with open("./Tests/filter_file.txt", "r") as filter_file:
         tests_to_run = filter_file.readlines()
@@ -88,7 +90,7 @@ def private_test_pack_zip():
 
     with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
-        for test_path, test in test_files(content_path):
+        for test_path, test in test_files(PRIVATE_CONTENT_PATH):
             if test_path not in tests_file_paths:
                 continue
             if not test_path.endswith('.yml'):

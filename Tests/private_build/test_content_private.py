@@ -117,6 +117,7 @@ def run_test(tests_settings, demisto_user, demisto_pass,
              test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
              prints_manager, thread_index=0):
     """
+    Wrapper for the run_test_logic function. Helps by indicating when the test is starting and ending.
 
     :param tests_settings: SettingsTester object which contains the test variables
     :param demisto_user: Username of the demisto user running the tests.
@@ -175,20 +176,21 @@ def run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_t
     :param filtered_tests:
     :param skipped_tests:
     :param secret_params:
-    :param failed_playbooks:
+    :param failed_playbooks: List of failed playbooks, additional failed playbooks will be added if
+                             they failed.
     :param playbook_skipped_integration:
-    :param succeed_playbooks:
-    :param slack:
-    :param circle_ci:
-    :param build_number:
-    :param server:
-    :param build_name:
+    :param succeed_playbooks: List of playbooks which have passed tests.
+    :param slack: Slack client used for notifications.
+    :param circle_ci: CircleCI token. Used to get name of dev who triggered the build.
+    :param build_number: The build number of the CI run. Used in slack message.
+    :param server: The FQDN of the server tests are being ran on.
+    :param build_name: Name of the build. (Nightly, etc.)
     :param server_numeric_version:
-    :param demisto_user:
-    :param demisto_pass:
+    :param demisto_user: Username of the demisto user running the tests.
+    :param demisto_pass: Password of the demisto user running the tests.
     :param demisto_api_key:
-    :param prints_manager:
-    :param thread_index:
+    :param prints_manager: PrintsManager object used in reporting. Will be deprecated.
+    :param thread_index: Integer indicating what thread the test is running on.
     :return:
     """
     playbook_id = t['playbookID']
@@ -260,14 +262,16 @@ def run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_t
 def execute_testing(tests_settings, server_ip, all_tests,
                     tests_data_keeper, prints_manager, thread_index=0):
     """
-
-    :param tests_settings:
-    :param server_ip:
-    :param all_tests:
-    :param tests_data_keeper:
-    :param prints_manager:
-    :param thread_index:
-    :return:
+    Main function used to handle the testing process. Starts by turning off telemetry and disabling
+    any left over tests. Afterwards it will create a test queue object which then is used to run the
+    specific test scenario.
+    :param tests_settings: SettingsTester object which contains the test variables
+    :param server_ip: IP address of the server. Will be formatted before use.
+    :param all_tests: All tests currently in the test conf.
+    :param tests_data_keeper: Object containing all the test results. Used by report tests function.
+    :param prints_manager: PrintsManager object used in reporting. Will be deprecated.
+    :param thread_index: Integer indicating what thread the test is running on.
+    :return: No object is returned, just updates the tests_data_keep object.
     """
     server = SERVER_URL.format(server_ip)
     server_numeric_version = tests_settings.serverNumericVersion
