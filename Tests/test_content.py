@@ -325,8 +325,9 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
     )
 
 
-def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks, integrations, playbook_id,
-                   succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url,
+def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass,
+                   failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
+                   test_options, slack, circle_ci, build_number, server_url,
                    build_name, prints_manager, thread_index=0, is_mock_run=False):
     with acquire_test_lock(integrations,
                            test_options.get('timeout'),
@@ -334,12 +335,13 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, faile
                            thread_index,
                            tests_settings.conf_path) as lock:
         if lock:
-            status, inc_id = check_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+            status, inc_id = check_integration(c, server_url, demisto_user, demisto_pass, integrations,
+                                               playbook_id, prints_manager, test_options,
                                                is_mock_run, thread_index=thread_index)
             # c.api_client.pool.close()
             if status == PB_Status.COMPLETED:
-                prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
-                                             message_color=LOG_COLORS.GREEN)
+                prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color,
+                                             thread_index, message_color=LOG_COLORS.GREEN)
                 succeed_playbooks.append(playbook_id)
 
             elif status == PB_Status.NOT_SUPPORTED_VERSION:
@@ -371,9 +373,11 @@ def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy
                    server_url, build_name, prints_manager, thread_index=0):
     proxy.set_tmp_folder()
     proxy.start(playbook_id, record=True, thread_index=thread_index, prints_manager=prints_manager)
-    succeed = run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks, integrations,
-                             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                             server_url, build_name, prints_manager, thread_index=thread_index, is_mock_run=True)
+    succeed = run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, str, str,
+                             failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                             test_message, test_options, slack, circle_ci, build_number, server_url,
+                             build_name, prints_manager, thread_index=thread_index,
+                             is_mock_run=True)
     proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
     if succeed:
         proxy.successful_rerecord_count += 1
@@ -453,11 +457,14 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
     start_message = f'------ Test {test_message} start ------'
     client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
 
-    if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
-        prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index, include_timestamp=True)
-        run_test_logic(conf_json_test_details, tests_queue, tests_settings, client, failed_playbooks, integrations,
-                       playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                       server_url, build_name, prints_manager, thread_index=thread_index)
+    if not is_ami or (not integrations or has_unmockable_integration(integrations,
+                                                                     unmockable_integrations)):
+        prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index,
+                                     include_timestamp=True)
+        run_test_logic(conf_json_test_details, tests_queue, tests_settings, client, str, str,
+                       demisto_user, demisto_pass, failed_playbooks, integrations, playbook_id,
+                       succeed_playbooks, test_message, test_options, slack, circle_ci,
+                       build_number, server_url, build_name, prints_manager)
         prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print, thread_index,
                                      include_timestamp=True)
 
