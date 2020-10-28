@@ -271,6 +271,11 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
+  - deprecated: false
+    description: Retrieves a User Profile schema which holds all of the user fields within the application.
+      Used for outgoing-mapping through the Get Schema option.
+    execution: false
+    name: get-mapping-fields
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
   longRunning: false
@@ -279,6 +284,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncout: true
 tests:
 - No tests
 fromversion: 6.0.0

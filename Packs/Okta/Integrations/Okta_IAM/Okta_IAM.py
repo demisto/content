@@ -92,6 +92,22 @@ class Client(BaseClient):
         )
         return res
 
+    def get_okta_fields(self):
+        okta_fields = {}
+        uri = 'meta/schemas/user/default'
+        res = self._http_request(
+            method='GET',
+            url_suffix=uri
+        )
+
+        base_properties = res.get('definitions', {}).get('base', {}).get('properties', {})
+        okta_fields.update({k: base_properties[k].get('title') for k in base_properties.keys()})
+
+        custom_properties = res.get('definitions', {}).get('custom', {}).get('properties', {})
+        okta_fields.update({k: custom_properties[k].get('title') for k in custom_properties.keys()})
+
+        return okta_fields
+
 
 '''HELPER FUNCTIONS'''
 
@@ -163,6 +179,16 @@ def get_error_details(res):
 def test_module(client):
     client.test()
     return_results('ok')
+
+
+def get_mapping_fields_command(client):
+    okta_fields = client.get_okta_fields()
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+
+    for field, description in okta_fields.items():
+        incident_type_scheme.add_field(field, description)
+
+    return GetMappingFieldsResponse([incident_type_scheme])
 
 
 def get_user_command(client, args, mapper_in):
@@ -392,6 +418,9 @@ def main():
     try:
         if command == 'test-module':
             test_module(client)
+
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields_command(client, mapper_in))
 
     except Exception:
         # For any other integration command exception, return an error
