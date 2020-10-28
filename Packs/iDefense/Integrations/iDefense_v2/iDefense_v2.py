@@ -75,7 +75,7 @@ def _calculate_dbot_score(severity: int):
     return dbot_score
 
 
-def _extract_analysis_info(res, indicator_value, dbot_score_type):
+def _extract_analysis_info(res: dict, indicator_value: str, dbot_score_type: str):
     """
     Extract context data from http-response and create corresponding DBotScore.
     If response is empty, return empty context and a none for DBotScore object
@@ -90,15 +90,16 @@ def _extract_analysis_info(res, indicator_value, dbot_score_type):
     """
     dbot = None
     analysis_info = {}
-    if res.get('total_size') > 0:
-        dbot_score = _calculate_dbot_score(res.get('results')[0].get('severity'))
+    if res.get('total_size'):
+        results_array = res.get('results')[0]
+        dbot_score: int = _calculate_dbot_score(results_array.get('severity',0))
         desc = 'Match found in iDefense database'
         dbot = Common.DBotScore(indicator_value, dbot_score_type, 'iDefense', dbot_score, desc)
         analysis_info = {
-            'Name': res.get('results')[0].get('key'),
+            'Name': results_array.get('key', ''),
             'Dbot Reputation': dbot_score,
-            'confidence': res.get('results')[0].get('confidence'),
-            'Threat Types': res.get('results')[0].get('threat_types')
+            'confidence': results_array.get('confidence'),
+            'Threat Types': results_array.get('threat_types')
         }
     return analysis_info, dbot
 
@@ -115,7 +116,7 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        client.http_request("", {})
+        client.perform_request('', '')
         return 'ok'
     except Exception as e:
         raise DemistoException(f"Error in API call - check the input parameters. Error: {e}")
@@ -131,7 +132,7 @@ def ip_command(client: Client, args: dict) -> CommandResults:
     Returns: CommandResults containing the indicator, the response and a readable output
 
     """
-    ip = args.get('ip')
+    ip: str = str(args.get('ip'))
 
     if not _validate_args('IP', ip):
         raise DemistoException(f'Invalid parameter was given, argument value is {ip}')
@@ -153,7 +154,7 @@ def ip_command(client: Client, args: dict) -> CommandResults:
 
 
 def url_command(client: Client, args: dict) -> CommandResults:
-    url = args.get('url')
+    url: str = str(args.get('url'))
     if not _validate_args('URL', url):
         raise DemistoException(f'Invalid parameter was given, argument value is {url}')
 
@@ -175,7 +176,7 @@ def url_command(client: Client, args: dict) -> CommandResults:
 
 
 def domain_command(client: Client, args: dict) -> CommandResults:
-    domain = args.get('domain')
+    domain: str = str(args.get('domain'))
     res = client.perform_request('/domain', domain)
     analysis_info, dbot = _extract_analysis_info(res, domain, DBotScoreType.DOMAIN)
 
@@ -204,7 +205,7 @@ def uuid_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults containing the indicator, the response and a readable output
     """
-    uuid = args.get('uuid')
+    uuid: str = str(args.get('uuid'))
     try:
         res = client.perform_request(f'/{uuid}', '')
     except Exception as e:

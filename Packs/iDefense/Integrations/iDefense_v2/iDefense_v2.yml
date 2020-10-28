@@ -37,10 +37,13 @@ script:
     outputs:
     - contextPath: IP.Address
       description: Bad IP Address found
+      type: String
     - contextPath: IP.Malicious.Vendor
       description: For malicious IPs, the vendor that made the decision
+      type: String
     - contextPath: IP.Malicious.Description
       description: For malicious IPs, the reason for the vendor to make the decision
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
@@ -59,18 +62,25 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Bad domain found
+      type: String
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
+      type: String
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
     description: Check domain reputation
   - name: url
     arguments:
@@ -81,18 +91,25 @@ script:
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
+      type: String
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
+      type: String
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
     description: Check URL reputation
   - name: idefense-get-ioc-by-uuid
     arguments:
@@ -103,30 +120,43 @@ script:
     outputs:
     - contextPath: IP.Address
       description: Bad IP Address found
+      type: String
     - contextPath: IP.Malicious.Vendor
       description: For malicious IPs, the vendor that made the decision
+      type: String
     - contextPath: IP.Malicious.Description
       description: For malicious IPs, the reason for the vendor to make the decision
+      type: String
     - contextPath: Domain.Name
       description: Bad domain found
+      type: String
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
+      type: String
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
+      type: String
     - contextPath: URL.Data
       description: Bad URLs found
+      type: String
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
+      type: String
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
     description: Get specific indicator reputation
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
