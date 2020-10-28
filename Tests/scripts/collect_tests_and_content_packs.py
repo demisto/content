@@ -9,8 +9,8 @@ import json
 import glob
 import random
 import argparse
-import coloredlogs
 import logging
+from Tests.scripts.utils.log_util import install_logging
 from distutils.version import LooseVersion
 from copy import deepcopy
 from typing import Dict, Tuple
@@ -19,15 +19,6 @@ import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
 from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_test_pack_name
-
-coloredlogs.install(level=logging.DEBUG,
-                    fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s',
-                    level_styles={
-                        'critical': {'bold': True, 'color': 'red'},
-                        'debug': {'color': 'cyan'},
-                        'error': {'color': 'red'},
-                        'info': {},
-                        'warning': {'color': 'yellow'}})
 
 
 class TestConf(object):
@@ -295,7 +286,9 @@ def get_modified_files_for_testing(files_string):
                 continue
 
             elif any(file in file_path for file in (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
-                modified_metadata_list.add(tools.get_pack_name(file_path))
+                pack = tools.get_pack_name(file_path)
+                if pack:
+                    modified_metadata_list.add(pack)
 
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
@@ -1363,7 +1356,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
-
+        logging.debug(f'Files string: {files_string}')
         minimum_server_version = AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
@@ -1383,17 +1376,18 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     if not is_nightly:
         # No need to print all content packs and all tests in nightly
         if tests_string:
-            logging.info('Collected the following tests:\n{0}\n'.format(tests_string))
+            logging.success('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
             logging.info('No filter configured, running all tests')
 
         if packs_to_install_string:
-            logging.info('Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string))
+            logging.success('Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string))
         else:
             logging.info('Did not find content packs to install')
 
 
 if __name__ == "__main__":
+    install_logging('Collect Tests And Content Packs.log')
     logging.info("Starting creation of test filter file")
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')

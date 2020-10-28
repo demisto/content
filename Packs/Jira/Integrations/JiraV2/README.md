@@ -40,6 +40,7 @@ ConsumerKey__
 ## Fetched Incidents Data
 ---
 When you enable fetched incidents, Demisto fetches the first batch of Jira issues from the 10 minutes prior to when the integration was added. After the first batch of fetched issues, Demisto fetches new Jira issues as soon as they are generated in Jira. By default, 50 issues are pulled for each call. To pull older Jira issues, use the query to fetch issues option.
+If mirror `Mirror incoming incidents` is enabled, any incident data changed in remote JIRA server will reflected on existing fetched incidents.
 
 ## Commands
 ---

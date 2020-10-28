@@ -2642,7 +2642,10 @@ class CommandResults:
     :param outputs: the data to be returned and will be set to context
 
     :type indicators: ``list``
-    :param indicators: must be list of Indicator types, like Common.IP, Common.URL, Common.File, etc.
+    :param indicators: DEPRECATED: use 'indicator' instead.
+
+    :type indicator: ``Common.Indicator``
+    :param indicator: single indicator like Common.IP, Common.URL, Common.File, etc.
 
     :type readable_output: ``str``
     :param readable_output: (Optional) markdown string that will be presented in the warroom, should be human readable -
@@ -2660,12 +2663,15 @@ class CommandResults:
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline) -> None
+                 raw_response=None, indicators_timeline=None, indicator=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator) -> None
         if raw_response is None:
             raw_response = outputs
 
-        self.indicators = indicators
+        if indicators and indicator:
+            raise ValueError('indicators is DEPRECATED, use only indicator')
+        self.indicators = indicators  # type: Optional[List[Common.Indicator]]
+        self.indicator = indicator  # type: Optional[Common.Indicator]
 
         self.outputs_prefix = outputs_prefix
 
@@ -2697,8 +2703,10 @@ class CommandResults:
         raw_response = None  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
 
-        if self.indicators:
-            for indicator in self.indicators:
+        indicators = [self.indicator] if self.indicator else self.indicators
+
+        if indicators:
+            for indicator in indicators:
                 context_outputs = indicator.to_context()
 
                 for key, value in context_outputs.items():
@@ -2758,6 +2766,11 @@ def return_results(results):
     if results is None:
         # backward compatibility reasons
         demisto.results(None)
+        return
+
+    if results and isinstance(results, list) and len(results) > 0 and isinstance(results[0], CommandResults):
+        for result in results:
+            demisto.results(result)
         return
 
     if isinstance(results, CommandResults):
@@ -4059,7 +4072,7 @@ def set_integration_context(context, sync=True, version=-1):
     :type sync: ``bool``
     :param sync: Whether to save the context directly to the DB.
 
-    :type version: ``int``
+    :type version: ``Any``
     :param version: The version of the context to set.
 
     :rtype: ``dict``
@@ -4067,8 +4080,7 @@ def set_integration_context(context, sync=True, version=-1):
     """
     demisto.debug('Setting integration context {}:'.format(str(context)))
     if is_versioned_context_available():
-        context['version'] = str(version + 1)
-        demisto.debug('Updating integration context to version {}. Sync: {}'.format(version + 1, sync))
+        demisto.debug('Updating integration context with version {}. Sync: {}'.format(version, sync))
         return demisto.setIntegrationContextVersioned(context, version, sync)
     else:
         return demisto.setIntegrationContext(context)
@@ -4148,8 +4160,8 @@ def set_to_integration_context_with_retries(context, object_keys=None, sync=True
         attempt += 1
         try:
             set_integration_context(integration_context, sync, version)
-            demisto.debug('Successfully updated integration context. New version is {}.'
-                          ''.format(version + 1 if version != -1 else version))
+            demisto.debug('Successfully updated integration context with version {}.'
+                          ''.format(version))
             break
         except ValueError as ve:
             demisto.debug('Failed updating integration context with version {}: {} Attempts left - {}'
