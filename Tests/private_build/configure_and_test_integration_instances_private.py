@@ -18,8 +18,8 @@ from Tests.configure_and_test_integration_instances import Build, configure_serv
     test_pack_metadata, options_handler
 
 
-PRIVATE_CONTENT_PATH = '/home/runner/work/content-private/content-private/content/'
-PRIVATE_CONTENT_TEST_ZIP = PRIVATE_CONTENT_PATH + 'test_pack.zip'
+PRIVATE_CONTENT_PATH = '/home/runner/work/content-private/content-private/content'
+PRIVATE_CONTENT_TEST_ZIP = PRIVATE_CONTENT_PATH + '/test_pack.zip'
 FILTER_FILE_PATH = "./Tests/filter_file.txt"
 
 
@@ -71,6 +71,7 @@ def find_needed_test_playbook_paths(test_playbooks, filter_file_path):
     """
     Uses the test filter file to determine which test playbooks are needed to run, then will use the
     test playbook IDs found in the ID set to determine what the path is for that test.
+    :param filter_file_path:
     :param test_playbooks: The test_playbooks dictionary from the ID set.
     :return: tests_file_paths set used to keep file paths of found tests.
     """
@@ -82,7 +83,7 @@ def find_needed_test_playbook_paths(test_playbooks, filter_file_path):
             if any(test_clean in d for d in test_playbooks):
                 for test_pb in test_playbooks:
                     if test_clean in test_pb:
-                        tests_file_paths.add(PRIVATE_CONTENT_PATH + test_pb[test_clean].get("file_path"))
+                        tests_file_paths.add(PRIVATE_CONTENT_PATH + '/' + test_pb[test_clean].get("file_path"))
     return tests_file_paths
 
 
@@ -122,7 +123,7 @@ def create_private_test_pack_zip(id_set=None):
     tests_file_paths = find_needed_test_playbook_paths(test_playbooks, FILTER_FILE_PATH)
     #  Adding contents of DeveloperPack for testing.
     #  TODO: Remove this when we have migrated test content out of this pack.
-    developer_pack_items = glob.glob(PRIVATE_CONTENT_PATH + "Packs/DeveloperTools/*/*.yml")
+    developer_pack_items = glob.glob(PRIVATE_CONTENT_PATH + "/Packs/DeveloperTools/*/*.yml")
     for dev_pack_item in developer_pack_items:
         tests_file_paths.add(dev_pack_item)
     #  Write the test pack using collected file paths
