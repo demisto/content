@@ -465,22 +465,22 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
     :param mapper_out: Mapping User Profiles to AD users.
     :return: User Profile of the AD user
     """
-    user_profile = args.get("user-profile")
-    user_profile_delta = args.get('user-profile-delta')
-    default_attribute = args.get('defult_attribute', "samaccountname")
-
-    iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
-
-    ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
-
-    value = ad_user.get(default_attribute)
-
-    # removing keys with no values
-    user = {k: v for k, v in ad_user.items() if v}
-    attributes = list(user.keys())
-
-    query = f'(&(objectClass=User)(objectCategory=person)({default_attribute}={value}))'
     try:
+        user_profile = args.get("user-profile")
+        user_profile_delta = args.get('user-profile-delta')
+        default_attribute = args.get('defult_attribute', "samaccountname")
+
+        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
+
+        ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
+
+        value = ad_user.get(default_attribute)
+
+        # removing keys with no values
+        user = {k: v for k, v in ad_user.items() if v}
+        attributes = list(user.keys())
+
+        query = f'(&(objectClass=User)(objectCategory=person)({default_attribute}={value}))'
         entries = search_with_paging(
             query,
             default_base_dn,
@@ -704,20 +704,19 @@ def create_user_iam(default_base_dn, args, mapper_out):
     :return: The user that was created
     """
     assert conn is not None
-
-    user_profile = args.get("user-profile")
-    user_profile_delta = args.get('user-profile-delta')
-    iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
-    ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
-
     try:
+
+        user_profile = args.get("user-profile")
+        user_profile_delta = args.get('user-profile-delta')
+        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
+        ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
+
         sam_account_name = ad_user.get("samaccountname")
         if not sam_account_name:
             raise DemistoException("User must have SAMAccountName")
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
         if user_exists:
             iam_user_profile.set_result(success=True, action=IAMActions.CREATE_USER,
-                                        skip=True, skip_reason="User already exists")            iam_user_profile.set_result(success=True, action=IAMActions.CREATE_USER,
                                         skip=True, skip_reason="User already exists")
 
         else:
@@ -759,14 +758,13 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out):
     :return: Updated User
     """
     assert conn is not None
-
-    user_profile = args.get("user-profile")
-    user_profile_delta = args.get('user-profile-delta')
-    iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
-
-    ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
-
     try:
+        user_profile = args.get("user-profile")
+        user_profile_delta = args.get('user-profile-delta')
+        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
+
+        ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
+
         # check it user exists and if it doesn't, create it
         sam_account_name = ad_user.get("samaccountname")
         if not sam_account_name:
@@ -779,12 +777,13 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out):
             return create_user_iam(default_base_dn, args, mapper_out)
 
         elif user_exists:
+
             dn = user_dn(sam_account_name, default_base_dn)
+
             # fields that can't be modified
             # notice that we are changing the ou and that effects the dn and cn
             for field in FIELDS_THAT_CANT_BE_MODIFIED:
                 if ad_user.get(field):
-                    ad_user.pop(field)
                     ad_user.pop(field)
 
             fail_to_modify = []
@@ -1079,48 +1078,50 @@ def enable_user_iam(default_base_dn, disabled_users_group_cn, args, create_if_no
     :param mapper_out: Mapping User Profiles to AD users.
     :return: The enabled user
     """
-    user_profile = args.get("user-profile")
-    user_profile_delta = args.get('user-profile-delta')
-    iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
-
-    ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
-
-    # check it user exists and if it doesn't, create it
-    sam_account_name = ad_user.get("samaccountname")
-    if not sam_account_name:
-        raise DemistoException("User must have SAMAccountName")
-
-    user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
-
-    if not user_exists and create_if_not_exists:
-        return create_user_iam(default_base_dn, iam_user_profile, mapper_out)
-
-    dn = user_dn(sam_account_name, default_base_dn)
-
-    # modify user to enable account
-    modification = {
-        'userAccountControl': [('MODIFY_REPLACE', NORMAL_ACCOUNT)]
-    }
-
     try:
+        user_profile = args.get("user-profile")
+        user_profile_delta = args.get('user-profile-delta')
+        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
+
+        ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
+
+        # check it user exists and if it doesn't, create it
+        sam_account_name = ad_user.get("samaccountname")
+        if not sam_account_name:
+            raise DemistoException("User must have SAMAccountName")
+
+        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
+
+        if not user_exists and create_if_not_exists:
+            return create_user_iam(default_base_dn, iam_user_profile, mapper_out)
+
+        dn = user_dn(sam_account_name, default_base_dn)
+
+        # modify user to enable account
+        modification = {
+            'userAccountControl': [('MODIFY_REPLACE', NORMAL_ACCOUNT)]
+        }
+
         # Enable account and update with attributes if any
+        command_failed = False
         modify_object(dn, modification)
         if disabled_users_group_cn:
             grp_dn = group_dn(disabled_users_group_cn, default_base_dn)
             success = microsoft.removeMembersFromGroups.ad_remove_members_from_groups(conn, [dn], [grp_dn], True)
             if not success:
+                command_failed = True
                 e = 'Failed to add user to {} group'.format(disabled_users_group_cn)
                 iam_user_profile.set_result(success=False,
                                             error_message=e,
                                             action=IAMActions.ENABLE_USER,
                                             )
-            else:
-                iam_user_profile.set_result(success=True,
-                                            email=ad_user.get('email'),
-                                            username=ad_user.get('name'),
-                                            action=IAMActions.ENABLE_USER,
-                                            details=ad_user,
-                                            active=True)
+        if not command_failed:
+            iam_user_profile.set_result(success=True,
+                                        email=ad_user.get('email'),
+                                        username=ad_user.get('name'),
+                                        action=IAMActions.ENABLE_USER,
+                                        details=ad_user,
+                                        active=True)
 
         return iam_user_profile
 
@@ -1140,47 +1141,49 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
     :param mapper_out: Mapping User Profiles to AD users.
     :return: The disabled user
     """
-    user_profile = args.get("user-profile")
-    user_profile_delta = args.get('user-profile-delta')
-    iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
-
-    ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
-
-    sam_account_name = ad_user.get("samaccountname")
-    if not sam_account_name:
-        raise DemistoException("User must have SAMAccountName")
-
-    user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
-    if not user_exists:
-        iam_user_profile.set_result(success=True, action=IAMActions.DISABLE_USER,
-                                    skip=True, skip_reason="User doesn't exists")
-        return iam_user_profile
-
-    dn = user_dn(sam_account_name, default_base_dn)
-
-    # modify user
-    modification = {
-        'userAccountControl': [('MODIFY_REPLACE', DISABLED_ACCOUNT)]
-    }
-
     try:
+        user_profile = args.get("user-profile")
+        user_profile_delta = args.get('user-profile-delta')
+        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
+        ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
+
+        sam_account_name = ad_user.get("samaccountname")
+        if not sam_account_name:
+            raise DemistoException("User must have SAMAccountName")
+
+        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
+        if not user_exists:
+            iam_user_profile.set_result(success=True, action=IAMActions.DISABLE_USER,
+                                        skip=True, skip_reason="User doesn't exists")
+            return iam_user_profile
+
+        dn = user_dn(sam_account_name, default_base_dn)
+
+        # modify user
+        modification = {
+            'userAccountControl': [('MODIFY_REPLACE', DISABLED_ACCOUNT)]
+        }
+
+        command_failed = False
         modify_object(dn, modification)
         if disabled_users_group_cn:
+
             grp_dn = group_dn(disabled_users_group_cn, default_base_dn)
             success = microsoft.addMembersToGroups.ad_add_members_to_groups(conn, [dn], [grp_dn])
             if not success:
+                command_failed = True
                 e = 'Failed to remove user from {} group'.format(disabled_users_group_cn)
                 iam_user_profile.set_result(success=False,
                                             error_message=e,
                                             action=IAMActions.DISABLE_USER,
                                             )
-            else:
-                iam_user_profile.set_result(success=True,
-                                            email=ad_user.get('email'),
-                                            username=ad_user.get('name'),
-                                            action=IAMActions.DISABLE_USER,
-                                            details=ad_user,
-                                            active=False)
+        if not command_failed:
+            iam_user_profile.set_result(success=True,
+                                        email=ad_user.get('email'),
+                                        username=ad_user.get('name'),
+                                        action=IAMActions.DISABLE_USER,
+                                        details=ad_user,
+                                        active=False)
 
         return iam_user_profile
 
@@ -1323,6 +1326,11 @@ def delete_group():
         'Contents': "Deleted group with DN: {}".format(dn)
     }
     demisto.results(demisto_entry)
+
+
+def get_mapping_fields_command():
+    # in progress
+    return ""
 
 
 '''
@@ -1494,6 +1502,9 @@ def main():
         if demisto.command() == 'iam-disable-user':
             user_profile = disable_user_iam(DEFAULT_BASE_DN, disabled_users_group_cn, args, mapper_out)
             return return_results(user_profile)
+
+        elif demisto.command() == 'get-mapping-fields':
+            get_mapping_fields_command()
 
     except Exception as e:
         message = str(e)
