@@ -1,5 +1,4 @@
 Use the Google Docs integration to create and modify Google Docs documents.
-This integration was integrated and tested with version xx of GoogleDocs
 ## Configure GoogleDocs on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
